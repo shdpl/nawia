@@ -1,5 +1,5 @@
 #include "luaHorde3d.h"
-#include "Horde3d.h"
+#include "Horde3D.h"
 #include "Horde3DUtils.h"
 
 #include "lua.hpp"
