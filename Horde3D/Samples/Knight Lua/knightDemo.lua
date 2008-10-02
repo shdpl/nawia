@@ -19,7 +19,6 @@ Application={}
 Application.__index=Application
 
 function Application.create()
-   print("Application:create")
    local a = {}             -- our new object
    a.keys={}
    for i = 0,320 do a.keys[i] = false end
@@ -51,7 +50,6 @@ function Application.create()
 end
 
 function Application:init()
-   print("Application:init")
 	if( Horde3d.init()==false ) then
 		Horde3dUtils.dumpMessages()
 		return false
@@ -80,16 +78,21 @@ function Application:init()
 	--Pipelines
 	self.hdrPipeRes = Horde3d.addResource( ResourceTypes.Pipeline, "hdr.pipeline.xml", 0 )
 	self.forwardPipeRes = Horde3d.addResource( ResourceTypes.Pipeline, "forward.pipeline.xml", 0 )
+
 	--Font
 	self.fontMatRes = Horde3d.addResource( ResourceTypes.Material, "font.material.xml", 0 )
+
 	--Logo
 	self.logoMatRes = Horde3d.addResource( ResourceTypes.Material, "logo.material.xml", 0 )
+
 	--Environment
 	local envRes = Horde3d.addResource( ResourceTypes.SceneGraph, "sphere.scene.xml", 0 )
+
 	--Knight
 	local knightRes = Horde3d.addResource( ResourceTypes.SceneGraph, "knight.scene.xml", 0 )
 	local knightAnim1Res = Horde3d.addResource( ResourceTypes.Animation, "knight_order.anim", 0 )
 	local knightAnim2Res = Horde3d.addResource( ResourceTypes.Animation, "knight_attack.anim", 0 )
+
 	--Particle system
 	local particleSysRes = Horde3d.addResource( ResourceTypes.SceneGraph, "particleSys1.scene.xml", 0 )
 
@@ -103,8 +106,10 @@ function Application:init()
 	--Add environment
 	local env = Horde3d.addNodes( Horde3d.RootNode, envRes ) 
 	Horde3d.setNodeTransform( env, 0, -20, 0, 0, 0, 0, 20, 20, 20 ) 
+
 	--Add knight
 	self.knight = Horde3d.addNodes( Horde3d.RootNode, knightRes ) 
+
 	Horde3d.setNodeTransform( self.knight, 0, 0, 0, 0, 180, 0, 0.1, 0.1, 0.1 ) 
 	Horde3d.setupModelAnimStage( self.knight, 0, knightAnim1Res, "", false ) 
 	Horde3d.setupModelAnimStage( self.knight, 1, knightAnim2Res, "", false ) 
@@ -134,7 +139,6 @@ function Application:init()
 end
 
 function Application:mainLoop( fps )
-   print("Application:mainLoop")
 	self.curFPS = fps
 	self.timer = self.timer+(1 / fps)
 
@@ -183,17 +187,13 @@ function Application:mainLoop( fps )
 
 	--Write all mesages to log file
 	Horde3dUtils.dumpMessages()
-   
-   print("Application:mainLoop-done")
 end
 
 function Application:release()
-   print("Application:release")
    Horde3d.release()
 end
 
 function Application:resize( width, height )
-   print("Application:resize")
 	--Resize viewport
 	Horde3d.resize( 0, 0, width, height )
 	
@@ -202,7 +202,6 @@ function Application:resize( width, height )
 end
 
 function Application:keyPressEvent( key )
-   print("Application:keyPressEvent")
 	if( key == 32 ) then   --space
 		self.freeze = not(self.freeze)
    end
@@ -229,7 +228,6 @@ function Application:keyPressEvent( key )
 end
 
 function Application:keyHandler()
-   print("keyHandler")
 	local curVel = self.velocity / self.curFPS
 	
 	if( self.keys[287]==true) then --LShift
@@ -270,7 +268,6 @@ function Application:keyHandler()
 end
 
 function Application:mouseMoveEvent( dX, dY )
-   print("Application:mouseMoveEvent")
 	--Look left/right
 	self.ry = self.ry - dX / 100 * 30
 	
@@ -281,7 +278,6 @@ function Application:mouseMoveEvent( dX, dY )
 end
 
 function Application:keyStateChange(key, state )
-   print("Application:keyStateChange")
    if( key >= 0 and key < 320 ) then
       self.keys[key] = state
    end
