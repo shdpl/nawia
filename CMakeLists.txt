@@ -59,6 +59,6 @@ CONFIGURE_FILE(Horde3D/Source/Horde3DEngine/egExtensions_auto_include.h.in ${CMA
 CONFIGURE_FILE(Horde3D/Source/Horde3DEngine/egExtensions_auto_install.h.in ${CMAKE_BINARY_DIR}/egExtensions_auto_install.h)
 
 add_subdirectory(Horde3D)
-IF(IS_DIRECTORY ./Extensions)
-add_subdirectory(Extensions)
-ENDIF(IS_DIRECTORY ./Extensions)
+IF(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/Extensions)
+  add_subdirectory(Extensions)
+ENDIF(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/Extensions)
