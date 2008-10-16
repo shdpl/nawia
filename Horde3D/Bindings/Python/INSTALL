@@ -1,0 +1,23 @@
+Dependencies for installation:
+Horde3D installed in search paths:
+	libHorde3D.so, libHorde3DUtils.so
+	horde3d/Horde3D.h, horde3d/Horde3DUtils.h horde3d/Horde3DTerrain.h
+
+You can disable the dependency on Horde3DTerrain.h in setup.py: Just look for the line
+> ext_modules.append(ext_horde3dterrain)
+and comment it out.
+
+
+
+Dependencies for running samples / tests:
+	pyglet
+
+
+
+Building the wrapper:
+	python setup.py build
+
+Install (to install it to the system default omit --prefix=...):
+	python setup.py install --prefix=/usr/local
+
+
