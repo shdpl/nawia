@@ -91,6 +91,7 @@ class App(object):
 		op.add_option('--vsync-on', dest='vsync', help='enable / disable vsync', action='store_true', default=False)
 		op.add_option('--content', dest='contentPaths', help='path to content directory, may be specified several times', action='append', default=[])
 		op.add_option('--limit-fps', type='int', dest='fpsLimit', help='limit FPS to specified value; may improve keyboard / mouse reaction times for values below 100', default=None)
+		op.add_option('--multiwindow', dest='multiWindow', help='enable support for multiple windows; disabled by default due to significant performance hit', default=False)
 
 		self._parseOptions_moreOptions(op)
 
@@ -217,8 +218,9 @@ class App(object):
 			self._mainloopUpdate(dt)
 
 			for w in self._windows:
-				w.switch_to()
-				w.on_resize(w._width, w._height) # calls h3d.resize; FIXME is this fixable?
+				if self._options.multiWindow:
+					w.switch_to()
+					w.on_resize(w._width, w._height) # calls h3d.resize; FIXME is this fixable?
 
 				self._mainloopRenderOverlays(w, dt)
 				self._mainloopRender(w, dt)
