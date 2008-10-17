@@ -1583,7 +1583,7 @@ static PyMethodDef horde3d_methods[] =
 	{"getNodeParamstr", horde3d_getNodeParamstr, METH_VARARGS},
 	{"setNodeParamstr", horde3d_setNodeParamstr, METH_VARARGS},
 	{"getNodeAABB", horde3d_getNodeAABB, METH_VARARGS},
-	{"findeNodes", horde3d_findNodes, METH_VARARGS},
+	{"findNodes", horde3d_findNodes, METH_VARARGS},
 	{"getNodeFindResult", horde3d_getNodeFindResult, METH_VARARGS},
 	{"castRay", horde3d_castRay, METH_VARARGS},
 	{"getCastRayResult", horde3d_getCastRayResult, METH_VARARGS},
