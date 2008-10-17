@@ -25,6 +25,10 @@
 #include "Python.h"
 #include <horde3d/Horde3D.h>
 
+// #define PHOENIX_SPOT_POINT_LIGHTS
+
+
+
 
 static PyObject* horde3d_getVersionString(PyObject *self, PyObject *args)
 {
@@ -1118,6 +1122,7 @@ static PyObject* horde3d_addJointNode(PyObject *self, PyObject *args)
 }
 
 
+#ifdef PHOENIX_SPOT_POINT_LIGHTS
 static PyObject* horde3d_addSpotLightNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1147,6 +1152,21 @@ static PyObject* horde3d_addPointLightNode(PyObject *self, PyObject *args)
 
 	return Py_BuildValue("i", Horde3D::addPointLightNode(parent, name, matRes, lightingContext, shadowContext));
 }
+#else // PHOENIX_SPOT_POINT_LIGHTS
+static PyObject* horde3d_addLightNode(PyObject *self, PyObject *args)
+{
+	int parent;
+	const char *name;
+	int matRes;
+	const char *lightingContext;
+	const char *shadowContext;
+
+	if(!PyArg_ParseTuple(args, "isiss:addLightNode", &parent, &name, &matRes, &lightingContext, &shadowContext))
+		return NULL;
+
+	return Py_BuildValue("i", Horde3D::addLightNode(parent, name, matRes, lightingContext, shadowContext));
+}
+#endif // PHOENIX_SPOT_POINT_LIGHTS
 
 
 
@@ -1414,8 +1434,12 @@ static PyObject *horde3d__getConstants(PyObject *self, PyObject *args)
 	H3D_CONSTANT(d, Model, SceneNodeTypes);
 	H3D_CONSTANT(d, Mesh, SceneNodeTypes);
 	H3D_CONSTANT(d, Joint, SceneNodeTypes);
+#ifdef PHOENIX_SPOT_POINT_LIGHTS
 	H3D_CONSTANT(d, SpotLight, SceneNodeTypes);
 	H3D_CONSTANT(d, PointLight, SceneNodeTypes);
+#else // PHOENIX_SPOT_POINT_LIGHTS
+	H3D_CONSTANT(d, Light, SceneNodeTypes);
+#endif // PHOENIX_SPOT_POINT_LIGHTS
 	H3D_CONSTANT(d, Camera, SceneNodeTypes);
 	H3D_CONSTANT(d, Emitter, SceneNodeTypes);
 	PyDict_SetItemString(dict, "SceneNodeTypes", d);
@@ -1570,8 +1594,12 @@ static PyMethodDef horde3d_methods[] =
 	{"setModelMorpher", horde3d_setModelMorpher, METH_VARARGS},
 	{"addMeshNode", horde3d_addMeshNode, METH_VARARGS},
 	{"addJointNode", horde3d_addJointNode, METH_VARARGS},
+#ifdef PHOENIX_SPOT_POINT_LIGHTS
 	{"addSpotLightNode", horde3d_addSpotLightNode, METH_VARARGS},
 	{"addPointLightNode", horde3d_addPointLightNode, METH_VARARGS},
+#else // PHOENIX_SPOT_POINT_LIGHTS
+	{"addLightNode", horde3d_addLightNode, METH_VARARGS},
+#endif // PHOENIX_SPOT_POINT_LIGHTS
 	{"setLightContexts", horde3d_setLightContexts, METH_VARARGS},
 	{"addCameraNode", horde3d_addCameraNode, METH_VARARGS},
 	{"setupCameraView", horde3d_setupCameraView, METH_VARARGS},
