@@ -146,6 +146,9 @@ static PyObject* horde3dutils_showFrameStats(PyObject *self, PyObject *args)
 		return NULL;
 
 	Horde3DUtils::showFrameStats(res, curFPS);
+
+	Py_INCREF(Py_None);
+	return Py_None;
 }
 
 
