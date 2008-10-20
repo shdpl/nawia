@@ -1,5 +1,5 @@
 <Material class="Translucent.Particle">
 	<Shader source="particle.shader.xml"/>
 	
-	<TexUnit unit="0" map="logo.tga" />
+	<TexUnit unit="0" map="logo.png" />
 </Material>
