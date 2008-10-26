@@ -1050,7 +1050,11 @@ static PyObject* horde3d_setNodeTransformMatrix(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_getNodeParamf_doc = "getNodeParamf(node, param)";// TODO
+static const char *horde3d_getNodeParamf_doc = "getNodeParamf(node, param)\n" \
+												"gets a *float* property of a scene node\n\n" \
+												"node: handle to the node\n" \
+												"param: parameter to be accessed\n" \
+												"returns value of the parameter";
 static PyObject* horde3d_getNodeParamf(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1063,7 +1067,12 @@ static PyObject* horde3d_getNodeParamf(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_setNodeParamf_doc = "setNodeParamf(node, param, value)";// TODO
+static const char *horde3d_setNodeParamf_doc = "setNodeParamf(node, param, value)\n" \
+												"sets a *float* property of a scene node\n\n" \
+												"node: handle to the node\n" \
+												"param: parameter to be accessed\n " \
+												"value: new value for the parameter\n" \
+												"returns True if successful, otherwise False";
 static PyObject* horde3d_setNodeParamf(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1082,8 +1091,11 @@ static PyObject* horde3d_setNodeParamf(PyObject *self, PyObject *args)
 	return Py_False;
 }
 
-
-static const char *horde3d_getNodeParami_doc = "getNodeParami(node, param)";// TODO
+static const char *horde3d_getNodeParami_doc = "getNodeParami(node, param)\n" \
+												"gets a *int* property of a scene node\n\n" \
+												"node: handle to the node\n" \
+												"param: parameter to be accessed\n" \
+												"returns value of the parameter";
 static PyObject* horde3d_getNodeParami(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1095,8 +1107,12 @@ static PyObject* horde3d_getNodeParami(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", Horde3D::getNodeParami(node, param));
 }
 
-
-static const char *horde3d_setNodeParami_doc = "setNodeParami(node, param, value)";// TODO
+static const char *horde3d_setNodeParami_doc = "setNodeParami(node, param, value)\n" \
+												"sets a *int* property of a scene node\n\n" \
+												"node: handle to the node\n" \
+												"param: parameter to be accessed\n " \
+												"value: new value for the parameter\n" \
+												"returns True if successful, otherwise False";
 static PyObject* horde3d_setNodeParami(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1115,8 +1131,11 @@ static PyObject* horde3d_setNodeParami(PyObject *self, PyObject *args)
 	return Py_False;
 }
 
-
-static const char *horde3d_getNodeParamstr_doc = "getNodeParamstr(node, param)";// TODO
+static const char *horde3d_getNodeParamstr_doc = "getNodeParamstr(node, param)\n" \
+												"gets a *string* property of a scene node\n\n" \
+												"node: handle to the node\n" \
+												"param: parameter to be accessed\n" \
+												"returns value of the parameter";
 static PyObject* horde3d_getNodeParamstr(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1128,8 +1147,12 @@ static PyObject* horde3d_getNodeParamstr(PyObject *self, PyObject *args)
 	return Py_BuildValue("s", Horde3D::getNodeParamstr(node, param));
 }
 
-
-static const char *horde3d_setNodeParamstr_doc = "setNodeParamstr(node, param, value)";// TODO
+static const char *horde3d_setNodeParamstr_doc = "setNodeParamstr(node, param, value)\n" \
+												"sets a *int* property of a scene node\n\n" \
+												"node: handle to the node\n" \
+												"param: parameter to be accessed\n " \
+												"value: new value for the parameter\n" \
+												"returns True if successful, otherwise False";
 static PyObject* horde3d_setNodeParamstr(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1251,7 +1274,11 @@ static PyObject* horde3d_getCastRayResult(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_addGroupNode_doc = "addGroupNode(parent, name)"; // TODO
+static const char *horde3d_addGroupNode_doc = "addGroupNode(parent, name)" \
+											   "adds a group node to the scene\n\n" \
+											   "parent: handle to parent node to which the new node will be attached\n" \
+											   "name: name of the node\n" \
+											   "returns handle to the created node or 0 in case of failure";
 static PyObject* horde3d_addGroupNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1264,7 +1291,12 @@ static PyObject* horde3d_addGroupNode(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_addModelNode_doc = "addModelNode(parent, name, res)"; // TODO
+static const char *horde3d_addModelNode_doc = "addModelNode(parent, name, res)" \
+											   "adds a model node to the scene\n\n" \
+											   "parent: handle to parent node to which the new nowde will be attached\n" \
+											   "name: name of the node\n" \
+											   "res: geometry resource for the model node\n" \
+											   "returns handle to the created node or 0 in case of failure";
 static PyObject* horde3d_addModelNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1278,7 +1310,14 @@ static PyObject* horde3d_addModelNode(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_setupModelAnimStage_doc = "setupModelAnimStage(node, stage, animRes, startNode, additive)"; // TODO
+static const char *horde3d_setupModelAnimStage_doc = "setupModelAnimStage(node, stage, animRes, startNode, additive)" \
+													  "configures an animation stage of a model node\n\n" \
+													  "node: handle to the model to be modified\n" \
+													  "stage: index of the animation stage to be configured\n " \
+													  "animRes: handle to animation resource (can be 0)\n" \
+													  "startNode: name of the first node to which animation shall be applied (or empty string)\n" \
+													  "additive: boolean flag indicating whether stage is additive\n" \
+													  "returns True if successful, otherwise False";
 static PyObject* horde3d_setupModelAnimStage(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1302,7 +1341,13 @@ static PyObject* horde3d_setupModelAnimStage(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_setModelAnimParams_doc = "setModelAnimParams(node, stage, time, weight)"; // TODO
+static const char *horde3d_setModelAnimParams_doc = "setModelAnimParams(node, stage, time, weight)\n" \
+													 "sets the parameters of an animation stage in a model node\n\n" \
+													 "node: handle to the model node to be modified\n" \
+													 "stage: index of the animation stage to be modified\n" \
+													 "time: new animation time / frame\n" \
+													 "weight: new blend weight\n" \
+													 "returns True if successful, otherwise False";
 static PyObject* horde3d_setModelAnimParams(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1323,7 +1368,12 @@ static PyObject* horde3d_setModelAnimParams(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_setModelMorpher_doc = "setModelMorpher(node, target, weight)"; // TODO
+static const char *horde3d_setModelMorpher_doc = "setModelMorpher(node, target, weight)\n" \
+												  "sets the weight of a morph target\n\n" \
+												  "modelNode: handle to the model node to be modified\n" \
+												  "target: name of the morph target\n" \
+												  "weight: new weight for morph target\n" \
+												  "returns True if successful, otherwise False";
 static PyObject* horde3d_setModelMorpher(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1343,7 +1393,16 @@ static PyObject* horde3d_setModelMorpher(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_addMeshNode_doc = "addMeshNode(parent, name, matRes, batchStart, batchcount, vertRStart, vertRend)";// TODO
+static const char *horde3d_addMeshNode_doc = "addMeshNode(parent, name, matRes, batchStart, batchcount, vertRStart, vertRend)\n" \
+											  "adds a mesh node to the scene\n\n" \
+											  "parent: handle to parent node to which the new node will be attached\n" \
+											  "name: name of the node\n" \
+											  "matRes: material resource to be used\n" \
+											  "batchStart: first triangle index of mesh in geometry resource of parent model node\n" \
+											  "batchCount: number of triangle indices used for drawing mesh\n" \
+											  "vertRStart: first vertex in geometry resource of parent model node\n" \
+											  "vertREnd: last vertex in Geometry resource of parent model node\n" \
+											  "returns handle to the created node or 0 in case of failure";
 static PyObject* horde3d_addMeshNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1361,7 +1420,12 @@ static PyObject* horde3d_addMeshNode(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_addJointNode_doc = "addJointNode(parent, name, jointIndex)"; // TODO
+static const char *horde3d_addJointNode_doc = "addJointNode(parent, name, jointIndex)\n" \
+											   "adds a joint node to the scene\n\n" \
+											   "parent: handle to parent node to which the new node will be attached\n" \
+											   "name: name of the node\n" \
+											   "jointIndex: index of joint in geometry resource of parent model node\n" \
+											   "returns handle to the created node or 0 in case of failure";
 static PyObject* horde3d_addJointNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1409,7 +1473,14 @@ static PyObject* horde3d_addPointLightNode(PyObject *self, PyObject *args)
 }
 #else // PHOENIX_SPOT_POINT_LIGHTS
 
-static const char *horde3d_addLightNode_doc = "addLightNode(parent, name, matRes, lightingContext, shadowContext)"; // TODO
+static const char *horde3d_addLightNode_doc = "addLightNode(parent, name, matRes, lightingContext, shadowContext)\n" \
+											   "adds a light node to the scene\n\n" \
+											   "parent: handle to parent node to which the new node will be attached\n" \
+											   "name: name of the node\n" \
+											   "matRes: material resource for light configuration or 0 if not used\n" \
+											   "lightingContext: name of the shader context used for doing light calculations\n" \
+											   "shadowContext: name of the shader context used for doing shadow map rendering\n" \
+											   "returns handle to the created node or 0 in case of failure";
 static PyObject* horde3d_addLightNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1426,7 +1497,12 @@ static PyObject* horde3d_addLightNode(PyObject *self, PyObject *args)
 #endif // PHOENIX_SPOT_POINT_LIGHTS
 
 
-static const char *horde3d_setLightContexts_doc = "setLightContexts(node, lightingContext, shadowContext)";// TODO
+static const char *horde3d_setLightContexts_doc = "setLightContexts(node, lightingContext, shadowContext)\n" \
+												   "sets the shader contexts used by a light source\n\n"
+												   "node: handle to the light node\n" \
+												   "lightingContext: name of the shader context used for doing light calculations\n" \
+												   "shadowContext: name of the shader context used for doing shadow map rendering\n" \
+												   "returns True if successful, otherwise False";
 static PyObject* horde3d_setLightContexts(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1446,7 +1522,12 @@ static PyObject* horde3d_setLightContexts(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_addCameraNode_doc = "addCameraNode(parent, name, pipeline)"; // TODO
+static const char *horde3d_addCameraNode_doc = "addCameraNode(parent, name, pipeline)\n" \
+												"adds a camera node to the scene\n\n" \
+												"parant: handle to parent node to which the new node will be attached\n" \
+												"name: name of the node\n" \
+												"pipeline: pipeline resource used for rendering\n" \
+												"returns handle to the created node or 0 in case of failure";
 static PyObject* horde3d_addCameraNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1460,7 +1541,14 @@ static PyObject* horde3d_addCameraNode(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_setupCameraView_doc = "setupCameraView(node, fov, aspect, nearDist, farDist)";// TODO
+static const char *horde3d_setupCameraView_doc = "setupCameraView(node, fov, aspect, nearDist, farDist)\n" \
+												  "sets the planes of a camera viewing frustum\n\n" \
+												  "node: handle to the camarea node\n" \
+												  "fov: field of view angle\n" \
+												  "aspect: aspect ratio\n" \
+												  "nearDist: distance of near clipping plane\n" \
+												  "farDist: distance of far clipping plane\n" \
+												  "returs True if successful, otherwise False";
 static PyObject* horde3d_setupCameraView(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1482,7 +1570,10 @@ static PyObject* horde3d_setupCameraView(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_calcCameraProjectionMatrix_doc = "calcCameraProjectionMatrix(node)"; // TODO
+static const char *horde3d_calcCameraProjectionMatrix_doc = "calcCameraProjectionMatrix(node)\n" \
+															 "calculates the camera projection matrix\n\n" \
+															 "node: handle to camera node\n" \
+															 "returns tuple of 16 floats representing projection matrix";
 static PyObject* horde3d_calcCameraProjectionMatrix(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1505,7 +1596,15 @@ static PyObject* horde3d_calcCameraProjectionMatrix(PyObject *self, PyObject *ar
 }
 
 
-static const char *horde3d_addEmitterNode_doc = "addEmitterNode(parent, name, matRes, effectRes, maxParticleCount, respawnCount)"; //TODO
+static const char *horde3d_addEmitterNode_doc = "addEmitterNode(parent, name, matRes, effectRes, maxParticleCount, respawnCount)\n" \
+												 "adds an emitter node to the scene\n\n" \
+												 "parent: handle to parent node to which the new node will be attached\n" \
+												 "name: name of the node\n" \
+												 "matRes: handle to material resource to be used\n" \
+												 "effectRes: handle to effect resource to be used\n" \
+												 "maxParticleCount: maximum number of particles living at the same time\n" \
+												 "respawnCount: number of times a single particle is recreated after dying (-1 for infinite)\n" \
+												 "returns handle to the created node or 0 in case of failure";
 static PyObject* horde3d_addEmitterNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1522,7 +1621,11 @@ static PyObject* horde3d_addEmitterNode(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_advanceEmitterTime_doc = "advanceEmitterTime(node, delta)";// TODO
+static const char *horde3d_advanceEmitterTime_doc = "advanceEmitterTime(node, delta)\n" \
+													 "advances the time value of an emitter node\n\n" \
+													 "node: handle to the node\n" \
+													 "delta: time delta in seconds\n" \
+													 "returns True if successful, otherwise False";
 static PyObject* horde3d_advanceEmitterTime(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1541,7 +1644,10 @@ static PyObject* horde3d_advanceEmitterTime(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_hasEmitterFinished_doc = "hasEmitterFinished(node)";// TODO
+static const char *horde3d_hasEmitterFinished_doc = "hasEmitterFinished(node)\n" \
+													 "checks if an emitter node is still alive\n\n" \
+													 "node: handle to the node\n" \
+													 "returns True if emitter node will no more emit any particles and has no remaining particles, otherwise False";
 static PyObject* horde3d_hasEmitterFinished(PyObject *self, PyObject *args)
 {
 	int node;
