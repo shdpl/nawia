@@ -29,7 +29,8 @@
 
 
 
-
+static const char *horde3d_getVersionString_doc = "getVersionString()\n" \
+												   "returns the engine version string";
 static PyObject* horde3d_getVersionString(PyObject *self, PyObject *args)
 {
 	if(!PyArg_ParseTuple(args, ":getVersionString"))
@@ -38,7 +39,10 @@ static PyObject* horde3d_getVersionString(PyObject *self, PyObject *args)
 	return Py_BuildValue("s", Horde3D::getVersionString());
 }
 
-
+static const char *horde3d_checkExtension_doc = "checkExtension(extensionName)\n" \
+												 "checks if an extension is part of the engine library\n\n" \
+												 "extensionName: name of the extension to be checked\n" \
+												 "returns True if extension ist installed, otherwise False";
 static PyObject* horde3d_checkExtension(PyObject *self, PyObject *args)
 {
 	const char *extensionName;
@@ -56,7 +60,9 @@ static PyObject* horde3d_checkExtension(PyObject *self, PyObject *args)
 	return Py_False;
 }
 
-
+static const char *horde3d_init_doc = "init()\n" \
+									   "initializes the engine\n\n" \
+									   "returns True if successful, otherwise False";
 static PyObject* horde3d_init(PyObject *self, PyObject *args)
 {
 	if(!PyArg_ParseTuple(args, ":init"))
@@ -72,7 +78,8 @@ static PyObject* horde3d_init(PyObject *self, PyObject *args)
 	return Py_False;
 }
 
-
+static const char *horde3d_release_doc = "release()\n" \
+										  "releases the engine";
 static PyObject* horde3d_release(PyObject *self, PyObject *args)
 {
 	if(!PyArg_ParseTuple(args, ":release"))
@@ -85,7 +92,10 @@ static PyObject* horde3d_release(PyObject *self, PyObject *args)
 	return Py_None;
 }
 
-
+static const char *horde3d_resize_doc = "resize(x, y, width, height)\n" \
+										 "resizes the viewport\n\n" \
+										 "x, y: position of the viewport in the rendering context\n" \
+										 "width, height: width / height of the viewport";
 static PyObject* horde3d_resize(PyObject *self, PyObject *args)
 {
 	int x, y, width, height;
@@ -99,7 +109,10 @@ static PyObject* horde3d_resize(PyObject *self, PyObject *args)
 	return Py_None;
 }
 
-
+static const char *horde3d_render_doc = "render(cameraNode)\n" \
+										 "main rendering function. May be called multiple times per frame\n\n" \
+										 "cameraNode: node from which the scene should be rendered\n" \
+										 "returns True if successful, otherwise False";
 static PyObject* horde3d_render(PyObject *self, PyObject *args)
 {
 	int cameraNode;
@@ -124,7 +137,8 @@ static PyObject* horde3d_render(PyObject *self, PyObject *args)
 	return Py_False;
 }
 
-
+static const char *horde3d_clear_doc = "clear()\n" \
+										"removes all resources and scene nodes";
 static PyObject* horde3d_clear(PyObject *self, PyObject *args)
 {
 	if(!PyArg_ParseTuple(args, ":clear"))
@@ -136,7 +150,9 @@ static PyObject* horde3d_clear(PyObject *self, PyObject *args)
 	return Py_None;
 }
 
-
+static const char *horde3d_getMessage_doc = "getMessage()\n" \
+											 "gets next message from the message queue\n\n" \
+											 "returns tuple (message, level, time)";
 static PyObject* horde3d_getMessage(PyObject *self, PyObject *args)
 {
 	int level;
@@ -150,7 +166,10 @@ static PyObject* horde3d_getMessage(PyObject *self, PyObject *args)
 	return Py_BuildValue("sif", msg, level, time);
 }
 
-
+static const char *horde3d_getOption_doc = "getOption(option)\n" \
+											"gets an option parameter of the engine\n\n" \
+											"option: one of the EngineOptions\n" \
+											"returns the value of the option";
 static PyObject* horde3d_getOption(PyObject *self, PyObject *args)
 {
 	int engineOption;
@@ -164,7 +183,11 @@ static PyObject* horde3d_getOption(PyObject *self, PyObject *args)
 	return Py_BuildValue("f", value);
 }
 
-
+static const char *horde3d_setOption_doc = "setOption(option, value)\n" \
+										"sets on option parameter of the engine\n\n" \
+										"option: one fo the EngineOptions\n" \
+										"value: new value for the option\n" \
+										"returns True if successful, otherwise False";
 static PyObject* horde3d_setOption(PyObject *self, PyObject *args)
 {
 	int engineOption;
@@ -183,7 +206,11 @@ static PyObject* horde3d_setOption(PyObject *self, PyObject *args)
 	return Py_False;
 }
 
-
+static const char *horde3d_getStat_doc = "getStat(param, reset)\n" \
+										  "gets a statistic value of the engine\n\n" \
+										  "param: one of the EngineStats\n" \
+										  "reset: boolean flag specifying whether the statistic value should be reset\n" \
+										  "returns requested value";
 static PyObject* horde3d_getStat(PyObject *self, PyObject *args)
 {
 	int param;
@@ -201,7 +228,18 @@ static PyObject* horde3d_getStat(PyObject *self, PyObject *args)
 	return Py_BuildValue("f", Horde3D::getStat((EngineStats::List)param, resetBoolean));
 }
 
-
+static const char *horde3d_showOverlay_doc = "showOverlay(x_ll, y_ll, u_ll, v_ll,\n" \
+											  "x_lr, y_lr, u_lr, v_lr,\n" \
+											  "x_ur, y_ur, u_ur, v_ur,\n" \
+											  "x_ul, y_ul, u_ul, v_ul,\n" \
+											  "layer, materialRes)\n" \
+											  "shows on overlay on the screen\n\n" \
+											  "?_ll: position / texture coordinates of the lower left corner\n" \
+											  "?_lr: position / texture coordinates of the lower right corner\n" \
+											  "?_ur: position / texture coordinates of the upper right corner\n" \
+											  "?_ul: position / texture coordinates of the upper left corner\n" \
+											  "layer: layer index of the overlay in range [0,7]\n" \
+											  "materialRes: material resource used for the rendering";
 static PyObject* horde3d_showOverlay(PyObject *self, PyObject *args)
 {
 	float x_ll, y_ll, u_ll, v_ll;
@@ -231,7 +269,8 @@ static PyObject* horde3d_showOverlay(PyObject *self, PyObject *args)
 	return Py_None;
 }
 
-
+static const char *horde3d_clearOverlays_doc = "clearOverlays()\n" \
+												"removes all overlays, usually called after render()";
 static PyObject* horde3d_clearOverlays(PyObject *self, PyObject *args)
 {
 	if(!PyArg_ParseTuple(args, ":clearOverlays"))
@@ -242,7 +281,10 @@ static PyObject* horde3d_clearOverlays(PyObject *self, PyObject *args)
 	return Py_None;
 }
 
-
+static const char *horde3d_getResourceType_doc = "getResourceType(res)\n" \
+												  "returns the type of a resource\n\n" \
+												  "res: handle to the resource\n" \
+												  "returns type of the resource";
 static PyObject* horde3d_getResourceType(PyObject *self, PyObject *args)
 {
 	int res;
@@ -256,6 +298,10 @@ static PyObject* horde3d_getResourceType(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", type);
 }
 
+static const char *horde3d_getResourceName_doc = "getResourceName(res)\n" \
+												  "returns the name of a resource\n\n" \
+												  "res: hande to the resource\n" \
+												  "returns name of the resource";
 static PyObject* horde3d_getResourceName(PyObject *self, PyObject *args)
 {
 	int res;
@@ -266,6 +312,11 @@ static PyObject* horde3d_getResourceName(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_findResource_doc = "findResource(type, name)\n" \
+											   "finds a resource and returns its handle\n\n" \
+											   "type: type of the resource\n" \
+											   "name: name of the resource\n" \
+											   "returns handle to the resource or 0 if not found";
 static PyObject* horde3d_findResource(PyObject *self, PyObject *args)
 {
 	int type;
@@ -277,6 +328,12 @@ static PyObject* horde3d_findResource(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", Horde3D::findResource((ResourceTypes::List)type, name));
 }
 
+static const char *horde3d_addResource_doc = "addResource(type, name, flags)\n" \
+											  "adds a resource\n\n" \
+											  "type: type of the resource\n" \
+											  "name: name of the resource\n" \
+											  "flags: flags used for creating the resource\n" \
+											  "returns handle to the resource to be added or 0 in case of failure";
 static PyObject* horde3d_addResource(PyObject *self, PyObject *args)
 {
 	int type;
@@ -289,7 +346,11 @@ static PyObject* horde3d_addResource(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", Horde3D::addResource((ResourceTypes::List)type, name, flags));
 }
 
-
+static const char *horde3d_cloneResource_doc = "cloneResource(sourceRes, name)\n" \
+												"duplicates a resource\n\n" \
+												"sourceRes: handle to resource to be cloned\n" \
+												"name: name of new resource (can be empty for auto-naming)\n" \
+												"returns handle to cloned resource or 0 in case of failure";
 static PyObject* horde3d_cloneResource(PyObject *self, PyObject *args)
 {
 	int res;
@@ -301,7 +362,10 @@ static PyObject* horde3d_cloneResource(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", Horde3D::cloneResource(res, name));
 }
 
-
+static const char *horde3d_removeResource_doc = "removeResource(res)\n" \
+												 "removes a resource\n\n" \
+												 "res: resource to be removed\n" \
+												 "returns number of references that the application is still holding after removal or -1 in case of failure";
 static PyObject* horde3d_removeResource(PyObject *self, PyObject *args)
 {
 	int res;
@@ -313,6 +377,32 @@ static PyObject* horde3d_removeResource(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_isResourceLoaded_doc = "isResourceLoaded(res)\n" \
+												   "checks if a resource is loaded\n\n" \
+												   "res: handle to the resource\n" \
+												   "returns True if the resource is loaded, otherwise False";
+static PyObject* horde3d_isResourceLoaded(PyObject *self, PyObject *args)
+{
+	int res;
+
+	if(!PyArg_ParseTuple(args, "i:isResourceLoaded", &res))
+			return NULL;
+
+	if(Horde3D::isResourceLoaded(res))
+	{
+		Py_INCREF(Py_True);
+		return Py_True;
+	}
+	Py_INCREF(Py_False);
+	return Py_False;
+}
+
+
+static const char *horde3d_loadResource_doc = "loadResource(res, data)\n" \
+											   "loads a resource, that means stores the given data inside the engine\n\n" \
+											   "res: handle to the resource for which data will be loaded\n" \
+											   "data: data to be stored. Important: XML-data must be null-terminated\n" \
+											   "returns True if successful, otherwise False";
 static PyObject* horde3d_loadResource(PyObject *self, PyObject *args)
 {
 	int res;
@@ -334,6 +424,10 @@ static PyObject* horde3d_loadResource(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_unloadResource_doc = "unloadResource(res)\n" \
+												 "unloads a resource\n\n" \
+												 "res: handle to resource to be unloaded\n" \
+												 "returns True if successful, otherwise False";
 static PyObject* horde3d_unloadResource(PyObject *self, PyObject *args)
 {
 	int res;
@@ -351,6 +445,11 @@ static PyObject* horde3d_unloadResource(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_getResourceParami_doc = "getResourceParami(res, param)\n" \
+													"gets *int* property of a resource\n\n" \
+													"res: handle to the resource to be accessed\n" \
+													"param: parameter to be accessed\n" \
+													"returns value of the parameter";
 static PyObject* horde3d_getResourceParami(PyObject *self, PyObject *args)
 {
 	int res;
@@ -363,6 +462,12 @@ static PyObject* horde3d_getResourceParami(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_setResourceParami_doc = "setResourceParami(res, param, value)\n" \
+													"sets *int* property of a resource\n\n" \
+													"res: handle of the resource to be accesed\n" \
+													"param: parameter to be accesed\n" \
+													"value: new value for the specified parameter\n"
+													"returns True if successful, otherwise False";
 static PyObject* horde3d_setResourceParami(PyObject *self, PyObject *args)
 {
 	int res;
@@ -381,6 +486,11 @@ static PyObject* horde3d_setResourceParami(PyObject *self, PyObject *args)
 	return Py_False;
 }
 
+static const char *horde3d_getResourceParamf_doc = "getResourceParamf(res, param)\n" \
+													"gets *float* property of a resource\n\n" \
+													"res: handle to the resource to be accessed\n" \
+													"param: parameter to be accessed\n" \
+													"returns value of the parameter";
 
 static PyObject* horde3d_getResourceParamf(PyObject *self, PyObject *args)
 {
@@ -393,7 +503,12 @@ static PyObject* horde3d_getResourceParamf(PyObject *self, PyObject *args)
 	return Py_BuildValue("f", Horde3D::getResourceParamf(res, param));
 }
 
-
+static const char *horde3d_setResourceParamf_doc = "setResourceParamf(res, param, value)\n" \
+													"sets *float* property of a resource\n\n" \
+													"res: handle of the resource to be accesed\n" \
+													"param: parameter to be accesed\n" \
+													"value: new value for the specified parameter\n"
+													"returns True if successful, otherwise False";
 static PyObject* horde3d_setResourceParamf(PyObject *self, PyObject *args)
 {
 	int res;
@@ -412,7 +527,11 @@ static PyObject* horde3d_setResourceParamf(PyObject *self, PyObject *args)
 	return Py_False;
 }
 
-
+static const char *horde3d_getResourceParamstr_doc = "getResourceParamstr(res, param)\n" \
+													"gets *string* property of a resource\n\n" \
+													"res: handle to the resource to be accessed\n" \
+													"param: parameter to be accessed\n" \
+													"returns value of the parameter";
 static PyObject* horde3d_getResourceParamstr(PyObject *self, PyObject *args)
 {
 	int res;
@@ -424,7 +543,12 @@ static PyObject* horde3d_getResourceParamstr(PyObject *self, PyObject *args)
 	return Py_BuildValue("s", Horde3D::getResourceParamstr(res, param));
 }
 
-
+static const char *horde3d_setResourceParamstr_doc = "setResourceParamstr(res, param, value)\n" \
+													"sets *string* property of a resource\n\n" \
+													"res: handle of the resource to be accesed\n" \
+													"param: parameter to be accesed\n" \
+													"value: new value for the specified parameter\n"
+													"returns True if successful, otherwise False";
 static PyObject* horde3d_setResourceParamstr(PyObject *self, PyObject *args)
 {
 	int res;
@@ -460,6 +584,12 @@ static PyObject* horde3d_getResourceData(PyObject *self, PyObject *args)
 }*/
 
 
+static const char *horde3d_updateResourceData_doc = "updateResourceData(res, param, data)\n" \
+													 "updates the data of a resource\n\n" \
+													 "res: handle to the resource for which the data is modified\n" \
+													 "param: data structure which will be updated\n" \
+													 "data: new data\n" \
+													 "returns True of successful, otherwise False";
 static PyObject* horde3d_updateResourceData(PyObject *self, PyObject *args)
 {
 	int res;
@@ -480,6 +610,10 @@ static PyObject* horde3d_updateResourceData(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_queryUnloadedResource_doc = "queryUnloadedResource(index)\n" \
+														"returns handle to an unloaded resource\n\n" \
+														"index: index of unloaded resource within the internal list of unloaded resources, starting with 0\n" \
+														"returns handle to an unloaded resource or 0";
 static PyObject* horde3d_queryUnloadedResource(PyObject *self, PyObject *args)
 {
 	int index;
@@ -490,6 +624,8 @@ static PyObject* horde3d_queryUnloadedResource(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_releaseUnusedResources_doc = "releaseUnusedResources()\n" \
+														 "frees resources that are no longer used";
 static PyObject* horde3d_releaseUnusedResources(PyObject *self, PyObject *args)
 {
 	if(!PyArg_ParseTuple(args, ":releaseUnusedResources"))
@@ -502,6 +638,13 @@ static PyObject* horde3d_releaseUnusedResources(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_createTexture2D_doc = "createTexture2D(name, flags, width, height, renderable)\n" \
+												  "adds a Texture2D resource\n\n" \
+												  "name: name of the resource\n" \
+												  "flags: flags used for creating the resource\n" \
+												  "width, height: width / height of the texture image\n" \
+												  "renderable: flag indicating whether the texture can be used as an output buffer for a Camera node\n" \
+												  "returns handle to the created resource or 0 in case of failure";
 static PyObject* horde3d_createTexture2D(PyObject *self, PyObject *args)
 {
 	const char *name;
@@ -519,6 +662,10 @@ static PyObject* horde3d_createTexture2D(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_setShaderPreambles_doc = "setShaderPreambles(vertPreamble, fragPreamble)\n" \
+													 "sets preambles of all Shader resources\n\n" \
+													 "vertPreamble: preamble text of vertex shaders\n" \
+													 "fragPreamble: preamble text of fragment shaders";
 static PyObject* horde3d_setShaderPreambles(PyObject *self, PyObject *args)
 {
 	const char *vertPreamble;
@@ -534,7 +681,12 @@ static PyObject* horde3d_setShaderPreambles(PyObject *self, PyObject *args)
 }
 
 
-
+static const char *horde3d_setMaterialUniform_doc = "setMaterialUniform(material, name, a, b, c, d)\n" \
+													 "set a shader uniform of a Material resource\n\n" \
+													 "material: handle to the Material resource\n" \
+													 "name: name of the uniform as defined in the Material\n" \
+													 "a, b, c, d: values of the four components\n" \
+													 "returns True if successful, otherwise False";
 static PyObject* horde3d_setMaterialUniform(PyObject *self, PyObject *args)
 {
 	int material;
@@ -554,6 +706,12 @@ static PyObject* horde3d_setMaterialUniform(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_setPipelineStageActivation_doc = "setPipelineStageActivation(res, stageName, enabled)\n" \
+															 "sets the activation stage of a pipeline stage\n\n" \
+															 "res: handle to the Pipeline resource\n" \
+															 "stageName: name fo the stage to be modified\n" \
+															 "enabled: boolean flag indicating whether the stage shall be enabled or disabled\n" \
+															 "returns True if successful, otherwise False";
 static PyObject* horde3d_setPipelineStageActivation(PyObject *self, PyObject *args)
 {
 	int res;
@@ -575,7 +733,12 @@ static PyObject* horde3d_setPipelineStageActivation(PyObject *self, PyObject *ar
 }
 
 
-
+static const char *horde3d_getPipelineRenderTargetData_doc = "getPipelineRenderTargetData(pipeline, targetName, bufIndex)\n" \
+								"reads the pixel data of a pipeline render target buffer\n\n" \
+								"pipeline: handle to pipeline resource\n" \
+								"targetName: unique name of render target to access\n" \
+								"bufIndex: index of buffer to be accessed\n" \
+								"returns tuple (width, height, componentCount, dataList) if successful, otherwise None";
 static PyObject* horde3d_getPipelineRenderTargetData(PyObject *self, PyObject *args)
 {
 	int pipeline;
@@ -620,6 +783,10 @@ static PyObject* horde3d_getPipelineRenderTargetData(PyObject *self, PyObject *a
 }
 
 
+static const char *horde3d_getNodeType_doc = "getNodeType(node)\n" \
+											  "returns the type of a scene node\n\n" \
+											  "node: handle to the scene node\n" \
+											  "returns type of the scene node";
 static PyObject* horde3d_getNodeType(PyObject *self, PyObject *args)
 {
 	int node;
@@ -629,7 +796,10 @@ static PyObject* horde3d_getNodeType(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", Horde3D::getNodeType(node));
 }
 
-
+static const char *horde3d_getNodeParent_doc = "getNodeParent(node)\n" \
+												"returns the parent of a scene node\n\n" \
+												"node: handle to the scene node\n" \
+												"returns handle to parent node or 0 in case of failure";
 static PyObject* horde3d_getNodeParent(PyObject *self, PyObject *args)
 {
 	int node;
@@ -640,7 +810,11 @@ static PyObject* horde3d_getNodeParent(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", Horde3D::getNodeParent(node));
 }
 
-
+static const char *horde3d_setNodeParent_doc = "setNodeParent(node, parent)\n" \
+												"relocates a node in the scene graph\n\n" \
+												"node: handle to the scene node to be relocated\n" \
+												"parent: handle to the new parent node\n" \
+												"returns True if successful, otherwise False";
 static PyObject* horde3d_setNodeParent(PyObject *self, PyObject *args)
 {
 	int node;
@@ -659,6 +833,11 @@ static PyObject* horde3d_setNodeParent(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_getNodeChild_doc = "getNodeChild(node, index)\n" \
+											   "returns the handle to a child node\n\n" \
+											   "node: handle to the parent node\n" \
+											   "index: index of the child node\n" \
+											   "returns handle to the child node or 0 if child doesn't exist";
 static PyObject* horde3d_getNodeChild(PyObject *self, PyObject *args)
 {
 	int node;
@@ -671,6 +850,11 @@ static PyObject* horde3d_getNodeChild(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_addNodes_doc = "addNodes(parent, sceneRes)\n" \
+										   "adds nodes from a SceneGraph resource to the scene\n\n" \
+										   "parent: handle to parent node to which the root of the new nodes will be attached\n" \
+										   "sceneRes: handle to loaded SceneGraph resourc\n" \
+										   "returns handle to the root of the created nodes or 0 in case of failure";
 static PyObject* horde3d_addNodes(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -683,6 +867,10 @@ static PyObject* horde3d_addNodes(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_removeNode_doc = "removeNode(node)\n" \
+											 "removes a node from the scene\n\n" \
+											 "node: handle to the node to be removed\n" \
+											 "returns True if successful, otherwise False";
 static PyObject* horde3d_removeNode(PyObject *self, PyObject *args)
 {
 	int node;
@@ -700,6 +888,11 @@ static PyObject* horde3d_removeNode(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_setNodeActivation_doc = "setNodeActivation(node, active)\n" \
+													"sets the activation (visibility) state of a node\n\n" \
+													"node: handle to the node to be modified\n" \
+													"active: boolean value indicating whether the node shall be active or inactive\n" \
+													"returns True if successful, otherwise False";
 static PyObject* horde3d_setNodeActivation(PyObject *self, PyObject *args)
 {
 	int node;
@@ -720,7 +913,11 @@ static PyObject* horde3d_setNodeActivation(PyObject *self, PyObject *args)
 }
 
 
-
+static const char *horde3d_checkNodeTransformFlag_doc = "checkNodeTransformFlag(node, reset)\n" \
+														 "checks if a scene node has been transformed by the engine\n\n" \
+														 "node: handle to the node to be accessed\n" \
+														 "reset: boolean flag indicating whether the transformation flag shall be reset" \
+														 "returns True if node has been transformed, otherwise False";
 static PyObject* horde3d_checkNodeTransformFlag(PyObject *self, PyObject *args)
 {
 	int node;
@@ -740,6 +937,10 @@ static PyObject* horde3d_checkNodeTransformFlag(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_getNodeTransform_doc = "getNodeTransform(node)\n" \
+												   "gets the relative transformation of a node\n\n" \
+												   "node: handle to the node\n" \
+												   "returns tuple (tx, ty, tz, rx, ry, rz, sx, sy, sz)";
 static PyObject* horde3d_getNodeTransform(PyObject *self, PyObject *args)
 {
 	int node;
@@ -760,7 +961,16 @@ static PyObject* horde3d_getNodeTransform(PyObject *self, PyObject *args)
 }
 
 
-
+static const char *horde3d_setNodeTransform_doc = "setNodeTransform(node,\n" \
+												   "tx, ty, tz,\n" \
+												   "rx, ry, rz,\n" \
+												   "sx, sy, sz)\n" \
+												   "sets the relative transformation of a node\n\n" \
+												   "node: handle to the node\n" \
+												   "tx, ty, tz: translation\n" \
+												   "rx, ry, rz: rotation in Euler angles\n" \
+												   "sy, sy, sz: scale" \
+												   "returns True if successful, otherwise False";
 static PyObject* horde3d_setNodeTransform(PyObject *self, PyObject *args)
 {
 	int node;
@@ -781,6 +991,10 @@ static PyObject* horde3d_setNodeTransform(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_getNodeTransformMatrices_doc = "getNodeTransformMatrices(node)\n" \
+														   "returns the transformation matrices of a node\n\n" \
+														   "node: handle to the node\n" \
+														   "returns tuple (relMat, absMat)";
 static PyObject* horde3d_getNodeTransformMatrices(PyObject *self, PyObject *args)
 {
 	int node;
@@ -808,6 +1022,11 @@ static PyObject* horde3d_getNodeTransformMatrices(PyObject *self, PyObject *args
 }
 
 
+static const char *horde3d_setNodeTransformMatrix_doc = "setNodeTransformMatrix(node, m0, m1, m2, ..., m15)\n" \
+														 "sets the relative transformation matrix of a node\n\n" \
+														 "node: handle to the node\n" \
+														 "m*: elements of a 4x4 matrix in column major order\n" \
+														 "returns True if successful, otherwise False";
 static PyObject* horde3d_setNodeTransformMatrix(PyObject *self, PyObject *args)
 {
 	int node;
@@ -831,6 +1050,7 @@ static PyObject* horde3d_setNodeTransformMatrix(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_getNodeParamf_doc = "getNodeParamf(node, param)";// TODO
 static PyObject* horde3d_getNodeParamf(PyObject *self, PyObject *args)
 {
 	int node;
@@ -843,6 +1063,7 @@ static PyObject* horde3d_getNodeParamf(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_setNodeParamf_doc = "setNodeParamf(node, param, value)";// TODO
 static PyObject* horde3d_setNodeParamf(PyObject *self, PyObject *args)
 {
 	int node;
@@ -862,6 +1083,7 @@ static PyObject* horde3d_setNodeParamf(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_getNodeParami_doc = "getNodeParami(node, param)";// TODO
 static PyObject* horde3d_getNodeParami(PyObject *self, PyObject *args)
 {
 	int node;
@@ -874,6 +1096,7 @@ static PyObject* horde3d_getNodeParami(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_setNodeParami_doc = "setNodeParami(node, param, value)";// TODO
 static PyObject* horde3d_setNodeParami(PyObject *self, PyObject *args)
 {
 	int node;
@@ -893,6 +1116,7 @@ static PyObject* horde3d_setNodeParami(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_getNodeParamstr_doc = "getNodeParamstr(node, param)";// TODO
 static PyObject* horde3d_getNodeParamstr(PyObject *self, PyObject *args)
 {
 	int node;
@@ -905,6 +1129,7 @@ static PyObject* horde3d_getNodeParamstr(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_setNodeParamstr_doc = "setNodeParamstr(node, param, value)";// TODO
 static PyObject* horde3d_setNodeParamstr(PyObject *self, PyObject *args)
 {
 	int node;
@@ -924,6 +1149,10 @@ static PyObject* horde3d_setNodeParamstr(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_getNodeAABB_doc = "getNodeAABB(node)\n" \
+											  "gets the bounding box of a scene node\n\n" \
+											  "node: handle to the node" \
+											  "returns tuple (minX, minY, minZ, maxX, maxY, maxZ)";
 static PyObject* horde3d_getNodeAABB(PyObject *self, PyObject *args)
 {
 	int node;
@@ -942,7 +1171,12 @@ static PyObject* horde3d_getNodeAABB(PyObject *self, PyObject *args)
 }
 
 
-
+static const char *horde3d_findNodes_doc = "findNodes(startNode, name, type)\n" \
+											"finds the scene nodes with specified properties\n\n" \
+											"startNode: handle to the node where the search begins\n" \
+											"name: name of the nodes to be searched for (empty string for all nodes)\n" \
+											"type: type of the nodes to be searched for (SceneNodeTypes.Undefined for all types)\n" \
+											"returns number of search results";
 static PyObject* horde3d_findNodes(PyObject *self, PyObject *args)
 {
 	int startNode;
@@ -956,6 +1190,10 @@ static PyObject* horde3d_findNodes(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_getNodeFindResult_doc = "getNodeFindResult(index)\n" \
+													"gets a result from the findNodes query\n\n" \
+													"index: index of search result\n" \
+													"returns handle to scene node from findNodes query or 0 if result doesn't exist";
 static PyObject* horde3d_getNodeFindResult(PyObject *self, PyObject *args)
 {
 	int index;
@@ -967,6 +1205,13 @@ static PyObject* horde3d_getNodeFindResult(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_castRay_doc = "castRay(node, ox, oy, oz, dx, dy, dz, numNearest)\n" \
+										  "performs a recursive ray collision query\n\n" \
+										  "node: node at which intersection check is beginning\n" \
+										  "ox, oy, oz: ray origin\n" \
+										  "dy, dy, dz: ray direction vector also specifying ray length\n" \
+										  "numNearest: maximum number of intersection points to be stored (0 for all)\n" \
+										  "returns number of intersections";
 static PyObject* horde3d_castRay(PyObject *self, PyObject *args)
 {
 	int node;
@@ -981,6 +1226,10 @@ static PyObject* horde3d_castRay(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_getCastRayResult_doc = "getCastRayResult(index)\n" \
+												   "returns a result of a previous castRay query\n\n" \
+												   "index: index of the result to be accessed in range [0, return value of castRay)\n" \
+												   "returns tuple (nodeHandle, distance, (intX, intY, intZ))";
 static PyObject* horde3d_getCastRayResult(PyObject *self, PyObject *args)
 {
 	int index;
@@ -1002,6 +1251,7 @@ static PyObject* horde3d_getCastRayResult(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_addGroupNode_doc = "addGroupNode(parent, name)"; // TODO
 static PyObject* horde3d_addGroupNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1014,6 +1264,7 @@ static PyObject* horde3d_addGroupNode(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_addModelNode_doc = "addModelNode(parent, name, res)"; // TODO
 static PyObject* horde3d_addModelNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1027,6 +1278,7 @@ static PyObject* horde3d_addModelNode(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_setupModelAnimStage_doc = "setupModelAnimStage(node, stage, animRes, startNode, additive)"; // TODO
 static PyObject* horde3d_setupModelAnimStage(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1050,7 +1302,7 @@ static PyObject* horde3d_setupModelAnimStage(PyObject *self, PyObject *args)
 }
 
 
-
+static const char *horde3d_setModelAnimParams_doc = "setModelAnimParams(node, stage, time, weight)"; // TODO
 static PyObject* horde3d_setModelAnimParams(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1071,7 +1323,7 @@ static PyObject* horde3d_setModelAnimParams(PyObject *self, PyObject *args)
 }
 
 
-
+static const char *horde3d_setModelMorpher_doc = "setModelMorpher(node, target, weight)"; // TODO
 static PyObject* horde3d_setModelMorpher(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1091,7 +1343,7 @@ static PyObject* horde3d_setModelMorpher(PyObject *self, PyObject *args)
 }
 
 
-
+static const char *horde3d_addMeshNode_doc = "addMeshNode(parent, name, matRes, batchStart, batchcount, vertRStart, vertRend)";// TODO
 static PyObject* horde3d_addMeshNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1109,6 +1361,7 @@ static PyObject* horde3d_addMeshNode(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_addJointNode_doc = "addJointNode(parent, name, jointIndex)"; // TODO
 static PyObject* horde3d_addJointNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1123,6 +1376,7 @@ static PyObject* horde3d_addJointNode(PyObject *self, PyObject *args)
 
 
 #ifdef PHOENIX_SPOT_POINT_LIGHTS
+static const char *horde3d_addSpotLightNode_doc = "addSpotLightNode(parent, name, matRes, lightingContext, shadowContext)";// TODO
 static PyObject* horde3d_addSpotLightNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1139,6 +1393,7 @@ static PyObject* horde3d_addSpotLightNode(PyObject *self, PyObject *args)
 
 
 
+static const char *horde3d_addPointLightNode_doc = "addPointLightNode(parent, name, matRes, lightingContext, shadowContext)";// TODO
 static PyObject* horde3d_addPointLightNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1153,6 +1408,8 @@ static PyObject* horde3d_addPointLightNode(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", Horde3D::addPointLightNode(parent, name, matRes, lightingContext, shadowContext));
 }
 #else // PHOENIX_SPOT_POINT_LIGHTS
+
+static const char *horde3d_addLightNode_doc = "addLightNode(parent, name, matRes, lightingContext, shadowContext)"; // TODO
 static PyObject* horde3d_addLightNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1169,7 +1426,7 @@ static PyObject* horde3d_addLightNode(PyObject *self, PyObject *args)
 #endif // PHOENIX_SPOT_POINT_LIGHTS
 
 
-
+static const char *horde3d_setLightContexts_doc = "setLightContexts(node, lightingContext, shadowContext)";// TODO
 static PyObject* horde3d_setLightContexts(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1189,6 +1446,7 @@ static PyObject* horde3d_setLightContexts(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_addCameraNode_doc = "addCameraNode(parent, name, pipeline)"; // TODO
 static PyObject* horde3d_addCameraNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1202,7 +1460,7 @@ static PyObject* horde3d_addCameraNode(PyObject *self, PyObject *args)
 }
 
 
-
+static const char *horde3d_setupCameraView_doc = "setupCameraView(node, fov, aspect, nearDist, farDist)";// TODO
 static PyObject* horde3d_setupCameraView(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1224,7 +1482,7 @@ static PyObject* horde3d_setupCameraView(PyObject *self, PyObject *args)
 }
 
 
-
+static const char *horde3d_calcCameraProjectionMatrix_doc = "calcCameraProjectionMatrix(node)"; // TODO
 static PyObject* horde3d_calcCameraProjectionMatrix(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1247,7 +1505,7 @@ static PyObject* horde3d_calcCameraProjectionMatrix(PyObject *self, PyObject *ar
 }
 
 
-
+static const char *horde3d_addEmitterNode_doc = "addEmitterNode(parent, name, matRes, effectRes, maxParticleCount, respawnCount)"; //TODO
 static PyObject* horde3d_addEmitterNode(PyObject *self, PyObject *args)
 {
 	int parent;
@@ -1264,7 +1522,7 @@ static PyObject* horde3d_addEmitterNode(PyObject *self, PyObject *args)
 }
 
 
-
+static const char *horde3d_advanceEmitterTime_doc = "advanceEmitterTime(node, delta)";// TODO
 static PyObject* horde3d_advanceEmitterTime(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1283,6 +1541,7 @@ static PyObject* horde3d_advanceEmitterTime(PyObject *self, PyObject *args)
 }
 
 
+static const char *horde3d_hasEmitterFinished_doc = "hasEmitterFinished(node)";// TODO
 static PyObject* horde3d_hasEmitterFinished(PyObject *self, PyObject *args)
 {
 	int node;
@@ -1525,88 +1784,90 @@ static PyObject *horde3d__getConstants(PyObject *self, PyObject *args)
 
 
 
+#define H3D_FUNCTION(name) {#name, horde3d_##name, METH_VARARGS, horde3d_##name ##_doc}
 
 static PyMethodDef horde3d_methods[] =
 {
-	{"getVersionString", horde3d_getVersionString, METH_VARARGS},
-	{"checkExtension", horde3d_checkExtension, METH_VARARGS},
-	{"init", horde3d_init, METH_VARARGS},
-	{"release", horde3d_release, METH_VARARGS},
-	{"resize", horde3d_resize, METH_VARARGS},
-	{"render", horde3d_render, METH_VARARGS},
-	{"clear", horde3d_clear, METH_VARARGS},
-	{"getMessage", horde3d_getMessage, METH_VARARGS},
-	{"getOption", horde3d_getOption, METH_VARARGS},
-	{"setOption", horde3d_setOption, METH_VARARGS},
-	{"getStat", horde3d_getStat, METH_VARARGS},
-	{"showOverlay", horde3d_showOverlay, METH_VARARGS},
-	{"clearOverlays", horde3d_clearOverlays, METH_VARARGS},
-	{"getResourceType", horde3d_getResourceType, METH_VARARGS},
-	{"getResourceName", horde3d_getResourceName, METH_VARARGS},
-	{"findResource", horde3d_findResource, METH_VARARGS},
-	{"addResource", horde3d_addResource, METH_VARARGS},
-	{"cloneResource", horde3d_cloneResource, METH_VARARGS},
-	{"removeResource", horde3d_removeResource, METH_VARARGS},
-	{"loadResource", horde3d_loadResource, METH_VARARGS},
-	{"unloadResource", horde3d_unloadResource, METH_VARARGS},
-	{"getResourceParami", horde3d_getResourceParami, METH_VARARGS},
-	{"setResourceParami", horde3d_setResourceParami, METH_VARARGS},
-	{"getResourceParamf", horde3d_getResourceParamf, METH_VARARGS},
-	{"setResourceParamf", horde3d_setResourceParamf, METH_VARARGS},
-	{"getResourceParamstr", horde3d_getResourceParamstr, METH_VARARGS},
-	{"setResourceParamstr", horde3d_setResourceParamstr, METH_VARARGS},
+	H3D_FUNCTION(getVersionString),
+	H3D_FUNCTION(checkExtension),
+	H3D_FUNCTION(init),
+	H3D_FUNCTION(release),
+	H3D_FUNCTION(resize),
+	H3D_FUNCTION(render),
+	H3D_FUNCTION(clear),
+	H3D_FUNCTION(getMessage),
+	H3D_FUNCTION(getOption),
+	H3D_FUNCTION(setOption),
+	H3D_FUNCTION(getStat),
+	H3D_FUNCTION(showOverlay),
+	H3D_FUNCTION(clearOverlays),
+	H3D_FUNCTION(getResourceType),
+	H3D_FUNCTION(getResourceName),
+	H3D_FUNCTION(findResource),
+	H3D_FUNCTION(addResource),
+	H3D_FUNCTION(cloneResource),
+	H3D_FUNCTION(removeResource),
+	H3D_FUNCTION(loadResource),
+	H3D_FUNCTION(isResourceLoaded),
+	H3D_FUNCTION(unloadResource),
+	H3D_FUNCTION(getResourceParami),
+	H3D_FUNCTION(setResourceParami),
+	H3D_FUNCTION(getResourceParamf),
+	H3D_FUNCTION(setResourceParamf),
+	H3D_FUNCTION(getResourceParamstr),
+	H3D_FUNCTION(setResourceParamstr),
 	//{"getResourceData", horde3d_getResourceData, METH_VARARGS},// FIXME implement function first
-	{"updateResourceData", horde3d_updateResourceData, METH_VARARGS},
-	{"queryUnloadedResource", horde3d_queryUnloadedResource, METH_VARARGS},
-	{"releaseUnusedResources", horde3d_releaseUnusedResources, METH_VARARGS},
-	{"createTexture2D", horde3d_createTexture2D, METH_VARARGS},
-	{"setShaderPreambles", horde3d_setShaderPreambles, METH_VARARGS},
-	{"setMaterialUniform", horde3d_setMaterialUniform, METH_VARARGS},
-	{"setPipelineStageActivation", horde3d_setPipelineStageActivation, METH_VARARGS},
-	{"getPipelineRenderTargetData", horde3d_getPipelineRenderTargetData, METH_VARARGS},
-	{"getNodeType", horde3d_getNodeType, METH_VARARGS},
-	{"getNodeParent", horde3d_getNodeParent, METH_VARARGS},
-	{"setNodeParent", horde3d_setNodeParent, METH_VARARGS},
-	{"getNodeChild", horde3d_getNodeChild, METH_VARARGS},
-	{"addNodes", horde3d_addNodes, METH_VARARGS},
-	{"removeNode", horde3d_removeNode, METH_VARARGS},
-	{"setNodeActivation", horde3d_setNodeActivation, METH_VARARGS},
-	{"checkNodeTransformFlag", horde3d_checkNodeTransformFlag, METH_VARARGS},
-	{"getNodeTransform", horde3d_getNodeTransform, METH_VARARGS},
-	{"setNodeTransform", horde3d_setNodeTransform, METH_VARARGS},
-	{"getNodeTransformMatrices", horde3d_getNodeTransformMatrices, METH_VARARGS},
-	{"setNodeTransformMatrix", horde3d_setNodeTransformMatrix, METH_VARARGS},
-	{"getNodeParamf", horde3d_getNodeParamf, METH_VARARGS},
-	{"setNodeParamf", horde3d_setNodeParamf, METH_VARARGS},
-	{"getNodeParami", horde3d_getNodeParami, METH_VARARGS},
-	{"setNodeParami", horde3d_setNodeParami, METH_VARARGS},
-	{"getNodeParamstr", horde3d_getNodeParamstr, METH_VARARGS},
-	{"setNodeParamstr", horde3d_setNodeParamstr, METH_VARARGS},
-	{"getNodeAABB", horde3d_getNodeAABB, METH_VARARGS},
-	{"findNodes", horde3d_findNodes, METH_VARARGS},
-	{"getNodeFindResult", horde3d_getNodeFindResult, METH_VARARGS},
-	{"castRay", horde3d_castRay, METH_VARARGS},
-	{"getCastRayResult", horde3d_getCastRayResult, METH_VARARGS},
-	{"addGroupNode", horde3d_addGroupNode, METH_VARARGS},
-	{"addModelNode", horde3d_addModelNode, METH_VARARGS},
-	{"setupModelAnimStage", horde3d_setupModelAnimStage, METH_VARARGS},
-	{"setModelAnimParams", horde3d_setModelAnimParams, METH_VARARGS},
-	{"setModelMorpher", horde3d_setModelMorpher, METH_VARARGS},
-	{"addMeshNode", horde3d_addMeshNode, METH_VARARGS},
-	{"addJointNode", horde3d_addJointNode, METH_VARARGS},
+	H3D_FUNCTION(updateResourceData),
+	H3D_FUNCTION(queryUnloadedResource),
+	H3D_FUNCTION(releaseUnusedResources),
+	H3D_FUNCTION(createTexture2D),
+	H3D_FUNCTION(setShaderPreambles),
+	H3D_FUNCTION(setMaterialUniform),
+	H3D_FUNCTION(setPipelineStageActivation),
+	H3D_FUNCTION(getPipelineRenderTargetData),
+	H3D_FUNCTION(getNodeType),
+	H3D_FUNCTION(getNodeParent),
+	H3D_FUNCTION(setNodeParent),
+	H3D_FUNCTION(getNodeChild),
+	H3D_FUNCTION(addNodes),
+	H3D_FUNCTION(removeNode),
+	H3D_FUNCTION(setNodeActivation),
+	H3D_FUNCTION(checkNodeTransformFlag),
+	H3D_FUNCTION(getNodeTransform),
+	H3D_FUNCTION(setNodeTransform),
+	H3D_FUNCTION(getNodeTransformMatrices),
+	H3D_FUNCTION(setNodeTransformMatrix),
+	H3D_FUNCTION(getNodeParamf),
+	H3D_FUNCTION(setNodeParamf),
+	H3D_FUNCTION(getNodeParami),
+	H3D_FUNCTION(setNodeParami),
+	H3D_FUNCTION(getNodeParamstr),
+	H3D_FUNCTION(setNodeParamstr),
+	H3D_FUNCTION(getNodeAABB),
+	H3D_FUNCTION(findNodes),
+	H3D_FUNCTION(getNodeFindResult),
+	H3D_FUNCTION(castRay),
+	H3D_FUNCTION(getCastRayResult),
+	H3D_FUNCTION(addGroupNode),
+	H3D_FUNCTION(addModelNode),
+	H3D_FUNCTION(setupModelAnimStage),
+	H3D_FUNCTION(setModelAnimParams),
+	H3D_FUNCTION(setModelMorpher),
+	H3D_FUNCTION(addMeshNode),
+	H3D_FUNCTION(addJointNode),
 #ifdef PHOENIX_SPOT_POINT_LIGHTS
-	{"addSpotLightNode", horde3d_addSpotLightNode, METH_VARARGS},
-	{"addPointLightNode", horde3d_addPointLightNode, METH_VARARGS},
+	H3D_FUNCTION(addSpotLightNode),
+	H3D_FUNCTION(addPointLightNode),
 #else // PHOENIX_SPOT_POINT_LIGHTS
-	{"addLightNode", horde3d_addLightNode, METH_VARARGS},
+	H3D_FUNCTION(addLightNode),
 #endif // PHOENIX_SPOT_POINT_LIGHTS
-	{"setLightContexts", horde3d_setLightContexts, METH_VARARGS},
-	{"addCameraNode", horde3d_addCameraNode, METH_VARARGS},
-	{"setupCameraView", horde3d_setupCameraView, METH_VARARGS},
-	{"calcCameraProjectionMatrix", horde3d_calcCameraProjectionMatrix, METH_VARARGS},
-	{"addEmitterNode", horde3d_addEmitterNode, METH_VARARGS},
-	{"advanceEmitterTime", horde3d_advanceEmitterTime, METH_VARARGS},
-	{"hasEmitterFinished", horde3d_hasEmitterFinished, METH_VARARGS},
+	H3D_FUNCTION(setLightContexts),
+	H3D_FUNCTION(addCameraNode),
+	H3D_FUNCTION(setupCameraView),
+	H3D_FUNCTION(calcCameraProjectionMatrix),
+	H3D_FUNCTION(addEmitterNode),
+	H3D_FUNCTION(advanceEmitterTime),
+	H3D_FUNCTION(hasEmitterFinished),
 
 
 
