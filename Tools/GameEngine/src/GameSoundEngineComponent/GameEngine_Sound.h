@@ -1,0 +1,116 @@
+// ****************************************************************************************
+//
+// GameEngine of the University of Augsburg
+// --------------------------------------
+// Copyright (C) 2007 Volker Wiendl
+// 
+// This file is part of the GameEngine developed at the 
+// Lab for Multimedia Concepts and Applications of the University of Augsburg
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+//
+// *************************************************************************************************
+
+
+
+// ****************************************************************************************
+//
+// GameEngine Sound Component of the University of Augsburg
+// ---------------------------------------------------------
+// Copyright (C) 2007 Volker Wiendl
+// 
+// ****************************************************************************************
+
+#ifndef GAMEENGINE_SOUND_H_
+#define GAMEENGINE_SOUND_H_
+
+#include <GameEngine/config.h>
+
+#ifdef PLATFORM_WIN
+#	 ifdef GAMESOUNDCOMPONENT_EXPORTS
+#       define SOUNDPLUGINEXP extern "C" __declspec( dllexport )
+#	 else
+#       define SOUNDPLUGINEXP extern "C" __declspec( dllimport )
+#    endif
+#else
+#	 define SOUNDPLUGINEXP 
+#endif
+
+namespace GameEngine
+{
+	/**
+	 * Enables (and plays) or disables (and stops) a sound file
+	 * @param entityWorldID the entity that is playing the sound
+	 * @param enable whether the sound should be enabled or disabled
+	 */
+	SOUNDPLUGINEXP void enableSound(unsigned int entityWorldID, const bool enable);
+	
+	/**
+	 * Sets the Sound Velocity
+	 */
+	SOUNDPLUGINEXP void setSoundVelocity(unsigned int entityWorldID, float x, float y, float z);
+	
+	/**
+	 * Sets the Sound Gain
+	 */
+	SOUNDPLUGINEXP void setSoundGain(unsigned int entityWorldID, const float gain);
+	
+	/**
+	 * Sets the Sound to loop or not
+	 */
+	SOUNDPLUGINEXP void setSoundLoop(unsigned int entityWorldID, const bool loop);
+	
+	/**
+	 * Sets the Sound Pitch
+	 */
+	SOUNDPLUGINEXP void setSoundPitch(unsigned int entityWorldID, const float x);
+
+	/**
+	 * Sets the Sound RollOff
+	 */
+	SOUNDPLUGINEXP void setSoundRolloff(unsigned int entityWorldID, const float x);
+
+	/**
+	 * Sets the Sound Max Dist
+	 */
+	SOUNDPLUGINEXP void setSoundMaxdist(unsigned int entityWorldID, const float x);
+
+	/**
+	 * Sets the Sound Max Ref Dist
+	 */
+	SOUNDPLUGINEXP void setSoundRefdist(unsigned int entityWorldID, const float x);
+
+	/**
+	 * Sets a Sound File to be played (from the media directory)
+	 */
+	//SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* fileName);
+
+	/**
+	 * Sets a Sound and Phonemes File to be played (from the media directory)
+	 */
+	SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* soundFile, const char* phonemesFile="");
+
+	/**
+	 * Sets the resource directory for sounds
+	 */
+	SOUNDPLUGINEXP void setSoundResourceDirectory( const char* directory );
+
+	/**
+	 * Returns the sound resource directory
+	 */
+	SOUNDPLUGINEXP const char* soundResourceDirectory();
+}
+
+#endif

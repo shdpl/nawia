@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="QPropertyEditor"
 	ProjectGUID="{C0A9DD0A-FDA1-4749-86B7-D831CDD4478B}"
 	RootNamespace="QPropertyEditor"
@@ -44,7 +44,7 @@
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_LIB;UNICODE;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -224,7 +224,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						Outputs="&quot;$(InputDir)moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
@@ -234,7 +234,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						Outputs="&quot;$(InputDir)moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>

@@ -24,6 +24,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3D.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3DUtils.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3DUtils_vc8.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3D_vc8.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32\Horde3D.dll&quot; &quot;$(SolutionDir)bin\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32\Horde3DUtils.dll&quot; &quot;$(SolutionDir)bin\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -91,6 +92,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3D.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3DUtils.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3DUtils_vc8.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3D_vc8.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32\Horde3D.dll&quot; &quot;$(SolutionDir)bin\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32\Horde3DUtils.dll&quot; &quot;$(SolutionDir)bin\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
