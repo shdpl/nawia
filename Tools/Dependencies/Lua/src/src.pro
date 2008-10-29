@@ -7,8 +7,7 @@ CONFIG += qt
 
 QT -= gui core
 
-DEFINES += LUA_BUILD_AS_DLL \
-			LUA_LIB
+DEFINES += LUA_BUILD_AS_DLL 		
 
 HEADERS += lapi.h \
 			lauxlib.h \

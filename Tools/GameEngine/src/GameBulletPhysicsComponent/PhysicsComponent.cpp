@@ -225,7 +225,7 @@ void PhysicsComponent::loadFromXml(const XMLNode* description)
 		m_collisionShape = new btCylinderShape(btVector3(radius0,height,radius0));
 	}
 	else // Mesh Shape
-	{
+	{		
 		MeshData meshData;
 		GameEvent meshEvent(GameEvent::E_MESH_DATA, &meshData, this);
 		// get mesh data from graphics engine
@@ -239,6 +239,16 @@ void PhysicsComponent::loadFromXml(const XMLNode* description)
 			if (meshData.TriangleMode == 5) // Triangle Strip
 				offset = 1;
 			
+			//m_btTriangleMesh = new btTriangleIndexVertexArray();
+			//btIndexedMesh bMesh;
+			//bMesh.m_numTriangles = meshData.NumTriangleIndices / offset;
+			//bMesh.m_triangleIndexBase = (const unsigned char*) meshData.TriangleBase;
+			//bMesh.m_triangleIndexStride = offset * sizeof(unsigned int);
+			//bMesh.m_vertexBase = (const unsigned char*) meshData.VertexBase;
+			//bMesh.m_vertexStride = offset * sizeof( float );
+			//bMesh.m_numVertices = meshData.NumVertices;
+			//m_btTriangleMesh->addIndexedMesh( bMesh );
+
 			// copy mesh from graphics to physics
 			for (unsigned int i = 0; i < meshData.NumTriangleIndices - 2; i+=offset)
 			{

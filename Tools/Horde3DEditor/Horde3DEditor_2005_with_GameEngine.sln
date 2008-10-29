@@ -123,17 +123,17 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameSapiComponent", "..\Gam
 		{DB488001-8E98-4724-9787-72DA137C4E47} = {DB488001-8E98-4724-9787-72DA137C4E47}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbulletcollision", "..\Dependencies\Bullet\bullet-2.72\msvc\8\libbulletcollision.vcproj", "{6ADA430D-009C-2ED4-A787-2AC2D6FEB8CE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbulletcollision", "..\Dependencies\Bullet\bullet-2.71\msvc\8\libbulletcollision.vcproj", "{6ADA430D-009C-2ED4-A787-2AC2D6FEB8CE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbulletdynamics", "..\Dependencies\Bullet\bullet-2.72\msvc\8\libbulletdynamics.vcproj", "{61BD1097-CF2E-B296-DAA9-73A6FE135319}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbulletdynamics", "..\Dependencies\Bullet\bullet-2.71\msvc\8\libbulletdynamics.vcproj", "{61BD1097-CF2E-B296-DAA9-73A6FE135319}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbulletmath", "..\Dependencies\Bullet\bullet-2.72\msvc\8\libbulletmath.vcproj", "{7D6E339F-9C2C-31DA-FDB0-5EE50973CF2A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbulletmath", "..\Dependencies\Bullet\bullet-2.71\msvc\8\libbulletmath.vcproj", "{7D6E339F-9C2C-31DA-FDB0-5EE50973CF2A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libconvexdecomposition", "..\Dependencies\Bullet\bullet-2.72\msvc\8\libconvexdecomposition.vcproj", "{8050F819-5B5B-1504-BC6D-7F2B4C6C85F3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libconvexdecomposition", "..\Dependencies\Bullet\bullet-2.71\msvc\8\libconvexdecomposition.vcproj", "{8050F819-5B5B-1504-BC6D-7F2B4C6C85F3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGIMPACT", "..\Dependencies\Bullet\bullet-2.72\msvc\8\libGIMPACT.vcproj", "{F8318FC6-B9C4-D5A1-DCC0-C9CE42ADAE22}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGIMPACT", "..\Dependencies\Bullet\bullet-2.71\msvc\8\libGIMPACT.vcproj", "{F8318FC6-B9C4-D5A1-DCC0-C9CE42ADAE22}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGIMPACTUtils", "..\Dependencies\Bullet\bullet-2.72\msvc\8\libGIMPACTUtils.vcproj", "{B1B5F775-54A9-2437-E4AC-7E817E492142}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGIMPACTUtils", "..\Dependencies\Bullet\bullet-2.71\msvc\8\libGIMPACTUtils.vcproj", "{B1B5F775-54A9-2437-E4AC-7E817E492142}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
