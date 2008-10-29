@@ -124,9 +124,20 @@ namespace GameEngine
 
 	SCENEGRAPHPLUGINEXP void setParentNode(unsigned int entityWorldIDChild, unsigned int entityWorldIDNewParent,const char* childInNewParent)
 	{
-		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldIDNewParent);
-		Attach attach(childInNewParent,entity->id().c_str());
-		sendEvent(entityWorldIDChild,&GameEvent(GameEvent::E_SET_NODE_PARENT,&attach,0));
+		const char* entityID;
+
+		if(entityWorldIDNewParent > 0)
+		{
+			GameEntity* entity = GameModules::gameWorld()->entity(entityWorldIDNewParent);	
+			entityID = entity->id().c_str();
+		}
+		else
+		{
+			entityID = "Root";
+		}
+		
+		Attach attachData = Attach(childInNewParent,entityID);
+		sendEvent(entityWorldIDChild,&GameEvent(GameEvent::E_SET_NODE_PARENT,&attachData,0));
 	}
 
 	SCENEGRAPHPLUGINEXP void updateSceneGraph()

@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="GameSoundComponent"
-	ProjectGUID="{C93E4376-D274-4D5C-9D4B-597594E5B343}"
-	RootNamespace="GameSoundComponent"
+	Name="GameSapiComponent"
+	ProjectGUID="{F606E654-0F08-4B81-8388-5A903BBA07E9}"
+	RootNamespace="GameSapiComponent"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -41,14 +41,15 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)..\..\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;GAMESOUNDCOMPONENT_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SAPICOMPONENT_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
+				DisableSpecificWarnings="4251"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -61,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib GameEngineCored.lib XmlParserd.lib Luad.lib openal32.lib"
+				AdditionalDependencies="delayimp.lib GameEngineCored.lib XmlParserd.lib Luad.lib"
 				OutputFile="$(SolutionDir)bin\$(ProjectName)d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
@@ -93,7 +94,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy &quot;$(ProjectDir)GameEngine_Sound.h&quot; &quot;$(SolutionDir)include\GameEngine\&quot; /y"
+				CommandLine="xcopy &quot;$(ProjectDir)GameEngine_SAPI.h&quot; &quot;$(SolutionDir)include\GameEngine\&quot; /y"
 			/>
 		</Configuration>
 		<Configuration
@@ -122,12 +123,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)..\..\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;GAMESOUNDCOMPONENT_EXPORTS;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SAPICOMPONENT_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
+				DisableSpecificWarnings="4251"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -140,7 +142,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib GameEngineCore.lib XmlParser.lib Lua.lib openal32.lib"
+				AdditionalDependencies="delayimp.lib GameEngineCore.lib XmlParser.lib Lua.lib"
 				OutputFile="$(SolutionDir)bin\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
@@ -174,7 +176,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy &quot;$(ProjectDir)GameEngine_Sound.h&quot; &quot;$(SolutionDir)include\GameEngine\&quot; /y"
+				CommandLine="xcopy &quot;$(ProjectDir)GameEngine_SAPI.h&quot; &quot;$(SolutionDir)include\GameEngine\&quot; /y"
 			/>
 		</Configuration>
 	</Configurations>
@@ -187,11 +189,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\CWaves.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GameEngine_Sound.cpp"
+				RelativePath=".\GameEngine_SAPI.cpp"
 				>
 			</File>
 			<File
@@ -199,23 +197,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Ogg.cpp"
+				RelativePath=".\TtsComponent.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SoundComponent.cpp"
+				RelativePath=".\TTSLua.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SoundListenerComponent.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SoundManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SoundResourceManager.cpp"
+				RelativePath=".\TTSManager.cpp"
 				>
 			</File>
 		</Filter>
@@ -225,31 +215,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\CWaves.h"
+				RelativePath=".\GameEngine_SAPI.h"
 				>
 			</File>
 			<File
-				RelativePath=".\GameEngine_Sound.h"
+				RelativePath=".\TtsComponent.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Ogg.h"
+				RelativePath=".\TTSLua.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SoundComponent.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SoundListenerComponent.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SoundManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SoundResourceManager.h"
+				RelativePath=".\TTSManager.h"
 				>
 			</File>
 		</Filter>

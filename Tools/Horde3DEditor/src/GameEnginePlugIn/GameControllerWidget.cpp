@@ -33,11 +33,18 @@ GameControllerWidget::GameControllerWidget(QWidget* parent /*= 0*/, Qt::WFlags f
 	connect(m_attachmentTreeView, SIGNAL(currentNodeChanged(QXmlTreeNode*)), this, SLOT(componentSelected(QXmlTreeNode*)));
 
 	connect(m_physicsWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
+	connect(m_crowdVisibilityWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
+	connect(m_crowdParticleWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
 	connect(m_keyframeAnimWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
+	connect(m_dynamidWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
 	connect(m_soundWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
 
 	connect(m_actionAddPhysicsComponent, SIGNAL(triggered()), m_attachmentTreeView, SLOT(addPhysicsComponent()));
+	connect(m_actionAddTTSComponent, SIGNAL(triggered()), m_attachmentTreeView, SLOT(addTTSComponent()));
 	connect(m_actionAddKeyframeAnimComponent, SIGNAL(triggered()), m_attachmentTreeView, SLOT(addKeyframeAnimComponent()));
+	connect(m_actionAddDynamidComponent, SIGNAL(triggered()), m_attachmentTreeView, SLOT(addDynamidComponent()));
+	connect(m_actionAddCrowdParticleComponent, SIGNAL(triggered()), m_attachmentTreeView, SLOT(addCrowdParticleComponent()));
+	connect(m_actionAddCrowdVisNodeComponent, SIGNAL(triggered()), m_attachmentTreeView, SLOT(addCrowdVisNodeComponent()));
 	connect(m_actionAddSound3DComponent, SIGNAL(triggered()), m_attachmentTreeView, SLOT(addSound3DComponent()));
 }
 
@@ -58,7 +65,11 @@ void GameControllerWidget::init()
 		m_attachmentTreeView->removeAction( m_attachmentTreeView->actions().first() );
 
 	if( availableNodes.contains("BulletPhysics") ) m_attachmentTreeView->addAction(m_actionAddPhysicsComponent);
+	if( availableNodes.contains("TTS") ) m_attachmentTreeView->addAction(m_actionAddTTSComponent);
 	if( availableNodes.contains("KeyframeAnimation") ) m_attachmentTreeView->addAction(m_actionAddKeyframeAnimComponent);
+	if( availableNodes.contains("Dynamid") ) m_attachmentTreeView->addAction(m_actionAddDynamidComponent);	
+	if( availableNodes.contains("CrowdParticle") ) m_attachmentTreeView->addAction(m_actionAddCrowdParticleComponent);
+	if( availableNodes.contains("CrowdVisNode") ) m_attachmentTreeView->addAction(m_actionAddCrowdVisNodeComponent);
 	if( availableNodes.contains("Sound3D") ) m_attachmentTreeView->addAction(m_actionAddSound3DComponent);
 
 }
@@ -118,8 +129,16 @@ void GameControllerWidget::componentSelected(QXmlTreeNode *node)
 {
 	if (m_physicsWidget->setCurrentNode(node))
 		m_componentWidgets->setCurrentWidget(m_physicsWidgetContainer);
+	else if (m_ttsWidget->setCurrentNode(node))
+		m_componentWidgets->setCurrentWidget(m_ttsWidgetContainer);
 	else if (m_keyframeAnimWidget->setCurrentNode(node))
 		m_componentWidgets->setCurrentWidget(m_keyframeAnimWidgetContainer);
+	else if (m_dynamidWidget->setCurrentNode(node))
+		m_componentWidgets->setCurrentWidget(m_dynamidWidgetContainer);
+	else if (m_crowdParticleWidget->setCurrentNode(node))
+		m_componentWidgets->setCurrentWidget(m_crowdParticleWidgetContainer);
+	else if (m_crowdVisibilityWidget->setCurrentNode(node))
+		m_componentWidgets->setCurrentWidget(m_crowdVisibilityWidgetContainer);
 	else if (m_soundWidget->setCurrentNode(node))
 		m_componentWidgets->setCurrentWidget(m_soundWidgetContainer);
 	else

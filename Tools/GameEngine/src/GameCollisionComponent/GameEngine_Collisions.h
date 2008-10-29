@@ -24,51 +24,43 @@
 
 // ****************************************************************************************
 //
-// GameEngine Horde3D Editor Plugin of the University of Augsburg
+// GameEngine Collision Component of the University of Augsburg
 // ---------------------------------------------------------
 // Copyright (C) 2007 Volker Wiendl
 // 
 // ****************************************************************************************
-#ifndef SOUNDWIDGET_H_
-#define SOUNDWIDGET_H_
+#ifndef GAMEENGINE_SAPI_H_
+#define GAMEENGINE_SAPI_H_
 
-#include "Ui_SoundWidget.h"
+#include <GameEngine/config.h>
 
-class QXmlTreeNode;
+#ifdef PLATFORM_WIN
+#	 ifdef COLLISIONCOMPONENT_EXPORTS
+#       define COLLISIONPLUGINEXP extern "C" __declspec( dllexport )
+#	 else
+#       define COLLISIONPLUGINEXP extern "C" __declspec( dllimport )
+#    endif
+#else
+#	 define COLLISIONPLUGINEXP 
+#endif
 
-class SoundWidget : public QWidget, protected Ui_SoundWidget
+namespace GameEngine
 {
-	Q_OBJECT
-public:
-	SoundWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
-	virtual ~SoundWidget();
+	/**
+	 * Returns number of collisions the specified entity during the last update iteration
+	 * @param entityWorldID the unique world id of the entity 
+	 * @return unsigned int number of collisions in the last frame
+	 */
+	COLLISIONPLUGINEXP size_t numCollisions(unsigned int entityWorldID);
 
-	bool setCurrentNode(QXmlTreeNode* node);
 
+	/**
+	 * Returns the world id of the entity that collided with the specified entity
+	 * @param entityWorldID the unique world id of the entity 
+	 * @param index collision number based on the number of collisions provided by collisions()
+	 * @return unsigned int the world id of the entity colliding with the entity specified by entityWorldID
+	 */
+	COLLISIONPLUGINEXP unsigned int collision(unsigned int entityWorldID, int index);
+}
 
-signals:
-	void modified(bool);
-
-private slots:
-	void scanMediaDir( const QString& path );
-	void addFiles();
-	void updateSoundFile( const QString& soundFile );
-	void gainChanged(double value);
-	void pitchChanged(double value);
-	void refDistChanged(double value);
-	void maxDistChanged(double value);
-	void loopChanged();
-	void rollOffChanged(double value);
-	void addPhonemeFiles();
-	void scanPhonemeFiles( const QString& path  );
-	void updatePhonemeFile( const QString& phonemeFile );
-	void playSound();
-	void stopSound();
-
-private:
-	unsigned int entityWorldID();
-
-	QXmlTreeNode*	m_currentNode;
-
-};
 #endif

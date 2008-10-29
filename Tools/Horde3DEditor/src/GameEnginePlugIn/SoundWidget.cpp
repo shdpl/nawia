@@ -56,6 +56,10 @@ SoundWidget::SoundWidget(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QW
 	connect(m_pitch, SIGNAL(valueChanged(double)), this, SLOT(pitchChanged(double)));
 	connect(m_rolloff, SIGNAL(valueChanged(double)), this, SLOT(rollOffChanged(double)));
 	connect(m_loop, SIGNAL(stateChanged(int)), this, SLOT(loopChanged()));
+	connect(m_importPhoneme, SIGNAL(clicked()), this, SLOT(addPhonemeFiles()));
+	connect(m_phonemeFile, SIGNAL(currentIndexChanged(const QString& )), this, SLOT(updatePhonemeFile( const QString& )));
+	connect(m_playButton, SIGNAL(clicked()), this, SLOT(playSound()) );
+	connect(m_stopButton, SIGNAL(clicked()), this, SLOT(stopSound()) );
 }
 
 
@@ -70,8 +74,11 @@ bool SoundWidget::setCurrentNode(QXmlTreeNode *node)
 	{				
 		m_currentNode = 0;
 		m_soundFile->clear();
+		m_phonemeFile->clear();
 		scanMediaDir( GameEngine::soundResourceDirectory() );
+		scanPhonemeFiles( GameEngine::soundResourceDirectory() );
 		m_soundFile->setCurrentIndex( m_soundFile->findText( node->xmlNode().attribute("file") ) );
+		m_phonemeFile->setCurrentIndex( m_phonemeFile->findText( node->xmlNode().attribute("phonemes") ) );
 		m_gain->setValue( node->xmlNode().attribute("gain", "0.5").toFloat() );
 		m_loop->setChecked( 
 			node->xmlNode().attribute("loop", "false").compare("true", Qt::CaseInsensitive) == 0 ||
@@ -204,4 +211,70 @@ unsigned int SoundWidget::entityWorldID()
 	}
 	else
 		return 0;
+}
+
+void SoundWidget::scanPhonemeFiles( const QString& path )
+{
+	QDir baseDir = GameEngine::soundResourceDirectory();
+	QStringList fileFormats = QStringList("*.phonemes.xml");
+	QFileInfoList phonemes = QDir(path).entryInfoList(fileFormats, QDir::Files | QDir::Readable );
+	for( int i = 0; i < phonemes.size(); ++i )
+	{
+		m_phonemeFile->addItem( baseDir.relativeFilePath( phonemes[i].absoluteFilePath() ) );
+	}
+	QFileInfoList dirs = QDir(path).entryInfoList(QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot );
+	for( int i = 0; i < dirs.size(); ++i )
+	{
+		scanPhonemeFiles( dirs[i].absoluteFilePath() );
+	}	
+}
+
+void SoundWidget::addPhonemeFiles()
+{
+	QStringList files = QFileDialog::getOpenFileNames(
+		this, 
+		tr("Select phoneme file"), 
+		QDir::currentPath(), 
+		tr("Phoneme files (*.phonemes.xml);;All files (*.*)"));
+
+	QStringList errorList;
+	QDir baseDir( GameEngine::soundResourceDirectory() );
+	for( int i = 0; i < files.size(); ++i )
+	{
+		if( !files[i].contains( baseDir.absolutePath() ) )
+		{
+			if( !QFile::copy( files[i], baseDir.absoluteFilePath( QFileInfo(files[i]).fileName() ) ) )
+				errorList << files[i];
+			else
+				m_phonemeFile->addItem( QFileInfo(files[i]).fileName() );
+		}
+	}
+	if( !errorList.isEmpty() )
+		QMessageBox::warning(this, tr("Error"), 
+		tr("The following files couldn't be copied to the\n"
+		"sound directory: %1").arg(baseDir.absolutePath())+
+		"\n\n"+errorList.join("\n"));
+}
+
+void SoundWidget::updatePhonemeFile( const QString& phonemeFile )
+{
+	if( m_currentNode != 0 )
+	{
+		m_currentNode->xmlNode().setAttribute("phonemes", phonemeFile );
+		GameEngine::setSoundFile( entityWorldID(), qPrintable( m_currentNode->xmlNode().attribute("file") ),qPrintable( phonemeFile ) );
+	}
+}
+
+void SoundWidget::playSound()
+{
+	unsigned int id = entityWorldID();
+	if( id != 0)
+		GameEngine::enableSound( id, true );
+}
+
+void SoundWidget::stopSound()
+{
+	unsigned int id = entityWorldID();
+	if( id != 0)
+		GameEngine::enableSound( id, false );
 }

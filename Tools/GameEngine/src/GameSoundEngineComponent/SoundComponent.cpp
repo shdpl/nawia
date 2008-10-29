@@ -169,8 +169,8 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 	setRefDist(static_cast<float>(atof(description->getAttribute("refdist", "15.0"))));
 	setPitch(static_cast<float>(atof(description->getAttribute("pitch", "1.0"))));
 	setRollOff(static_cast<float>(atof(description->getAttribute("rolloff", "1.0"))));	
-	if( description->getAttribute("phonems") )
-		setPhonemesFile(description->getAttribute("phonems"));
+	if( description->getAttribute("phonemes") )
+		setPhonemesFile(description->getAttribute("phonemes"));
 }
 
 void SoundComponent::update()

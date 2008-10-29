@@ -29,46 +29,33 @@
 // Copyright (C) 2007 Volker Wiendl
 // 
 // ****************************************************************************************
-#ifndef SOUNDWIDGET_H_
-#define SOUNDWIDGET_H_
+#ifndef DYNAMIDWIDGET_H_
+#define DYNAMIDWIDGET_H_
 
-#include "Ui_SoundWidget.h"
+#include "./Ui_DynamidWidget.h"
 
 class QXmlTreeNode;
 
-class SoundWidget : public QWidget, protected Ui_SoundWidget
+class DynamidWidget : public QWidget, protected Ui_DynamidWidget
 {
 	Q_OBJECT
 public:
-	SoundWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
-	virtual ~SoundWidget();
+	DynamidWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
+	virtual ~DynamidWidget();
 
 	bool setCurrentNode(QXmlTreeNode* node);
-
 
 signals:
 	void modified(bool);
 
 private slots:
-	void scanMediaDir( const QString& path );
-	void addFiles();
-	void updateSoundFile( const QString& soundFile );
-	void gainChanged(double value);
-	void pitchChanged(double value);
-	void refDistChanged(double value);
-	void maxDistChanged(double value);
-	void loopChanged();
-	void rollOffChanged(double value);
-	void addPhonemeFiles();
-	void scanPhonemeFiles( const QString& path  );
-	void updatePhonemeFile( const QString& phonemeFile );
-	void playSound();
-	void stopSound();
+	void setActive(bool active);
+	void updateCollision();
+
 
 private:
-	unsigned int entityWorldID();
-
 	QXmlTreeNode*	m_currentNode;
+
 
 };
 #endif

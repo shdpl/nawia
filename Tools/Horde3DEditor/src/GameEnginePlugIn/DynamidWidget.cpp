@@ -29,46 +29,58 @@
 // Copyright (C) 2007 Volker Wiendl
 // 
 // ****************************************************************************************
-#ifndef SOUNDWIDGET_H_
-#define SOUNDWIDGET_H_
+#include "DynamidWidget.h"
 
-#include "Ui_SoundWidget.h"
+#include <QXmlTree/QXmlTreeNode.h>
+#include <GameEngine/GameEngine.h>
+#include <Qt/qtextstream.h>
 
-class QXmlTreeNode;
-
-class SoundWidget : public QWidget, protected Ui_SoundWidget
+DynamidWidget::DynamidWidget(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QWidget(parent, flags), m_currentNode(0)
 {
-	Q_OBJECT
-public:
-	SoundWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
-	virtual ~SoundWidget();
+	setupUi(this);
 
-	bool setCurrentNode(QXmlTreeNode* node);
+	connect(m_active, SIGNAL(toggled(bool)), this, SLOT(setActive(bool)));
+
+}
 
 
-signals:
-	void modified(bool);
+DynamidWidget::~DynamidWidget()
+{
+}
 
-private slots:
-	void scanMediaDir( const QString& path );
-	void addFiles();
-	void updateSoundFile( const QString& soundFile );
-	void gainChanged(double value);
-	void pitchChanged(double value);
-	void refDistChanged(double value);
-	void maxDistChanged(double value);
-	void loopChanged();
-	void rollOffChanged(double value);
-	void addPhonemeFiles();
-	void scanPhonemeFiles( const QString& path  );
-	void updatePhonemeFile( const QString& phonemeFile );
-	void playSound();
-	void stopSound();
+bool DynamidWidget::setCurrentNode(QXmlTreeNode *node)
+{		
+	if (node && node->xmlNode().tagName() == "Dynamid")
+	{				
+		m_currentNode = 0;		
+		m_active->setChecked(
+			node->xmlNode().attribute("active", "false").compare("true",Qt::CaseInsensitive) == 0 ||
+			node->xmlNode().attribute("active", "0").compare("1",Qt::CaseInsensitive) == 0);
+		m_currentNode = node;
+		return true;
+	}
+	else
+		return false;
+}
 
-private:
-	unsigned int entityWorldID();
+void DynamidWidget::setActive(bool active)
+{
+	if( m_currentNode )
+	{
+		m_currentNode->xmlNode().setAttribute("active", active);
+		updateCollision();
+	}
+}
 
-	QXmlTreeNode*	m_currentNode;
+void DynamidWidget::updateCollision()
+{
+	if (m_currentNode == 0)	return;
+	QString entityName = m_currentNode->xmlNode().parentNode().toElement().attribute("name");
+	QString xmlData;
+	QTextStream stream(&xmlData);
+	m_currentNode->xmlNode().save(stream, 4);	
+	unsigned int entityID = GameEngine::entityWorldID(qPrintable(entityName));	
+	GameEngine::setComponentData(entityID, "Dynamid", qPrintable(xmlData));	
+	emit modified(true);
+}
 
-};
-#endif

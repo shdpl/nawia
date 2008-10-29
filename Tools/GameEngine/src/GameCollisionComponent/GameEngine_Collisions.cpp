@@ -24,51 +24,44 @@
 
 // ****************************************************************************************
 //
-// GameEngine Horde3D Editor Plugin of the University of Augsburg
+// GameEngine Collision Component of the University of Augsburg
 // ---------------------------------------------------------
 // Copyright (C) 2007 Volker Wiendl
 // 
 // ****************************************************************************************
-#ifndef SOUNDWIDGET_H_
-#define SOUNDWIDGET_H_
+#include "GameEngine_Collisions.h"
 
-#include "Ui_SoundWidget.h"
+#include <GameEngine/GameEntity.h>
+#include <GameEngine/GameWorld.h>
+#include <GameEngine/GameModules.h>
 
-class QXmlTreeNode;
+#include "CollisionManager.h"
+#include "CollisionComponent.h"
 
-class SoundWidget : public QWidget, protected Ui_SoundWidget
+namespace GameEngine
 {
-	Q_OBJECT
-public:
-	SoundWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
-	virtual ~SoundWidget();
+	COLLISIONPLUGINEXP size_t numCollisions(unsigned int entityWorldID)
+	{
+		CollisionComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( component = static_cast<CollisionComponent*>(entity->component("CollisionHandler")) ) != 0 )
+		{
+			return component->collisionList()->size();
+		}	
+		return 0;
+	}
 
-	bool setCurrentNode(QXmlTreeNode* node);
+	COLLISIONPLUGINEXP unsigned int collision(unsigned int entityWorldID, int index)
+	{		
+		CollisionComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( component = static_cast<CollisionComponent*>(entity->component("CollisionHandler")) ) != 0 )
+		{
+			size_t size = component->collisionList()->size();
+			if( index < size )
+				return component->collisionList()->at(index);
+		}	
+		return 0;
+	}
+}
 
-
-signals:
-	void modified(bool);
-
-private slots:
-	void scanMediaDir( const QString& path );
-	void addFiles();
-	void updateSoundFile( const QString& soundFile );
-	void gainChanged(double value);
-	void pitchChanged(double value);
-	void refDistChanged(double value);
-	void maxDistChanged(double value);
-	void loopChanged();
-	void rollOffChanged(double value);
-	void addPhonemeFiles();
-	void scanPhonemeFiles( const QString& path  );
-	void updatePhonemeFile( const QString& phonemeFile );
-	void playSound();
-	void stopSound();
-
-private:
-	unsigned int entityWorldID();
-
-	QXmlTreeNode*	m_currentNode;
-
-};
-#endif

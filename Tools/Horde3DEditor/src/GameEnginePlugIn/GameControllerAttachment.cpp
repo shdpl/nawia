@@ -189,15 +189,21 @@ QXmlTreeModel* GameControllerAttachment::initExtras( const QDomElement &extraNod
 
 void GameControllerAttachment::sceneFileConfig()
 {
+	QDomDocument sceneFile(m_sceneFile->sceneFileDom());
+	QDomElement pathNode(sceneFile.documentElement().firstChildElement("EnginePath"));
 	// Create a wizard for the configuration of the directories
 	QWizard wizard;
-	wizard.addPage(new PathPage(&wizard));
+	PathPage* page = new PathPage(&wizard);	
+	page->setDirectories( 
+		pathNode.attribute("mediapath"), 
+		pathNode.attribute("trackerpath"), 
+		pathNode.attribute("scriptpath")
+	);
+	wizard.addPage(page);
 	if (wizard.exec() == QDialog::Accepted)
 	{
-		QDomDocument sceneFile(m_sceneFile->sceneFileDom());
-		QDomElement pathNode(sceneFile.documentElement().firstChildElement("EnginePath"));
 		pathNode.setAttribute("mediapath", wizard.field("mediadir").toString());
-		pathNode.setAttribute("trackerpath", wizard.field("trackerdir").toString());
+		//pathNode.setAttribute("trackerpath", wizard.field("trackerdir").toString());
 		pathNode.setAttribute("scriptpath", wizard.field("scriptdir").toString());
 	}
 }

@@ -24,51 +24,42 @@
 
 // ****************************************************************************************
 //
-// GameEngine Horde3D Editor Plugin of the University of Augsburg
+// GameEngine Collision Component of the University of Augsburg
 // ---------------------------------------------------------
 // Copyright (C) 2007 Volker Wiendl
 // 
 // ****************************************************************************************
-#ifndef SOUNDWIDGET_H_
-#define SOUNDWIDGET_H_
+#ifndef COLLISIONCOMPONENT_H_
+#define COLLISIONCOMPONENT_H_
 
-#include "Ui_SoundWidget.h"
+#include <GameEngine/GameComponent.h>
 
-class QXmlTreeNode;
-
-class SoundWidget : public QWidget, protected Ui_SoundWidget
+/**
+ * Component to handle collision events
+ */
+class CollisionComponent : public GameComponent
 {
-	Q_OBJECT
+
 public:
-	SoundWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
-	virtual ~SoundWidget();
+	static GameComponent* createComponent( GameEntity* owner );
+	CollisionComponent(GameEntity* owner);
+	~CollisionComponent();
 
-	bool setCurrentNode(QXmlTreeNode* node);
 
+	// Clears the collision list
+	void update();
 
-signals:
-	void modified(bool);
+	bool checkEvent(GameEvent* event) { return true; }
+	void executeEvent(GameEvent* event);
 
-private slots:
-	void scanMediaDir( const QString& path );
-	void addFiles();
-	void updateSoundFile( const QString& soundFile );
-	void gainChanged(double value);
-	void pitchChanged(double value);
-	void refDistChanged(double value);
-	void maxDistChanged(double value);
-	void loopChanged();
-	void rollOffChanged(double value);
-	void addPhonemeFiles();
-	void scanPhonemeFiles( const QString& path  );
-	void updatePhonemeFile( const QString& phonemeFile );
-	void playSound();
-	void stopSound();
+	void loadFromXml(const XMLNode* description);
+
+	std::vector<unsigned int>*	collisionList() { return &m_collisions; }
 
 private:
-	unsigned int entityWorldID();
-
-	QXmlTreeNode*	m_currentNode;
+	
+	std::vector<unsigned int>	m_collisions;
 
 };
-#endif
+#endif 
+

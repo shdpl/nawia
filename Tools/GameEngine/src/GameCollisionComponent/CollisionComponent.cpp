@@ -24,51 +24,48 @@
 
 // ****************************************************************************************
 //
-// GameEngine Horde3D Editor Plugin of the University of Augsburg
+// GameEngine Collision Component of the University of Augsburg
 // ---------------------------------------------------------
 // Copyright (C) 2007 Volker Wiendl
 // 
 // ****************************************************************************************
-#ifndef SOUNDWIDGET_H_
-#define SOUNDWIDGET_H_
+#include "CollisionComponent.h"
 
-#include "Ui_SoundWidget.h"
+#include "CollisionManager.h"
 
-class QXmlTreeNode;
+#include <GameEngine/GameEvent.h>
+#include <GameEngine/GameEntity.h>
 
-class SoundWidget : public QWidget, protected Ui_SoundWidget
+GameComponent* CollisionComponent::createComponent( GameEntity* owner )
 {
-	Q_OBJECT
-public:
-	SoundWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
-	virtual ~SoundWidget();
+	return new CollisionComponent( owner );
+}
 
-	bool setCurrentNode(QXmlTreeNode* node);
+CollisionComponent::CollisionComponent(GameEntity *owner) : GameComponent(owner, "CollisionHandler")
+{
+	owner->addListener(GameEvent::E_COLLISION, this);
+	CollisionManager::instance()->addComponent(this);	
+}
 
+CollisionComponent::~CollisionComponent()
+{
+	CollisionManager::instance()->removeComponent(this);
+}
 
-signals:
-	void modified(bool);
+void CollisionComponent::update()
+{
+	m_collisions.resize(0);
+}
 
-private slots:
-	void scanMediaDir( const QString& path );
-	void addFiles();
-	void updateSoundFile( const QString& soundFile );
-	void gainChanged(double value);
-	void pitchChanged(double value);
-	void refDistChanged(double value);
-	void maxDistChanged(double value);
-	void loopChanged();
-	void rollOffChanged(double value);
-	void addPhonemeFiles();
-	void scanPhonemeFiles( const QString& path  );
-	void updatePhonemeFile( const QString& phonemeFile );
-	void playSound();
-	void stopSound();
+void CollisionComponent::executeEvent(GameEvent *event)
+{
+	if( event->id() == GameEvent::E_COLLISION )
+	{
+		m_collisions.push_back( *static_cast<int*>(event->data()) );
+	}
+}
 
-private:
-	unsigned int entityWorldID();
-
-	QXmlTreeNode*	m_currentNode;
-
-};
-#endif
+void CollisionComponent::loadFromXml(const XMLNode *description)
+{
+	// Nothing to configure
+}

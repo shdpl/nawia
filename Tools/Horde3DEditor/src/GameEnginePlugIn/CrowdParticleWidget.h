@@ -29,46 +29,34 @@
 // Copyright (C) 2007 Volker Wiendl
 // 
 // ****************************************************************************************
-#ifndef SOUNDWIDGET_H_
-#define SOUNDWIDGET_H_
+#ifndef CROWDPARTICLEWIDGET_H_
+#define CROWDPARTICLEWIDGET_H_
 
-#include "Ui_SoundWidget.h"
+#include "Ui_CrowdParticleWidget.h"
 
 class QXmlTreeNode;
 
-class SoundWidget : public QWidget, protected Ui_SoundWidget
+class CrowdParticleWidget : public QWidget, protected Ui_CrowdParticleWidget
 {
 	Q_OBJECT
 public:
-	SoundWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
-	virtual ~SoundWidget();
+	CrowdParticleWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
+	virtual ~CrowdParticleWidget();
 
 	bool setCurrentNode(QXmlTreeNode* node);
-
 
 signals:
 	void modified(bool);
 
 private slots:
-	void scanMediaDir( const QString& path );
-	void addFiles();
-	void updateSoundFile( const QString& soundFile );
-	void gainChanged(double value);
-	void pitchChanged(double value);
-	void refDistChanged(double value);
-	void maxDistChanged(double value);
-	void loopChanged();
-	void rollOffChanged(double value);
-	void addPhonemeFiles();
-	void scanPhonemeFiles( const QString& path  );
-	void updatePhonemeFile( const QString& phonemeFile );
-	void playSound();
-	void stopSound();
+	void updateZone(double);
+	void updateTags(int value);
+	void updateFixedState(bool fixed);
+	void updateCrowdSim();
 
 private:
-	unsigned int entityWorldID();
-
 	QXmlTreeNode*	m_currentNode;
+
 
 };
 #endif

@@ -1,0 +1,440 @@
+// ****************************************************************************************
+//
+// GameEngine of the University of Augsburg
+// --------------------------------------
+// Copyright (C) 2007
+// Programmers: Volker Wiendl, Nikolaus Bee
+// 
+// This file is part of the GameEngine of the University of Augsburg
+// 
+// You are not allowed to redistribute the code, if not explicitly authorized by the author
+//
+// ****************************************************************************************
+#include "TTSComponent.h"
+
+#include "TTSManager.h"
+
+#include <GameEngine/GameEngine.h>
+#include <GameEngine/GameLog.h>
+#include <GameEngine/GameEntity.h>
+
+
+#include <XMLParser/utXMLParser.h>
+
+using namespace std;
+
+
+// http://www.digitalcuriosity.com/VocaliseTTS/SimpleCharacterTutorial_1.htm
+// http://udn.epicgames.com/Two/ImpersonatorHeadRigging
+/*const float visemeMapping[22] = {
+0,		// SP_VISEME_0 = 0,    // Silence
+20,		// SP_VISEME_1,        // AE, AX, AH
+20,		// SP_VISEME_2,        // AA
+20,		// SP_VISEME_3,        // AO
+90,		// SP_VISEME_4,        // EY, EH, UH		// ??
+20,		// SP_VISEME_5,        // ER
+150,	// SP_VISEME_6,        // y, IY, IH, IX
+60,		// SP_VISEME_7,        // w, UW
+40,		// SP_VISEME_8,        // OW
+150,	// SP_VISEME_9,        // AW
+50,		// SP_VISEME_10,       // OY
+20,		// SP_VISEME_11,       // AY
+150,	// SP_VISEME_12,       // h
+140,	// SP_VISEME_13,       // r
+110,	// SP_VISEME_14,       // l
+70,		// SP_VISEME_15,       // s, z
+80,		// SP_VISEME_16,       // SH, CH, JH, ZH
+100,	// SP_VISEME_17,       // TH, DH
+90,		// SP_VISEME_18,       // f, v
+70,		// SP_VISEME_19,       // d, t, n
+150,	// SP_VISEME_20,       // k, g, NG
+120		// SP_VISEME_21,       // p, b, m
+};*/
+
+
+const char *visemeMapping[22] = {
+	"-none-",							// SP_VISEME_0 = 0,		// Silence
+	"ae_ax_ah_aa_ao_er_ay",		// SP_VISEME_1,			// AE, AX, AH
+	"ae_ax_ah_aa_ao_er_ay",		// SP_VISEME_2,			// AA
+	"ae_ax_ah_aa_ao_er_ay",		// SP_VISEME_3,			// AO
+	"ey_eh_uh",					// SP_VISEME_4,			// EY, EH, UH
+	"ae_ax_ah_aa_ao_er_ay",		// SP_VISEME_5,			// ER
+	"aw_y_iy_ih_ix_h_k_g_ng",		// SP_VISEME_6,			// y, IY, IH, IX
+	"w_uw",						// SP_VISEME_7,			// w, UW
+	"ow",							// SP_VISEME_8,			// OW
+	"aw_y_iy_ih_ix_h_k_g_ng",		// SP_VISEME_9,			// AW
+	"oy",							// SP_VISEME_10,		// OY
+	"ae_ax_ah_aa_ao_er_ay",		// SP_VISEME_11,		// AY
+	"aw_y_iy_ih_ix_h_k_g_ng",		// SP_VISEME_12,		// h
+	"r",							// SP_VISEME_13,		// r
+	"l",	//TODO					// SP_VISEME_14,		// l
+	"s_z_t_d_n",					// SP_VISEME_15,		// s, z
+	"sh_ch_jh_zh",					// SP_VISEME_16,		// SH, CH, JH, ZH
+	"th_dh",						// SP_VISEME_17,		// TH, DH
+	"f_v",							// SP_VISEME_18,		// f, v
+	"s_z_t_d_n",					// SP_VISEME_19,		// d, t, n
+	"aw_y_iy_ih_ix_h_k_g_ng",		// SP_VISEME_20,		// k, g, NG
+	"p_b_m"						// SP_VISEME_21,		// p, b, m
+};
+
+const float avgDuration[22] = 
+{ 169, 86, 89, 84, 78, 60, 77, 69, 93, 90, 31, 81, 87, 100, 102, 122, 93, 85, 92, 90, 83, 80 };	
+
+GameComponent* TTSComponent::createComponent( GameEntity* owner )
+{
+	return new TTSComponent( owner );
+}
+
+TTSComponent::TTSComponent(GameEntity *owner) : GameComponent(owner, "Sapi"), m_pVoice(0), 
+m_curViseme(0), m_prevViseme(0), m_visemeChanged(false), m_visemeBlendFacPrev(1.0f), m_isSpeaking(false), m_FACSmapping(false)
+{
+	owner->addListener(GameEvent::E_SPEAK, this);
+	owner->addListener(GameEvent::E_SET_VOICE, this);
+	CoInitialize(NULL);
+	TTSManager::instance()->addComponent(this);
+}
+
+TTSComponent::~TTSComponent()
+{
+	TTSManager::instance()->removeComponent(this);
+	if (m_pVoice) m_pVoice->Release();
+	CoUninitialize();
+}
+
+bool TTSComponent::init()
+{
+	// don't initialize if already allocated
+	if (m_pVoice)
+		return true;
+
+	if( FAILED( CoCreateInstance( CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&m_pVoice ) ) ) 
+		return false;
+
+	// TODO Add interests for word boundary
+	if( FAILED( m_pVoice->SetInterest( SPFEI( SPEI_VISEME ) | SPFEI( SPEI_END_INPUT_STREAM ), SPFEI( SPEI_VISEME ) | SPFEI( SPEI_END_INPUT_STREAM ) ) ) ) 
+		return false;
+
+
+	if( FAILED( m_pVoice->SetNotifyCallbackFunction( sapiEvent, (WPARAM) this, 0 ) ) ) 
+		return false;
+
+	return true;
+}
+
+void TTSComponent::update()
+{
+	if (m_pVoice == 0 )	return;
+
+	if( m_visemeChanged )
+	{	
+		m_visemeBlendFacPrev = minf( minf( 1.0f, 2.0f - m_visemeBlendFac), m_visemeBlendFac );
+		m_visemeBlendFac = 0;
+		m_visemeChanged = false;
+	}
+
+	// Calculate interpolation
+	float step = (1.0f / GameEngine::FPS() * 1000) / (avgDuration[m_curViseme]) ;
+	m_visemeBlendFac += step;
+	m_visemeBlendFacPrev -= step;
+
+	if( m_prevViseme != 0 )
+	{		
+		// Fade out previous viseme
+		if( !m_FACSmapping )
+		{
+			MorphTarget morphTargetData( visemeMapping[m_prevViseme], minf( m_visemeBlendFacPrev, maxf( 1.0f - m_visemeBlendFac, 0.0f ) ) );
+			if( morphTargetData.Value <= 0.0f )
+				resetPreviousViseme();
+			else
+			{
+				//printf(" Prev vis: %s, %.4f\n", visemeMapping[m_prevViseme], morphTargetData.Value);
+				GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
+				if (m_owner->checkEvent(&event)) m_owner->executeEvent(&event);
+			}
+		}
+		else
+		{
+			float val = minf( m_visemeBlendFacPrev, maxf( 1.0f - m_visemeBlendFac, 0.0f ) );
+			if (val <= 0.0f )
+				resetPreviousViseme();
+			else
+			{
+				setViseme( visemeMapping[m_prevViseme], val );
+			}
+		}
+	}
+
+	if( m_curViseme != 0 )
+	{
+		if( !m_FACSmapping )
+		{
+			MorphTarget morphTargetData(visemeMapping[m_curViseme], minf( 1.0f, m_visemeBlendFac ) );
+			if( m_visemeBlendFac > 1.0f )
+				morphTargetData.Value = maxf( 2.0f - m_visemeBlendFac, 0.0f );
+			//printf(" Curr vis: %s, %.4f\n", visemeMapping[m_curViseme], morphTargetData.Value);
+			GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);
+			if (m_owner->checkEvent(&event)) m_owner->executeEvent(&event);
+		}
+		else
+		{
+			float val = minf( 1.0f, m_visemeBlendFac );
+			if( m_visemeBlendFac > 1.0f )
+				val = maxf( 2.0f - m_visemeBlendFac, 0.0f );
+			setViseme( visemeMapping[m_curViseme], val );
+			if( m_visemeBlendFac > 2.0f ) 
+				m_curViseme = 0;
+		}
+		if( m_visemeBlendFac > 2.0f ) 
+			m_curViseme = 0;
+	}
+}
+
+
+void TTSComponent::executeEvent(GameEvent *event)
+{
+	switch(event->id())
+	{
+	case GameEvent::E_SPEAK:
+		speak(static_cast<const char*>(event->data()));
+		break;
+	case GameEvent::E_SET_VOICE:
+		setVoice(static_cast<const char*>(event->data()));
+		break;
+	}
+}
+
+
+void TTSComponent::loadFromXml(const XMLNode* description)
+{
+
+	const char* voice = description->getAttribute("voice", "Microsoft Sam");
+	if( !init() )
+		GameLog::errorMessage("TTSComponent: Failed to initialize Microsoft Text-To-Speech Api");
+	else if( !setVoice(voice) )
+		GameLog::errorMessage("TTSComponent: Failed setting voice '%s'",voice);
+
+	const char* visemefile = description->getAttribute( "visemefile" );
+	if( visemefile != 0 )
+	{
+		m_FACSmapping = true;
+
+		XMLNode xmlNode = XMLNode::openFileHelper( visemefile, "Visemes" );
+		int n = xmlNode.nChildNode( "Viseme" );
+		
+		for( int i = 0; i < n; i++ )
+		{
+			XMLNode fe = xmlNode.getChildNode( "Viseme", i );
+			string name( fe.getAttribute( "name" ) );
+
+			int k = fe.nChildNode( "AU" );
+			map<int, float> auValues;
+			for( int j = 0; j < k; j++ )
+			{
+				auValues[atoi( fe.getChildNode( "AU", j ).getAttribute( "id" ) )] = (float) atof( fe.getChildNode( "AU", j ).getAttribute( "value" ) );
+			}
+			m_FACSvisemes[name] = auValues;
+		}
+	}
+}
+
+bool TTSComponent::setVoice(const char* voice)
+{
+	// Enumerate voice tokens with desired name as attribute 
+	IEnumSpObjectTokens *pEnum;
+	HRESULT hr = S_FALSE;
+	std::string voiceString = "Name=";
+	voiceString+=voice;
+	int lenA = (int) voiceString.length();
+	int lenW;
+	BSTR unicodestr;
+	// get length for new string
+	lenW = ::MultiByteToWideChar(CP_ACP, 0, voiceString.c_str(), lenA, 0, 0);
+	if (lenW > 0)
+	{
+		// Check whether conversion was successful
+		unicodestr = ::SysAllocStringLen(0, lenW);
+		::MultiByteToWideChar(CP_ACP, 0, voiceString.c_str(), lenA, unicodestr, lenW);
+		hr = SpEnumTokens( SPCAT_VOICES, unicodestr, NULL, &pEnum );
+	}
+	::SysFreeString(unicodestr);
+	if( hr != S_OK ) 
+	{
+		GameLog::errorMessage("SpEnumTokens failed");
+		return false;
+	}
+
+	// Get the closest token
+	ISpObjectToken *pToken;
+	hr = pEnum->Next( 1, &pToken, NULL );
+	if(  hr != S_OK ) 
+	{
+		pEnum->Release();
+		GameLog::errorMessage("Error initializing TTS: Voice not found:", voice);
+		return false;
+	}
+
+	// Set voice
+	hr = m_pVoice->SetVoice( pToken );
+	pToken->Release();
+	pEnum->Release();
+	return hr == S_OK;	
+}
+
+void TTSComponent::speak(const char* string, int sentenceID /*=-1*/)
+{
+	if( !m_pVoice )
+	{
+		GameLog::errorMessage("No voice initialized");
+		return;
+	}
+	int lenA = lstrlenA(string);
+	if (lenA<=0)
+		return;
+	int lenW;
+	BSTR unicodestr = 0;
+	lenW = ::MultiByteToWideChar(CP_ACP, 0, string, lenA, 0, 0);
+	if (lenW > 0)
+	{
+		// Check whether conversion was successful
+		unicodestr = ::SysAllocStringLen(0, lenW);
+		::MultiByteToWideChar(CP_ACP, 0, string, lenA, unicodestr, lenW);		
+		//ULONG numSkipped = 0;
+		//m_pVoice->Skip(L"SENTENCE", 100, &numSkipped);
+		m_pVoice->Speak( unicodestr, SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
+		m_sentenceID = sentenceID;
+		m_isSpeaking = true;
+	}
+	::SysFreeString(unicodestr);
+}
+
+void TTSComponent::resetPreviousViseme()
+{
+	if( m_prevViseme != 0 )
+	{
+		if( !m_FACSmapping )
+		{
+		MorphTarget morphTargetData(visemeMapping[m_prevViseme], 0);
+		// Reset visemes
+		GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
+		if (m_owner->checkEvent(&event))
+			m_owner->executeEvent(&event);
+		}
+		else
+		{
+			setViseme( visemeMapping[m_prevViseme], 0 );
+		}
+		m_prevViseme = 0;
+		//printf("Reseted prev viseme\n");
+	}
+}
+
+void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
+{
+	TTSComponent* obj = (TTSComponent*) wParam;
+	CSpEvent e;  
+	while( e.GetFrom( obj->m_pVoice ) == S_OK )
+	{		
+		switch( e.eEventId )
+		{
+		case SPEI_VISEME:
+			obj->m_visemeChanged = true;
+			obj->resetPreviousViseme();
+			obj->m_prevViseme = obj->m_curViseme;
+			obj->m_curViseme = e.Viseme();								
+			break;
+		case SPEI_END_INPUT_STREAM:
+			GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(obj->m_sentenceID), obj);
+			if (obj->m_owner->checkEvent(&event))
+				obj->m_owner->executeEvent(&event);			
+			obj->m_sentenceID = -1;
+			obj->m_isSpeaking = false;
+			break;
+		}
+	}
+}
+
+bool TTSComponent::isSpeaking()
+{
+	return m_isSpeaking;
+}
+
+void TTSComponent::setViseme( const string viseme, const float weight )
+{
+	map<int, float> oldAUs = m_FACSvisemes[m_curFACSViseme];
+	map<int, float>::iterator iterOldAUs;
+
+	map<int, float> newAUs = m_FACSvisemes[viseme];
+	map<int, float>::iterator iterNewAUs;
+
+	// resetting old morph targets
+	for( iterOldAUs = oldAUs.begin(); iterOldAUs != oldAUs.end(); iterOldAUs++ )
+	{
+		char buffer[10];
+		sprintf( buffer, "AU_%02i", (*iterOldAUs).first );
+		string au( buffer );
+
+		MorphTarget morphTargetData( au.c_str(), newAUs[(*iterOldAUs).first] * weight );
+		GameEvent event( GameEvent::E_MORPH_TARGET, &morphTargetData, this );
+		if( m_owner->checkEvent( &event ) )
+		{
+			m_owner->executeEvent( &event );
+		}
+
+		// Special treatment for AU27
+		if( (*iterOldAUs).first == 27 )
+		{
+			MorphTarget morphTargetData( "bottom_au_27", newAUs[(*iterOldAUs).first] * weight );
+			GameEvent event( GameEvent::E_MORPH_TARGET, &morphTargetData, this );
+			if( m_owner->checkEvent( &event ) )
+			{
+				m_owner->executeEvent( &event );
+			}
+
+			MorphTarget morphTargetData2( "bottomgums_au_27", newAUs[(*iterOldAUs).first] * weight );
+			GameEvent event2( GameEvent::E_MORPH_TARGET, &morphTargetData2, this );
+			if( m_owner->checkEvent( &event2 ) )
+			{
+				m_owner->executeEvent( &event2 );
+			}
+		}
+	}
+
+	// setting new morph targets
+	for( iterNewAUs = newAUs.begin(); iterNewAUs != newAUs.end(); iterNewAUs++ )
+	{
+		char buffer[10];
+		sprintf( buffer, "AU_%02i", (*iterNewAUs).first);
+		string au( buffer );
+
+		if( oldAUs[(*iterNewAUs).first] == 0 )
+		{
+			MorphTarget morphTargetData( au.c_str(), (*iterNewAUs).second * weight );
+			GameEvent event( GameEvent::E_MORPH_TARGET, &morphTargetData, this );
+			if ( m_owner->checkEvent( &event ) )
+			{
+				m_owner->executeEvent( &event );
+			}
+
+			// Special treatment for AU27
+			if( (*iterNewAUs).first == 27 )
+			{
+				MorphTarget morphTargetData( "bottom_au_27", (*iterNewAUs).second * weight );
+				GameEvent event( GameEvent::E_MORPH_TARGET, &morphTargetData, this );
+				if( m_owner->checkEvent( &event ) )
+				{
+					m_owner->executeEvent( &event );
+				}
+
+				MorphTarget morphTargetData2( "bottomgums_au_27", (*iterNewAUs).second * weight );
+				GameEvent event2( GameEvent::E_MORPH_TARGET, &morphTargetData2, this );
+				if( m_owner->checkEvent( &event2 ) )
+				{
+					m_owner->executeEvent( &event2 );
+				}
+			}
+		}
+	}
+
+	m_curFACSViseme = viseme;
+	m_curFACSWeight = weight;
+}

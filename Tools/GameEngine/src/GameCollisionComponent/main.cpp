@@ -24,51 +24,38 @@
 
 // ****************************************************************************************
 //
-// GameEngine Horde3D Editor Plugin of the University of Augsburg
+// GameEngine Collision Component of the University of Augsburg
 // ---------------------------------------------------------
 // Copyright (C) 2007 Volker Wiendl
 // 
 // ****************************************************************************************
-#ifndef SOUNDWIDGET_H_
-#define SOUNDWIDGET_H_
+#include "GameEngine_Collisions.h"
 
-#include "Ui_SoundWidget.h"
+#include <GameEngine/GameModules.h>
+#include <GameEngine/GameComponentRegistry.h>
 
-class QXmlTreeNode;
+#include <iostream>
 
-class SoundWidget : public QWidget, protected Ui_SoundWidget
+#include "CollisionManager.h"
+#include "CollisionComponent.h"
+
+struct lua_State;
+
+COLLISIONPLUGINEXP void dllLoadGamePlugin(void)
 {
-	Q_OBJECT
-public:
-	SoundWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
-	virtual ~SoundWidget();
+	GameModules::componentRegistry()->registerComponent( "CollisionHandler", CollisionComponent::createComponent );	
+	GameModules::componentRegistry()->registerManager( CollisionManager::instance() );	
+}
 
-	bool setCurrentNode(QXmlTreeNode* node);
+COLLISIONPLUGINEXP void dllUnloadGamePlugin(void)
+{
+	GameModules::componentRegistry()->registerComponent( "CollisionHandler", 0);	
+	GameModules::componentRegistry()->unregisterManager( CollisionManager::instance() );
+	CollisionManager::release();
+}
 
+COLLISIONPLUGINEXP void dllRegisterLuaStack( lua_State* L )
+{
+	// TODO
+}
 
-signals:
-	void modified(bool);
-
-private slots:
-	void scanMediaDir( const QString& path );
-	void addFiles();
-	void updateSoundFile( const QString& soundFile );
-	void gainChanged(double value);
-	void pitchChanged(double value);
-	void refDistChanged(double value);
-	void maxDistChanged(double value);
-	void loopChanged();
-	void rollOffChanged(double value);
-	void addPhonemeFiles();
-	void scanPhonemeFiles( const QString& path  );
-	void updatePhonemeFile( const QString& phonemeFile );
-	void playSound();
-	void stopSound();
-
-private:
-	unsigned int entityWorldID();
-
-	QXmlTreeNode*	m_currentNode;
-
-};
-#endif

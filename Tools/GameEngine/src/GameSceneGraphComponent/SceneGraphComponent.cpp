@@ -308,8 +308,8 @@ void SceneGraphComponent::setScale(const Vec3f *scale)
 {
 	Vec3f tr,rotation,sc;
 	Matrix4f(m_transformation).decompose(tr,rotation,sc);	
-		
-	Matrix4f trans = Matrix4f::ScaleMat(scale->x, scale->y, scale->z);
+	
+	Matrix4f trans = Matrix4f::ScaleMat( scale->x, scale->y, scale->z );
 	trans = trans * Matrix4f(Quaternion(rotation.x, rotation.y, rotation.z));
 	trans.translate(m_transformation[12], m_transformation[13], m_transformation[14]);
 	
@@ -334,7 +334,7 @@ void SceneGraphComponent::rotate(const Vec3f* rotation)
 void SceneGraphComponent::setRotation(const Vec3f* rotation)
 {	
 	Vec3f scale = Matrix4f(m_transformation).getScale();	
-	Matrix4f trans = Matrix4f::ScaleMat(scale.x, scale.y, scale.z);
+	Matrix4f trans = Matrix4f::ScaleMat( scale.x, scale.y, scale.z );
 	trans = trans * Matrix4f(Quaternion(degToRad(rotation->x), degToRad(rotation->y), degToRad(rotation->z)));
 	trans.translate(m_transformation[12], m_transformation[13], m_transformation[14]);
 	// Create event without sender attribute, such the scenegraph component will be updated using executeEvent too
@@ -346,17 +346,37 @@ void SceneGraphComponent::setRotation(const Vec3f* rotation)
 }
 void SceneGraphComponent::setParentNode(const Attach* data)
 {
-	int nodes = Horde3D::findNodes( RootNode, data->EntityID, SceneNodeTypes::Model );
-	NodeHandle otherNode = Horde3D::getNodeFindResult(0);
+	NodeHandle otherNode;
+	int nodes;
 	
-	nodes = Horde3D::findNodes( otherNode, data->Child, SceneNodeTypes::Undefined );
-	NodeHandle child = Horde3D::getNodeFindResult(0);
+	if(strcmp(data->EntityID,"Root") == 0 )
+	{
+		otherNode = RootNode;
+	}
+	else
+	{
+		nodes = Horde3D::findNodes( RootNode, data->EntityID, SceneNodeTypes::Model );
+		otherNode = Horde3D::getNodeFindResult(0);
+	}
 	
-	Horde3D::setNodeParent(m_hordeID, child);
+	
+	if(strcmp(data->Child,"") !=0 )
+	{
+		nodes = Horde3D::findNodes( otherNode, data->Child, SceneNodeTypes::Undefined );
+		NodeHandle child = Horde3D::getNodeFindResult(0);
+	
+		Horde3D::setNodeParent(m_hordeID, child);
+	}
+	else
+	{
+		Horde3D::setNodeParent(m_hordeID, otherNode);
+	}
 
-		Horde3D::setNodeTransform(m_hordeID,data->Tx,data->Ty, data->Tz,
+	Horde3D::setNodeTransform(m_hordeID,data->Tx,data->Ty, data->Tz,
 		data->Rx, data->Ry, data->Rz,
 		data->Sx, data->Sy, data->Sz);
+
+	update();
 }
 
 void SceneGraphComponent::attach(const Attach* data)
