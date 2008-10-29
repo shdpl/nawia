@@ -39,7 +39,7 @@
 
 #include "Physics.h"
 
-#include <Bullet/btBulletDynamicsCommon.h>
+#include <btBulletDynamicsCommon.h>
 #include <GIMPACT/Bullet/btGImpactShape.h>
 #include <GIMPACT/Bullet/btGImpactCollisionAlgorithm.h>
 #include <btGImpactConvexDecompositionShape.h>

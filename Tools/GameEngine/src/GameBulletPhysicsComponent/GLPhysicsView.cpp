@@ -35,7 +35,7 @@
 
 #include "PhysicsComponent.h"
 
-#include <Bullet/btBulletDynamicsCommon.h>
+#include <btBulletDynamicsCommon.h>
 //#include <Bullet/BulletCollision/BroadphaseCollision/btMultiSapBroadphase.h>
 #include <Horde3D/Horde3D.h>
 

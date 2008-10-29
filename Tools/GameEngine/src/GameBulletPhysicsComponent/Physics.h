@@ -36,7 +36,7 @@
 
 #include <GameEngine/GameComponentManager.h>
 
-#include <Bullet/btBulletDynamicsCommon.h>
+#include <btBulletDynamicsCommon.h>
 
 #include <vector>
 
