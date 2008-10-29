@@ -24,6 +24,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="xcopy &quot;$(ProjectDir)..\..\..\..\Extensions\Terrain\Bindings\C++\Horde3DTerrain.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -106,6 +107,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="xcopy &quot;$(ProjectDir)..\..\..\..\Extensions\Terrain\Bindings\C++\Horde3DTerrain.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
