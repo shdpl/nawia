@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib Horde3D_vc8.lib"
-				OutputFile="$(SolutionDir)\bin\$(RootNamespace).dll"
+				OutputFile="$(OutDir)\$(RootNamespace).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)../../Bindings/C++&quot;"
 				GenerateDebugInformation="true"
@@ -141,7 +141,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib Horde3D_vc8.lib"
-				OutputFile="$(SolutionDir)\bin\$(RootNamespace).dll"
+				OutputFile="$(OutDir)\$(RootNamespace).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)../../Bindings/C++&quot;"
 				GenerateDebugInformation="true"
