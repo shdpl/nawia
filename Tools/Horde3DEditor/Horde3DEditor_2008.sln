@@ -64,7 +64,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Extension Terrain", "..\..\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "..\Dependencies\Lua\Lua_2008.vcproj", "{BEA5367D-0441-4677-934A-43A09ABBF8C6}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "src\Installer\Installer_2008.vdproj", "{FAC98A8E-AE46-48BF-A53C-0D19E39FB254}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "src\Installer\Installer_2005.vdproj", "{FAC98A8E-AE46-48BF-A53C-0D19E39FB254}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
