@@ -183,7 +183,10 @@ namespace GameLog
 		va_start( arglist, message );
 		int len = _vscprintf( message, arglist )+ 1;
 		char* buffer = (char*)malloc( len * sizeof(char) );
-	    vsprintf_s( buffer, len, message, arglist );
+		#pragma warning( push )
+		#pragma warning( disable:4996 )
+		vsprintf( buffer, message, arglist );
+		#pragma warning( pop )
 		log(buffer, "#009900");
 	    free( buffer );	
 	}
@@ -194,7 +197,10 @@ namespace GameLog
 		va_start( arglist, message );
 		int len = _vscprintf( message, arglist )+ 1;
 		char* buffer = (char*)malloc( len * sizeof(char) );
-	    vsprintf_s( buffer, len, message, arglist );
+	    #pragma warning( push )
+		#pragma warning( disable:4996 )
+		vsprintf( buffer, message, arglist );
+		#pragma warning( pop )
 		log(buffer, "#FFCC00");
 	    free( buffer );
 	}
@@ -205,7 +211,10 @@ namespace GameLog
 		va_start( arglist, message );
 		int len = _vscprintf( message, arglist )+ 1;
 		char* buffer = (char*)malloc( len * sizeof(char) );
-	    vsprintf_s( buffer, len, message, arglist );
+	    #pragma warning( push )
+		#pragma warning( disable:4996 )
+		vsprintf( buffer, message, arglist );
+		#pragma warning( pop )
 		log(buffer, "#FF0000");
 	    free( buffer );
 	}
