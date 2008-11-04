@@ -160,6 +160,11 @@ namespace GameEngine
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_MORPH_TARGET, &MorphTarget(target,weight), 0));
 	}
 
+	SCENEGRAPHPLUGINEXP void setVisible( unsigned int entityWorldID, bool enable )
+	{
+		sendEvent( entityWorldID, &GameEvent( GameEvent::E_SET_ENABLED, &enable, 0 ) );
+	}
+
 	SCENEGRAPHPLUGINEXP void renderSceneGraph()
 	{
 		SceneGraphManager::instance()->run();

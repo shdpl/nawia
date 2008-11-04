@@ -63,7 +63,7 @@ GameComponent* MorphtargetAnimComponent::createComponent( GameEntity* owner )
 
 MorphtargetAnimComponent::MorphtargetAnimComponent(GameEntity *owner) : GameComponent(owner, "MorphtargetAnimComponent")
 {
-	//listen for morph target animtions
+	//listen for morph target animations
 	owner->addListener(GameEvent::E_MORPH_TARGET_ANIM, this);
 
 	MorphtargetAnimManager::instance()->addObject(this);

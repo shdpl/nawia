@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="GameEngineCore"
 	ProjectGUID="{DB488001-8E98-4724-9787-72DA137C4E47}"
 	RootNamespace="GameEngineCore"
@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib XmlParserd.lib Luad.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib opengl32.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)/lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
@@ -147,7 +147,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib XmlParser.lib Lua.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib opengl32.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)/lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
@@ -403,14 +403,6 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
-		<File
-			RelativePath="..\..\bin\plugin.cfg"
-			>
-		</File>
-		<File
-			RelativePath="..\..\bin\plugin_debug.cfg"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

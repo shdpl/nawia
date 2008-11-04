@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="GameBulletPhysicsComponent"
 	ProjectGUID="{015B0EBE-4BCE-4C7D-8F27-47A5C78C6B27}"
 	RootNamespace="GameBulletPhysicsComponent"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib GameEngineCored.lib libbulletcollisiond.lib libbulletdynamicsd.lib libbulletmathd.lib libGIMPACTd.lib libGIMPACTUtilsd.lib libconvexdecompositiond.lib XmlParserd.lib glu32.lib opengl32.lib Luad.lib"
+				AdditionalDependencies="delayimp.lib glu32.lib opengl32.lib"
 				OutputFile="$(SolutionDir)bin\$(ProjectName)d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
@@ -142,7 +142,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib GameEngineCore.lib XmlParser.lib libbulletcollision.lib libbulletdynamics.lib libbulletmath.lib libGIMPACT.lib libGIMPACTUtils.lib libconvexdecomposition.lib glu32.lib opengl32.lib Lua.lib"
+				AdditionalDependencies="delayimp.lib glu32.lib opengl32.lib"
 				OutputFile="$(SolutionDir)bin\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"

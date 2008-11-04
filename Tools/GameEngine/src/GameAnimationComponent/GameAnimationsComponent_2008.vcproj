@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="GameAnimationsComponent"
 	ProjectGUID="{3E87E5FB-5C38-1139-85B7-CF179BA0D2AB}"
 	RootNamespace="GameAnimationsComponent"
@@ -63,9 +63,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib GameEngineCored.lib XmlParserd.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib Luad.lib"
+				AdditionalDependencies="delayimp.lib"
 				OutputFile="$(SolutionDir)bin\$(ProjectName)d.dll"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -142,7 +142,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib GameEngineCore.lib XmlParser.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib Lua.lib"
+				AdditionalDependencies="delayimp.lib"
 				OutputFile="$(SolutionDir)bin\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
