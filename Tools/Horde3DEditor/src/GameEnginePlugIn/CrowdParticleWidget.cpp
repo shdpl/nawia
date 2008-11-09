@@ -34,10 +34,7 @@
 
 #include <GameEngine/GameEngine.h>
 
-// This file is not in the SVN. It is supposed to contain PREPROCESSOR definitions for individual
-// parts in the GameEnginePlugIn not released to the public
-// If you don't know what I'm talking about, just create an empty Config.h file in the GameEnginePlugIn directory
-#include "Config.h"
+#include <GameEngine/CustomConfig.h>
 
 #ifdef UNI_AUGSBURG
 #include <GameEngine/GameEngine_CrowdSim.h>
