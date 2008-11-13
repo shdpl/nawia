@@ -117,6 +117,16 @@ namespace GameEngine
 	 * @return true if the specified animation is currently being played by the given entity
 	 */ 
 	ANIMATIONSPLUGINEXP bool isPlaying( unsigned int entityWorldID, const char* animation);
+	
+	/**
+	 * \brief Get the length of an animation ( Frames / Speed )
+	 * 
+	 * 
+	 * @param entityWorldID the entity's world ID to which the animation belongs
+	 * @param animation the animation for which you want to get the length
+	 * @return the length of the animation in seconds ( Frames / Speed ) or 0 if it wasn't found.
+	 */ 
+	ANIMATIONSPLUGINEXP float getAnimLength( unsigned int entityWorldID, const char* animation);
 
 	/*! @}*/
 

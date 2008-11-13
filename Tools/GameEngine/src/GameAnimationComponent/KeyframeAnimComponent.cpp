@@ -501,6 +501,15 @@ bool KeyframeAnimComponent::isPlaying(const char *animation)
 	return false;
 }
 
+float KeyframeAnimComponent::getAnimLength(const char *animation)
+{
+	std::map<std::string, AnimationControl::Animation*>::iterator iter = m_animations.find(animation);
+	if(iter == m_animations.end()) return 0;
+
+	return iter->second->Frames / iter->second->Speed;
+
+}
+
 void KeyframeAnimComponent::setupAnim(AnimationSetup *command)
 {
 	std::map<std::string, AnimationControl::Animation*>::iterator iter = m_animations.find(command->Animation);

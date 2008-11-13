@@ -57,13 +57,13 @@
       <StaticAnimation fps="30" name="idle" file="female_idle.anim" />
       <StaticAnimation fps="30" name="walk" file="female_walk.anim" />
     </KeyframeAnimation>
-    <MoveAnimation activeAnimation="walk" idleAnimation="idle" speed="7.0" />
+    <MoveAnimation moveAnimation="walk" idleAnimation="idle" speed="7.0" />
   </GameEntity>
   \endcode
  * <br>
  * In this example you have two static animations for the KeyframeAnimComponent. 
  * These two animations will be used in the MoveAnimComponent referenced by the
- * attributes activeAnimation and idleAnimation. If the translation change of an 
+ * attributes moveAnimation and idleAnimation. If the translation change of an 
  * entity between two frames falls below a specific threshold the idleAnimation will be activated.
  * Otherwise the activeAnimation will be used. To adjust the animation speed by a constant
  * factor (maybe because the default framerate of the animation does not fit to the characters translation
@@ -137,26 +137,46 @@ public:
 	void update(float fps);
 
 	/**
-	 * \brief Toggles between active and idle animation
+	 * \brief Toggles between animations
 	 * 
-	 * @param active if set to true, the character will switch to the active animation, otherwise
-	 * the idle animation will be played back.
+	 * @param anim which animation shall be played.
+	 * @param idle whether the animation is an idle one.
 	 */ 
-	void activate(bool active);
+	void setAnim(AnimationSetup* anim, bool idle=false);
 	
 private:
-	/// Configuration setup for the animation played when translating the entity
-	AnimationSetup* m_activeAnim;
-	/// Configuration setup for the animation played when entity is not moving
-	AnimationSetup* m_idleAnim;
+	/// Configuration setup for the animation played when translating the entity in -z direction
+	AnimationSetup* m_moveAnim;
+	/// Configuration setup for the animation played when translating the entity in +z direction
+	AnimationSetup* m_moveBackAnim;
+	/// Configuration setup for the animation played when translating the entity in +x direction
+	AnimationSetup* m_moveRightAnim;
+	/// Configuration setup for the animation played when translating the entity in -x direction
+	AnimationSetup* m_moveLeftAnim;
+	/// up to 5 alternative Configuration setups for the animation played when entity is not moving
+	AnimationSetup* m_idleAnim[5];
+	/// count of idle Animations
+	int m_idleAnimCount;
+	/// time to switch idleAnimation next
+	float m_idleTime;
 
 	/// Position in previous and current frame
-	Vec3f m_oldPos, m_newPos;
+	Vec3f m_oldPos, m_newPos, m_rotation;
 
 	/// Constant scale factor for moving animation
 	float m_speed;
-	/// Current activation state (moving = true, idle = false)
-	bool m_active;
+
+	/// Current animation playing
+	AnimationSetup* m_activeAnim;
+
+	/// Next animation to be played
+	AnimationSetup* m_nextAnim;
+
+	// Whether object is idle
+	bool m_idle;
+
+	// If the rand seed was set
+	bool m_randSeed;
 
 };
 

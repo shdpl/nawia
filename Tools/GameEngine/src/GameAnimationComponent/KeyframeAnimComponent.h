@@ -66,6 +66,7 @@ public:
 
 	bool isPlaying( const char* animation );
 
+	float getAnimLength( const char* animation );
 private:
 	void release();
 

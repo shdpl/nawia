@@ -81,5 +81,16 @@ namespace GameEngine
 		}
 		return false;
 	}
+
+	ANIMATIONSPLUGINEXP float getAnimLength( unsigned int entityWorldID, const char* animation)
+	{
+		KeyframeAnimComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( component = static_cast<KeyframeAnimComponent*>(entity->component("KeyframeAnimComponent")) ) != 0 )
+		{
+			return component->getAnimLength(animation);
+		}
+		return 0;
+	}
 }
 
