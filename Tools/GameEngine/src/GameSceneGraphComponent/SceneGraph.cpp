@@ -105,14 +105,18 @@ void SceneGraphManager::update()
 		while( !m_newSceneNodes.empty() )
 		{
 			int nodes = Horde3D::findNodes( m_newSceneNodes.top(), "", SceneNodeTypes::Undefined );
+			//Save the find results locally  because Horde3D::getNodeFindResult() is not safe
+			int *findResult = static_cast<int *>(alloca(nodes * sizeof(int)));
 			for (int i = 0; i < nodes; ++i)
-			{
-				NodeHandle node = Horde3D::getNodeFindResult(i);
-				const char* xmlText = Horde3D::getNodeParamstr( node, SceneNodeParams::AttachmentString );
+				findResult[i] = Horde3D::getNodeFindResult(i);
+
+			for (int i = 0; i < nodes; ++i)
+			{				
+				const char* xmlText = Horde3D::getNodeParamstr( findResult[i], SceneNodeParams::AttachmentString );
 				if (xmlText && strlen(xmlText) > 0) 
 				{
 					// Create a new GameEntity based on the attachment settings
-					createGameEntity( xmlText, node );
+					createGameEntity( xmlText, findResult[i] );
 					++attachments;
 				}
 			}
