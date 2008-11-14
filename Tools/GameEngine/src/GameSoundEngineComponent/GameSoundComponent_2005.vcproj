@@ -24,6 +24,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="xcopy &quot;$(ProjectDir)..\..\..\Dependencies\Ogg\ogg.dll&quot; &quot;$(SolutionDir)bin&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\Dependencies\Ogg\vorbisfile.dll&quot; &quot;$(SolutionDir)bin&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\Dependencies\Ogg\vorbis.dll&quot; &quot;$(SolutionDir)bin&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -94,7 +95,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy &quot;$(ProjectDir)GameEngine_Sound.h&quot; &quot;$(SolutionDir)include\GameEngine\&quot; /y"
+				CommandLine="xcopy &quot;$(ProjectDir)GameEngine_Sound.h&quot; &quot;$(SolutionDir)include\GameEngine\&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -107,6 +108,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="xcopy &quot;$(ProjectDir)..\..\..\Dependencies\Ogg\ogg.dll&quot; &quot;$(SolutionDir)bin&quot; /y"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
