@@ -238,7 +238,7 @@ void MoveAnimComponent::update(float fps)
 		{
 			if(!m_randSeed)
 			{
-				srand( fps * 100000 );
+				srand( (unsigned int) (fps * 100000) );
 				m_randSeed = true;
 			}
 			int i = rand() % m_idleAnimCount; 
