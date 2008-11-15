@@ -2,7 +2,7 @@
 //
 // GameEngine of the University of Augsburg
 // --------------------------------------
-// Copyright (C) 2007 Volker Wiendl
+// Copyright (C) 2008 Volker Wiendl
 // 
 // This file is part of the GameEngine developed at the 
 // Lab for Multimedia Concepts and Applications of the University of Augsburg
@@ -26,49 +26,37 @@
 //
 // GameEngine Horde3D Editor Plugin of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Volker Wiendl
+// Copyright (C) 2008 Felix Kistler
 // 
 // ****************************************************************************************
-#ifndef SOUNDWIDGET_H_
-#define SOUNDWIDGET_H_
+#ifndef PHONEMEEDITORWIDGET_H_
+#define PHONEMEEDITORWIDGET_H_
 
-#include "Ui_SoundWidget.h"
+#include "Ui_PhonemeEditorWidget.h"
 
 class QXmlTreeNode;
 
-class SoundWidget : public QWidget, protected Ui_SoundWidget
+class PhonemeEditorWidget : public QWidget, protected Ui_PhonemeEditorWidget
 {
 	Q_OBJECT
 public:
-	SoundWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
-	virtual ~SoundWidget();
-
-	bool setCurrentNode(QXmlTreeNode* node);
+	PhonemeEditorWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
+	virtual ~PhonemeEditorWidget();
+	
+	void loadPhonemeFile( unsigned int id, const QString& path );
 
 
 signals:
 	void modified(bool);
-	void activatePhonemeEditor(bool activate, unsigned int id, const QString& path);
+	void closeEditor();
 
 private slots:
-	void scanMediaDir( const QString& path );
-	void addFiles();
-	void updateSoundFile( const QString& soundFile );
-	void gainChanged(double value);
-	void pitchChanged(double value);
-	void refDistChanged(double value);
-	void maxDistChanged(double value);
-	void loopChanged();
-	void rollOffChanged(double value);
-	void addPhonemeFiles();
-	void scanPhonemeFiles( const QString& path  );
-	void updatePhonemeFile( const QString& phonemeFile );
 	void playSound();
 	void stopSound();
-	void openPhonemeEditor();
 
 private:
-	unsigned int entityWorldID();
+	unsigned int m_entityWorldID;
+	QString m_phonemeFile;
 
 	QXmlTreeNode*	m_currentNode;
 

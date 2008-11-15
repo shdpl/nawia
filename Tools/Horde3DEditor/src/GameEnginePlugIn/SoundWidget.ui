@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>297</width>
-    <height>180</height>
+    <width>303</width>
+    <height>174</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -272,6 +272,13 @@ always positive</string>
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="6" column="3" >
+    <widget class="QToolButton" name="m_phonemeEditorButton" >
+     <property name="text" >
+      <string>Phoneme Editor</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

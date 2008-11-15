@@ -38,6 +38,9 @@ GameControllerWidget::GameControllerWidget(QWidget* parent /*= 0*/, Qt::WFlags f
 	connect(m_keyframeAnimWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
 	connect(m_dynamidWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
 	connect(m_soundWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
+	connect(m_phonemeEditorWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
+	connect(m_soundWidget, SIGNAL(activatePhonemeEditor(bool, unsigned int, const QString&)), this, SLOT(switchPhonemeEditor(bool, unsigned int, const QString&)));
+	connect(m_phonemeEditorWidget, SIGNAL(closeEditor()), this, SLOT(switchPhonemeEditor()));
 
 	connect(m_actionAddPhysicsComponent, SIGNAL(triggered()), m_attachmentTreeView, SLOT(addPhysicsComponent()));
 	connect(m_actionAddTTSComponent, SIGNAL(triggered()), m_attachmentTreeView, SLOT(addTTSComponent()));
@@ -148,6 +151,18 @@ void GameControllerWidget::componentSelected(QXmlTreeNode *node)
 	}
 	m_componentWidgets->setVisible(true);
 
+}
+
+void GameControllerWidget::switchPhonemeEditor(bool activate /*=false*/, unsigned int id /*=0*/, const QString& path /*=0*/)
+{
+	if(activate)
+	{
+		m_componentWidgets->setCurrentWidget(m_phonemeEditorWidgetContainer);
+		m_phonemeEditorWidget->loadPhonemeFile(id, path);
+	}
+	else
+		m_componentWidgets->setCurrentWidget(m_soundWidgetContainer);
+	m_componentWidgets->setVisible(true);
 }
 
 void GameControllerWidget::entityChanged(const QModelIndex& first, const QModelIndex& last)

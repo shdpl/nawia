@@ -63,6 +63,8 @@ private slots:
 	void entityChanged(const QModelIndex& first, const QModelIndex& last);
 	void entityNameChanged(const QString& name);
 
+	void switchPhonemeEditor(bool activate=false, unsigned int id=0, const QString& path=0);
+
 private:
 	void updateActions();
 

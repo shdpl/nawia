@@ -43,6 +43,8 @@
 #include <GameEngine/GameEngine.h>
 #include <GameEngine/GameEngine_Sound.h>
 
+#include "PhonemeEditorWidget.h"
+
 Q_DECLARE_METATYPE(QDomElement)
 
 SoundWidget::SoundWidget(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QWidget(parent, flags), m_currentNode(0)
@@ -60,6 +62,7 @@ SoundWidget::SoundWidget(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QW
 	connect(m_phonemeFile, SIGNAL(currentIndexChanged(const QString& )), this, SLOT(updatePhonemeFile( const QString& )));
 	connect(m_playButton, SIGNAL(clicked()), this, SLOT(playSound()) );
 	connect(m_stopButton, SIGNAL(clicked()), this, SLOT(stopSound()) );
+	connect(m_phonemeEditorButton, SIGNAL(clicked()), this, SLOT(openPhonemeEditor()) );
 }
 
 
@@ -277,4 +280,15 @@ void SoundWidget::stopSound()
 	unsigned int id = entityWorldID();
 	if( id != 0)
 		GameEngine::enableSound( id, false );
+}
+
+void SoundWidget::openPhonemeEditor()
+{
+	unsigned int id = entityWorldID();
+	if( id != 0)
+	{
+		// Call PhonemeEditor with entityWorldID of current Object
+		// and the selected phoneme file
+		emit activatePhonemeEditor(true, id, m_currentNode->xmlNode().attribute("phonemes") );
+	}
 }

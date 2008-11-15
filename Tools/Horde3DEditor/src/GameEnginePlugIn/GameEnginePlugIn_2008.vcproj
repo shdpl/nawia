@@ -312,6 +312,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PhonemeEditorWidget.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PhysicsWidget.cpp"
 				>
 			</File>
@@ -674,6 +678,20 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\PhonemeEditorWidget.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\PhysicsWidget.h"
 				>
 				<FileConfiguration
@@ -824,6 +842,10 @@
 			</File>
 			<File
 				RelativePath=".\moc_PathPage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\moc_PhonemeEditorWidget.cpp"
 				>
 			</File>
 			<File
@@ -1058,6 +1080,20 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Memory Check|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Compiling UI file $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/uic.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)ui_$(InputName).h&quot;&#x0D;&#x0A;"
+						Outputs="&quot;$(InputDir)ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\PhonemeEditorWidget.ui"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"

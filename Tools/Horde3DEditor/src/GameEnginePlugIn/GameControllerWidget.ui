@@ -305,6 +305,48 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="m_phonemeEditorWidgetContainer" >
+      <layout class="QGridLayout" >
+       <property name="margin" >
+        <number>1</number>
+       </property>
+       <item row="0" column="0" >
+        <widget class="PhonemeEditorWidget" native="1" name="m_phonemeEditorWidget" />
+       </item>
+       <item row="0" column="1" >
+        <spacer>
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType" >
+          <enum>QSizePolicy::MinimumExpanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>2</width>
+           <height>2</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0" >
+        <spacer>
+         <property name="orientation" >
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType" >
+          <enum>QSizePolicy::MinimumExpanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>2</width>
+           <height>2</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="m_emptyWidget" />
     </widget>
    </item>
@@ -389,6 +431,12 @@
    <class>SoundWidget</class>
    <extends>QWidget</extends>
    <header>SoundWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PhonemeEditorWidget</class>
+   <extends>QWidget</extends>
+   <header>PhonemeEditorWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
