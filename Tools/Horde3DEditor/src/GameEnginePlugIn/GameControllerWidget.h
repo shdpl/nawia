@@ -54,6 +54,7 @@ public:
 
 signals:
 	void modified(bool);
+	void phonemeFileChanged();
 
 private slots:
 	void addComponent();

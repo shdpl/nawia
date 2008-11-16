@@ -38,7 +38,6 @@ GameControllerWidget::GameControllerWidget(QWidget* parent /*= 0*/, Qt::WFlags f
 	connect(m_keyframeAnimWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
 	connect(m_dynamidWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
 	connect(m_soundWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
-	connect(m_phonemeEditorWidget, SIGNAL(modified(bool)), this, SIGNAL(modified(bool)));
 	connect(m_soundWidget, SIGNAL(activatePhonemeEditor(bool, unsigned int, const QString&)), this, SLOT(switchPhonemeEditor(bool, unsigned int, const QString&)));
 	connect(m_phonemeEditorWidget, SIGNAL(closeEditor()), this, SLOT(switchPhonemeEditor()));
 
@@ -49,6 +48,7 @@ GameControllerWidget::GameControllerWidget(QWidget* parent /*= 0*/, Qt::WFlags f
 	connect(m_actionAddCrowdParticleComponent, SIGNAL(triggered()), m_attachmentTreeView, SLOT(addCrowdParticleComponent()));
 	connect(m_actionAddCrowdVisNodeComponent, SIGNAL(triggered()), m_attachmentTreeView, SLOT(addCrowdVisNodeComponent()));
 	connect(m_actionAddSound3DComponent, SIGNAL(triggered()), m_attachmentTreeView, SLOT(addSound3DComponent()));
+	connect(this, SIGNAL(phonemeFileChanged()), m_phonemeEditorWidget, SLOT(closePhonemeEditor())); 
 }
 
 
@@ -84,6 +84,7 @@ void GameControllerWidget::release()
 
 void GameControllerWidget::setCurrentNode(QXmlTreeNode *node)
 {
+	emit phonemeFileChanged();
 	if (node)
 	{
 		AttachmentTreeModel* model = static_cast<AttachmentTreeModel*>(node->property("__AttachmentModel").value<void*>());
@@ -130,6 +131,7 @@ void GameControllerWidget::removeComponent()
 
 void GameControllerWidget::componentSelected(QXmlTreeNode *node)
 {
+	emit phonemeFileChanged();
 	if (m_physicsWidget->setCurrentNode(node))
 		m_componentWidgets->setCurrentWidget(m_physicsWidgetContainer);
 	else if (m_ttsWidget->setCurrentNode(node))

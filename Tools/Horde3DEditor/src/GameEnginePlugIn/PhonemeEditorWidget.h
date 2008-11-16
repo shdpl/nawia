@@ -34,6 +34,8 @@
 
 #include "Ui_PhonemeEditorWidget.h"
 
+#include <QtXml/qdom.h>
+
 class QXmlTreeNode;
 
 class PhonemeEditorWidget : public QWidget, protected Ui_PhonemeEditorWidget
@@ -45,18 +47,21 @@ public:
 	
 	void loadPhonemeFile( unsigned int id, const QString& path );
 
+public slots:
+	void closePhonemeEditor();
 
 signals:
-	void modified(bool);
 	void closeEditor();
 
 private slots:
 	void playSound();
 	void stopSound();
+	void save();
 
 private:
-	unsigned int m_entityWorldID;
-	QString m_phonemeFile;
+	unsigned int	m_entityWorldID;
+	QString			m_phonemeFileName;
+	QDomDocument	m_phonemeXml;
 
 	QXmlTreeNode*	m_currentNode;
 
