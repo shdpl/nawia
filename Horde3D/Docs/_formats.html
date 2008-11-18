@@ -249,6 +249,54 @@ The following XML node elements with the described attributes are supported for 
             </table>
         </td>
     </tr>
+	<tr>
+        <td><b>AlphaTest</b></td>
+        <td>
+			optional Alpha Test configuration of rendering parameters; child of <b>Context</b> element {1}
+            <table>
+                <tr>
+                    <td><b>enabled</b></td>
+                    <td>enable alpha testing (Values: false, true) (Default: false) </td>
+                </tr>
+                <tr>
+                    <td><b>mode</b></td>
+                    <td>test function (Values: equal, gequal, lequal, less, greater) (Default: lequal) </td>
+                </tr>
+                <tr>
+                    <td><b>value</b></td>
+                    <td>floating point value which alpha channels are compared against (Default: 0.0) </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+	<tr>
+        <td><b>DepthTest</b></td>
+        <td>
+			optional Depth Test configuration of rendering parameters; child of <b>Context</b> element {1}
+            <table>
+                <tr>
+                    <td><b>enabled</b></td>
+                    <td>enable depth testing against existing fragments (Values: false, true) (Default: false) </td>
+                </tr>
+                <tr>
+                    <td><b>mode</b></td>
+                    <td>test function (Values: equal, gequal, lequal, less, greater) (Default: lequal) </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+	<tr>
+        <td><b>AlphaToCoverage</b></td>
+        <td>
+			optional ATOC configuration of rendering parameters, requires Multisampling to be enabled in the Engine Options; child of <b>Context</b> element {1}
+            <table>
+                <tr>
+                    <td><b>enabled</b></td>
+                    <td>enable ATOC for fragments (Values: false, true) (Default: false) </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
     <tr>
         <td><b>VertexShader</b></td>
         <td>vertex shader created by concatenating code blocks; child of <b>Context</b> element {1}</td>
@@ -285,6 +333,8 @@ The following XML node elements with the described attributes are supported for 
 <pre>
 &lt;Shader&gt;
     &lt;Context id="OVERLAY"&gt;
+	  &lt;AlphaTest enabled="true" mode="less" value="0.5" /&gt;
+	  &lt;DepthTest enabled="true" mode="lequal" /&gt;
         &lt;VertexShader&gt;
             &lt;DefCode&gt;
             &lt;![CDATA[<i>
