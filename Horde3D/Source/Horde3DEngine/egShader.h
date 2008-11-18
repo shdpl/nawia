@@ -30,6 +30,17 @@
 
 struct XMLNode;
 
+struct testEvaluationFunc
+{
+	enum List
+	{
+		less,
+		greater,
+		equal,
+		gequal,
+		lequal
+	};
+};
 
 class CodeResource : public Resource
 {
@@ -91,6 +102,15 @@ struct ShaderContext
 
 	// RenderConfig
 	bool						writeDepth;
+	bool						testDepth;
+	//True = must be closer, false = must be further
+	testEvaluationFunc::List	depthTestFunc;
+	bool						testAlpha;
+	//true is > false is <
+	testEvaluationFunc::List	alphaTestFunc;
+	float						alphaTestVal;
+	bool						alphaToCoverage;
+
 	BlendModes::List			blendMode;
 	
 	// Engine uniform and attribute locations

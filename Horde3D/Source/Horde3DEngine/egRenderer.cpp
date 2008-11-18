@@ -475,6 +475,66 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 			glEnable( GL_BLEND );
 			glBlendFunc( GL_DST_COLOR, GL_ZERO );
 		}
+
+		//Alpha Test / Alpha To Coverage / Depth Test - Jonathan Sandusky - AcidFaucet, Sept 12, 2008
+		if( sc->testAlpha )
+		{
+			glEnable( GL_ALPHA_TEST );
+			// Greater than
+			switch(sc->alphaTestFunc)
+			{
+			case testEvaluationFunc::equal:
+				glAlphaFunc(GL_EQUAL, sc->alphaTestVal);
+				break;
+			case testEvaluationFunc::lequal:
+				glAlphaFunc(GL_LEQUAL, sc->alphaTestVal);
+				break;
+			case testEvaluationFunc::gequal:
+				glAlphaFunc(GL_GEQUAL, sc->alphaTestVal);
+				break;
+			case testEvaluationFunc::less:
+				glAlphaFunc(GL_LESS, sc->alphaTestVal);
+				break;
+			case testEvaluationFunc::greater:
+				glAlphaFunc(GL_GREATER, sc->alphaTestVal);
+				break;
+			}
+		}
+		else
+		{
+			glDisable( GL_ALPHA_TEST );
+			if(sc->alphaToCoverage && Modules::config().sampleCount > 0) 
+			{
+				glEnable( GL_SAMPLE_ALPHA_TO_COVERAGE );
+			}
+			else 
+			{
+				glDisable( GL_SAMPLE_ALPHA_TO_COVERAGE );
+			}
+		}
+		if( sc->testDepth )
+		{
+			glEnable( GL_DEPTH_TEST );
+			switch(sc->depthTestFunc)
+			{
+			case testEvaluationFunc::equal:
+				glDepthFunc(GL_EQUAL);
+				break;
+			case testEvaluationFunc::lequal:
+				glDepthFunc(GL_LEQUAL);
+				break;
+			case testEvaluationFunc::gequal:
+				glDepthFunc(GL_GEQUAL);
+				break;
+			case testEvaluationFunc::less:
+				glDepthFunc(GL_LESS);
+				break;
+			case testEvaluationFunc::greater:
+				glDepthFunc(GL_GREATER);
+				break;
+			}
+		}
+		else glDisable( GL_DEPTH_TEST );
 	}
 	if( _curShader == 0x0 ) return false;
 	

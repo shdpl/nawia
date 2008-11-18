@@ -258,7 +258,88 @@ bool ShaderResource::load( const char *data, int size )
 			else
 				sc.blendMode = BlendModes::Replace;
 		}
-		
+		node2 = node1.getChildNode( "AlphaTest" );
+
+		//assign emergency test data
+		sc.testAlpha = false;
+		sc.testDepth = true;
+		sc.alphaToCoverage = false;
+		//GL_LEQUAL
+		sc.depthTestFunc = testEvaluationFunc::lequal;
+
+		if( !node2.isEmpty() )
+		{
+			//Alpha Depth Test
+			if( _stricmp( node2.getAttribute("enabled","false"),"false") == 0 ||
+				_stricmp( node2.getAttribute("enabled","0"),"0") == 0)
+			{
+				sc.testAlpha = false;
+			}
+			else
+			{
+				sc.testAlpha = true;
+				if( _stricmp( node2.getAttribute("mode","less"),"less") == 0)
+				{
+					sc.alphaTestFunc = testEvaluationFunc::less;
+				}
+				else 
+				{
+					if( _stricmp( node2.getAttribute("mode","less"),"greater") == 0)
+						sc.alphaTestFunc = testEvaluationFunc::greater;
+					if( _stricmp( node2.getAttribute("mode","less"),"gequal") == 0)
+						sc.alphaTestFunc = testEvaluationFunc::gequal;
+					if( _stricmp( node2.getAttribute("mode","less"),"lequal") == 0)
+						sc.alphaTestFunc = testEvaluationFunc::lequal;
+					if( _stricmp( node2.getAttribute("mode","less"),"equal") == 0)
+						sc.alphaTestFunc = testEvaluationFunc::equal;
+				}
+				sc.alphaTestVal = (float)atof(node2.getAttribute("value","0"));
+			}
+		}
+		else
+		{
+			node2 = node1.getChildNode("AlphaToCoverage");
+			if(!node2.isEmpty())
+			{
+				if( _stricmp( node2.getAttribute("enabled","false"),"false") == 0 ||
+					_stricmp( node2.getAttribute("enabled","0"),"0") == 0)
+					sc.alphaToCoverage = false;
+				else
+				{
+					sc.alphaToCoverage = true;
+				}
+			}
+		}
+
+		node2 = node1.getChildNode("DepthTest");
+		if(!node2.isEmpty())
+		{
+			if( _stricmp( node2.getAttribute("enabled","true"),"true") == 0 ||
+				_stricmp( node2.getAttribute("enabled","1"),"1") == 0)
+			{
+				sc.testDepth = true;
+				if( _stricmp( node2.getAttribute("mode","lequal"),"lequal") == 0)
+				{
+					sc.depthTestFunc = testEvaluationFunc::lequal;
+				}
+				else
+				{
+					if( _stricmp( node2.getAttribute("mode","lequal"),"greater") == 0)
+						sc.depthTestFunc = testEvaluationFunc::greater;
+					if( _stricmp( node2.getAttribute("mode","lequal"),"gequal") == 0)
+						sc.depthTestFunc = testEvaluationFunc::gequal;
+					if( _stricmp( node2.getAttribute("mode","lequal"),"less") == 0)
+						sc.depthTestFunc = testEvaluationFunc::less;
+					if( _stricmp( node2.getAttribute("mode","lequal"),"equal") == 0)
+						sc.depthTestFunc = testEvaluationFunc::equal;
+				}
+			}
+			else
+			{
+				sc.testDepth = false;
+				//Test direction is unnecessary, but just in case
+			}
+		}
 		// Code 
 		node2 = node1.getChildNode( "VertexShader" );
 		if( node2.isEmpty() ) return raiseError( "Missing VertexShader node in Context '" + sc.id + "'" );
