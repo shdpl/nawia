@@ -110,10 +110,10 @@ namespace GameEngine
 			component->setRefDist( x );
 	}
 
-	SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* soundFile, const char* phonemesFile/*=""*/)
+	SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* soundFile, const char* phonemesFile/*="NONE"*/)
 	{
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_SET_SOUND_FILE, &GameEventData( soundFile ), 0));
-		if( _stricmp(phonemesFile, "") != 0 )
+		if( _stricmp(phonemesFile, "NONE") != 0 )
 			sendEvent(entityWorldID, &GameEvent(GameEvent::E_SET_PHONEMES_FILE, &GameEventData( phonemesFile ), 0));
 	}
 

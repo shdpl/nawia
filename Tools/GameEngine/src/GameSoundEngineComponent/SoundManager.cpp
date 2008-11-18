@@ -204,7 +204,6 @@ void SoundManager::run()
 				//stop Viseme playback
 				node->stopVisemes();
 
-				m_sourcesAvailable.push_back(node->m_sourceID);
 				node->m_sourceID = 0;
 			}
 			ALenum state = AL_STOPPED;

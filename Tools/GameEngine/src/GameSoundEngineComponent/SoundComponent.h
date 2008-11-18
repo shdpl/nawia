@@ -107,7 +107,9 @@ private:
 	float				m_velX, m_velY, m_velZ;
 	float				m_pitch;
 	float				m_maxDist;
+	/// current gain of the sound file
 	float				m_gain;
+	/// initial gain which is used when returning from disabled state
 	float				m_initialGain;
 	float				m_rollOff;
 	float				m_reference_dist;

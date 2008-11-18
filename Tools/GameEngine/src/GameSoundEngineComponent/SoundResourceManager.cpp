@@ -389,3 +389,54 @@ bool SoundResourceManager::loadOggToBuffer(const char *szOggFile, unsigned int *
 
 	return success;
 }
+
+const char* SoundResourceManager::getResourceFileName(unsigned int resourceID)
+{
+	std::vector<SoundFile>::iterator iter = m_files.begin();
+	while( iter!=m_files.end() )
+	{
+		if (iter->resourceID == resourceID)
+			return iter->filename.c_str();
+		++iter;
+	}
+	return "";
+}
+
+void SoundResourceManager::reloadResource(unsigned int resourceID)
+{
+	// Search for the sound file associated to this resource
+	std::vector<SoundFile>::iterator soundFile = m_files.begin();
+	while( soundFile!=m_files.end() )
+	{
+		if (soundFile->resourceID == resourceID)
+			break;
+		++soundFile;
+	}
+
+	// No sound file found for this resourceID
+	if( soundFile == m_files.end() ) return;
+	
+	// Delete old buffers
+	alDeleteBuffers(soundFile->numBuffers, soundFile->buffers);
+	
+	int numBuffers = 0;
+	// Reload it
+	switch (soundFile->fileType)
+	{
+		case SRESFT_OGG:
+			int OggFileID;
+			if ((numBuffers = loadOgg(soundFile->filename.c_str(), soundFile->buffers, SOUNDRESOURCE_NUMBUFFERS, &OggFileID))>0)
+			{
+				soundFile->numBuffers = numBuffers;
+				soundFile->oggID=OggFileID;
+			}
+			break;
+
+		case SRESFT_PCM_WAV:
+			if ((numBuffers = loadWave(soundFile->filename.c_str(), soundFile->buffers, SOUNDRESOURCE_NUMBUFFERS))>0)
+			{
+				soundFile->numBuffers = numBuffers;
+			}
+			break;
+	}
+}

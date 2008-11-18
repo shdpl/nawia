@@ -59,6 +59,8 @@ public:
 	bool isStream(unsigned int resourceID);
 	void updateBuffer(unsigned int uiSource, unsigned int resourceID);
 	void releaseUnusedResources();
+	const char* getResourceFileName(unsigned int resourceID);
+	void reloadResource(unsigned int resourceID);
 
 protected:
 

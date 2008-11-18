@@ -100,7 +100,7 @@ namespace GameEngine
 	/**
 	 * Sets a Sound and Phonemes File to be played (from the media directory)
 	 */
-	SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* soundFile, const char* phonemesFile="");
+	SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* soundFile, const char* phonemesFile="NONE");
 
 	/**
 	 * Sets the resource directory for sounds

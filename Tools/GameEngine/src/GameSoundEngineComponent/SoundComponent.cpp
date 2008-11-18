@@ -256,6 +256,10 @@ void SoundComponent::setEnabled(bool enabled)
 	if( enabled && m_gain == OFF )
 	{
 		m_gain = m_initialGain;
+		
+		// If we have a stream we need to reload it
+		if( m_stream && m_resourceID != 0)
+			SoundResourceManager::instance()->reloadResource(m_resourceID);
 	}	
 	else if( !enabled )
 		m_gain = OFF;		
@@ -264,15 +268,27 @@ void SoundComponent::setEnabled(bool enabled)
 
 void SoundComponent::setGain(const float gain)
 {
+	if( gain == OFF )
+	{
+		// Users only wants to disable the sound
+		setEnabled(false);
+		return;
+	}
+	else if( m_gain == OFF )
+		// Users sets the gain of a disabled sound
+		// so enable it first
+		setEnabled(true);
+	
+	// now we set the current gain
+	// and the gain for returning after disabled status
 	m_initialGain = m_gain = gain;
 }
 
 void SoundComponent::setLoop(const bool loop)
 {
 	m_loop = loop;
-	// Auto start sound if now looping
-	if( loop ) m_gain = m_initialGain;
-	else m_gain = SoundComponent::OFF;
+	// Auto start sound if now looping else stop
+	setEnabled( loop );
 }
 
 void SoundComponent::setPitch(const float x)
@@ -345,7 +361,12 @@ bool SoundComponent::setPhonemesFile(const char* fileName)
 	stopVisemes();
 	// Delete old visemes
 	m_visemes.clear();
-		
+	
+	// If the new file name is empty, the user only wants to
+	// deactivate the phonemes and we are ready
+	if( _stricmp(fileName, "") == 0 )
+		return true;
+
 	// Get resource directory for phoneme file
 	std::string file = SoundResourceManager::instance()->getResourceDirectory();
 	file += fileName;
