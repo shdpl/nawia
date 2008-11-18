@@ -80,8 +80,12 @@ bool SoundWidget::setCurrentNode(QXmlTreeNode *node)
 		m_phonemeFile->clear();
 		scanMediaDir( GameEngine::soundResourceDirectory() );
 		scanPhonemeFiles( GameEngine::soundResourceDirectory() );
+		// Last Item empty for clearing the phonemefile
+		m_phonemeFile->addItem("");
+
 		m_soundFile->setCurrentIndex( m_soundFile->findText( node->xmlNode().attribute("file") ) );
 		m_phonemeFile->setCurrentIndex( m_phonemeFile->findText( node->xmlNode().attribute("phonemes") ) );
+		m_phonemeEditorButton->setEnabled( !node->xmlNode().attribute("phonemes").isEmpty() );
 		m_gain->setValue( node->xmlNode().attribute("gain", "0.5").toFloat() );
 		m_loop->setChecked( 
 			node->xmlNode().attribute("loop", "false").compare("true", Qt::CaseInsensitive) == 0 ||
@@ -239,7 +243,8 @@ void SoundWidget::addPhonemeFiles()
 		tr("Select phoneme file"), 
 		QDir::currentPath(), 
 		tr("Phoneme files (*.phonemes.xml);;All files (*.*)"));
-
+	
+	m_phonemeFile->removeItem(m_phonemeFile->findText(""));
 	QStringList errorList;
 	QDir baseDir( GameEngine::soundResourceDirectory() );
 	for( int i = 0; i < files.size(); ++i )
@@ -257,6 +262,9 @@ void SoundWidget::addPhonemeFiles()
 		tr("The following files couldn't be copied to the\n"
 		"sound directory: %1").arg(baseDir.absolutePath())+
 		"\n\n"+errorList.join("\n"));
+
+	// Last Item empty for clearing the phonemefile
+	m_phonemeFile->addItem("");
 }
 
 void SoundWidget::updatePhonemeFile( const QString& phonemeFile )
@@ -265,7 +273,15 @@ void SoundWidget::updatePhonemeFile( const QString& phonemeFile )
 	{
 		m_currentNode->xmlNode().setAttribute("phonemes", phonemeFile );
 		GameEngine::setSoundFile( entityWorldID(), qPrintable( m_currentNode->xmlNode().attribute("file") ),qPrintable( phonemeFile ) );
+		
+		// Only enable phoneme editor button if a phoneme file is set
+		if( !phonemeFile.isEmpty() )
+			m_phonemeEditorButton->setEnabled(true);
+		else
+			m_phonemeEditorButton->setEnabled(false);
 	}
+	else
+		m_phonemeEditorButton->setEnabled(false);
 }
 
 void SoundWidget::playSound()
@@ -284,6 +300,7 @@ void SoundWidget::stopSound()
 
 void SoundWidget::openPhonemeEditor()
 {
+	if( !m_phonemeEditorButton->isEnabled() ) return;
 	unsigned int id = entityWorldID();
 	if( id != 0)
 	{
