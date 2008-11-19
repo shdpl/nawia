@@ -1,0 +1,128 @@
+<Group tx="0" sx="1" ty="0" rx="0" sy="1" tz="0" ry="0" sz="1" rz="0" >
+    <Light sy="1" lightingContext="LIGHTING" sz="1" col_B="1" name="Licht" col_G="1" tx="-109.929" ty="245.667" shadowContext="SHADOWMAP" tz="219.526" shadowMapBias="0.001" rx="-47.4405" ry="-24.84" shadowMapCount="4" rz="-1.26231e-06" col_R="1" radius="1000" fov="140" shadowSplitLambda="0.9" sx="1" >
+        <Attachment type="GameEngine" />
+    </Light>
+    <Camera sy="1" sz="1" nearDist="0.1" nearPlane="0.1" leftPlane="-0.0552271" topPlane="0.0414214" name="camera" tx="23.7472" ty="14.0389" rightPlane="0.0552271" tz="9.2703" bottomPlane="-0.0414214" rx="-8.3805" ry="78.6998" rz="0" keepAspect="1" farPlane="2000" pipeline="forward.pipeline.xml" sx="1" >
+        <Attachment type="GameEngine" name="camera" >
+            <SoundListener active="true" gain="0.8" />
+            <Socket protocol="UDP" port="5555" />
+        </Attachment>
+    </Camera>
+    <Reference tx="0" sx="500" ty="8" sy="500" rx="0" tz="0" sceneGraph="skybox.scene.xml" sz="500" ry="0" rz="0" name="Skybox" />
+    <Reference tx="0" sx="1" ty="3.69627" sy="1" tz="0" sceneGraph="scene.scene.xml" sz="1" name="Boden" >
+        <Attachment type="GameEngine" name="Boden_7" >
+            <BulletPhysics x="75" y="5" z="75" shape="Box" />
+			<Sound3D file="TESLA.wav" loop="true" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.19895" sx="1" ty="9.70328" sy="1" tz="5.07254" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_17" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="11.6672" sy="1" tz="6.01025" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_1711" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.20517" sx="1" ty="11.6617" sy="1" tz="8.16692" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_1713" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21128" sx="1" ty="11.6697" sy="1" tz="12.2905" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_1715" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.212" sx="1" ty="9.68292" sy="1" tz="13.0805" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_1717" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.212" sx="1" ty="9.68292" sy="1" tz="7.14016" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_1719" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.212" sx="1" ty="9.68292" sy="1" tz="11.1267" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171721" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.19895" sx="1" ty="9.68292" sy="1" tz="3.03225" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171723" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="11.6703" sy="1" tz="10.1198" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171125" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="13.6353" sy="1" tz="11.2228" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171127" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="13.6418" sy="1" tz="9.10943" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171129" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="13.653" sy="1" tz="7.21252" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171131" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="13.6576" sy="1" tz="5.03562" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171133" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="15.6628" sy="1" tz="6.26445" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171135" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="15.6368" sy="1" tz="8.20483" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171137" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="15.6042" sy="1" tz="10.2039" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171139" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="17.6444" sy="1" tz="7.3795" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171141" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="17.6183" sy="1" tz="9.29225" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171143" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="19.6018" sy="1" tz="8.48118" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171145" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.21296" sx="1" ty="11.6906" sy="1" tz="3.85181" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171147" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-8.19895" sx="1" ty="9.69364" sy="1" tz="9.07961" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
+        <Attachment type="GameEngine" name="Dose_171949" >
+            <BulletPhysics radius="0.75" mass="0.3" static_friction="0.5" height="0.975" shape="Cylinder" />
+        </Attachment>
+    </Reference>
+    <Reference tx="1.09901" sx="1" ty="26.5788" sy="1" tz="-4.94839" sceneGraph="Kugel.scene.xml" sz="1" name="kugel" >
+        <Attachment type="GameEngine" name="KugelModel" >
+            <BulletPhysics radius="1" mass="1" shape="Sphere" />
+        </Attachment>
+    </Reference>
+</Group>

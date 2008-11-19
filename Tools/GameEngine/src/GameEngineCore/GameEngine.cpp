@@ -74,7 +74,8 @@ namespace GameEngine
 			return false;
 		}
 		
-		GameModules::plugInManager()->init();
+		if( !GameModules::plugInManager()->init() )
+			return false;
 
 		Initialized = true;
 		return true;

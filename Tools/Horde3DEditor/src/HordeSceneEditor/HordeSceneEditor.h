@@ -108,9 +108,6 @@ public:
 
 	PlugInManager* pluginManager() {return m_pluginManager;}
 
-
-	void loadStyle(const QString& fileName);
-
 	void addCamera(QCameraNode* camera);
 	void removeCamera(QCameraNode* camera);
 
@@ -133,6 +130,7 @@ private slots:
 	bool closeScene();
 	void cleanScene();
 	void newScene();
+	void loadStyle( const QString& fileName );
 
 	void openRecentFile();
 	void updateRecentFileActions();
@@ -182,6 +180,7 @@ private:
 
 	SceneFile*			m_sceneFile;
 	QFileSystemWatcher*	m_fileSystemWatcher;
+	QFileSystemWatcher*	m_styleSystemWatcher;
 
 	GLWidget*			m_glWidget;
 	QLabel*				m_fpsLabel;

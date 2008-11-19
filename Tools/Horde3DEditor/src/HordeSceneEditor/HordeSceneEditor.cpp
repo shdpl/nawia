@@ -254,7 +254,14 @@ m_sceneFile(0), m_glWidget(0)
 	QHordeSceneEditorSettings settings(this);
 	settings.beginGroup("WindowState");
 	setWindowState((Qt::WindowStates) settings.value("State", Qt::WindowMaximized).toUInt());
+	m_styleSystemWatcher = new QFileSystemWatcher(this);
+	m_styleSystemWatcher->addPath(
+		QApplication::applicationDirPath()+QDir::separator()+
+		"Styles"+QDir::separator()+
+		settings.value("Style", "default.qss").toString() 
+	);
 	loadStyle(settings.value("Style", "default.qss").toString());
+	connect(m_styleSystemWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(loadStyle( const QString&)));
 	settings.endGroup();
 
 }
@@ -741,7 +748,12 @@ void HordeSceneEditor::configure()
 		QList<QUndoStack*> stacks = m_undoGroup->stacks();
 		foreach(QUndoStack* stack, stacks)
 			stack->setUndoLimit(limit);		
-		loadStyle(settings.value("Style").toString());
+		if( !m_styleSystemWatcher->files().empty() )
+			m_styleSystemWatcher->removePaths( m_styleSystemWatcher->files() );
+		QFileInfo style = QApplication::applicationDirPath()+QDir::separator()+"Styles"+QDir::separator()+settings.value("Style", "default.qss").toString();
+		if( style.exists() )
+			m_styleSystemWatcher->addPath( style.absoluteFilePath() );					
+		loadStyle( style.absoluteFilePath() );
 		settings.endGroup();
 		if (m_glWidget)
 			m_glWidget->loadButtonConfig();
@@ -1010,9 +1022,9 @@ void HordeSceneEditor::updateFileSystemWatcher()
 	}
 }
 
-void HordeSceneEditor::loadStyle(const QString& fileName)
-{
-	QFile file(QApplication::applicationDirPath()+QDir::separator()+"Styles"+QDir::separator()+fileName);
+void HordeSceneEditor::loadStyle( const QString& fileName )
+{		
+	QFile file( fileName );
 	if (file.open(QFile::ReadOnly))
 	{
 		QApplication::setOverrideCursor(Qt::BusyCursor);
