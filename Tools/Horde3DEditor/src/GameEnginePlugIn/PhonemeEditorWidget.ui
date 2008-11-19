@@ -5,9 +5,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>687</width>
+    <width>274</width>
     <height>110</height>
    </rect>
+  </property>
+  <property name="sizePolicy" >
+   <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle" >
    <string>Form</string>
@@ -30,8 +36,26 @@
    </property>
    <item>
     <layout class="QHBoxLayout" >
+     <property name="sizeConstraint" >
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
      <item>
       <widget class="QLabel" name="textLabel" >
+       <property name="enabled" >
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize" >
+        <size>
+         <width>64</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text" >
         <string>Text:</string>
        </property>
@@ -68,7 +92,13 @@ It is not important that the words are written correctly, it is more important t
         <enum>QFrame::Panel</enum>
        </property>
        <property name="frameShadow" >
-        <enum>QFrame::Sunken</enum>
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="lineWidth" >
+        <number>1</number>
+       </property>
+       <property name="midLineWidth" >
+        <number>0</number>
        </property>
       </widget>
      </item>
@@ -76,13 +106,22 @@ It is not important that the words are written correctly, it is more important t
    </item>
    <item>
     <layout class="QHBoxLayout" name="_2" >
+     <property name="sizeConstraint" >
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
      <item>
       <widget class="QLabel" name="phonemeLabel" >
        <property name="sizePolicy" >
-        <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
+        <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize" >
+        <size>
+         <width>64</width>
+         <height>0</height>
+        </size>
        </property>
        <property name="text" >
         <string>Phonemes:</string>
@@ -124,7 +163,7 @@ p, li { white-space: pre-wrap; }
         <enum>QFrame::Panel</enum>
        </property>
        <property name="frameShadow" >
-        <enum>QFrame::Sunken</enum>
+        <enum>QFrame::Plain</enum>
        </property>
       </widget>
      </item>
@@ -132,6 +171,9 @@ p, li { white-space: pre-wrap; }
    </item>
    <item>
     <layout class="QHBoxLayout" name="_3" >
+     <property name="sizeConstraint" >
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
      <item>
       <widget class="QToolButton" name="m_playButton" >
        <property name="text" >
@@ -189,7 +231,6 @@ p, li { white-space: pre-wrap; }
     </layout>
    </item>
   </layout>
-  <zorder>m_saveButton</zorder>
  </widget>
  <resources/>
  <connections/>

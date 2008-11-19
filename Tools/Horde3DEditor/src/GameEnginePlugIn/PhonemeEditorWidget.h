@@ -2,7 +2,7 @@
 //
 // GameEngine of the University of Augsburg
 // --------------------------------------
-// Copyright (C) 2008 Volker Wiendl
+// Copyright (C) 2007 Volker Wiendl
 // 
 // This file is part of the GameEngine developed at the 
 // Lab for Multimedia Concepts and Applications of the University of Augsburg
@@ -59,6 +59,8 @@ private slots:
 	void save();
 
 private:
+	void			parseXmlFile();
+
 	unsigned int	m_entityWorldID;
 	QString			m_phonemeFileName;
 	QDomDocument	m_phonemeXml;

@@ -2,7 +2,7 @@
 //
 // GameEngine of the University of Augsburg
 // --------------------------------------
-// Copyright (C) 2008 Volker Wiendl
+// Copyright (C) 2007 Volker Wiendl
 // 
 // This file is part of the GameEngine developed at the 
 // Lab for Multimedia Concepts and Applications of the University of Augsburg
@@ -26,7 +26,7 @@
 //
 // GameEngine Horde3D Editor Plugin of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Felix Kistler
+// Copyright (C) 2008 Felix Kistler
 // 
 // ****************************************************************************************
 #include "PhonemeEditorWidget.h"
@@ -40,9 +40,12 @@
 #include <Qt/qmessagebox.h>
 #include <Qt/qdesktopservices.h>
 #include <QtCore/QTextStream>
+#include <Qt/qcombobox.h>
+#include <Qt/qlineedit.h>
 
 #include <GameEngine/GameEngine.h>
 #include <GameEngine/GameEngine_Sound.h>
+#include <math.h>
 
 Q_DECLARE_METATYPE(QDomElement)
 
@@ -55,6 +58,7 @@ PhonemeEditorWidget::PhonemeEditorWidget(QWidget* parent /*= 0*/, Qt::WFlags fla
 	connect(m_closeButton, SIGNAL(clicked()), this, SLOT(closePhonemeEditor()) );
 	connect(m_saveButton, SIGNAL(clicked()), this, SLOT(save()) );
 	m_saveButton->setEnabled(false);
+	setEnabled(false);
 }
 
 
@@ -93,11 +97,11 @@ void PhonemeEditorWidget::loadPhonemeFile(unsigned int id, const QString& path)
 				setStatusTip(tr("Error in line %1 column %2 when reading phoneme file %3: %4").arg(errorLine).arg(errorColumn).arg(m_phonemeFileName).arg(errorMsg));
 			else
 			{
-				setStatusTip("");			
+				setStatusTip("");		
+				//make Content visible
+				parseXmlFile();
 			}
 			file.close();
-
-			//TODO: make Content visible
 		}
 		else
 			setStatusTip(file.errorString());
@@ -145,4 +149,61 @@ void PhonemeEditorWidget::save()
 	}
 	m_saveButton->setEnabled(false);
 	blockSignals(false);
+}
+
+void PhonemeEditorWidget::parseXmlFile()
+{
+	// Clear old text comboboxes
+	QList<QLineEdit *> oldText= m_text->findChildren<QLineEdit *>();
+	while(!oldText.isEmpty())
+		delete oldText.takeFirst();
+
+	// Clear old phoneme comboboxes
+	QList<QComboBox *> oldPhoneme = m_text->findChildren<QComboBox *>();
+	while(!oldPhoneme.isEmpty())
+		delete oldPhoneme.takeFirst();
+	
+	// Get new items from phoneme xml
+	QDomElement timings = m_phonemeXml.firstChildElement("PhonemeTimings");
+
+	// Get length of phoneme timings
+	QDomElement last = timings.lastChildElement("word");
+	float sentenceLength = 0;
+	if(!last.isNull()) sentenceLength = last.attribute("end", "0").toFloat();
+	last = timings.lastChildElement("phn");
+	if( !last.isNull() ) sentenceLength = max(sentenceLength, last.attribute("end", "0").toFloat() );
+	// Get length of panel
+	int maxWidth = m_text->width()-2;
+
+	// Get words
+	QDomNode wordNode = timings.firstChild();
+	while(!wordNode.isNull())
+	{
+		if( wordNode.nodeName().compare("word") == 0)
+		{
+			QDomElement word = wordNode.toElement();
+			int start = word.attribute("start", "0").toInt();
+			int end = word.attribute("end", "0").toInt();
+			QLineEdit* wordBox = new QLineEdit(m_text);
+			wordBox->setText(word.attribute("value"));
+			wordBox->setGeometry( (int)((start/sentenceLength) * maxWidth + 1.5f), 1,
+				(int)(((end-start)/sentenceLength) * maxWidth + 0.5f), m_text->height()-2);
+			wordBox->setVisible(true);
+			// Get phonemes of a word
+			QDomElement phoneme = word.firstChildElement("phn");
+			while(!phoneme.isNull())
+			{
+				phoneme = phoneme.nextSiblingElement("phn");
+			}
+		}
+		else if( wordNode.nodeName().compare("phn") == 0 )
+		{
+			QDomElement phonem = wordNode.toElement();
+			int start = phonem.attribute("start", "0").toInt();
+			int end = phonem.attribute("end", "0").toInt();
+		}
+
+		wordNode = wordNode.nextSibling();
+	}
+
 }
