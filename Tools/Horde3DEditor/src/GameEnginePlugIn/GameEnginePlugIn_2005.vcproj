@@ -684,7 +684,27 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Memory Check|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
 						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
@@ -1096,7 +1116,27 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Compiling UI file $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/uic.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)ui_$(InputName).h&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)/bin/uic.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)ui_$(InputName).h&quot;"
+						Outputs="&quot;$(InputDir)ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Compiling UI file $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/uic.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)ui_$(InputName).h&quot;"
+						Outputs="&quot;$(InputDir)ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Memory Check|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Compiling UI file $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/uic.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)ui_$(InputName).h&quot;"
 						Outputs="&quot;$(InputDir)ui_$(InputName).h&quot;"
 					/>
 				</FileConfiguration>
