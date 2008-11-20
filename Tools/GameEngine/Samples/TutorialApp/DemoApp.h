@@ -27,9 +27,7 @@ private:
 
 	char m_keys[256];
 	bool m_running;
-	
-	float m_camRX, m_camRY;
-	int	m_camID, m_characterID;
+
 };
 
 #endif
