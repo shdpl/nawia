@@ -1,0 +1,4 @@
+<Material>
+	<Shader source="skinning.shader.xml" />
+	<TexUnit unit="0" map="male/haar_4_3.tga" />
+</Material>

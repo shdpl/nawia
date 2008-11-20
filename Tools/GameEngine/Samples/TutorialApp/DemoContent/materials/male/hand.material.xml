@@ -1,0 +1,4 @@
+<Material>
+	<TexUnit unit="0" map="male/hand.tga" />
+	<Shader source="skinning.shader.xml" />
+</Material>

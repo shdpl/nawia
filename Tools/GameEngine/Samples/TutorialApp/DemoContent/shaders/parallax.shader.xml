@@ -1,0 +1,217 @@
+<Shader>
+	<Context id="ATTRIBPASS">
+		<VertexShader>
+			<InsCode code="utilityLib/vertCommon.glsl" />
+			<DefCode>
+			<![CDATA[
+				uniform vec3 viewer;
+				attribute vec2 texCoords0;
+				attribute vec3 normal, tangent, bitangent;
+				varying vec3 eyeTS;
+				varying mat3 tsbMat;
+				varying vec4 pos;
+				varying vec2 texCoord;
+			
+				void main( void )
+				{
+					// Transform tangent space basis
+					vec3 tsbTangent = normalize( calcWorldVec( tangent ) );
+					vec3 tsbBitangent = normalize( calcWorldVec( bitangent ) );
+					vec3 tsbNormal = normalize( calcWorldVec( normal ) );
+			
+					// Invert tangent space basis
+					tsbMat = calcTanToWorldMat( tsbTangent, tsbBitangent, tsbNormal );
+				
+					// Calculate world space position
+					pos = calcWorldPos( gl_Vertex );
+					
+					// Eye vector and eye vector in tangent space
+					eyeTS = calcTanVec( viewer - pos.xyz, tsbTangent, tsbBitangent, tsbNormal );
+					
+					// Calculate texture coordinates and clip space position
+					texCoord = texCoords0.st;
+					gl_Position = gl_ModelViewProjectionMatrix * pos;
+				}
+			]]>
+			</DefCode>
+		</VertexShader>
+		
+		<FragmentShader>
+			<InsCode code="utilityLib/fragDeferred.glsl" />
+			<DefCode>
+			<![CDATA[
+				uniform sampler2D tex0, tex1;
+				varying vec3 eyeTS;
+				varying mat3 tsbMat;
+				varying vec4 pos;
+				varying vec2 texCoord;
+				
+				void main( void )
+				{
+					const float plxScale = 0.03;
+					const float plxBias = -0.015;
+					
+					// Parallax mapping
+					float height = texture2D( tex1, texCoord ).a * 2.0 - 1.0;
+					height = height * plxScale + plxBias;
+					vec2 newCoord = texCoord + normalize( eyeTS ).xy * height;
+					
+					vec3 albedo = texture2D( tex0, newCoord ).rgb;
+					vec3 normalMap = texture2D( tex1, newCoord ).rgb * 2.0 - 1.0;
+					
+					// Transform normal from tangent space to world space
+					vec3 normal = tsbMat * normalMap;
+					
+					// Use parallax mapping for fragment position
+					vec3 newPos = pos.xyz + vec3( 0.0, height * 0.05, 0.0 );
+					
+					setMatID( 1.0 );
+					setPos( newPos );
+					setNormal( normalize( normal ) );
+					setAlbedo( albedo );
+					setSpecMask( 1.0 );
+				}
+			]]>
+			</DefCode>
+		</FragmentShader>
+	</Context>
+	
+	<!--
+	<Context id="SHADOWMAP">
+		<VertexShader>
+			<InsCode code="utilityLib/vertCommon.glsl" />
+			<DefCode>
+			<![CDATA[
+				uniform vec4 lightPos;
+				varying float dist;
+				
+				void main( void )
+				{
+					vec4 pos = calcWorldPos( gl_Vertex );
+					dist = length( lightPos.xyz - pos.xyz ) / lightPos.w;
+					gl_Position = gl_ModelViewProjectionMatrix * pos;
+				}
+			]]>
+			</DefCode>
+		</VertexShader>
+		
+		<FragmentShader>
+			<DefCode>
+			<![CDATA[
+				uniform float shadowBias;
+				varying float dist;
+				
+				void main( void )
+				{
+					gl_FragDepth = dist + shadowBias;
+				}
+			]]>
+			</DefCode>
+		</FragmentShader>
+	</Context>
+	-->
+	
+	<Context id="LIGHTING">
+		<RenderConfig writeDepth="false" blendMode="ADD" />
+		
+		<VertexShader>
+			<InsCode code="utilityLib/vertCommon.glsl" />
+			<DefCode>
+			<![CDATA[
+				uniform vec3 viewer;
+				attribute vec2 texCoords0;
+				attribute vec3 normal, tangent, bitangent;
+				varying vec3 eyeTS;
+				varying mat3 tsbMat;
+				varying vec4 pos, vsPos;
+				varying vec2 texCoord;
+			
+				void main( void )
+				{
+					// Transform tangent space basis
+					vec3 tsbTangent = normalize( calcWorldVec( tangent ) );
+					vec3 tsbBitangent = normalize( calcWorldVec( bitangent ) );
+					vec3 tsbNormal = normalize( calcWorldVec( normal ) );
+			
+					// Invert tangent space basis
+					tsbMat = calcTanToWorldMat( tsbTangent, tsbBitangent, tsbNormal );
+				
+					// Calculate world space position
+					pos = calcWorldPos( gl_Vertex );
+					vsPos = calcViewPos( pos );
+					
+					// Eye vector and eye vector in tangent space
+					eyeTS = calcTanVec( viewer - pos.xyz, tsbTangent, tsbBitangent, tsbNormal );
+			
+					// Calculate texture coordinates and clip space position
+					texCoord = texCoords0;
+					gl_Position = gl_ModelViewProjectionMatrix * pos;
+				}
+			]]>
+			</DefCode>
+		</VertexShader>
+		
+		<FragmentShader>
+			<InsCode code="utilityLib/fragLighting.glsl" />
+			<DefCode>
+			<![CDATA[
+				uniform sampler2D tex0, tex1;
+				varying vec3 eyeTS;
+				varying mat3 tsbMat;
+				varying vec4 pos, vsPos;
+				varying vec2 texCoord;
+				
+				void main( void )
+				{
+					const float plxScale = 0.03;
+					const float plxBias = -0.015;
+					
+					// Parallax mapping
+					float height = texture2D( tex1, texCoord ).a * 2.0 - 1.0;
+					height = height * plxScale + plxBias;
+					vec2 newCoord = texCoord + normalize( eyeTS ).xy * height;
+					
+					vec3 albedo = texture2D( tex0, newCoord ).rgb;
+					vec3 normalMap = texture2D( tex1, newCoord ).rgb * 2.0 - 1.0;
+					
+					// Transform normal from tangent space to world space
+					vec3 normal = tsbMat * normalMap;
+					
+					// Use parallax mapping for fragment position
+					vec3 newPos = pos.xyz + vec3( 0.0, height, 0.0 );
+					
+					gl_FragColor.rgb =
+						calcPhongSpotLight( newPos, normalize( normal ), albedo, 1.0, -vsPos.z );
+				}
+			]]>
+			</DefCode>
+		</FragmentShader>
+	</Context>
+	
+	
+	<Context id="AMBIENT">
+		<VertexShader>
+			<InsCode code="utilityLib/vertCommon.glsl" />
+			<DefCode>
+			<![CDATA[
+				void main( void )
+				{
+					vec4 pos = calcWorldPos( gl_Vertex );
+					gl_Position = gl_ModelViewProjectionMatrix * pos;
+				}
+			]]>
+			</DefCode>
+		</VertexShader>
+		
+		<FragmentShader>
+			<DefCode>
+			<![CDATA[
+				void main( void )
+				{
+					gl_FragColor.rgb = vec3( 0, 0, 0 );
+				}
+			]]>
+			</DefCode>
+		</FragmentShader>
+	</Context>
+</Shader>
