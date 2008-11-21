@@ -337,6 +337,7 @@ class TriGroup():
 		self.vertRStart, self.vertREnd = vStart,0 
 		self.material = None
 		self.posIndexToVertices = []
+		self.vertexToPosIndex = {} # reverse mapping of self.posIndexToVertices
 
 class HordeMesh():
 	def __init__(self, name, bName, matRel, matAbs):
@@ -408,7 +409,7 @@ class Converter():
 		self.__matPath = matPath
 		self.__animPath = animPath
 		self.__images = []
-		__AdditionalJointMat = Matrix()
+		self.__AdditionalJointMat = Matrix()
 		
 	def convertModel(self, scn):
 		##################
@@ -693,14 +694,9 @@ class Converter():
 						normal = Vector(vert.no)
 					
 					found = False
-					pindex = -1
+					pindex = t.vertexToPosIndex.get(vert.index, -1)
 					pi = 0
 					vertCo = Vector(vert.co)
-					for posindex in t.posIndexToVertices:
-						if posindex[0] == vert.index:
-							pindex = pi
-							break
-						pi += 1
 					
 					if pindex != -1:
 						pi = 1
@@ -718,7 +714,7 @@ class Converter():
 						t.count += 1
 					elif pindex != -1:
 						# Position found but no equal vertices -> append new vertex in position list
-						self.__indices.append(vlen)
+						self.__indices.append(vlen)						
 						t.posIndexToVertices[pindex].append(vlen)
 						t.count += 1
 						self.__vertices.append( Vertex(vertCo, normal, uv, pindex, vert.index) )
@@ -728,6 +724,7 @@ class Converter():
 					else:
 						# Position not found -> append new vertex in new position list
 						self.__indices.append(vlen)
+						t.vertexToPosIndex[vert.index] = len(t.posIndexToVertices)
 						t.posIndexToVertices.append([vert.index, vlen])
 						t.count += 1
 						self.__vertices.append( Vertex(vertCo, normal, uv, len(t.posIndexToVertices)-1, vert.index) )
@@ -945,8 +942,9 @@ class Converter():
 				# Trim weights and joints
 				vert.weights = vert.weights[:4]
 				vert.joints = vert.joints[:4]
-				# Make sure weights add up to 1
-				weightSum = float(sum(vert.weights))
+			# Make sure weights add up to 1
+			weightSum = float(sum(vert.weights))
+			if weightSum != 0:
 				for w in range(len(vert.weights)):
 					vert.weights[w] = vert.weights[w] / weightSum
 			
