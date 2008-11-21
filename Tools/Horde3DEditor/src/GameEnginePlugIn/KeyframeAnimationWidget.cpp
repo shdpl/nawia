@@ -99,20 +99,22 @@ void KeyframeAnimationWidget::addAnimation()
 		if( !animations[i].contains( baseDir.absolutePath() ) )
 		{
 			if( !QFile::copy( animations[i], baseDir.absoluteFilePath( QFileInfo(animations[i]).fileName() ) ) )
-				errorList << animations[i];
-			else
 			{
-				QDomElement anim = m_currentNode->xmlNode().appendChild(QDomDocument().createElement("StaticAnimation")).toElement();		
-				QStringList attributes;
-				attributes << QFileInfo(animations[i]).baseName() << QFileInfo(animations[i]).fileName() << "30";
-				anim.setAttribute("name", attributes[0]);
-				anim.setAttribute("file", attributes[1]);
-				anim.setAttribute("fps", attributes[2]);
-				QTreeWidgetItem* item = new QTreeWidgetItem(m_animations, attributes);		
-				item->setData(0, Qt::UserRole, QVariant::fromValue<QDomElement>(anim));
-				item->setFlags(item->flags() | Qt::ItemIsEditable);
+				errorList << animations[i];
+				continue;
 			}
+			else
+				animations[i] = baseDir.absoluteFilePath( QFileInfo(animations[i]).fileName() );
 		}
+		QDomElement anim = m_currentNode->xmlNode().appendChild(QDomDocument().createElement("StaticAnimation")).toElement();		
+		QStringList attributes;
+		attributes << QFileInfo(animations[i]).baseName() << baseDir.relativeFilePath( QFileInfo(animations[i]).fileName() ) << "30";
+		anim.setAttribute("name", attributes[0]);
+		anim.setAttribute("file", attributes[1]);
+		anim.setAttribute("fps", attributes[2]);
+		QTreeWidgetItem* item = new QTreeWidgetItem(m_animations, attributes);		
+		item->setData(0, Qt::UserRole, QVariant::fromValue<QDomElement>(anim));
+		item->setFlags(item->flags() | Qt::ItemIsEditable);
 	}
 	if( !errorList.isEmpty() )
 		QMessageBox::warning(this, tr("Error"), 
