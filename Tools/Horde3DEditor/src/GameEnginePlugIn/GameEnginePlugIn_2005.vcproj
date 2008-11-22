@@ -326,6 +326,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TimeLineComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeLineTextEdit.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TTSWidget.cpp"
 				>
 			</File>
@@ -778,6 +786,74 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\TimeLineComboBox.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Memory Check|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\TimeLineTextEdit.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Memory Check|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\TTSWidget.h"
 				>
 				<FileConfiguration
@@ -892,6 +968,14 @@
 			</File>
 			<File
 				RelativePath=".\moc_SoundWidget.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\moc_TimeLineComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\moc_TimeLineTextEdit.cpp"
 				>
 			</File>
 			<File

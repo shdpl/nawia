@@ -25,11 +25,14 @@
 // ****************************************************************************************
 //
 // GameEngine Horde3D Editor Plugin of the University of Augsburg
+// Phoneme Editor
 // ---------------------------------------------------------
 // Copyright (C) 2008 Felix Kistler
 // 
 // ****************************************************************************************
 #include "PhonemeEditorWidget.h"
+#include "TimeLineComboBox.h"
+#include "TimeLineTextEdit.h"
 
 #include <QXmlTree/QXmlTreeNode.h>
 #include <QXmlTree/QXmlTreeModel.h>
@@ -40,7 +43,6 @@
 #include <Qt/qmessagebox.h>
 #include <Qt/qdesktopservices.h>
 #include <QtCore/QTextStream>
-#include <Qt/qcombobox.h>
 #include <Qt/qlineedit.h>
 
 #include <GameEngine/GameEngine.h>
@@ -48,6 +50,12 @@
 #include <math.h>
 
 Q_DECLARE_METATYPE(QDomElement)
+
+// List of available Phonemes
+const QStringList PhonemeEditorWidget::m_phonemeList = (QStringList() << "x" << "AE" << "AY" << "AH" << "AA" << "AO" << "EY"  << "EH"  << "UH"
+														<< "ER"	<< "y" << "IY" << "IH" << "w" << "UW" << "OW" << "AW" << "OY" << "AY" << "h" 
+														<< "r" << "l" << "s" << "z" << "SH" << "CH" << "ZH" << "j" << "TH" << "DH"
+														<< "f" << "v" << "d" << "t" << "n" << "k" << "g" << "NG" << "p" << "b" << "m");
 
 PhonemeEditorWidget::PhonemeEditorWidget(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QWidget(parent, flags), m_entityWorldID(0)
 {
@@ -159,7 +167,7 @@ void PhonemeEditorWidget::parseXmlFile()
 		delete oldText.takeFirst();
 
 	// Clear old phoneme comboboxes
-	QList<QComboBox *> oldPhoneme = m_text->findChildren<QComboBox *>();
+	QList<TimeLineComboBox *> oldPhoneme = m_phonemes->findChildren<TimeLineComboBox *>();
 	while(!oldPhoneme.isEmpty())
 		delete oldPhoneme.takeFirst();
 	
@@ -168,42 +176,74 @@ void PhonemeEditorWidget::parseXmlFile()
 
 	// Get length of phoneme timings
 	QDomElement last = timings.lastChildElement("word");
-	float sentenceLength = 0;
-	if(!last.isNull()) sentenceLength = last.attribute("end", "0").toFloat();
+	int sentenceLength = 0;
+	if(!last.isNull()) sentenceLength = last.attribute("end", "0").toInt();
 	last = timings.lastChildElement("phn");
-	if( !last.isNull() ) sentenceLength = max(sentenceLength, last.attribute("end", "0").toFloat() );
-	// Get length of panel
-	int maxWidth = m_text->width()-2;
+	if( !last.isNull() ) sentenceLength = max(sentenceLength, last.attribute("end", "0").toInt() );
+	
+	// Get minimal phoneme width
+	QDomNodeList phnlist = timings.elementsByTagName("phn");
+	int minPhnWidth = 999999;
+	for(unsigned int i=0; i<phnlist.length(); i++)
+	{
+		QDomElement phn = phnlist.item(i).toElement();
+		// Skip silence
+		if( phn.attribute("value").compare("x") == 0 ) continue;
+		int start = phn.attribute("start", "0").toInt();
+		int end = phn.attribute("end", "999999").toInt();
+		if( end-start < minPhnWidth ) minPhnWidth = end-start;
+	}
+	int minWidth =  (int)( 39.5f / minPhnWidth * sentenceLength );
+	
+	// Get length of panels and enlarge them if too small
+	if( m_text->width()-2 < minWidth)
+	{
+		m_text->setFixedWidth(minWidth+2);
+		m_phonemes->setFixedWidth(minWidth+2);
+		m_phonemeScrollArea->setFixedWidth(m_text->x()+minWidth+2);
+	}
 
-	// Get words
 	QDomNode wordNode = timings.firstChild();
 	while(!wordNode.isNull())
 	{
+		// Get words
 		if( wordNode.nodeName().compare("word") == 0)
 		{
 			QDomElement word = wordNode.toElement();
-			int start = word.attribute("start", "0").toInt();
-			int end = word.attribute("end", "0").toInt();
-			QLineEdit* wordBox = new QLineEdit(m_text);
-			wordBox->setText(word.attribute("value"));
-			wordBox->setGeometry( (int)((start/sentenceLength) * maxWidth + 1.5f), 1,
-				(int)(((end-start)/sentenceLength) * maxWidth + 0.5f), m_text->height()-2);
+			TimeLineTextEdit* wordBox = new TimeLineTextEdit(word, sentenceLength, m_text);
+			connect(wordBox, SIGNAL(xmlNodeChanged()), this, SLOT(enableSaveButton()) );
 			wordBox->setVisible(true);
+
 			// Get phonemes of a word
-			QDomElement phoneme = word.firstChildElement("phn");
-			while(!phoneme.isNull())
+			QDomNodeList phonemeList = word.elementsByTagName("phn");
+			for(unsigned int i = 0; i < phonemeList.length(); i++)
 			{
-				phoneme = phoneme.nextSiblingElement("phn");
+				QDomElement phoneme = phonemeList.item(i).toElement();
+				// Skip silence
+				if( phoneme.attribute("value").compare("x") == 0 ) continue;
+				TimeLineComboBox* phonemeBox = new TimeLineComboBox(phoneme, sentenceLength, m_phonemeList, m_phonemes);
+				connect(phonemeBox, SIGNAL(xmlNodeChanged()), this, SLOT(enableSaveButton()) );
+				phonemeBox->setVisible(true);
 			}
 		}
+		// Get phonemes which don't belong to words
 		else if( wordNode.nodeName().compare("phn") == 0 )
 		{
-			QDomElement phonem = wordNode.toElement();
-			int start = phonem.attribute("start", "0").toInt();
-			int end = phonem.attribute("end", "0").toInt();
+			QDomElement phoneme = wordNode.toElement();
+			// Skip silence
+			if( phoneme.attribute("value").compare("x") != 0 )
+			{
+				TimeLineComboBox* phonemeBox = new TimeLineComboBox(phoneme, sentenceLength, m_phonemeList, m_phonemes);
+				connect(phonemeBox, SIGNAL(xmlNodeChanged()), this, SLOT(enableSaveButton()) );
+				phonemeBox->setVisible(true);
+			}
 		}
 
 		wordNode = wordNode.nextSibling();
 	}
+}
 
+void PhonemeEditorWidget::enableSaveButton()
+{
+	m_saveButton->setEnabled(true);
 }

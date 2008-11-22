@@ -25,6 +25,7 @@
 // ****************************************************************************************
 //
 // GameEngine Horde3D Editor Plugin of the University of Augsburg
+// Phoneme Editor
 // ---------------------------------------------------------
 // Copyright (C) 2008 Felix Kistler
 // 
@@ -35,6 +36,7 @@
 #include "Ui_PhonemeEditorWidget.h"
 
 #include <QtXml/qdom.h>
+#include <Qt/QStringlist.h>
 
 class QXmlTreeNode;
 
@@ -57,15 +59,18 @@ private slots:
 	void playSound();
 	void stopSound();
 	void save();
+	void parseXmlFile();
+	void enableSaveButton();
 
 private:
-	void			parseXmlFile();
+	unsigned int				m_entityWorldID;
+	QString						m_phonemeFileName;
+	QDomDocument				m_phonemeXml;
 
-	unsigned int	m_entityWorldID;
-	QString			m_phonemeFileName;
-	QDomDocument	m_phonemeXml;
+	QXmlTreeNode*				m_currentNode;
 
-	QXmlTreeNode*	m_currentNode;
+	static const QStringList	m_phonemeList;
+
 
 };
 #endif
