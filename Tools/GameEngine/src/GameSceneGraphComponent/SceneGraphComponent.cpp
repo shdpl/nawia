@@ -281,6 +281,9 @@ void SceneGraphComponent::getMeshData(MeshData* data)
 
 void SceneGraphComponent::translateLocal(const Vec3f* translation)
 {
+	// ensure that m_transfomration is up to date
+	update();
+
 	Matrix4f trans(m_transformation);
 	Vec3f t( (trans * *translation) );
 	trans.x[12] = t.x;
@@ -294,6 +297,9 @@ void SceneGraphComponent::translateLocal(const Vec3f* translation)
 
 void SceneGraphComponent::translateGlobal(const Vec3f* translation)
 {
+	// ensure that m_transfomration is up to date
+	update();
+
 	Matrix4f trans(m_transformation);
 	trans.x[12] += translation->x;
 	trans.x[13] += translation->y;
@@ -322,6 +328,9 @@ void SceneGraphComponent::setScale(const Vec3f *scale)
 
 void SceneGraphComponent::rotate(const Vec3f* rotation)
 {
+	// ensure that m_transfomration is up to date
+	update();
+
 	Matrix4f trans( Matrix4f(m_transformation) * Matrix4f(Quaternion(degToRad(rotation->x), degToRad(rotation->y), degToRad(rotation->z))) );
 	// Create event without sender attribute, such the scenegraph component will be updated using executeEvent too
 	GameEvent event(GameEvent::E_SET_TRANSFORMATION, &GameEventData(trans.x, 16), 0);
