@@ -3,14 +3,66 @@
 <head>
     <title>Horde3D Documentation</title>
     <link rel="stylesheet" type="text/css" href="css/manual.css" title="ALL" media="screen,projection" />
+	<link rel="stylesheet" type="text/css" href="css/api.css">
 </head>
 
 <body>
 <div id="content">
 
 <h1>Horde3D Data Format Reference</h1>
-
-<h2>Texture Maps</h2>
+<div class="CBody">
+  <!--START_ND_SUMMARY-->
+  <div class="Summary">
+    <div class="STitle">Contents</div>
+    <div class="SBorder">
+      <table border="0" cellspacing="0" cellpadding="0" class="STable">
+        <tr class="SGroup SIndent1">
+          <td class="SEntry"><a href="#textureMaps" >Textural and imaging </a></td>
+          <td class="SDescription"></td>
+        </tr>
+        <tr class="SFunction SIndent2 SMarked">
+          <td class="SEntry"><a href="#textureMaps" id="link1" onmouseover="ShowTip(event, 'tt1', 'link1')" onmouseout="HideTip('tt1')">Textures Maps </a></td>
+          <td class="SDescription">Frees memory allocated by the Utility Library.</td>
+        </tr>
+        <tr class="SFunction SIndent2">
+          <td class="SEntry"><a href="#materials" id="link2" onmouseover="ShowTip(event, 'tt2', 'link2')" onmouseout="HideTip('tt2')">Materials</a></td>
+          <td class="SDescription">Writes all messages in the queue to a log file.</td>
+        </tr>
+        <tr class="SFunction SIndent2 SMarked">
+          <td class="SEntry"><a href="#code" id="link1" onmouseover="ShowTip(event, 'tt1', 'link1')" onmouseout="HideTip('tt1')">Code Files </a></td>
+          <td class="SDescription">Frees memory allocated by the Utility Library.</td>
+        </tr>
+        <tr class="SFunction SIndent2">
+          <td class="SEntry"><a href="#shaders" id="link2" onmouseover="ShowTip(event, 'tt2', 'link2')" onmouseout="HideTip('tt2')">Shaders</a></td>
+          <td class="SDescription">Writes all messages in the queue to a log file.</td>
+        </tr>
+        <tr class="SGroup SIndent1">
+          <td class="SEntry"><a href="#scenegraph" >Graphs and Content </a></td>
+          <td class="SDescription"></td>
+        </tr>
+        <tr class="SFunction SIndent2 SMarked">
+          <td class="SEntry"><a href="#scenegraph" id="link3" onmouseover="ShowTip(event, 'tt3', 'link3')" onmouseout="HideTip('tt3')">Scene Graph </a></td>
+          <td class="SDescription">Initializes OpenGL.</td>
+        </tr>
+        <tr class="SFunction SIndent2">
+          <td class="SEntry"><a href="#effect" id="link4" onmouseover="ShowTip(event, 'tt4', 'link4')" onmouseout="HideTip('tt4')">Effects</a></td>
+          <td class="SDescription">Releases OpenGL.</td>
+        </tr>
+        <tr class="SFunction SIndent2 SMarked">
+          <td class="SEntry"><a href="#geo" id="link5" onmouseover="ShowTip(event, 'tt5', 'link5')" onmouseout="HideTip('tt5')">Geometry</a></td>
+          <td class="SDescription">Displays the rendered image on the screen.</td>
+        </tr>
+        <tr class="SFunction SIndent2">
+          <td class="SEntry"><a href="#anim" id="link4" onmouseover="ShowTip(event, 'tt4', 'link4')" onmouseout="HideTip('tt4')">Animation</a></td>
+          <td class="SDescription">Releases OpenGL.</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <!--END_ND_SUMMARY-->
+</div>
+<p>&nbsp;</p>
+<h2>Texture Maps<a name="textureMaps" id="textureMaps"></a></h2>
 <p>
 Horde3D supports two dimensional texture maps and cube maps with up to four 8-bit color components, thus including
 an Alpha channel. It is recommended that texture maps have power of two dimensions (1, 2, 4, 8, 16, ..., 512, 1024, 2048) but this
@@ -40,7 +92,7 @@ cube map.
 </p>
 <br /><br /><br />
 
-<h2>Materials</h2>
+<h2>Materials<a name="materials" id="materials"></a></h2>
 <p><i>Filename-extension: .material.xml</i></p>
 <p>
 Materials are used to bind data to shaders. They can reference a shader and setup texture units
@@ -193,7 +245,7 @@ The following XML node elements with the described attributes are supported:
 <br /><br /><br />
 
 
-<h2>Code Files</h2>
+<h2>Code Files<a name="code" id="code"></a></h2>
 <p><i>Filename-extension: arbitrary, usually .txt</i></p>
 <p>
 Code files are pure text files that can be used to define shader code. These files can be referenced by shader resources.
@@ -201,7 +253,7 @@ Code files are pure text files that can be used to define shader code. These fil
 <br /><br /><br />
 
 
-<h2>Shaders</h2>
+<h2>Shaders<a name="shaders" id="shaders"></a></h2>
 <p><i>Filename-extension: .shader.xml</i></p>
 <p>
 Shaders are used to create a plenty of different effects. A shader can generally be executed in different stages of the
@@ -371,7 +423,7 @@ For more information on available shader attributes see the <a href="_pipeline.h
 </p>
 <br /><br />
 
-<h2>Scene Graph Files</h2>
+<h2>Scene Graph Files<a name="scenegraph" id="scenegraph"></a></h2>
 <p><i>Filename-extension: .scene.xml</i></p>
 <p>
 Scene graph files are XML documents that define a subtree of the scene graph.
@@ -655,7 +707,7 @@ The XML document can have an arbitrary scene node as root element.
 <br /><br />
 
 
-<h2>Effect Files</h2>
+<h2>Effect Files<a name="effect" id="effect"></a></h2>
 <p><i>Filename-extension: .effect.xml</i></p>
 <p>
 Effect files are used to configure particles of a particle system. Each particle has a randomly selected
@@ -733,7 +785,7 @@ The following XML node elements with the described attributes are supported for 
 <br /><br />
 
 
-<h2>Geometry</h2>
+<h2>Geometry<a name="geo" id="geo"></a></h2>
 <p><i>Filename-extensions: .geo</i></p>
 <p>The file format for geometry is a binary format and has to be created with a suitable tool
 like the Collada Converter described above.
@@ -764,7 +816,7 @@ The file format is based on streams. The streams are written in that order:
                     <td><b>magic</b></td>
 					<td>4 <b>char</b>s</td>
                     <td>byte sequence 'H3DG'</td>
-					</tr>
+			  </tr>
 				<tr>
 					<td><b>version</b></td>
 					<td><b>int</b></td>
@@ -803,7 +855,7 @@ The file format is based on streams. The streams are written in that order:
         <td>Vertex stream, just after the joint stream
 			<table>
                 <tr>
-					<tr>
+			  <tr>
 						<td><b>numVertexStreams</b></td>
 						<td><b>int</b></td>
 						<td>
@@ -820,7 +872,7 @@ The file format is based on streams. The streams are written in that order:
 								<li>texture coordinates, set 1</li>
 							</ul>
 						</td>
-					</tr>
+			  </tr>
 					<tr>
 						<td><b>numVertices</b></td>
 						<td><b>int</b></td>
@@ -1101,7 +1153,7 @@ The file format is based on streams. The streams are written in that order:
 
 
 
-<h2>Animation</h2>
+<h2>Animation<a name="anim" id="anim"></a></h2>
 <p><i>Filename-extensions: .anim</i></p>
 
 The animation resource consists of sampled animation data for the joints and meshes of a model.
