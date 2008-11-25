@@ -7,15 +7,15 @@
     </Camera>
     <Reference tx="0" ty="15" sx="40" tz="0" sy="40" rx="0" sz="40" sceneGraph="skybox.scene.xml" ry="0" rz="0" name="skybox" />
     <Reference tx="-4" ty="0.5" sx="1" tz="1" sy="1" rx="0" sz="1" sceneGraph="woodencrate.scene.xml" ry="0" rz="0" name="crate1" >
-        <Attachment type="GameEngine" name="Crate1" />
+        <Attachment type="GameEngine" name="crate1" />
     </Reference>
     <Reference tx="5" sx="0.06" ty="0" sy="0.06" rx="0" tz="-3.5" sceneGraph="female.scene.xml" sz="0.06" ry="0" rz="0" name="Marie" >
-        <Attachment type="GameEngine" name="Character1" >
+        <Attachment type="GameEngine" name="Marie" >
             <TTS voice="Microsoft Mary" />
         </Attachment>
     </Reference>
     <Reference tx="-7" sx="0.06" ty="0" sy="0.06" rx="0" tz="-1" sceneGraph="male.scene.xml" sz="0.06" ry="90" rz="0" name="Hans" >
-        <Attachment type="GameEngine" name="Character2" >
+        <Attachment type="GameEngine" name="Hans" >
             <TTS voice="Microsoft Sam" />
         </Attachment>
     </Reference>
@@ -23,6 +23,6 @@
         <Attachment type="GameEngine" name="Ground" />
     </Reference>
     <Reference tx="-4" ty="0.5" sx="1" tz="-3" sy="1" rx="0" sz="1" sceneGraph="woodencrate.scene.xml" ry="0" rz="0" name="crate2" >
-        <Attachment type="GameEngine" name="Crate2" />
+        <Attachment type="GameEngine" name="crate2" />
     </Reference>
 </Group>
