@@ -1277,7 +1277,7 @@ class Converter():
 			if self.__materials[mat]['uniform'] != None:
 				color = tuple(self.__materials[mat]['uniform'])
 				name = [self.__materials[mat]['name']+'col']
-				matFile.write('\t<Uniform name="%s" a="%s" b="%s" c="%s" d="%s" />\n' % (tuple(name)+color))
+				matFile.write('\t<Uniform name="Materialcol" a="%s" b="%s" c="%s" d="%s" />\n' % (color))
 			matFile.write('</Material>\n')	
 			matFile.close()
 			
