@@ -42,11 +42,15 @@ struct testEvaluationFunc
 	};
 };
 
+// =================================================================================================
+// Code Resource
+// =================================================================================================
+
 class CodeResource : public Resource
 {
 private:
 	
-	std::string	_code;
+	std::string  _code;
 
 	void updateShaders();
 
@@ -72,10 +76,14 @@ public:
 typedef SmartResPtr< CodeResource > PCodeResource;
 
 
+// =================================================================================================
+// Shader Resource
+// =================================================================================================
+
 struct ShaderCodeFract
 {
-	PCodeResource	refCodeRes;
-	std::string			code;
+	PCodeResource  refCodeRes;
+	std::string    code;
 };
 
 
@@ -94,42 +102,43 @@ struct BlendModes
 
 struct ShaderContext
 {
-	std::string						id;
-	std::vector< ShaderCodeFract >	vertShaderFracts, fragShaderFracts;
-	bool						compiled;
-	uint32						shaderObject;
-	uint32						lastUpdateStamp;
-
+	std::string                     id;
+	uint32                          shaderObject;
+	uint32                          lastUpdateStamp;
+	
 	// RenderConfig
-	bool						writeDepth;
-	bool						testDepth;
+	bool						    testDepth;
 	//True = must be closer, false = must be further
-	testEvaluationFunc::List	depthTestFunc;
-	bool						testAlpha;
+	testEvaluationFunc::List	    depthTestFunc;
+	bool						    testAlpha;
 	//true is > false is <
-	testEvaluationFunc::List	alphaTestFunc;
-	float						alphaTestVal;
-	bool						alphaToCoverage;
+	testEvaluationFunc::List	    alphaTestFunc;
+	float						    alphaTestVal;
+	bool						    alphaToCoverage;
 
-	BlendModes::List			blendMode;
+	BlendModes::List                blendMode;
+	bool                            writeDepth;
 	
 	// Engine uniform and attribute locations
-	int							uni_frameBufSize;
-	int							uni_texs[12];
-	int							uni_worldMat, uni_worldNormalMat;
-	int							uni_viewer;
-	int							uni_lightPos, uni_lightDir, uni_lightColor, uni_lightCosCutoff;
-	int							uni_shadowSplitDists, uni_shadowMats;
-	int							uni_shadowMapSize, uni_shadowBias;
-	int							uni_skinMatRows;
-	int							uni_parCorners;
-	int							uni_parPosArray, uni_parSizeAndRotArray, uni_parColorArray;
-	int							attrib_normal, attrib_tangent, attrib_bitangent;
-	int							attrib_joints, attrib_weights;
-	int							attrib_texCoords0, attrib_texCoords1;
+	int                             uni_frameBufSize;
+	int                             uni_texs[12];
+	int                             uni_worldMat, uni_worldNormalMat;
+	int                             uni_viewer;
+	int                             uni_lightPos, uni_lightDir, uni_lightColor, uni_lightCosCutoff;
+	int                             uni_shadowSplitDists, uni_shadowMats;
+	int                             uni_shadowMapSize, uni_shadowBias;
+	int                             uni_skinMatRows;
+	int                             uni_parCorners;
+	int                             uni_parPosArray, uni_parSizeAndRotArray, uni_parColorArray;
+	int                             attrib_normal, attrib_tangent, attrib_bitangent;
+	int                             attrib_joints, attrib_weights;
+	int                             attrib_texCoords0, attrib_texCoords1;
 
 	// Custom uniforms
-	std::map< std::string, int >			customUniforms;
+	std::map< std::string, int >    customUniforms;
+
+	std::vector< ShaderCodeFract >  vertShaderFracts, fragShaderFracts;
+	bool                            compiled;
 
 
 	ShaderContext()
@@ -142,14 +151,15 @@ struct ShaderContext
 	}
 };
 
+// =================================================================================================
 
 class ShaderResource : public Resource
 {
 private:
 	
-	static std::string				_vertPreamble, _fragPreamble;
+	static std::string            _vertPreamble, _fragPreamble;
 	
-	std::vector< ShaderContext >		_contexts;
+	std::vector< ShaderContext >  _contexts;
 
 	bool raiseError( const std::string &msg, int line = -1 );
 	bool parseCode( XMLNode &node, std::vector< ShaderCodeFract > &codeFracts );
