@@ -452,7 +452,7 @@ void KeyframeAnimComponent::loadFromXml(const XMLNode* description)
 			// Null-terminate buffer - this is important for XML parsers 
 			data[size] = '\0';
 			// Add animation resources to horde resource manager			
-			const int resourceID = Horde3D::addResource( ResourceTypes::Animation, name, 0 );	
+			const int resourceID = Horde3D::addResource( ResourceTypes::Animation, file, 0 );	
 			// Send resource data to engine
 			Horde3D::loadResource( resourceID, data, size );
 			delete[] data;
@@ -487,13 +487,16 @@ void KeyframeAnimComponent::update(const float timestamp)
 
 bool KeyframeAnimComponent::isPlaying(const char *animation)
 {
-	ResHandle res = Horde3D::findResource(ResourceTypes::Animation, animation);
-	if(res == 0) return false;
+	//ResHandle res = Horde3D::findResource(ResourceTypes::Animation, animation);
+	//if(res == 0) return false;
 
+	std::map<std::string, AnimationControl::Animation*>::iterator iter = m_animations.find(animation);
+	if(iter == m_animations.end()) return false;
+	
 	for (int i=0; i<MAX_STAGES; ++i)
 	{
 		if( !m_stageControllers[i].Animations.empty() &&
-			m_stageControllers[i].Animations.front()->m_animation->AnimResourceID == res)
+			m_stageControllers[i].Animations.front()->m_animation->AnimResourceID == iter->second->AnimResourceID)
 		{
 			return true;
 		}
