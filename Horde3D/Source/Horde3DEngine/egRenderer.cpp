@@ -1113,6 +1113,9 @@ void Renderer::drawFSQuad( Resource *matRes, const string &shaderContext )
 	glLoadIdentity();
 	glOrtho( 0, 1, 0, 1, -1, 1 );
 	glMatrixMode( GL_MODELVIEW );
+	if( _curCamera != 0x0 )
+		glLoadMatrixf( _curCamera->_invTrans.x );
+	else
 	glLoadIdentity();
 	
 	glDepthFunc( GL_ALWAYS );
