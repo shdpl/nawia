@@ -195,10 +195,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\AnimationSquirrel.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\GameEngine_Animations.cpp"
 				>
 			</File>
@@ -238,10 +234,6 @@
 			>
 			<File
 				RelativePath=".\AnimationLua.h"
-				>
-			</File>
-			<File
-				RelativePath=".\AnimationSquirrel.h"
 				>
 			</File>
 			<File
