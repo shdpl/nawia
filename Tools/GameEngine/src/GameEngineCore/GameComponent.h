@@ -60,7 +60,6 @@ class DLLEXP GameComponent
 	friend class GameEntity;
 
 public:
-
 	typedef std::string ComponentID;
 
 	/**

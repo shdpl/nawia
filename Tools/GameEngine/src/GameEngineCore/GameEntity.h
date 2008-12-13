@@ -36,6 +36,8 @@
 #define GAMEENTITY_H_
 
 #include <string>
+#include <map>
+#include <GameEngine/utMath.h>
 
 #include "GameComponent.h"
 
@@ -64,6 +66,30 @@ class DLLEXP GameEntity
 	friend struct DeleteEntity;
 
 public:
+	enum PropertyType
+	{
+		INVALID = 0,
+		INTEGER,
+		UNSIGNED,
+		FLOAT,
+		DOUBLE,
+		STRING,
+		VEC,
+		COUNT
+	};
+	void* setProperty(std::string name, int value, GameComponent* editor = 0);
+	void* setProperty(std::string name, unsigned int value, GameComponent* editor = 0);
+	void* setProperty(std::string name, float value, GameComponent* editor = 0);
+	void* setProperty(std::string name, double value, GameComponent* editor = 0);
+	void* setProperty(std::string name, std::string value, GameComponent* editor = 0);
+	void* setProperty(std::string name, Vec3f value, GameComponent* editor = 0);
+
+	int getPropertyInteger(std::string name);
+	unsigned int getPropertyUnsigned(std::string name);
+	float getPropertyFloat(std::string name);
+	double getPropertyDouble(std::string name);
+	std::string getPropertyString(std::string name);
+	Vec3f getPropertyVec3f(std::string name);
 	
 	/**
 	 * \brief A unique id (string) of the entity within the GameWorld
@@ -184,7 +210,9 @@ private:
 
 	/// Index for the entity within the GameWorld
 	unsigned int				m_worldId;
-	
+
+	std::map< std::string, std::pair< PropertyType, void* > > m_properties;
+	void throwPropertyEvent(std::string name, PropertyType type, void* value, GameComponent* editor);
 };
 
 /*! @}*/

@@ -96,5 +96,4 @@ namespace GameEngine
 		GameModules::plugInManager()->registerLuaStack( L );
 
 	}
-
 }

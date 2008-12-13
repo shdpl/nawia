@@ -36,6 +36,7 @@
 #define GAME_MODULES_H_
 
 #include <GameEngine/config.h>
+#include <GameEngine/NameGenerator.h>
 
 class GameComponentRegistry;
 class GamePlugInManager;
@@ -87,7 +88,8 @@ public:
 	 * @return the singleton instance of the GameWorld
 	 */ 
 	static GameWorld*				gameWorld();
-
+	
+	static NameGenerator*			nameGen();
 private:
 	/// Singleton instance 
 	static GamePlugInManager*		m_plugInManager;
@@ -95,6 +97,7 @@ private:
 	static GameComponentRegistry*	m_componentRegistry;
 	/// Singleton instance 
 	static GameWorld*				m_gameWorld;
+	static NameGenerator*					m_nameGen;
 };
 
 /*! @}*/

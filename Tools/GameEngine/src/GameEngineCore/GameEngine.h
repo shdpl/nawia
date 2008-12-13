@@ -46,6 +46,7 @@
 
 class GameEvent;
 struct lua_State;
+struct SQVM;
 
 /**
  * \mainpage GaBaCo - GameEngine based on Components
@@ -151,6 +152,7 @@ namespace GameEngine
 	 * Registers the GameEngine methods on the given lua stack
 	 */
 	GAMEENGINE_API void registerLuaStack(lua_State* L);
+	GAMEENGINE_API void registerSquirrelFunctions(SQVM* v);
 
 	/**
 	 * \brief Returns the index of an entity within the GameWorld
@@ -160,7 +162,7 @@ namespace GameEngine
 	 * @return 0 if no entity with this id exists, otherwise the internal world index 
 	 */
 	GAMEENGINE_API unsigned int entityWorldID( const char* entityID );
-	
+	GAMEENGINE_API const char* entityName(unsigned int worldID );
 	/**
      * Creates a new GameEntity based on the given XML data 
 	 * @param xmlText data for a game entity. e.g.: 

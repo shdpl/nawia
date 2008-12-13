@@ -43,6 +43,7 @@ class GameEntity;
 
 #include <GameEngine/utMath.h>
 #include <stdlib.h>
+#include <map>
 
 /** \addtogroup GameEngineCore
  * @{
@@ -288,7 +289,51 @@ public:
 		E_SET_ENABLED,			/// Enables components (wether the component should be rendered/updated or not)		
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
-	
+	static GameEvent::EventID convertStringEvent(std::string in)
+	{
+		if(in.find("E_INVALID") != std::string::npos) return GameEvent::E_INVALID;
+		if(in.find("E_SET_TRANSFORMATION") != std::string::npos) return GameEvent::E_SET_TRANSFORMATION;
+		if(in.find("E_SET_ROTATION") != std::string::npos) return GameEvent::E_SET_ROTATION;
+		if(in.find("E_SET_TRANSLATION") != std::string::npos) return GameEvent::E_SET_TRANSLATION;
+		if(in.find("E_SET_SCALE") != std::string::npos) return GameEvent::E_SET_SCALE;
+		if(in.find("E_TRANSLATE_LOCAL") != std::string::npos) return GameEvent::E_TRANSLATE_LOCAL;
+		if(in.find("E_TRANSLATE_GLOBAL") != std::string::npos) return GameEvent::E_TRANSLATE_GLOBAL;
+		if(in.find("E_ROTATE_LOCAL") != std::string::npos) return GameEvent::E_ROTATE_LOCAL;
+		if(in.find("E_TRANSFORMATION") != std::string::npos) return GameEvent::E_TRANSFORMATION;
+		if(in.find("E_MESH_DATA") != std::string::npos) return GameEvent::E_MESH_DATA;
+		if(in.find("E_MORPH_TARGET") != std::string::npos) return GameEvent::E_MORPH_TARGET;
+		if(in.find("E_MORPH_TARGET_ANIM") != std::string::npos) return GameEvent::E_MORPH_TARGET_ANIM;
+		if(in.find("E_KEY_PRESS") != std::string::npos) return GameEvent::E_KEY_PRESS;
+		if(in.find("E_PLAY_ANIM") != std::string::npos) return GameEvent::E_PLAY_ANIM;
+		if(in.find("E_UPDATE_ANIM") != std::string::npos) return GameEvent::E_UPDATE_ANIM;
+		if(in.find("E_ANIM_STOPPED") != std::string::npos) return GameEvent::E_ANIM_STOPPED;
+		if(in.find("E_SETUP_ANIM") != std::string::npos) return GameEvent::E_SETUP_ANIM;
+		if(in.find("E_SET_ANIM_FRAME") != std::string::npos) return GameEvent::E_SET_ANIM_FRAME;
+		if(in.find("E_ATTACH") != std::string::npos) return GameEvent::E_ATTACH;
+		if(in.find("E_SET_NODE_PARENT") != std::string::npos) return GameEvent::E_SET_NODE_PARENT;
+		if(in.find("E_SPEAKING_STOPPED") != std::string::npos) return GameEvent::E_SPEAKING_STOPPED;
+		if(in.find("E_SPEAK") != std::string::npos) return GameEvent::E_SPEAK;
+		if(in.find("E_SET_VOICE") != std::string::npos) return GameEvent::E_SET_VOICE;
+		if(in.find("E_COLLISION") != std::string::npos) return GameEvent::E_COLLISION;
+		if(in.find("E_ACTIVATE_CAM") != std::string::npos) return GameEvent::E_ACTIVATE_CAM;
+		if(in.find("E_PERFORM_ACTION") != std::string::npos) return GameEvent::E_PERFORM_ACTION;
+		if(in.find("E_WITNESS_ACTION") != std::string::npos) return GameEvent::E_WITNESS_ACTION;
+		if(in.find("E_GO_TO_ENTITY") != std::string::npos) return GameEvent::E_GO_TO_ENTITY;
+		if(in.find("E_GO_TO_POSITION") != std::string::npos) return GameEvent::E_GO_TO_POSITION;
+		if(in.find("E_GO_TO_RELATIVE") != std::string::npos) return GameEvent::E_GO_TO_RELATIVE;
+		if(in.find("E_GO_TO_STOPPED") != std::string::npos) return GameEvent::E_GO_TO_STOPPED;
+		if(in.find("E_SET_PROPERTY") != std::string::npos) return GameEvent::E_SET_PROPERTY;
+		if(in.find("E_GET_PROPERTY") != std::string::npos) return GameEvent::E_GET_PROPERTY;
+		if(in.find("E_INTERACT") != std::string::npos) return GameEvent::E_INTERACT;
+		if(in.find("E_INTERACTED_WITH") != std::string::npos) return GameEvent::E_INTERACTED_WITH;
+		if(in.find("E_SET_SOUND_GAIN") != std::string::npos) return GameEvent::E_SET_SOUND_GAIN;
+		if(in.find("E_SET_SOUND_LOOP") != std::string::npos) return GameEvent::E_SET_SOUND_LOOP;
+		if(in.find("E_SET_SOUND_FILE") != std::string::npos) return GameEvent::E_SET_SOUND_FILE;
+		if(in.find("E_SET_PHONEMES_FILE") != std::string::npos) return GameEvent::E_SET_PHONEMES_FILE;
+		if(in.find("E_SET_ENABLED") != std::string::npos) return GameEvent::E_SET_ENABLED;
+		return GameEvent::EVENT_COUNT;
+
+	}
 	GameEvent(EventID id, GameEventData* data, GameComponent* sender) : m_id(id), m_pData(data), m_sender(sender), m_owner(false)
 	{		
 	}
