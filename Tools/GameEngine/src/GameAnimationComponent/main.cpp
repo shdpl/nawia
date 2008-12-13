@@ -51,6 +51,8 @@
 #include "MorphtargetAnimComponent.h"
 #include "MorphtargetAnimManager.h"
 #include "AnimationLua.h"
+#include "AnimationSquirrel.h"
+
 
 ANIMATIONSPLUGINEXP void dllLoadGamePlugin(void)
 {
@@ -110,4 +112,8 @@ ANIMATIONSPLUGINEXP void dllLoadScene( const char* sceneFile )
 extern "C" ANIMATIONSPLUGINEXP  void dllRegisterLuaStack( lua_State* L )
 {
 	AnimationLua::registerLuaBindings( L );
+}
+extern "C" ANIMATIONSPLUGINEXP void dllRegisterSquirrelFunctions(SQVM* v)
+{
+	AnimSquirrel::registerFunctions(v);
 }

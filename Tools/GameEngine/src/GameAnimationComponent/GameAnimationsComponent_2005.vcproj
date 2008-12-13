@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="GameAnimationsComponent"
 	ProjectGUID="{3E87E5FB-5C38-1139-85B7-CF179BA0D2AB}"
 	RootNamespace="GameAnimationsComponent"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib GameEngineCore.lib XmlParser.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib Lua.lib"
+				AdditionalDependencies="delayimp.lib GameEngineCore.lib XmlParser.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib Lua.lib squirrel.lib"
 				OutputFile="$(SolutionDir)bin\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
@@ -195,6 +195,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\AnimationSquirrel.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\GameEngine_Animations.cpp"
 				>
 			</File>
@@ -234,6 +238,10 @@
 			>
 			<File
 				RelativePath=".\AnimationLua.h"
+				>
+			</File>
+			<File
+				RelativePath=".\AnimationSquirrel.h"
 				>
 			</File>
 			<File

@@ -561,3 +561,15 @@ void KeyframeAnimComponent::updateAnim(AnimationUpdate *command)
 	}
 }
 
+int KeyframeAnimComponent::getJobID(std::string animName)
+{
+	std::map<std::string, AnimationControl::Animation*>::iterator iter = m_animations.find(animName);
+	if(iter != m_animations.end())
+	{
+		for(unsigned int i = 0; i < m_animationRegistry.size(); ++i)
+		{
+			if(m_animationRegistry[i]->m_animation = iter->second) return i+1;
+		}
+	}
+	return 0;
+}

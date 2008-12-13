@@ -67,6 +67,12 @@ public:
 	bool isPlaying( const char* animation );
 
 	float getAnimLength( const char* animation );
+
+	int getJobCount()
+	{
+		return int(m_animationRegistry.size());
+	};
+	int getJobID(std::string animName);
 private:
 	void release();
 
