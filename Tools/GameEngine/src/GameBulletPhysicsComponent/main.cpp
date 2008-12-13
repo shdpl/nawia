@@ -41,7 +41,6 @@
 #include "Physics.h"
 #include "PhysicsComponent.h"
 #include "PhysicsLua.h"
-#include "PhysicsSquirrel.h"
 
 extern "C" BULLETPHYSICSPLUGINEXP void dllLoadGamePlugin(void)
 {
@@ -63,9 +62,5 @@ extern "C" BULLETPHYSICSPLUGINEXP void dllUnloadGamePlugin(void)
 extern "C" BULLETPHYSICSPLUGINEXP  void dllRegisterLuaStack( lua_State* L )
 {
 	PhysicsLua::registerLuaBindings( L );
-}
-extern "C" BULLETPHYSICSPLUGINEXP void dllRegisterSquirrelFunctions(HSQUIRRELVM v)
-{
-	PhysicsSquirrel::registerSquirrelBindings(v);
 }
 

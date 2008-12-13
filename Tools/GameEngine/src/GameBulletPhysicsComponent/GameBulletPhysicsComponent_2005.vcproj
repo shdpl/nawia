@@ -212,10 +212,6 @@
 				RelativePath=".\PhysicsLua.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\PhysicsSquirrel.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -240,10 +236,6 @@
 			</File>
 			<File
 				RelativePath=".\PhysicsLua.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PhysicsSquirrel.h"
 				>
 			</File>
 		</Filter>
