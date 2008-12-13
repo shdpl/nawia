@@ -46,7 +46,6 @@
 
 #include <XmlParser/utXmlParser.h>
 #include <direct.h>
-#include "GameEngine_Squirrel.h"
 
 
 namespace GameEngine
@@ -199,21 +198,13 @@ namespace GameEngine
 			const char* entityName = attachment.getAttribute("name");
 			if (entityName == 0)
 			{
-				entityName = GameModules::nameGen()->getName();
-				//GameLog::errorMessage("%s, Line %d: The Attachment contains no name attribute!", __FILE__, __LINE__ );
-				//return 0;
+				GameLog::errorMessage("%s, Line %d: The Attachment contains no name attribute!", __FILE__, __LINE__ );
+				return 0;
 			}
 			EntityID entityID = entityName;
 			
 			GameEntity* entity = GameModules::gameWorld()->createEntity(entityID);
 	
-			int tries = 0;
-			while(!entity && tries < 6)
-			{
-				++tries;
-				entityID = GameModules::nameGen()->getName();
-				entity = GameModules::gameWorld()->createEntity(entityID);
-			}
 			
 			const int childNodes = attachment.nChildNode();
 			for( int i = 0; i < childNodes; ++i )

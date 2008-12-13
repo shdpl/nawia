@@ -72,7 +72,6 @@ class GamePlugInManager
 
 	/// \typedef Prototype for lua registration method in plugins
 	typedef void (*REGISTER_LUA_STACK)( lua_State* L );
-	typedef void (*REGISTER_SQUIRREL_FUNCTIONS)(SQVM* V);
 
 public:
 	/**
@@ -112,7 +111,6 @@ public:
 	 * @param L 
 	 */ 
 	void registerLuaStack( lua_State* L );
-	void registerSquirrelFunctions(SQVM* V);
 
 private:
 	/// Private Contstructor ( friend class GameModules )

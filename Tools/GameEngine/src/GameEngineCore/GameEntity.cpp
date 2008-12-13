@@ -107,13 +107,6 @@ GameEntity::GameEntity(const EntityID& id) : m_id(id), m_worldId(0)
 GameEntity::~GameEntity()
 {
 	delete m_privateData;
-	std::map< std::string, std::pair<PropertyType,void*> >::iterator t = m_properties.begin();
-	while(t != m_properties.end())
-	{
-		delete t->second.second;
-		t++;
-	}
-	m_properties.clear();
 }
 
 void GameEntity::addListener( GameEvent::EventID eventType, GameComponent* listener )

@@ -41,7 +41,6 @@
 GamePlugInManager* GameModules::m_plugInManager = 0x0;
 GameComponentRegistry* GameModules::m_componentRegistry = 0x0;
 GameWorld* GameModules::m_gameWorld = 0x0;
-NameGenerator* GameModules::m_nameGen = 0x0;
 
 void GameModules::release()
 {
@@ -52,7 +51,6 @@ void GameModules::release()
 	delete m_plugInManager; m_plugInManager = 0;
 	// Last but not least, remove the component registry
 	delete m_componentRegistry; m_componentRegistry = 0;
-	delete m_nameGen;
 }
 
 GamePlugInManager* GameModules::plugInManager()
@@ -74,11 +72,4 @@ GameWorld* GameModules::gameWorld()
 	if( m_gameWorld == 0x0 )
 		m_gameWorld = new GameWorld();
 	return m_gameWorld;
-}
-
-NameGenerator* GameModules::nameGen()
-{
-	if(m_nameGen == 0x0)
-		m_nameGen = new NameGenerator();
-	return m_nameGen;
 }

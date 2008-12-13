@@ -152,7 +152,6 @@ namespace GameEngine
 	 * Registers the GameEngine methods on the given lua stack
 	 */
 	GAMEENGINE_API void registerLuaStack(lua_State* L);
-	GAMEENGINE_API void registerSquirrelFunctions(SQVM* v);
 
 	/**
 	 * \brief Returns the index of an entity within the GameWorld

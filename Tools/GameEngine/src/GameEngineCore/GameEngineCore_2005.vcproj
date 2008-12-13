@@ -305,10 +305,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\GameEngine_Squirrel.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\GameEntity.cpp"
 				>
 			</File>
@@ -367,10 +363,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\GameEngine_Squirrel.h"
-				>
-			</File>
-			<File
 				RelativePath=".\GameEntity.h"
 				>
 			</File>
@@ -392,10 +384,6 @@
 			</File>
 			<File
 				RelativePath=".\GameWorld.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NameGenerator.h"
 				>
 			</File>
 			<File

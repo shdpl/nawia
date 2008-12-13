@@ -136,17 +136,4 @@ void GamePlugInManager::registerLuaStack( lua_State *L )
 		++iter;
 	}
 }
-void GamePlugInManager::registerSquirrelFunctions(SQVM* V)
-{
-	std::map<std::string, DynLib*>::iterator iter = m_plugIns.begin();
-	while( iter != m_plugIns.end() )
-	{
-		REGISTER_SQUIRREL_FUNCTIONS registerSquirrelFunc = (REGISTER_SQUIRREL_FUNCTIONS) iter->second->getSymbol("dllRegisterSquirrelFunctions");
-		if( registerSquirrelFunc )
-			registerSquirrelFunc( V );
-		else
-			GameLog::logMessage( "No Squirrel Bindings for plugin '%s' found!", iter->second->getName().c_str() );
-		++iter;
-	}
-}
 
