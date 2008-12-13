@@ -45,7 +45,7 @@ extern "C"
 
 namespace PhysicsLua
 {
-	int GameEngine_setEntityPhysicsEnabled(lua_State* L)
+		int GameEngine_setEntityPhysicsEnabled(lua_State* L)
 		{
 			const int params = lua_gettop(L);
 			if (params < 2)

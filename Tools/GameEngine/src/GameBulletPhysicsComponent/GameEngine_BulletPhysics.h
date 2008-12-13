@@ -99,6 +99,7 @@ namespace GameEngine
 	 */
 	BULLETPHYSICSPLUGINEXP void resetEntityPhysicsForces(const char* entityID);
 
+	BULLETPHYSICSPLUGINEXP int physicsRay(float x, float y, float z, float dx, float dy, float dz, float* pos = 0, float* normal = 0);
 }
 
 #endif

@@ -124,7 +124,6 @@ void PhysicsComponent::executeEvent(GameEvent *event)
 			setRotation( rotation->x, rotation->y, rotation->z);
 		}
 		break;
-
 	}		
 }
 
@@ -160,6 +159,18 @@ void PhysicsComponent::setEnabled(bool enable)
 	}
 }
 
+void PhysicsComponent::setCollisionResponse(bool enable)
+{
+	m_CF_Disabled = !enable;
+	if(!enable)
+	{
+		m_rigidBody->setCollisionFlags(m_rigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+	}
+	else
+	{
+		m_rigidBody->setCollisionFlags(m_rigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+	}
+}
 void PhysicsComponent::resetForce()
 {
 	if( m_rigidBody )
@@ -293,6 +304,9 @@ void PhysicsComponent::loadFromXml(const XMLNode* description)
 	bool kinematic = _stricmp(description->getAttribute("kinematic", "false"), "true") == 0 || 
 					 _stricmp(description->getAttribute("kinematic", "0"), "1") == 0;
 
+	bool nondynamic = _stricmp(description->getAttribute("static", "false"),"true") == 0 ||
+					 _stricmp(description->getAttribute("static","0"),"1") == 0;
+
 	// Create initial transformation without scale
 	btTransform tr;			
 	tr.setRotation(btQuaternion(r.y, r.x, r.z));
@@ -320,10 +334,21 @@ void PhysicsComponent::loadFromXml(const XMLNode* description)
 	m_rigidBody->setDeactivationTime(2.0f);	
 	
 	// Add support for collision detection if mass is zero but kinematic is explicitly enabled
-	if (kinematic && mass == 0)
+	if (kinematic && mass == 0 && !nondynamic)
 	{
 		m_rigidBody->setCollisionFlags(m_rigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);	
 		m_rigidBody->setActivationState(DISABLE_DEACTIVATION);
+	}
+	if(nondynamic && mass == 0)
+	{
+		m_rigidBody->setCollisionFlags(m_rigidBody->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
+	}
+	
+	bool isTrigger = _stricmp(description->getAttribute("solid", "true"),"false") == 0 ||
+					 _stricmp(description->getAttribute("solid","1"),"0") == 0;
+	if(isTrigger)
+	{
+		setCollisionResponse(true);
 	}
 
 	Physics::instance()->addObject(this);

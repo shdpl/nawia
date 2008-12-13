@@ -66,6 +66,7 @@ public:
 	void reset();
 
 	void setEnabled(bool enable);
+	void setCollisionResponse(bool enable);
 
 	void resetForce();
 
@@ -87,6 +88,7 @@ private:
 	void setRotation( const float x, const float y, const float z );
 
 	bool							m_blockSignals;
+	bool							m_CF_Disabled;
 
 	/// Motion state for dynamic objects
 	btDefaultMotionState*			m_motionState;

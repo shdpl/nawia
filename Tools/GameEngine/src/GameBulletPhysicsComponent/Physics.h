@@ -131,6 +131,8 @@ public:
 	 */
 	void collisionCallback(btBroadphasePair& collisionPair, btCollisionDispatcher& dispatcher, btDispatcherInfo& dispatchInfo);
 
+	int castRay(float x, float y, float z, float dx, float dy, float dz, float* pos = 0, float* normal = 0);
+
 	btCollisionDispatcher*	dispatcher() { return m_dispatcher; }
 
 private:

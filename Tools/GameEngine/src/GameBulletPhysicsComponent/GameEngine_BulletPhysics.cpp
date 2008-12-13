@@ -105,5 +105,9 @@ namespace GameEngine
 		if( entity && ( component = static_cast<PhysicsComponent*>(entity->component("BulletPhysics")) ) != 0 )
 			component->resetForce();
 	}	
+	BULLETPHYSICSPLUGINEXP int physicsRay(float x, float y, float z, float dx, float dy, float dz, float* pos, float* normal)
+	{
+		return Physics::instance()->castRay(x,y,z,dx,dy,dz,pos,normal);
+	}
 }
 

@@ -190,6 +190,29 @@ void Physics::removeObject(PhysicsComponent* object)
 	}
 }
 
+int Physics::castRay(float x, float y, float z, float dx, float dy, float dz, float* pos, float* normal)
+{
+	btCollisionWorld::ClosestRayResultCallback t(btVector3(x,y,z),btVector3(dx,dy,dz));
+	m_physicsWorld->rayTest(btVector3(x,y,z),btVector3(dx,dy,dz),t);
+	PhysicsComponent* obj = (PhysicsComponent*)(t.m_collisionObject->getUserPointer());
+	if(obj)
+	{
+		if(pos)
+		{
+			pos[0] = t.m_hitPointWorld.x();
+			pos[1] = t.m_hitPointWorld.y();
+			pos[2] = t.m_hitPointWorld.z();
+		}
+		if(normal)
+		{
+			normal[0] = t.m_hitNormalWorld.x();
+			normal[1] = t.m_hitNormalWorld.y();
+			normal[2] = t.m_hitNormalWorld.z();
+		}
+		return obj->owner()->worldId();
+	}
+	return 0;
+}
 	//void collisionCallback(btBroadphasePair& collisionPair, btCollisionDispatcher& dispatcher, btDispatcherInfo& dispatchInfo)
 	//{
 	//	dispatcher.defaultNearCallback(collisionPair, dispatcher, dispatchInfo);		
