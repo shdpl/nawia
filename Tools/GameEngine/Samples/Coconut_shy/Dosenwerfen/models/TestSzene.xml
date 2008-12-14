@@ -12,7 +12,6 @@
     <Reference tx="0" sx="1" ty="3.69627" sy="1" tz="0" sceneGraph="scene.scene.xml" sz="1" name="Boden" >
         <Attachment type="GameEngine" name="Boden_7" >
             <BulletPhysics x="75" y="5" z="75" shape="Box" />
-			<Sound3D file="TESLA.wav" loop="true" />
         </Attachment>
     </Reference>
     <Reference tx="-8.19895" sx="1" ty="9.70328" sy="1" tz="5.07254" sceneGraph="Dose.scene.xml" sz="1" name="Dose" >
@@ -123,6 +122,7 @@
     <Reference tx="1.09901" sx="1" ty="26.5788" sy="1" tz="-4.94839" sceneGraph="Kugel.scene.xml" sz="1" name="kugel" >
         <Attachment type="GameEngine" name="KugelModel" >
             <BulletPhysics radius="1" mass="1" shape="Sphere" />
+            <Sound3D loop="1" file="Sound.wav" gain="1" />
         </Attachment>
     </Reference>
 </Group>
