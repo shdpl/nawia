@@ -29,47 +29,31 @@
 // Copyright (C) 2008 Felix Kistler
 // 
 // ****************************************************************************************
-#ifndef TIMELINETEXTEDIT_H_
-#define TIMELINETEXTEDIT_H_
 
-#include <QtXml/qdom.h>
-#include <Qt/QStringlist.h>
-#include <QtGui/QWidget.h>
-#include <QtGui/QTextEdit.h>
+#include "TimeLineFrame.h"
 
-class TimeLineTextEdit : public QTextEdit
+#include <QtGui/QEvent.h>
+
+TimeLineFrame::TimeLineFrame(QWidget * parent /*=0*/) : QFrame(parent)
 {
-	Q_OBJECT
+	setMouseTracking(true);
+}
 
-	Q_PROPERTY(QString value READ value WRITE setValue DESIGNABLE true USER true)
-	Q_PROPERTY(int start READ start WRITE setStart DESIGNABLE true USER true)
-	Q_PROPERTY(int end READ end WRITE setEnd DESIGNABLE true USER true)
+TimeLineFrame::~TimeLineFrame()
+{
+}
 
-public:
-	TimeLineTextEdit(const QDomElement& xmlNode, int maxTime, QWidget* parent = 0);
-	virtual ~TimeLineTextEdit();
+void TimeLineFrame::mouseMoveEvent(QMouseEvent *event)
+{
+	emit mouseMove(event);
+}
 
-	void setValue(const QString& value);
-	QString value() const {return m_value;}
-	void setStart(int start);
-	int start() const {return m_start;}
-	void setEnd(int end);
-	int end() const {return m_end;}
+void TimeLineFrame::mousePressEvent(QMouseEvent *event)
+{
+	emit mousePress(event);
+}
 
-	QDomElement& xmlNode() {return m_xmlNode;}
-
-signals:
-	void xmlNodeChanged();
-
-private slots:
-	void currentTextChanged();
-	void updateFromXml();
-
-
-private:
-	int				m_maxTime, m_start, m_end;
-	QString			m_value;
-	QDomElement		m_xmlNode;
-	
-};
-#endif
+void TimeLineFrame::mouseReleaseEvent(QMouseEvent *event)
+{
+	emit mouseRelease(event);
+}

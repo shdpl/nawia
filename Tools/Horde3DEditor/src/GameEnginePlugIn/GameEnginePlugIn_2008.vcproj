@@ -328,6 +328,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TimeLineFrame.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TimeLineTextEdit.cpp"
 				>
 			</File>
@@ -792,6 +796,40 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Memory Check|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\TimeLineFrame.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
 						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
 						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
 					/>
@@ -826,7 +864,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
@@ -836,7 +874,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
@@ -846,7 +884,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
@@ -970,6 +1008,10 @@
 			</File>
 			<File
 				RelativePath=".\moc_TimeLineComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\moc_TimeLineFrame.cpp"
 				>
 			</File>
 			<File

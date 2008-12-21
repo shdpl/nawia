@@ -29,61 +29,30 @@
 // Copyright (C) 2008 Felix Kistler
 // 
 // ****************************************************************************************
-#ifndef TIMELINECOMBOBOX_H_
-#define TIMELINECOMBOBOX_H_
+#ifndef TIMELINEFRAME_H_
+#define TIMELINEFRAME_H_
 
-#include <QtXml/qdom.h>
-#include <Qt/QStringlist.h>
+#include <QtGui/QFrame.h>
 #include <QtGui/QWidget.h>
-#include <QtGui/QComboBox.h>
-#include "TimeLineFrame.h"
 
-class TimeLineComboBox : public QComboBox
+class TimeLineFrame : public QFrame
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QString value READ value WRITE setValue DESIGNABLE true USER true)
-
 public:
-	TimeLineComboBox(const QDomElement& xmlNode, int maxTime, const QStringList items = QStringList(), TimeLineFrame* parent = 0);
-	virtual ~TimeLineComboBox();
-
-	void setValue(const QString& value);
-	QString value() const {return m_value;}
-	QDomElement& xmlNode() {return m_xmlNode;}
-
-public slots:
-	void mouseMove(QMouseEvent* event, bool comboBoxEvent = false);
-	void mousePress(QMouseEvent* event, bool comboBoxEvent = false);
-	void mouseRelease(QMouseEvent* event, bool comboBoxEvent = false);
+	TimeLineFrame(QWidget * parent=0);
+	virtual ~TimeLineFrame();
 
 signals:
-	void xmlNodeChanged();
-
-private slots:
-	void indexChanged(int index);
+	void mouseMove(QMouseEvent *event);
+	void mousePress(QMouseEvent *event);
+	void mouseRelease(QMouseEvent *event);
 
 protected:
 	void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
-	
-	// Timeline values and content
-	int				m_maxTime, m_start, m_end;
-	QString			m_value;
-	QDomElement		m_xmlNode;
-	
-	// Drag variables
-	bool			m_dragging;
-	int				m_dragStartX;
-	int				m_dragStartGeoX;
 
-	// Sizing variables#
-	bool			m_sizingLeft;
-	bool			m_sizingRight;
-	int				m_sizingStartX;
-	int				m_sizingStartGeoX;
-	int				m_sizingStartGeoW;
-	
 };
+
 #endif

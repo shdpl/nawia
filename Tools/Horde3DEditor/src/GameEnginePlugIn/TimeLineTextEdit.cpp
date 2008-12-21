@@ -56,6 +56,19 @@ void TimeLineTextEdit::setValue(const QString& value)
 {
 	m_xmlNode.setAttribute("value", value);
 	m_value = QString(value);
+	setPlainText(value);
+	emit xmlNodeChanged();
+}
+void TimeLineTextEdit::setStart(int start)
+{
+	m_xmlNode.setAttribute("start", start);
+	m_start = start;
+	emit xmlNodeChanged();
+}
+void TimeLineTextEdit::setEnd(int end)
+{
+	m_xmlNode.setAttribute("end", end);
+	m_end = end;
 	emit xmlNodeChanged();
 }
 
@@ -66,3 +79,44 @@ void TimeLineTextEdit::currentTextChanged()
 	emit xmlNodeChanged();
 }
 
+void TimeLineTextEdit::updateFromXml()
+{
+	QDomElement child = m_xmlNode.firstChildElement();
+	int min, max, start, end;
+	bool change = false;
+
+	if( !child.isNull() && child.hasAttribute("start") && child.hasAttribute("end") )
+	{
+		min = child.attribute("start", "0").toInt();
+		max = child.attribute("end", "0").toInt();
+		change = true;
+	}
+
+	while( !child.isNull() )
+	{
+		if(child.hasAttribute("start") && child.hasAttribute("end"))
+		{
+			start = child.attribute("start", "0").toInt();
+			end = child.attribute("end", "0").toInt();
+			// Get minimum child start
+			if( start < min ) min = start;
+			// Get maximum child end
+			if( end > max )	max = end;
+			change = true;
+		}
+
+		child = child.nextSiblingElement();
+	}
+
+	if( change && (m_start != min || m_end != max) )
+	{
+		setStart(min);
+		setEnd(max);
+		if( m_maxTime != 0 && parentWidget() )
+		{
+			setGeometry( (int)( ((float)m_start/m_maxTime) * (parentWidget()->width()-2) + 1.5f ), 1,
+				(int)( ((float)(m_end-m_start)/m_maxTime) * (parentWidget()->width()-2) + 0.5f ), parentWidget()->height()-2 );
+		}
+
+	}
+}

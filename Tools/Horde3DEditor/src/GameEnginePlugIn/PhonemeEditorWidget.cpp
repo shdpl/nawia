@@ -46,6 +46,7 @@
 #include <Qt/qlineedit.h>
 
 #include <GameEngine/GameEngine.h>
+#include <GameEngine/GameEvent.h>
 #include <GameEngine/GameEngine_Sound.h>
 #include <math.h>
 
@@ -138,6 +139,7 @@ void PhonemeEditorWidget::closePhonemeEditor()
 void PhonemeEditorWidget::save()
 {
 	blockSignals(true);
+	//TODO: gaps between phonemes have to be interpreted as silence (phoneme "x")
 	//Save changes to phoneme file
 	if (!m_phonemeFileName.isEmpty() && m_saveButton->isEnabled())
 	{
@@ -156,13 +158,14 @@ void PhonemeEditorWidget::save()
 		}
 	}
 	m_saveButton->setEnabled(false);
+	GameEngine::sendEvent(m_entityWorldID, &GameEvent(GameEvent::E_SET_PHONEMES_FILE, &GameEventData(qPrintable(m_phonemeFileName)), 0));
 	blockSignals(false);
 }
 
 void PhonemeEditorWidget::parseXmlFile()
 {
-	// Clear old text comboboxes
-	QList<QLineEdit *> oldText= m_text->findChildren<QLineEdit *>();
+	// Clear old text boxes
+	QList<TimeLineTextEdit *> oldText= m_text->findChildren<TimeLineTextEdit *>();
 	while(!oldText.isEmpty())
 		delete oldText.takeFirst();
 
@@ -202,8 +205,10 @@ void PhonemeEditorWidget::parseXmlFile()
 		m_phonemes->setFixedWidth(minWidth+2);
 		m_phonemeScrollArea->setFixedWidth(m_text->x()+minWidth+2);
 	}
-
-	QDomNode wordNode = timings.firstChild();
+	
+	// Add wordBoxes in reverse direction, because first nodes have higher priority
+	// and should be printed above of the others
+	QDomNode wordNode = timings.lastChild();
 	while(!wordNode.isNull())
 	{
 		// Get words
@@ -216,13 +221,15 @@ void PhonemeEditorWidget::parseXmlFile()
 
 			// Get phonemes of a word
 			QDomNodeList phonemeList = word.elementsByTagName("phn");
-			for(unsigned int i = 0; i < phonemeList.length(); i++)
+			// also reverse direction
+			for(int i = phonemeList.size()-1; i >=0; i--)
 			{
 				QDomElement phoneme = phonemeList.item(i).toElement();
 				// Skip silence
 				if( phoneme.attribute("value").compare("x") == 0 ) continue;
 				TimeLineComboBox* phonemeBox = new TimeLineComboBox(phoneme, sentenceLength, m_phonemeList, m_phonemes);
 				connect(phonemeBox, SIGNAL(xmlNodeChanged()), this, SLOT(enableSaveButton()) );
+				connect(phonemeBox, SIGNAL(xmlNodeChanged()), wordBox, SLOT(updateFromXml()));
 				phonemeBox->setVisible(true);
 			}
 		}
@@ -239,11 +246,14 @@ void PhonemeEditorWidget::parseXmlFile()
 			}
 		}
 
-		wordNode = wordNode.nextSibling();
+		wordNode = wordNode.previousSibling();
 	}
 }
 
 void PhonemeEditorWidget::enableSaveButton()
 {
+	// TODO: Give SoundComponent a temporary phoneme file, so we don't have to save to see our changes
+
+	// Enable save button
 	m_saveButton->setEnabled(true);
 }
