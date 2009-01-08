@@ -66,8 +66,8 @@ Physics::Physics() : m_enabled(true), m_renderShapes(false)
 	//m_dispatcher->setsetNearCallback(Physics::collisionCallback);
 	// TODO make this configurable
 	//m_pairCache = new btMultiSapBroadphase();
-	btPoint3 worldAabbMin(-1000,-1000,-1000);
-	btPoint3 worldAabbMax(1000,1000,1000);
+	btVector3 worldAabbMin(-1000,-1000,-1000);
+	btVector3 worldAabbMax(1000,1000,1000);
 	m_pairCache = new btAxisSweep3 (worldAabbMin, worldAabbMax);
 	m_constraintSolver = new btSequentialImpulseConstraintSolver();
 	m_physicsWorld = new btDiscreteDynamicsWorld(m_dispatcher,m_pairCache,m_constraintSolver, m_configuration);

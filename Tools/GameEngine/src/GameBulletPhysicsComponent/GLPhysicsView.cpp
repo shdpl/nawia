@@ -331,7 +331,7 @@ namespace BulletPhysicsComponent
 					int i;
 					for (i=0;i<polyshape->getNumEdges();i++)
 					{
-						btPoint3 a,b;
+						btVector3 a,b;
 						polyshape->getEdge(i,a,b);
 
 						glVertex3f(a.getX(),a.getY(),a.getZ());
