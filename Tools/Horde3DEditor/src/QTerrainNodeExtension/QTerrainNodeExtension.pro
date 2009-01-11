@@ -31,12 +31,10 @@ UI_DIR = .
 CONFIG(debug, debug|release) { 
 	LIBS += -lHordeSceneEditorCored
 	LIBS += -lQXmlTreed
-        LIBS += -lLuad
-        unix {
-                LIBS += -lHorde3Dd
-                LIBS += -lHorde3DUtilsd
-        }
-        TARGET = QTerrainNodeExtensiond
+    LIBS += -lLuad
+	LIBS += -lHorde3Dd
+	LIBS += -lHorde3DUtilsd
+	TARGET = QTerrainNodeExtensiond
 	OBJECTS_DIR = ../../Build/QTerrainNodeExtension/Debug
 	MOC_DIR = ../../Build/QTerrainNodeExtension/Debug
 }
@@ -46,21 +44,14 @@ CONFIG(release, debug|release) {
 	TARGET = QTerrainNodeExtension
 	LIBS += -lHordeSceneEditorCore
 	LIBS += -lQXmlTree
-        LIBS += -lLua
-        unix {
-                LIBS += -lHorde3D
-                LIBS += -lHorde3DUtils
-        }
-	OBJECTS_DIR = ../../Build/QTerrainNodeExtension/Release
+	LIBS += -lLua
+	LIBS += -lHorde3D
+	LIBS += -lHorde3DUtils
+    OBJECTS_DIR = ../../Build/QTerrainNodeExtension/Release
 	MOC_DIR = ../../Build/QTerrainNodeExtension/Release
 	DEFINES+=QT_NO_DEBUG	
 }
 
-win32 {
-	LIBS += -lHorde3D_vc8
-	LIBS += -lHorde3DUtils_vc8
-
-}
 unix {
 	LIBS += -L../../bin
 	DOLLAR=$

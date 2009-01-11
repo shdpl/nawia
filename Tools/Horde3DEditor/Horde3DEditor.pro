@@ -4,7 +4,7 @@ CONFIG += debug_and_release \
           ordered
 
 SUBDIRS = \    
-        ../Dependencies/Lua/src \
+        ../Dependencies/Lua \
         ./src/tgaPlugIn \
         ./src/psdPlugIn \
         ./src/EditorLib \

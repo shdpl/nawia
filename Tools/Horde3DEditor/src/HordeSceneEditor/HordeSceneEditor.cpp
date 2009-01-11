@@ -303,7 +303,7 @@ void HordeSceneEditor::about()
 
 void HordeSceneEditor::onlineDoc()
 {
-	QDesktopServices::openUrl(tr("http://mm-werkstatt.informatik.uni-augsburg.de/files/project_content/45/231_HordeEditor.pdf"));
+	QDesktopServices::openUrl(tr("http://horde3d.org/wiki/index.php5?title=Editor_Tutorials"));
 }
 
 

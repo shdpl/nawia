@@ -21,6 +21,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0252D050D7D94170A531A18A31B1FC2C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_03BB96937EE14D0884616F4D54B9DDAF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -75,12 +81,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_1266B11A43029485DF93951979A51F4B"
-        "OwnerKey" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_133B845D13B8494FA2BE456AA75304DF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -131,6 +131,12 @@
         {
         "MsmKey" = "8:_274F775ED74E407593FAF298AD1C494A"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2AB6B175B40B4DF29576C8B9DC8BE1ED"
+        "OwnerKey" = "8:_55D624D0C2D14B0E8E169B3D8F9F20A2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -209,6 +215,12 @@
         {
         "MsmKey" = "8:_3922FC8F3BF7460B9CA4EF2F59CB8DB7"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_39DCC36BBE794839577A719AE81C41AC"
+        "OwnerKey" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -292,6 +304,36 @@
         "Entry"
         {
         "MsmKey" = "8:_558916F1CAD0390FD6145A4A419A74C8"
+        "OwnerKey" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_55D624D0C2D14B0E8E169B3D8F9F20A2"
+        "OwnerKey" = "8:_10A01304D54D4670A2F5CC967E54C82B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_55D624D0C2D14B0E8E169B3D8F9F20A2"
+        "OwnerKey" = "8:_94543A8342FD43ABA44706A4C05F2463"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_55D624D0C2D14B0E8E169B3D8F9F20A2"
+        "OwnerKey" = "8:_7ACE34CC2FE5469DADD528FA9031D3A1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_55D624D0C2D14B0E8E169B3D8F9F20A2"
+        "OwnerKey" = "8:_6EDB8543881E4E0C8F239D006AFCA3C2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_55D624D0C2D14B0E8E169B3D8F9F20A2"
         "OwnerKey" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -501,12 +543,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_7A5E1EF838E32F7C5EB242BB5EE193CF"
-        "OwnerKey" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_7ACE34CC2FE5469DADD528FA9031D3A1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -561,12 +597,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_8608C8E59122459BB0D32376BAE6D011"
-        "OwnerKey" = "8:_E5766668DE034EC58C67793724A9CFE3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_87059BA2054A45C092704A4164D3DEC8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -575,12 +605,6 @@
         {
         "MsmKey" = "8:_873D502922784C1889B36179C475EC13"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_887C6EAAD8E7904CA2C281683BD65F2E"
-        "OwnerKey" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -695,6 +719,12 @@
         {
         "MsmKey" = "8:_AAF4AB1B8609483A82B8538534F7B272"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_AEF4D0E9440A31EBCB05659A8C8BF93A"
+        "OwnerKey" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -873,6 +903,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D3B973EDC593BF3F3DEDA526FC767584"
+        "OwnerKey" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D7EAD32479E54036890E8AB277D6C7DA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -915,6 +951,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E3E21F8513214E0CB6F5F50526C8CE94"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E41D0E3972EC4DA4AF59690C7E5B3BB8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -923,36 +965,6 @@
         {
         "MsmKey" = "8:_E4BF126641F4421FAB820F833A6B9D2B"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E5766668DE034EC58C67793724A9CFE3"
-        "OwnerKey" = "8:_10A01304D54D4670A2F5CC967E54C82B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E5766668DE034EC58C67793724A9CFE3"
-        "OwnerKey" = "8:_94543A8342FD43ABA44706A4C05F2463"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E5766668DE034EC58C67793724A9CFE3"
-        "OwnerKey" = "8:_7ACE34CC2FE5469DADD528FA9031D3A1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E5766668DE034EC58C67793724A9CFE3"
-        "OwnerKey" = "8:_6EDB8543881E4E0C8F239D006AFCA3C2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E5766668DE034EC58C67793724A9CFE3"
-        "OwnerKey" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1095,7 +1107,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug\\Installer.msi"
+        "OutputFilename" = "8:Debug\\Horde3DEditor.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -1122,7 +1134,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\Installer.msi"
+        "OutputFilename" = "8:Release\\Horde3DEditor.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -1175,6 +1187,26 @@
             "TargetName" = "8:terrain.h"
             "Tag" = "8:"
             "Folder" = "8:_2D4876A20F024EC5ADC3ECC2616CEA3D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0252D050D7D94170A531A18A31B1FC2C"
+            {
+            "SourcePath" = "8:..\\Horde3D\\Horde3D.pro"
+            "TargetName" = "8:Horde3D.pro"
+            "Tag" = "8:"
+            "Folder" = "8:_63D68E36263440A68B2C2BD598CC2A0A"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1347,26 +1379,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1266B11A43029485DF93951979A51F4B"
-            {
-            "SourcePath" = "8:Lua.dll"
-            "TargetName" = "8:Lua.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_B30259BD4D184860AA5E0CD6E8B8E4E1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_133B845D13B8494FA2BE456AA75304DF"
@@ -1807,6 +1819,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_39DCC36BBE794839577A719AE81C41AC"
+            {
+            "SourcePath" = "8:Horde3D.dll"
+            "TargetName" = "8:Horde3D.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_B30259BD4D184860AA5E0CD6E8B8E4E1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3D153BE7A4D24058AACE2CA9C02E2BBA"
@@ -2649,26 +2681,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7A5E1EF838E32F7C5EB242BB5EE193CF"
-            {
-            "SourcePath" = "8:Horde3DUtils.dll"
-            "TargetName" = "8:Horde3DUtils.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_B30259BD4D184860AA5E0CD6E8B8E4E1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7C7C181E85F949718CAF2B28A2B049F0"
             {
             "SourcePath" = "8:..\\..\\bin\\Particle\\shaders\\utilityLib\\fragLighting.glsl"
@@ -2867,26 +2879,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_887C6EAAD8E7904CA2C281683BD65F2E"
-            {
-            "SourcePath" = "8:Horde3D.dll"
-            "TargetName" = "8:Horde3D.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_B30259BD4D184860AA5E0CD6E8B8E4E1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8AAD1A8BDC8F498EA2DE970C34D4323B"
@@ -3247,6 +3239,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AEF4D0E9440A31EBCB05659A8C8BF93A"
+            {
+            "SourcePath" = "8:Horde3DUtils.dll"
+            "TargetName" = "8:Horde3DUtils.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_B30259BD4D184860AA5E0CD6E8B8E4E1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B1E48AE7B4B54A27A32249C091639006"
@@ -3749,6 +3761,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D3B973EDC593BF3F3DEDA526FC767584"
+            {
+            "SourcePath" = "8:Lua.dll"
+            "TargetName" = "8:Lua.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_B30259BD4D184860AA5E0CD6E8B8E4E1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D7EAD32479E54036890E8AB277D6C7DA"
             {
             "SourcePath" = "8:..\\..\\..\\..\\Horde3D\\Binaries\\Content\\pipelines\\deferred.pipeline.xml"
@@ -3889,6 +3921,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E3E21F8513214E0CB6F5F50526C8CE94"
+            {
+            "SourcePath" = "8:..\\Horde3DUtils\\Horde3DUtils.pro"
+            "TargetName" = "8:Horde3DUtils.pro"
+            "Tag" = "8:"
+            "Folder" = "8:_22E69752C60C402A95E77C176A49FA9F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E41D0E3972EC4DA4AF59690C7E5B3BB8"
             {
             "SourcePath" = "8:..\\..\\..\\..\\Horde3D\\Binaries\\Content\\shaders\\utilityLib\\fragDeferredWrite.glsl"
@@ -4014,7 +4066,7 @@
             "SourcePath" = "8:Horde3DEditor_2005.sln"
             "TargetName" = "8:Horde3DEditor_2005.sln"
             "Tag" = "8:"
-            "Folder" = "8:_B9314AEA17044EEA86C602FBBEB559CB"
+            "Folder" = "8:_10B818F6344947A4BD4886AEE9B04461"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -4369,7 +4421,7 @@
                 {
                     "{9EF0B969-E518-4E46-987F-47570745A589}:_2DD90AA5B56041B0AC47030CFAF46EEF"
                     {
-                    "Name" = "8:Horde3D Scene Editor"
+                    "Name" = "8:Horde3D Editor"
                     "AlwaysCreate" = "11:FALSE"
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
@@ -4615,6 +4667,17 @@
                                                 {
                                                 }
                                             }
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_22E69752C60C402A95E77C176A49FA9F"
+                                            {
+                                            "Name" = "8:Horde3DUtils"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "Property" = "8:_AA09FB48A45D4B27A023AB7314198CFA"
+                                                "Folders"
+                                                {
+                                                }
+                                            }
                                             "{9EF0B969-E518-4E46-987F-47570745A589}:_312F6BE4B23A41AD8E829619A8A4B639"
                                             {
                                             "Name" = "8:QTerrainNodeExtension"
@@ -4633,6 +4696,17 @@
                                             "Condition" = "8:"
                                             "Transitive" = "11:FALSE"
                                             "Property" = "8:_FDA74AEEBEE44129901B2E3CCAA96D19"
+                                                "Folders"
+                                                {
+                                                }
+                                            }
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_63D68E36263440A68B2C2BD598CC2A0A"
+                                            {
+                                            "Name" = "8:Horde3D"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "Property" = "8:_383AFE40AECA42ACB6D900251A02DEA5"
                                                 "Folders"
                                                 {
                                                 }
@@ -5066,16 +5140,16 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Horde3D Scene Editor"
-        "ProductCode" = "8:{E748993B-9202-4F3A-ADBC-95E719DB9010}"
-        "PackageCode" = "8:{F63E91C6-BC37-43FD-8852-0B8219092663}"
+        "ProductName" = "8:Horde3D Editor"
+        "ProductCode" = "8:{BA7CA04D-801C-4F11-BDC7-36A1CEB4AFE8}"
+        "PackageCode" = "8:{79D31F2A-8FCE-45BE-812C-7DC169606566}"
         "UpgradeCode" = "8:{0DA6D84B-B433-4A1C-983F-C667CAFCFC44}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.78"
-        "Manufacturer" = "8:University of Augsburg"
+        "ProductVersion" = "8:1.0.8"
+        "Manufacturer" = "8:Volker Wiendl"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
         "Title" = "8:The Horde3D Scene Editor"
@@ -5187,9 +5261,23 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_4D6B38664DDE4D02AB7221C39733C14F"
+            {
+            "Name" = "8:Horde3D Editor VS2005 Solution"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_EE46CA2394DD4B5E9AF7E568015CBA6D"
+            "Folder" = "8:_2DD90AA5B56041B0AC47030CFAF46EEF"
+            "WorkingFolder" = "8:_10B818F6344947A4BD4886AEE9B04461"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_AF581E956F0345B99A1400270DD6F5FB"
             {
-            "Name" = "8:Horde3D Scene Editor"
+            "Name" = "8:Horde3D Editor"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -5197,6 +5285,20 @@
             "Transitive" = "11:FALSE"
             "Target" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
             "Folder" = "8:_2DD90AA5B56041B0AC47030CFAF46EEF"
+            "WorkingFolder" = "8:_B30259BD4D184860AA5E0CD6E8B8E4E1"
+            "Icon" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_F82BDF47B98F476EBFE4AF4272B77DA5"
+            {
+            "Name" = "8:Horde3D Editor"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:101"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
+            "Folder" = "8:_8E75570DABA749C29DB554DD0C2FA321"
             "WorkingFolder" = "8:_B30259BD4D184860AA5E0CD6E8B8E4E1"
             "Icon" = "8:_6E9AE4CED39C4D7F949FB37F847E7C12"
             "Feature" = "8:"
@@ -5214,7 +5316,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_64137238AEB54355964D54AFDCC2AA77"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Read Me"
+                    "DisplayName" = "8:Infodatei"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminReadmeDlg.wid"
@@ -5261,7 +5363,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_C3A1B7E5DA1146F59A63CD32A7D1F17E"
                     {
                     "Sequence" = "3:110"
-                    "DisplayName" = "8:Finished"
+                    "DisplayName" = "8:Fertig"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminFinishedDlg.wid"
@@ -5298,7 +5400,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_888ADEF578A146F8B0FDC52F673702BE"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Progress"
+                    "DisplayName" = "8:Status"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminProgressDlg.wid"
@@ -5348,7 +5450,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_1B56CA2A99C8491F9E820297FE0102B4"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Read Me"
+                    "DisplayName" = "8:Infodatei"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdReadmeDlg.wid"
@@ -5395,7 +5497,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_8032AC5A925E4EFCA84B585E72C1FA01"
                     {
                     "Sequence" = "3:110"
-                    "DisplayName" = "8:Finished"
+                    "DisplayName" = "8:Fertig"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdFinishedDlg.wid"
@@ -5439,7 +5541,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_FE9768FC79D74E43BF8760E64D46212B"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Progress"
+                    "DisplayName" = "8:Status"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdProgressDlg.wid"
@@ -5483,7 +5585,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_1A84980541234B92A241018A9034DE0F"
                     {
                     "Sequence" = "3:200"
-                    "DisplayName" = "8:Installation Folder"
+                    "DisplayName" = "8:Installationsordner"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminFolderDlg.wid"
@@ -5505,7 +5607,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_5EB0732FE63C404AB4D83429CEB7236D"
                     {
                     "Sequence" = "3:110"
-                    "DisplayName" = "8:License Agreement"
+                    "DisplayName" = "8:Lizenzvertrag"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminLicenseDlg.wid"
@@ -5552,7 +5654,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_8E7E148513E0451CA9BA1F9DABA78CB8"
                     {
                     "Sequence" = "3:300"
-                    "DisplayName" = "8:Confirm Installation"
+                    "DisplayName" = "8:Installation bestätigen"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminConfirmDlg.wid"
@@ -5574,7 +5676,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_ECC0098523414A91ABA19DE69E8BE585"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Welcome"
+                    "DisplayName" = "8:Willkommen"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminWelcomeDlg.wid"
@@ -5631,7 +5733,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_292B2DA974184D9DA5045B8DD196CB1C"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:Welcome"
+                    "DisplayName" = "8:Willkommen"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdWelcomeDlg.wid"
@@ -5679,7 +5781,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_4A3C3591B8BB46028FF2ED51F222D38A"
                     {
                     "Sequence" = "3:300"
-                    "DisplayName" = "8:Confirm Installation"
+                    "DisplayName" = "8:Installation bestätigen"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdConfirmDlg.wid"
@@ -5701,7 +5803,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_A8ED19B442F44354AD84CF449B6B9FF3"
                     {
                     "Sequence" = "3:200"
-                    "DisplayName" = "8:Installation Folder"
+                    "DisplayName" = "8:Installationsordner"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdFolderDlg.wid"
@@ -5736,7 +5838,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_EAE98A7C72E04CF7B386ABE333708F72"
                     {
                     "Sequence" = "3:110"
-                    "DisplayName" = "8:License Agreement"
+                    "DisplayName" = "8:Lizenzvertrag"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdLicenseDlg.wid"
@@ -5785,7 +5887,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_8608C8E59122459BB0D32376BAE6D011"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_2AB6B175B40B4DF29576C8B9DC8BE1ED"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -5799,7 +5901,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_E5766668DE034EC58C67793724A9CFE3"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_55D624D0C2D14B0E8E169B3D8F9F20A2"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -6264,9 +6366,6 @@
                 {
                 }
             }
-        }
-        "VJSharpPlugin"
-        {
         }
     }
 }

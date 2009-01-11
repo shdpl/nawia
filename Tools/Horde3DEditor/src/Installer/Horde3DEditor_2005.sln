@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HordeSceneEditor", "Tools\Horde3DEditor\src\HordeSceneEditor\HordeSceneEditor_2005.vcproj", "{E8DB005D-620C-4BBD-902C-1D0F273B5D51}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HordeSceneEditor", "src\HordeSceneEditor\HordeSceneEditor_2005.vcproj", "{E8DB005D-620C-4BBD-902C-1D0F273B5D51}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C0A9DD0A-FDA1-4749-86B7-D831CDD4478B} = {C0A9DD0A-FDA1-4749-86B7-D831CDD4478B}
 		{5FDF2849-8AB0-4E61-AF32-1C9AF7479601} = {5FDF2849-8AB0-4E61-AF32-1C9AF7479601}
@@ -13,56 +13,54 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HordeSceneEditor", "Tools\H
 		{28EC7401-6DF8-441E-BE98-FDFFCE373E43} = {28EC7401-6DF8-441E-BE98-FDFFCE373E43}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qtga", "Tools\Horde3DEditor\src\tgaPlugIn\qtga_2005.vcproj", "{7B215A75-C507-3FDC-BE7C-4FE7E6E73A12}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qtga", "src\tgaPlugIn\qtga_2005.vcproj", "{7B215A75-C507-3FDC-BE7C-4FE7E6E73A12}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qpsd", "Tools\Horde3DEditor\src\psdPlugIn\qpsd_2005.vcproj", "{B64F4856-B01D-42A8-B6A7-B41D125B3D7C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qpsd", "src\psdPlugIn\qpsd_2005.vcproj", "{B64F4856-B01D-42A8-B6A7-B41D125B3D7C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TerrainToolPlugIn", "Tools\Horde3DEditor\src\TerrainToolPlugIn\TerrainToolPlugIn_2005.vcproj", "{5CD38FEE-1A7C-4727-9B44-D983D5556419}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TerrainToolPlugIn", "src\TerrainToolPlugIn\TerrainToolPlugIn_2005.vcproj", "{5CD38FEE-1A7C-4727-9B44-D983D5556419}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B50FE54C-0061-466D-892F-7C5A85854EB4} = {B50FE54C-0061-466D-892F-7C5A85854EB4}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HordeSceneEditorCore", "Tools\Horde3DEditor\src\HordeSceneEditorCore\HordeSceneEditorCore_2005.vcproj", "{B50FE54C-0061-466D-892F-7C5A85854EB4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HordeSceneEditorCore", "src\HordeSceneEditorCore\HordeSceneEditorCore_2005.vcproj", "{B50FE54C-0061-466D-892F-7C5A85854EB4}"
 	ProjectSection(ProjectDependencies) = postProject
-		{C0A9DD0A-FDA1-4749-86B7-D831CDD4478B} = {C0A9DD0A-FDA1-4749-86B7-D831CDD4478B}
 		{1D558D7D-DA57-4908-BCFC-902054FE6B63} = {1D558D7D-DA57-4908-BCFC-902054FE6B63}
 		{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D} = {AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D}
 		{5FDF2849-8AB0-4E61-AF32-1C9AF7479601} = {5FDF2849-8AB0-4E61-AF32-1C9AF7479601}
 		{BEA5367D-0441-4677-934A-43A09ABBF8C6} = {BEA5367D-0441-4677-934A-43A09ABBF8C6}
+		{C0A9DD0A-FDA1-4749-86B7-D831CDD4478B} = {C0A9DD0A-FDA1-4749-86B7-D831CDD4478B}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QTerrainNodeExtension", "Tools\Horde3DEditor\src\QTerrainNodeExtension\QTerrainNodeExtension_2005.vcproj", "{28EC7401-6DF8-441E-BE98-FDFFCE373E43}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QTerrainNodeExtension", "src\QTerrainNodeExtension\QTerrainNodeExtension_2005.vcproj", "{28EC7401-6DF8-441E-BE98-FDFFCE373E43}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B50FE54C-0061-466D-892F-7C5A85854EB4} = {B50FE54C-0061-466D-892F-7C5A85854EB4}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EditorLib", "Tools\Horde3DEditor\src\EditorLib\EditorLib_2005.vcproj", "{71DA73F2-C09D-4F4A-8955-CB3CB830061F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EditorLib", "src\EditorLib\EditorLib_2005.vcproj", "{71DA73F2-C09D-4F4A-8955-CB3CB830061F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QXmlTree", "Tools\Horde3DEditor\src\QXmlTree\QXmlTree_2005.vcproj", "{5FDF2849-8AB0-4E61-AF32-1C9AF7479601}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QXmlTree", "src\QXmlTree\QXmlTree_2005.vcproj", "{5FDF2849-8AB0-4E61-AF32-1C9AF7479601}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QPropertyEditor", "Tools\Horde3DEditor\src\QPropertyEditor\QPropertyEditor_2005.vcproj", "{C0A9DD0A-FDA1-4749-86B7-D831CDD4478B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QPropertyEditor", "src\QPropertyEditor\QPropertyEditor_2005.vcproj", "{C0A9DD0A-FDA1-4749-86B7-D831CDD4478B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Horde3D Engine", "Horde3D\Source\Horde3DEngine\Horde3D Engine.vcproj", "{1D558D7D-DA57-4908-BCFC-902054FE6B63}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Horde3D Engine", "..\..\Horde3D\Source\Horde3DEngine\Horde3D Engine.vcproj", "{1D558D7D-DA57-4908-BCFC-902054FE6B63}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6} = {7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Horde3D Utils", "Horde3D\Source\Horde3DUtils\Horde3D Utils.vcproj", "{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Horde3D Utils", "..\..\Horde3D\Source\Horde3DUtils\Horde3D Utils.vcproj", "{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1D558D7D-DA57-4908-BCFC-902054FE6B63} = {1D558D7D-DA57-4908-BCFC-902054FE6B63}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Extension Terrain", "Extensions\Terrain\Source\Extension Terrain.vcproj", "{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Extension Terrain", "..\..\Extensions\Terrain\Source\Extension Terrain.vcproj", "{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "Tools\Dependencies\Lua\Lua_2005.vcproj", "{BEA5367D-0441-4677-934A-43A09ABBF8C6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "..\Dependencies\Lua\Lua_2005.vcproj", "{BEA5367D-0441-4677-934A-43A09ABBF8C6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Horde3D", "Horde3D", "{34A79A7B-6E40-422B-B83E-860EC839A8E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Editor", "Editor", "{8D9117A3-5683-4A36-9EB7-304FA087AD04}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{1F6CFC77-39EB-4C66-9C17-16D5B900D396}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{6D9BC0C1-F33A-4959-907C-99D6C11C7396}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -122,10 +120,6 @@ Global
 		{BEA5367D-0441-4677-934A-43A09ABBF8C6}.Debug|Win32.Build.0 = Debug|Win32
 		{BEA5367D-0441-4677-934A-43A09ABBF8C6}.Release|Win32.ActiveCfg = Release|Win32
 		{BEA5367D-0441-4677-934A-43A09ABBF8C6}.Release|Win32.Build.0 = Release|Win32
-		{FAC98A8E-AE46-48BF-A53C-0D19E39FB254}.Debug|Win32.ActiveCfg = Debug
-		{FAC98A8E-AE46-48BF-A53C-0D19E39FB254}.Debug|Win32.Build.0 = Debug
-		{FAC98A8E-AE46-48BF-A53C-0D19E39FB254}.Release|Win32.ActiveCfg = Release
-		{FAC98A8E-AE46-48BF-A53C-0D19E39FB254}.Release|Win32.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -144,6 +138,5 @@ Global
 		{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6} = {34A79A7B-6E40-422B-B83E-860EC839A8E1}
 		{1D558D7D-DA57-4908-BCFC-902054FE6B63} = {34A79A7B-6E40-422B-B83E-860EC839A8E1}
 		{BEA5367D-0441-4677-934A-43A09ABBF8C6} = {1F6CFC77-39EB-4C66-9C17-16D5B900D396}
-		{FAC98A8E-AE46-48BF-A53C-0D19E39FB254} = {6D9BC0C1-F33A-4959-907C-99D6C11C7396}
 	EndGlobalSection
 EndGlobal

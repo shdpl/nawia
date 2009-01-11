@@ -96,6 +96,7 @@ HEADERS= AboutDialog.h \
 	SettingsDialog.h 	
 
 RESOURCES += resources.qrc
+RC_FILE = HordeSceneEditor.rc
 
 FORMS=AboutDialog.ui \
 	CameraToolBar.ui \
@@ -131,20 +132,16 @@ DESTDIR = ../../bin
 
 CONFIG(debug, debug|release) {
 	LIBS += -L../../lib
-	win32 {
-		LIBS += -lHorde3D_vc8
-		LIBS += -lHorde3DUtils_vc8
-	}
 	unix {
     	LIBS += -L../../bin
-		LIBS += -lHorde3D
-		LIBS += -lHorde3DUtils
 		DOLLAR=$
 		QMAKE_RPATH = $${QMAKE_RPATH}$${DOLLAR}$${DOLLAR}ORIGIN
 		QMAKE_LFLAGS+=\'$${QMAKE_RPATH}\'		
 	}
-        LIBS += -lLuad
-        LIBS += -lEditorLibd
+	LIBS += -lLuad
+	LIBS += -lEditorLibd
+	LIBS += -lHorde3Dd
+	LIBS += -lHorde3DUtilsd
 	LIBS += -lQPropertyEditord
 	LIBS += -lHordeSceneEditorCored
 	LIBS += -lQXmlTreed
@@ -155,20 +152,16 @@ CONFIG(debug, debug|release) {
 
 CONFIG(release, debug|release) { 
 	LIBS += -L../../lib
-	win32 {
-		LIBS += -lHorde3D_vc8
-		LIBS += -lHorde3DUtils_vc8
-	}
 	unix {
     	LIBS += -L../../bin
-		LIBS += -lHorde3D
-		LIBS += -lHorde3DUtils		
 		DOLLAR=$
 		QMAKE_RPATH = $${QMAKE_RPATH}$${DOLLAR}$${DOLLAR}ORIGIN
 		QMAKE_LFLAGS+=\'$${QMAKE_RPATH}\'
 	}
-        LIBS += -lLua
-        LIBS += -lEditorLib
+	LIBS += -lHorde3D
+	LIBS += -lHorde3DUtils		
+	LIBS += -lLua
+	LIBS += -lEditorLib
 	LIBS += -lQPropertyEditor
 	LIBS += -lQXmlTree
 	LIBS += -lHordeSceneEditorCore
