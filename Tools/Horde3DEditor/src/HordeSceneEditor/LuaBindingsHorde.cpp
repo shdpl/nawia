@@ -22,8 +22,8 @@
 
 #include "LuaBindingsHorde.h"
 
-#include <Horde3D/Horde3D.h>
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3D.h>
+#include <Horde3DUtils.h>
 #include <stdio.h>
 
 extern "C"
@@ -169,7 +169,7 @@ namespace Horde3D
 		Returns:
 		nothing
 		*/
-		int lua_clear( lua_State *L )
+                int lua_clear( lua_State * )
 		{
 			Horde3D::clear();
 			return 0;
@@ -296,7 +296,7 @@ namespace Horde3D
 		Returns:
 		nothing
 		*/
-		int  lua_clearOverlays( lua_State *L )
+                int  lua_clearOverlays( lua_State * )
 		{
 			Horde3D::clearOverlays();
 			return 0;

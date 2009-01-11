@@ -26,7 +26,7 @@
 
 #include <QtGui/QMessageBox>
 
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
 
 SceneTreeWidget::SceneTreeWidget(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QWidget(parent, flags)

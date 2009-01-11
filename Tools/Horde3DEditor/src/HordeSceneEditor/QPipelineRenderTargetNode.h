@@ -35,7 +35,7 @@ public:
 protected:
 	// Render Targets don't have childnodes
 	bool isKnown(const QString&) const {return false;}
-	QXmlTreeNode* createChild(const QDomElement& childNode, int row) {return 0;}
+        QXmlTreeNode* createChild(const QDomElement& /*childNode*/, int /*row*/) {return 0;}
 
 
 };

@@ -37,8 +37,8 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
-#include <Horde3D/Horde3D.h>
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3D.h>
+#include <Horde3DUtils.h>
 
 QSceneNode* QModelNode::loadNode(const QDomElement& xmlNode, int row, SceneTreeModel* model, QSceneNode* parent)
 {

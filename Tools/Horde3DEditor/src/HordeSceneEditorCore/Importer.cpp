@@ -27,7 +27,7 @@
 #include <QtXml/qdom.h>
 #include <QtGui/QMessageBox>
 
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3DUtils.h>
 
 Importer::Importer()
 {

@@ -14,19 +14,34 @@ INCLUDEPATH+=../../include
 DESTDIR = ../../lib
 UI_DIR = .
 
-CONFIG(debug, debug|release) { 
-	TARGET = EditorLibd
-	OBJECTS_DIR = ../../Build/EditorLib/Debug
-	MOC_DIR = ../../Build/EditorLib/Debug
+CONFIG(debug, debug|release) {
+        unix {
+            exists( ../../Build/EditorLib/Debug )
+            {
+                system(mkdir -p ../../Build/EditorLib/Release )
+            }
+        }
+
+        TARGET = EditorLibd
+        OBJECTS_DIR = ../../Build/EditorLib/Debug
+        MOC_DIR = ../../Build/EditorLib/Debug
 }
 
-CONFIG(release, debug|release) { 
-    
-	TARGET = EditorLib
-	OBJECTS_DIR = ../../Build/EditorLib/Release
-	MOC_DIR = ../../Build/EditorLib/Release
-	DEFINES+=QT_NO_DEBUG	
+CONFIG(release, debug|release) {
+
+        unix {
+            !exists( ../../Build/EditorLib/Release )
+            {
+                system(mkdir -p ../../Build/EditorLib/Release )
+            }
+        }
+
+        TARGET = EditorLib
+        OBJECTS_DIR = ../../Build/EditorLib/Release
+        MOC_DIR = ../../Build/EditorLib/Release
+        DEFINES+=QT_NO_DEBUG
 }
+
 
 unix {	
 	system(mkdir -p ../../include/EditorLib)

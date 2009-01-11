@@ -33,7 +33,7 @@
 #include <QtGui/QApplication>
 #include <QtCore/QDir>
 
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
 SceneTreeModel::SceneTreeModel(PlugInManager* factory, const QDomElement &node, QSceneNode* parentNode) : QXmlTreeModel(), 
 m_parentNode(parentNode), m_sceneNodeFactory(factory)
@@ -137,7 +137,7 @@ QVariant SceneTreeModel::headerData(int section, Qt::Orientation orientation, in
 }
 
 
-int SceneTreeModel::columnCount(const QModelIndex &parent /*= QModelIndex()*/) const
+int SceneTreeModel::columnCount(const QModelIndex & /*parent = QModelIndex()*/) const
 {
 	return 3;
 }
@@ -170,7 +170,7 @@ QMimeData* SceneTreeModel::mimeData(const QModelIndexList &indexes) const
     return mime;
 }
 
-bool SceneTreeModel::dropMimeData(const QMimeData *mime, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+bool SceneTreeModel::dropMimeData(const QMimeData *mime, Qt::DropAction action, int /*row*/, int /*column*/, const QModelIndex & /*parent*/)
  {
      if (action == Qt::IgnoreAction)
          return true;

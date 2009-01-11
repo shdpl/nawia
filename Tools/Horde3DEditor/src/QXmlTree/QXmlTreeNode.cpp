@@ -24,7 +24,7 @@
 
 
 QXmlTreeNode::QXmlTreeNode(const QDomElement& xmlNode, int row, QXmlTreeModel* model, QXmlTreeNode* parent /*= 0*/) : QObject(parent), 
-m_xmlNode(xmlNode), m_row(row), m_model(model) 
+ m_model(model), m_xmlNode(xmlNode), m_row(row)
 {
 }
 

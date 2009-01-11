@@ -65,8 +65,8 @@
 #include <QtCore/QPluginLoader>
 #include <QtCore/QLibrary>
 
-#include <Horde3D/Horde3D.h>
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3D.h>
+#include <Horde3DUtils.h>
 
 HordeSceneEditor* HordeSceneEditor::m_instance = 0;
 
@@ -984,7 +984,7 @@ void HordeSceneEditor::nodeRegistered(const QString& name, PlugInManager::NodeTy
 	}
 }
 
-void HordeSceneEditor::nodeUnregistered(const QString& name, PlugInManager::NodeType type)
+void HordeSceneEditor::nodeUnregistered(const QString& name, PlugInManager::NodeType /*type*/)
 {
 	QList<QAction*> actions = m_menuScene->actions();
 	actions << m_menuExtras->actions();

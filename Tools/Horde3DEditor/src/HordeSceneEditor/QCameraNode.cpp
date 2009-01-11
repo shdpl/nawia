@@ -33,7 +33,7 @@
 #include <QtCore/QTextStream>
 #include <QtGui/QAction>
 
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
 
 QSceneNode* QCameraNode::loadNode(const QDomElement& xmlNode, int row, SceneTreeModel* model, QSceneNode* parent)
@@ -42,7 +42,7 @@ QSceneNode* QCameraNode::loadNode(const QDomElement& xmlNode, int row, SceneTree
 }
 
 QCameraNode::QCameraNode(const QDomElement& xmlNode, int row, SceneTreeModel* model, QSceneNode* parentNode) : 
-QSceneNode(xmlNode, row, model, parentNode), m_pipelineID(0), m_viewportHeight(0), m_viewportWidth(1)
+QSceneNode(xmlNode, row, model, parentNode), m_pipelineID(0), m_viewportWidth(1), m_viewportHeight(0)
 {
 	setObjectName("Camera");
 	addRepresentation();	

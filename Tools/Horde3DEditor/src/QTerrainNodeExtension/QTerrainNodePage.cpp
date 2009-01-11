@@ -21,7 +21,7 @@
 // ****************************************************************************************
 #include "QTerrainNodePage.h"
 
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3DUtils.h>
 
 QTerrainNodePage::QTerrainNodePage(QWidget* parent /*= 0*/) : QWizardPage(parent)
 {

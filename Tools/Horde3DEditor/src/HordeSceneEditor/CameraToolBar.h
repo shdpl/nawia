@@ -40,7 +40,7 @@ public:
 	void setActiveCamera(const QCameraNode* camera);
 	void setActiveCamera(const QString& name);
 
-	unsigned int currentPipelineID() const;
+        int currentPipelineID() const;
 
 	const QString currentPipelineFile() const;
 

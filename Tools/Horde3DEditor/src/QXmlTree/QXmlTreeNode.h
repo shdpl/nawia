@@ -105,12 +105,12 @@ protected:
 
 	virtual QXmlTreeNode* createChild(const QDomElement& childNode, int row) = 0;
 
-	QXmlTreeModel*				m_model;
+        QXmlTreeModel*                  m_model;
 
-	QDomElement					m_xmlNode;
+        QDomElement                     m_xmlNode;
 	QList<QXmlTreeNode*>		m_childItems;	
-	int							m_row;
-	QStringList					m_knownNodeNames;
+        int                             m_row;
+        QStringList                     m_knownNodeNames;
 
 };
 #endif

@@ -29,7 +29,7 @@
 #include <QtCore/QMetaObject>
 #include <QtCore/QMetaEnum>
 #include <QtCore/QMetaProperty>
-#include <QtGUI/QComboBox>
+#include <QtGui/QComboBox>
 #include "Property.h"
 
 /**

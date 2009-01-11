@@ -31,8 +31,8 @@
 #include "SceneTreeModel.h"
 #include "PlugInManager.h"
 
-#include <Horde3D/Horde3D.h>
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3D.h>
+#include <Horde3DUtils.h>
 
 #include <QtCore/QTextStream>
 #include <QtCore/QFile>
@@ -45,7 +45,7 @@ QSceneNode* QLightNode::loadNode(const QDomElement& xmlNode, int row, SceneTreeM
 
 QLightNode::QLightNode(const QDomElement& xmlNode, int row, SceneTreeModel* model, QSceneNode* parentNode) : 
 	QSceneNode(xmlNode, row, model, parentNode), m_resourceID(0), 
-		m_debugID(0), m_debugResourceGeo(0), m_debugResourceMat(0)
+                m_debugID(0), m_debugResourceMat(0), m_debugResourceGeo(0)
 {
 	setObjectName(tr("Light"));
 	addRepresentation();

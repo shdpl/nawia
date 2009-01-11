@@ -35,8 +35,8 @@
 #include <QtCore/QFile>
 #include <QtGui/QMessageBox>
 
-#include <Horde3D/Horde3D.h>
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3D.h>
+#include <Horde3DUtils.h>
 
 QSceneNode* QReferenceNode::loadNode(const QDomElement& xmlNode, int row, SceneTreeModel* model, QSceneNode* parent)
 {
@@ -158,7 +158,7 @@ void QReferenceNode::activate()
 	Horde3D::setNodeTransformMatrix(cameraID, (QMatrix4f(camera).inverted() * newCamTrans).x);	
 }
 
-QString QReferenceNode::toolTip(int column)
+QString QReferenceNode::toolTip(int /*column*/)
 {
 	 return tr("Double click to enter the associated scenegraph file '%1'\n"
 		 "Hold Control key pressed while clicking to move the camera to\n"

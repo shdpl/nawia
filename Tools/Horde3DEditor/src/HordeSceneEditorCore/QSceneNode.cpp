@@ -28,7 +28,7 @@
 
 #include <QXmlTree/QXmlNodePropertyCommand.h>
 
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
 #include <QtGui/QApplication>
 

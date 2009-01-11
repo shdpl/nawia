@@ -26,8 +26,8 @@
 #include "QUniform.h"
 #include "QHordeSceneEditorSettings.h"
 
-#include <Horde3D/Horde3D.h>
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3D.h>
+#include <Horde3DUtils.h>
 
 #include <QtCore/QFile>
 #include <QtGui/QInputDialog>
@@ -195,7 +195,7 @@ void MaterialWidget::initValues()
 	m_saveButton->setEnabled(false);
 }
 
-void MaterialWidget::texUnitChanged(int index)
+void MaterialWidget::texUnitChanged(int /*index*/)
 {
 	QTexUnit* unit = static_cast<QTexUnit*>(m_texUnitCombo->itemData(m_texUnitCombo->currentIndex()).value<void*>());
 	m_texUnitProperties->setObject(unit);

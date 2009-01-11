@@ -42,7 +42,7 @@
 #include <QtCore/QTextStream>
 
 #include <math.h>
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
 namespace SceneWizard
 {

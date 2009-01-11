@@ -7,8 +7,6 @@ CONFIG += qt
 
 QT -= gui core
 
-DEFINES += LUA_BUILD_AS_DLL 		
-
 HEADERS += lapi.h \
 			lauxlib.h \
 			lcode.h \
@@ -63,16 +61,33 @@ SOURCES += lapi.c \
 		lzio.c \
 		print.c 
 
-DESTDIR = ../../../Horde3DEditor/lib
-DLLDESTDIR = ../../../Horde3DEditor/bin
-
-CONFIG(debug, debug|release) { 	
-	TARGET = Luad
-	OBJECTS_DIR = ../../../Horde3DEditor/Build/Lua/Debug	
+CONFIG(debug, debug|release) {
+        TARGET = Luad
+        OBJECTS_DIR = ../../../Horde3DEditor/Build/Lua/Debug
 }
 
-CONFIG(release, debug|release) { 
-    
-	TARGET = Lua
-	OBJECTS_DIR = ../../../Horde3DEditor/Build/Lua/Release
+CONFIG(release, debug|release) {
+
+        TARGET = Lua
+        OBJECTS_DIR = ../../../Horde3DEditor/Build/Lua/Release
+}
+
+unix {
+    DESTDIR = ../../../Horde3DEditor/bin
+    system(mkdir -p ../../../Horde3DEditor/include/Lua)
+    system(cp lua.h luaconf.h lualib.h lauxlib.h ../../../Horde3DEditor/include/Lua)
+}
+
+win32 {
+    DEFINES += LUA_BUILD_AS_DLL
+    DESTDIR = ../../../Horde3DEditor/lib
+    DLLDESTDIR = ../../../Horde3DEditor/bin
+    system( xcopy /y lua.h luaconf.h  ..\..\include\Lua\ )
+}
+
+macx {
+        DESTDIR = ../../../Horde3DEditor/bin
+        CONFIG += x86 ppc
+        QMAKE_MAC_SDK = /Developer/SDKs/MacOSX10.4u.sdk
+        QMAKE_LFLAGS += -mmacosx-version-min=10.4
 }

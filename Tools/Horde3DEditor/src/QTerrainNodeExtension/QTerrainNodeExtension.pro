@@ -10,15 +10,18 @@ include(../../qpluginbase.pri)
 VERSION = 0.0.1
 
 HEADERS += QTerrainNodePage.h \
-		   QTerrainNode.h \
-		   ExtTerrainPlugIn.h
+           QTerrainNode.h \
+           ExtTerrainPlugIn.h
 SOURCES += QTerrainNodePage.cpp \
            QTerrainNode.cpp \
-		   ExtTerrainPlugIn.cpp
+           ExtTerrainPlugIn.cpp
+
 FORMS += QTerrainNodePage.ui
 
-INCLUDEPATH+=../../include 
-INCLUDEPATH+=../HordeSceneEditorCore
+INCLUDEPATH+=../../include \
+             ../HordeSceneEditorCore \
+             ../../../../Horde3D/Bindings/C++ \
+             ../../../../Extensions/Terrain/Bindings/C++
 
 LIBS += -L../../lib
 
@@ -28,7 +31,12 @@ UI_DIR = .
 CONFIG(debug, debug|release) { 
 	LIBS += -lHordeSceneEditorCored
 	LIBS += -lQXmlTreed
-	TARGET = QTerrainNodeExtensiond
+        LIBS += -lLuad
+        unix {
+                LIBS += -lHorde3Dd
+                LIBS += -lHorde3DUtilsd
+        }
+        TARGET = QTerrainNodeExtensiond
 	OBJECTS_DIR = ../../Build/QTerrainNodeExtension/Debug
 	MOC_DIR = ../../Build/QTerrainNodeExtension/Debug
 }
@@ -38,6 +46,11 @@ CONFIG(release, debug|release) {
 	TARGET = QTerrainNodeExtension
 	LIBS += -lHordeSceneEditorCore
 	LIBS += -lQXmlTree
+        LIBS += -lLua
+        unix {
+                LIBS += -lHorde3D
+                LIBS += -lHorde3DUtils
+        }
 	OBJECTS_DIR = ../../Build/QTerrainNodeExtension/Release
 	MOC_DIR = ../../Build/QTerrainNodeExtension/Release
 	DEFINES+=QT_NO_DEBUG	
@@ -46,13 +59,10 @@ CONFIG(release, debug|release) {
 win32 {
 	LIBS += -lHorde3D_vc8
 	LIBS += -lHorde3DUtils_vc8
-	LIBS += -lLua
+
 }
 unix {
 	LIBS += -L../../bin
-	LIBS += -lHorde3D
-	LIBS += -lHorde3DUtils		
-	LIBS += -llua
 	DOLLAR=$
 	QMAKE_RPATH = $${QMAKE_RPATH}$${DOLLAR}$${DOLLAR}ORIGIN
 	QMAKE_LFLAGS+=\'$${QMAKE_RPATH}\'

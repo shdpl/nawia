@@ -24,7 +24,7 @@
 #include "QPipelineNode.h"
 
 #include <QXmlTree/QXmlTreeModel.h>
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
 
 QPipelineStageNode::QPipelineStageNode(const QDomElement& xmlNode, int row, QXmlTreeModel* model, QXmlTreeNode* parent /*= 0*/) : 

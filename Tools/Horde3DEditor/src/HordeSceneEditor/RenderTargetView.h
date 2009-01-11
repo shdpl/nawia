@@ -63,11 +63,11 @@ private:
 	
 	unsigned int	m_pipelineID;
 
-	ImgLabel*		m_imageLabel;
-	QScrollArea*	m_scrollArea;
-	double			m_scaleFactor;
+        ImgLabel*	m_imageLabel;
+        QScrollArea*    m_scrollArea;
+        double		m_scaleFactor;
 
-	float*			m_imgData;
-	int				m_imgDepth;
+        float*		m_imgData;
+        int		m_imgDepth;
 };
 #endif

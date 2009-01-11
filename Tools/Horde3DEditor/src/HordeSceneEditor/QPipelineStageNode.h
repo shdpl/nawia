@@ -41,7 +41,7 @@ public:
 protected:
 	// QPipelineStageNode doesn't have childs
 	bool isKnown(const QString&) const {return false;}
-	QXmlTreeNode* createChild(const QDomElement& childNode, int row) {return 0;}
+        QXmlTreeNode* createChild(const QDomElement& /*childNode*/, int /*row*/) {return 0;}
 
 	bool m_active;
 

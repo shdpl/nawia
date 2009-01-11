@@ -23,7 +23,7 @@
 #include "TextureComboBox.h"
 
 #include <QtCore/QDir>
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 #include "HordeFileDialog.h"
 
 TextureComboBox::TextureComboBox(QWidget* parent /*= 0*/) : QComboBox(parent)

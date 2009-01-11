@@ -28,7 +28,7 @@
 #include <QtCore/QList>
 #include <QtCore/QVariant>
 
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
 
 struct CopyJob

@@ -29,8 +29,8 @@
 #include <QtXml/qdom.h>
 #include <QtCore/QDir>
 
-#include <Horde3D/Horde3D.h>
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3D.h>
+#include <Horde3DUtils.h>
 
 struct HordePathSettings
 {

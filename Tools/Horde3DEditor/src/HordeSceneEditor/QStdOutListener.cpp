@@ -24,7 +24,7 @@
 
 
 
-QStdOutListener::QStdOutListener(const QString& pipeName /*= QString("stdoutredirection")*/, QObject* parent /*= 0*/) : QObject(parent), m_timerID(0)
+QStdOutListener::QStdOutListener(const QString& /*pipeName = QString("stdoutredirection")*/, QObject* parent /*= 0*/) : QObject(parent), m_timerID(0)
 {
 #ifdef _WIN32
 #ifdef UNICODE	
@@ -72,7 +72,7 @@ void QStdOutListener::stop()
 	m_timerID = 0;
 }
 
-void QStdOutListener::timerEvent(QTimerEvent* event)
+void QStdOutListener::timerEvent(QTimerEvent* /*event*/)
 {
 	char buf[256];
 	unsigned long bytesRead = 0;		
@@ -88,7 +88,7 @@ void QStdOutListener::timerEvent(QTimerEvent* event)
 			emit received(QString(buf));
 		}
 #endif
-	} while (bytesRead);	 
+	} while (bytesRead);	         
 }
 
 

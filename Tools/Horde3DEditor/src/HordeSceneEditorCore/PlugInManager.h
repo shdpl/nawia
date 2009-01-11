@@ -114,14 +114,14 @@ private:
 
 	QMap<QString, AttachmentPlugIn*>	m_attachmentPluginRegistry;
 	
-	QMap<QString, SceneNodeLoadFunc>	m_sceneNodeLoadRegistry;
-	QMap<QString, NodeLoadFunc>			m_nodeLoadRegistry;
-	QMap<QString, NodeCreateFunc>		m_nodeCreateRegistry;
+        QMap<QString, SceneNodeLoadFunc>        m_sceneNodeLoadRegistry;
+        QMap<QString, NodeLoadFunc>             m_nodeLoadRegistry;
+        QMap<QString, NodeCreateFunc>           m_nodeCreateRegistry;
 
-	QPropertyEditorWidget*				m_propertyEditor;
-	AttachmentPlugIn*					m_currentAttachmentPlugIn;
+        QPropertyEditorWidget*                  m_propertyEditor;
+        AttachmentPlugIn*                       m_currentAttachmentPlugIn;
 
-	QList<ToolPlugIn*>					m_toolPlugIns;
+        QList<ToolPlugIn*>                      m_toolPlugIns;
 
 };
 #endif

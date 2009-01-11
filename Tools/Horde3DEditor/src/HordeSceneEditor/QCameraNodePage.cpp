@@ -23,7 +23,7 @@
 #include "QCameraNodePage.h"
 
 #include <math.h>
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3DUtils.h>
 
 #include "HordeSceneEditor.h"
 

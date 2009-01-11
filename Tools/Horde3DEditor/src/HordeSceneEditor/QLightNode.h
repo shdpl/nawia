@@ -85,7 +85,7 @@ public:
 	Material material() const;
 	void setMaterial(const Material& material);
 	
-	QString toolTip( int column )  { return tr("Double click to move the camera to the lights position"); }
+        QString toolTip( int /*column*/ )  { return tr("Double click to move the camera to the lights position"); }
 
 protected:
 	

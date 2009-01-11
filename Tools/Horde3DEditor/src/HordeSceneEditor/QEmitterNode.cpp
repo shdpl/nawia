@@ -33,8 +33,8 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
-#include <Horde3D/Horde3D.h>
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3D.h>
+#include <Horde3DUtils.h>
 
 
 QSceneNode* QEmitterNode::loadNode(const QDomElement& xmlNode, int row, SceneTreeModel* model, QSceneNode* parent)
@@ -275,7 +275,7 @@ void QEmitterNode::setDelay(float value)
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Delay"), this, "Delay", value, EmitterDelayID));
 }
 
-void QEmitterNode::timerEvent(QTimerEvent *event)
+void QEmitterNode::timerEvent(QTimerEvent */*event*/)
 {
 	if (m_hordeID != 0)
 		Horde3D::advanceEmitterTime(m_hordeID, 0.1f);

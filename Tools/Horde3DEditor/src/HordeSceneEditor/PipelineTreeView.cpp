@@ -33,8 +33,8 @@
 #include <QtCore/QTextStream>
 #include <QtGui/QMessageBox>
 
-#include <Horde3D/Horde3D.h>
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3D.h>
+#include <Horde3DUtils.h>
 
 PipelineTreeView::PipelineTreeView(QWidget* parent /*= 0*/) : QTreeView(parent), m_pipelineID(0)
 {

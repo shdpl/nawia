@@ -124,7 +124,8 @@ CONFIG += qt
 QT +=  opengl xml
 
 INCLUDEPATH+=../../include
-INCLUDEPATH+=../HordeSceneEditorCore
+INCLUDEPATH+=../HordeSceneEditorCore \
+            ../../../../Horde3D/Bindings/C++
 
 DESTDIR = ../../bin
 
@@ -133,18 +134,17 @@ CONFIG(debug, debug|release) {
 	win32 {
 		LIBS += -lHorde3D_vc8
 		LIBS += -lHorde3DUtils_vc8
-		LIBS += -lLuad
 	}
 	unix {
     	LIBS += -L../../bin
 		LIBS += -lHorde3D
 		LIBS += -lHorde3DUtils
-		LIBS += -llua
 		DOLLAR=$
 		QMAKE_RPATH = $${QMAKE_RPATH}$${DOLLAR}$${DOLLAR}ORIGIN
 		QMAKE_LFLAGS+=\'$${QMAKE_RPATH}\'		
 	}
-	LIBS += -lEditorLibd
+        LIBS += -lLuad
+        LIBS += -lEditorLibd
 	LIBS += -lQPropertyEditord
 	LIBS += -lHordeSceneEditorCored
 	LIBS += -lQXmlTreed
@@ -158,18 +158,17 @@ CONFIG(release, debug|release) {
 	win32 {
 		LIBS += -lHorde3D_vc8
 		LIBS += -lHorde3DUtils_vc8
-		LIBS += -lLua
 	}
 	unix {
     	LIBS += -L../../bin
 		LIBS += -lHorde3D
 		LIBS += -lHorde3DUtils		
-		LIBS += -llua
 		DOLLAR=$
 		QMAKE_RPATH = $${QMAKE_RPATH}$${DOLLAR}$${DOLLAR}ORIGIN
 		QMAKE_LFLAGS+=\'$${QMAKE_RPATH}\'
 	}
-	LIBS += -lEditorLib
+        LIBS += -lLua
+        LIBS += -lEditorLib
 	LIBS += -lQPropertyEditor
 	LIBS += -lQXmlTree
 	LIBS += -lHordeSceneEditorCore

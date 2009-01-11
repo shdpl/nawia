@@ -36,9 +36,9 @@
 #include <QtCore/QFileInfo>
 #include <QtGui/QWizard>
 
-#include <Horde3D/Horde3D.h>
-#include <Horde3D/Horde3DUtils.h>
-#include <Horde3D/Horde3DTerrain.h>
+#include <Horde3D.h>
+#include <Horde3DUtils.h>
+#include <Horde3DTerrain.h>
 
 QDomElement QTerrainNode::createNode(QWidget* parent)
 {

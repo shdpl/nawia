@@ -26,6 +26,8 @@
 #include <QtCore/QMetaProperty>
 #include <QtGui/QSpinBox>
 
+#include <limits.h>
+
 Property::Property(const QString& name /*= QString()*/, QObject* propertyObject /*= 0*/, QObject* parent /*= 0*/) : QObject(parent), 
 m_propertyObject(propertyObject)
 {

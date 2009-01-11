@@ -23,7 +23,7 @@
 
 #include "HordeSceneEditor.h"
 
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3DUtils.h>
 
 QEmitterNodePage::QEmitterNodePage(QWidget* parent /*= 0*/) : QWizardPage(parent)
 {

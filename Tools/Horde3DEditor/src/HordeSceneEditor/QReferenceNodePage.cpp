@@ -23,7 +23,7 @@
 #include "QReferenceNodePage.h"
 #include "HordeModelDialog.h"
 
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 #include <QtGui/QFileDialog>
 #include <QtCore/QDir>
 

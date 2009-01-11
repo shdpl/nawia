@@ -68,7 +68,7 @@ public:
 	 * the registration of these functions on the provided lua stack within this method.
 	 * @param lua pointer to an existing lua stack used by the editor's LuaController
 	 */
-	virtual void registerLuaFunctions(lua_State* lua) {};
+        virtual void registerLuaFunctions(lua_State* /*lua*/) {}
 
 };
 

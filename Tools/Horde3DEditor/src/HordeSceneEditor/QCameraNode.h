@@ -89,7 +89,7 @@ public:
 	 */
 	void activate();
 
-	QString toolTip( int column ) { return tr("Double click to activate this camera"); }
+        QString toolTip( int /*column*/ ) { return tr("Double click to activate this camera"); }
 
 public slots:
 
@@ -103,9 +103,9 @@ protected:
 
 private:
 
-	int m_pipelineID;
-	int	m_viewportWidth;
-	int	m_viewportHeight;
+        int     m_pipelineID;
+        int     m_viewportWidth;
+        int     m_viewportHeight;
 
 };
 #endif

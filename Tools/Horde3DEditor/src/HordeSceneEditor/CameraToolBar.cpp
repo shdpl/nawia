@@ -23,7 +23,7 @@
 
 #include "QCameraNode.h"
 
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
 CameraToolBar::CameraToolBar(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QWidget(parent, flags), m_orthoScale(10)
 {
@@ -59,7 +59,7 @@ void CameraToolBar::setActiveCamera(const QString& name)
 	
 }
 
-unsigned int CameraToolBar::currentPipelineID() const
+int CameraToolBar::currentPipelineID() const
 {
 	const QCameraNode* camera = static_cast<const QCameraNode*>(m_activeCam->itemData(m_activeCam->currentIndex()).value<void*>());
 	if( camera )

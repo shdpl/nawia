@@ -33,7 +33,7 @@
 #include <QtCore/QFile>
 #include <QtGui/QImageReader>
 
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3DUtils.h>
 #include <math.h>
 Q_DECLARE_METATYPE(QFileInfo)
 
@@ -71,6 +71,8 @@ m_scenePaths(targetPaths)
 	case ResourceTypes::Pipeline:
 		initPipelineView();
 		break;
+        default:
+                break;
 	}
 	connect(m_fileList, SIGNAL(currentItemChanged(QListWidgetItem* , QListWidgetItem*)), this, SLOT(itemChanged(QListWidgetItem*, QListWidgetItem*)));
 	m_importer = new Importer();

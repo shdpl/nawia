@@ -50,8 +50,11 @@ SOURCES = 	CustomTypes.cpp \
 FORMS = HordeFileDialog.ui \
         OverwriteFilesDialog.ui
 
-INCLUDEPATH+=../../include
+INCLUDEPATH+=../../include \
+             ../../../../Horde3D/Bindings/C++
+
 DESTDIR = ../../lib
+
 UI_DIR = .
 
 CONFIG(debug, debug|release) { 

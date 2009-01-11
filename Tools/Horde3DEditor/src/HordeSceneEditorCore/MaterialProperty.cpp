@@ -24,8 +24,8 @@
 #include "MaterialComboBox.h"
 #include "CustomTypes.h"
 
-#include <Horde3D/Horde3D.h>
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3D.h>
+#include <Horde3DUtils.h>
 
 MaterialProperty::MaterialProperty(const QString& name /*= QString()*/, QObject* propertyObject /*= 0*/, QObject* parent /*= 0*/) : Property(name, propertyObject, parent)
 {	

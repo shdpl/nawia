@@ -38,7 +38,7 @@ extern "C"
 	#include "Lua/lua.h"
 }
 
-PlugInManager::PlugInManager(QObject* parent /*= 0*/) : QObject(parent), m_currentAttachmentPlugIn(0), m_propertyEditor(0)
+PlugInManager::PlugInManager(QObject* parent /*= 0*/) : QObject(parent), m_propertyEditor(0), m_currentAttachmentPlugIn(0)
 {
 }
 

@@ -25,7 +25,7 @@
 
 #include <QXmlTree/QXmlTreeNode.h>
 #include <QtGui/QLayout>
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
 NodeWidget::NodeWidget(QWidget* parent /*= 0*/) : QPropertyEditorWidget(parent), m_currentNode(0)
 {
@@ -121,7 +121,7 @@ void NodeWidget::rotateObject(const float rx, const float ry, const float rz)
 {	
 	if( !m_currentNode || !m_currentNode->property("Rotation").isValid() ) return;
 
-	const int hordeID = m_currentNode->property("ID").toInt();
+        // const int hordeID = m_currentNode->property("ID").toInt();
 	if (rx != rx && ry != ry && rz != rz) // reset
 	{
 		QVec3f pos(m_currentNode->property("Position").value<QVec3f>());

@@ -39,10 +39,10 @@
 #include <QtGui/QApplication>
 #include <QtGui/QClipboard>
 
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
-RenderTargetView::RenderTargetView(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QWidget(parent, flags), m_scaleFactor(1.0), 
-m_imgData(0), m_imgDepth(0), m_pipelineID(0)
+RenderTargetView::RenderTargetView(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QWidget(parent, flags),
+m_pipelineID(0), m_scaleFactor(1.0), m_imgData(0), m_imgDepth(0)
 {
 	setFocusPolicy(Qt::ClickFocus);
 	setupUi(this);
@@ -155,7 +155,7 @@ void RenderTargetView::showBuffer(int index)
 	delete[] m_imgData;
 	m_imgData = 0;
 
-	if (index = -2)
+        if( index == -2 )
 		index = m_buffer->currentIndex();
 	if (index >= 0)
 	{

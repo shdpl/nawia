@@ -31,7 +31,7 @@
 
 #include <QtCore/QTextStream>
 
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
 QSceneNode* QJointNode::loadNode(const QDomElement& xmlNode, int row, SceneTreeModel* model, QSceneNode* parent)
 {

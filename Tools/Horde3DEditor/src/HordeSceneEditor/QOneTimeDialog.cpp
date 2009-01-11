@@ -48,7 +48,7 @@ void QOneTimeDialog::buttonPressed(QAbstractButton* button)
 
 int QOneTimeDialog::question(QWidget *parent, const QString &title, const QString &text, const QDialogButtonBox::StandardButton &button1, const QDialogButtonBox::StandardButton &button2, const QDialogButtonBox::StandardButton &button3 /*= QDialogButtonBox::NoButton*/)
 {
-	QOneTimeDialog dlg;
+        QOneTimeDialog dlg( parent );
 	dlg.setWindowTitle(title);
 	dlg.m_label->setText(text);
 	dlg.m_buttonBox->addButton(button1);

@@ -21,7 +21,7 @@
 // ****************************************************************************************
 #include "QTexUnit.h"
 
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
 QTexUnit::QTexUnit(const QDomElement& texUnitNode, QObject* parent /*= 0*/) : QObject(parent), m_texUnitNode(texUnitNode)
 {

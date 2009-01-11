@@ -31,8 +31,8 @@
 #include <QtCore/QTextStream>
 #include <QtGui/QUndoStack>
 
-#include <Horde3D/Horde3D.h>
-#include <Horde3D/Horde3DUtils.h>
+#include <Horde3D.h>
+#include <Horde3DUtils.h>
 
 SceneFile* SceneFile::load(const QString &sceneFileName)
 {

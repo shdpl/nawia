@@ -132,7 +132,7 @@ public:
 	 * Provides a tooltip for the tree view
 	 * Can be reimplemented in sub nodes
 	 */
-	virtual QString toolTip( int column = -1) { return QString();}
+        virtual QString toolTip( int /*column*/ = -1) { return QString(); }
 
 	/**
 	 * Returns the text displayed by a tree view for the given column

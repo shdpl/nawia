@@ -25,7 +25,7 @@
 #include "HordeFileDialog.h"
 #include "HordeSceneEditor.h"
 
-#include <Horde3D/Horde3D.h>
+#include <Horde3D.h>
 
 QLightNodePage::QLightNodePage(QWidget* parent /*= 0*/) : QWizardPage(parent)
 {

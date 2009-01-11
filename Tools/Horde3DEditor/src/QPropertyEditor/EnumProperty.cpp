@@ -66,7 +66,7 @@ QVariant EnumProperty::value(int role /* = Qt::UserRole */) const {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // createEditor
 /////////////////////////////////////////////////////////////////////////////////////////////
-QWidget* EnumProperty::createEditor(QWidget* parent, const QStyleOptionViewItem& option){
+QWidget* EnumProperty::createEditor(QWidget* parent, const QStyleOptionViewItem& /*option*/){
 	// create a QComboBox and fill it with the QStringList values
 	QComboBox* editor = new QComboBox(parent);
 	editor->addItems(m_enum);
@@ -82,7 +82,7 @@ QWidget* EnumProperty::createEditor(QWidget* parent, const QStyleOptionViewItem&
 bool EnumProperty::setEditorData(QWidget *editor, const QVariant &data)
 {
 	QComboBox* combo = 0;
-	if(combo = qobject_cast<QComboBox*>(editor)){
+        if( (combo = qobject_cast<QComboBox*>(editor) ) ){
 		int value = data.toInt();
 		const QMetaObject* meta = m_propertyObject->metaObject();
 		QMetaProperty prop = meta->property(meta->indexOfProperty(qPrintable(objectName())));
@@ -105,9 +105,12 @@ bool EnumProperty::setEditorData(QWidget *editor, const QVariant &data)
 QVariant EnumProperty::editorData(QWidget *editor)
 {
 	QComboBox* combo = 0;
-	if(combo = qobject_cast<QComboBox*>(editor)){
+        if( (combo = qobject_cast<QComboBox*>(editor) ) )
+        {
 		return QVariant(combo->currentText());
-	} else {
+        }
+        else
+        {
 		return QVariant();
 	}
 }
