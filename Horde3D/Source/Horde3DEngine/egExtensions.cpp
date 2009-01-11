@@ -33,8 +33,11 @@
 #else
 
 #include "Terrain/Source/extension.h"
+
+#ifndef QMAKE
 // Lib files for extensions
 #pragma comment( lib, "Extension_Terrain.lib" )
+#endif
 
 #endif
 

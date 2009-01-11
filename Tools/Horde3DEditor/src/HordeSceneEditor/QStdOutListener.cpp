@@ -24,7 +24,7 @@
 
 
 
-QStdOutListener::QStdOutListener(const QString& /*pipeName = QString("stdoutredirection")*/, QObject* parent /*= 0*/) : QObject(parent), m_timerID(0)
+QStdOutListener::QStdOutListener(const QString& pipeName /*= QString("stdoutredirection")*/, QObject* parent /*= 0*/) : QObject(parent), m_timerID(0)
 {
 #ifdef _WIN32
 #ifdef UNICODE	

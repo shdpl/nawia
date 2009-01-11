@@ -28,6 +28,9 @@ CONFIG(debug, debug|release) {
                 system(mkdir -p ../../Build/Horde3DUtils/Debug )
             }
         }
+		win32 {			
+			LIBS += -lHorde3Dd 
+		}
         TARGET = Horde3DUtilsd
         OBJECTS_DIR = ../../../Horde3DEditor/Build/Horde3DUtils/Debug
 }
@@ -39,6 +42,10 @@ CONFIG(release, debug|release) {
                 system(mkdir -p ../../Build/Horde3DUtils/Release )
             }
         }
+		win32 {
+			LIBS += -lHorde3D 
+		}
+
         TARGET = Horde3DUtils
         OBJECTS_DIR = ../../../Horde3DEditor/Build/Horde3DUtils/Release
 }
@@ -47,7 +54,12 @@ unix {
     DESTDIR = ../../../Horde3DEditor/bin
 }
 
-win32 {
+win32 {	
+	LIBS += -L../../lib
+	LIBS += -lopengl32 \
+			-lgdi32
+	DEFINES += HORDE3DUTILS_EXPORTS
+
     DESTDIR = ../../../Horde3DEditor/lib
     DLLDESTDIR = ../../../Horde3DEditor/bin
 }

@@ -67,6 +67,7 @@ SOURCES += ../../../../Horde3D/Source/Horde3DEngine/egAnimatables.cpp \
            ../../../../Horde3D/Source/Shared/utXMLParser.cpp
 
 terrain {
+	DEFINES += QMAKE
     INCLUDEPATH += ../../../../Extensions/
     HEADERS += ../../../../Extensions/Terrain/Source/extension.h \
                ../../../../Extensions/Terrain/Source/terrain.h
@@ -100,6 +101,13 @@ unix {
 }
 
 win32 {
+	LIBS += -lopengl32 \
+	        -ladvapi32 \
+			-luser32
+	DEFINES += HORDE3D_EXPORTS
+	DEFINES -= UNICODE
+	DEFINES += _MBCS \
+               _WINDLL	
     DESTDIR = ../../../Horde3DEditor/lib
     DLLDESTDIR = ../../../Horde3DEditor/bin
 }
