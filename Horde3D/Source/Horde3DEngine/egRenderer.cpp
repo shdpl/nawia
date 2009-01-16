@@ -215,6 +215,9 @@ bool Renderer::init()
 
 	_statTriCount = 0; _statBatchCount = 0; _statLightPassCount = 0;
 	
+	// Reset GL states
+	finishRendering();
+
 	return true;
 }
 
@@ -1585,7 +1588,9 @@ void Renderer::finishRendering()
 	glDepthMask( 1 );
 	glDepthFunc( GL_LEQUAL );
 	setShader( 0x0 );
-	setupViewMatrices( _curCamera );
+	glBindBuffer( GL_ARRAY_BUFFER, 0 );
+	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+	if( _curCamera != 0x0 ) setupViewMatrices( _curCamera );
 }
 
 
