@@ -93,6 +93,7 @@ void SceneGraphManager::removeComponent(SceneGraphComponent* node)
 void SceneGraphManager::run()
 {
 	Horde3D::render(m_activeCam);				
+	Horde3D::finalizeFrame();
 }
 
 void SceneGraphManager::update()
