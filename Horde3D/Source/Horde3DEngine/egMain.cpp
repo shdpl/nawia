@@ -146,11 +146,19 @@ namespace Horde3D
 	}
 
 
-	DLLEXP void resize( int x, int y, int width, int height )
+	DLLEXP bool finalizeFrame()
+	{
+		return true;
+	}
+
+
+	DLLEXP void setupViewport( int x, int y, int width, int height, bool resizeBuffers )
 	{
 		if( !initialized ) return;
 		
 		Modules::renderer().resize( x, y, width, height );
+
+		if( !resizeBuffers ) return;
 
 		// Update pipeline resources
 		for( uint32 i = 0; i < Modules::resMan().getResources().size(); ++i )
@@ -266,12 +274,19 @@ namespace Horde3D
 	}
 
 
+	DLLEXP ResHandle iterateResources( int type, ResHandle start )
+	{
+		Resource *res = Modules::resMan().getNextResource( type, start );
+		
+		return res != 0x0 ? res->getHandle() : 0;
+	}
+	
+	
 	DLLEXP ResHandle findResource( int type, const char *name )
 	{
 		Resource *res = Modules::resMan().findResource( type, safeStr( name ) );
 		
-		if( res != 0x0 ) return res->getHandle();
-		else return 0;
+		return res != 0x0 ? res->getHandle() : 0;
 	}
 
 	
@@ -859,7 +874,7 @@ namespace Horde3D
 
 	DLLEXP NodeHandle castRay( NodeHandle node, float ox, float oy, float oz, float dx, float dy, float dz, int numNearest )
 	{
-		SceneNode* sn = Modules::sceneMan().resolveNodeHandle( node );
+		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
 		if ( sn == 0x0 )
 		{
 			Modules::log().writeDebugInfo( "Invalid node handle %i in castRay", node );
@@ -890,6 +905,26 @@ namespace Horde3D
 		}
 
 		return false;
+	}
+
+
+	DLLEXP int checkNodeVisibility( NodeHandle node, NodeHandle cameraNode, bool checkOcclusion, bool calcLod )
+	{
+		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+		if ( sn == 0x0 )
+		{
+			Modules::log().writeDebugInfo( "Invalid node handle %i in checkNodeVisibility", node );
+			return -1;
+		}
+
+		SceneNode *cam = Modules::sceneMan().resolveNodeHandle( cameraNode );
+		if ( cam == 0x0 || cam->getType() != SceneNodeTypes::Camera )
+		{
+			Modules::log().writeDebugInfo( "Invalid camera node %i in checkNodeVisibility", cameraNode );
+			return -1;
+		}
+		
+		return Modules::sceneMan().checkNodeVisibility( sn, (CameraNode *)cam, checkOcclusion, calcLod );
 	}
 
 
@@ -1104,17 +1139,18 @@ namespace Horde3D
 	}
 
 
-	DLLEXP bool calcCameraProjectionMatrix( NodeHandle cameraNode, float *projMat )
+	DLLEXP bool getCameraProjectionMatrix( NodeHandle cameraNode, float *projMat )
 	{
 		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( cameraNode );
 		if( sn != 0x0 && sn->getType() == SceneNodeTypes::Camera && projMat != 0x0 )
 		{
-			memcpy( projMat, ((CameraNode *)sn)->calcProjectionMatrix().x, 16 * sizeof( float ) );
+			Modules::sceneMan().updateNodes();
+			memcpy( projMat, ((CameraNode *)sn)->getProjMat().x, 16 * sizeof( float ) );
 			return true;
 		}
 		else
 		{
-			Modules::log().writeDebugInfo( "Invalid Camera node handle %i in calcCameraProjectionMatrix", cameraNode );
+			Modules::log().writeDebugInfo( "Invalid Camera node handle %i in getCameraProjectionMatrix", cameraNode );
 			return false;
 		}
 	}

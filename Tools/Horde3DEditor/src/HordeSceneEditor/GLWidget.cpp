@@ -208,7 +208,7 @@ void GLWidget::initializeGL()
 void GLWidget::resizeGL(int width, int height)
 {	
 	if ( m_initialized )
-		Horde3D::resize(0,0, width, height);	
+		Horde3D::setupViewport( 0, 0, width, height, true);	
 	emit resized(width, height);	
 }
 
@@ -260,7 +260,10 @@ void GLWidget::paintGL()
 			m_attachmentPlugIn->render( m_activeCameraID );
 		}
 		else
+		{
 			Horde3D::render(m_activeCameraID); // Render scene	
+			Horde3D::finalizeFrame();
+		}
 		
 		renderEditorInfo();
 

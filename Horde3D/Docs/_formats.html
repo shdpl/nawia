@@ -2,67 +2,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Horde3D Documentation</title>
-    <link rel="stylesheet" type="text/css" href="css/manual.css"  />
-	<link rel="stylesheet" type="text/css" href="css/api.css">
+    <link rel="stylesheet" type="text/css" href="css/manual.css" title="ALL" media="screen,projection" />
 </head>
 
 <body>
 <div id="content">
 
 <h1>Horde3D Data Format Reference</h1>
-<div class="CBody">
-  <!--START_ND_SUMMARY-->
-  <div class="Summary">
-    <div class="STitle">Contents</div>
-    <div class="SBorder">
-      <table border="0" cellspacing="0" cellpadding="0" class="STable">
-        <tr class="SGroup SIndent1">
-          <td class="SEntry"><a href="#textureMaps" >Textural and imaging </a></td>
-          <td class="SDescription"></td>
-        </tr>
-        <tr class="SFunction SIndent2 SMarked">
-          <td class="SEntry"><a href="#textureMaps" id="link1" >Textures Maps </a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SFunction SIndent2">
-          <td class="SEntry"><a href="#materials" id="link2" >Materials</a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SFunction SIndent2 SMarked">
-          <td class="SEntry"><a href="#code" id="link1" >Code Files </a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SFunction SIndent2">
-          <td class="SEntry"><a href="#shaders" id="link2" >Shaders</a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SGroup SIndent1">
-          <td class="SEntry"><a href="#scenegraph" >Graphs and Content </a></td>
-          <td class="SDescription"></td>
-        </tr>
-        <tr class="SFunction SIndent2 SMarked">
-          <td class="SEntry"><a href="#scenegraph" id="link3" >Scene Graph </a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SFunction SIndent2">
-          <td class="SEntry"><a href="#effect" id="link4" >Effects</a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SFunction SIndent2 SMarked">
-          <td class="SEntry"><a href="#geo" id="link5" >Geometry</a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SFunction SIndent2">
-          <td class="SEntry"><a href="#anim" id="link4" >Animation</a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-      </table>
-    </div>
-  </div>
-  <!--END_ND_SUMMARY-->
-</div>
-<p>&nbsp;</p>
-<h2>Texture Maps<a name="textureMaps" id="textureMaps"></a></h2>
+
+<h2>Texture Maps</h2>
 <p>
 Horde3D supports two dimensional texture maps and cube maps with up to four 8-bit color components, thus including
 an Alpha channel. It is recommended that texture maps have power of two dimensions (1, 2, 4, 8, 16, ..., 512, 1024, 2048) but this
@@ -92,7 +40,7 @@ cube map.
 </p>
 <br /><br /><br />
 
-<h2>Materials<a name="materials" id="materials"></a></h2>
+<h2>Materials</h2>
 <p><i>Filename-extension: .material.xml</i></p>
 <p>
 Materials are used to bind data to shaders. They can reference a shader and setup texture units
@@ -245,7 +193,7 @@ The following XML node elements with the described attributes are supported:
 <br /><br /><br />
 
 
-<h2>Code Files<a name="code" id="code"></a></h2>
+<h2>Code Files</h2>
 <p><i>Filename-extension: arbitrary, usually .txt</i></p>
 <p>
 Code files are pure text files that can be used to define shader code. These files can be referenced by shader resources.
@@ -253,7 +201,7 @@ Code files are pure text files that can be used to define shader code. These fil
 <br /><br /><br />
 
 
-<h2>Shaders<a name="shaders" id="shaders"></a></h2>
+<h2>Shaders</h2>
 <p><i>Filename-extension: .shader.xml</i></p>
 <p>
 Shaders are used to create a plenty of different effects. A shader can generally be executed in different stages of the
@@ -292,59 +240,29 @@ The following XML node elements with the described attributes are supported for 
             <table>
                 <tr>
                     <td><b>writeDepth</b></td>
-                    <td>enable writing to depth buffer (Values: false, true) (Default: true)  {optional}</td>
+                    <td>enables writing to depth buffer (Values: false, true) (Default: true)  {optional}</td>
                 </tr>
                 <tr>
                     <td><b>blendMode</b></td>
-                    <td>blend function (Values: REPLACE, BLEND, ADD, ADD_BLENDED, MULT) (Default: REPLACE)  {optional}</td>
+                    <td>blend mode (Values: REPLACE, BLEND, ADD, ADD_BLENDED, MULT) (Default: REPLACE)  {optional}</td>
                 </tr>
-            </table>
-        </td>
-    </tr>
-	<tr>
-        <td><b>AlphaTest</b></td>
-        <td>
-			optional Alpha Test configuration of rendering parameters; child of <b>Context</b> element {1}
-            <table>
-                <tr>
-                    <td><b>enabled</b></td>
-                    <td>enable alpha testing (Values: false, true) (Default: false) </td>
+				<tr>
+                    <td><b>depthTest</b></td>
+                    <td>depth test function; use ALWAYS to disable depth test
+					    (Values: ALWAYS, EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL) (Default: LESS_EQUAL)  {optional}</td>
                 </tr>
-                <tr>
-                    <td><b>mode</b></td>
-                    <td>test function (Values: equal, gequal, lequal, less, greater) (Default: lequal) </td>
+				<tr>
+                    <td><b>alphaTest</b></td>
+                    <td>alpha test function; use ALWAYS to disable alpha test
+					    (Values: ALWAYS, EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL) (Default: ALWAYS)  {optional}</td>
                 </tr>
-                <tr>
-                    <td><b>value</b></td>
-                    <td>floating point value which alpha channels are compared against (Default: 0.0) </td>
+				<tr>
+                    <td><b>alphaRef</b></td>
+                    <td>reference value for alpha test (Default: 0.0)  {optional}</td>
                 </tr>
-            </table>
-        </td>
-    </tr>
-	<tr>
-        <td><b>DepthTest</b></td>
-        <td>
-			optional Depth Test configuration of rendering parameters; child of <b>Context</b> element {1}
-            <table>
-                <tr>
-                    <td><b>enabled</b></td>
-                    <td>enable depth testing against existing fragments (Values: false, true) (Default: false) </td>
-                </tr>
-                <tr>
-                    <td><b>mode</b></td>
-                    <td>test function (Values: equal, gequal, lequal, less, greater) (Default: lequal) </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-	<tr>
-        <td><b>AlphaToCoverage</b></td>
-        <td>
-			optional ATOC configuration of rendering parameters, requires Multisampling to be enabled in the Engine Options; child of <b>Context</b> element {1}
-            <table>
-                <tr>
-                    <td><b>enabled</b></td>
-                    <td>enable ATOC for fragments (Values: false, true) (Default: false) </td>
+				<tr>
+                    <td><b>alphaToCoverage</b></td>
+                    <td>enables alpha-to-coverage (Values: false, true) (Default: false)  {optional}</td>
                 </tr>
             </table>
         </td>
@@ -385,8 +303,6 @@ The following XML node elements with the described attributes are supported for 
 <pre>
 &lt;Shader&gt;
     &lt;Context id="OVERLAY"&gt;
-	  &lt;AlphaTest enabled="true" mode="less" value="0.5" /&gt;
-	  &lt;DepthTest enabled="true" mode="lequal" /&gt;
         &lt;VertexShader&gt;
             &lt;DefCode&gt;
             &lt;![CDATA[<i>
@@ -423,7 +339,7 @@ For more information on available shader attributes see the <a href="_pipeline.h
 </p>
 <br /><br />
 
-<h2>Scene Graph Files<a name="scenegraph" id="scenegraph"></a></h2>
+<h2>Scene Graph Files</h2>
 <p><i>Filename-extension: .scene.xml</i></p>
 <p>
 Scene graph files are XML documents that define a subtree of the scene graph.
@@ -463,14 +379,6 @@ The following XML elements and attributes are supported for defining the scene n
         <td>
             Group scene node {*}
             <table>
-                <tr>
-                    <td><b>minDist</b></td>
-                    <td>see <a href="_api.html#GroupNodeParams">GroupNodeParams</a> {optional}</td>
-                </tr>
-                <tr>
-                    <td><b>maxDist</b></td>
-                    <td>see <a href="_api.html#GroupNodeParams">GroupNodeParams</a> {optional}</td>
-                </tr>
             </table>
         </td>
     </tr>
@@ -500,6 +408,22 @@ The following XML elements and attributes are supported for defining the scene n
                     <td><b>softwareSkinning</b></td>
 					<td>see <a href="_api.html#ModelNodeParams">ModelNodeParams</a> {optional}</td>
                 </tr>
+				<tr>
+                    <td><b>lodDist1</b></td>
+					<td>see <a href="_api.html#ModelNodeParams">ModelNodeParams</a> {optional}</td>
+                </tr>
+				<tr>
+                    <td><b>lodDist2</b></td>
+					<td>see <a href="_api.html#ModelNodeParams">ModelNodeParams</a> {optional}</td>
+                </tr>
+				<tr>
+                    <td><b>lodDist3</b></td>
+					<td>see <a href="_api.html#ModelNodeParams">ModelNodeParams</a> {optional}</td>
+                </tr>
+				<tr>
+                    <td><b>lodDist4</b></td>
+					<td>see <a href="_api.html#ModelNodeParams">ModelNodeParams</a> {optional}</td>
+                </tr>
             </table>
         </td>
     </tr>
@@ -527,6 +451,10 @@ The following XML elements and attributes are supported for defining the scene n
                 <tr>
                     <td><b>vertREnd</b></td>
                     <td>maximum vertex array index contained in indices of geometry resource of parent model {required}</td>
+                </tr>
+				<tr>
+                    <td><b>lodLevel</b></td>
+                    <td>see <a href="_api.html#MeshNodeParams">MeshNodeParams</a> {optional}</td>
                 </tr>
             </table>
         </td>
@@ -707,7 +635,7 @@ The XML document can have an arbitrary scene node as root element.
 <br /><br />
 
 
-<h2>Effect Files<a name="effect" id="effect"></a></h2>
+<h2>Effect Files</h2>
 <p><i>Filename-extension: .effect.xml</i></p>
 <p>
 Effect files are used to configure particles of a particle system. Each particle has a randomly selected
@@ -785,7 +713,7 @@ The following XML node elements with the described attributes are supported for 
 <br /><br />
 
 
-<h2>Geometry<a name="geo" id="geo"></a></h2>
+<h2>Geometry</h2>
 <p><i>Filename-extensions: .geo</i></p>
 <p>The file format for geometry is a binary format and has to be created with a suitable tool
 like the Collada Converter described above.
@@ -816,7 +744,7 @@ The file format is based on streams. The streams are written in that order:
                     <td><b>magic</b></td>
 					<td>4 <b>char</b>s</td>
                     <td>byte sequence 'H3DG'</td>
-			  </tr>
+					</tr>
 				<tr>
 					<td><b>version</b></td>
 					<td><b>int</b></td>
@@ -854,7 +782,7 @@ The file format is based on streams. The streams are written in that order:
         <td>Vertex stream, just after the joint stream
 			<table>
                 <tr>
-			  <tr>
+					<tr>
 						<td><b>numVertexStreams</b></td>
 						<td><b>int</b></td>
 						<td>
@@ -871,7 +799,7 @@ The file format is based on streams. The streams are written in that order:
 								<li>texture coordinates, set 1</li>
 							</ul>
 						</td>
-			  </tr>
+					</tr>
 					<tr>
 						<td><b>numVertices</b></td>
 						<td><b>int</b></td>
@@ -1004,7 +932,7 @@ The file format is based on streams. The streams are written in that order:
 				</tr>
 				<tr>
 					<td><b>jointIndices</b></td>
-					<td>#V * 4 <b>unsigned char</b>s</td>
+					<td>4 <b>unsigned char</b>s</td>
 					<td>joint indices of current vertex (up to 4); a 0 means unused</td>
 				</tr>
             </table>
@@ -1028,7 +956,7 @@ The file format is based on streams. The streams are written in that order:
 				</tr>
 				<tr>
 					<td><b>jointWeights</b></td>
-					<td>#V * 4 <b>unsigned char</b>s</td>
+					<td>4 <b>unsigned char</b>s</td>
 					<td>To save space joint weights are stored as <b>unsigned char</b>s. Before writing multiply your <b>float</b> with 255 and convert it then to <b>unsigned char</b></td>
 				</tr>
             </table>
@@ -1152,7 +1080,7 @@ The file format is based on streams. The streams are written in that order:
 
 
 
-<h2>Animation<a name="anim" id="anim"></a></h2>
+<h2>Animation</h2>
 <p><i>Filename-extensions: .anim</i></p>
 
 The animation resource consists of sampled animation data for the joints and meshes of a model.

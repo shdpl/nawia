@@ -48,7 +48,7 @@ namespace Horde3DTerrain
 		"	gl_FragColor = color;\n"
 		"}\n";
 
-	ShaderContext TerrainNode::debugViewShader;
+	ShaderCombination TerrainNode::debugViewShader;
 
 	
 	TerrainNode::TerrainNode( const TerrainNodeTpl &terrainTpl ) :
@@ -246,9 +246,9 @@ namespace Horde3DTerrain
 		// Loop through terrain queue
 		for( uint32 i = 0, s = (uint32)Modules::sceneMan().getRenderableQueue().size(); i < s; ++i )
 		{
-			if( Modules::sceneMan().getRenderableQueue()[i]->getType() != SNT_TerrainNode ) continue;
+			if( Modules::sceneMan().getRenderableQueue()[i].type != SNT_TerrainNode ) continue;
 			
-			TerrainNode *terrain = (TerrainNode *)Modules::sceneMan().getRenderableQueue()[i];
+			TerrainNode *terrain = (TerrainNode *)Modules::sceneMan().getRenderableQueue()[i].node;
 			
 			if( !debugView )
 			{
@@ -277,7 +277,7 @@ namespace Horde3DTerrain
 			glEnableVertexAttribArray( attrib_terHeight );
 		
 			// World transformation
-			ShaderContext *curShader = Modules::renderer().getCurShader();
+			ShaderCombination *curShader = Modules::renderer().getCurShader();
 			if( curShader->uni_worldMat >= 0 )
 			{
 				glUniformMatrix4fv( curShader->uni_worldMat, 1, false, &terrain->_absTrans.x[0] );

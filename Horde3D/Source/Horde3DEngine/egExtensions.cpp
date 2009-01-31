@@ -33,11 +33,10 @@
 #else
 
 #include "Terrain/Source/extension.h"
-
-#ifndef QMAKE
+#include "Sound/Source/extension.h"
 // Lib files for extensions
 #pragma comment( lib, "Extension_Terrain.lib" )
-#endif
+#pragma comment( lib, "Extension_Sound.lib" )
 
 #endif
 
@@ -53,6 +52,7 @@ bool ExtensionManager::installExtensions()
 #else
 	
 	installExtension( Horde3DTerrain::getExtensionName, Horde3DTerrain::initExtension, Horde3DTerrain::releaseExtension );
+	installExtension( Horde3DSound::getExtensionName, Horde3DSound::initExtension, Horde3DSound::releaseExtension );
 
 #endif
 

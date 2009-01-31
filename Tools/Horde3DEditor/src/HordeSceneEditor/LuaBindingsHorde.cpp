@@ -69,7 +69,7 @@ namespace Horde3D
 		*/
 		int  lua_checkExtension( lua_State *L )
 		{
-			lua_pushinteger(L, Horde3D::checkExtension(luaL_checkstring(L, 1)));
+			lua_pushboolean( L, Horde3D::checkExtension(luaL_checkstring(L, 1)) );
 			return 1;
 		}
 
@@ -88,7 +88,7 @@ namespace Horde3D
 		*/
 		int  lua_init( lua_State *L )
 		{
-			lua_pushinteger(L, Horde3D::init());
+			lua_pushboolean(L, Horde3D::init());
 			return 1;
 		}
 
@@ -106,7 +106,7 @@ namespace Horde3D
 		*/
 		int lua_release( lua_State *L )
 		{
-			luaL_error( L, "lua release call not allowed " );
+			luaL_error( L, "lua call to Horde3D::release is not allowed " );
 			return 0;
 		}
 
@@ -131,7 +131,8 @@ namespace Horde3D
 			int y = luaL_checkint(L, 2);
 			int width = luaL_checkint(L, 3);
 			int height = luaL_checkint(L, 4);
-			Horde3D::resize(x, y, width, height);
+			bool resizeBuffers = luaL_checkinteger( L, 5 ) != 0;
+			Horde3D::setupViewport( x, y, width, height, resizeBuffers );
 			return 0;
 		}
 
@@ -151,7 +152,7 @@ namespace Horde3D
 		int lua_render( lua_State *L )
 		{
 			int cameraID = luaL_checkint(L, 1);
-			lua_pushinteger(L, Horde3D::render(cameraID));
+			lua_pushboolean(L, Horde3D::render(cameraID));
 			return 1;
 		}
 
@@ -553,7 +554,13 @@ namespace Horde3D
 		*/
 		int lua_setResourceParamf( lua_State *L )
 		{
-			lua_pushboolean(L, Horde3D::setResourceParamf(luaL_checkint(L, 1), luaL_checkint(L, 2), luaL_checknumber(L, 3) ));
+			lua_pushboolean(
+				L, 
+				Horde3D::setResourceParamf(
+					luaL_checkint(L, 1), 
+					luaL_checkint(L, 2), 
+					static_cast<float>( luaL_checknumber(L, 3) ) ) 
+			);
 			return 1;
 		}
 
@@ -748,7 +755,7 @@ namespace Horde3D
 	*/
 	int lua_setMaterialUniform( lua_State *L )
 	{
-		lua_pushinteger( L, Horde3D::setMaterialUniform( luaL_checkint(L, 1), luaL_checkstring(L, 2), 
+		lua_pushboolean( L, Horde3D::setMaterialUniform( luaL_checkint(L, 1), luaL_checkstring(L, 2), 
 			float( luaL_checknumber(L, 3) ), 
 			float( luaL_checknumber(L, 4) ),
 			float( luaL_checknumber(L, 5) ),
@@ -771,7 +778,7 @@ namespace Horde3D
 	*/
 	int lua_setPipelineStageActivation( lua_State *L )
 	{
-		lua_pushinteger(L, Horde3D::setPipelineStageActivation(luaL_checkint(L, 1), luaL_checkstring(L, 2), luaL_checkint(L, 3) != 0));
+		lua_pushboolean(L, Horde3D::setPipelineStageActivation(luaL_checkint(L, 1), luaL_checkstring(L, 2), luaL_checkint(L, 3) != 0));
 		return 1;
 	}
 
@@ -904,7 +911,7 @@ namespace Horde3D
 		int  lua_setNodeParent( lua_State *L )
 		{
 			NodeHandle node = luaL_checkint(L,1);			
-			lua_pushinteger(L, Horde3D::setNodeParent(node, luaL_checkint(L, 2) )); 
+			lua_pushboolean(L, Horde3D::setNodeParent(node, luaL_checkint(L, 2) )); 
 			return 1;
 		}
 
@@ -1098,8 +1105,22 @@ namespace Horde3D
 		*/
 		int lua_getNodeTransformMatrices( lua_State *L )
 		{
-			luaL_error(L, "lua binding not yet implemented");
-			return 0;
+			int node = luaL_checkint( L, 1 );
+			const float *relMatrix = 0, *absMatrix;
+			bool result = Horde3D::getNodeTransformMatrices( node, &relMatrix, &absMatrix );
+			
+			lua_pushboolean( L, result );
+			lua_pushnumber( L, relMatrix[0] ); lua_pushnumber( L, relMatrix[1] ); lua_pushnumber( L, relMatrix[2] ); lua_pushnumber( L, relMatrix[3] );
+			lua_pushnumber( L, relMatrix[4] ); lua_pushnumber( L, relMatrix[5] ); lua_pushnumber( L, relMatrix[6] ); lua_pushnumber( L, relMatrix[7] );
+			lua_pushnumber( L, relMatrix[8] ); lua_pushnumber( L, relMatrix[9] ); lua_pushnumber( L, relMatrix[10] ); lua_pushnumber( L, relMatrix[11] );
+			lua_pushnumber( L, relMatrix[12] ); lua_pushnumber( L, relMatrix[13] ); lua_pushnumber( L, relMatrix[14] ); lua_pushnumber( L, relMatrix[15] );
+
+			lua_pushnumber( L, absMatrix[0] ); lua_pushnumber( L, absMatrix[1] ); lua_pushnumber( L, absMatrix[2] ); lua_pushnumber( L, absMatrix[3] );
+			lua_pushnumber( L, absMatrix[4] ); lua_pushnumber( L, absMatrix[5] ); lua_pushnumber( L, absMatrix[6] ); lua_pushnumber( L, absMatrix[7] );
+			lua_pushnumber( L, absMatrix[8] ); lua_pushnumber( L, absMatrix[9] ); lua_pushnumber( L, absMatrix[10] ); lua_pushnumber( L, absMatrix[11] );
+			lua_pushnumber( L, absMatrix[12] ); lua_pushnumber( L, absMatrix[13] ); lua_pushnumber( L, absMatrix[14] ); lua_pushnumber( L, absMatrix[15] );
+						
+			return 33;			
 		}
 
 		/* 	Function: setNodeTransformMatrix
@@ -1117,8 +1138,39 @@ namespace Horde3D
 		*/
 		int lua_setNodeTransformMatrix( lua_State *L )
 		{
-			luaL_error(L, "lua binding not yet implemented");
-			return 0;
+			NodeHandle node;
+			float matrix[16];
+			bool result;
+
+			if(lua_gettop(L)!=17)
+			{
+				luaL_error( L, "setNodeTransformMatrix requires a nodehandle and 16 float values! ");
+				return 0;
+			}
+
+			node=(int) lua_tointeger(L,1);
+			matrix[0]=static_cast<float>( lua_tonumber(L,2) );
+			matrix[1]=static_cast<float>( lua_tonumber(L,3) );
+			matrix[2]=static_cast<float>( lua_tonumber(L,4) );
+			matrix[3]=static_cast<float>( lua_tonumber(L,5) );
+			matrix[4]=static_cast<float>( lua_tonumber(L,6) );
+			matrix[5]=static_cast<float>( lua_tonumber(L,7) );
+			matrix[6]=static_cast<float>( lua_tonumber(L,8) );
+			matrix[7]=static_cast<float>( lua_tonumber(L,9) );
+			matrix[8]=static_cast<float>( lua_tonumber(L,10) );
+			matrix[9]=static_cast<float>( lua_tonumber(L,11) );
+			matrix[10]=static_cast<float>( lua_tonumber(L,12) );
+			matrix[11]=static_cast<float>( lua_tonumber(L,13) );
+			matrix[12]=static_cast<float>( lua_tonumber(L,14) );
+			matrix[13]=static_cast<float>( lua_tonumber(L,15) );
+			matrix[14]=static_cast<float>( lua_tonumber(L,16) );
+			matrix[15]=static_cast<float>( lua_tonumber(L,17) );
+			lua_pop(L, 17);
+
+			result=Horde3D::setNodeTransformMatrix(node, matrix);
+
+			lua_pushboolean(L, result);
+			return 1;
 		}
 
 			/* 	Function: getNodeParamf
@@ -1311,8 +1363,68 @@ namespace Horde3D
 			return 1;
 		}	
 
+		/*	Function: getCastRayResult
+			Returns a result of a previous castRay query.
+
+		This functions is used to access the results of a previous castRay query. The index is used to access
+		a specific result. The intersection data is copied to the specified variables.
+
+		Parameters:
+			index			- index of result to be accessed (range: 0 to number of results returned by castRay)
+			node			- handle of intersected node
+			distance		- distance from ray origin to intersection point
+			intersection	- coordinates of intersection point (float[3] array)
+
+		Returns:
+			true if index was valid and data could be copied, otherwise false
+		*/
+		int lua_getCastRayResult( lua_State *L )
+		{
+			int index = luaL_checkint( L, 1 );
+			NodeHandle node;
+			float distance;
+			float intersection[3];
+			bool retVal = Horde3D::getCastRayResult( index, &node, &distance, intersection );
+			lua_pushboolean( L, retVal );
+			lua_pushinteger( L, node );
+			lua_pushnumber( L, distance );
+			lua_pushnumber( L, intersection[0] );
+			lua_pushnumber( L, intersection[1] );
+			lua_pushnumber( L, intersection[2] );
+			return 6;
+		}
+
+	/*	Function: checkNodeVisibility
+			Checks if a node is visible.
+
+		This function checks if a specified node is visible from the perspective of a specified
+		camera. The function always checks if the node is in the camera's frustum. If checkOcclusion
+		is true, the function will take into account the occlusion culling information from the previous
+		frame (if occlusion culling is disabled the flag is ignored). The flag calcLod determines whether the
+		detail level for the node should be returned in case it is visible. The function returns -1 if the node
+		is not visible, otherwise 0 (base LOD level) or the computed LOD level.
+
+		Parameters:
+			node			- node to be checked for visibility
+			cameraNode		- camera node from which the visibility test is done
+			checkOcclusion	- specifies if occlusion info from previous frame should be taken into account
+			calcLod			- specifies if LOD level should be computed
+
+		Returns:
+			Computed LOD level or -1 if node is not visible
+	*/
+	int lua_checkNodeVisibility( lua_State *L )
+	{
+		NodeHandle node = luaL_checkint( L, 1 );
+		NodeHandle cameraNode = luaL_checkint( L, 2 );
+		bool checkOcclusion = luaL_checkint( L, 3 ) != 0;
+		bool calcLod = luaL_checkint( L, 4 ) != 0;
+		lua_pushinteger( L, Horde3D::checkNodeVisibility( node, cameraNode, checkOcclusion, calcLod ) );
+		return 1;
+	}
 
 			/* Group: Group-specific scene graph functions */
+
 	/* 	Function: addGroupNode
 			Adds a Group node to the scene.
 		
@@ -1605,10 +1717,10 @@ namespace Horde3D
 			return 1;
 		}
 
-			/* 	Function: calcCameraProjectionMatrix
-			Calculates the camera projection matrix.
+	/* 	Function: getCameraProjectionMatrix
+			Gets the camera projection matrix.
 		
-		This function calculates the camera projection matrix used for bringing the geometry to
+		This function gets the camera projection matrix used for bringing the geometry to
         screen space and copies it to the specified array.
 		
 		Parameters:
@@ -1618,11 +1730,36 @@ namespace Horde3D
 		Returns:
 			 true in case of success otherwise false
 	*/
-		int  lua_calcCameraProjectionMatrix( lua_State *L )
-	{
-		luaL_error(L, "lua binding not yet implemented");
-		return 0;
-	}
+		int  lua_getCameraProjectionMatrix( lua_State *L )
+		{
+			if(lua_gettop(L)!=1) return 0;
+
+			NodeHandle camera=(NodeHandle) lua_tointeger(L, 1);
+			lua_pop(L, 1);
+
+			float matrix[16];
+			if( !Horde3D::getCameraProjectionMatrix(camera, matrix) ) return 0;
+
+			lua_pushboolean( L, 1 );
+			lua_pushnumber( L,matrix[0] );
+			lua_pushnumber( L,matrix[1] );
+			lua_pushnumber( L,matrix[2] );
+			lua_pushnumber( L,matrix[3] );
+			lua_pushnumber( L,matrix[4] );
+			lua_pushnumber( L,matrix[5] );
+			lua_pushnumber( L,matrix[6] );
+			lua_pushnumber( L,matrix[7] );
+			lua_pushnumber( L,matrix[8] );
+			lua_pushnumber( L,matrix[9] );
+			lua_pushnumber( L,matrix[10] );
+			lua_pushnumber( L,matrix[11] );
+			lua_pushnumber( L,matrix[12] );
+			lua_pushnumber( L,matrix[13] );
+			lua_pushnumber( L,matrix[14] );
+			lua_pushnumber( L,matrix[15] );
+
+			return 17;
+		}
 
 		/* Group: Emitter-specific scene graph functions */
 	/* 	Function: addEmitterNode
@@ -1777,6 +1914,8 @@ namespace Horde3D
 			{"findNodes", lua_findNodes},
 			{"getNodeFindResult", lua_getNodeFindResult},
 			{"castRay", lua_castRay},
+			{"getCastRayResult", lua_getCastRayResult},
+			{"checkNodeVisibility", lua_checkNodeVisibility},
 			{"addGroupNode", lua_addGroupNode},
 			{"addModelNode", lua_addModelNode},
 			{"setupModelAnimStage", lua_setupModelAnimStage},
@@ -1788,7 +1927,7 @@ namespace Horde3D
 			{"setLightContexts", lua_setLightContexts},
 			{"addCameraNode", lua_addCameraNode},
 			{"setupCameraView", lua_setupCameraView},
-			{"calcCameraProjectionMatrix", lua_calcCameraProjectionMatrix},
+			{"getCameraProjectionMatrix", lua_getCameraProjectionMatrix},
 			{"addEmitterNode", lua_addEmitterNode},
 			{"advanceEmitterTime", lua_advanceEmitterTime},
 			{0,0}

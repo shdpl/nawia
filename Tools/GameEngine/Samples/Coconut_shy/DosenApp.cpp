@@ -154,7 +154,7 @@ void DemoApp::keyPress(unsigned int param, bool pressed)
 
 void DemoApp::resize(int width, int height)
 {	
-	Horde3D::resize(0, 0, width, height);
+	Horde3D::setupViewport(0, 0, width, height, true);
 	m_width = width;
 	m_height = height;
 }

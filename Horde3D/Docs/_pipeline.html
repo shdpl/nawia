@@ -3,78 +3,14 @@
 <head>
     <title>Horde3D Documentation</title>
     <link rel="stylesheet" type="text/css" href="css/manual.css" title="ALL" media="screen,projection" />
-	<link rel="stylesheet" type="text/css" href="css/api.css">
 </head>
 
 <body>
 <div id="content">
 
 <h1>The Flexible Rendering Pipeline</h1>
-<div class="CBody">
-  <!--START_ND_SUMMARY-->
-  <div class="Summary">
-    <div class="STitle">Contents</div>
-    <div class="SBorder">
-      <table border="0" cellspacing="0" cellpadding="0" class="STable">
-        <tr class="SGroup SIndent1">
-          <td width="42%" class="SEntry"><a href="#intro" >Introduction</a></td>
-          <td width="58%" class="SDescription"></td>
-        </tr>
-        <tr class="SGroup SIndent1">
-          <td class="SEntry"><a href="#systemoverview" >system overview </a></td>
-          <td class="SDescription"></td>
-        </tr>
-        <tr class="SGroup SIndent1">
-          <td class="SEntry"><a href="#lightshadow" >lighting and shadows </a></td>
-          <td class="SDescription"></td>
-        </tr>
-        <tr class="SGroup SIndent1">
-          <td class="SEntry"><a href="#pipelineconfig" >pipeline configuration </a></td>
-          <td class="SDescription"></td>
-        </tr>
-        <tr class="SFunction SIndent2 SMarked">
-          <td class="SEntry"><a href="#pipesyntax"  >Syntax</a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SFunction SIndent2">
-          <td class="SEntry"><a href="#pipesample"  >Samples</a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SGroup SIndent1">
-          <td class="SEntry"><a href="#predefined" >predefined glsl uniforms </a></td>
-          <td class="SDescription"></td>
-        </tr>
-        <tr class="SFunction SIndent2 SMarked">
-          <td class="SEntry"><a href="#general"  >Vector / Matrix Uniforms </a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SFunction SIndent2">
-          <td class="SEntry"><a href="#particle"  >Particle Specific Uniforms </a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SFunction SIndent2 SMarked">
-          <td class="SEntry"><a href="#sampler"  >Sampler Uniforms </a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SFunction SIndent2">
-          <td class="SEntry"><a href="#vertexattributes" >General Vertex Attributes </a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SFunction SIndent2 SMarked">
-          <td class="SEntry"><a href="#particleattributes"  >Particle Specific Vertex Attr. </a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-        <tr class="SFunction SIndent2">
-          <td class="SEntry"><a href="#other" >Other Data </a></td>
-          <td class="SDescription">&nbsp;</td>
-        </tr>
-      </table>
-    </div>
-  </div>
-  <!--END_ND_SUMMARY-->
-</div>
-<p>&nbsp;</p>
-<h2>Introduction<a name="intro" id="intro"></a></h2>
+
+<h2>Introduction</h2>
 <p>
 The rendering pipeline defines the steps which are necessary to bring the abstract 3D data to a visible result on
 the screen. Horde3D has a configurable rendering pipeline which makes it possible to employ a plenty of different
@@ -85,7 +21,7 @@ the usage of different rendering algorithms.
 </p>
 <br />
 
-<h2>System overview<a name="systemoverview" id="systemoverview"></a></h2>
+<h2>System overview</h2>
 <p>
 Horde is heavily based on shaders which are small programs that are executed on the graphics card at different stages
 of the hardware pipeline. Horde uses vertex and fragment shaders. Vertex shaders influence directly the geometry
@@ -104,7 +40,7 @@ assigned to that shader.
 </p>
 <br />
 
-<h2>Lighting and shadows<a name="lightshadow" id="lightshadow"></a></h2>
+<h2>Lighting and shadows</h2>
 <p>
 Horde supports basically two different approaches for lighting namely forward and deferred shading. Forward shading
 is the standard technique that is currently used in most applications. With this technique the geometry is rendered
@@ -139,7 +75,7 @@ shader context for all the materials (respectively shaders) that shall interact 
 </p>
 <br />
 
-<h2>Pipeline configuration<a name="pipelineconfig" id="pipelineconfig"></a></h2>
+<h2>Pipeline configuration</h2>
 <p>
 The flexible rendering pipeline allows to define render targets and commands which determine the steps taken
 to render the scene. The commands are specified within a XML file. Most rendering commands use the attributes
@@ -148,7 +84,7 @@ rendered. It is possible to use the tilde operator <b>~</b> as a logical NOT mea
 the one with the specified material class will be drawn. The context is finally available for specifying the
 rendering technique which should be used for the current draw call.
 </p>
-<h3>Pipeline syntax<a name="pipesyntax" id="pipesyntax"></a></h3>
+<h3>Pipeline syntax</h3>
 <p>
 The following XML elements and attributes are supported.
 </p>
@@ -296,7 +232,7 @@ The following XML elements and attributes are supported.
             <table>
                 <tr>
                     <td><b>texUnit</b></td>
-                    <td>texture unit to which buffer is assigned {required}; possible values: <i>0-11</i><i></td>
+                    <td>texture unit to which buffer is assigned {required}; possible values: <i>0-11</i<i></td>
                 </tr>
                 <tr>
                     <td><b>target</b></td>
@@ -476,7 +412,7 @@ The following XML elements and attributes are supported.
 </table>
 </div>
 <br /><br />
-<h3>Sample showing simple deferred shading pipeline<a name="pipesample" id="pipesample"></a></h3>
+<h3>Sample showing simple deferred shading pipeline</h3>
 <div class="memdoc">
 <pre>
 &lt;Pipeline&gt;
@@ -513,7 +449,7 @@ The following XML elements and attributes are supported.
 </div>
 <br /><br /><br />
 
-<h2>Predefined GLSL attributes and uniforms<a name="predefined" id="predefined"></a></h2>
+<h2>Predefined GLSL attributes and uniforms</h2>
 <p>
 Horde defines some standard uniforms and attributes which can be used by shaders. The engine automatically detects
 which input data is required and binds it to the shader programs.
@@ -522,7 +458,7 @@ which input data is required and binds it to the shader programs.
 parameters are only available when doing lighting calculations and particle specific data only when
 rendering emitters.
 </p>
-<h3>General vector/matrix uniforms<a name="general" id="general"></a></h3>
+<h3>General vector/matrix uniforms</h3>
 <div class="syntaxbox">
 <table>
     <tr>
@@ -582,7 +518,7 @@ rendering emitters.
 <br /><br/>
 
 
-<h3>Particle specific vector/matrix uniforms<a name="particle" id="particle"></a></h3>
+<h3>Particle specific vector/matrix uniforms</h3>
 <div class="syntaxbox">
 <table>
     <tr>
@@ -606,7 +542,7 @@ rendering emitters.
 <br /><br/>
 
 
-<h3>Sampler uniforms<a name="sampler" id="sampler"></a></h3>
+<h3>Sampler uniforms</h3>
 <div class="syntaxbox">
 <table>
     <tr>
@@ -665,7 +601,7 @@ rendering emitters.
 </div>
 <br/><br/>
 
-<h3>General vertex attributes<a name="vertexattributes" id="vertexattributes"></a></h3>
+<h3>General vertex attributes</h3>
 <div class="syntaxbox">
 <table>
     <tr>
@@ -700,7 +636,7 @@ rendering emitters.
 </div>
 <br/><br/>
 
-<h3>Particle specific vertex attributes<a name="particleattributes" id="particleattributes"></a></h3>
+<h3>Particle specific vertex attributes</h3>
 <div class="syntaxbox">
 <table>
 	<tr>
@@ -715,11 +651,12 @@ rendering emitters.
 </div>
 <br/><br/>
 
-<h3>Other data available in vertex shader<a name="other" id="other"></a></h3>
+<h3>Other data available in vertex shader</h3>
 <p>
 The vertex position is available through the attribute <b>gl_Vertex</b>.
 The camera transformation is stored in the modelview matrix (<b>gl_ModelViewMatrix</b>) and the projection
-matrix in <b>gl_ProjectionMatrix</b>. All overlays have their texture coordinates stored in
+matrix in <b>gl_ProjectionMatrix</b>. The camera transformation is also available when rendering a fullscreen
+quad (e.g. for post-processing effects).All overlays have their texture coordinates stored in
 <b>gl_MultiTexCoord0</b>.
 <br /><br />
 

@@ -297,11 +297,12 @@ static int lua_release(lua_State* L)
    return 0;
 }
 
-static int lua_resize(lua_State* L)
+static int lua_setupViewport(lua_State* L)
 {
    int x,y,w,h;
+   bool resizeBuffers;
 
-   if(lua_gettop(L)!=4)
+   if(lua_gettop(L)!=5)
    {
       return 0;
    }
@@ -310,9 +311,10 @@ static int lua_resize(lua_State* L)
    y=lua_tonumber(L, 2);
    w=lua_tonumber(L, 3);
    h=lua_tonumber(L, 4);
-   lua_pop(L, 4);
+   resizeBuffers( lua_toboolean(L, 5);
+   lua_pop(L, 5);
 
-   Horde3D::resize(x,y,w,h);
+   Horde3D::setupViewport(x,y,w,h,resizeBuffers);
 
    return 0;
 }
@@ -1211,9 +1213,22 @@ static int lua_setNodeTrasform(lua_State* L)
 
 static int lua_getNodeTransformMatrices(lua_State* L)
 {
-   //still not implemented
-   lua_pushboolean(L, false);
-   return 1;
+	int node = luaL_checkint( L, 1 );
+	const float *relMatrix = 0, *absMatrix;
+	bool result = Horde3D::getNodeTransformMatrices( node, &relMatrix, &absMatrix );
+
+	lua_pushboolean( L, result );
+	lua_pushnumber( L, relMatrix[0] ); lua_pushnumber( L, relMatrix[1] ); lua_pushnumber( L, relMatrix[2] ); lua_pushnumber( L, relMatrix[3] );
+	lua_pushnumber( L, relMatrix[4] ); lua_pushnumber( L, relMatrix[5] ); lua_pushnumber( L, relMatrix[6] ); lua_pushnumber( L, relMatrix[7] );
+	lua_pushnumber( L, relMatrix[8] ); lua_pushnumber( L, relMatrix[9] ); lua_pushnumber( L, relMatrix[10] ); lua_pushnumber( L, relMatrix[11] );
+	lua_pushnumber( L, relMatrix[12] ); lua_pushnumber( L, relMatrix[13] ); lua_pushnumber( L, relMatrix[14] ); lua_pushnumber( L, relMatrix[15] );
+
+	lua_pushnumber( L, absMatrix[0] ); lua_pushnumber( L, absMatrix[1] ); lua_pushnumber( L, absMatrix[2] ); lua_pushnumber( L, absMatrix[3] );
+	lua_pushnumber( L, absMatrix[4] ); lua_pushnumber( L, absMatrix[5] ); lua_pushnumber( L, absMatrix[6] ); lua_pushnumber( L, absMatrix[7] );
+	lua_pushnumber( L, absMatrix[8] ); lua_pushnumber( L, absMatrix[9] ); lua_pushnumber( L, absMatrix[10] ); lua_pushnumber( L, absMatrix[11] );
+	lua_pushnumber( L, absMatrix[12] ); lua_pushnumber( L, absMatrix[13] ); lua_pushnumber( L, absMatrix[14] ); lua_pushnumber( L, absMatrix[15] );
+
+	return 33;			
 }
 
 static int lua_setNodeTransformMatrix(lua_State* L)
@@ -1818,7 +1833,7 @@ static int lua_setupCameraView(lua_State* L)
    return 1;
 }
 
-static int lua_calcCameraProjectionMatrix(lua_State* L)
+static int lua_getCameraProjectionMatrix(lua_State* L)
 {
    int camera;
    float matrix[16];
@@ -1832,7 +1847,7 @@ static int lua_calcCameraProjectionMatrix(lua_State* L)
    camera=lua_tonumber(L, 1);
    lua_pop(L, 1);
 
-   result=Horde3D::calcCameraProjectionMatrix(camera, matrix);
+   result=Horde3D::getCameraProjectionMatrix(camera, matrix);
 
    if(result==false)
    {
@@ -2156,7 +2171,7 @@ static const struct luaL_Reg horde3dLib [] =
    {"checkExtension", lua_checkExtension},
    {"init", lua_init},
    {"release", lua_release},
-   {"resize", lua_resize},
+   {"setupViewport", lua_setupViewport},
    {"render", lua_render},
    {"clear", lua_clear},
    {"getMesasge", lua_getMessage},
@@ -2223,7 +2238,7 @@ static const struct luaL_Reg horde3dLib [] =
    {"setLightContexts", lua_setLightContexts},
    {"addCameraNode", lua_addCameraNode},
    {"setupCameraView", lua_setupCameraView},
-   {"calcCameraProjectionMatrix", lua_calcCameraProjectionMatrix},
+   {"getCameraProjectionMatrix", lua_getCameraProjectionMatrix},
    {"addEmitterNode", lua_addEmitterNode},
    {"advanceEmitterTime", lua_advanceEmitterTime},
    {"hasEmitterFinished", lua_hasEmmiterFinished},

@@ -100,5 +100,5 @@ void DemoApp::renderCb(void *userData)
 
 void DemoApp::resizeCb(int width, int height)
 {	
-	Horde3D::resize(0, 0, width, height);
+	Horde3D::setupViewport(0, 0, width, height, true);
 }

@@ -86,6 +86,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Horde3D Engine", "..\..\Horde3D\Source\Horde3DEngine\Horde3D Engine.vcproj", "{1D558D7D-DA57-4908-BCFC-902054FE6B63}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6} = {7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD} = {572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Horde3D Utils", "..\..\Horde3D\Source\Horde3DUtils\Horde3D Utils.vcproj", "{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D}"
@@ -98,6 +99,25 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DominoApp", "Samples\Domino
 		{7B21D090-9A12-4E86-8E65-9AAEA2B72AB4} = {7B21D090-9A12-4E86-8E65-9AAEA2B72AB4}
 		{015B0EBE-4BCE-4C7D-8F27-47A5C78C6B27} = {015B0EBE-4BCE-4C7D-8F27-47A5C78C6B27}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Extension Sound", "..\..\Extensions\Sound\Source\Extension_Sound.vcproj", "{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC} = {CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ogg", "..\..\Extensions\Sound\Dependencies\Source\ogg\ogg.vcproj", "{15CBFEFF-7965-41F5-B4E2-21E8795C9159}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbis", "..\..\Extensions\Sound\Dependencies\Source\vorbis\vorbis.vcproj", "{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159} = {15CBFEFF-7965-41F5-B4E2-21E8795C9159}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbisfile", "..\..\Extensions\Sound\Dependencies\Source\vorbisfile\vorbisfile.vcproj", "{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD} = {3A214E06-B95E-4D61-A291-1F8DF2EC10FD}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sound Dependencies", "Sound Dependencies", "{BB412F41-7C51-489A-AF33-A2736913EBA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -361,6 +381,54 @@ Global
 		{AFB8F4F3-5342-4AAE-ACAA-CB6428F6212E}.Release|Win32.Build.0 = Release|Win32
 		{AFB8F4F3-5342-4AAE-ACAA-CB6428F6212E}.ReleaseDoublePrecision|Win32.ActiveCfg = Release|Win32
 		{AFB8F4F3-5342-4AAE-ACAA-CB6428F6212E}.ReleaseDoublePrecision|Win32.Build.0 = Release|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Debug|Win32.Build.0 = Debug|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.DebugDoublePrecision|Win32.ActiveCfg = Debug|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.DebugDoublePrecision|Win32.Build.0 = Debug|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.MemoryCheck|Win32.ActiveCfg = Release|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.MemoryCheck|Win32.Build.0 = Release|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Release OpenMP|Win32.ActiveCfg = Release|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Release OpenMP|Win32.Build.0 = Release|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Release|Win32.ActiveCfg = Release|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Release|Win32.Build.0 = Release|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.ReleaseDoublePrecision|Win32.ActiveCfg = Release|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.ReleaseDoublePrecision|Win32.Build.0 = Release|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.Debug|Win32.ActiveCfg = Debug|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.Debug|Win32.Build.0 = Debug|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.DebugDoublePrecision|Win32.ActiveCfg = Debug|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.DebugDoublePrecision|Win32.Build.0 = Debug|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.MemoryCheck|Win32.ActiveCfg = Release|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.MemoryCheck|Win32.Build.0 = Release|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.Release OpenMP|Win32.ActiveCfg = Release|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.Release OpenMP|Win32.Build.0 = Release|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.Release|Win32.ActiveCfg = Release|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.Release|Win32.Build.0 = Release|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.ReleaseDoublePrecision|Win32.ActiveCfg = Release|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.ReleaseDoublePrecision|Win32.Build.0 = Release|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Debug|Win32.Build.0 = Debug|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.DebugDoublePrecision|Win32.ActiveCfg = Debug|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.DebugDoublePrecision|Win32.Build.0 = Debug|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.MemoryCheck|Win32.ActiveCfg = Release|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.MemoryCheck|Win32.Build.0 = Release|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Release OpenMP|Win32.ActiveCfg = Release|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Release OpenMP|Win32.Build.0 = Release|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Release|Win32.ActiveCfg = Release|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Release|Win32.Build.0 = Release|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.ReleaseDoublePrecision|Win32.ActiveCfg = Release|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.ReleaseDoublePrecision|Win32.Build.0 = Release|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Debug|Win32.Build.0 = Debug|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.DebugDoublePrecision|Win32.ActiveCfg = Debug|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.DebugDoublePrecision|Win32.Build.0 = Debug|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.MemoryCheck|Win32.ActiveCfg = Release|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.MemoryCheck|Win32.Build.0 = Release|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Release OpenMP|Win32.ActiveCfg = Release|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Release OpenMP|Win32.Build.0 = Release|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Release|Win32.ActiveCfg = Release|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Release|Win32.Build.0 = Release|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.ReleaseDoublePrecision|Win32.ActiveCfg = Release|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.ReleaseDoublePrecision|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -385,6 +453,11 @@ Global
 		{1D558D7D-DA57-4908-BCFC-902054FE6B63} = {284A8B6D-11F0-4242-9FE9-FBA5E7E632BA}
 		{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D} = {284A8B6D-11F0-4242-9FE9-FBA5E7E632BA}
 		{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6} = {284A8B6D-11F0-4242-9FE9-FBA5E7E632BA}
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD} = {284A8B6D-11F0-4242-9FE9-FBA5E7E632BA}
+		{BB412F41-7C51-489A-AF33-A2736913EBA3} = {284A8B6D-11F0-4242-9FE9-FBA5E7E632BA}
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159} = {BB412F41-7C51-489A-AF33-A2736913EBA3}
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC} = {BB412F41-7C51-489A-AF33-A2736913EBA3}
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD} = {BB412F41-7C51-489A-AF33-A2736913EBA3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		AMDCaProjectFile = D:\Dokumente\Programmieren\GameEngine\CodeAnalyst\GameEngine_2005.caw

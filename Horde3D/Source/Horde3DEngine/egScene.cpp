@@ -40,8 +40,9 @@ using namespace std;
 // *************************************************************************************************
 
 SceneNode::SceneNode( const SceneNodeTpl &tpl ) :
-	_type( tpl.type ), _name( tpl.name ), _renderable( false ), _active( true ), _handle( 0 ),
-	_dirty( true ), _transformed( true ), _parent( 0x0 ), _attachment( tpl.attachmentString )
+	_type( tpl.type ), _parent( 0x0 ), _handle( 0 ), _sgHandle( 0 ),
+	_dirty( true ), _transformed( true ), _renderable( false ), _active( true ),
+	_name( tpl.name ), _attachment( tpl.attachmentString )
 {
 	setTransform( tpl.trans, tpl.rot, tpl.scale );
 }
@@ -223,6 +224,8 @@ bool SceneNode::update()
 		bBoxChanged = true;
 	}
 	
+	Modules::sceneMan().updateSpatialNode( _sgHandle );
+
 	onPostUpdate();
 
 	_dirty = false;
@@ -291,7 +294,7 @@ void SceneNode::onDetach( SceneNode &/*parentNode*/ )
 // *************************************************************************************************
 
 GroupNode::GroupNode( const GroupNodeTpl &groupTpl ) :
-	SceneNode( groupTpl ), _minDist( 0 ), _maxDist( Math::MaxFloat )
+	SceneNode( groupTpl )
 {
 }
 
@@ -300,11 +303,6 @@ SceneNodeTpl *GroupNode::parsingFunc( map< string, string > &attribs )
 {
 	map< string, string >::iterator itr;
 	GroupNodeTpl *groupTpl = new GroupNodeTpl( "" );
-
-	itr = attribs.find( "minDist" );
-	if( itr != attribs.end() ) groupTpl->minDist = (float)atof( itr->second.c_str() );
-	itr = attribs.find( "maxDist" );
-	if( itr != attribs.end() ) groupTpl->maxDist = (float)atof( itr->second.c_str() );
 	
 	return groupTpl;
 }
@@ -320,31 +318,108 @@ SceneNode *GroupNode::factoryFunc( const SceneNodeTpl &nodeTpl )
 
 float GroupNode::getParamf( int param )
 {
-	switch( param )
-	{
-	case GroupNodeParams::MinDist:
-		return _minDist;
-	case GroupNodeParams::MaxDist:
-		return _maxDist;
-	default:
-		return SceneNode::getParamf( param );
-	}
+	return SceneNode::getParamf( param );
 }
 
 
 bool GroupNode::setParamf( int param, float value )
 {
-	switch( param )
+	return SceneNode::setParamf( param, value );
+}
+
+
+// =================================================================================================
+// Class SpatialGraph
+// =================================================================================================
+
+SpatialGraph::SpatialGraph()
+{
+	_lightQueue.reserve( 20 );
+	_renderableQueue.reserve( 500 );
+}
+
+
+void SpatialGraph::addNode( SceneNode &sceneNode )
+{	
+	if( !sceneNode._renderable && sceneNode._type != SceneNodeTypes::Light ) return;
+	
+	if( !_freeList.empty() )
 	{
-	case GroupNodeParams::MinDist:
-		_minDist = value;
-		return true;
-	case GroupNodeParams::MaxDist:
-		_maxDist = value;
-		return true;
-	default:
-		return SceneNode::setParamf( param, value );
+		uint32 slot = _freeList.back();
+		ASSERT( _nodes[slot] == 0x0 );
+		_freeList.pop_back();
+
+		sceneNode._sgHandle = slot + 1;
+		_nodes[slot] = &sceneNode;
 	}
+	else
+	{
+		_nodes.push_back( &sceneNode );
+		sceneNode._sgHandle = (uint32)_nodes.size();
+	}
+}
+
+
+void SpatialGraph::removeNode( uint32 sgHandle )
+{
+	if( sgHandle == 0 || _nodes[sgHandle - 1] == 0x0 ) return;
+
+	// Reset queues
+	_lightQueue.resize( 0 );
+	_renderableQueue.resize( 0 );
+	
+	_nodes[sgHandle - 1]->_sgHandle = 0;
+	_nodes[sgHandle - 1] = 0x0;
+	_freeList.push_back( sgHandle - 1 );
+}
+
+
+void SpatialGraph::updateNode( uint32 sgHandle )
+{
+	// Since the spatial graph is just a flat list of objects,
+	// there is nothing to do at the moment
+}
+
+
+void SpatialGraph::updateQueues( const Frustum &frustum1, const Frustum *frustum2,
+	                             RenderingOrder::List order, bool lightQueue, bool renderQueue )
+{
+	Modules::sceneMan().updateNodes();
+	
+	// Clear without affecting capacity
+	if( lightQueue ) _lightQueue.resize( 0 );
+	if( renderQueue ) _renderableQueue.resize( 0 );
+
+	// Culling
+	for( size_t i = 0, s = _nodes.size(); i < s; ++i )
+	{
+		SceneNode *node = _nodes[i];
+		if( node == 0x0 || !node->_active ) continue;
+
+		if( renderQueue && node->_renderable )
+		{
+			if( !frustum1.cullBox( node->_bBox ) &&
+				(frustum2 == 0x0 || !frustum2->cullBox( node->_bBox )) )
+			{
+				if( order != RenderingOrder::None )
+				{
+					node->tmpSortValue = nearestDistToAABB( frustum1.getOrigin(),
+						node->_bBox.getMinCoords(), node->_bBox.getMaxCoords() );
+				}
+				_renderableQueue.push_back( RendQueueEntry( node->_type, node ) );	
+			}
+		}
+		else if( lightQueue && node->_type == SceneNodeTypes::Light )
+		{
+			_lightQueue.push_back( node );
+		}
+	}
+
+	// Sort
+	if( order == RenderingOrder::FrontToBack )
+		std::sort( _renderableQueue.begin(), _renderableQueue.end(), SpatialGraph::frontToBackOrder );
+	else if( order == RenderingOrder::BackToFront )
+		std::sort( _renderableQueue.begin(), _renderableQueue.end(), SpatialGraph::backToFrontOrder );
 }
 
 
@@ -357,14 +432,15 @@ SceneManager::SceneManager()
 	SceneNode *rootNode = GroupNode::factoryFunc( GroupNodeTpl( "RootNode" ) );
 	rootNode->_handle = RootNode;
 	_nodes.push_back( rootNode );
-	
-	_lightQueue.reserve( 50 );
-	_renderableQueue.reserve( 1000 );
+
+	_spatialGraph = new SpatialGraph();
 }
 
 
 SceneManager::~SceneManager()
 {
+	delete _spatialGraph;
+
 	for( uint32 i = 0; i < _nodes.size(); ++i )
 	{
 		delete _nodes[i]; _nodes[i] = 0x0;
@@ -414,82 +490,10 @@ void SceneManager::updateNodes()
 }
 
 
-void SceneManager::updateQueuesRec( const Frustum &frustum1, const Frustum *frustum2, bool sorted,
-								    SceneNode &node, bool lightQueue, bool renderableQueue )
-{
-	if( !node._active ) return;
-	
-	if( node._type == SceneNodeTypes::Group )
-	{
-		// LOD
-		Vec3f nodePos( node._absTrans.c[3][0], node._absTrans.c[3][1], node._absTrans.c[3][2] );
-		float dist = (nodePos - frustum1.getOrigin()).length();
-		
-		GroupNode *gn = (GroupNode *)&node;
-		if( dist < gn->_minDist || dist >= gn->_maxDist ) return;
-	}
-	else if( lightQueue && node._type == SceneNodeTypes::Light )
-	{
-		_lightQueue.push_back( &node );
-	}
-	else if( renderableQueue && node._renderable )
-	{
-		if( node._type == SceneNodeTypes::Emitter )
-		{
-			// Emitters are a special case since we have to use their local bounding box
-			// If the emitter is transformed particle positions don't change
-			if( !frustum1.cullBox( *node.getLocalBBox() ) &&
-				(frustum2 == 0x0 || !frustum2->cullBox( *node.getLocalBBox() )) )
-			{
-				if( sorted )
-				{
-					node.tmpSortValue = nearestDistToAABB( frustum1.getOrigin(),
-						node.getLocalBBox()->getMinCoords(), node.getLocalBBox()->getMaxCoords() );
-				}
-				_renderableQueue.push_back( &node );
-			}
-		}
-		else
-		{
-			if( !frustum1.cullBox( node._bBox ) &&
-				(frustum2 == 0x0 || !frustum2->cullBox( node._bBox )) )
-			{
-				if( sorted )
-				{
-					node.tmpSortValue = nearestDistToAABB( frustum1.getOrigin(),
-						node._bBox.getMinCoords(), node._bBox.getMaxCoords() );
-				}
-				_renderableQueue.push_back( &node );
-			}
-		}
-	}
-			
-	// Recurse over children
-	for( uint32 i = 0, s = (uint32)node._children.size(); i < s; ++i )
-	{
-		updateQueuesRec( frustum1, frustum2, sorted, *node._children[i], lightQueue, renderableQueue );
-	}
-}
-
-
 void SceneManager::updateQueues( const Frustum &frustum1, const Frustum *frustum2,
 								 RenderingOrder::List order, bool lightQueue, bool renderableQueue )
 {
-	// Clear without affecting capacity
-	if( lightQueue ) _lightQueue.resize( 0 );
-	if( renderableQueue ) _renderableQueue.resize( 0 );
-		
-	updateNodes();
-	
-	updateQueuesRec( frustum1, frustum2,
-					 order == RenderingOrder::FrontToBack || order == RenderingOrder::BackToFront,
-					 getRootNode(), lightQueue, renderableQueue );
-
-	// Sort
-	if( order == RenderingOrder::FrontToBack )
-		std::sort( _renderableQueue.begin(), _renderableQueue.end(), SceneNode::frontToBackOrder );
-	else if( order == RenderingOrder::BackToFront )
-		std::sort( _renderableQueue.begin(), _renderableQueue.end(), SceneNode::backToFrontOrder );
+	_spatialGraph->updateQueues( frustum1, frustum2, order, lightQueue, renderableQueue );
 }
 
 
@@ -552,6 +556,9 @@ NodeHandle SceneManager::addNode( SceneNode *node, SceneNode &parent )
 
 	// Mark tree as dirty
 	node->markDirty();
+
+	// Register node in spatial graph
+	_spatialGraph->addNode( *node );
 	
 	// Insert node in free slot
 	if( !_freeList.empty() )
@@ -596,6 +603,7 @@ void SceneManager::removeNodeRec( SceneNode *node )
 	// Delete node
 	if( handle != RootNode )
 	{
+		_spatialGraph->removeNode( node->_sgHandle );
 		delete _nodes[handle - 1]; _nodes[handle - 1] = 0x0;
 		_freeList.push_back( handle - 1 );
 	}
@@ -610,10 +618,6 @@ bool SceneManager::removeNode( NodeHandle handle )
 		Modules::log().writeDebugInfo( "Invalid node handle %i in removeNode", handle );
 		return false;
 	}
-
-	// Reset queues
-	_lightQueue.resize( 0 );
-	_renderableQueue.resize( 0 );
 
 	SceneNode *parent = sn->_parent;
 
@@ -787,4 +791,44 @@ bool SceneManager::getCastRayResult( int index, CastRayResult &crr )
 }
 
 
+int SceneManager::checkNodeVisibility( SceneNode *node, CameraNode *cam, bool checkOcclusion, bool calcLod )
+{
+	// Note: This function is a bit hacky with all the hard-coded node types
+	
+	if( node->_dirty ) updateNodes();
 
+	// Check occlusion
+	if( checkOcclusion && cam->_occSet >= 0 )
+	{
+		if( node->getType() == SceneNodeTypes::Model )
+		{
+			if( Modules::renderer().getOccQueryResult( ((ModelNode *)node)->_occQueries[cam->_occSet] ) < 1 )
+				return -1;
+		}
+		else if( node->getType() == SceneNodeTypes::Emitter )
+		{
+			if( Modules::renderer().getOccQueryResult( ((EmitterNode *)node)->_occQueries[cam->_occSet] ) < 1 )
+				return -1;
+		}
+		else if( node->getType() == SceneNodeTypes::Light )
+		{
+			if( Modules::renderer().getOccQueryResult( ((LightNode *)node)->_occQueries[cam->_occSet] ) < 1 )
+				return -1;
+		}
+	}
+	
+	// Frustum culling
+	if( cam->getFrustum().cullBox( node->getBBox() ) )
+	{
+		return -1;
+	}
+	else if( node->getType() == SceneNodeTypes::Model )
+	{
+		// Calculate LOD level
+		return ((ModelNode *)node)->calcLodLevel( cam->getAbsPos() );
+	}
+	else
+	{
+		return 0;
+	}
+}

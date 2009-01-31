@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8,00"
 	Name="Extension Sound"
-	ProjectGUID="{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}"
+	ProjectGUID="{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}"
 	RootNamespace="Extension_Sound"
 	Keyword="Win32Proj"
 	>

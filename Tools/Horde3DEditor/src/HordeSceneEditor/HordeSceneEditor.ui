@@ -13,20 +13,12 @@
    <string>The Horde3D Scene Editor</string>
   </property>
   <property name="windowIcon" >
-   <iconset resource="resources.qrc" >:/Icons/Resources/Icon.png</iconset>
+   <iconset resource="resources.qrc" >
+    <normaloff>:/Icons/Resources/Icon.png</normaloff>:/Icons/Resources/Icon.png</iconset>
   </property>
   <widget class="QWidget" name="m_centralwidget" >
    <layout class="QVBoxLayout" >
-    <property name="leftMargin" >
-     <number>3</number>
-    </property>
-    <property name="topMargin" >
-     <number>3</number>
-    </property>
-    <property name="rightMargin" >
-     <number>3</number>
-    </property>
-    <property name="bottomMargin" >
+    <property name="margin" >
      <number>3</number>
     </property>
     <item>
@@ -188,7 +180,7 @@
     </sizepolicy>
    </property>
    <property name="styleSheet" >
-    <string/>
+    <string notr="true" />
    </property>
    <property name="windowTitle" >
     <string>Editor Log</string>
@@ -201,7 +193,7 @@
      <enum>Qt::ActionsContextMenu</enum>
     </property>
     <property name="styleSheet" >
-     <string>QListWidget#m_logWidget { background: black;  color: white }</string>
+     <string notr="true" >QListWidget#m_logWidget { background: black;  color: white }</string>
     </property>
     <property name="selectionMode" >
      <enum>QAbstractItemView::ExtendedSelection</enum>
@@ -322,7 +314,8 @@
   </action>
   <action name="m_actionNew" >
    <property name="icon" >
-    <iconset resource="resources.qrc" >:/Icons/Resources/New.png</iconset>
+    <iconset resource="resources.qrc" >
+     <normaloff>:/Icons/Resources/New.png</normaloff>:/Icons/Resources/New.png</iconset>
    </property>
    <property name="text" >
     <string>&amp;New Scene</string>
@@ -339,7 +332,8 @@
     <bool>false</bool>
    </property>
    <property name="icon" >
-    <iconset resource="resources.qrc" >:/Icons/Resources/Save.png</iconset>
+    <iconset resource="resources.qrc" >
+     <normaloff>:/Icons/Resources/Save.png</normaloff>:/Icons/Resources/Save.png</iconset>
    </property>
    <property name="text" >
     <string>&amp;Save Scene</string>
@@ -375,7 +369,8 @@
   </action>
   <action name="m_actionOpen" >
    <property name="icon" >
-    <iconset resource="resources.qrc" >:/Icons/Resources/Open.png</iconset>
+    <iconset resource="resources.qrc" >
+     <normaloff>:/Icons/Resources/Open.png</normaloff>:/Icons/Resources/Open.png</iconset>
    </property>
    <property name="text" >
     <string>&amp;Open Scene</string>
@@ -403,7 +398,8 @@
     <bool>false</bool>
    </property>
    <property name="icon" >
-    <iconset resource="resources.qrc" >:/Icons/Resources/Fullscreen.png</iconset>
+    <iconset resource="resources.qrc" >
+     <normaloff>:/Icons/Resources/Fullscreen.png</normaloff>:/Icons/Resources/Fullscreen.png</iconset>
    </property>
    <property name="text" >
     <string>&amp;Fullscreen Mode</string>
@@ -439,7 +435,7 @@
     <bool>false</bool>
    </property>
    <property name="text" >
-    <string>&amp;Pathes</string>
+    <string>Resource &amp;Paths</string>
    </property>
    <property name="statusTip" >
     <string>Let you change the pipeline configuration of the current scene</string>
@@ -512,7 +508,8 @@
     <bool>false</bool>
    </property>
    <property name="icon" >
-    <iconset resource="resources.qrc" >:/Icons/Resources/Move.png</iconset>
+    <iconset resource="resources.qrc" >
+     <normaloff>:/Icons/Resources/Move.png</normaloff>:/Icons/Resources/Move.png</iconset>
    </property>
    <property name="text" >
     <string>Move Object</string>
@@ -538,7 +535,8 @@
     <bool>false</bool>
    </property>
    <property name="icon" >
-    <iconset resource="resources.qrc" >:/Icons/Resources/Rotate.png</iconset>
+    <iconset resource="resources.qrc" >
+     <normaloff>:/Icons/Resources/Rotate.png</normaloff>:/Icons/Resources/Rotate.png</iconset>
    </property>
    <property name="text" >
     <string>Rotate Object</string>
@@ -575,7 +573,8 @@
     <bool>false</bool>
    </property>
    <property name="icon" >
-    <iconset resource="resources.qrc" >:/Icons/Resources/Wireframe.png</iconset>
+    <iconset resource="resources.qrc" >
+     <normaloff>:/Icons/Resources/Wireframe.png</normaloff>:/Icons/Resources/Wireframe.png</iconset>
    </property>
    <property name="text" >
     <string>&amp;Debug Mode</string>
@@ -592,7 +591,8 @@
     <bool>false</bool>
    </property>
    <property name="icon" >
-    <iconset resource="resources.qrc" >:/Icons/Resources/Node2Cam.png</iconset>
+    <iconset resource="resources.qrc" >
+     <normaloff>:/Icons/Resources/Node2Cam.png</normaloff>:/Icons/Resources/Node2Cam.png</iconset>
    </property>
    <property name="text" >
     <string>Move Node To Camera Position</string>
@@ -685,7 +685,8 @@
     <bool>false</bool>
    </property>
    <property name="icon" >
-    <iconset resource="resources.qrc" >:/Icons/Resources/scale.png</iconset>
+    <iconset resource="resources.qrc" >
+     <normaloff>:/Icons/Resources/scale.png</normaloff>:/Icons/Resources/scale.png</iconset>
    </property>
    <property name="text" >
     <string>Scale Object</string>
@@ -713,7 +714,8 @@
     <bool>false</bool>
    </property>
    <property name="icon" >
-    <iconset resource="resources.qrc" >:/Icons/Resources/Cam2Node.png</iconset>
+    <iconset resource="resources.qrc" >
+     <normaloff>:/Icons/Resources/Cam2Node.png</normaloff>:/Icons/Resources/Cam2Node.png</iconset>
    </property>
    <property name="text" >
     <string>Move Camera To Node</string>

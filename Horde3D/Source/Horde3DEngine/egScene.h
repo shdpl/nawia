@@ -34,6 +34,7 @@
 
 
 struct SceneNodeTpl;
+class CameraNode;
 class SceneGraphResource;
 
 const int RootNode = 1;
@@ -98,6 +99,7 @@ protected:
 	SceneNode                   *_parent;  // Parent node
 	int                         _type;
 	NodeHandle                  _handle;
+	uint32                      _sgHandle;  // Spatial graph handle
 	bool                        _dirty;  // Does the node need to be updated?
 	bool                        _transformed;
 	bool                        _renderable;
@@ -111,14 +113,15 @@ protected:
 	
 	void markChildrenDirty();
 
+	virtual void onPreUpdate();	// Called before absolute transformation is updated
+	virtual void onPostUpdate();	// Called after absolute transformation has been updated
+	virtual void onFinishedUpdate();  // Called after children have been updated
+	virtual void onAttach( SceneNode &parentNode );	// Called when node is attached to parent
+	virtual void onDetach( SceneNode &parentNode );	// Called when node is detached from parent
+
 public:
 
 	float                       tmpSortValue;
-	
-	static bool frontToBackOrder( SceneNode *n1, SceneNode *n2 )
-		{ return n1->tmpSortValue < n2->tmpSortValue; }
-	static bool backToFrontOrder( SceneNode *n1, SceneNode *n2 )
-		{ return n1->tmpSortValue > n2->tmpSortValue; }
 	
 	SceneNode( const SceneNodeTpl &tpl );
 	virtual ~SceneNode();
@@ -142,12 +145,6 @@ public:
 	bool update();
 	virtual bool checkIntersection( const Vec3f &rayOrig, const Vec3f &rayDir, Vec3f &intsPos ) const;
 
-	virtual void onPreUpdate();	// Called before absolute transformation is updated
-	virtual void onPostUpdate();	// Called after absolute transformation has been updated
-	virtual void onFinishedUpdate();  // Called after children have been updated
-	virtual void onAttach( SceneNode &parentNode );	// Called when node is attached to parent
-	virtual void onDetach( SceneNode &parentNode );	// Called when node is detached from parent
-
 	int getType() { return _type; };
 	NodeHandle getHandle() { return _handle; }
 	SceneNode *getParent() { return _parent; }
@@ -162,6 +159,7 @@ public:
 		{ bool b = _transformed; if( reset ) _transformed = false; return b; }
 
 	friend class SceneManager;
+	friend class SpatialGraph;
 	friend class Renderer;
 };
 
@@ -170,21 +168,8 @@ public:
 // Group Node
 // =================================================================================================
 
-struct GroupNodeParams
-{
-	enum List
-	{
-		MinDist = 100,
-		MaxDist
-	};
-};
-
-// =================================================================================================
-
 struct GroupNodeTpl : public SceneNodeTpl
 {
-	float  minDist, maxDist;
-
 	GroupNodeTpl( const std::string &name ) :
 		SceneNodeTpl( SceneNodeTypes::Group, name )
 	{
@@ -196,8 +181,6 @@ struct GroupNodeTpl : public SceneNodeTpl
 class GroupNode : public SceneNode
 {
 protected:
-
-	float  _minDist, _maxDist;
 
 	GroupNode( const GroupNodeTpl &groupTpl );
 
@@ -211,6 +194,47 @@ public:
 
 	friend class Renderer;
 	friend class SceneManager;
+};
+
+
+// =================================================================================================
+// Spatial Graph
+// =================================================================================================
+
+struct RendQueueEntry
+{
+	SceneNode  *node;
+	int        type;  // Type is stored explicitly for better cache efficiency when iterating over list
+
+	RendQueueEntry() {}
+	RendQueueEntry( int type, SceneNode *node ) : type( type ), node( node ) {}
+};
+
+class SpatialGraph
+{
+protected:
+	std::vector< SceneNode * >     _nodes;		// Renderable nodes and lights
+	std::vector< uint32 >          _freeList;
+	std::vector< SceneNode * >     _lightQueue;
+	std::vector< RendQueueEntry >  _renderableQueue;
+
+	static bool frontToBackOrder( RendQueueEntry n1, RendQueueEntry n2 )
+		{ return n1.node->tmpSortValue < n2.node->tmpSortValue; }
+	static bool backToFrontOrder( RendQueueEntry n1, RendQueueEntry n2 )
+		{ return n1.node->tmpSortValue > n2.node->tmpSortValue; }
+
+public:
+	SpatialGraph();
+	
+	void addNode( SceneNode &sceneNode );
+	void removeNode( uint32 sgHandle );
+	void updateNode( uint32 sgHandle );
+
+	void updateQueues( const Frustum &frustum1, const Frustum *frustum2,
+	                   RenderingOrder::List order, bool lightQueue, bool renderQueue );
+
+	std::vector< SceneNode * > &getLightQueue() { return _lightQueue; }
+	std::vector< RendQueueEntry > &getRenderableQueue() { return _renderableQueue; }
 };
 
 
@@ -247,10 +271,9 @@ protected:
 
 	std::vector< SceneNode *>      _nodes;  // _nodes[0] is root node
 	std::vector< uint32 >          _freeList;  // List of free slots
-	std::vector< SceneNode *>      _lightQueue;
-	std::vector< SceneNode *>      _renderableQueue;
 	std::vector< SceneNode * >     _findResults;
 	std::vector< CastRayResult >   _castRayResults;
+	SpatialGraph                   *_spatialGraph;
 
 	std::map< int, NodeRegEntry >  _registry;  // Registry of node types
 
@@ -258,8 +281,6 @@ protected:
 	Vec3f                          _rayDirection;  // Ditto
 	int                            _rayNum;  // Ditto
 
-	void updateQueuesRec( const Frustum &frustum1, const Frustum *frustum2, bool sorted, 
-	                      SceneNode &node, bool lightQueue, bool renderableQueue );
 	NodeHandle parseNode( SceneNodeTpl &tpl, SceneNode *parent );
 	void removeNodeRec( SceneNode *node );
 
@@ -275,6 +296,7 @@ public:
 	NodeRegEntry *findType( const std::string &typeString );
 	
 	void updateNodes();
+	void updateSpatialNode( uint32 sgHandle ) { _spatialGraph->updateNode( sgHandle ); }
 	void updateQueues( const Frustum &frustum1, const Frustum *frustum2,
 	                   RenderingOrder::List order, bool lightQueue, bool renderableQueue );
 	
@@ -290,10 +312,12 @@ public:
 	int castRay( SceneNode *node, const Vec3f &rayOrig, const Vec3f &rayDir, int numNearest );
 	bool getCastRayResult( int index, CastRayResult &crr );
 
+	int checkNodeVisibility( SceneNode *node, CameraNode *cam, bool checkOcclusion, bool calcLod );
+
 	SceneNode &getRootNode() { return *_nodes[0]; }
 	SceneNode &getDefCamNode() { return *_nodes[1]; }
-	std::vector< SceneNode * > &getLightQueue() { return _lightQueue; }
-	std::vector< SceneNode * > &getRenderableQueue() { return _renderableQueue; }
+	std::vector< SceneNode * > &getLightQueue() { return _spatialGraph->getLightQueue(); }
+	std::vector< RendQueueEntry > &getRenderableQueue() { return _spatialGraph->getRenderableQueue(); }
 	
 	SceneNode *resolveNodeHandle( NodeHandle handle )
 		{ return (handle != 0 && (unsigned)(handle - 1) < _nodes.size()) ? _nodes[handle - 1] : 0x0; }

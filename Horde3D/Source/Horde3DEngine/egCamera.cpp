@@ -122,12 +122,6 @@ SceneNode *CameraNode::factoryFunc( const SceneNodeTpl &nodeTpl )
 }
 
 
-void CameraNode::onPostUpdate()
-{
-	_invTrans = _absTrans.inverted();
-}
-
-
 float CameraNode::getParamf( int param )
 {
 	switch( param )
@@ -156,21 +150,27 @@ bool CameraNode::setParamf( int param, float value )
 	{
 	case CameraNodeParams::LeftPlane:
 		_frustLeft = value;
+		markDirty();
 		return true;
 	case CameraNodeParams::RightPlane:
 		_frustRight = value;
+		markDirty();
 		return true;
 	case CameraNodeParams::BottomPlane:
 		_frustBottom = value;
+		markDirty();
 		return true;
 	case CameraNodeParams::TopPlane:
 		_frustTop = value;
+		markDirty();
 		return true;
 	case CameraNodeParams::NearPlane:
 		_frustNear = value;
+		markDirty();
 		return true;
 	case CameraNodeParams::FarPlane:
 		_frustFar = value;
+		markDirty();
 		return true;
 	default:
 		return SceneNode::setParamf( param, value );
@@ -227,6 +227,7 @@ bool CameraNode::setParami( int param, int value )
 		return true;
 	case CameraNodeParams::Orthographic:
 		_orthographic = (value == 1);
+		markDirty();
 		return true;
 	case CameraNodeParams::OcclusionCulling:
 		if( _occSet < 0 && value != 0 )
@@ -256,41 +257,42 @@ void CameraNode::setupViewParams( float fov, float aspect, float near, float far
 	_frustTop = ymax;
 	_frustNear = near;
 	_frustFar = far;
-}
-
-
-void CameraNode::genFrustum( Frustum &frustum )
-{
-	Modules::sceneMan().updateNodes();
 	
-	frustum.buildViewFrustum( _invTrans, calcProjectionMatrix() );
+	markDirty();
 }
 
 
-Matrix4f CameraNode::calcProjectionMatrix()
+void CameraNode::onPostUpdate()
 {
-	Matrix4f m;
-
-	if( !_orthographic )	// Perspective frustum
+	// Get position
+	_absPos = Vec3f( _absTrans.c[3][0], _absTrans.c[3][1], _absTrans.c[3][2] );
+	
+	// Calculate view matrix
+	_viewMat = _absTrans.inverted();
+	
+	// Calculate projection matrix
+	_projMat = Matrix4f();
+	if( !_orthographic )  // Perspective frustum
 	{
-		m.x[0] = 2 * _frustNear / (_frustRight - _frustLeft);
-		m.x[5] = 2 * _frustNear / (_frustTop - _frustBottom);
-		m.x[8] = (_frustRight + _frustLeft) / (_frustRight - _frustLeft);
-		m.x[9] = (_frustTop + _frustBottom) / (_frustTop - _frustBottom);
-		m.x[10] = -(_frustFar + _frustNear) / (_frustFar - _frustNear);
-		m.x[11] = -1;
-		m.x[14] = -2 * _frustFar * _frustNear / (_frustFar - _frustNear);
-		m.x[15] = 0;
+		_projMat.x[0] = 2 * _frustNear / (_frustRight - _frustLeft);
+		_projMat.x[5] = 2 * _frustNear / (_frustTop - _frustBottom);
+		_projMat.x[8] = (_frustRight + _frustLeft) / (_frustRight - _frustLeft);
+		_projMat.x[9] = (_frustTop + _frustBottom) / (_frustTop - _frustBottom);
+		_projMat.x[10] = -(_frustFar + _frustNear) / (_frustFar - _frustNear);
+		_projMat.x[11] = -1;
+		_projMat.x[14] = -2 * _frustFar * _frustNear / (_frustFar - _frustNear);
+		_projMat.x[15] = 0;
 	}
-	else					// Orthographic frustum
+	else  // Orthographic frustum
 	{
-		m.x[0] = 2 / (_frustRight - _frustLeft);
-		m.x[5] = 2 / (_frustTop - _frustBottom);
-		m.x[10] = -2 / (_frustFar - _frustNear);
-		m.x[12] = -(_frustRight + _frustLeft) / (_frustRight - _frustLeft);
-		m.x[13] = -(_frustTop + _frustBottom) / (_frustTop - _frustBottom);
-		m.x[14] = -(_frustFar + _frustNear) / (_frustFar - _frustNear);
+		_projMat.x[0] = 2 / (_frustRight - _frustLeft);
+		_projMat.x[5] = 2 / (_frustTop - _frustBottom);
+		_projMat.x[10] = -2 / (_frustFar - _frustNear);
+		_projMat.x[12] = -(_frustRight + _frustLeft) / (_frustRight - _frustLeft);
+		_projMat.x[13] = -(_frustTop + _frustBottom) / (_frustTop - _frustBottom);
+		_projMat.x[14] = -(_frustFar + _frustNear) / (_frustFar - _frustNear);
 	}
 
-	return m;
+	// Update frustum
+	_frustum.buildViewFrustum( _viewMat, _projMat );
 }

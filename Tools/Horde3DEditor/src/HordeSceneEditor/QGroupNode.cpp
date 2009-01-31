@@ -68,36 +68,3 @@ void QGroupNode::addRepresentation()
 		plugIn->initNodeAttachment(this);
 }
 
-float QGroupNode::minDist() const
-{
-	return m_xmlNode.attribute("minDist", "0.0").toFloat();
-}
-
-void QGroupNode::setMinDist(float value)
-{
-	if (signalsBlocked())
-	{
-		m_xmlNode.setAttribute("minDist", value);
-		Horde3D::setNodeParamf(m_hordeID, GroupNodeParams::MinDist, value);
-	}
-	else if (value != QGroupNode::minDist())
-		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Min Dist", this, "Minimum_Distance", value, GroupMinDistID));
-
-}
-
-float QGroupNode::maxDist() const
-{
-	return m_xmlNode.attribute("maxDist", QString::number(FLT_MAX)).toFloat();
-}
-
-void QGroupNode::setMaxDist(float value)
-{
-	if (signalsBlocked())
-	{
-		m_xmlNode.setAttribute("maxDist", value);
-		Horde3D::setNodeParamf(m_hordeID, GroupNodeParams::MaxDist, value);
-	}
-	else if (value != QGroupNode::maxDist())
-		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Max Dist", this, "Maximum_Distance", value, GroupMaxDistID));
-}
-

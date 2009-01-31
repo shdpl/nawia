@@ -28,16 +28,17 @@
 #include "daeMain.h"
 #include "utMath.h"
 
+
 struct Joint;
 
 struct Vertex
 {
-	Vec3f			storedPos, pos;
-	Vec3f			storedNormal, normal, tangent, bitangent;
-	Vec3f			texCoords[4];
-	Joint			*joints[4];
-	float			weights[4];	
-	int				daePosIndex;
+	Vec3f  storedPos, pos;
+	Vec3f  storedNormal, normal, tangent, bitangent;
+	Vec3f  texCoords[4];
+	Joint  *joints[4];
+	float  weights[4];	
+	int    daePosIndex;
 
 
 	Vertex()
@@ -50,12 +51,12 @@ struct Vertex
 
 struct TriGroup
 {
-	unsigned int	first, count;
-	unsigned int	vertRStart, vertREnd;
-	std::string		matName;
+	unsigned int  first, count;
+	unsigned int  vertRStart, vertREnd;
+	std::string   matName;
 
-	unsigned int			numPosIndices;
-	std::vector< unsigned int >	*posIndexToVertices;
+	unsigned int                 numPosIndices;
+	std::vector< unsigned int >  *posIndexToVertices;
 
 	TriGroup() : posIndexToVertices( 0x0 )
 	{
@@ -65,16 +66,16 @@ struct TriGroup
 
 struct SceneNode
 {
-	bool					typeJoint;
-	char					name[256];
-	Matrix4f				matRel, matAbs;
-	DaeNode					*daeNode;
-	DaeInstance				*daeInstance;
-	SceneNode				*parent;
-	std::vector< SceneNode * >	children;
+	bool                        typeJoint;
+	char                        name[256];
+	Matrix4f                    matRel, matAbs;
+	DaeNode                     *daeNode;
+	DaeInstance                 *daeInstance;
+	SceneNode                   *parent;
+	std::vector< SceneNode * >  children;
 
 	// Animation
-	std::vector< Matrix4f >	frames;			// Relative transformation for every frame
+	std::vector< Matrix4f >     frames;  // Relative transformation for every frame
 
 	SceneNode()
 	{
@@ -87,24 +88,26 @@ struct SceneNode
 
 struct Mesh : public SceneNode
 {
-	std::vector< TriGroup >		triGroups;
+	std::vector< TriGroup >  triGroups;
+	unsigned int             lodLevel;
 	
 	Mesh()
 	{
 		typeJoint = false;
 		parent = 0x0;
+		lodLevel = 0;
 	}
 };
 
 
 struct Joint : public SceneNode
 {
-	unsigned int			index;
-	Matrix4f				invBindMat;
-	bool					used;
+	unsigned int  index;
+	Matrix4f      invBindMat;
+	bool          used;
 
 	// Temporary
-	Matrix4f				daeInvBindMat;
+	Matrix4f      daeInvBindMat;
 
 	Joint()
 	{
@@ -116,16 +119,16 @@ struct Joint : public SceneNode
 
 struct MorphDiff
 {
-	unsigned int			vertIndex;
-	Vec3f					posDiff;
-	Vec3f					normDiff, tanDiff, bitanDiff;
+	unsigned int  vertIndex;
+	Vec3f         posDiff;
+	Vec3f         normDiff, tanDiff, bitanDiff;
 };
 
 
 struct MorphTarget
 {
-	char					name[256];
-	std::vector< MorphDiff >diffs;
+	char                      name[256];
+	std::vector< MorphDiff >  diffs;
 };
 
 
@@ -133,18 +136,20 @@ class Converter
 {
 private:
 
-	std::vector< Vertex >		_vertices;
-	std::vector< unsigned int >	_indices;
-	std::vector< Mesh * >		_meshes;
-	std::vector< Joint * >		_joints;
-	std::vector< MorphTarget >	_morphTargets;
+	std::vector< Vertex >        _vertices;
+	std::vector< unsigned int >  _indices;
+	std::vector< Mesh * >        _meshes;
+	std::vector< Joint * >       _joints;
+	std::vector< MorphTarget >   _morphTargets;
 
-	unsigned int			_frameCount;
+	float                        _lodDist1, _lodDist2, _lodDist3, _lodDist4;
+	unsigned int                 _frameCount;
+	unsigned int                 _maxLodLevel;
 
 
 	Matrix4f getNodeTransform( ColladaDocument &doc, DaeNode &node, unsigned int frame );
 	SceneNode *processNode( ColladaDocument &doc, DaeNode &node, SceneNode *parentNode,
-							Matrix4f transAccum, std::vector< Matrix4f > animTransAccum );
+	                        Matrix4f transAccum, std::vector< Matrix4f > animTransAccum );
 	void calcTangentSpaceBasis( std::vector< Vertex > &vertices );
 	void processJoints();
 	void processMeshes( ColladaDocument &doc, bool optimize );
@@ -155,7 +160,7 @@ private:
 
 public:
 
-	Converter();
+	Converter( float *lodDists );
 	~Converter();
 	
 	bool convertModel( ColladaDocument &doc, bool optimize );

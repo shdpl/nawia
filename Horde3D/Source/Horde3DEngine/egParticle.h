@@ -175,9 +175,8 @@ class EmitterNode : public SceneNode
 {
 protected:
 
-	BoundingBox            _localBBox;
-
 	// Emitter data
+	float                  _timeDelta;
 	float                  _emissionAccum;
 	
 	// Emitter params
@@ -200,6 +199,8 @@ protected:
 	EmitterNode( const EmitterNodeTpl &emitterTpl );
 	void setMaxParticleCount( uint32 maxParticleCount );
 
+	void onPostUpdate();
+
 public:
 	
 	~EmitterNode();
@@ -207,7 +208,6 @@ public:
 	static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
 	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
 
-	BoundingBox *getLocalBBox() { return &_localBBox; }
 	float getParamf( int param );
 	bool setParamf( int param, float value );
 	int getParami( int param );
@@ -216,6 +216,7 @@ public:
 	void advanceTime( float timeDelta );
 	bool hasFinished();
 
+	friend class SceneManager;
 	friend class Renderer;
 };
 

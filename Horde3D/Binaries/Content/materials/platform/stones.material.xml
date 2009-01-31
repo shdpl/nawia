@@ -1,6 +1,7 @@
 <Material>
-	<Shader source="parallax.shader.xml"/>
+	<Shader source="model.shader"/>
+	<ShaderFlag name="_F03_ParallaxMapping" />
 	
 	<TexUnit unit="0" map="layingrock.jpg" />
-	<TexUnit unit="1" map="layingrockBump.png" allowCompression="false" />
+	<TexUnit unit="1" map="layingrockBump.tga" allowCompression="false" />
 </Material>

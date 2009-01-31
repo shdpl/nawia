@@ -18,6 +18,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Horde3D Engine", "Horde3D\S
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6} = {7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD} = {572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Collada Converter", "Horde3D\Source\ColladaConverter\Collada Converter.vcproj", "{17F40F35-7889-4373-AF53-EA87B9009556}"
@@ -80,6 +81,58 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "Horde3D\Dependencie
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Extension Sound", "Extensions\Sound\Source\Extension_Sound.vcproj", "{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159} = {15CBFEFF-7965-41F5-B4E2-21E8795C9159}
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC} = {CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD} = {3A214E06-B95E-4D61-A291-1F8DF2EC10FD}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbisfile", "Extensions\Sound\Dependencies\Source\vorbisfile\vorbisfile.vcproj", "{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD} = {3A214E06-B95E-4D61-A291-1F8DF2EC10FD}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbis", "Extensions\Sound\Dependencies\Source\vorbis\vorbis.vcproj", "{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159} = {15CBFEFF-7965-41F5-B4E2-21E8795C9159}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ogg", "Extensions\Sound\Dependencies\Source\ogg\ogg.vcproj", "{15CBFEFF-7965-41F5-B4E2-21E8795C9159}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SoundDependencies", "SoundDependencies", "{A8F36B73-F74F-4992-8773-F4135D6111DC}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sample Sound", "Extensions\Sound\Sample\Sample_Sound.vcproj", "{38F25986-F76E-49EC-BEB0-354B189EAA4A}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{1D558D7D-DA57-4908-BCFC-902054FE6B63} = {1D558D7D-DA57-4908-BCFC-902054FE6B63}
+		{2A423B83-D582-49BA-A45F-E27148099850} = {2A423B83-D582-49BA-A45F-E27148099850}
+		{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D} = {AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -118,8 +171,33 @@ Global
 		{2A423B83-D582-49BA-A45F-E27148099850}.Debug|Win32.Build.0 = Debug|Win32
 		{2A423B83-D582-49BA-A45F-E27148099850}.Release|Win32.ActiveCfg = Release|Win32
 		{2A423B83-D582-49BA-A45F-E27148099850}.Release|Win32.Build.0 = Release|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Debug|Win32.Build.0 = Debug|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Release|Win32.ActiveCfg = Release|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Release|Win32.Build.0 = Release|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Debug|Win32.Build.0 = Debug|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Release|Win32.ActiveCfg = Release|Win32
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Release|Win32.Build.0 = Release|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Debug|Win32.Build.0 = Debug|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Release|Win32.ActiveCfg = Release|Win32
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD}.Release|Win32.Build.0 = Release|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.Debug|Win32.ActiveCfg = Debug|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.Debug|Win32.Build.0 = Debug|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.Release|Win32.ActiveCfg = Release|Win32
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159}.Release|Win32.Build.0 = Release|Win32
+		{38F25986-F76E-49EC-BEB0-354B189EAA4A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{38F25986-F76E-49EC-BEB0-354B189EAA4A}.Debug|Win32.Build.0 = Debug|Win32
+		{38F25986-F76E-49EC-BEB0-354B189EAA4A}.Release|Win32.ActiveCfg = Release|Win32
+		{38F25986-F76E-49EC-BEB0-354B189EAA4A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC} = {A8F36B73-F74F-4992-8773-F4135D6111DC}
+		{15CBFEFF-7965-41F5-B4E2-21E8795C9159} = {A8F36B73-F74F-4992-8773-F4135D6111DC}
+		{3A214E06-B95E-4D61-A291-1F8DF2EC10FD} = {A8F36B73-F74F-4992-8773-F4135D6111DC}
 	EndGlobalSection
 EndGlobal

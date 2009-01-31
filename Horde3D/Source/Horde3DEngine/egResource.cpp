@@ -197,9 +197,24 @@ void ResourceManager::registerType( int type, const string &typeString, ResTypeI
 
 Resource *ResourceManager::findResource( int type, const string &name )
 {
-	for( uint32 i = 0; i < _resources.size(); ++i )
+	for( size_t i = 0, s = _resources.size(); i < s; ++i )
 	{
 		if( _resources[i] != 0x0 && _resources[i]->_type == type && _resources[i]->_name == name )
+		{
+			return _resources[i];
+		}
+	}
+	
+	return 0x0;
+}
+
+
+Resource *ResourceManager::getNextResource( int type, ResHandle start )
+{
+	for( size_t i = start, s = _resources.size(); i < s; ++i )
+	{
+		if( _resources[i] != 0x0 &&
+		    (type == ResourceTypes::Undefined || _resources[i]->_type == type) )
 		{
 			return _resources[i];
 		}
@@ -232,7 +247,7 @@ ResHandle ResourceManager::addResource( Resource &resource )
 ResHandle ResourceManager::addResource( int type, const string &name,
 										int flags, bool userCall )
 {
-	if( name == "" || name.find( ":" ) != string::npos )
+	if( name == "" || (userCall && name.find( ":" ) != string::npos) )
 	{	
 		Modules::log().writeDebugInfo( "Invalid name for added resource of type %i", type );
 		return 0;
@@ -267,7 +282,7 @@ ResHandle ResourceManager::addResource( int type, const string &name,
 
 ResHandle ResourceManager::addNonExistingResource( Resource &resource, bool userCall )
 {
-	if( resource._name == "" || resource._name.find( ":" ) != string::npos ) return 0;
+	if( resource._name == "" || (userCall && resource._name.find( ":" ) != string::npos) ) return 0;
 
 	// Check that name does not yet exist
 	for( uint32 i = 0; i < _resources.size(); ++i )

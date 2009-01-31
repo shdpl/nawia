@@ -33,11 +33,6 @@ class QGroupNode : public QSceneNode
 	Q_OBJECT
 	Q_CLASSINFO("QGroupNode", "Group Specific");
 
-	Q_PROPERTY(float Minimum_Distance READ minDist WRITE setMinDist DESIGNABLE true USER true)
-	Q_CLASSINFO("Minimum_Distance", "minimum=0;");
-
-	Q_PROPERTY(float Maximum_Distance READ maxDist WRITE setMaxDist DESIGNABLE true USER true)
-
 public:
 	static QSceneNode* loadNode(const QDomElement& xmlNode, int row, SceneTreeModel* model, QSceneNode* parent);
 
@@ -45,12 +40,6 @@ public:
 	virtual ~QGroupNode();
 
 	void addRepresentation();
-
-	float minDist() const;
-	void setMinDist(float value);
-
-	float maxDist() const;
-	void setMaxDist(float value);
 
 };
 #endif

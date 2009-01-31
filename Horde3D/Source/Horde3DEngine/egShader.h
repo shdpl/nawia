@@ -27,31 +27,27 @@
 
 #include "egPrerequisites.h"
 #include "egResource.h"
+#include <set>
 
 struct XMLNode;
 
-struct testEvaluationFunc
-{
-	enum List
-	{
-		less,
-		greater,
-		equal,
-		gequal,
-		lequal
-	};
-};
 
 // =================================================================================================
 // Code Resource
 // =================================================================================================
 
+class CodeResource;
+typedef SmartResPtr< CodeResource > PCodeResource;
+
 class CodeResource : public Resource
 {
 private:
 	
-	std::string  _code;
+	uint32                                             _flagMask;
+	std::string                                        _code;
+	std::vector< std::pair< PCodeResource, size_t > >  _includes;	// Pair: Included res and location in _code
 
+	bool raiseError( const std::string &msg );
 	void updateShaders();
 
 public:
@@ -67,25 +63,20 @@ public:
 	void release();
 	bool load( const char *data, int size );
 
+	bool hasDependency( CodeResource *codeRes );
+	bool tryLinking( uint32 *flagMask );
+	std::string assembleCode();
+
 	bool isLoaded() { return _loaded; }
 	const std::string &getCode() { return _code; }
 
 	friend class Renderer;
 };
 
-typedef SmartResPtr< CodeResource > PCodeResource;
-
 
 // =================================================================================================
 // Shader Resource
 // =================================================================================================
-
-struct ShaderCodeFract
-{
-	PCodeResource  refCodeRes;
-	std::string    code;
-};
-
 
 struct BlendModes
 {
@@ -99,26 +90,27 @@ struct BlendModes
 	};
 };
 
-
-struct ShaderContext
+struct TestModes
 {
-	std::string                     id;
+	enum List
+	{
+		Always,  // Same as disabled
+		Equal,
+		Less,
+		LessEqual,
+		Greater,
+		GreaterEqual
+	};
+};
+
+
+struct ShaderCombination
+{
+	uint32                          combMask;
+	
 	uint32                          shaderObject;
 	uint32                          lastUpdateStamp;
-	
-	// RenderConfig
-	bool						    testDepth;
-	//True = must be closer, false = must be further
-	testEvaluationFunc::List	    depthTestFunc;
-	bool						    testAlpha;
-	//true is > false is <
-	testEvaluationFunc::List	    alphaTestFunc;
-	float						    alphaTestVal;
-	bool						    alphaToCoverage;
 
-	BlendModes::List                blendMode;
-	bool                            writeDepth;
-	
 	// Engine uniform and attribute locations
 	int                             uni_frameBufSize;
 	int                             uni_texs[12];
@@ -137,17 +129,44 @@ struct ShaderContext
 	// Custom uniforms
 	std::map< std::string, int >    customUniforms;
 
-	std::vector< ShaderCodeFract >  vertShaderFracts, fragShaderFracts;
-	bool                            compiled;
 
-
-	ShaderContext()
+	ShaderCombination() :
+		combMask( 0 ), shaderObject( 0 ), lastUpdateStamp( 0 )
 	{
-		compiled = false;
-		shaderObject = 0;
-		lastUpdateStamp = 0;
-		writeDepth = true;
-		blendMode = BlendModes::Replace;
+	}
+};
+
+
+struct ShaderContext
+{
+	std::string                       id;
+	uint32                            flagMask;
+	
+	// RenderConfig
+	BlendModes::List                  blendMode;
+	TestModes::List                   depthTest;
+	TestModes::List                   alphaTest;
+	float                             alphaRef;
+	bool                              writeDepth;
+	bool                              alphaToCoverage;
+	
+	// Shaders
+	std::vector< ShaderCombination >  shaderCombs;
+	PCodeResource                     vertCode, fragCode;
+	bool                              compiled;
+
+
+	ShaderContext() :
+		compiled( false ), writeDepth( true ), blendMode( BlendModes::Replace ),
+		depthTest( TestModes::LessEqual ), alphaTest( TestModes::Always ),
+		alphaRef( 0.0f ), alphaToCoverage( false )
+	{
+	}
+
+	~ShaderContext()
+	{
+		vertCode = 0x0;
+		fragCode = 0x0;
 	}
 };
 
@@ -158,11 +177,15 @@ class ShaderResource : public Resource
 private:
 	
 	static std::string            _vertPreamble, _fragPreamble;
+	static std::string            _tmpCode0, _tmpCode1;
 	
 	std::vector< ShaderContext >  _contexts;
+	std::set< uint32 >            _preLoadList;
 
 	bool raiseError( const std::string &msg, int line = -1 );
-	bool parseCode( XMLNode &node, std::vector< ShaderCodeFract > &codeFracts );
+	bool parseXMLCode( XMLNode &node, std::string &code );
+	bool parseFXSection( const char *data, bool oldFormat );
+	void compileCombination( ShaderContext &context, ShaderCombination &sc );
 
 public:
 	
@@ -171,6 +194,8 @@ public:
 
 	static void setPreambles( const std::string &vertPreamble, const std::string &fragPreamble )
 		{ _vertPreamble = vertPreamble; _fragPreamble = fragPreamble; }
+
+	static uint32 calcCombMask( const std::vector< std::string > &flags );
 	
 	ShaderResource( const std::string &name, int flags );
 	~ShaderResource();
@@ -178,7 +203,9 @@ public:
 	void initDefault();
 	void release();
 	bool load( const char *data, int size );
-	void compileShaders();
+	void preLoadCombination( uint32 combMask );
+	void compileContexts();
+	ShaderCombination *getCombination( ShaderContext &context, uint32 combMask );
 
 	ShaderContext *findContext( const std::string &name )
 	{

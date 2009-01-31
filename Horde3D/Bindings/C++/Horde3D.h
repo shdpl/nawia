@@ -90,6 +90,8 @@ struct EngineOptions
 		WireframeMode		- Enables or disables wireframe rendering
 		DebugViewMode		- Enables or disables debug view where geometry is rendered in wireframe without shaders and
 							  lights are visualized using their screen space bounding box. (Values: 0, 1; Default: 0)
+		DumpFailedShaders	- Enables or disables storing of shader code that failed to compile in a text file; this can be
+							  useful in combination with the line numbers given back by the shader compiler. (Values: 0, 1; Default: 0)
 	*/
 	enum List
 	{
@@ -103,7 +105,8 @@ struct EngineOptions
 		ShadowMapSize,
 		SampleCount,
 		WireframeMode,
-		DebugViewMode
+		DebugViewMode,
+		DumpFailedShaders
 	};
 };
 
@@ -411,22 +414,6 @@ struct SceneNodeParams
 	};
 };
 
-struct GroupNodeParams
-{
-	/*	Enum: GroupNodeParams
-			The available Group node parameters.
-	
-		MinDist	- Minimal distance from the viewer for the node to be visible
-				  (default: 0.0); used for level of detail [type: float]
-		MaxDist	- Maximal distance from the viewer for the node to be visible
-				  (default: infinite); used for level of detail [type: float]
-	*/
-	enum List
-	{
-		MinDist = 100,
-		MaxDist
-	};
-};
 
 struct ModelNodeParams
 {
@@ -435,11 +422,23 @@ struct ModelNodeParams
 
 		GeometryRes			- Geometry resource used for the model [type: ResHandle]
 		SoftwareSkinning	- Enables or disables software skinning (default: 0) [type: int]
+		LodDist1            - Distance to camera from which on LOD1 is used (default: infinite) [type: float]
+		                      (must be a positive value larger than 0.0)
+		LodDist2            - Distance to camera from which on LOD2 is used
+		                      (may not be smaller than LodDist1) (default: infinite) [type: float]
+		LodDist3            - Distance to camera from which on LOD3 is used
+		                      (may not be smaller than LodDist2) (default: infinite) [type: float]
+		LodDist4            - Distance to camera from which on LOD4 is used
+		                      (may not be smaller than LodDist3) (default: infinite) [type: float]
 	*/
 	enum List
 	{
 		GeometryRes = 200,
-		SoftwareSkinning
+		SoftwareSkinning,
+		LodDist1,
+		LodDist2,
+		LodDist3,
+		LodDist4
 	};
 };
 
@@ -453,6 +452,8 @@ struct MeshNodeParams
 		BatchCount	- Number of triangle indices used for drawing mesh [type: int, read-only]
 		VertRStart	- First vertex in Geometry resource of parent Model node [type: int, read-only]
 		VertREnd	- Last vertex in Geometry resource of parent Model node [type: int, read-only]
+		LodLevel    - LOD level of Mesh; the mesh is only rendered if its LOD level corresponds to
+		              the model's current LOD level which is calculated based on the LOD distances (default: 0) [type: int]
 	*/
 	enum List
 	{
@@ -460,7 +461,8 @@ struct MeshNodeParams
 		BatchStart,
 		BatchCount,
 		VertRStart,
-		VertREnd
+		VertREnd,
+		LodLevel
 	};
 };
 
@@ -631,22 +633,28 @@ namespace Horde3D
 	*/
 	DLL void release();
 	
-	/* 	Function: resize
-			Resizes the viewport.
+	/* 	Function: setupViewport
+			Sets the location and size of the viewport.
 		
-		This function sets the dimensions of the rendering viewport. It has to be called after
-		initialization and whenever the viewport size changes.
+		This function sets the location and size of the viewport. It has to be called
+		after engine initialization and whenever the size of the rendering context/window
+		changes. The resizeBuffers parameter specifies whether render targets with a size
+		relative to the viewport dimensions should be resized. This is usually desired
+		after engine initialization and when the window is resized but not for just rendering
+		to a part of the framebuffer.
+
 		
 		Parameters:
-			x		- the x-position of the viewport in the rendering context
-			y		- the y-position of the viewport in the rendering context
-			width	- the width of the viewport
-			height	- the height of the viewport
+			x				- the x-position of the lower left corner of the viewport rectangle
+			y				- the y-position of the lower left corner of the viewport rectangle
+			width			- the width of the viewport
+			height			- the height of the viewport
+			resizeBuffers	- specifies whether render targets should be adapted to new size
 			
 		Returns:
 			nothing
 	*/
-	DLL void resize( int x, int y, int width, int height );
+	DLL void setupViewport( int x, int y, int width, int height, bool resizeBuffers );
 	
 	/* 	Function: render
 			Main rendering function.
@@ -662,6 +670,20 @@ namespace Horde3D
 			true in case of success, otherwise false
 	*/
 	DLL bool render( NodeHandle cameraNode );
+	
+	/* 	Function: finalizeFrame
+			Marker for end of frame.
+		
+		This function tells the engine that the current frame is finished and that all
+		subsequent rendering operations will be for the next frame.
+		
+		Parameters:
+			none
+			
+		Returns:
+			true in case of success, otherwise false
+	*/
+	DLL bool finalizeFrame();
 	
 	/* 	Function: clear
 			Removes all resources and scene nodes.
@@ -811,6 +833,24 @@ namespace Horde3D
 			name of the resource or empty string in case of failure
 	*/
 	DLL const char *getResourceName( ResHandle res );
+	
+	/* 	Function: getNextResource
+			Returns the next resource of the specified type.
+		
+		This function searches the next resource of the specified type and returns its handle.
+		The search begins after the specified start handle. If a further resource of the queried type
+		does not exist, a zero handle is returned. The function can be used to iterate over all
+		resources of a given type by using as start the return value of the previous iteration step.
+		The first iteration step should start at 0 and iteration can be ended when the function returns 0.
+		
+		Parameters:
+			type	- type of resource to be searched (ResourceTypes::Undefined for all types)
+			start	- resource handle after which the search begins (can be 0 for beginning of resource list)
+			
+		Returns:
+			handle to the found resource or 0 if it does not exist
+	*/
+	DLL ResHandle getNextResource( int type, ResHandle start );
 	
 	/* 	Function: findResource
 			Finds a resource and returns its handle.
@@ -1549,6 +1589,7 @@ namespace Horde3D
         The function finds intersections relative to the ray origin and returns the number of intersecting scene
         nodes. The ray is a line segment and is specified by a starting point (the origin) and a finite direction
 		vector which also defines its length. Currently this function is limited to returning intersections with Meshes.
+		For Meshes, the base LOD (LOD0) is always used for performing the ray-triangle intersection tests.
 		
 		Parameters:
 			node		- node at which intersection check is beginning
@@ -1560,7 +1601,6 @@ namespace Horde3D
 			number of intersections
 		*/
 	DLL int castRay( NodeHandle node, float ox, float oy, float oz, float dx, float dy, float dz, int numNearest );
-
 
 	/*	Function: getCastRayResult
 			Returns a result of a previous castRay query.
@@ -1578,6 +1618,27 @@ namespace Horde3D
 			true if index was valid and data could be copied, otherwise false
 	*/
 	DLL bool getCastRayResult( int index, NodeHandle *node, float *distance, float *intersection );
+
+	/*	Function: checkNodeVisibility
+			Checks if a node is visible.
+
+		This function checks if a specified node is visible from the perspective of a specified
+		camera. The function always checks if the node is in the camera's frustum. If checkOcclusion
+		is true, the function will take into account the occlusion culling information from the previous
+		frame (if occlusion culling is disabled the flag is ignored). The flag calcLod determines whether the
+		detail level for the node should be returned in case it is visible. The function returns -1 if the node
+		is not visible, otherwise 0 (base LOD level) or the computed LOD level.
+
+		Parameters:
+			node			- node to be checked for visibility
+			cameraNode		- camera node from which the visibility test is done
+			checkOcclusion	- specifies if occlusion info from previous frame should be taken into account
+			calcLod			- specifies if LOD level should be computed
+
+		Returns:
+			Computed LOD level or -1 if node is not visible
+	*/
+	DLL int checkNodeVisibility( NodeHandle node, NodeHandle cameraNode, bool checkOcclusion, bool calcLod );
 
 
 	/* Group: Group-specific scene graph functions */
@@ -1794,10 +1855,10 @@ namespace Horde3D
 	*/
 	DLL bool setupCameraView( NodeHandle cameraNode, float fov, float aspect, float nearDist, float farDist );
 	
-	/* 	Function: calcCameraProjectionMatrix
-			Calculates the camera projection matrix.
+	/* 	Function: getCameraProjectionMatrix
+			Gets the camera projection matrix.
 		
-		This function calculates the camera projection matrix used for bringing the geometry to
+		This function gets the camera projection matrix used for bringing the geometry to
         screen space and copies it to the specified array.
 		
 		Parameters:
@@ -1807,7 +1868,7 @@ namespace Horde3D
 		Returns:
 			 true in case of success otherwise false
 	*/
-	DLL bool calcCameraProjectionMatrix( NodeHandle cameraNode, float *projMat );
+	DLL bool getCameraProjectionMatrix( NodeHandle cameraNode, float *projMat );
 
 
 	/* Group: Emitter-specific scene graph functions */
