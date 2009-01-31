@@ -39,7 +39,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory="$(TargetDir)"
-				CommandArguments="Dosenwerfen\Dosenwerfen.scn"
+				CommandArguments="$(ProjectDir)Dosenwerfen\Dosenwerfen.scn"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -67,7 +67,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory="$(TargetDir)"
-				CommandArguments="Dosenwerfen\Dosenwerfen.scn"
+				CommandArguments="$(ProjectDir)Dosenwerfen\Dosenwerfen.scn"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"

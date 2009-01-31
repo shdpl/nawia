@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)../HordeSceneEditorCore&quot;"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)../HordeSceneEditorCore&quot;;&quot;$(SolutionDir)..\..\Horde3D\Bindings\C++&quot;;&quot;$(SolutionDir)..\..\Extensions\Terrain\Bindings\C++&quot;"
 				PreprocessorDefinitions="_DEBUG;_WINDOWS;QT_LARGEFILE_SUPPORT;QT_DLL;QT_PLUGIN;QT_THREAD_SUPPORT;WIN32"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -125,7 +125,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)../HordeSceneEditorCore&quot;"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)../HordeSceneEditorCore&quot;;&quot;$(SolutionDir)..\..\Horde3D\Bindings\C++&quot;;&quot;$(SolutionDir)..\..\Extensions\Terrain\Bindings\C++&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UNICODE;QT_LARGEFILE_SUPPORT;QT_DLL;QT_PLUGIN;QT_NO_DEBUG;QT_THREAD_SUPPORT"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

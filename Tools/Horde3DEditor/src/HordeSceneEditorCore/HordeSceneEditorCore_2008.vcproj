@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(SolutionDir)..\..\Horde3D\Bindings\C++&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_LIB;UNICODE;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -114,7 +114,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(SolutionDir)..\..\Horde3D\Bindings\C++&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_LIB;UNICODE;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
