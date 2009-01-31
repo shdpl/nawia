@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)../../Include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBVORBIS_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(ProjectDir)..\..\lib\$(ProjectName).lib"
+				OutputFile="$(ProjectDir)..\..\Libs\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -112,7 +112,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)../../Include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBVORBIS_EXPORTS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;"
 				StringPooling="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(ProjectDir)..\..\lib\$(ProjectName).lib"
+				OutputFile="$(ProjectDir)..\..\Libs\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -152,7 +152,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../../../../Horde3D/Binaries/Win32&quot; /y&#x0D;&#x0A;xcopy &quot;$(TargetDir)$(RootNamespace).lib&quot; &quot;$(ProjectDir)..\..\Libs\&quot; /y&#x0D;&#x0A;"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>
@@ -238,10 +238,6 @@
 			</File>
 			<File
 				RelativePath=".\synthesis.c"
-				>
-			</File>
-			<File
-				RelativePath=".\vorbis.def"
 				>
 			</File>
 			<File
