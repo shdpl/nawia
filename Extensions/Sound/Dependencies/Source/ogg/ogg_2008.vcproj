@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
-	Name="vorbisfile"
-	ProjectGUID="{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}"
-	RootNamespace="vorbisfile"
+	Version="9,00"
+	Name="ogg"
+	ProjectGUID="{15CBFEFF-7965-41F5-B4E2-21E8795C9159}"
+	RootNamespace="ogg"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -40,15 +41,16 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)../../Include&quot;;&quot;$(ProjectDir)../vorbis&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBVORBISFILE_EXPORTS"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)../../Include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
+				DebugInformationFormat="3"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -86,6 +88,7 @@
 			IntermediateDirectory="$(ProjectDir)../../../Build/$(ProjectName)/$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="2"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -104,13 +107,23 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)../../Include&quot;;&quot;$(ProjectDir)../vorbis&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBVORBISFILE_EXPORTS"
+				Optimization="3"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)../../Include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBOGG_EXPORTS"
+				StringPooling="true"
+				ExceptionHandling="0"
 				RuntimeLibrary="0"
+				BufferSecurityCheck="false"
+				EnableEnhancedInstructionSet="2"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
+				CompileAs="1"
+				DisableSpecificWarnings="4244"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -152,11 +165,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\vorbisfile.c"
+				RelativePath=".\bitwise.c"
 				>
 			</File>
 			<File
-				RelativePath=".\vorbisfile.def"
+				RelativePath=".\framing.c"
+				>
+			</File>
+			<File
+				RelativePath=".\ogg.def"
 				>
 			</File>
 		</Filter>
@@ -166,7 +183,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\Include\vorbis\vorbisfile.h"
+				RelativePath="..\..\Include\ogg\ogg.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Include\ogg\os_types.h"
 				>
 			</File>
 		</Filter>
