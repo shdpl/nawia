@@ -40,8 +40,6 @@
 #include "Physics.h"
 
 #include <btBulletDynamicsCommon.h>
-#include <GIMPACT/Bullet/btGImpactShape.h>
-#include <GIMPACT/Bullet/btGImpactCollisionAlgorithm.h>
 #include <btGImpactConvexDecompositionShape.h>
 
 #include <XMLParser/utXMLParser.h>
@@ -277,15 +275,15 @@ void PhysicsComponent::loadFromXml(const XMLNode* description)
 
 			if (mass > 0)
 			{
-				btGImpactMeshShape* shape = new btGImpactMeshShape(m_btTriangleMesh);
+				//btGImpactMeshShape* shape = new btGImpactMeshShape(m_btTriangleMesh);
 
-				//btGImpactConvexDecompositionShape* shape = new
-				//	btGImpactConvexDecompositionShape(m_btTriangleMesh, btVector3(1.f,1.f,1.f),btScalar(0.1f), true);
+				btGImpactConvexDecompositionShape* shape = new
+					btGImpactConvexDecompositionShape(m_btTriangleMesh, btVector3(1.f,1.f,1.f),btScalar(0.1f), true);
 
 				shape->updateBound();
 
-				btCollisionDispatcher* dispatcher = static_cast<btCollisionDispatcher *>(Physics::instance()->dispatcher());
-				btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher);
+				//btCollisionDispatcher* dispatcher = static_cast<btCollisionDispatcher *>(Physics::instance()->dispatcher());
+				//btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher);
 
 				m_collisionShape = shape;		
 
