@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="GameEngineCore"
 	ProjectGUID="{DB488001-8E98-4724-9787-72DA137C4E47}"
 	RootNamespace="GameEngineCore"
@@ -147,7 +147,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib XmlParser.lib Lua.lib opengl32.lib squirrel.lib"
+				AdditionalDependencies="delayimp.lib XmlParser.lib Lua.lib opengl32.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)/lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
