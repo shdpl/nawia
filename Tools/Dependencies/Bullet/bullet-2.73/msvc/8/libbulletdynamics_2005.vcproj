@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
-	Name="libGIMPACTUtils"
-	ProjectGUID="{B1B5F775-54A9-2437-E4AC-7E817E492142}"
-	RootNamespace="libGIMPACTUtils"
-	TargetFrameworkVersion="131072"
+	Version="8,00"
+	Name="libbulletdynamics"
+	ProjectGUID="{61BD1097-CF2E-B296-DAA9-73A6FE135319}"
+	RootNamespace="libbulletdynamics"
 	>
 	<Platforms>
 		<Platform
@@ -17,8 +16,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\out\release8\build\libGIMPACTUtils\"
-			IntermediateDirectory="..\..\out\release8\build\libGIMPACTUtils\"
+			OutputDirectory="..\..\out\release8\build\libbulletdynamics\"
+			IntermediateDirectory="..\..\out\release8\build\libbulletdynamics\"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -41,13 +40,13 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8\build\libGIMPACTUtils\libGIMPACTUtils.tlb"
+				TypeLibraryName="..\..\out\release8\build\libbulletdynamics\libbulletdynamics.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
 				Optimization="2"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 				PreprocessorDefinitions="NDEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -55,10 +54,10 @@
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="false"
-				PrecompiledHeaderFile="..\..\out\release8\build\libGIMPACTUtils\libGIMPACTUtils.pch"
-				AssemblerListingLocation="..\..\out\release8\build\libGIMPACTUtils\"
-				ObjectFile="..\..\out\release8\build\libGIMPACTUtils\"
-				ProgramDataBaseFileName="..\..\out\release8\build\libGIMPACTUtils\GIMPACTUtils.pdb"
+				PrecompiledHeaderFile="..\..\out\release8\build\libbulletdynamics\libbulletdynamics.pch"
+				AssemblerListingLocation="..\..\out\release8\build\libbulletdynamics\"
+				ObjectFile="..\..\out\release8\build\libbulletdynamics\"
+				ProgramDataBaseFileName="..\..\out\release8\build\libbulletdynamics\bulletdynamics.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
@@ -72,7 +71,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -100,8 +99,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseDll|Win32"
-			OutputDirectory="..\..\out\release_dll8\build\libGIMPACTUtils\"
-			IntermediateDirectory="..\..\out\release_dll8\build\libGIMPACTUtils\"
+			OutputDirectory="..\..\out\release_dll8\build\libbulletdynamics\"
+			IntermediateDirectory="..\..\out\release_dll8\build\libbulletdynamics\"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -124,13 +123,13 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release_dll8\build\libGIMPACTUtils\libGIMPACTUtils.tlb"
+				TypeLibraryName="..\..\out\release_dll8\build\libbulletdynamics\libbulletdynamics.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
 				Optimization="2"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 				PreprocessorDefinitions="NDEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -138,10 +137,10 @@
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="false"
-				PrecompiledHeaderFile="..\..\out\release_dll8\build\libGIMPACTUtils\libGIMPACTUtils.pch"
-				AssemblerListingLocation="..\..\out\release_dll8\build\libGIMPACTUtils\"
-				ObjectFile="..\..\out\release_dll8\build\libGIMPACTUtils\"
-				ProgramDataBaseFileName="..\..\out\release_dll8\build\libGIMPACTUtils\GIMPACTUtils.pdb"
+				PrecompiledHeaderFile="..\..\out\release_dll8\build\libbulletdynamics\libbulletdynamics.pch"
+				AssemblerListingLocation="..\..\out\release_dll8\build\libbulletdynamics\"
+				ObjectFile="..\..\out\release_dll8\build\libbulletdynamics\"
+				ProgramDataBaseFileName="..\..\out\release_dll8\build\libbulletdynamics\bulletdynamics.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
@@ -155,7 +154,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -182,8 +181,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseDoublePrecision|Win32"
-			OutputDirectory="..\..\out\release_dbl8\build\libGIMPACTUtils\"
-			IntermediateDirectory="..\..\out\release_dbl8\build\libGIMPACTUtils\"
+			OutputDirectory="..\..\out\release_dbl8\build\libbulletdynamics\"
+			IntermediateDirectory="..\..\out\release_dbl8\build\libbulletdynamics\"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -206,19 +205,19 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release_dbl8\build\libGIMPACTUtils\libGIMPACTUtils.tlb"
+				TypeLibraryName="..\..\out\release_dbl8\build\libbulletdynamics\libbulletdynamics.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 				PreprocessorDefinitions="NDEBUG;BT_USE_DOUBLE_PRECISION;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32"
 				ExceptionHandling="0"
 				TreatWChar_tAsBuiltInType="false"
-				PrecompiledHeaderFile="..\..\out\release_dbl8\build\libGIMPACTUtils\libGIMPACTUtils.pch"
-				AssemblerListingLocation="..\..\out\release_dbl8\build\libGIMPACTUtils\"
-				ObjectFile="..\..\out\release_dbl8\build\libGIMPACTUtils\"
-				ProgramDataBaseFileName="..\..\out\release_dbl8\build\libGIMPACTUtils\GIMPACTUtils.pdb"
+				PrecompiledHeaderFile="..\..\out\release_dbl8\build\libbulletdynamics\libbulletdynamics.pch"
+				AssemblerListingLocation="..\..\out\release_dbl8\build\libbulletdynamics\"
+				ObjectFile="..\..\out\release_dbl8\build\libbulletdynamics\"
+				ProgramDataBaseFileName="..\..\out\release_dbl8\build\libbulletdynamics\bulletdynamics.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
@@ -231,7 +230,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;BT_USE_DOUBLE_PRECISION;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -258,8 +257,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\out\debug8\build\libGIMPACTUtils\"
-			IntermediateDirectory="..\..\out\debug8\build\libGIMPACTUtils\"
+			OutputDirectory="..\..\out\debug8\build\libbulletdynamics\"
+			IntermediateDirectory="..\..\out\debug8\build\libbulletdynamics\"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -282,23 +281,23 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\libGIMPACTUtils\libGIMPACTUtils.tlb"
+				TypeLibraryName="..\..\out\debug8\build\libbulletdynamics\libbulletdynamics.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 				PreprocessorDefinitions="_DEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
 				RuntimeTypeInfo="false"
-				PrecompiledHeaderFile="..\..\out\debug8\build\libGIMPACTUtils\libGIMPACTUtils.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\libGIMPACTUtils\"
-				ObjectFile="..\..\out\debug8\build\libGIMPACTUtils\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\libGIMPACTUtils\GIMPACTUtils.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\libbulletdynamics\libbulletdynamics.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\libbulletdynamics\"
+				ObjectFile="..\..\out\debug8\build\libbulletdynamics\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\libbulletdynamics\bulletdynamics.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
@@ -312,7 +311,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -340,8 +339,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugDll|Win32"
-			OutputDirectory="..\..\out\debug_dll8\build\libGIMPACTUtils\"
-			IntermediateDirectory="..\..\out\debug_dll8\build\libGIMPACTUtils\"
+			OutputDirectory="..\..\out\debug_dll8\build\libbulletdynamics\"
+			IntermediateDirectory="..\..\out\debug_dll8\build\libbulletdynamics\"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -364,23 +363,23 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug_dll8\build\libGIMPACTUtils\libGIMPACTUtils.tlb"
+				TypeLibraryName="..\..\out\debug_dll8\build\libbulletdynamics\libbulletdynamics.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 				PreprocessorDefinitions="_DEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
 				RuntimeTypeInfo="false"
-				PrecompiledHeaderFile="..\..\out\debug_dll8\build\libGIMPACTUtils\libGIMPACTUtils.pch"
-				AssemblerListingLocation="..\..\out\debug_dll8\build\libGIMPACTUtils\"
-				ObjectFile="..\..\out\debug_dll8\build\libGIMPACTUtils\"
-				ProgramDataBaseFileName="..\..\out\debug_dll8\build\libGIMPACTUtils\GIMPACTUtils.pdb"
+				PrecompiledHeaderFile="..\..\out\debug_dll8\build\libbulletdynamics\libbulletdynamics.pch"
+				AssemblerListingLocation="..\..\out\debug_dll8\build\libbulletdynamics\"
+				ObjectFile="..\..\out\debug_dll8\build\libbulletdynamics\"
+				ProgramDataBaseFileName="..\..\out\debug_dll8\build\libbulletdynamics\bulletdynamics.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
@@ -394,7 +393,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -421,8 +420,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugDoublePrecision|Win32"
-			OutputDirectory="..\..\out\debug_dbl8\build\libGIMPACTUtils\"
-			IntermediateDirectory="..\..\out\debug_dbl8\build\libGIMPACTUtils\"
+			OutputDirectory="..\..\out\debug_dbl8\build\libbulletdynamics\"
+			IntermediateDirectory="..\..\out\debug_dbl8\build\libbulletdynamics\"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -445,23 +444,23 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug_dbl8\build\libGIMPACTUtils\libGIMPACTUtils.tlb"
+				TypeLibraryName="..\..\out\debug_dbl8\build\libbulletdynamics\libbulletdynamics.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 				PreprocessorDefinitions="_DEBUG;BT_USE_DOUBLE_PRECISION;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="1"
 				TreatWChar_tAsBuiltInType="false"
 				RuntimeTypeInfo="false"
-				PrecompiledHeaderFile="..\..\out\debug_dbl8\build\libGIMPACTUtils\libGIMPACTUtils.pch"
-				AssemblerListingLocation="..\..\out\debug_dbl8\build\libGIMPACTUtils\"
-				ObjectFile="..\..\out\debug_dbl8\build\libGIMPACTUtils\"
-				ProgramDataBaseFileName="..\..\out\debug_dbl8\build\libGIMPACTUtils\GIMPACTUtils.pdb"
+				PrecompiledHeaderFile="..\..\out\debug_dbl8\build\libbulletdynamics\libbulletdynamics.pch"
+				AssemblerListingLocation="..\..\out\debug_dbl8\build\libbulletdynamics\"
+				ObjectFile="..\..\out\debug_dbl8\build\libbulletdynamics\"
+				ProgramDataBaseFileName="..\..\out\debug_dbl8\build\libbulletdynamics\bulletdynamics.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
@@ -475,7 +474,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;BT_USE_DOUBLE_PRECISION;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -508,7 +507,171 @@
 			Name="Source Files"
 			>
 			<File
-				RelativePath="..\..\Extras\GIMPACTUtils\btGImpactConvexDecompositionShape.cpp"
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btConeTwistConstraint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btContactConstraint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Dynamics\btContinuousDynamicsWorld.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btGeneric6DofConstraint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btHingeConstraint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Character\btKinematicCharacterController.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btPoint2PointConstraint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Vehicle\btRaycastVehicle.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Dynamics\btRigidBody.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btSequentialImpulseConstraintSolver.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Dynamics\btSimpleDynamicsWorld.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btSliderConstraint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btSolve2LinearConstraint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btTypedConstraint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Vehicle\btWheelInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Dynamics\Bullet-C-API.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Character\btCharacterControllerInterface.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btConeTwistConstraint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btConstraintSolver.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btContactConstraint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btContactSolverInfo.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Dynamics\btContinuousDynamicsWorld.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Dynamics\btDynamicsWorld.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btGeneric6DofConstraint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btHingeConstraint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btJacobianEntry.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Character\btKinematicCharacterController.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btPoint2PointConstraint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Vehicle\btRaycastVehicle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Dynamics\btRigidBody.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btSequentialImpulseConstraintSolver.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Dynamics\btSimpleDynamicsWorld.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btSliderConstraint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btSolve2LinearConstraint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btSolverBody.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btSolverConstraint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\ConstraintSolver\btTypedConstraint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Vehicle\btVehicleRaycaster.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\BulletDynamics\Vehicle\btWheelInfo.h"
 				>
 			</File>
 		</Filter>

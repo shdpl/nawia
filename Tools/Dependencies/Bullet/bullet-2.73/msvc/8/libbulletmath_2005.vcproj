@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
-	Name="libGIMPACTUtils"
-	ProjectGUID="{B1B5F775-54A9-2437-E4AC-7E817E492142}"
-	RootNamespace="libGIMPACTUtils"
-	TargetFrameworkVersion="131072"
+	Version="8,00"
+	Name="libbulletmath"
+	ProjectGUID="{7D6E339F-9C2C-31DA-FDB0-5EE50973CF2A}"
+	RootNamespace="libbulletmath"
 	>
 	<Platforms>
 		<Platform
@@ -17,8 +16,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\out\release8\build\libGIMPACTUtils\"
-			IntermediateDirectory="..\..\out\release8\build\libGIMPACTUtils\"
+			OutputDirectory="..\..\out\release8\build\libbulletmath\"
+			IntermediateDirectory="..\..\out\release8\build\libbulletmath\"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -41,13 +40,13 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release8\build\libGIMPACTUtils\libGIMPACTUtils.tlb"
+				TypeLibraryName="..\..\out\release8\build\libbulletmath\libbulletmath.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
 				Optimization="2"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 				PreprocessorDefinitions="NDEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -55,10 +54,10 @@
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="false"
-				PrecompiledHeaderFile="..\..\out\release8\build\libGIMPACTUtils\libGIMPACTUtils.pch"
-				AssemblerListingLocation="..\..\out\release8\build\libGIMPACTUtils\"
-				ObjectFile="..\..\out\release8\build\libGIMPACTUtils\"
-				ProgramDataBaseFileName="..\..\out\release8\build\libGIMPACTUtils\GIMPACTUtils.pdb"
+				PrecompiledHeaderFile="..\..\out\release8\build\libbulletmath\libbulletmath.pch"
+				AssemblerListingLocation="..\..\out\release8\build\libbulletmath\"
+				ObjectFile="..\..\out\release8\build\libbulletmath\"
+				ProgramDataBaseFileName="..\..\out\release8\build\libbulletmath\bulletmath.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
@@ -72,7 +71,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -100,8 +99,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseDll|Win32"
-			OutputDirectory="..\..\out\release_dll8\build\libGIMPACTUtils\"
-			IntermediateDirectory="..\..\out\release_dll8\build\libGIMPACTUtils\"
+			OutputDirectory="..\..\out\release_dll8\build\libbulletmath\"
+			IntermediateDirectory="..\..\out\release_dll8\build\libbulletmath\"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -124,13 +123,13 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release_dll8\build\libGIMPACTUtils\libGIMPACTUtils.tlb"
+				TypeLibraryName="..\..\out\release_dll8\build\libbulletmath\libbulletmath.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
 				Optimization="2"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 				PreprocessorDefinitions="NDEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -138,10 +137,10 @@
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="false"
-				PrecompiledHeaderFile="..\..\out\release_dll8\build\libGIMPACTUtils\libGIMPACTUtils.pch"
-				AssemblerListingLocation="..\..\out\release_dll8\build\libGIMPACTUtils\"
-				ObjectFile="..\..\out\release_dll8\build\libGIMPACTUtils\"
-				ProgramDataBaseFileName="..\..\out\release_dll8\build\libGIMPACTUtils\GIMPACTUtils.pdb"
+				PrecompiledHeaderFile="..\..\out\release_dll8\build\libbulletmath\libbulletmath.pch"
+				AssemblerListingLocation="..\..\out\release_dll8\build\libbulletmath\"
+				ObjectFile="..\..\out\release_dll8\build\libbulletmath\"
+				ProgramDataBaseFileName="..\..\out\release_dll8\build\libbulletmath\bulletmath.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
@@ -155,7 +154,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -182,8 +181,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseDoublePrecision|Win32"
-			OutputDirectory="..\..\out\release_dbl8\build\libGIMPACTUtils\"
-			IntermediateDirectory="..\..\out\release_dbl8\build\libGIMPACTUtils\"
+			OutputDirectory="..\..\out\release_dbl8\build\libbulletmath\"
+			IntermediateDirectory="..\..\out\release_dbl8\build\libbulletmath\"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -206,19 +205,19 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\release_dbl8\build\libGIMPACTUtils\libGIMPACTUtils.tlb"
+				TypeLibraryName="..\..\out\release_dbl8\build\libbulletmath\libbulletmath.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 				PreprocessorDefinitions="NDEBUG;BT_USE_DOUBLE_PRECISION;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32"
 				ExceptionHandling="0"
 				TreatWChar_tAsBuiltInType="false"
-				PrecompiledHeaderFile="..\..\out\release_dbl8\build\libGIMPACTUtils\libGIMPACTUtils.pch"
-				AssemblerListingLocation="..\..\out\release_dbl8\build\libGIMPACTUtils\"
-				ObjectFile="..\..\out\release_dbl8\build\libGIMPACTUtils\"
-				ProgramDataBaseFileName="..\..\out\release_dbl8\build\libGIMPACTUtils\GIMPACTUtils.pdb"
+				PrecompiledHeaderFile="..\..\out\release_dbl8\build\libbulletmath\libbulletmath.pch"
+				AssemblerListingLocation="..\..\out\release_dbl8\build\libbulletmath\"
+				ObjectFile="..\..\out\release_dbl8\build\libbulletmath\"
+				ProgramDataBaseFileName="..\..\out\release_dbl8\build\libbulletmath\bulletmath.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
@@ -231,7 +230,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG;BT_USE_DOUBLE_PRECISION;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -258,8 +257,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\out\debug8\build\libGIMPACTUtils\"
-			IntermediateDirectory="..\..\out\debug8\build\libGIMPACTUtils\"
+			OutputDirectory="..\..\out\debug8\build\libbulletmath\"
+			IntermediateDirectory="..\..\out\debug8\build\libbulletmath\"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -282,23 +281,23 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug8\build\libGIMPACTUtils\libGIMPACTUtils.tlb"
+				TypeLibraryName="..\..\out\debug8\build\libbulletmath\libbulletmath.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 				PreprocessorDefinitions="_DEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
 				RuntimeTypeInfo="false"
-				PrecompiledHeaderFile="..\..\out\debug8\build\libGIMPACTUtils\libGIMPACTUtils.pch"
-				AssemblerListingLocation="..\..\out\debug8\build\libGIMPACTUtils\"
-				ObjectFile="..\..\out\debug8\build\libGIMPACTUtils\"
-				ProgramDataBaseFileName="..\..\out\debug8\build\libGIMPACTUtils\GIMPACTUtils.pdb"
+				PrecompiledHeaderFile="..\..\out\debug8\build\libbulletmath\libbulletmath.pch"
+				AssemblerListingLocation="..\..\out\debug8\build\libbulletmath\"
+				ObjectFile="..\..\out\debug8\build\libbulletmath\"
+				ProgramDataBaseFileName="..\..\out\debug8\build\libbulletmath\bulletmath.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
@@ -312,7 +311,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -340,8 +339,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugDll|Win32"
-			OutputDirectory="..\..\out\debug_dll8\build\libGIMPACTUtils\"
-			IntermediateDirectory="..\..\out\debug_dll8\build\libGIMPACTUtils\"
+			OutputDirectory="..\..\out\debug_dll8\build\libbulletmath\"
+			IntermediateDirectory="..\..\out\debug_dll8\build\libbulletmath\"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -364,23 +363,23 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug_dll8\build\libGIMPACTUtils\libGIMPACTUtils.tlb"
+				TypeLibraryName="..\..\out\debug_dll8\build\libbulletmath\libbulletmath.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 				PreprocessorDefinitions="_DEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
 				RuntimeTypeInfo="false"
-				PrecompiledHeaderFile="..\..\out\debug_dll8\build\libGIMPACTUtils\libGIMPACTUtils.pch"
-				AssemblerListingLocation="..\..\out\debug_dll8\build\libGIMPACTUtils\"
-				ObjectFile="..\..\out\debug_dll8\build\libGIMPACTUtils\"
-				ProgramDataBaseFileName="..\..\out\debug_dll8\build\libGIMPACTUtils\GIMPACTUtils.pdb"
+				PrecompiledHeaderFile="..\..\out\debug_dll8\build\libbulletmath\libbulletmath.pch"
+				AssemblerListingLocation="..\..\out\debug_dll8\build\libbulletmath\"
+				ObjectFile="..\..\out\debug_dll8\build\libbulletmath\"
+				ProgramDataBaseFileName="..\..\out\debug_dll8\build\libbulletmath\bulletmath.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
@@ -394,7 +393,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -421,8 +420,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugDoublePrecision|Win32"
-			OutputDirectory="..\..\out\debug_dbl8\build\libGIMPACTUtils\"
-			IntermediateDirectory="..\..\out\debug_dbl8\build\libGIMPACTUtils\"
+			OutputDirectory="..\..\out\debug_dbl8\build\libbulletmath\"
+			IntermediateDirectory="..\..\out\debug_dbl8\build\libbulletmath\"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -445,23 +444,23 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName="..\..\out\debug_dbl8\build\libGIMPACTUtils\libGIMPACTUtils.tlb"
+				TypeLibraryName="..\..\out\debug_dbl8\build\libbulletmath\libbulletmath.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions=" "
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 				PreprocessorDefinitions="_DEBUG;BT_USE_DOUBLE_PRECISION;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="1"
 				TreatWChar_tAsBuiltInType="false"
 				RuntimeTypeInfo="false"
-				PrecompiledHeaderFile="..\..\out\debug_dbl8\build\libGIMPACTUtils\libGIMPACTUtils.pch"
-				AssemblerListingLocation="..\..\out\debug_dbl8\build\libGIMPACTUtils\"
-				ObjectFile="..\..\out\debug_dbl8\build\libGIMPACTUtils\"
-				ProgramDataBaseFileName="..\..\out\debug_dbl8\build\libGIMPACTUtils\GIMPACTUtils.pdb"
+				PrecompiledHeaderFile="..\..\out\debug_dbl8\build\libbulletmath\libbulletmath.pch"
+				AssemblerListingLocation="..\..\out\debug_dbl8\build\libbulletmath\"
+				ObjectFile="..\..\out\debug_dbl8\build\libbulletmath\"
+				ProgramDataBaseFileName="..\..\out\debug_dbl8\build\libbulletmath\bulletmath.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
@@ -475,7 +474,7 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG;BT_USE_DOUBLE_PRECISION;_LIB;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;PROJECTGEN_VERSION=8"
 				Culture="1033"
-				AdditionalIncludeDirectories=".;..\..;..\..\src;..\..\Extras\GIMPACT\include;..\..\Extras\GIMPACTUtils;..\..\Extras\ConvexDecomposition"
+				AdditionalIncludeDirectories=".;..\..;..\..\src"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -508,7 +507,111 @@
 			Name="Source Files"
 			>
 			<File
-				RelativePath="..\..\Extras\GIMPACTUtils\btGImpactConvexDecompositionShape.cpp"
+				RelativePath="..\..\src\LinearMath\btAlignedAllocator.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btConvexHull.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btGeometryUtil.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btQuickprof.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			>
+			<File
+				RelativePath="..\..\src\LinearMath\btAabbUtil2.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btAlignedAllocator.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btAlignedObjectArray.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btConvexHull.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btDefaultMotionState.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btGeometryUtil.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btHashMap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btIDebugDraw.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btList.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btMatrix3x3.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btMinMax.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btMotionState.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btPoolAllocator.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btQuadWord.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btQuaternion.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btQuickprof.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btRandom.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btScalar.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btStackAlloc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btTransform.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btTransformUtil.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\LinearMath\btVector3.h"
 				>
 			</File>
 		</Filter>
