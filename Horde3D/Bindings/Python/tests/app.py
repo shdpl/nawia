@@ -57,7 +57,7 @@ class Window(pyglet.window.Window):
 		self._height = height
 
 		self.switch_to()
-		h3d.resize(0, 0, width, height)
+		h3d.setupViewport(0, 0, width, height, True)
 
 		h3d.setupCameraView(self.camera, 45, width / float(height), 0.1, 1000)
 

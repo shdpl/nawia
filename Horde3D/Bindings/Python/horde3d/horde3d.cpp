@@ -92,18 +92,23 @@ static PyObject* horde3d_release(PyObject *self, PyObject *args)
 	return Py_None;
 }
 
-static const char *horde3d_resize_doc = "resize(x, y, width, height)\n" \
+
+static const char *horde3d_setupViewport_doc = "setupViewport(x, y, width, height, resizeBuffers)\n" \
 										 "resizes the viewport\n\n" \
 										 "x, y: position of the viewport in the rendering context\n" \
-										 "width, height: width / height of the viewport";
-static PyObject* horde3d_resize(PyObject *self, PyObject *args)
+										 "width, height: width / height of the viewport\n" \
+										 "resizeBuffers: specifies wether render targets should be adapted to new size";
+static PyObject* horde3d_setupViewport(PyObject *self, PyObject *args)
 {
 	int x, y, width, height;
+	PyObject *resizeBuffers;
+	bool resizeBuffersBoolean;
 
-	if(!PyArg_ParseTuple(args, "iiii:resize", &x, &y, &width, &height))
+	if(!PyArg_ParseTuple(args, "iiiiO:resize", &x, &y, &width, &height, &resizeBuffers))
 		return NULL;
 
-	Horde3D::resize(x, y, width, height);
+	resizeBuffersBoolean = PyObject_IsTrue(resizeBuffers);
+	Horde3D::setupViewport(x, y, width, height, resizeBuffersBoolean);
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -1570,18 +1575,18 @@ static PyObject* horde3d_setupCameraView(PyObject *self, PyObject *args)
 }
 
 
-static const char *horde3d_calcCameraProjectionMatrix_doc = "calcCameraProjectionMatrix(node)\n" \
+static const char *horde3d_getCameraProjectionMatrix_doc = "getCameraProjectionMatrix(node)\n" \
 															 "calculates the camera projection matrix\n\n" \
 															 "node: handle to camera node\n" \
 															 "returns tuple of 16 floats representing projection matrix";
-static PyObject* horde3d_calcCameraProjectionMatrix(PyObject *self, PyObject *args)
+static PyObject* horde3d_getCameraProjectionMatrix(PyObject *self, PyObject *args)
 {
 	int node;
-	if(!PyArg_ParseTuple(args, "i:calcCameraProjectionMatrix", &node))
+	if(!PyArg_ParseTuple(args, "i:getCameraProjectionMatrix", &node))
 		return NULL;
 
 	float m[16];
-	if(Horde3D::calcCameraProjectionMatrix(node, m))
+	if(Horde3D::getCameraProjectionMatrix(node, m))
 	{
 		PyObject *list = PyList_New(0);
 		for(int i = 0; i < 16; ++i)
@@ -1815,12 +1820,6 @@ static PyObject *horde3d__getConstants(PyObject *self, PyObject *args)
 	H3D_CONSTANT(d, AttachmentString, SceneNodeParams);
 	PyDict_SetItemString(dict, "SceneNodeParams", d);
 
-	// GroupNodeParams
-	d = PyDict_New();
-	H3D_CONSTANT(d, MinDist, GroupNodeParams);
-	H3D_CONSTANT(d, MaxDist, GroupNodeParams);
-	PyDict_SetItemString(dict, "GroupNodeParams", d);
-
 	// ModelNodeParams
 	d = PyDict_New();
 	H3D_CONSTANT(d, GeometryRes, ModelNodeParams);
@@ -1898,7 +1897,7 @@ static PyMethodDef horde3d_methods[] =
 	H3D_FUNCTION(checkExtension),
 	H3D_FUNCTION(init),
 	H3D_FUNCTION(release),
-	H3D_FUNCTION(resize),
+	H3D_FUNCTION(setupViewport),
 	H3D_FUNCTION(render),
 	H3D_FUNCTION(clear),
 	H3D_FUNCTION(getMessage),
@@ -1970,7 +1969,7 @@ static PyMethodDef horde3d_methods[] =
 	H3D_FUNCTION(setLightContexts),
 	H3D_FUNCTION(addCameraNode),
 	H3D_FUNCTION(setupCameraView),
-	H3D_FUNCTION(calcCameraProjectionMatrix),
+	H3D_FUNCTION(getCameraProjectionMatrix),
 	H3D_FUNCTION(addEmitterNode),
 	H3D_FUNCTION(advanceEmitterTime),
 	H3D_FUNCTION(hasEmitterFinished),
