@@ -1,5 +1,5 @@
 <Material>
 	<Shader source="overlay.shader.xml"/>
 	
-	<TexUnit unit="0" map="logo.tga" />
+	<TexUnit unit="0" map="logo.png" />
 </Material>

@@ -3,5 +3,5 @@
 	<ShaderFlag name="_F03_ParallaxMapping" />
 	
 	<TexUnit unit="0" map="layingrock.jpg" />
-	<TexUnit unit="1" map="layingrockBump.tga" allowCompression="false" />
+	<TexUnit unit="1" map="layingrockBump.png" allowCompression="false" />
 </Material>
