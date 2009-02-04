@@ -147,11 +147,6 @@ class KnightApp(app.App):
 	def _mainloopUpdate(self, dt):
 		app.App._mainloopUpdate(self, dt)
 
-		if self._fps == 0.0:
-			curFPS = 30.0
-		else:
-			curFPS = self._fps
-
 		for w in self._windows:
 			h3d.setNodeTransform(w.camera, self._x, self._y, self._z, self._rx, self._ry, 0, 1, 1, 1)
 
@@ -168,7 +163,7 @@ class KnightApp(app.App):
 
 
 			key = pyglet.window.key
-			curVel = self._velocity / curFPS
+			curVel = self._velocity * dt
 			if w.keyboard[key.LSHIFT]:
 				curVel *= 5
 
@@ -188,11 +183,11 @@ class KnightApp(app.App):
 				self._z += cos(radians(self._ry + 90)) * curVel
 
 			if w.keyboard[key._1]:
-				self._weight += 2 / curFPS
+				self._weight += 2 * dt
 				if self._weight > 1.0:
 					self._weight = 1.0
 			if w.keyboard[key._2]:
-				self._weight -= 2/ curFPS
+				self._weight -= 2 * dt
 				if self._weight < 0.0:
 					self._weight = 0.0
 
@@ -202,7 +197,7 @@ class KnightApp(app.App):
 
 
 		if not self._freeze:
-			self._animTime += 1.0 / curFPS
+			self._animTime += dt
 
 			h3d.setModelAnimParams(self._knight, 0, self._animTime * 24.0, self._weight)
 			h3d.setModelAnimParams(self._knight, 1, self._animTime * 24.0, 1.0 - self._weight)
@@ -210,7 +205,7 @@ class KnightApp(app.App):
 
 			count = h3d.findNodes(self._particleSystem, '', h3d.SceneNodeTypes.Emitter)
 			for i in range(count):
-				h3d.advanceEmitterTime(h3d.getNodeFindResult(i), 1.0 / curFPS)
+				h3d.advanceEmitterTime(h3d.getNodeFindResult(i), dt)
 
 
 	def _mainloopRenderOverlays(self, w, dt):
