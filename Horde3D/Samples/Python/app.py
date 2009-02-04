@@ -228,6 +228,7 @@ class App(object):
 				self._mainloopRender(w, dt)
 
 				w.flip()
+			h3d.finalizeFrame()
 
 			h3d.utils.dumpMessages()
 
