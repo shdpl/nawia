@@ -1,0 +1,41 @@
+Pure Python bindings for Horde3D (community version)
+Copyright (C) 2008-2009 Florian Noeding <florian@noeding.com>
+
+Requierements:
+	Python >= 2.5 (maybe even 2.4)
+	ctypes
+	compatible version of Horde3D (community svn r190 works)
+
+Installation:
+	copy the horde3d folder into the Python path, i.e. python2.X/site-packages/
+
+
+Usage:
+	See the examples.
+	Most functions are plain wrappers for the C/C++ functions, so refer to the Horde3D documentation.
+	Functions in the C/C++ bindings which have pointer arguments to return data use the return value in Python.
+
+
+Missing functionality:
+Horde3D:
+	getResourceData
+Horde3DUtils:
+	freeMem (not needed, only used in combination with createTGAImage)
+	initOpenGL, releaseOpenGL, swapBuffers (use pyglet)
+	createTGAImage (use PIL)
+
+Supported extensions:
+	Terrain
+
+
+Suggested additional packages:
+pyglet: http://www.pyglet.org
+	provides OpenGL bindings and provides methodes to create windows, access keyboard / mouse
+
+euclid: http://code.google.com/p/pyeuclid
+	vector / matrix library
+
+PIL: http://www.pythonware.com/products/pil
+	image creation / processing library
+
+

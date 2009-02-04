@@ -20,8 +20,9 @@ import pyglet.gl
 import pyglet.window
 import pyglet.clock
 
-import horde3d as h3d
 import app
+
+import horde3d as h3d
 from math import sin, cos, radians, degrees
 
 

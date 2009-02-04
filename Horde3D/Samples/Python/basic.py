@@ -20,9 +20,10 @@ import pyglet.gl
 import pyglet.window
 import pyglet.clock
 
+import app
+
 import horde3d as h3d
 
-import app
 
 
 class BasicWindow(app.Window):

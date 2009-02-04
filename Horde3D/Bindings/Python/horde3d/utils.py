@@ -1,0 +1,108 @@
+# *************************************************************************************************
+#
+# Horde3D
+#   Next-Generation Graphics Engine
+# --------------------------------------
+# Copyright (C) 2006-2009 Nicolas Schulz
+#               2008-2009 Florian Noeding (Python wrapper)
+#
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+#
+# *************************************************************************************************
+
+from ctypes import *
+
+if not 'c_bool' in globals():
+	c_bool = c_int
+
+
+__all__ = []
+
+
+
+try:
+	h3dutils = cdll.LoadLibrary('libHorde3DUtils.so')
+except OSError:
+	h3dutils = cdll.LoadLibrary('Horde3DUtils.dll')
+
+
+dumpMessages = h3dutils.dumpMessages
+dumpMessages.restype = c_bool
+dumpMessages.argtypes = []
+__all__.append('dumpMessages')
+
+
+getResourcePath = h3dutils.getResourcePath
+getResourcePath.restype = c_char_p
+getResourcePath.argtypes = [c_int]
+__all__.append('getResourcePath')
+
+
+setResourcePath = h3dutils.setResourcePath
+setResourcePath.restype = None
+setResourcePath.argtypes = [c_int, c_char_p]
+__all__.append('setResourcePath')
+
+
+loadResourcesFromDisk = h3dutils.loadResourcesFromDisk
+loadResourcesFromDisk.restype = c_bool
+loadResourcesFromDisk.argtypes = [c_char_p]
+__all__.append('loadResourcesFromDisk')
+
+_pickRay = h3dutils.pickRay
+_pickRay.restype = None
+_pickRay.argtypes = [
+		c_int,
+		c_float, c_float,
+		POINTER(c_float), POINTER(c_float), POINTER(c_float),
+		POINTER(c_float), POINTER(c_float), POINTER(c_float),
+		]
+def pickRay(cameraNode, nwx, nwy):
+	ox, oy, oz = c_float(), c_float(), c_float()
+	dx, dy, dz = c_float(), c_float(), c_float()
+	_pickRay(cameraNode,
+			c_float(nwx), c_float(nwy),
+			byref(ox), byref(oy), byref(oz),
+			byref(dx), byref(dy), byref(dz),
+			)
+	return [[ox.value, oy.value, oz.value], [dx.value, dy.value, dz.value]]
+__all__.append('pickRay')
+
+
+_pickNode = h3dutils.pickNode
+_pickNode.restype = c_int
+_pickNode.argtypes = [c_int, c_float, c_float]
+def pickNode(cameraNode, nwx, nwy):
+	return _pickNode(cameraNode, c_float(nwx), c_float(nwy))
+__all__.append('pickNode')
+
+
+_showText = h3dutils.showText
+_showText.restype = None
+_showText.argtypes = [c_char_p, c_float, c_float, c_float, c_int, c_int]
+def showText(text, x, y, size, layer, fontMaterialRes):
+	return _showText(text, c_float(x), c_float(y), c_float(size), layer, fontMaterialRes)
+__all__.append('showText')
+
+
+_showFrameStats = h3dutils.showFrameStats
+_showFrameStats.restype = None
+_showFrameStats.argtypes = [c_int, c_float]
+def showFrameStats(fontMaterialRes, curFPS):
+	return _showFrameStats(fontMaterialRes, c_float(curFPS))
+__all__.append('showFrameStats')
+
+

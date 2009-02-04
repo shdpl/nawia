@@ -20,6 +20,8 @@ import pyglet.gl
 import pyglet.window
 import pyglet.clock
 
+import sys
+sys.path.append('../../Bindings/Python')
 import horde3d as h3d
 
 from optparse import OptionParser
@@ -89,7 +91,7 @@ class App(object):
 		op.add_option('-x', '--width', type='int', dest='width', help='window width', default=800)
 		op.add_option('-y', '--height', type='int', dest='height', help='window height', default=600)
 		op.add_option('--vsync-on', dest='vsync', help='enable / disable vsync', action='store_true', default=False)
-		op.add_option('--content', dest='contentPaths', help='path to content directory, may be specified several times', action='append', default=[])
+		op.add_option('--content', dest='contentPaths', help='path to content directory, may be specified several times', action='append', default=['../../Binaries/Content'])
 		op.add_option('--limit-fps', type='int', dest='fpsLimit', help='limit FPS to specified value; may improve keyboard / mouse reaction times for values below 100', default=None)
 		op.add_option('--multiwindow', dest='multiWindow', help='enable support for multiple windows; disabled by default due to significant performance hit', default=False)
 
