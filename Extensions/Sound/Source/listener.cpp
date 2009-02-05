@@ -22,6 +22,7 @@
 // *************************************************************************************************
 
 #include <al.h>
+#include <utPlatform.h>
 
 #include "egModules.h"
 #include "utMath.h"

@@ -16,6 +16,7 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
+#include <stdlib.h>
 #include "glfw.h"
 #include "Horde3D.h"
 #include "Horde3DUtils.h"
