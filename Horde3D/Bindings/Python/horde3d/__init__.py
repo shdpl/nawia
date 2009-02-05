@@ -43,6 +43,13 @@ try:
 except:
 	pass
 
+try:
+	import sound
+	__all__.append('sound')
+except:
+	pass
+
+
 
 
 try:
