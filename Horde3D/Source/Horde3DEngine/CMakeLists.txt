@@ -1,6 +1,6 @@
 
 # CMAKE_BINARY_DIR is used for inclusion of automatically generated files
-include_directories(. ../Shared ../../../ ${CMAKE_BINARY_DIR})
+include_directories(. ../Shared ../../../ ${CMAKE_BINARY_DIR} ${HORDE3D_EXTENSION_INCLUDE_DIRS})
 
 
 set(HORDE3D_SOURCES 
@@ -60,6 +60,8 @@ add_definitions(-DCMAKE )
 add_library(Horde3D SHARED
 	${HORDE3D_SOURCES}
 	)
+
+target_link_libraries(Horde3D ${HORDE3D_EXTENSION_LIBS})
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")

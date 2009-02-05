@@ -12,6 +12,8 @@ project(Horde3D)
 set(HORDE3D_EXTENSION_SOURCES)
 set(HORDE3D_EXTENSION_INCLUDES)
 set(HORDE3D_EXTENSION_INSTALLS)
+set(HORDE3D_EXTENSION_INCLUDE_DIRS)
+set(HORDE3D_EXTENSION_LIBS)
 
 
 # terrain extension (check egExtensions.cpp if it's activated)
@@ -30,9 +32,47 @@ if(HORDE3D_BUILD_TERRAIN)
 		)
 	set(HORDE3D_EXTENSION_INCLUDES
 		${HORDE3D_EXTENSION_INCLUDES}
-		"#include \"Extensions/Terrain/Source/extension.h\"\n"
+		"\n#include \"Extensions/Terrain/Source/extension.h\"\n"
 		)
 endif(HORDE3D_BUILD_TERRAIN)
+
+
+# sound extension (check egExtensions.cpp if it's activated)
+option(HORDE3D_BUILD_SOUND "Build the sound extension into Horde3D" OFF)
+if(HORDE3D_BUILD_SOUND)
+	set(HORDE3D_EXTENSION_SOURCES
+		${HORDE3D_EXTENSION_SOURCES}
+		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/decode_vorbis.cpp
+		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/decode_wave.cpp
+		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/extension.cpp
+		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/listener.cpp
+		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/manager.cpp
+		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/soundNode.cpp
+		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/soundResource.cpp
+		)
+	set(HORDE3D_EXTENSION_INSTALLS
+		${HORDE3D_EXTENSION_INSTALLS}
+		"installExtension(Horde3DSound::getExtensionName, Horde3DSound::initExtension, Horde3DSound::releaseExtension);\n"
+		)
+	set(HORDE3D_EXTENSION_INCLUDES
+		${HORDE3D_EXTENSION_INCLUDES}
+		"\n#include \"Extensions/Sound/Source/extension.h\"\n"
+		)
+	# FIXME must be cross platform
+	set(HORDE3D_EXTENSION_INCLUDE_DIRS
+		${HORDE3D_EXTENSION_INCLUDE_DIRS}
+		"/usr/include/AL"
+		)
+	# FIXME must be cross platform
+	set(HORDE3D_EXTENSION_LIBS
+		${HORDE3D_EXTENSION_LIBS}
+		"openal"
+		"vorbisfile"
+		)
+endif(HORDE3D_BUILD_SOUND)
+
+
+
 
 IF("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" GREATER 2.4)    
   IF(WIN32)
