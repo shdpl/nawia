@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="GameEnginePlugIn"
 	ProjectGUID="{AE98057C-AD68-4F66-A78D-FD0E7D62AC73}"
 	RootNamespace="GameEnginePlugIn"
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(GAMEENGINEPLUGIN)&quot;;&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)..\HordeSceneEditorCore&quot;;&quot;$(SolutionDir)include\SAPI&quot;;&quot;$(ProjectDir)..\..\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)..\HordeSceneEditorCore&quot;;&quot;$(SolutionDir)include\SAPI&quot;;&quot;$(ProjectDir)..\..\include&quot;"
 				PreprocessorDefinitions="_DEBUG;_WINDOWS;QT_LARGEFILE_SUPPORT;QT_DLL;QT_PLUGIN;QT_THREAD_SUPPORT;WIN32"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -830,7 +830,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
@@ -840,7 +840,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
@@ -850,7 +850,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>

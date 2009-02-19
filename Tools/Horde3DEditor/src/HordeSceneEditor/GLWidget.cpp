@@ -37,8 +37,8 @@
 #include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 
-#include <Horde3D.h>
-#include <Horde3DUtils.h>
+#include <Horde3D/Horde3D.h>
+#include <Horde3D/Horde3DUtils.h>
 
 #include <math.h>
 
@@ -208,7 +208,7 @@ void GLWidget::initializeGL()
 void GLWidget::resizeGL(int width, int height)
 {	
 	if ( m_initialized )
-		Horde3D::setupViewport( 0, 0, width, height, true);	
+		Horde3D::setupViewport( 0, 0, width, height, true);
 	emit resized(width, height);	
 }
 
