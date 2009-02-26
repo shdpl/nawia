@@ -286,7 +286,13 @@ public:
 		E_SET_SOUND_LOOP,		/// Sets the sound to loop
 		E_SET_SOUND_FILE,		/// Sets a sound file
 		E_SET_PHONEMES_FILE,	/// Sets a phonemes file
-		E_SET_ENABLED,			/// Enables components (wether the component should be rendered/updated or not)		
+		E_SET_ENABLED,			/// Enables components (wether the component should be rendered/updated or not)	
+		IK_COMPUTE,				/// Computes the IK with the given data and applies it to the chain
+		IK_GAZE,				/// Computes and applies a gaze action
+		IK_INIT_ANIM,			/// Initializes an IK animation
+		IK_SET_RESTRICT,		/// Sets the value of the DOFR flag
+		IK_SET_OPTIMIZE,		/// Sets the value of the IKMO flag
+		IK_SET_ZLOCK,			/// Sets the value of the z_lock flag
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
 	static GameEvent::EventID convertStringEvent(std::string in)
@@ -867,6 +873,63 @@ public:
 		return new Attach(*this);
 
 	}
+};
+
+class IKData : public GameEventData
+{
+public:
+	//Contructor for gaze data
+	IKData(float TargetX, float TargetY, float TargetZ, bool MoveLEye, bool MoveREye, bool MoveNeck, int Head_pitch )
+		: GameEventData(CUSTOM), endEffektorName(0), stopName(0), 
+		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), moveLEye(MoveLEye), moveREye(MoveREye), moveNeck(MoveNeck), head_pitch(Head_pitch)
+	{
+		m_data.ptr = this;
+	}
+	//Contrcutor for ik data
+	IKData(const char* EndEffektorName,	const char* StopName, float TargetX, float TargetY, float TargetZ)
+		: GameEventData(CUSTOM), endEffektorName(EndEffektorName), stopName(StopName), 
+		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), moveLEye(false), moveREye(false), moveNeck(false), head_pitch(0)
+	{
+		m_data.ptr = this;
+	}
+
+	IKData(const IKData& copy) : GameEventData(CUSTOM), targetX(copy.targetX), targetY(copy.targetY), targetZ(copy.targetZ)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+		
+		const size_t lenEEName = copy.endEffektorName ? strlen(copy.endEffektorName) : 0;
+		endEffektorName = new char[lenEEName + 1];
+		memcpy( (char*) endEffektorName, copy.endEffektorName, lenEEName );
+		const_cast<char*>(endEffektorName)[lenEEName] = '\0';
+
+		const size_t lenStopName = copy.stopName ? strlen(copy.stopName) : 0;
+		stopName = new char[lenStopName + 1];
+		memcpy( (char*) stopName, copy.stopName, lenStopName );
+		const_cast<char*>(stopName)[lenStopName] = '\0';
+	}
+
+	~IKData()
+	{
+		if (m_owner)
+		{
+			delete[] endEffektorName;
+			delete[] stopName;
+		}
+	}
+
+
+	GameEventData* clone() const
+	{
+		return new IKData(*this);
+	}
+
+	const char* endEffektorName;
+	const char* stopName;
+	float targetX, targetY, targetZ;
+	bool moveLEye, moveREye, moveNeck;
+	int head_pitch;
+	//bool restrict, optimize, zlock;
 };
 
 class Vec3fData : public GameEventData
