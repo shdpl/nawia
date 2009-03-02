@@ -254,10 +254,10 @@ bool SoundResourceManager::isStream(unsigned int resourceID)
 
 void SoundResourceManager::updateBuffer(unsigned int uiSource, unsigned int resourceID)
 {
-	ALenum error_code = AL_NO_ERROR;
 	std::vector<SoundFile>::iterator iter = m_files.begin();
 	while (iter!=m_files.end())
 	{
+		ALenum error_code = AL_NO_ERROR;
 		if ( iter->resourceID == resourceID) 
 		{
 			ALint iBuffersProcessed;
@@ -288,7 +288,7 @@ void SoundResourceManager::updateBuffer(unsigned int uiSource, unsigned int reso
 						alSourceQueueBuffers(uiSource, 1, &uiBuffer);
 						if( (error_code = alGetError()) != AL_NO_ERROR ) 
 						{
-							DisplayALError("Error queuing Buffer: ", error_code);
+							DisplayALError("Error queuing OGG Buffer: ", error_code);
 						}
 					}
 				}
@@ -306,7 +306,12 @@ int SoundResourceManager::loadWave(const char *szWaveFile, unsigned int * uiBuff
 	completeFilename+=szWaveFile;
 	
 	// create ALBuffer
+	ALenum error_code = AL_NO_ERROR;
 	alGenBuffers(1, uiBuffer);
+	if( (error_code = alGetError()) != AL_NO_ERROR ) 
+	{
+		DisplayALError("Error generating Buffer: ", error_code);
+	}
 	// load the wav file
 
 	if (!loadWaveToBuffer(completeFilename.c_str(), uiBuffer, 1))

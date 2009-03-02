@@ -112,6 +112,8 @@ SoundComponent::~SoundComponent()
 
 	// Clear visemes
 	m_visemes.clear();	
+
+	delete[] m_buffer;
 }
 
 void SoundComponent::executeEvent(GameEvent *event)
@@ -325,8 +327,10 @@ bool SoundComponent::setSoundFile(const char* fileName)
 
 	if ((m_resourceID = SoundResourceManager::instance()->addResource(fileName)) != 0)
 	{
-		m_buffer  = SoundResourceManager::instance()->getBuffer(m_resourceID); 
-		m_bufferCount = SoundResourceManager::instance()->getBufferCount(m_resourceID); 
+		m_bufferCount = SoundResourceManager::instance()->getBufferCount(m_resourceID);
+		delete[] m_buffer;
+		m_buffer = new unsigned int[m_bufferCount];
+		memcpy(m_buffer, SoundResourceManager::instance()->getBuffer(m_resourceID), m_bufferCount * sizeof(int));
 		m_stream = SoundResourceManager::instance()->isStream(m_resourceID); 
 
 		m_gain= m_initialGain;

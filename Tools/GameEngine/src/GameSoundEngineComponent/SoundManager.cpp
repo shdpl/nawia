@@ -126,7 +126,7 @@ SoundManager::SoundManager() : m_activeListener(0)
 	{
 		ALuint source;
 		alGenSources(1, &source);
-	    if (alGetError() != AL_NO_ERROR)
+	    if ((error_code = alGetError()) != AL_NO_ERROR)
 		{
 			DisplayALError("Error creating source: ", error_code);
 			break;
@@ -164,14 +164,13 @@ void SoundManager::run()
 	typedef std::pair<float, SoundComponent*> sound;
 	std::priority_queue<sound> priorityQueue;	
 	
-	// get scene graph iterator
-	std::vector<SoundComponent*>::iterator nodeIter = m_soundNodes.begin(); 
-	const std::vector<SoundComponent*>::iterator end = m_soundNodes.end(); 
+	// typedef for more readability
+	typedef std::vector<SoundComponent*>::iterator soundIterator;
 
 	// fill the priority queue
-	while(nodeIter != end)
+	for( soundIterator nodeIter = m_soundNodes.begin(); nodeIter < m_soundNodes.end(); nodeIter++) 
 	{
-		SoundComponent* node = *nodeIter++;
+		SoundComponent* node = *nodeIter;
 		// Skip invalid nodes
 		if( node->m_resourceID == 0)
 			continue;
@@ -263,12 +262,14 @@ void SoundManager::run()
 		}
 	}
 
-	ALenum error_code = AL_NO_ERROR;
+	// typedef for more readability
+	typedef std::vector<SoundComponent* const>::iterator playingSoundIter;
+
 	// play the sounds that don't have a source buffer yet
-	std::vector<SoundComponent* const>::iterator iter = playingSounds.begin();
-	while (iter != playingSounds.end() && !m_sourcesAvailable.empty())
+	for( playingSoundIter iter = playingSounds.begin(); iter < playingSounds.end() && !m_sourcesAvailable.empty(); iter++) 
 	{
-		SoundComponent* const node = (*iter++);
+
+		SoundComponent* const node = *iter;
 		ALfloat pos[3] = {node->m_x, node->m_y, node->m_z};
 		ALfloat vel[3] = {node->m_velX, node->m_velY, node->m_velZ};
 		const unsigned int sourceID = m_sourcesAvailable.back();
@@ -276,7 +277,8 @@ void SoundManager::run()
 		
 		//start Viseme playback
 		node->startVisemes();
-
+		
+		ALenum error_code = AL_NO_ERROR;
 		node->m_sourceID = sourceID; 
 		if (node->m_stream)
 		{
@@ -284,13 +286,14 @@ void SoundManager::run()
 		}
 		else
 		{
-			alSourcei(sourceID, AL_BUFFER,	*node->m_buffer);
+			alSourcei(sourceID, AL_BUFFER,	*(node->m_buffer));
 		}
-		//ALint type;
-		//alGetSourcei(sourceID, AL_SOURCE_TYPE, &type);
-		//printf("Buffer type: %x", type); 
+		/*ALint type;
+		alGetSourcei(sourceID, AL_SOURCE_TYPE, &type);
+		printf("Buffer type: %x", type); 
+		printf("Buffer id: %u", *(node->m_buffer));*/
 		if ( (error_code = alGetError()) != AL_NO_ERROR)
-			DisplayALError("Error queuing buffer: ", error_code);
+			DisplayALError("Error assigning buffer: ", error_code);
 
 		//set properties
 		alSourcei (sourceID, AL_SOURCE_RELATIVE,    AL_FALSE);
