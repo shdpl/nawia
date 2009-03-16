@@ -1,5 +1,0 @@
-<Model geometry="speaker.geo" name="speaker" >
-
-	<Mesh vertREnd="1081" batchStart="0" name="GeometryMeshNode_0000" batchCount="3996" material="speaker/speaker.material.xml" vertRStart="0" />
-
-</Model>

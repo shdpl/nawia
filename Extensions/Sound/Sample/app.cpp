@@ -4,7 +4,7 @@
 //
 // Sample Application
 // --------------------------------------
-// Copyright (C) 2008 Ulf Nilsson Tännström
+// Copyright (C) 2008-2009 Ulf Nilsson Tännström
 //
 //
 // This sample source file is not covered by the LGPL as the rest of the SDK
@@ -29,7 +29,7 @@ inline float degToRad( float f )
 	return f * (3.1415926f / 180.0f);
 }
 
-Application::Application( const std::string contentDir )
+Application::Application( const std::string &contentDir )
 {
 	for( int i = 0; i < 320; i++ )
 		_keys[i] = false;
@@ -48,7 +48,7 @@ Application::Application( const std::string contentDir )
 	_soundLoop = false;
 	_distanceModel = DistanceModels::InverseDistanceClamped;
 
-	_showStats = false;
+	_statMode = 0;
 	_debugViewMode = false;
 	_wireframeMode = false;
 
@@ -72,40 +72,27 @@ bool Application::init()
 		return false;
 	}
 
-	// Set paths for resources
-	Horde3DUtils::setResourcePath( ResourceTypes::SceneGraph, "models" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Geometry, "models" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Animation, "models" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Material, "materials" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Code, "shaders" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Shader, "shaders" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Texture2D, "textures" );
-	Horde3DUtils::setResourcePath( ResourceTypes::TextureCube, "textures" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Effect, "effects" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Pipeline, "pipelines" );
-	Horde3DUtils::setResourcePath( RST_SoundResource, "sounds" );
-
 	// Set options
 	Horde3D::setOption( EngineOptions::LoadTextures, 1 );
 	Horde3D::setOption( EngineOptions::TexCompression, 0 );
 	Horde3D::setOption( EngineOptions::FastAnimation, 0 );
-	Horde3D::setOption( EngineOptions::AnisotropyFactor, 8 );
+	Horde3D::setOption( EngineOptions::MaxAnisotropy, 4 );
 	Horde3D::setOption( EngineOptions::ShadowMapSize, 2048 );
 
 	// Add resources
 	// Pipelines
-	_hdrPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "hdr.pipeline.xml", 0 );
-	_forwardPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "forward.pipeline.xml", 0 );
-	// Font
-	_fontMatRes = Horde3D::addResource( ResourceTypes::Material, "font.material.xml", 0 );
-	// Logo
-	_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "logo.material.xml", 0 );
+	_hdrPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/hdr.pipeline.xml", 0 );
+	_forwardPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/forward.pipeline.xml", 0 );
+	// Overlays
+	_fontMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/font.material.xml", 0 );
+	_panelMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/panel.material.xml", 0 );
+	_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/logo.material.xml", 0 );
 	// Environment
-	ResHandle floorRes = Horde3D::addResource( ResourceTypes::SceneGraph, "tiles.scene.xml", 0 );
+	ResHandle floorRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/tiles/tiles.scene.xml", 0 );
 	// Knight
-	ResHandle speakerRes = Horde3D::addResource( ResourceTypes::SceneGraph, "speaker.scene.xml", 0 );
+	ResHandle speakerRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/speaker/speaker.scene.xml", 0 );
 	// Music
-	_soundRes = Horde3D::addResource( RST_SoundResource, "stringed_disco.ogg", 0 );
+	_soundRes = Horde3D::addResource( RST_SoundResource, "sounds/stringed_disco.ogg", 0 );
 
 	// Load resources
 	Horde3DUtils::loadResourcesFromDisk( _contentDir.c_str() );
@@ -142,7 +129,7 @@ bool Application::init()
 	_lightTimer = 1.0f;
 
 	// Customize post processing effects
-	NodeHandle matRes = Horde3D::findResource( ResourceTypes::Material, "postHDR.material.xml" );
+	NodeHandle matRes = Horde3D::findResource( ResourceTypes::Material, "pipelines/postHDR.material.xml" );
 	// hdrParams: exposure, brightpass threshold, brightpass offset (see shader for description)
 	Horde3D::setMaterialUniform( matRes, "hdrParams", 2.0f, 0.6f, 0.08f, 0 );
 
@@ -155,6 +142,7 @@ bool Application::init()
 
 void Application::release()
 {
+	// Close the sound device and release the engine
 	Horde3DSound::closeDevice();
 	Horde3D::release();
 }
@@ -168,7 +156,7 @@ void Application::mainLoop( float timeSinceLastFrame )
 
 	_lightTimer += timeSinceLastFrame;
 
-	// Has it gone one second since the light changed color?
+	// Has it gone a second since the light changed color?
 	if( _lightTimer >= 1.0f )
 	{
 		// Set a random light color
@@ -216,19 +204,23 @@ void Application::mainLoop( float timeSinceLastFrame )
 		_lightTimer = 0.0f;
 	}
 
-	if( _showStats )
-	{
-		Horde3DUtils::showFrameStats( _fontMatRes, 1 / timeSinceLastFrame );
+	// Show stats
+	Horde3DUtils::showFrameStats( _fontMatRes, _panelMatRes, _statMode );
+	if( _statMode > 0 )
+	{	
 		displaySoundInfo();
 	}
 
 	// Show logo
-	Horde3D::showOverlay( 0.75f, 0, 0, 0, 1, 0, 1, 0,
-						  1, 0.2f, 1, 1, 0.75f, 0.2f, 0, 1,
-						  7, _logoMatRes );
+	Horde3D::showOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
+	                      1, 1, 1, 0, 1, 0.8f, 1, 1,
+	                      1, 1, 1, 1, _logoMatRes, 7 );
 
 	// Render scene
 	Horde3D::render( _cam );
+
+	// Finish rendering of frame
+	Horde3D::finalizeFrame();
 
 	// Remove all overlays
 	Horde3D::clearOverlays();
@@ -244,6 +236,20 @@ void Application::resize( int width, int height )
 
 	// Set virtual camera parameters
 	Horde3D::setupCameraView( _cam, 45.0f, (float)width / height, 0.1f, 1000.0f );
+}
+
+void Application::mouseMoveEvent( int deltaX, int deltaY )
+{
+	// Look left/right
+	_ry -= deltaX * 0.3f;
+
+	// Loop up/down but only in a limited range
+	_rx -= deltaY * 0.3f;
+
+	if( _rx > 90 )
+		_rx = 90; 
+	if( _rx < -90 )
+		_rx = -90;
 }
 
 void Application::keyPressEvent( int key )
@@ -271,8 +277,8 @@ void Application::keyPressEvent( int key )
 	case '7':
 		_soundLoop = !_soundLoop;
 
-		Horde3D::setNodeParami( _sound1, SoundNodeParams::Loop, _soundLoop? 1 : 0 );
-		Horde3D::setNodeParami( _sound2, SoundNodeParams::Loop, _soundLoop? 1 : 0 );
+		Horde3D::setNodeParami( _sound1, SoundNodeParams::Loop, _soundLoop ? 1 : 0 );
+		Horde3D::setNodeParami( _sound2, SoundNodeParams::Loop, _soundLoop ? 1 : 0 );
 		break;
 	case '8':
 		// Rotate between the distance models
@@ -319,7 +325,11 @@ void Application::keyPressEvent( int key )
 		Horde3D::setOption( EngineOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
 		break;
 	case GLFW_KEY_F9:
-		_showStats = !_showStats;
+		_statMode += 1;
+
+		if( _statMode > Horde3DUtils::MaxStatMode )
+			_statMode = 0;
+
 		break;
 	}
 }
@@ -410,35 +420,21 @@ void Application::keyHandler( float timeSinceLastFrame )
 	}
 }
 
-void Application::mouseMoveEvent( int deltaX, int deltaY )
-{
-	// Look left/right
-	_ry -= deltaX * 0.3f;
-
-	// Loop up/down but only in a limited range
-	_rx -= deltaY * 0.3f;
-
-	if( _rx > 90 )
-		_rx = 90; 
-	if( _rx < -90 )
-		_rx = -90;
-}
-
 void Application::displaySoundInfo()
 {
 	std::stringstream text;
 
 	text.str( "" );
 	text << std::fixed << std::setprecision( 2 ) << Horde3D::getNodeParamf( _sound1, SoundNodeParams::Offset ) << " / " << Horde3D::getResourceParamf( _soundRes, SoundResParams::Runtime );
-	Horde3DUtils::showText( text.str().c_str(), 0, 0.78f, 0.03f, 0, _fontMatRes );
+	Horde3DUtils::showText( text.str().c_str(), 0.03f, 0.43f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 
 	text.str( "" );
 	text << "Volume: " << (int)( _soundVolume * 100 ) << "%";
-	Horde3DUtils::showText( text.str().c_str(), 0, 0.75f, 0.03f, 0, _fontMatRes );
+	Horde3DUtils::showText( text.str().c_str(), 0.03f, 0.46f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 
 	text.str( "" );
 	text << std::fixed << std::setprecision( 2 ) << "Pitch: " << _soundPitch;
-	Horde3DUtils::showText( text.str().c_str(), 0, 0.72f, 0.03f, 0, _fontMatRes );
+	Horde3DUtils::showText( text.str().c_str(), 0.03f, 0.49f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 
 	text.str( "" );
 	text << "Loop: ";
@@ -448,7 +444,7 @@ void Application::displaySoundInfo()
 	else
 		text << "no";
 
-	Horde3DUtils::showText( text.str().c_str(), 0, 0.69f, 0.03f, 0, _fontMatRes );
+	Horde3DUtils::showText( text.str().c_str(), 0.03f, 0.52f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 
 	text.str( "" );
 	text << "Distance model: ";
@@ -478,5 +474,5 @@ void Application::displaySoundInfo()
 		break;
 	}
 
-	Horde3DUtils::showText( text.str().c_str(), 0, 0.66f, 0.03f, 0, _fontMatRes );
+	Horde3DUtils::showText( text.str().c_str(), 0.03f, 0.55f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 }

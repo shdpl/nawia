@@ -1,9 +1,0 @@
-<Material>
-
-	<Shader source="parallax.shader.xml" />
-
-
-	<TexUnit unit="0" map="tiles.png" type="2D" />
-	<TexUnit unit="1" map="tiles_nrm.png" allowCompression="false" />
-
-</Material>

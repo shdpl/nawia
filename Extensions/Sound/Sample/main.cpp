@@ -4,7 +4,7 @@
 //
 // Sample Application
 // --------------------------------------
-// Copyright (C) 2008 Ulf Nilsson Tännström
+// Copyright (C) 2008-2009 Ulf Nilsson Tännström
 //
 //
 // This sample source file is not covered by the LGPL as the rest of the SDK
@@ -18,20 +18,20 @@
 #include "app.h"
 
 // Configuration
-const char appCaption[] = "Sound - Horde3D Sample";
+const char caption[] = "Sound - Horde3D Sample";
 const int appWidth = 800;
 const int appHeight = 600;
 bool fullScreen = false;
 
 
 
-bool setupWindow( int, int, bool, const char * );
+bool setupWindow( int, int, bool );
 
 bool running;
 int mousePosX, mousePosY;
 Application *app;
 
-std::string generatePath( char *p, const std::string file )
+std::string generatePath( const char *p, const std::string &file )
 {
 #ifdef __APPLE__
 	std::string s( p );
@@ -41,7 +41,7 @@ std::string generatePath( char *p, const std::string file )
 
 	return s + "/" + file;
 #else
-	const std::string s( p );
+	std::string s( p );
 
 	if( s.find("/") != std::string::npos )
 		return s.substr( 0, s.rfind( "/" ) ) + "/" + file;
@@ -85,24 +85,12 @@ void GLFWCALL keyPressListener( int key, int action )
 				GLFWvidmode mode;
 				glfwGetDesktopMode( &mode );
 
-				float aspect = mode.Width / (float)mode.Height;
-				if( (int)(aspect * 100) == 133 || (int)(aspect * 100) == 125 )	// Standard
-				{
-					width = 1280; height = 1024;
-				}
-				else if( (int)(aspect * 100) == 160 )							// Widescreen
-				{
-					width = 1280; height = 800;
-				}
-				else															// Unknown
-				{
-					// Use desktop resolution
-					width = mode.Width;
-					height = mode.Height;
-				}
+				// Use desktop resolution
+				width = mode.Width;
+				height = mode.Height;
 			}
 
-			if( !setupWindow( width, height, fullScreen, appCaption ) )
+			if( !setupWindow( width, height, fullScreen ) )
 			{
 				delete app;
 				glfwTerminate();
@@ -131,10 +119,10 @@ void GLFWCALL mouseMoveListener( int x, int y )
 	mousePosY = y;
 }
 
-bool setupWindow( int width, int height, bool fullscreen, const char *caption )
+bool setupWindow( int width, int height, bool fullscreen )
 {
 	// Create OpenGL window
-	if( !glfwOpenWindow( width, height, 8, 8, 8, 8, 24, 8, fullscreen? GLFW_FULLSCREEN : GLFW_WINDOW ) )
+	if( !glfwOpenWindow( width, height, 8, 8, 8, 8, 24, 8, fullscreen ? GLFW_FULLSCREEN : GLFW_WINDOW ) )
 	{
 		glfwTerminate();
 		return false;
@@ -158,7 +146,7 @@ int main( int argc, char *argv[] )
 	// Initialize GLFW
 	glfwInit();
 
-	if( !setupWindow( appWidth, appHeight, fullScreen, appCaption ) )
+	if( !setupWindow( appWidth, appHeight, fullScreen ) )
 		return -1;
 
 	// Initalize application and engine

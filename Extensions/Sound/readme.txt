@@ -12,10 +12,10 @@ It has the following dependencies:
 		http://www.openal.org/
 
 
-The Sound Extension extends Horde3D with the capability of 3D positional audio with the help
-of OpenAL. It was designed to integrate as nicely as possible with Horde3D, therefore it comes
-with some limitations, such as the lack of streaming sound support. This means the whole audio
-file will be read and decoded all at once, which can be quite time consuming for larger files.
+The Sound Extension extends Horde3D with the capability of 3D positional audio with the help of
+OpenAL. It was designed to integrate as nicely as possible with Horde3D, therefore it lacks support
+for streaming resources. This means the whole audio file will be read and decoded all at once, which
+can be quite time consuming for larger files.
 
 The extension currently decodes ogg vorbis and wave audio files but decoders for more formats
 can quite easily be implemented. See the decoder.h file for documentation on how to implement more
@@ -31,9 +31,6 @@ Horde3D
 		-> Binaries
 		-> ...
 
-If your version of Horde3D SDK is <= 1.0.0 Beta 2 you will need to apply the patch found in this forum thread:
-http://www.horde3d.org/forums/viewtopic.php?f=3&t=577
-
 In Visual Studio, add the extension, sample, ogg, vorbis and vorbisfile projects to the Horde3D solution.
 Then add the extension project to the project dependencies of the Horde3D Engine and the Horde3D Engine to
 the dependencies of the Sound Sample. After that, include 'Sound/Source/extension.h' in 'egExtensions.cpp'
@@ -47,7 +44,7 @@ installExtension( Horde3DSound::getExtensionName, Horde3DSound::initExtension, H
 
 The extension is then part of the Horde3D DLL and can be used with the Horde3DSound.h header file.
 
-When using the extension a sound device needs to be opened for playback, then a listener node needs
+To use the extension a sound device needs to be opened for playback, then a listener node needs
 to be created and activated. The activated listener node will act as the ears and all 3D sound
 calculations will be based on that node's position and orientation. Then you can start creating
 sound resources, attaching them to sound nodes and start playing the nodes.
@@ -58,19 +55,15 @@ OpenAL will need to be installed to be able to run any applications using the So
 ChangeLog
 ---------
 
+1.0.1	- Adapted to Horde3D 1.0.0 Beta3
 1.0	- Initial release
 
 ------------------------------------------------------------------------------------------
 Notes on sample application
 ------------------------------------------------------------------------------------------
 
-To run the sample, you have to build it first. You will also have to build ogg, vorbis and
-vorbisfile and make sure the Horde3D engine was built with the Sound extension. The demo should
-then be located inside the 'Binaries/Win32' folder. You will also need to make sure you copied
-the 'Binaries/Content' folder from the Sound extension package to your Horde3D SDK directory.
-You can then run the demo executable from the 'Binaries/Win32' directory.
-
-OpenAL will need to be installed prior to running the sample.
+To run the sample, you have to build it first. The demo executable should then be located
+inside the 'Binaries/Win32' folder. OpenAL will need to be installed prior to running the sample.
 
 
 Input:
@@ -84,10 +77,10 @@ Input:
 	7 toggles whether to loop the music or not.
 	8 rotates between different distance models.
 	F1 sets fullscreen mode.
-	F3 switches between forward and deferred shading.
+	F3 switches between hdr and standard forward lighting.
 	F7 toggles debug view.
 	F8 toggles wireframe mode.
-	F9 toggles information display.
+	F9 toggles frame stats and information display.
 	ESC quits the application.
 
 Notes on content:

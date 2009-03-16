@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8,00"
 	Name="Extension Sound"
-	ProjectGUID="{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}"
+	ProjectGUID="{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}"
 	RootNamespace="Extension_Sound"
 	Keyword="Win32Proj"
 	>
@@ -17,8 +17,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ProjectDir)../../../Horde3D/Build/$(ProjectName)/$(ConfigurationName)"
-			IntermediateDirectory="$(ProjectDir)../../../Horde3D/Build/$(ProjectName)/$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)../Build/$(ProjectName)/$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)../Build/$(ProjectName)/$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="2"
 			>
@@ -85,8 +85,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ProjectDir)../../../Horde3D/Build/$(ProjectName)/$(ConfigurationName)"
-			IntermediateDirectory="$(ProjectDir)../../../Horde3D/Build\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)../Build/$(ProjectName)/$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)../Build/$(ProjectName)/$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="2"
 			WholeProgramOptimization="1"

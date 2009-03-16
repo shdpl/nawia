@@ -39,18 +39,16 @@
 /*	Topic: Introduction
 		Some words about the Sound Extension.
 
-	The Sound Extension extends Horde3D with the capability of 3D positional audio with the help
-	of OpenAL. It was designed to integrate as nicely as possible with Horde3D, therefore it comes
-	with some limitations, such as the lack of streaming sound support. This means the whole audio
-	file will be read and decoded all at once, which can be quite time consuming for larger files.
+	The Sound Extension extends Horde3D with the capability of 3D positional audio with the help of
+	OpenAL. It was designed to integrate as nicely as possible with Horde3D, therefore it lacks support
+	for streaming resources. This means the whole audio file will be read and decoded all at once, which
+	can be quite time consuming for larger files.
 
 	The extension currently decodes ogg vorbis and wave audio files but decoders for more formats
 	can quite easily be implemented. See the decoder.h file for documentation on how to implement more
 	audio decoders.
 
 	To install the extension, copy the Extensions directory to the path where the Horde3D SDK resides.
-	If your version of Horde3D SDK is <= 1.0.0 Beta 2 you will need to apply the patch found in this
-	forum thread: http://www.horde3d.org/forums/viewtopic.php?f=3&t=577.
 	In Visual Studio, add the extension, sample, ogg, vorbis and vorbisfile projects to the Horde3D solution.
 	Then add the extension project to the project dependencies of the Horde3D Engine and the Horde3D Engine to
 	the dependencies of the Sound Sample. After that, include 'Sound/Source/extension.h' in 'egExtensions.cpp'
@@ -64,7 +62,7 @@
 
 	The extension is then part of the Horde3D DLL and can be used with the Horde3DSound.h header file.
 
-	When using the extension a sound device needs to be opened for playback, then a listener node needs
+	To use the extension a sound device needs to be opened for playback, then a listener node needs
 	to be created and activated. The activated listener node will act as the ears and all 3D sound
 	calculations will be based on that node's position and orientation. Then you can start creating
 	sound resources, attaching them to sound nodes and start playing the nodes.

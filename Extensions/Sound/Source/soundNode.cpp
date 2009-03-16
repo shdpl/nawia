@@ -21,9 +21,8 @@
 //
 // *************************************************************************************************
 
-#include <utPlatform.h>
-
 #include "egModules.h"
+#include "utPlatform.h"
 #include "utMath.h"
 
 #include "soundNode.h"

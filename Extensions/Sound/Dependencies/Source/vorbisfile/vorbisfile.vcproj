@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)../../Include&quot;;&quot;$(ProjectDir)../vorbis&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(ProjectDir)..\..\Libs\$(ProjectName).lib"
+				OutputFile="$(OutDir)\$(RootNamespace).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -77,7 +77,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine=""
+				CommandLine="xcopy &quot;$(TargetDir)$(RootNamespace).lib&quot; &quot;$(ProjectDir)..\..\Libs\&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -105,7 +105,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)../../Include&quot;;&quot;$(ProjectDir)../vorbis&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -123,7 +123,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(ProjectDir)..\..\Libs\$(ProjectName).lib"
+				OutputFile="$(OutDir)\$(RootNamespace).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -139,7 +139,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine=""
+				CommandLine="xcopy &quot;$(TargetDir)$(RootNamespace).lib&quot; &quot;$(ProjectDir)..\..\Libs\&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

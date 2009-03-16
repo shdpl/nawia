@@ -62,15 +62,15 @@ Here is an example on how a decoder class could look like:
 		const char *init( const char *data, size_t size, SoundInfo &info )
 		{
 			//fill info with the sound's properties
-			//below is just an example on what values these could have, but you
-			//will need to parse the sound file to get the right values
+			//below is just an example on what values these could have, you will
+			//need to parse the sound file to get the right values
 			info.samplingRate = 44100;
 			info.bitDepth = 16;
 			info.channels = 1;
 			info.bitRate = 1840000;
 			info.runtime = 192.5;
 
-			//copy the audio file so we can decode the data later on
+			//store the audio file so we can decode the data later on
 			_data = new char[size];
 			memcpy( _data, &data[offset], size );
 			_size = size;

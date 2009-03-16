@@ -4,7 +4,7 @@
 //
 // Sample Application
 // --------------------------------------
-// Copyright (C) 2008 Ulf Nilsson Tännström
+// Copyright (C) 2008-2009 Ulf Nilsson Tännström
 //
 //
 // This sample source file is not covered by the LGPL as the rest of the SDK
@@ -32,19 +32,23 @@ private:
 	bool					_soundLoop;
 	DistanceModels::List	_distanceModel;
 
-	bool					_showStats, _debugViewMode, _wireframeMode;
+	int						_statMode;
+	bool					_debugViewMode, _wireframeMode;
 
 	// Engine objects
-	ResHandle				_pipeRes, _fontMatRes, _logoMatRes, _hdrPipeRes, _forwardPipeRes, _soundRes;
+	ResHandle				_fontMatRes, _panelMatRes, _logoMatRes;
+	ResHandle				_pipeRes, _hdrPipeRes, _forwardPipeRes;
+	ResHandle				_soundRes;
 	NodeHandle				_cam, _sound1, _sound2, _light;
 
 	std::string				_contentDir;
 
 	void keyHandler( float timeSinceLastFrame );
+	void displaySoundInfo();
 
 public:
 
-	Application( const std::string contentDir );
+	Application( const std::string &contentDir );
 
 	bool init();
 	void release();
@@ -52,15 +56,13 @@ public:
 	void mainLoop( float timeSinceLastFrame );
 	void resize( int width, int height );
 
+	void mouseMoveEvent( int deltaX, int deltaY );
 	void keyPressEvent( int key );
 	void keyStateChange( int key, bool state )
 	{
 		if( key >= 0 && key < 320 )
 			_keys[key] = state;
 	}
-	void mouseMoveEvent( int deltaX, int deltaY );
-
-	void displaySoundInfo();
 };
 
 #endif // _app_H_
