@@ -63,14 +63,14 @@ namespace Horde3DSound
 			if( offset > vorbisData->size )
 				vorbisData->sizeRead = vorbisData->size;
 			else
-				vorbisData->sizeRead = offset;
+				vorbisData->sizeRead = (size_t)offset;
 
 			break;
 		case SEEK_CUR:
 			if( offset > vorbisData->size - vorbisData->sizeRead )
 				vorbisData->sizeRead = vorbisData->size;
 			else
-				vorbisData->sizeRead += offset;
+				vorbisData->sizeRead += (size_t)offset;
 
 			break;
 		case SEEK_END:
