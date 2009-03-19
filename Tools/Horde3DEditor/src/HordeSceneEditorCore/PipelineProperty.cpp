@@ -49,8 +49,7 @@ QWidget* PipelineProperty::createEditor(QWidget *parent, const QStyleOptionViewI
 	editor->init(
 		Horde3DUtils::getResourcePath(ResourceTypes::Pipeline), 
 		Horde3DUtils::getResourcePath(ResourceTypes::Material),
-		Horde3DUtils::getResourcePath(ResourceTypes::Texture2D),
-		Horde3DUtils::getResourcePath(ResourceTypes::TextureCube),
+		Horde3DUtils::getResourcePath(ResourceTypes::Texture),		
 		Horde3DUtils::getResourcePath(ResourceTypes::Shader),
 		Horde3DUtils::getResourcePath(ResourceTypes::Code));
 	return editor;

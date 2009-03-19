@@ -108,7 +108,7 @@ void HordeModelDialog::initModelViewer()
 		ResHandle lightMaterial = 0;
 		if (standardLight.hasAttribute("material"))
 			lightMaterial = Horde3D::addResource( ResourceTypes::Material, qPrintable(standardLight.attribute("material")), 0 );
-		Horde3DUtils::loadResourcesFromDisk("");		
+		Horde3DUtils::loadResourcesFromDisk(".");		
 		// Add Light to cam
 		NodeHandle light = Horde3D::addLightNode( 
 			m_cameraID, 
@@ -149,13 +149,12 @@ void HordeModelDialog::loadModel(const QString& fileName, bool repoFile)
 		settings.beginGroup("Repository");
 		Horde3DUtils::setResourcePath(ResourceTypes::SceneGraph, qPrintable(settings.value("sceneGraphDir", DefaultModelsRepoPath.absolutePath()).toString()));
 		Horde3DUtils::setResourcePath(ResourceTypes::Geometry, qPrintable(settings.value("geometryDir", DefaultModelsRepoPath.absolutePath()).toString()));
-		Horde3DUtils::setResourcePath(ResourceTypes::Texture2D, qPrintable(settings.value("textureDir", DefaultTextureRepoPath.absolutePath()).toString()));
-		Horde3DUtils::setResourcePath(ResourceTypes::TextureCube, qPrintable(settings.value("textureDir", DefaultTextureRepoPath.absolutePath()).toString()));
+		Horde3DUtils::setResourcePath(ResourceTypes::Texture, qPrintable(settings.value("textureDir", DefaultTextureRepoPath.absolutePath()).toString()));
 		Horde3DUtils::setResourcePath(ResourceTypes::Shader, qPrintable(settings.value("shaderDir", DefaultShaderRepoPath.absolutePath()).toString()));
 		Horde3DUtils::setResourcePath(ResourceTypes::Code, qPrintable(settings.value("shaderDir", DefaultShaderRepoPath.absolutePath()).toString()));
 		Horde3DUtils::setResourcePath(ResourceTypes::Material, qPrintable(settings.value("materialDir", DefaultMaterialRepoPath.absolutePath()).toString()));
 		Horde3DUtils::setResourcePath(ResourceTypes::Animation, qPrintable(settings.value("animationDir", DefaultModelsRepoPath.absolutePath()).toString()));
-		Horde3DUtils::setResourcePath(ResourceTypes::Effect, qPrintable(settings.value("effectsDir", DefaultEffectsRepoPath.absolutePath()).toString()));
+		Horde3DUtils::setResourcePath(ResourceTypes::ParticleEffect, qPrintable(settings.value("effectsDir", DefaultEffectsRepoPath.absolutePath()).toString()));
 		Horde3DUtils::setResourcePath(ResourceTypes::Pipeline, qPrintable(settings.value("pipelineDir", DefaultPipelineRepoPath.absolutePath()).toString()));
 		settings.endGroup();
 	}
@@ -172,7 +171,7 @@ void HordeModelDialog::loadModel(const QString& fileName, bool repoFile)
 	// Add resource for model 
 	ResHandle envRes = Horde3D::addResource( ResourceTypes::SceneGraph, qPrintable(fileName), 0 );
 	// Load data
-	if (envRes == 0 || !Horde3DUtils::loadResourcesFromDisk( "" )) // if loading failed
+	if (envRes == 0 || !Horde3DUtils::loadResourcesFromDisk( "." )) // if loading failed
 	{
 		// Clear log
 		m_xmlView->clear();

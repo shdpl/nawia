@@ -47,7 +47,7 @@ QVariant EffectProperty::value(int role) const
 QWidget* EffectProperty::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/)
 {
 	EffectComboBox* editor = new EffectComboBox(parent);
-	editor->init(Horde3DUtils::getResourcePath(ResourceTypes::Effect));
+	editor->init(Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect));
 	return editor;
 }
 

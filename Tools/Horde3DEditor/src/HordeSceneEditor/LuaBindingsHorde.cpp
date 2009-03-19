@@ -256,8 +256,9 @@ namespace Horde3D
 		x_lr, y_lr, u_lr, v_lr	- position and texture coordinates of the lower right corner
 		x_ur, y_ur, u_ur, v_ur	- position and texture coordinates of the upper right corner
 		x_ul, y_ul, u_ul, v_ul	- position and texture coordinates of the upper left corner
-		layer					- layer index of the overlay (Values: from 0 to 7)
+		colR, colG, colB, colA  - color of the overlay that is set for the material's shader
 		materialRes				- material resource used for rendering
+		layer					- layer index of the overlay (Values: from 0 to 7)
 
 		Returns:
 		nothing
@@ -280,9 +281,13 @@ namespace Horde3D
 			float y_ul = static_cast<float>(luaL_checknumber(L,14));
 			float u_ul = static_cast<float>(luaL_checknumber(L,15));
 			float v_ul = static_cast<float>(luaL_checknumber(L,16));
-			int layer = luaL_checkint(L, 17);
-			ResHandle material = luaL_checkint(L, 18);
-			Horde3D::showOverlay(x_ll, y_ll, u_ll, v_ll, x_lr, y_lr, u_lr, v_lr, x_ur, y_ur, u_ur, v_ur, x_ul, y_ul, u_ul, v_ul, layer, material);
+			float colR = static_cast<float>(luaL_checknumber(L,17));
+			float colG = static_cast<float>(luaL_checknumber(L,18));
+			float colB = static_cast<float>(luaL_checknumber(L,19));
+			float colA = static_cast<float>(luaL_checknumber(L,20));
+			ResHandle material = luaL_checkint(L, 20);
+			int layer = luaL_checkint(L, 22);
+			Horde3D::showOverlay(x_ll, y_ll, u_ll, v_ll, x_lr, y_lr, u_lr, v_lr, x_ur, y_ur, u_ur, v_ur, x_ul, y_ul, u_ul, v_ul, colR, colG, colB, colA, material, layer);
 			return 0;
 		}
 

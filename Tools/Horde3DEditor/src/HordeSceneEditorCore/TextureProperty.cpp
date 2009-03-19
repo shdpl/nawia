@@ -46,7 +46,7 @@ QVariant TextureProperty::value(int role) const
 QWidget* TextureProperty::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/)
 {
 	TextureComboBox* editor = new TextureComboBox(parent);
-	editor->init(Horde3DUtils::getResourcePath(ResourceTypes::Texture2D), Horde3DUtils::getResourcePath(ResourceTypes::TextureCube));
+	editor->init(Horde3DUtils::getResourcePath(ResourceTypes::Texture));
 	return editor;
 }
 

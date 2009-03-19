@@ -5,7 +5,7 @@
 //
 // Sample Application
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This sample source file is not covered by the LGPL as the rest of the SDK
@@ -32,10 +32,11 @@ Application::Application( const string &contentDir )
 {
 	for( unsigned int i = 0; i < 320; ++i ) _keys[i] = false;
 
-	_x = 512; _y = 120; _z = 512; _rx = 0; _ry = -45; _velocity = 10.0f;
+	_x = 512; _y = 120; _z = 512; _rx = 0; _ry = 225; _velocity = 10.0f;
 	_curFPS = 30;
 
-	_freeze = false; _showStats = false; _debugViewMode = false; _wireframeMode = false;
+	_statMode = 0;
+	_freeze = false; _debugViewMode = false; _wireframeMode = false;
 	_cam = 0;
 
 	_contentDir = contentDir;
@@ -50,35 +51,23 @@ bool Application::init()
 		Horde3DUtils::dumpMessages();
 		return false;
 	}
-	
-	// Set paths for resources
-	Horde3DUtils::setResourcePath( ResourceTypes::SceneGraph, "models" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Geometry, "models" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Animation, "models" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Material, "materials" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Code, "shaders" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Shader, "shaders" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Texture2D, "textures" );
-	Horde3DUtils::setResourcePath( ResourceTypes::TextureCube, "textures" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Effect, "effects" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Pipeline, "pipelines" );
 
 	// Set options
 	Horde3D::setOption( EngineOptions::LoadTextures, 1 );
 	Horde3D::setOption( EngineOptions::TexCompression, 0 );
-	Horde3D::setOption( EngineOptions::AnisotropyFactor, 8 );
+	Horde3D::setOption( EngineOptions::MaxAnisotropy, 4 );
 	Horde3D::setOption( EngineOptions::ShadowMapSize, 2048 );
 	Horde3D::setOption( EngineOptions::FastAnimation, 1 );
 
 	// Add resources
 	// Pipeline
-	ResHandle pipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "forward.pipeline.xml", 0 );
-	// Font
-	_fontMatRes = Horde3D::addResource( ResourceTypes::Material, "font.material.xml", 0 );
-	// Logo
-	_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "logo.material.xml", 0 );
+	ResHandle pipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/forward.pipeline.xml", 0 );
+	// Overlays
+	_fontMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/font.material.xml", 0 );
+	_panelMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/panel.material.xml", 0 );
+	_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/logo.material.xml", 0 );
 	// Terrain
-	ResHandle terrainRes = Horde3D::addResource( ResourceTypes::SceneGraph, "terrain.scene.xml", 0 );
+	ResHandle terrainRes = Horde3D::addResource( ResourceTypes::SceneGraph, "terrains/terrain1/terrain1.scene.xml", 0 );
 	
 	
 	// Load resources
@@ -103,7 +92,7 @@ bool Application::init()
 	Horde3D::setNodeParamf( light, LightNodeParams::Col_B, 0.7f );*/
 
 	// Set sun direction for ambient pass
-	NodeHandle matRes = Horde3D::findResource( ResourceTypes::Material, "terrain/terrain.material.xml" );
+	NodeHandle matRes = Horde3D::findResource( ResourceTypes::Material, "terrains/terrain1/terrain1.material.xml" );
 	Horde3D::setMaterialUniform( matRes, "sunDir", 1, -1, 0, 0 );
 
 	return true;
@@ -126,15 +115,13 @@ void Application::mainLoop( float fps )
 	// Set camera parameters
 	Horde3D::setNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 );
 	
-	if( _showStats )
-	{
-		Horde3DUtils::showFrameStats( _fontMatRes, _curFPS );
-	}
+	// Show stats
+	Horde3DUtils::showFrameStats( _fontMatRes, _panelMatRes, _statMode );
 
 	// Show logo
-	Horde3D::showOverlay( 0.75f, 0, 0, 0, 1, 0, 1, 0,
-						  1, 0.2f, 1, 1, 0.75f, 0.2f, 0, 1,
-						  7, _logoMatRes );
+	Horde3D::showOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
+	                      1, 1, 1, 0, 1, 0.8f, 1, 1,
+	                      1, 1, 1, 1, _logoMatRes, 7 );
 	
 	// Render scene
 	Horde3D::render( _cam );
@@ -179,7 +166,10 @@ void Application::keyPressEvent( int key )
 		_wireframeMode = !_wireframeMode;
 	
 	if( key == 266 )	// F9
-		_showStats = !_showStats;
+	{
+		_statMode += 1;
+		if( _statMode > Horde3DUtils::MaxStatMode ) _statMode = 0;
+	}
 }
 
 

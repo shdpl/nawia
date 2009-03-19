@@ -37,7 +37,7 @@ public:
 	PipelineComboBox(QWidget* parent = 0);
 	virtual ~PipelineComboBox();
 
-	void init(const QString& pipelinePath, const QString& materialPath, const QString& texture2DPath, const QString& textureCubePath, const QString& shaderPath, const QString& codePath);
+	void init(const QString& pipelinePath, const QString& materialPath, const QString& texturePath, const QString& shaderPath, const QString& codePath);
 
 	QString pipelineFile() const {return currentText();}
 
@@ -58,8 +58,7 @@ private:
 
 	QString m_pipelinePath;
 	QString m_materialPath;
-	QString m_texture2DPath;
-	QString m_textureCubePath;
+	QString m_texturePath;
 	QString m_shaderPath;
 	QString m_codePath;
 };

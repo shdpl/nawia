@@ -5,7 +5,7 @@
 //
 // Sample Application
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This sample source file is not covered by the LGPL as the rest of the SDK
@@ -34,11 +34,12 @@ void CrowdSim::chooseDestination( Particle &p )
 void CrowdSim::init()
 {
 	// Init random generator
-	srand( (unsigned int)time( NULL ) );
+	//srand( (unsigned int)time( NULL ) );
+	srand( 99777 );  // Use fixed value for better performance comparisons
 	
 	// Load character with walk animation
-	ResHandle characterRes = Horde3D::addResource( ResourceTypes::SceneGraph, "man.scene.xml", 0 );
-	ResHandle characterWalkRes = Horde3D::addResource( ResourceTypes::Animation, "man.anim", 0 );
+	ResHandle characterRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/man/man.scene.xml", 0 );
+	ResHandle characterWalkRes = Horde3D::addResource( ResourceTypes::Animation, "animations/man.anim", 0 );
 	Horde3DUtils::loadResourcesFromDisk( _contentDir.c_str() );
 	
 	// Add characters

@@ -86,7 +86,7 @@ void QModelNode::addRepresentation()
 
 	// Load resource immediately since a later call to loadResourceFromDisk results in a bad behaviour of the Horde3D engine
 	QString resourceName = Horde3DUtils::getResourcePath(ResourceTypes::Geometry);
-	if (!resourceName.endsWith('/') && !resourceName.endsWith('\\'))
+	if( !resourceName.isEmpty() && !resourceName.endsWith('/') && !resourceName.endsWith('\\'))
 		resourceName += '/';
 	resourceName += geometry();
 

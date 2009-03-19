@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -84,7 +84,7 @@ Renderer::Renderer() : RendererBase()
 Renderer::~Renderer()
 {
 	destroyShadowBuffer();
-	unloadTexture( _defShadowMap, false );
+	unloadTexture( _defShadowMap, TextureTypes::Tex2D );
 	if( _particleVBO != 0 ) unloadBuffers( _particleVBO, 0 );
 }
 
@@ -189,12 +189,6 @@ bool Renderer::init()
 	                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 	glGenTextures( 1, &_defShadowMap );
 	glBindTexture( GL_TEXTURE_2D, _defShadowMap );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, 8, 8, 0,
 	              GL_DEPTH_COMPONENT, GL_FLOAT, shadowTex );
 
@@ -218,10 +212,13 @@ bool Renderer::init()
 
 	_overlays.reserve( 100 );
 
-	_statTriCount = 0; _statBatchCount = 0; _statLightPassCount = 0;
-
 	// Reset GL states
 	finishRendering();
+
+	// Start frame timer
+	Timer *timer = Modules::stats().getTimer( EngineStats::FrameTime );
+	ASSERT( timer != 0x0 );
+	timer->setEnabled( true );
 	
 	return true;
 }
@@ -237,47 +234,6 @@ void Renderer::resize( int x, int y, int width, int height )
 // =================================================================================================
 // Misc Helper Functions
 // =================================================================================================
-
-float Renderer::getStat( int param, bool reset )
-{
-	float value;	
-	
-	switch( param )
-	{
-	case EngineStats::TriCount:
-		value = (float)_statTriCount;
-		if( reset ) _statTriCount = 0;
-		return value;
-	case EngineStats::BatchCount:
-		value = (float)_statBatchCount;
-		if( reset ) _statBatchCount = 0;
-		return value;
-	case EngineStats::LightPassCount:
-		value = (float)_statLightPassCount;
-		if( reset ) _statLightPassCount = 0;
-		return value;
-	default:
-		return 0;
-	}
-}
-
-
-void Renderer::incStat( int param, float value )
-{
-	switch( param )
-	{
-	case EngineStats::TriCount:
-		_statTriCount += (int)value;
-		break;
-	case EngineStats::BatchCount:
-		_statBatchCount += (int)value;
-		break;
-	case EngineStats::LightPassCount:
-		_statLightPassCount += (int)value;
-		break;
-	}
-}
-
 
 int Renderer::registerOccSet()
 {
@@ -342,31 +298,6 @@ bool Renderer::uploadShader( const char *vertexShader, const char *fragmentShade
 	sc.shaderObject = shaderId;
 	
 	// Set standard uniforms
-	sc.uni_texs[0] = glGetUniformLocation( shaderId, "tex0" );
-	if( sc.uni_texs[0] >= 0 ) glUniform1i( sc.uni_texs[0], 0 );
-	sc.uni_texs[1] = glGetUniformLocation( shaderId, "tex1" );
-	if( sc.uni_texs[1] >= 0 ) glUniform1i( sc.uni_texs[1], 1 );
-	sc.uni_texs[2] = glGetUniformLocation( shaderId, "tex2" );
-	if( sc.uni_texs[2] >= 0 ) glUniform1i( sc.uni_texs[2], 2 );
-	sc.uni_texs[3] = glGetUniformLocation( shaderId, "tex3" );
-	if( sc.uni_texs[3] >= 0 ) glUniform1i( sc.uni_texs[3], 3 );
-	sc.uni_texs[4] = glGetUniformLocation( shaderId, "tex4" );
-	if( sc.uni_texs[4] >= 0 ) glUniform1i( sc.uni_texs[4], 4 );
-	sc.uni_texs[5] = glGetUniformLocation( shaderId, "tex5" );
-	if( sc.uni_texs[5] >= 0 ) glUniform1i( sc.uni_texs[5], 5 );
-	sc.uni_texs[6] = glGetUniformLocation( shaderId, "tex6" );
-	if( sc.uni_texs[6] >= 0 ) glUniform1i( sc.uni_texs[6], 6 );
-	sc.uni_texs[7] = glGetUniformLocation( shaderId, "tex7" );
-	if( sc.uni_texs[7] >= 0 ) glUniform1i( sc.uni_texs[7], 7 );
-	sc.uni_texs[8] = glGetUniformLocation( shaderId, "tex8" );
-	if( sc.uni_texs[8] >= 0 ) glUniform1i( sc.uni_texs[8], 8 );
-	sc.uni_texs[9] = glGetUniformLocation( shaderId, "tex9" );
-	if( sc.uni_texs[9] >= 0 ) glUniform1i( sc.uni_texs[9], 9 );
-	sc.uni_texs[10] = glGetUniformLocation( shaderId, "tex10" );
-	if( sc.uni_texs[10] >= 0 ) glUniform1i( sc.uni_texs[10], 10 );
-	sc.uni_texs[11] = glGetUniformLocation( shaderId, "tex11" );
-	if( sc.uni_texs[11] >= 0 ) glUniform1i( sc.uni_texs[11], 11 );
-
 	int loc = glGetUniformLocation( shaderId, "shadowMap" );
 	if( loc >= 0 ) glUniform1i( loc, 12 );
 
@@ -388,6 +319,7 @@ bool Renderer::uploadShader( const char *vertexShader, const char *fragmentShade
 	sc.uni_parPosArray = glGetUniformLocation( shaderId, "parPosArray" );
 	sc.uni_parSizeAndRotArray = glGetUniformLocation( shaderId, "parSizeAndRotArray" );
 	sc.uni_parColorArray = glGetUniformLocation( shaderId, "parColorArray" );
+	sc.uni_olayColor = glGetUniformLocation( shaderId, "olayColor" );
 
 	// Get attribute locations
 	sc.attrib_normal = glGetAttribLocation( shaderId, "normal" );
@@ -397,32 +329,6 @@ bool Renderer::uploadShader( const char *vertexShader, const char *fragmentShade
 	sc.attrib_weights = glGetAttribLocation( shaderId, "weights" );
 	sc.attrib_texCoords0 = glGetAttribLocation( shaderId, "texCoords0" );
 	sc.attrib_texCoords1 = glGetAttribLocation( shaderId, "texCoords1" );
-
-	// Get custom uniforms
-	int uniformCount;
-	int size;
-	uint32 type;
-	char charBuf[128];
-	glGetProgramiv( shaderId, GL_ACTIVE_UNIFORMS, &uniformCount );
-	for( int i = 0; i < uniformCount; ++i )
-	{
-		glGetActiveUniform( shaderId, i, 127, 0x0, &size, &type, charBuf );
-		string name = charBuf;
-
-		if( name.find( "gl_" ) != 0 &&
-			name != "tex0" && name != "tex1" && name != "tex2" && name != "tex3" &&
-			name != "tex4" && name != "tex5" && name != "tex6" && name != "tex7" &&
-			name != "tex8" && name != "tex9" && name != "tex10" && name != "tex11" &&
-			name != "frameBufSize" && name != "worldMat" && name != "worldNormalMat" &&
-			name != "viewer" && name != "lightPos" && name != "lightDir" && name != "lightColor" &&
-			name != "lightCosCutoff" && name != "shadowSplitDists" && name != "shadowMats" &&
-			name != "shadowMapSize" && name != "shadowMapSize" && name != "shadowBias" &&
-			name != "skinMatRows[0]" && name != "parCorners" && name != "parPosArray" &&
-			name != "parSizeAndRotArray" && name != "parColorArray" )
-		{
-			sc.customUniforms[name] = glGetUniformLocation( shaderId, name.c_str() );
-		}
-	}
 
 	return true;
 }
@@ -443,25 +349,34 @@ void Renderer::setShader( ShaderCombination *sc )
 }
 
 
-bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shaderContext, bool firstRec )
+bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shaderContext,
+                               ShaderResource *shaderRes )
 {
 	if( materialRes == 0x0 ) return false;
+	
+	bool firstRec = (shaderRes == 0x0);
 	bool result = true;
 	
-	// Setup shader and render config (ignore shader for links)
-	if( firstRec && materialRes->_shaderRes != 0x0 )
-	{
-		ShaderContext *context = materialRes->_shaderRes->findContext( shaderContext );
+	// Set shader in first recursion step
+	if( firstRec )
+	{	
+		shaderRes = materialRes->_shaderRes;
+		if( shaderRes == 0x0 ) return false;	
+	
+		// Find context
+		ShaderContext *context = shaderRes->findContext( shaderContext );
 		if( context == 0x0 ) return false;
 		
-		ShaderCombination *sc = materialRes->_shaderRes->getCombination( *context, materialRes->_combMask );
-		if( sc != _curShader ) setShader( sc );	
+		// Set shader combination
+		ShaderCombination *sc = shaderRes->getCombination( *context, materialRes->_combMask );
+		if( sc != _curShader ) setShader( sc );
+		if( _curShader == 0x0 ) return false;
 
-		// Depth mask
+		// Configure depth mask
 		if( context->writeDepth ) glDepthMask( GL_TRUE );
 		else glDepthMask( GL_FALSE );
 
-		// Blending
+		// Configure blending
 		switch( context->blendMode )
 		{
 		case BlendModes::Replace:
@@ -485,7 +400,7 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 			break;
 		}
 
-		// Depth test
+		// Configure depth test
 		switch( context->depthTest )
 		{
 		case TestModes::LessEqual:
@@ -513,7 +428,7 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 			break;
 		}
 
-		// Alpha test and alpha-to-coverage
+		// Configure alpha test and alpha-to-coverage
 		if( context->alphaToCoverage && Modules::config().sampleCount > 0 )
 		{
 			glDisable( GL_ALPHA_TEST );
@@ -551,7 +466,6 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 			}
 		}
 	}
-	if( _curShader == 0x0 ) return false;
 	
 	// Setup standard shader uniforms
 	// Note: Make sure that all functions which modify one of the following params increase stamp
@@ -596,42 +510,156 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 
 		_curShader->lastUpdateStamp = _curUpdateStamp;
 	}
-	
-	// Setup material parameters
-	for( uint32 i = 0; i < materialRes->_texUnits.size(); ++i )
+
+	// Setup texture samplers
+	for( size_t i = 0, s = shaderRes->_samplers.size(); i < s; ++i )
 	{
-		TexUnit &texUnit = materialRes->_texUnits[i];
+		if( _curShader->customSamplers[i] < 0 ) continue;
 		
-		if( texUnit.texRes != 0x0 && texUnit.unit < 12 && _curShader->uni_texs[texUnit.unit] >= 0 )
+		glActiveTexture( GL_TEXTURE0 + shaderRes->_samplers[i].texUnit );
+		
+		ShaderSampler &sampler = shaderRes->_samplers[i];
+		int target = 0;
+		bool mips = false;
+
+		// Find sampler in material
+		for( size_t j = 0, s = materialRes->_samplers.size(); j < s; ++j )
 		{
-			glActiveTexture( GL_TEXTURE0 + texUnit.unit );
+			MatSampler &matSampler = materialRes->_samplers[j];
 			
-			if( texUnit.texRes->getType() == ResourceTypes::Texture2D )
+			if( matSampler.name == sampler.id )
 			{
-				Texture2DResource *texRes = (Texture2DResource *)texUnit.texRes.getPtr();
-				glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
-				glBindTexture( GL_TEXTURE_2D, texRes->getTexObject() );
-			}
-			else if( texUnit.texRes->getType() == ResourceTypes::TextureCube )
-			{
-				TextureCubeResource *texRes = (TextureCubeResource *)texUnit.texRes.getPtr();
-				glBindTexture( GL_TEXTURE_CUBE_MAP, texRes->getTexObject() );
+				if( matSampler.texRes->getTexType() == TextureTypes::Tex2D )
+				{
+					target = GL_TEXTURE_2D;
+					mips = matSampler.texRes->hasMipMaps();
+					glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
+					glBindTexture( GL_TEXTURE_2D, matSampler.texRes->getTexObject() );
+				}
+				else if( matSampler.texRes->getTexType() == TextureTypes::TexCube )
+				{
+					target = GL_TEXTURE_CUBE_MAP;
+					mips = matSampler.texRes->hasMipMaps();
+					glBindTexture( GL_TEXTURE_CUBE_MAP, matSampler.texRes->getTexObject() );
+				}
+
+				break;
 			}
 		}
-	}
 
+		// Find sampler in pipeline
+		for( size_t j = 0, s = _pipeSamplerBindings.size(); j < s; ++j )
+		{
+			if( strcmp( _pipeSamplerBindings[j].sampler, sampler.id.c_str() ) == 0 )
+			{
+				target = GL_TEXTURE_2D;
+				mips = false;
+				glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
+
+				uint32 bufIndex = _pipeSamplerBindings[j].bufIndex;
+				RenderBuffer *rb = _pipeSamplerBindings[j].rb;
+				
+				if( bufIndex < 4 && rb->colBufs[bufIndex] != 0 )
+				{
+					glBindTexture( GL_TEXTURE_2D, rb->colBufs[bufIndex] );
+				}
+				else if( bufIndex == 32 && rb->depthBuf != 0 )
+				{
+					glBindTexture( GL_TEXTURE_2D, rb->depthBuf );
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
+					glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE );
+				}
+
+				break;
+			}
+		}
+
+		if( target == 0 ) continue;  // Texture for sampler not found (maybe in linked material)
+
+		// Address mode
+		switch( sampler.addressMode )
+		{
+		case TexAddressModes::Wrap:
+			glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_REPEAT );
+			glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_REPEAT );
+			glTexParameteri( target, GL_TEXTURE_WRAP_R, GL_REPEAT );
+			break;
+		case TexAddressModes::Clamp:
+			glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+			glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+			glTexParameteri( target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
+			break;
+		}
+
+		// Filtering
+		switch( sampler.filterMode )
+		{
+		case TexFilterModes::Trilinear:
+			if( Modules::config().trilinearFiltering )
+			{
+				glTexParameteri( target, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+				if( mips )
+					glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+				else
+					glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+				break;
+			} // else go to case TexFilterModes::Bilinear
+		case TexFilterModes::Bilinear:
+			glTexParameteri( target, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+			if( mips )
+				glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
+			else
+				glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			break;
+		case TexFilterModes::None:
+			glTexParameteri( target, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			if( mips )
+				glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST );
+			else
+				glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			break;
+		}
+
+		// Anisotropy
+		if( mips )
+		{
+			glTexParameteri( target, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+				std::min( sampler.maxAnisotropy, Modules::config().maxAnisotropy ) );
+		}
+		else
+		{
+			glTexParameteri( target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1 );
+		}
+	}
 	glActiveTexture( GL_TEXTURE0 );
 
-	// Setup material shader uniforms
-	for( uint32 i = 0; i < materialRes->_uniforms.size(); ++i )
+	// Set custom uniforms
+	for( size_t i = 0, s = shaderRes->_uniforms.size(); i < s; ++i )
 	{
-		Uniform &uniform = materialRes->_uniforms[i];
+		if( _curShader->customUniforms[i] < 0 ) continue;
+		
+		bool found = false;
 
-		map< string, int >::iterator itr = _curShader->customUniforms.find( uniform.name );
-		if( itr != _curShader->customUniforms.end() )
+		// Find uniform in material
+		for( size_t j = 0, s = materialRes->_uniforms.size(); j < s; ++j )
 		{
-			glUniform4f( (*itr).second, uniform.values[0], uniform.values[1],
-			             uniform.values[2], uniform.values[3] );
+			MatUniform &matUniform = materialRes->_uniforms[j];
+			
+			if( matUniform.name == shaderRes->_uniforms[i].id )
+			{
+				glUniform4f( _curShader->customUniforms[i], matUniform.values[0], matUniform.values[1],
+				             matUniform.values[2], matUniform.values[3] );
+				found = true;
+				break;
+			}
+		}
+
+		// Use default values if not found
+		if( !found )
+		{
+			ShaderUniform &uniform = shaderRes->_uniforms[i];
+			glUniform4f( _curShader->customUniforms[i], uniform.defValues[0], uniform.defValues[1],
+				         uniform.defValues[2], uniform.defValues[3] );
 		}
 	}
 
@@ -639,16 +667,16 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 	{
 		// Handle link of stage
 		if( _curStageMatLink != 0x0 && _curStageMatLink != materialRes )
-			result &= setMaterialRec( _curStageMatLink, shaderContext );
+			result &= setMaterialRec( _curStageMatLink, shaderContext, shaderRes );
 
 		// Handle material of light source
 		if( _curLight != 0x0 && _curLight->_materialRes != 0x0 && _curLight->_materialRes != materialRes )
-			result &= setMaterialRec( _curLight->_materialRes, shaderContext );
+			result &= setMaterialRec( _curLight->_materialRes, shaderContext, shaderRes );
 	}
 
 	// Handle link of material resource
 	if( materialRes->_matLink != 0x0 )
-		result &= setMaterialRec( materialRes->_matLink, shaderContext );
+		result &= setMaterialRec( materialRes->_matLink, shaderContext, shaderRes );
 
 	return result;
 }
@@ -671,7 +699,7 @@ bool Renderer::setMaterial( MaterialResource *materialRes, const string &shaderC
 		
 	_curMatRes = materialRes;
 	
-	bool result = setMaterialRec( materialRes, shaderContext, true );
+	bool result = setMaterialRec( materialRes, shaderContext, 0x0 );
 
 	if( !result )
 	{
@@ -702,13 +730,6 @@ bool Renderer::createShadowBuffer( uint32 width, uint32 height )
 	glGenTextures( 1, &_smTex );
 	glBindTexture( GL_TEXTURE_2D, _smTex );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-	float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0x0 );
 	glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, _smTex, 0 );
 
@@ -742,8 +763,19 @@ void Renderer::setupShadowMap( bool noShadows )
 {
 	// Bind shadow map
 	glActiveTexture( GL_TEXTURE12 );
+
 	if( !noShadows && _curLight->_shadowMapCount > 0 )glBindTexture( GL_TEXTURE_2D, _smTex );
 	else glBindTexture( GL_TEXTURE_2D, _defShadowMap );
+
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1 );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+	float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
 	
 	glActiveTexture( GL_TEXTURE0 );
 }
@@ -805,12 +837,12 @@ Matrix4f Renderer::calcLightMat( const Frustum &frustum )
 	}
 
 	// Combine frustum and bounding box
-	float minX = max( frustMinX, bbMinX );
-	float minY = max( frustMinY, bbMinY );
-	float minZ = min( frustMinZ, bbMinZ );
-	float maxX = min( frustMaxX, bbMaxX );
-	float maxY = min( frustMaxY, bbMaxY );
-	float maxZ = min( frustMaxZ, bbMaxZ );
+	float minX = maxf( frustMinX, bbMinX );
+	float minY = maxf( frustMinY, bbMinY );
+	float minZ = minf( frustMinZ, bbMinZ );
+	float maxX = minf( frustMaxX, bbMaxX );
+	float maxY = minf( frustMaxY, bbMaxY );
+	float maxZ = minf( frustMaxZ, bbMaxZ );
 	
 	// Clamp the min and max values to post projection range [-1, 1]
 	minX = clamp( minX, -1, 1 );
@@ -1095,14 +1127,9 @@ void Renderer::drawDebugAABB( const Vec3f &bbMin, const Vec3f &bbMax, bool saveS
 // Overlays
 // =================================================================================================
 
-void Renderer::showOverlay( const Overlay &overlay, uint32 matRes )
+void Renderer::showOverlay( const Overlay &overlay )
 {
-	Resource *res = Modules::resMan().resolveResHandle( matRes );
-	if( res != 0x0 && res->getType() == ResourceTypes::Material )
-	{
-		_overlays.push_back( overlay );
-		_overlays.back().materialRes = (MaterialResource *)res;
-	}
+	_overlays.push_back( overlay );
 }
 
 
@@ -1119,7 +1146,7 @@ void Renderer::drawOverlays( const string &shaderContext )
 	
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	glOrtho( 0, 1, 0, 1, -1, 1 );
+	glOrtho( 0, 1, 1, 0, -1, 1 );
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 	
@@ -1132,12 +1159,14 @@ void Renderer::drawOverlays( const string &shaderContext )
 			Overlay &overlay = _overlays[j];
 
 			if( !setMaterial( overlay.materialRes, shaderContext ) ) continue;
+			if( _curShader->uni_olayColor >= 0 )
+				glUniform4fv( _curShader->uni_olayColor, 1, &overlay.colR );
 			
 			glBegin( GL_QUADS );
-			glTexCoord2fv( &overlay.u_ll ); glVertex3f( overlay.x_ll, overlay.y_ll, 1 );
-			glTexCoord2fv( &overlay.u_lr ); glVertex3f( overlay.x_lr, overlay.y_lr, 1 );
-			glTexCoord2fv( &overlay.u_ur ); glVertex3f( overlay.x_ur, overlay.y_ur, 1 );
-			glTexCoord2fv( &overlay.u_ul ); glVertex3f( overlay.x_ul, overlay.y_ul, 1 );
+			glTexCoord2fv( &overlay.u_tl ); glVertex3f( overlay.x_tl, overlay.y_tl, 1 );
+			glTexCoord2fv( &overlay.u_bl ); glVertex3f( overlay.x_bl, overlay.y_bl, 1 );
+			glTexCoord2fv( &overlay.u_br ); glVertex3f( overlay.x_br, overlay.y_br, 1 );
+			glTexCoord2fv( &overlay.u_tr ); glVertex3f( overlay.x_tr, overlay.y_tr, 1 );
 			glEnd();
 		}
 	}
@@ -1148,29 +1177,42 @@ void Renderer::drawOverlays( const string &shaderContext )
 // Pipeline Functions
 // =================================================================================================
 
-void Renderer::bindBuffer( RenderBuffer *rb, uint32 texUnit, uint32 bufIndex )
+void Renderer::bindBuffer( RenderBuffer *rb, const string &sampler, uint32 bufIndex )
 {
 	if( rb == 0x0 )
 	{
+		// Clear buffer bindings
+		_pipeSamplerBindings.resize( 0 );
+
+		// Make sure all render buffers are unbound
 		for( uint32 i = 0; i < 12; ++i )
 		{
 			glActiveTexture( GL_TEXTURE0 + i );
 			glBindTexture( GL_TEXTURE_2D, 0 );
 		}
+		glActiveTexture( GL_TEXTURE0 );
 	}
 	else
 	{
-		if( texUnit < 12 )
+		// Check if binding is already existing
+		for( size_t i = 0, s = _pipeSamplerBindings.size(); i < s; ++i )
 		{
-			glActiveTexture( GL_TEXTURE0 + texUnit );
-			if( bufIndex < 4 && rb->colBufs[bufIndex] != 0 )
-				glBindTexture( GL_TEXTURE_2D, rb->colBufs[bufIndex] );
-			else if( bufIndex == 32 && rb->depthBuf != 0 )
-				glBindTexture( GL_TEXTURE_2D, rb->depthBuf );
+			if( strcmp( _pipeSamplerBindings[i].sampler, sampler.c_str() ) == 0 )
+			{
+				_pipeSamplerBindings[i].rb = rb;
+				_pipeSamplerBindings[i].bufIndex = bufIndex;
+				return;
+			}
 		}
+		
+		// Add binding
+		_pipeSamplerBindings.push_back( PipeSamplerBinding() );
+		size_t len = std::min( sampler.length(), (size_t)63 );
+		strncpy_s( _pipeSamplerBindings.back().sampler, 63, sampler.c_str(), len );
+		_pipeSamplerBindings.back().sampler[len] = '\0';
+		_pipeSamplerBindings.back().rb = rb;
+		_pipeSamplerBindings.back().bufIndex = bufIndex;
 	}
-
-	glActiveTexture( GL_TEXTURE0 );
 }
 
 
@@ -1336,8 +1378,8 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 		// Set scissor rectangle
 		if( bbx != 0 || bby != 0 || bbw != 1 || bbh != 1 )
 		{
-			glScissor( (int)(bbx * _fbWidth), (int)(bby * _fbHeight),
-			           (int)(bbw * _fbWidth), (int)(bbh * _fbHeight) );
+			glScissor( ftoi_r( bbx * _fbWidth ), ftoi_r( bby * _fbHeight ),
+			           ftoi_r( bbw * _fbWidth ), ftoi_r( bbh * _fbHeight ) );
 			glEnable( GL_SCISSOR_TEST );
 		}
 		
@@ -1351,7 +1393,7 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 		setupViewMatrices( _curCamera );
 		drawRenderables( context, theClass, false, &_curCamera->getFrustum(),
 		                 &_curLight->getFrustum(), order, occSet );
-		incStat( EngineStats::LightPassCount, 1 );
+		Modules().stats().incStat( EngineStats::LightPassCount, 1 );
 
 		// Reset
 		glDisable( GL_SCISSOR_TEST );
@@ -1458,7 +1500,7 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 		glTexCoord2f( bbx + bbw, bby + bbh ); glVertex3f( bbx + bbw, bby + bbh, 1 );
 		glTexCoord2f( bbx, bby + bbh ); glVertex3f( bbx, bby + bbh, 1 );
 		glEnd();
-		incStat( EngineStats::LightPassCount, 1 );
+		Modules().stats().incStat( EngineStats::LightPassCount, 1 );
 
 		// Reset
 		glActiveTexture( GL_TEXTURE12 );
@@ -1720,8 +1762,8 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			                     curGeoRes->_16BitIndices ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT,
 			                     (char *)0 + meshNode->getBatchStart() *
 			                     (curGeoRes->_16BitIndices ? sizeof( short ) : sizeof( int )) );
-			Modules::renderer().incStat( EngineStats::BatchCount, 1 );
-			Modules::renderer().incStat( EngineStats::TriCount, meshNode->getBatchCount() / 3.0f );
+			Modules::stats().incStat( EngineStats::BatchCount, 1 );
+			Modules::stats().incStat( EngineStats::TriCount, meshNode->getBatchCount() / 3.0f );
 		}
 
 		if( occCulling )
@@ -1850,14 +1892,14 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 				glUniform4fv( curShader->uni_parColorArray, ParticlesPerBatch, (float *)emitter->_parColors + j*ParticlesPerBatch*4 );
 
 			glDrawArrays( GL_QUADS, 0, ParticlesPerBatch * 4 );
-			Modules::renderer().incStat( EngineStats::BatchCount, 1 );
-			Modules::renderer().incStat( EngineStats::TriCount, ParticlesPerBatch * 2.0f );
+			Modules::stats().incStat( EngineStats::BatchCount, 1 );
+			Modules::stats().incStat( EngineStats::TriCount, ParticlesPerBatch * 2.0f );
 		}
 
 		uint32 count = emitter->_particleCount % ParticlesPerBatch;
 		if( count > 0 )
 		{
-			uint32 offset = (int)(emitter->_particleCount / ParticlesPerBatch) * ParticlesPerBatch;
+			uint32 offset = (emitter->_particleCount / ParticlesPerBatch) * ParticlesPerBatch;
 			
 			// Check if batch needs to be rendered
 			bool allDead = true;
@@ -1880,8 +1922,8 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 				glUniform4fv( curShader->uni_parColorArray, count, (float *)emitter->_parColors + offset*4 );
 			
 			glDrawArrays( GL_QUADS, 0, count * 4 );
-			Modules::renderer().incStat( EngineStats::BatchCount, 1 );
-			Modules::renderer().incStat( EngineStats::TriCount, count * 2.0f );
+			Modules::stats().incStat( EngineStats::BatchCount, 1 );
+			Modules::stats().incStat( EngineStats::TriCount, count * 2.0f );
 		}
 
 		if( occCulling )
@@ -1936,7 +1978,7 @@ bool Renderer::render( CameraNode *camNode )
 			{
 			case PipelineCommands::SwitchTarget:
 				// Unbind all textures
-				bindBuffer( 0x0, 0, 0 );
+				bindBuffer( 0x0, "", 0 );
 				if( _curRenderTarget != 0x0 && _curRenderTarget->samples > 0 )
 				{
 					// Current render target is multisampled, so resolve it now
@@ -1964,8 +2006,12 @@ bool Renderer::render( CameraNode *camNode )
 			case PipelineCommands::BindBuffer:
 				rt = (RenderTarget *)pc.refParams[0];
 			
-				bindBuffer( &rt->rendBuf, (uint32)((PCFloatParam *)pc.valParams[0])->get(),
-				            (uint32)((PCFloatParam *)pc.valParams[1])->get() );
+				bindBuffer( &rt->rendBuf, ((PCStringParam *)pc.valParams[0])->get(),
+				            (uint32)((PCIntParam *)pc.valParams[1])->get() );
+				break;
+
+			case PipelineCommands::UnbindBuffers:
+				bindBuffer( 0x0, "", 0 );
 				break;
 
 			case PipelineCommands::ClearTarget:
@@ -2015,6 +2061,17 @@ bool Renderer::render( CameraNode *camNode )
 	
 	finishRendering();
 	return true;
+}
+
+
+void Renderer::finalizeFrame()
+{
+	// Reset frame timer
+	Timer *timer = Modules::stats().getTimer( EngineStats::FrameTime );
+	ASSERT( timer != 0x0 );
+	Modules::stats().getStat( EngineStats::FrameTime, true );  // Reset
+	Modules::stats().incStat( EngineStats::FrameTime, timer->getElapsedTimeMS() );
+	timer->reset();
 }
 
 
@@ -2139,4 +2196,6 @@ void Renderer::finishRendering()
 	glBindBuffer( GL_ARRAY_BUFFER, 0 );
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 	if( _curCamera != 0x0 ) setupViewMatrices( _curCamera );
+
+	ASSERT( glGetError() == GL_NO_ERROR );
 }

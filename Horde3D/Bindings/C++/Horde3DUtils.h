@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -50,6 +50,13 @@
 
 namespace Horde3DUtils
 {
+	/* Group: Typedefs and constants */
+	/*	Constants: Predefined constants
+		MaxStatMode  - Maximum stat mode number supported in showFrameStats
+	*/
+	const int MaxStatMode = 2;
+
+	
 	/*	Group: General functions */
 	/*	Function: freeMem
 			Frees memory allocated by the Utility Library.
@@ -57,7 +64,7 @@ namespace Horde3DUtils
 		This utility function frees the memory that was allocated by another function of the Utility Library.
 		
 		Parameters:
-			ptr	- address of a pointer that references to memory allocated by the Utility Library
+			ptr  - address of a pointer that references to memory allocated by the Utility Library
 			
 		Returns:
 			nothing
@@ -68,7 +75,7 @@ namespace Horde3DUtils
 			Writes all messages in the queue to a log file.
 		
 		This utility function pops all messages from the message queue and writes them to a HTML formated
-        log file 'EngineLog.html'.
+		log file 'EngineLog.html'.
 		
 		Parameters:
 			none
@@ -84,10 +91,10 @@ namespace Horde3DUtils
 			Initializes OpenGL.
 		
 		This utility function initializes an OpenGL rendering context in a specified window component.
-        *Currently this function is only available on Windows platforms.*
+		*Currently this function is only available on Windows platforms.*
 		
 		Parameters:
-			hDC	- handle to device context for which OpenGL context shall be created
+			hDC  - handle to device context for which OpenGL context shall be created
 			
 		Returns:
 			true in case of success, otherwise false
@@ -98,7 +105,7 @@ namespace Horde3DUtils
 			Releases OpenGL.
 		
 		This utility function destroys the previously created OpenGL rendering context.
-        *Currently this function is only available on Windows platforms.*
+		*Currently this function is only available on Windows platforms.*
 		
 		Parameters:
 			none
@@ -113,7 +120,7 @@ namespace Horde3DUtils
 		
 		This utility function displays the image rendered to the previously initialized OpenGL context
 		on the screen by copying it from the backbuffer to the frontbuffer.
-        *Currently this function is only available on Windows platforms.*
+		*Currently this function is only available on Windows platforms.*
 		
 		Parameters:
 			none
@@ -126,12 +133,16 @@ namespace Horde3DUtils
 	
 	/*	Group: Resource management */
 	/* 	Function: getResourcePath
+			*Deprecated*
 			Returns  the search path of a resource type.
 		
 		This function returns the search path of a specified resource type.
+
+		The function is now marked as deprecated since it is better practice to make all paths
+		relative to the content directory.
 		
 		Parameters:
-			type	- type of resource
+			type  - type of resource
 			
 		Returns:
 			pointer to the search path string
@@ -139,13 +150,17 @@ namespace Horde3DUtils
 	DLL const char *getResourcePath( int type );
 	
 	/* 	Function: setResourcePath
+			*Deprecated*
 			Sets the search path for a resource type.
-		
+
 		This function sets the search path for a specified resource type.
 		
+		The function is now marked as deprecated since it is better practice to make all paths
+		relative to the content directory.
+		
 		Parameters:
-			type	- type of resource
-			path	- path where the resources can be found ((back-)slashes at end are removed)
+			type  - type of resource
+			path  - path where the resources can be found ((back-)slashes at end are removed)
 			
 		Returns:
 			nothing
@@ -161,7 +176,7 @@ namespace Horde3DUtils
 		find them in the specified directories using the given order of the search paths.
 		
 		Parameters:
-			contentDir	- directories where data is located on the drive ((back-)slashes at end are removed)
+			contentDir  - directories where data is located on the drive ((back-)slashes at end are removed)
 			
 		Returns:
 			false if at least one resource could not be loaded, otherwise true
@@ -177,25 +192,25 @@ namespace Horde3DUtils
 		*Note: The memory allocated by this routine has to freed manually using the freeMem function.*
 		
 		Parameters:
-			pixels	- pointer to pixel source data in BGR(A) format from which TGA-image is constructed;
-						-memory layout: pixel with position (x, y) in image (origin of image is upper left
-						 corner) has memory location (y * width + x) * (bpp / 8) in pixels-array  
-			width	- width of source image
-			height	- height of source image
-			bpp		- color bit depth of source data (valid values: 24, 32)
-			outData	- address of a pointer to which the address of the created memory block is written
-			outSize	- variable to which to size of the created memory block is written
+			pixels   - pointer to pixel source data in BGR(A) format from which TGA-image is constructed;
+			           memory layout: pixel with position (x, y) in image (origin of image is upper left
+			           corner) has memory location (y * width + x) * (bpp / 8) in pixels-array  
+			width    - width of source image
+			height   - height of source image
+			bpp      - color bit depth of source data (valid values: 24, 32)
+			outData  - address of a pointer to which the address of the created memory block is written
+			outSize  - variable to which to size of the created memory block is written
 			
 		Returns:
 			false if at least one resource could not be loaded, otherwise true
 	*/
 	DLL bool createTGAImage( const unsigned char *pixels, int width, int height, int bpp,
-							 char **outData, int *outSize );
+	                         char **outData, int *outSize );
 	
 	
 	/*	Group: Scene graph */
 	/* 	Function: pickRay
-	 *  	Calculates the ray originating at the specified camera and window coordinates
+			Calculates the ray originating at the specified camera and window coordinates
 		
 		This utility function takes normalized window coordinates (ranging from 0 to 1 with the
 		origin being the bottom left corner of the window) and returns ray origin and direction for the
@@ -203,8 +218,8 @@ namespace Horde3DUtils
 		on them.
 		
 		Parameters:
-			cameraNode	- camera used for picking
-			nwx, nwy	- normalized window coordinates
+			cameraNode  - camera used for picking
+			nwx, nwy    - normalized window coordinates
 			ox, oy, oz  - calculated ray origin
 			dx, dy, dz  - calculated ray direction
 			
@@ -222,8 +237,8 @@ namespace Horde3DUtils
 		on them. Currently picking is only working for Meshes.
 		
 		Parameters:
-			cameraNode	- camera used for picking
-			nwx, nwy	- normalized window coordinates
+			cameraNode  - camera used for picking
+			nwx, nwy    - normalized window coordinates
 
 		Returns:
 			handle of picked node or 0 if no node was hit
@@ -239,32 +254,35 @@ namespace Horde3DUtils
 		ASCII characters in row-major order. The layer corresponds to the layer parameter of overlays.
 		
 		Parameters:
-			text			- text string to be displayed
-			x, y			- position of the lower left corner of the first character;
-							  for more details on coordinate system see overlay documentation
-			size 			- size (scale) factor of the font
-			layer			- layer index of the font overlays
-			fontMaterialRes	- font material resource used for rendering
+			text              - text string to be displayed
+			x, y              - position of the lower left corner of the first character;
+			                    for more details on coordinate system see overlay documentation
+			size              - size (scale) factor of the font
+			colR, colG, colB  - font color
+			fontMaterialRes   - font material resource used for rendering
+			layer             - layer index of the font overlays
 			
 		Returns:
 			nothing
 	*/
 	DLL void showText( const char *text, float x, float y, float size,
-					   int layer, ResHandle fontMaterialRes );
+	                   float colR, float colG, float colB,
+	                   ResHandle fontMaterialRes, int layer );
 
 	/* 	Function: showFrameStats
 			Shows frame statistics on the screen.
 		
-		This utility function displays statistics for the current frame in the upper left corner of
-		the screen. Since the statistic counters are reset after the call, it should be called exactly
-		once per frame to obtain correct values.
+		This utility function displays an info box with statistics for the current frame on the screen.
+		Since the statistic counters are reset after the call, the function should be called exactly once
+		per frame to obtain correct values.
 		
 		Parameters:
-			fontMaterialRes	- font material resource used for drawing text
-			curFPS			- frames per second with which application is currently running
+			fontMaterialRes	  - font material resource used for drawing text
+			panelMaterialRes  - material resource used for drawing info box
+			mode              - display mode, specifying which data is shown (<= MaxStatMode)
 			
 		Returns:
 			nothing
 	*/
-	DLL void showFrameStats( ResHandle fontMaterialRes, float curFPS );
+	DLL void showFrameStats( ResHandle fontMaterialRes, ResHandle panelMaterialRes, int mode );
 };

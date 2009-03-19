@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -54,12 +54,12 @@ class MeshOptimizer
 {
 public:
 
-	static const int OptCacheSize = 32;
+	static const int maxCacheSize = 16;
 	
 	static unsigned int removeDegeneratedTriangles( TriGroup &triGroup, std::vector< Vertex > &vertices,
 	                                                std::vector< unsigned int > &indices );
-	static void optimizeIndexOrderNV( TriGroup &triGroup, std::vector< Vertex > &vertices,
-	                                  std::vector< unsigned int > &indices );
+	static float calcCacheEfficiency( TriGroup &triGroup, std::vector< unsigned int > &indices,
+                                      const unsigned int cacheSize = maxCacheSize );
 	static void optimizeIndexOrder( TriGroup &triGroup, std::vector< Vertex > &vertices,
 	                                std::vector< unsigned int > &indices );
 };

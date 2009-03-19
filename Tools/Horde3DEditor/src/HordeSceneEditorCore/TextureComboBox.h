@@ -38,7 +38,7 @@ public:
 	TextureComboBox(QWidget* parent = 0);
 	virtual ~TextureComboBox();
 
-	void init(const QString& texture2DPath, const QString& textureCubePath);
+	void init(const QString& texturePath);
 
 	Texture texture() const;
 	void setTexture(Texture texture);
@@ -53,12 +53,11 @@ private slots:
 	void currentChanged(int index);	
 
 private:
-	void addTextures(const QDir& base, const QString dir, int type);
+	void addTextures(const QDir& base, const QString dir);
 
 	QString	m_init;
 
-	QString m_texture2DPath;
-	QString m_textureCubePath;
+	QString m_texturePath;	
 };
 #endif
 

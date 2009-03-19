@@ -2,7 +2,7 @@
 //
 // Horde3D .NET wrapper
 // ----------------------------------
-// Copyright (C) 2007 Martin Burkhard
+// Copyright (C) 2007-2009 Martin Burkhard, Volker Wiendl
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -29,6 +29,11 @@ namespace Horde3DNET
 {
     public static class Horde3DUtils
     {
+        /// <summary>        
+        /// MaxStatMode  - Maximum stat mode number supported in showFrameStats
+        /// </summary>
+        public const int MaxStatMode = 2;
+
         // Utilities functions
         /// <summary>
         /// FreeMem is not supported. The purpose is to free memory allocated by the Horde3D library.
@@ -204,21 +209,33 @@ namespace Horde3DNET
         /// <param name="x">x position of the lower left corner of the first character; for more details on coordinate system see overlay documentation</param>
         /// <param name="y">y position of the lower left corner of the first character; for more details on coordinate system see overlay documentation</param>
         /// <param name="size">size factor of the font</param>
-        /// <param name="layer">layer index of the font overlays (values: 0-7)</param>
+        /// <param name="colR">red part of font color</param>
+        /// <param name="colG">green part of font color</param>
+        /// <param name="colB">blue part of font color</param>
         /// <param name="fontMatRes">font material resource used for rendering</param>
+        /// <param name="layer">layer index of the font overlays (values: 0-7)</param>        
         public static void showText(string text, float x, float y, float size,
-                                             int layer, int fontMatRes)
+                                    float colR, float colG, float colB,
+                                    int fontMatRes, int layer)
         {
             if (text == null) throw new ArgumentNullException("text", Resources.StringNullExceptionString);
             if (layer < 0) throw new ArgumentOutOfRangeException("layer", Resources.UIntOutOfRangeExceptionString);
             if (fontMatRes < 0) throw new ArgumentOutOfRangeException("fontMatRes", Resources.UIntOutOfRangeExceptionString);
 
-            NativeMethodsUtils.showText(text, x, y, size, (int)layer, (uint)fontMatRes);
+            NativeMethodsUtils.showText(text, x, y, size, colR, colG, colB, fontMatRes, layer);
         }
 
-        public static void showFrameStats(int fontMaterialRes, float curFPS)
+        /// <summary>
+        /// This utility function displays an info box with statistics for the current frame on the screen.
+		/// Since the statistic counters are reset after the call, the function should be called exactly once
+		/// per frame to obtain correct values.
+        /// </summary>
+        /// <param name="fontMaterialRes">font material resource used for drawing text</param>
+        /// <param name="panelMaterialRes">material resource used for drawing info box</param>
+        /// <param name="mode">display mode, specifying which data is shown (<= MaxStatMode)</param>
+        public static void showFrameStats(int fontMaterialRes, int panelMaterialRes, int mode)
         {
-            NativeMethodsUtils.showFrameStats(fontMaterialRes, curFPS);
+            NativeMethodsUtils.showFrameStats(fontMaterialRes, panelMaterialRes, mode);
         }
     }
 }

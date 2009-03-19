@@ -107,7 +107,7 @@ void QMeshNode::setMaterial(const Material &material)
 			Horde3D::removeResource(resourceID);
 		resourceID = Horde3D::addResource( ResourceTypes::Material, qPrintable(material.FileName), 0 );		
 		Horde3D::setNodeParami(m_hordeID, MeshNodeParams::MaterialRes, resourceID);
-		Horde3DUtils::loadResourcesFromDisk("");
+		Horde3DUtils::loadResourcesFromDisk(".");
 	}
 	else if (material != QMeshNode::material())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Material", this, "Material", QVariant::fromValue(material), MeshMaterialID));

@@ -82,7 +82,7 @@ public:
 
 	QString materialDir() const
 	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("materialpath", "materials");
+		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("materialpath", "");
 		directory.replace('\\', QDir::separator());
 		directory.replace('/', QDir::separator());
 		return directory;
@@ -91,7 +91,7 @@ public:
 
 	QString textureDir() const
 	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("texturepath", "textures");
+		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("texturepath", "");
 		directory.replace('\\', QDir::separator());
 		directory.replace('/', QDir::separator());
 		return directory;
@@ -100,7 +100,7 @@ public:
 
 	QString animationDir() const
 	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("animationpath", "animations");
+		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("animationpath", "");
 		directory.replace('\\', QDir::separator());
 		directory.replace('/', QDir::separator());
 		return directory;
@@ -110,7 +110,7 @@ public:
 
 	QString shaderDir() const
 	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("shaderpath", "shaders");
+		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("shaderpath", "");
 		directory.replace('\\', QDir::separator());
 		directory.replace('/', QDir::separator());
 		return directory;
@@ -119,7 +119,7 @@ public:
 
 	QString geometryDir() const
 	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("geometrypath", "models");
+		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("geometrypath", "");
 		directory.replace('\\', QDir::separator());
 		directory.replace('/', QDir::separator());
 		return directory;
@@ -128,7 +128,7 @@ public:
 
 	QString sceneGraphDir() const
 	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("scenegraphpath", "models");
+		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("scenegraphpath", "");
 		directory.replace('\\', QDir::separator());
 		directory.replace('/', QDir::separator());
 		return directory;
@@ -137,7 +137,7 @@ public:
 
 	QString effectDir() const
 	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("effectspath", "effects");
+		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("effectspath", "");
 		directory.replace('\\', QDir::separator());
 		directory.replace('/', QDir::separator());
 		return directory;
@@ -146,7 +146,7 @@ public:
 
 	QString pipelineDir() const
 	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("pipelinepath", "pipelines");
+		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("pipelinepath", "");
 		directory.replace('\\', QDir::separator());
 		directory.replace('/', QDir::separator());
 		return directory;

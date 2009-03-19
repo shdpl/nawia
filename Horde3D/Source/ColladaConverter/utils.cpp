@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -29,6 +29,7 @@ using namespace std;
 
 #ifdef PLATFORM_WIN
 #   define WIN32_LEAN_AND_MEAN 1
+#	define NOMINMAX
 #	include <windows.h>
 #endif
 
@@ -85,6 +86,18 @@ bool parseUInt( char *s, unsigned int &pos, unsigned int &value )
 	if( !parseString( s, pos, token ) ) return false;
 
 	value = (unsigned int)atoi( token.c_str() );
+
+	return true;
+}
+
+
+bool parseInt( char *s, unsigned int &pos, int &value )
+{
+	string token;
+	
+	if( !parseString( s, pos, token ) ) return false;
+
+	value = atoi( token.c_str() );
 
 	return true;
 }

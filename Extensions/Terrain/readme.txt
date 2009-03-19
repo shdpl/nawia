@@ -1,7 +1,7 @@
 Horde3D Terrain Extension
 --------------------------
 
-Copyright (C) 2006-2008 Nicolas Schulz and Volker Wiendl
+Copyright (C) 2006-2009 Nicolas Schulz and Volker Wiendl
 
 The Terrain Extension extends Horde3D with the capability to render large landscapes. A special
 level of detail algorithm adapts the resolution of the terrain mesh so that near regions get
@@ -44,14 +44,15 @@ sample shader.
 ChangeLog
 ---------
 
-0.2.0	- Disabled texture compression for height map
-		- Fixed culling issues
-		- Fixed intersection calculation
-		- Fixed visible gaps in terrain (thanks to phoenix64)
+0.2.1   - Adapted to Horde3D 1.0.0 Beta3
+0.2.0   - Disabled texture compression for height map
+        - Fixed culling issues
+        - Fixed intersection calculation
+        - Fixed visible gaps in terrain (thanks to phoenix64)
 		
-0.1.1	- Fixed culling issues and simplified installation
+0.1.1   - Fixed culling issues and simplified installation
 
-0.1.0	- Initial release
+0.1.0   - Initial release
 
 
 ------------------------------------------------------------------------------------------

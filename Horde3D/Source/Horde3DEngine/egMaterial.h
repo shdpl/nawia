@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@
 #include "egPrerequisites.h"
 #include "egResource.h"
 #include "egShader.h"
+#include "egTextures.h"
 
 
 // =================================================================================================
@@ -40,41 +41,26 @@ struct MaterialResParams
 	{
 		Class = 400,
 		Link,
-		Shader,
-		TexUnit_0,
-		TexUnit_1,
-		TexUnit_2,
-		TexUnit_3,
-		TexUnit_4,
-		TexUnit_5,
-		TexUnit_6,
-		TexUnit_7,
-		TexUnit_8,
-		TexUnit_9,
-		TexUnit_10,
-		TexUnit_11
+		Shader
 	};	
 };
 
 // =================================================================================================
 
-struct TexUnit
+struct MatSampler
 {
-	uint32     unit;
-	PResource  texRes;
-	
-
-	TexUnit(): unit( 0 ) {}
+	std::string       name;
+	PTextureResource  texRes;
 };
 
 
-struct Uniform
+struct MatUniform
 {
 	std::string  name;
 	float        values[4];	
 
 
-	Uniform()
+	MatUniform()
 	{
 		values[0] = 0; values[1] = 0; values[2] = 0; values[3] = 0;
 	}
@@ -92,13 +78,11 @@ private:
 	PShaderResource             _shaderRes;
 	uint32                      _combMask;
 	std::string                 _class;
-	std::vector< TexUnit >      _texUnits;
-	std::vector< Uniform >      _uniforms;
+	std::vector< MatSampler >   _samplers;
+	std::vector< MatUniform >   _uniforms;
 	std::vector< std::string >  _shaderFlags;
-	PMaterialResource           _matLink;	
+	PMaterialResource           _matLink;
 
-	ResHandle getTexUnit( int unit );
-	bool setTexUnit( int unit, ResHandle texRes );
 	bool raiseError( const std::string &msg, int line = -1 );
 
 public:
@@ -114,6 +98,7 @@ public:
 	void release();
 	bool load( const char *data, int size );
 	bool setUniform( const std::string &name, float a, float b, float c, float d );
+	bool setSampler( const std::string &name, TextureResource *texRes );
 	bool isOfClass( const std::string &theClass );
 
 	int getParami( int param );

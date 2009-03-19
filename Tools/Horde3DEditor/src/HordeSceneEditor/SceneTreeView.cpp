@@ -59,7 +59,7 @@ public:
 	void undo()
 	{
 		QRemoveXmlNodeUndoCommand::undo();
-		Horde3DUtils::loadResourcesFromDisk("");
+		Horde3DUtils::loadResourcesFromDisk(".");
 	}	
 
 };
@@ -110,7 +110,7 @@ public:
 				newNode->blockSignals(false);								
 			}
 		}
-		Horde3DUtils::loadResourcesFromDisk("");
+		Horde3DUtils::loadResourcesFromDisk(".");
 		qApp->restoreOverrideCursor();
 	}
 
@@ -132,10 +132,11 @@ SceneTreeView::~SceneTreeView()
 bool SceneTreeView::loadSceneGraph(const QString& fileName)
 {
 	closeTree();
-	QDomElement root = QDomDocument().createElement("Reference");
-	root.setAttribute("name", fileName);	
-	root.setAttribute("sceneGraph", QDir(Horde3DUtils::getResourcePath(ResourceTypes::SceneGraph)).relativeFilePath(fileName));
-	m_rootNode = new QReferenceNode(root, 0, 0, 0);
+	QDomDocument root;
+	root.setContent( QString( "<Reference/>" ) );
+	root.documentElement().setAttribute("name", fileName);	
+	root.documentElement().setAttribute("sceneGraph", QDir(Horde3DUtils::getResourcePath(ResourceTypes::SceneGraph)).relativeFilePath(fileName));
+	m_rootNode = new QReferenceNode(root.documentElement(), 0, 0, 0);
 	if (!m_rootNode->model())
 	{		
 		delete m_rootNode;

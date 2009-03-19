@@ -36,10 +36,9 @@ Importer::Importer()
 	m_sourceResourcePaths[ResourceTypes::SceneGraph] = settings.value("sceneGraphDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"models").toString();
 	m_sourceResourcePaths[ResourceTypes::Geometry]   = settings.value("sceneGraphDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"models").toString();
 	m_sourceResourcePaths[ResourceTypes::Material]   = settings.value("materialDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"materials").toString();		
-	m_sourceResourcePaths[ResourceTypes::Texture2D]  = settings.value("textureDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"textures").toString();		
-	m_sourceResourcePaths[ResourceTypes::TextureCube]= settings.value("textureDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"textures").toString();		
+	m_sourceResourcePaths[ResourceTypes::Texture]  = settings.value("textureDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"textures").toString();			
 	m_sourceResourcePaths[ResourceTypes::Shader]     = settings.value("shaderDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"shaders").toString();		
-	m_sourceResourcePaths[ResourceTypes::Effect]     = settings.value("effectsDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"effects").toString();		
+	m_sourceResourcePaths[ResourceTypes::ParticleEffect] = settings.value("effectsDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"effects").toString();		
 	m_sourceResourcePaths[ResourceTypes::Code]       = settings.value("shaderDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"shaders").toString();		
 	m_sourceResourcePaths[ResourceTypes::Animation]  = settings.value("animationDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"animations").toString();		
 	m_sourceResourcePaths[ResourceTypes::Pipeline]   = settings.value("pipelineDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"pipelines").toString();		
@@ -297,14 +296,9 @@ void Importer::importMaterialFile(const QFileInfo& materialFile, const QString& 
 	QDomNodeList textures = material.documentElement().elementsByTagName("TexUnit");
 	for (int j=0; j<textures.count(); ++j)
 	{
-		if (textures.at(j).toElement().attribute("type")=="CUBE")
 			importTextureFile(
-				QFileInfo(m_sourceResourcePaths[ResourceTypes::TextureCube], textures.at(j).toElement().attribute("map")), 
-				textures.at(j).toElement().attribute("map"), ResourceTypes::TextureCube);
-		else
-			importTextureFile(
-				QFileInfo(m_sourceResourcePaths[ResourceTypes::Texture2D], textures.at(j).toElement().attribute("map")),
-				textures.at(j).toElement().attribute("map"), ResourceTypes::Texture2D);		
+				QFileInfo(m_sourceResourcePaths[ResourceTypes::Texture], textures.at(j).toElement().attribute("map")),
+				textures.at(j).toElement().attribute("map"), ResourceTypes::Texture);		
 	}
 }
 
@@ -419,9 +413,9 @@ void Importer::importGeometrieElement(const QDomElement& element)
 
 void Importer::importEffectFile(const QFileInfo& effectFile, const QString& targetFileName, const QString& customData)
 {
-	QFileInfo target(m_targetResourcePaths[ResourceTypes::Effect], targetFileName);
+	QFileInfo target(m_targetResourcePaths[ResourceTypes::ParticleEffect], targetFileName);
 	if (!target.absoluteDir().exists())
-		m_targetResourcePaths[ResourceTypes::Effect].mkpath(target.absolutePath());		
+		m_targetResourcePaths[ResourceTypes::ParticleEffect].mkpath(target.absolutePath());		
 	const CopyJob job(effectFile, target);
 	if (!job.exec() && !m_filesToOverwrite.contains(job) && !m_alreadyCopied.contains(job))
 	{
@@ -447,7 +441,7 @@ void Importer::importEffectElement(const QDomElement& element)
 {
 	if (element.hasAttribute("effect"))
 	{
-		QFileInfo effectFile(m_sourceResourcePaths[ResourceTypes::Effect], element.attribute("effect"));
+		QFileInfo effectFile(m_sourceResourcePaths[ResourceTypes::ParticleEffect], element.attribute("effect"));
 		importEffectFile(effectFile, element.attribute("effect"), QString());
 	}
 	QDomNodeList childs = element.childNodes();

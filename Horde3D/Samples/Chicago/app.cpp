@@ -5,7 +5,7 @@
 //
 // Sample Application
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This sample source file is not covered by the LGPL as the rest of the SDK
@@ -35,7 +35,8 @@ Application::Application( const string &contentDir )
 	_x = 15; _y = 3; _z = 20; _rx = -10; _ry = 60; _velocity = 10.0f;
 	_curFPS = 30;
 
-	_freeze = false; _showStats = false; _debugViewMode = false; _wireframeMode = false;
+	_statMode = 0;
+	_freeze = false; _debugViewMode = false; _wireframeMode = false;
 	_cam = 0;
 
 	_contentDir = contentDir;
@@ -50,40 +51,28 @@ bool Application::init()
 		Horde3DUtils::dumpMessages();
 		return false;
 	}
-	
-	// Set paths for resources
-	Horde3DUtils::setResourcePath( ResourceTypes::SceneGraph, "models" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Geometry, "models" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Animation, "models" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Material, "materials" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Code, "shaders" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Shader, "shaders" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Texture2D, "textures" );
-	Horde3DUtils::setResourcePath( ResourceTypes::TextureCube, "textures" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Effect, "effects" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Pipeline, "pipelines" );
 
 	// Set options
 	Horde3D::setOption( EngineOptions::LoadTextures, 1 );
 	Horde3D::setOption( EngineOptions::TexCompression, 0 );
-	Horde3D::setOption( EngineOptions::AnisotropyFactor, 8 );
+	Horde3D::setOption( EngineOptions::MaxAnisotropy, 4 );
 	Horde3D::setOption( EngineOptions::ShadowMapSize, 2048 );
 	Horde3D::setOption( EngineOptions::FastAnimation, 1 );
 
 	// Add resources
 	// Pipelines
-	_forwardPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "forward.pipeline.xml", 0 );
-	_deferredPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "deferred.pipeline.xml", 0 );
-	// Font
-	_fontMatRes = Horde3D::addResource( ResourceTypes::Material, "font.material.xml", 0 );
-	// Logo
-	_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "logo.material.xml", 0 );
+	_forwardPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/forward.pipeline.xml", 0 );
+	_deferredPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/deferred.pipeline.xml", 0 );
+	// Overlays
+	_fontMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/font.material.xml", 0 );
+	_panelMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/panel.material.xml", 0 );
+	_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/logo.material.xml", 0 );
 	// Shader for deferred shading
-	ResHandle lightMatRes = Horde3D::addResource( ResourceTypes::Material, "light.material.xml", 0 );
+	ResHandle lightMatRes = Horde3D::addResource( ResourceTypes::Material, "materials/light.material.xml", 0 );
 	// Environment
-	ResHandle envRes = Horde3D::addResource( ResourceTypes::SceneGraph, "platform.scene.xml", 0 );
+	ResHandle envRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/platform/platform.scene.xml", 0 );
 	// Skybox
-	ResHandle skyBoxRes = Horde3D::addResource( ResourceTypes::SceneGraph, "skybox.scene.xml", 0 );
+	ResHandle skyBoxRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/skybox/skybox.scene.xml", 0 );
 	
 	// Load resources
 	Horde3DUtils::loadResourcesFromDisk( _contentDir.c_str() );
@@ -134,15 +123,20 @@ void Application::mainLoop( float fps )
 	// Set camera parameters
 	Horde3D::setNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 );
 	
-	if( _showStats )
+	// Show stats
+	Horde3DUtils::showFrameStats( _fontMatRes, _panelMatRes, _statMode );
+	if( _statMode > 0 )
 	{
-		Horde3DUtils::showFrameStats( _fontMatRes, _curFPS );
+		if( Horde3D::getNodeParami( _cam, CameraNodeParams::PipelineRes ) == _forwardPipeRes )
+			Horde3DUtils::showText( "Pipeline: forward", 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+		else
+			Horde3DUtils::showText( "Pipeline: deferred", 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 	}
 
 	// Show logo
-	Horde3D::showOverlay( 0.75f, 0, 0, 0, 1, 0, 1, 0,
-						  1, 0.2f, 1, 1, 0.75f, 0.2f, 0, 1,
-						  7, _logoMatRes );
+	Horde3D::showOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
+	                      1, 1, 1, 0, 1, 0.8f, 1, 1,
+	                      1, 1, 1, 1, _logoMatRes, 7 );
 	
 	// Render scene
 	Horde3D::render( _cam );
@@ -197,7 +191,10 @@ void Application::keyPressEvent( int key )
 		_wireframeMode = !_wireframeMode;
 	
 	if( key == 266 )	// F9
-		_showStats = !_showStats;
+	{
+		_statMode += 1;
+		if( _statMode > Horde3DUtils::MaxStatMode ) _statMode = 0;
+	}
 }
 
 

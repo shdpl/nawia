@@ -52,10 +52,9 @@ void QEmitterNodePage::initializePage()
 			Horde3DUtils::getResourcePath(ResourceTypes::Material), 
 			Horde3DUtils::getResourcePath(ResourceTypes::Code),
 			Horde3DUtils::getResourcePath(ResourceTypes::Shader),
-			Horde3DUtils::getResourcePath(ResourceTypes::Texture2D),
-			Horde3DUtils::getResourcePath(ResourceTypes::TextureCube)
+			Horde3DUtils::getResourcePath(ResourceTypes::Texture)			
 		);	
-		m_effect->init( Horde3DUtils::getResourcePath(ResourceTypes::Effect) );	
+		m_effect->init( Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect) );	
 	}
 }
 

@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -42,11 +42,4 @@
 
 #define new MYDEBUG_NEW
 
-#endif
-
-
-#if defined( _DEBUG )
-#	define ASSERT( exp ) assert( exp )
-#else
-#	define ASSERT( exp )
 #endif

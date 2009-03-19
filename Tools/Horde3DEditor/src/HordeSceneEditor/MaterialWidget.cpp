@@ -124,8 +124,7 @@ void MaterialWidget::closeMaterial()
 	m_saveButton->setEnabled(false);
 	if (parentWidget())
 		parentWidget()->setWindowTitle(tr("Material Settings"));
-	m_materialXml = QDomDocument();
-	//m_materialXml.appendChild(m_materialXml.createElement("Material"));
+	m_materialXml.setContent( QString("<Material/>") );	
 	m_texUnitCombo->clear();	
 	m_uniformCombo->clear();
 }
@@ -218,12 +217,11 @@ void MaterialWidget::addTexUnit()
 	QString type = QInputDialog::getItem(this, tr("Texture type"), tr("Texture type"), types, 0, false, &ok);
 	if (!ok) return;
 	HordePathSettings paths;
-	paths.Texture2DPath = Horde3DUtils::getResourcePath(ResourceTypes::Texture2D);
-	paths.TextureCubePath = Horde3DUtils::getResourcePath(ResourceTypes::TextureCube);
-	QString texture = HordeFileDialog::getTextureFile(paths, this, tr("Select texture"), type == "CUBE" ? ResourceTypes::TextureCube : ResourceTypes::Texture2D);
+	paths.TexturePath = Horde3DUtils::getResourcePath(ResourceTypes::Texture);	
+	QString texture = HordeFileDialog::getTextureFile(paths, this, tr("Select texture") );
 	if (!texture.isEmpty())
 	{				
-		QDomElement element(m_materialXml.documentElement().appendChild(QDomDocument().createElement("TexUnit")).toElement());
+		QDomElement element(m_materialXml.documentElement().appendChild( m_materialXml.createElement("TexUnit")).toElement());
 		element.setAttribute("unit", m_texUnitCombo->count());
 		element.setAttribute("type", type);
 		element.setAttribute("map", texture);
@@ -253,7 +251,7 @@ void MaterialWidget::addUniform()
 			m_uniformCombo->setCurrentIndex(index);
 		else
 		{
-			QDomElement uniform = m_materialXml.documentElement().appendChild(QDomDocument().createElement("Uniform")).toElement();
+			QDomElement uniform = m_materialXml.documentElement().appendChild( m_materialXml.createElement("Uniform")).toElement();
 			uniform.setAttribute("name", uniformName);
 			QUniform* uni = new QUniform(uniform);
 			m_uniformCombo->addItem(uniformName, QVariant::fromValue<void*>(uni));
@@ -294,7 +292,7 @@ void MaterialWidget::shaderChanged()
 {
 	QDomElement shader = m_materialXml.documentElement().firstChildElement("Shader");
 	if (shader.isNull() && !m_shader->currentText().isEmpty())
-		shader = m_materialXml.insertBefore(QDomDocument().createElement("Shader"), QDomNode()).toElement();
+		shader = m_materialXml.insertBefore( m_materialXml.createElement("Shader"), QDomNode()).toElement();
 	shader.setAttribute("source", m_shader->currentText());
 	if ( m_shader->currentText().isEmpty() )
 		m_materialXml.documentElement().removeChild(shader);

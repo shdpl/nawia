@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -50,6 +50,18 @@ SceneNode::SceneNode( const SceneNodeTpl &tpl ) :
 
 SceneNode::~SceneNode()
 {
+}
+
+
+void SceneNode::setActivation( bool active )
+{
+	_active = active;
+	
+	// Set same activation state for children
+	for( size_t i = 0, s = _children.size(); i < s; ++i )
+	{
+		if( _children[i]->_active != active ) _children[i]->setActivation( active );
+	}
 }
 
 
@@ -164,6 +176,12 @@ bool SceneNode::setParamstr( int param, const char *value )
 }
 
 
+uint32 SceneNode::calcLodLevel( const Vec3f &viewPoint )
+{
+	return 0;
+}
+
+
 bool SceneNode::canAttach( SceneNode &/*parent*/ )
 {
 	return true;
@@ -172,13 +190,14 @@ bool SceneNode::canAttach( SceneNode &/*parent*/ )
 
 void SceneNode::markChildrenDirty()
 {	
-	for( uint32 i = 0, s = (uint32)_children.size(); i < s; ++i )
+	for( vector< SceneNode * >::iterator itr = _children.begin(),
+	     end = _children.end(); itr != end; ++itr )
 	{
-		if( !_children[i]->_dirty )
+		if( !(*itr)->_dirty )
 		{	
-			_children[i]->_dirty = true;
-			_children[i]->_transformed = true;
-			_children[i]->markChildrenDirty();
+			(*itr)->_dirty = true;
+			(*itr)->_transformed = true;
+			(*itr)->markChildrenDirty();
 		}
 	}
 }
@@ -210,8 +229,7 @@ bool SceneNode::update()
 	
 	// Calculate absolute matrix
 	if( _parent != 0x0 )
-		//_absTrans = _parent->_absTrans * _relTrans;
-		_absTrans.fastMult( _parent->_absTrans, _relTrans );
+		Matrix4f::fastMult43( _absTrans, _parent->_absTrans, _relTrans );
 	else
 		_absTrans = _relTrans;
 	
@@ -748,7 +766,7 @@ void SceneManager::castRayInternal( SceneNode *node )
 				_castRayResults.push_back( crr );
 			}
 
-			if( _rayNum > 0 && (int) _castRayResults.size() > _rayNum )
+			if( _rayNum > 0 && (int)_castRayResults.size() > _rayNum )
 			{
 				_castRayResults.pop_back();
 			}
@@ -774,13 +792,13 @@ int SceneManager::castRay( SceneNode *node, const Vec3f &rayOrig, const Vec3f &r
 
 	castRayInternal( node );
 
-	return (int) _castRayResults.size();
+	return (int)_castRayResults.size();
 }
 
 
 bool SceneManager::getCastRayResult( int index, CastRayResult &crr )
 {
-	if( (uint32) index < _castRayResults.size() )
+	if( (uint32)index < _castRayResults.size() )
 	{
 		crr = _castRayResults[index];
 
@@ -819,16 +837,9 @@ int SceneManager::checkNodeVisibility( SceneNode *node, CameraNode *cam, bool ch
 	
 	// Frustum culling
 	if( cam->getFrustum().cullBox( node->getBBox() ) )
-	{
 		return -1;
-	}
-	else if( node->getType() == SceneNodeTypes::Model )
-	{
-		// Calculate LOD level
-		return ((ModelNode *)node)->calcLodLevel( cam->getAbsPos() );
-	}
+	else if( calcLod )
+		return node->calcLodLevel( cam->getAbsPos() );
 	else
-	{
 		return 0;
-	}
 }

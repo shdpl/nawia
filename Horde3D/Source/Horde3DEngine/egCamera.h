@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -58,7 +58,7 @@ struct CameraNodeParams
 struct CameraNodeTpl : public SceneNodeTpl
 {
 	PPipelineResource   pipeRes;
-	PTexture2DResource  outputTex;
+	PTextureResource    outputTex;
 	float               leftPlane, rightPlane;
 	float               bottomPlane, topPlane;
 	float               nearPlane, farPlane;
@@ -84,7 +84,7 @@ class CameraNode : public SceneNode
 private:
 
 	PPipelineResource   _pipelineRes;
-	PTexture2DResource  _outputTex;
+	PTextureResource    _outputTex;
 	Matrix4f            _viewMat, _projMat;
 	Frustum             _frustum;
 	Vec3f               _absPos;
@@ -110,7 +110,7 @@ public:
 	int getParami( int param );
 	bool setParami( int param, int value );
 
-	void setupViewParams( float fov, float aspect, float near, float far );
+	void setupViewParams( float fov, float aspect, float nearPlane, float farPlane );
 
 	const Frustum &getFrustum() { return _frustum; }
 	const Matrix4f &getViewMat() { return _viewMat; }

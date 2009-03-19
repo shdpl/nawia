@@ -5,7 +5,7 @@
 //
 // Sample Application
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This sample source file is not covered by the LGPL as the rest of the SDK
@@ -26,20 +26,22 @@ class Application
 {
 private:
 
-	bool			_keys[320];
-	float			_x, _y, _z, _rx, _ry;	// Viewer position and orientation
-	float			_velocity;				// Velocity for movement
-	float			_curFPS;
-	std::stringstream	_text;
+	bool               _keys[320];
+	float              _x, _y, _z, _rx, _ry;  // Viewer position and orientation
+	float              _velocity;  // Velocity for movement
+	float              _curFPS;
+	std::stringstream  _text;
 
-	bool			_freeze, _showStats, _debugViewMode, _wireframeMode;
-	float			_animTime, _weight;
+	int                _statMode;
+	bool               _freeze, _debugViewMode, _wireframeMode;
+	float              _animTime, _weight;
 	
 	// Engine objects
-	ResHandle		_pipeRes, _fontMatRes, _logoMatRes, _hdrPipeRes, _forwardPipeRes;
-	NodeHandle		_cam, _knight, _particleSys;
+	ResHandle          _fontMatRes, _panelMatRes;
+	ResHandle          _pipeRes, _logoMatRes, _hdrPipeRes, _forwardPipeRes;
+	NodeHandle         _cam, _knight, _particleSys;
 
-	std::string			_contentDir;
+	std::string        _contentDir;
 
 	void keyHandler();
 

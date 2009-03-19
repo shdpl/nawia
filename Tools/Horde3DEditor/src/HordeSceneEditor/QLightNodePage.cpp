@@ -56,8 +56,7 @@ void QLightNodePage::initializePage()
 		m_material->init(
 			field("materialdir").toString(), 
 			field("shaderdir").toString(), 
-			field("shaderdir").toString(), 
-			field("texturedir").toString(), 
+			field("shaderdir").toString(), 			
 			field("texturedir").toString()
 		);
 	// Hack to check if Horde3D has been initialized already
@@ -65,9 +64,8 @@ void QLightNodePage::initializePage()
 		m_material->init(
 			Horde3DUtils::getResourcePath(ResourceTypes::Material), 
 			Horde3DUtils::getResourcePath(ResourceTypes::Code),
-			Horde3DUtils::getResourcePath(ResourceTypes::Shader),
-			Horde3DUtils::getResourcePath(ResourceTypes::Texture2D),
-			Horde3DUtils::getResourcePath(ResourceTypes::TextureCube)
+			Horde3DUtils::getResourcePath(ResourceTypes::Shader),			
+			Horde3DUtils::getResourcePath(ResourceTypes::Texture)
 		);	
 }
 

@@ -44,12 +44,8 @@ void QTerrainNodePage::initializePage()
 		Horde3DUtils::getResourcePath(ResourceTypes::Material), 
 		Horde3DUtils::getResourcePath(ResourceTypes::Code),
 		Horde3DUtils::getResourcePath(ResourceTypes::Shader),
-		Horde3DUtils::getResourcePath(ResourceTypes::Texture2D),
-		Horde3DUtils::getResourcePath(ResourceTypes::TextureCube)
+		Horde3DUtils::getResourcePath(ResourceTypes::Texture)		
 		);	
-	m_heightMap->init(
-		Horde3DUtils::getResourcePath(ResourceTypes::Texture2D),
-		Horde3DUtils::getResourcePath(ResourceTypes::TextureCube)
-		);
+	m_heightMap->init( Horde3DUtils::getResourcePath(ResourceTypes::Texture) );
 }
 

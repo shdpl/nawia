@@ -36,16 +36,13 @@ TextureComboBox::~TextureComboBox()
 {
 }
 
-void TextureComboBox::init(const QString& texture2DPath, const QString& textureCubePath)
+void TextureComboBox::init(const QString& texturePath)
 {
 	clear();
-	m_texture2DPath = texture2DPath;
-	m_textureCubePath = textureCubePath;
-	
-	addTextures(texture2DPath, texture2DPath, ResourceTypes::Texture2D);
-	addTextures(textureCubePath, textureCubePath, ResourceTypes::TextureCube);
-	addItem(tr("Import Texture2D from Repository"), QVariant((int) ResourceTypes::Texture2D));
-	addItem(tr("Import Cube-Texture from Repository"), QVariant((int) ResourceTypes::TextureCube));
+	m_texturePath = texturePath;
+
+	addTextures(texturePath, texturePath);
+	addItem(tr("Import Texture2D from Repository"), QVariant((int) ResourceTypes::Texture));
 
 }
 
@@ -63,12 +60,11 @@ void TextureComboBox::setTexture(Texture texture)
 
 void TextureComboBox::currentChanged(int index)
 {
-	if ( itemData(index).isValid() && ( itemData(index) == QVariant((int) ResourceTypes::Texture2D) || itemData(index) == QVariant((int) ResourceTypes::TextureCube) ) )
+	if ( itemData(index).isValid() && itemData(index) == QVariant((int) ResourceTypes::Texture) )
 	{
 		HordePathSettings paths;
-		paths.Texture2DPath = m_texture2DPath;
-		paths.TextureCubePath = m_textureCubePath;
-		QString newTexture = HordeFileDialog::getTextureFile(paths, this, tr("Select texture to import"), (ResourceTypes::List) itemData(index).toInt());
+		paths.TexturePath = m_texturePath;
+		QString newTexture = HordeFileDialog::getTextureFile(paths, this, tr("Select texture to import") );
 		if (!newTexture.isEmpty())
 		{
 			if (findText(newTexture) == -1)
@@ -95,10 +91,10 @@ void TextureComboBox::currentChanged(int index)
 	}
 }
 
-void TextureComboBox::addTextures(const QDir& base, const QString dir, int type)
+void TextureComboBox::addTextures(const QDir& base, const QString dir)
 {
 	QStringList filter;
-	filter << "*.jpg" << "*.png" << "*.tga" << "*.bmp" << "*.pgm";
+	filter << "*.jpg" << "*.png" << "*.tga" << "*.bmp" << "*.pgm" << "*.dds" << "*.psd";
 	QList<QFileInfo> textures = QDir(dir).entryInfoList(filter, QDir::Files | QDir::Readable);
 	foreach(QFileInfo texture, textures)
 	{
@@ -109,6 +105,6 @@ void TextureComboBox::addTextures(const QDir& base, const QString dir, int type)
 	QList<QFileInfo> textureDirs = QDir(dir).entryInfoList(QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot);
 	foreach(QFileInfo directory, textureDirs)
 	{
-		addTextures(base, directory.absoluteFilePath(), type);
+		addTextures(base, directory.absoluteFilePath() );
 	}
 }

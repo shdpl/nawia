@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -71,8 +71,8 @@ SceneNodeTpl *CameraNode::parsingFunc( map< string, string > &attribs )
 	itr = attribs.find( "outputTex" );
 	if( itr != attribs.end() )
 	{	
-		cameraTpl->outputTex = (Texture2DResource *)Modules::resMan().findResource(
-			ResourceTypes::Texture2D, itr->second );
+		cameraTpl->outputTex = (TextureResource *)Modules::resMan().findResource(
+			ResourceTypes::Texture, itr->second );
 	}
 	itr = attribs.find( "outputBufferIndex" );
 	if( itr != attribs.end() ) cameraTpl->outputBufferIndex = atoi( itr->second.c_str() );
@@ -215,12 +215,13 @@ bool CameraNode::setParami( int param, int value )
 		return true;
 	case CameraNodeParams::OutputTex:
 		res = Modules::resMan().resolveResHandle( value );
-		if( res != 0x0 && res->getType() != ResourceTypes::Texture2D )
+		if( res != 0x0 && (res->getType() != ResourceTypes::Texture ||
+			((TextureResource *)res)->getTexType() != TextureTypes::Tex2D) )
 		{	
-			Modules::log().writeDebugInfo( "Invalid Texture2D resource for Camera node %i", _handle );
+			Modules::log().writeDebugInfo( "Invalid Texture resource for Camera node %i", _handle );
 			return false;
 		}
-		_outputTex = (Texture2DResource *)res;
+		_outputTex = (TextureResource *)res;
 		return true;
 	case CameraNodeParams::OutputBufferIndex:
 		_outputBufferIndex = value;
@@ -246,17 +247,17 @@ bool CameraNode::setParami( int param, int value )
 }
 
 
-void CameraNode::setupViewParams( float fov, float aspect, float near, float far )
+void CameraNode::setupViewParams( float fov, float aspect, float nearPlane, float farPlane )
 {
-	float ymax = near * tanf( degToRad( fov / 2 ) );
+	float ymax = nearPlane * tanf( degToRad( fov / 2 ) );
 	float xmax = ymax * aspect;
 
 	_frustLeft = -xmax;
 	_frustRight = xmax;
 	_frustBottom = -ymax;
 	_frustTop = ymax;
-	_frustNear = near;
-	_frustFar = far;
+	_frustNear = nearPlane;
+	_frustFar = farPlane;
 	
 	markDirty();
 }

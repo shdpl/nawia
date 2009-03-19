@@ -47,7 +47,7 @@ void QTexUnit::setUnit(const int unit)
 
 Texture QTexUnit::map() const
 {
-	return Texture(m_texUnitNode.attribute("map"), m_texUnitNode.attribute("type", "2D").compare("CUBE") == 0 ? ResourceTypes::TextureCube : ResourceTypes::Texture2D);
+	return Texture(m_texUnitNode.attribute("map"), ResourceTypes::Texture );
 
 }
 

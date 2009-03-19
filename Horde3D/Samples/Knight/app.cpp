@@ -5,7 +5,7 @@
 //
 // Sample Application
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This sample source file is not covered by the LGPL as the rest of the SDK
@@ -35,7 +35,8 @@ Application::Application( const std::string &contentDir )
 	_x = 5; _y = 3; _z = 19; _rx = 7; _ry = 15; _velocity = 10.0f;
 	_curFPS = 30;
 
-	_freeze = false; _showStats = false; _debugViewMode = false; _wireframeMode = false;
+	_statMode = 0;
+	_freeze = false; _debugViewMode = false; _wireframeMode = false;
 	_animTime = 0; _weight = 1.0f;
 	_cam = 0;
 
@@ -51,42 +52,30 @@ bool Application::init()
 		Horde3DUtils::dumpMessages();
 		return false;
 	}
-	
-	// Set paths for resources
-	Horde3DUtils::setResourcePath( ResourceTypes::SceneGraph, "models" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Geometry, "models" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Animation, "models" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Material, "materials" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Code, "shaders" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Shader, "shaders" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Texture2D, "textures" );
-	Horde3DUtils::setResourcePath( ResourceTypes::TextureCube, "textures" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Effect, "effects" );
-	Horde3DUtils::setResourcePath( ResourceTypes::Pipeline, "pipelines" );
 
 	// Set options
 	Horde3D::setOption( EngineOptions::LoadTextures, 1 );
 	Horde3D::setOption( EngineOptions::TexCompression, 0 );
 	Horde3D::setOption( EngineOptions::FastAnimation, 0 );
-	Horde3D::setOption( EngineOptions::AnisotropyFactor, 8 );
+	Horde3D::setOption( EngineOptions::MaxAnisotropy, 4 );
 	Horde3D::setOption( EngineOptions::ShadowMapSize, 2048 );
 
 	// Add resources
 	// Pipelines
-	_hdrPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "hdr.pipeline.xml", 0 );
-	_forwardPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "forward.pipeline.xml", 0 );
-	// Font
-	_fontMatRes = Horde3D::addResource( ResourceTypes::Material, "font.material.xml", 0 );
-	// Logo
-	_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "logo.material.xml", 0 );
+	_hdrPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/hdr.pipeline.xml", 0 );
+	_forwardPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/forward.pipeline.xml", 0 );
+	// Overlays
+	_fontMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/font.material.xml", 0 );
+	_panelMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/panel.material.xml", 0 );
+	_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/logo.material.xml", 0 );
 	// Environment
-	ResHandle envRes = Horde3D::addResource( ResourceTypes::SceneGraph, "sphere.scene.xml", 0 );
+	ResHandle envRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/sphere/sphere.scene.xml", 0 );
 	// Knight
-	ResHandle knightRes = Horde3D::addResource( ResourceTypes::SceneGraph, "knight.scene.xml", 0 );
-	ResHandle knightAnim1Res = Horde3D::addResource( ResourceTypes::Animation, "knight_order.anim", 0 );
-	ResHandle knightAnim2Res = Horde3D::addResource( ResourceTypes::Animation, "knight_attack.anim", 0 );
+	ResHandle knightRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/knight/knight.scene.xml", 0 );
+	ResHandle knightAnim1Res = Horde3D::addResource( ResourceTypes::Animation, "animations/knight_order.anim", 0 );
+	ResHandle knightAnim2Res = Horde3D::addResource( ResourceTypes::Animation, "animations/knight_attack.anim", 0 );
 	// Particle system
-	ResHandle particleSysRes = Horde3D::addResource( ResourceTypes::SceneGraph, "particleSys1.scene.xml", 0 );
+	ResHandle particleSysRes = Horde3D::addResource( ResourceTypes::SceneGraph, "particles/particleSys1/particleSys1.scene.xml", 0 );
 	
 	// Load resources
 	Horde3DUtils::loadResourcesFromDisk( _contentDir.c_str() );
@@ -121,7 +110,7 @@ bool Application::init()
 	Horde3D::setNodeParamf( light, LightNodeParams::Col_B, 0.7f );
 
 	// Customize post processing effects
-	NodeHandle matRes = Horde3D::findResource( ResourceTypes::Material, "postHDR.material.xml" );
+	NodeHandle matRes = Horde3D::findResource( ResourceTypes::Material, "pipelines/postHDR.material.xml" );
 	// hdrParams: exposure, brightpass threshold, brightpass offset (see shader for description)
 	Horde3D::setMaterialUniform( matRes, "hdrParams", 2.5f, 0.5f, 0.08f, 0 );
 	
@@ -155,20 +144,20 @@ void Application::mainLoop( float fps )
 	// Set camera parameters
 	Horde3D::setNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 );
 	
-	if( _showStats )
-	{
-		Horde3DUtils::showFrameStats( _fontMatRes, _curFPS );
-
+	// Show stats
+	Horde3DUtils::showFrameStats( _fontMatRes, _panelMatRes, _statMode );
+	if( _statMode > 0 )
+	{	
 		// Display weight
 		_text.str( "" );
 		_text << fixed << setprecision( 2 ) << "Weight: " << _weight;
-		Horde3DUtils::showText( _text.str().c_str(), 0, 0.78f, 0.03f, 0, _fontMatRes );
+		Horde3DUtils::showText( _text.str().c_str(), 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 	}
 
 	// Show logo
-	Horde3D::showOverlay( 0.75f, 0, 0, 0, 1, 0, 1, 0,
-						  1, 0.2f, 1, 1, 0.75f, 0.2f, 0, 1,
-						  7, _logoMatRes );
+	Horde3D::showOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
+	                      1, 1, 1, 0, 1, 0.8f, 1, 1,
+	                      1, 1, 1, 1, _logoMatRes, 7 );
 	
 	// Render scene
 	Horde3D::render( _cam );
@@ -221,7 +210,10 @@ void Application::keyPressEvent( int key )
 		_wireframeMode = !_wireframeMode;
 	
 	if( key == 266 )	// F9
-		_showStats = !_showStats;
+	{
+		_statMode += 1;
+		if( _statMode > Horde3DUtils::MaxStatMode ) _statMode = 0;
+	}
 }
 
 

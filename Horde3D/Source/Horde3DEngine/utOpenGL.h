@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -36,6 +36,7 @@
 
 #ifdef PLATFORM_WIN
 #   define WIN32_LEAN_AND_MEAN 1
+#	define NOMINMAX
 #   include <windows.h>
 #	include <stddef.h>
 #   define GLAPI __declspec( dllimport )

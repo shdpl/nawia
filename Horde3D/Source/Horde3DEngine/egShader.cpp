@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -73,6 +73,7 @@ void CodeResource::release()
 	{
 		_includes[i].first = 0x0;
 	}
+	_includes.clear();
 }
 
 
@@ -303,6 +304,8 @@ void ShaderResource::release()
 	}
 
 	_contexts.clear();
+	_samplers.clear();
+	_uniforms.clear();
 	//_preLoadList.clear();
 }
 
@@ -358,7 +361,7 @@ bool ShaderResource::parseXMLCode( XMLNode &node, std::string &code )
 }
 
 
-bool ShaderResource::parseFXSection( const char *data, bool oldFormat )
+bool ShaderResource::parseFXSection( const char *data )
 {
 	// Parse FX section
 	XMLResults res;
@@ -368,9 +371,6 @@ bool ShaderResource::parseFXSection( const char *data, bool oldFormat )
 		return raiseError( XMLNode::getError( res.error ), res.nLine );
 	}
 
-	if( oldFormat )
-		Modules::log().writeWarning( "Shader resource '%s': Deprecated old syntax, please consider converting to new format", _name.c_str() );
-	
 	// Parse contexts
 	int nodeItr1 = 0;
 	XMLNode node1 = rootNode.getChildNode( "Context", nodeItr1 );
@@ -443,47 +443,105 @@ bool ShaderResource::parseFXSection( const char *data, bool oldFormat )
 				context.alphaToCoverage = false;
 		}
 		
-		if( oldFormat )
-		{
-			// Create vertex shader code resource
-			node2 = node1.getChildNode( "VertexShader" );
-			if( node2.isEmpty() ) return raiseError( "Missing VertexShader node in Context '" + context.id + "'" );
-			if( !parseXMLCode( node2, _tmpCode0 ) ) return raiseError( "Error in VertexShader node of Context '" + context.id + "'" );
-			
-			ResHandle res = Modules::resMan().addResource(
-				ResourceTypes::Code, _name + ":VS_" + context.id, 0, false );
-			context.vertCode = (CodeResource *)Modules::resMan().resolveResHandle( res );
-			context.vertCode->load( _tmpCode0.c_str(), (uint32)_tmpCode0.length() );
-			
-			// Create fragment shader code resource
-			node2 = node1.getChildNode( "FragmentShader" );
-			if( node2.isEmpty() ) return raiseError( "Missing FragmentShader node in Context '" + context.id + "'" );
-			if( !parseXMLCode( node2, _tmpCode0 ) ) return raiseError( "Error in FragmentShader node of Context '" + context.id + "'" );
+		// Shaders
+		node2 = node1.getChildNode( "Shaders" );
+		if( node2.isEmpty() ) return raiseError( "Missing Shaders node in Context '" + context.id + "'" );
 
-			res = Modules::resMan().addResource(
-				ResourceTypes::Code, _name + ":FS_" + context.id, 0, false );
-			context.fragCode = (CodeResource *)Modules::resMan().resolveResHandle( res );
-			context.fragCode->load( _tmpCode0.c_str(), (uint32)_tmpCode0.length() );
-		}
-		else
-		{
-			node2 = node1.getChildNode( "Shaders" );
-			if( node2.isEmpty() ) return raiseError( "Missing Shaders node in Context '" + context.id + "'" );
-
-			_tmpCode0 = _name + ":" + node2.getAttribute( "vertex", "" );
-			_tmpCode1 = _name + ":" + node2.getAttribute( "fragment", "" );
-			
-			context.vertCode = (CodeResource *)Modules::resMan().findResource( ResourceTypes::Code, _tmpCode0.c_str() );
-			if( context.vertCode == 0x0 )
-				return raiseError( "Context '" + context.id + "' references undefined vertex shader code section" );
-			context.fragCode = (CodeResource *)Modules::resMan().findResource( ResourceTypes::Code, _tmpCode1.c_str() );
-			if( context.fragCode == 0x0 )
-				return raiseError( "Context '" + context.id + "' references undefined fragment shader code section" );
-		}
+		_tmpCode0 = _name + ":" + node2.getAttribute( "vertex", "" );
+		_tmpCode1 = _name + ":" + node2.getAttribute( "fragment", "" );
+		
+		context.vertCode = (CodeResource *)Modules::resMan().findResource( ResourceTypes::Code, _tmpCode0.c_str() );
+		if( context.vertCode == 0x0 )
+			return raiseError( "Context '" + context.id + "' references undefined vertex shader code section" );
+		context.fragCode = (CodeResource *)Modules::resMan().findResource( ResourceTypes::Code, _tmpCode1.c_str() );
+		if( context.fragCode == 0x0 )
+			return raiseError( "Context '" + context.id + "' references undefined fragment shader code section" );
 
 		_contexts.push_back( context );
 		
 		node1 = rootNode.getChildNode( "Context", ++nodeItr1 );
+	}
+
+	// Parse samplers
+	bool unitFree[12] = {true, true, true, true, true, true, true, true, true, true, true, true}; 
+	
+	nodeItr1 = 0;
+	node1 = rootNode.getChildNode( "Sampler", nodeItr1 );
+	while( !node1.isEmpty() )
+	{
+		if( node1.getAttribute( "id" ) == 0x0 ) return raiseError( "Missing Sampler attribute 'id'" );
+		
+		ShaderSampler sampler;
+
+		sampler.id = node1.getAttribute( "id" );
+		sampler.texUnit = atoi( node1.getAttribute( "texUnit", "-1" ) );
+		if( sampler.texUnit > 11 ) return raiseError( "texUnit exceeds limit" );
+		if( sampler.texUnit >= 0 ) unitFree[sampler.texUnit] = false;
+
+		// Sampler states
+		XMLNode node2 = node1.getChildNode( "StageConfig" );
+		if( !node2.isEmpty() )
+		{
+			// Address mode
+			if( _stricmp( node2.getAttribute( "addressMode", "WRAP" ), "CLAMP" ) == 0 )
+				sampler.addressMode = TexAddressModes::Clamp;
+			else
+				sampler.addressMode = TexAddressModes::Wrap;
+			
+			// Filtering
+			if( _stricmp( node2.getAttribute( "filtering", "TRILINEAR" ), "NONE" ) == 0 )
+				sampler.filterMode = TexFilterModes::None;
+			else if( _stricmp( node2.getAttribute( "filtering", "TRILINEAR" ), "BILINEAR" ) == 0 )
+				sampler.filterMode = TexFilterModes::Bilinear;
+			else
+				sampler.filterMode = TexFilterModes::Trilinear;
+
+			// Max anisotropy
+			sampler.maxAnisotropy = atoi( node2.getAttribute( "maxAnisotropy", "8" ) );
+		}
+
+		_samplers.push_back( sampler );
+
+		node1 = rootNode.getChildNode( "Sampler", ++nodeItr1 );
+	}
+
+	// Parse uniforms
+	nodeItr1 = 0;
+	node1 = rootNode.getChildNode( "Uniform", nodeItr1 );
+	while( !node1.isEmpty() )
+	{
+		if( node1.getAttribute( "id" ) == 0x0 ) return raiseError( "Missing Uniform attribute 'id'" );
+		
+		ShaderUniform uniform;
+
+		uniform.id = node1.getAttribute( "id" );
+		uniform.defValues[0] = (float)atof( node1.getAttribute( "a", "0.0" ) );
+		uniform.defValues[1] = (float)atof( node1.getAttribute( "b", "0.0" ) );
+		uniform.defValues[2] = (float)atof( node1.getAttribute( "c", "0.0" ) );
+		uniform.defValues[3] = (float)atof( node1.getAttribute( "d", "0.0" ) );
+
+		_uniforms.push_back( uniform );
+		
+		node1 = rootNode.getChildNode( "Uniform", ++nodeItr1 );
+	}
+
+	// Automatic texture unit assignment
+	for( uint32 i = 0; i < _samplers.size(); ++i )
+	{
+		if( _samplers[i].texUnit < 0 )
+		{	
+			for( uint32 j = 0; j < 12; ++j )
+			{
+				if( unitFree[j] )
+				{
+					_samplers[i].texUnit = j;
+					unitFree[j] = false;
+					break;
+				}
+			}
+			if( _samplers[i].texUnit < 0 )
+				return raiseError( "Automatic texture unit assignment: No free unit found" );
+		}
 	}
 
 	return true;
@@ -541,15 +599,9 @@ bool ShaderResource::load( const char *data, int size )
 			}
 		}
 	}
-	
-	bool result;
 
-	if( !_tmpCode1.empty() )
-		result = parseFXSection( _tmpCode1.c_str(), false );
-	else
-		result = parseFXSection( data, true );
-
-	if( !result ) return false;
+	if( _tmpCode1.empty() ) return raiseError( "Missing FX section" );
+	if( !parseFXSection( _tmpCode1.c_str() ) ) return false;
 
 	compileContexts();
 	
@@ -635,6 +687,25 @@ void ShaderResource::compileCombination( ShaderContext &context, ShaderCombinati
 			out0.close();
 			out1.close();
 		}
+	}
+
+	// Find samplers in compiled shader
+	sc.customSamplers.reserve( _samplers.size() );
+	for( uint32 i = 0; i < _samplers.size(); ++i )
+	{
+		sc.customSamplers.push_back(
+			Modules::renderer().getShaderVar( sc.shaderObject, _samplers[i].id.c_str() ) );
+		
+		// Set texture unit
+		Modules::renderer().setShaderVar1i( sc.shaderObject, _samplers[i].id.c_str(), _samplers[i].texUnit );
+	}
+	
+	// Find uniforms in compiled shader
+	sc.customUniforms.reserve( _uniforms.size() );
+	for( uint32 i = 0; i < _uniforms.size(); ++i )
+	{
+		sc.customUniforms.push_back(
+			Modules::renderer().getShaderVar( sc.shaderObject, _uniforms[i].id.c_str() ) );
 	}
 
 	// Output shader log

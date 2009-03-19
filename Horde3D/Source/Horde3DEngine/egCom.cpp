@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@ EngineConfig::EngineConfig()
 {
 	maxLogLevel = 4;
 	trilinearFiltering = true;
-	anisotropyFactor = 1;
+	maxAnisotropy = 1;
 	texCompression = false;
 	loadTextures = true;
 	fastAnimation = true;
@@ -60,8 +60,8 @@ float EngineConfig::getOption( EngineOptions::List param )
 		return (float)Modules::log().getMaxNumMessages();
 	case EngineOptions::TrilinearFiltering:
 		return trilinearFiltering ? 1.0f : 0.0f;
-	case EngineOptions::AnisotropyFactor:
-		return (float)anisotropyFactor;
+	case EngineOptions::MaxAnisotropy:
+		return (float)maxAnisotropy;
 	case EngineOptions::TexCompression:
 		return texCompression ? 1.0f : 0.0f;
 	case EngineOptions::LoadTextures:
@@ -91,16 +91,16 @@ bool EngineConfig::setOption( EngineOptions::List param, float value )
 	switch( param )
 	{
 	case EngineOptions::MaxLogLevel:
-		maxLogLevel = (int)value;
+		maxLogLevel = ftoi_r( value );
 		return true;
 	case EngineOptions::MaxNumMessages:
-		Modules::log().setMaxNumMessages( (uint32) value );
+		Modules::log().setMaxNumMessages( (uint32)ftoi_r( value ) );
 		return true;
 	case EngineOptions::TrilinearFiltering:
 		trilinearFiltering = (value != 0);
 		return true;
-	case EngineOptions::AnisotropyFactor:
-		anisotropyFactor = (int)value;
+	case EngineOptions::MaxAnisotropy:
+		maxAnisotropy = ftoi_r( value );
 		return true;
 	case EngineOptions::TexCompression:
 		texCompression = (value != 0);
@@ -112,7 +112,7 @@ bool EngineConfig::setOption( EngineOptions::List param, float value )
 		fastAnimation = (value != 0);
 		return true;
 	case EngineOptions::ShadowMapSize:
-		size = (int)value;
+		size = ftoi_r( value );
 
 		if( size == shadowMapSize ) return true;
 		if( size != 128 && size != 256 && size != 512 && size != 1024 && size != 2048 ) return false;
@@ -133,7 +133,7 @@ bool EngineConfig::setOption( EngineOptions::List param, float value )
 			return true;
 		}
 	case EngineOptions::SampleCount:
-		sampleCount = (int)value;
+		sampleCount = ftoi_r( value );
 		return true;
 	case EngineOptions::WireframeMode:
 		wireframeMode = (value != 0);
@@ -235,4 +235,84 @@ bool EngineLog::getMessage( LogMessage &msg )
 	}
 	else
 		return false;
+}
+
+
+// *************************************************************************************************
+// Class StatManager
+// *************************************************************************************************
+
+StatManager::StatManager()
+{
+	_statTriCount = 0;
+	_statBatchCount = 0;
+	_statLightPassCount = 0;
+
+	_frameTime = 0;
+}
+
+
+float StatManager::getStat( int param, bool reset )
+{
+	float value;	
+	
+	switch( param )
+	{
+	case EngineStats::TriCount:
+		value = (float)_statTriCount;
+		if( reset ) _statTriCount = 0;
+		return value;
+	case EngineStats::BatchCount:
+		value = (float)_statBatchCount;
+		if( reset ) _statBatchCount = 0;
+		return value;
+	case EngineStats::LightPassCount:
+		value = (float)_statLightPassCount;
+		if( reset ) _statLightPassCount = 0;
+		return value;
+	case EngineStats::FrameTime:
+		value = _frameTime;
+		if( reset ) _frameTime = 0;
+		return value;
+	case EngineStats::CustomTime:
+		value = _customTimer.getElapsedTimeMS();
+		if( reset ) _customTimer.reset();
+		return value;
+	default:
+		return 0;
+	}
+}
+
+
+void StatManager::incStat( int param, float value )
+{
+	switch( param )
+	{
+	case EngineStats::TriCount:
+		_statTriCount += ftoi_r( value );
+		break;
+	case EngineStats::BatchCount:
+		_statBatchCount += ftoi_r( value );
+		break;
+	case EngineStats::LightPassCount:
+		_statLightPassCount += ftoi_r( value );
+		break;
+	case EngineStats::FrameTime:
+		_frameTime += value;
+		break;
+	}
+}
+
+
+Timer *StatManager::getTimer( int param )
+{
+	switch( param )
+	{
+	case EngineStats::FrameTime:
+		return &_frameTimer;
+	case EngineStats::CustomTime:
+		return &_customTimer;
+	default:
+		return 0x0;
+	}
 }

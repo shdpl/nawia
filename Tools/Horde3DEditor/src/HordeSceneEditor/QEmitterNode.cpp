@@ -64,7 +64,7 @@ void QEmitterNode::addRepresentation()
 
 	// Load resource immediately since a later call to loadResourceFromDisk results in a bad behaviour of the Horde3D engine
 	QString resourceName = Horde3DUtils::getResourcePath(ResourceTypes::Material);
-	if (!resourceName.endsWith('/') && !resourceName.endsWith('\\'))
+	if( !resourceName.isEmpty() && !resourceName.endsWith('/') && !resourceName.endsWith('\\') )
 		resourceName += '/';
 	resourceName += m_xmlNode.attribute("material");
 
@@ -79,11 +79,11 @@ void QEmitterNode::addRepresentation()
 	Horde3D::loadResource(m_matResource, matFile.readAll().append('\0').constData(), matFile.size() + 1);
 	matFile.close();
 
-	m_effectResource = Horde3D::addResource(ResourceTypes::Effect, qPrintable(m_xmlNode.attribute("effect")), 0);
+	m_effectResource = Horde3D::addResource(ResourceTypes::ParticleEffect, qPrintable(m_xmlNode.attribute("effect")), 0);
 
 	// Load resource immediately since a later call to loadResourceFromDisk results in a bad behaviour of the Horde3D engine
-	resourceName = Horde3DUtils::getResourcePath(ResourceTypes::Effect);
-	if (!resourceName.endsWith('/') && !resourceName.endsWith('\\'))
+	resourceName = Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect);
+	if (!resourceName.isEmpty() && !resourceName.endsWith('/') && !resourceName.endsWith('\\'))
 		resourceName += '/';
 	resourceName += m_xmlNode.attribute("effect");
 
@@ -144,7 +144,7 @@ void QEmitterNode::setMaterial(const Material& material)
 		if (m_matResource != 0)
 			Horde3D::removeResource(m_matResource);
 		m_matResource = Horde3D::addResource( ResourceTypes::Material, qPrintable(material.FileName), 0 );
-		Horde3DUtils::loadResourcesFromDisk("");
+		Horde3DUtils::loadResourcesFromDisk(".");
 		Horde3D::setNodeParami(m_hordeID, EmitterNodeParams::MaterialRes, m_matResource);
 	}
 	else if (material != QEmitterNode::material())
@@ -163,9 +163,9 @@ void QEmitterNode::setEffect(const Effect& effect)
 		m_xmlNode.setAttribute("effect", effect.FileName);
 		if (m_effectResource != 0)
 			Horde3D::removeResource(m_effectResource);
-		m_effectResource = Horde3D::addResource( ResourceTypes::Effect, qPrintable(effect.FileName), 0 );
-		Horde3DUtils::loadResourcesFromDisk("");
-		Horde3D::setNodeParami(m_hordeID, EmitterNodeParams::EffectRes, m_effectResource);
+		m_effectResource = Horde3D::addResource( ResourceTypes::ParticleEffect, qPrintable(effect.FileName), 0 );
+		Horde3DUtils::loadResourcesFromDisk(".");
+		Horde3D::setNodeParami(m_hordeID, EmitterNodeParams::ParticleEffectRes, m_effectResource);
 	}
 	else if (effect != QEmitterNode::effect())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Effect", this, "Effect", QVariant::fromValue(effect), EmitterMaterialID));

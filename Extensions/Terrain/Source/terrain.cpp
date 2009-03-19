@@ -2,7 +2,7 @@
 //
 // Horde3D Terrain Extension
 // --------------------------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz and Volker Wiendl
+// Copyright (C) 2006-2009 Nicolas Schulz and Volker Wiendl
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -88,13 +88,10 @@ namespace Horde3DTerrain
 		itr = attribs.find( "heightmap" );
 		if( itr != attribs.end() )
 		{
-			uint32 res = Modules::resMan().addResource( 
-				ResourceTypes::Texture2D, 
-				itr->second, 
-				ResourceFlags::NoTexCompression | ResourceFlags::NoTexMipmaps,
-				false );
+			uint32 res = Modules::resMan().addResource( ResourceTypes::Texture, itr->second, 
+				ResourceFlags::NoTexCompression | ResourceFlags::NoTexMipmaps, false );
 			if( res != 0 )
-				terrainTpl->hmapRes = (Texture2DResource *)Modules::resMan().resolveResHandle( res );
+				terrainTpl->hmapRes = (TextureResource *)Modules::resMan().resolveResHandle( res );
 		}
 		itr = attribs.find( "material" );
 		if( itr != attribs.end() )
@@ -132,8 +129,8 @@ namespace Horde3DTerrain
 
 
 	void TerrainNode::drawTerrainBlock( TerrainNode *terrain, float minU, float minV, float maxU, float maxV,
-										int level, float scale, const Vec3f &localCamPos, const Frustum *frust1,
-										const Frustum *frust2, int uni_terBlockParams )
+	                                    int level, float scale, const Vec3f &localCamPos, const Frustum *frust1,
+	                                    const Frustum *frust2, int uni_terBlockParams )
 	{
 		const float halfU = (minU + maxU) / 2.0f;
 		const float halfV = (minV + maxV) / 2.0f;
@@ -141,7 +138,7 @@ namespace Horde3DTerrain
 		uint32 offset = 0;
 		for( int i = 0; i < level; ++i ) offset += (1 << i) * (1 << i);
 		
-		const uint32 blockIndex =  offset + (int)(minV * (1 << level)) * (1 << level) + (int)(minU * (1 << level));
+		const uint32 blockIndex = offset + ftoi_t( minV * (1 << level) ) * (1 << level) + ftoi_t( minU * (1 << level) );
 		BlockInfo &block = terrain->_blockTree[blockIndex];
 
 		// Create AABB for block
@@ -180,7 +177,7 @@ namespace Horde3DTerrain
 					float *vertHeight = &terrain->_heightArray[v * size + u];
 					const float newU = (s * scale + minU) * (terrain->_hmapSize) + 0.5f;
 					const float newV = (t * scale + minV) * (terrain->_hmapSize) + 0.5f;
-					uint32 index = ((int)newV * (terrain->_hmapSize + 1) + (int)newU );
+					uint32 index = ftoi_t( newV ) * (terrain->_hmapSize + 1) + ftoi_t( newU );
 					
 					*vertHeight = terrain->_heightData[index] / 65535.0f;
 					
@@ -197,8 +194,8 @@ namespace Horde3DTerrain
 			Modules::renderer().updateVertices( terrain->_heightArray, terrain->getVertexCount() * sizeof( float ) * 3,
 				terrain->getVertexCount() * sizeof( float ), terrain->_vertexBuffer );
 			glDrawElements( GL_TRIANGLE_STRIP, terrain->getIndexCount(), GL_UNSIGNED_SHORT, (char *)0 );
-			Modules::renderer().incStat( EngineStats::BatchCount, 1 );
-			Modules::renderer().incStat( EngineStats::TriCount, (terrain->_blockSize - 1) * (terrain->_blockSize - 1) * 2.0f );
+			Modules::stats().incStat( EngineStats::BatchCount, 1 );
+			Modules::stats().incStat( EngineStats::TriCount, (terrain->_blockSize - 1) * (terrain->_blockSize - 1) * 2.0f );
 		}
 		else 
 		{
@@ -228,15 +225,15 @@ namespace Horde3DTerrain
 			for( uint32 i = 0; i < 4; ++i )
 			{
 				drawTerrainBlock( terrain, blocks[i].x, blocks[i].y, blocks[i].z, blocks[i].w,
-								  level + 1, scale, localCamPos, frust1, frust2, uni_terBlockParams );
+				                  level + 1, scale, localCamPos, frust1, frust2, uni_terBlockParams );
 			}
 		}
 	}
 	
 	
 	void TerrainNode::renderFunc( const string &shaderContext, const string &theClass, bool debugView,
-								  const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order,
-								  int occSet )
+	                              const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order,
+	                              int occSet )
 	{
 		CameraNode *curCam = Modules::renderer().getCurCamera();
 		if( curCam == 0x0 ) return;
@@ -273,7 +270,7 @@ namespace Horde3DTerrain
 			glVertexPointer( 3, GL_FLOAT, sizeof( float ) * 3, (char *)0 );
 			glEnableClientState( GL_VERTEX_ARRAY );
 			glVertexAttribPointer( attrib_terHeight, 1, GL_FLOAT, GL_FALSE, sizeof( float ),
-								   (char *)0 + terrain->getVertexCount() * sizeof( float ) * 3 );
+			                       (char *)0 + terrain->getVertexCount() * sizeof( float ) * 3 );
 			glEnableVertexAttribArray( attrib_terHeight );
 		
 			// World transformation
@@ -286,8 +283,8 @@ namespace Horde3DTerrain
 			{
 				Matrix4f normalMat4 = terrain->_absTrans.inverted().transposed();
 				float normalMat[9] = { normalMat4.x[0], normalMat4.x[1], normalMat4.x[2],
-									   normalMat4.x[4], normalMat4.x[5], normalMat4.x[6],
-									   normalMat4.x[8], normalMat4.x[9], normalMat4.x[10] };
+				                       normalMat4.x[4], normalMat4.x[5], normalMat4.x[6],
+				                       normalMat4.x[8], normalMat4.x[9], normalMat4.x[10] };
 				glUniformMatrix3fv( curShader->uni_worldNormalMat, 1, false, normalMat );
 			}
 
@@ -305,11 +302,11 @@ namespace Horde3DTerrain
 	}
 
 
-	bool TerrainNode::updateHeightData( Texture2DResource &hmap )
+	bool TerrainNode::updateHeightData( TextureResource &hmap )
 	{
 		delete[] _heightData; _heightData = 0x0;
 
-		if( hmap.getComps() == 4 && !hmap.isHDR() && hmap.getWidth() == hmap.getHeight() &&
+		if( hmap.getWidth() == hmap.getHeight() &&
 			(hmap.getWidth() == 32 || hmap.getWidth() == 64 || hmap.getWidth() == 128 ||
 			hmap.getWidth() == 256 || hmap.getWidth() == 512 || hmap.getWidth() == 1024 ||
 			hmap.getWidth() == 2048 || hmap.getWidth() == 4096 || hmap.getWidth() == 8192) )
@@ -338,7 +335,7 @@ namespace Horde3DTerrain
 				unsigned short height;                                                                       
 				// Decode 16 bit data from red and green channels                                             
 				height = (unsigned short)(clamp( pixels[(i * _hmapSize + _hmapSize - 1) * 4], 0, 1 ) * 255 * 256 +
-							clamp( pixels[(i * _hmapSize + _hmapSize - 1) * 4 + 1], 0, 1 ) * 255);                                                                                                                         
+					clamp( pixels[(i * _hmapSize + _hmapSize - 1) * 4 + 1], 0, 1 ) * 255);                                                                                                                         
 				_heightData[i * (_hmapSize + 1) + _hmapSize] = height;                                           
 			}                                                                                                         
                                                                                                                       
@@ -518,7 +515,7 @@ namespace Horde3DTerrain
 				for( uint32 x = 0; x < numBlocks; ++x )
 				{
 					buildBlockInfo( _blockTree[index++], (float)x / numBlocks, (float)y / numBlocks,
-									(float)(x + 1) / numBlocks, (float)(y + 1) / numBlocks );
+					                (float)(x + 1) / numBlocks, (float)(y + 1) / numBlocks );
 				}
 			}
 		}
@@ -547,12 +544,13 @@ namespace Horde3DTerrain
 		{
 		case TerrainNodeParams::HeightMapRes:
 			res = Modules::resMan().resolveResHandle( value );
-			if ( res == 0x0 || res->getType() != ResourceTypes::Texture2D )
+			if ( res == 0x0 || res->getType() != ResourceTypes::Texture ||
+				((TextureResource *)res)->getTexType() != TextureTypes::Tex2D )
 			{
-				Modules::log().writeDebugInfo( "Invalid Texture2D resource for Terrain node %i", _handle );
+				Modules::log().writeDebugInfo( "Invalid 2D Texture resource for Terrain node %i", _handle );
 				return false;
 			}
-			updateHeightData( *((Texture2DResource *)res) );
+			updateHeightData( *((TextureResource *)res) );
 			
 			recreateVertexBuffer();
 			calcMaxLevel();
@@ -658,15 +656,15 @@ namespace Horde3DTerrain
 
 		dir /= dir.length();
 
-		int x = (int)(startX * (_hmapSize + 1) );
-		int y = (int)(startZ * (_hmapSize + 1) );
+		int x = ftoi_t( startX * (_hmapSize + 1) );
+		int y = ftoi_t( startZ * (_hmapSize + 1) );
 
 		// Check heightmap with Bresenham algorithm (code based on http://de.wikipedia.org/wiki/Bresenham-Algorithmus)
 		int t, dx, dy, incX, incY, pdx, pdy, ddx, ddy, err_step_fast, err_step_slow, err;
 
 		// Get deltas in image space
-		dx = (int)((endX - startX) * (_hmapSize + 1) );
-		dy = (int)((endZ - startZ) * (_hmapSize + 1) );
+		dx = ftoi_t( (endX - startX) * (_hmapSize + 1) );
+		dy = ftoi_t( (endZ - startZ) * (_hmapSize + 1) );
 
 		// Check directions
 		incX = (dx > 0) ? 1 : (dx < 0) ? -1 : 0;
@@ -682,9 +680,9 @@ namespace Horde3DTerrain
 		}
 		else // y is the fast direction
 		{			
-			pdx = 0;    pdy = incY; // pd. is parallel step 
+			pdx = 0; pdy = incY; // pd. is parallel step 
 			ddx = incX; ddy = incY; // dd. ist diagonal step
-			err_step_fast = dx;   err_step_slow = dy;   // Error steps fast, slow
+			err_step_fast = dx; err_step_slow = dy;   // Error steps fast, slow
 		}
 
 		// Init error
@@ -757,7 +755,7 @@ namespace Horde3DTerrain
 
 
 	uint32 TerrainNode::calculateGeometryBlockCount( float lodThreshold, float minU, float minV,
-													 float maxU, float maxV, int level, float scale)
+	                                                 float maxU, float maxV, int level, float scale)
 	{
 		int blockCount = 0;
 		const float halfU = (minU + maxU) / 2.0f;
@@ -766,7 +764,7 @@ namespace Horde3DTerrain
 		uint32 offset = 0;
 		for( int i = 0; i < level; ++i ) offset += (1 << i) * (1 << i);
 
-		const uint32 blockIndex =  offset + (int)(minV * (1 << level)) * (1 << level) + (int)(minU * (1 << level));
+		const uint32 blockIndex = offset + ftoi_t( minV * (1 << level) ) * (1 << level) + ftoi_t( minU * (1 << level) );
 		BlockInfo &block = _blockTree[blockIndex];
 		
 		const float p = block.geoError;
@@ -790,7 +788,7 @@ namespace Horde3DTerrain
 			for( uint32 i = 0; i < 4; ++i )
 			{
 				blockCount += calculateGeometryBlockCount( lodThreshold, blocks[i].x, blocks[i].y,
-														   blocks[i].z, blocks[i].w, level + 1, scale );
+				                                           blocks[i].z, blocks[i].w, level + 1, scale );
 			}
 		}
 		return blockCount;
@@ -806,7 +804,7 @@ namespace Horde3DTerrain
 		uint32 offset = 0;
 		for( int i = 0; i < level; ++i ) offset += (1 << i) * (1 << i);
 
-		const uint32 blockIndex =  offset + (int)(minV * (1 << level)) * (1 << level) + (int)(minU * (1 << level));
+		const uint32 blockIndex =  offset + ftoi_t( minV * (1 << level) ) * (1 << level) + ftoi_t( minU * (1 << level) );
 		BlockInfo &block = _blockTree[blockIndex];
 
 		// Determine level of detail
@@ -829,7 +827,7 @@ namespace Horde3DTerrain
 
 					const float newU = (s * scale + minU) * _hmapSize + 0.5f;
 					const float newV = (t * scale + minV) * _hmapSize + 0.5f;
-					uint32 index = (int)newV * (_hmapSize + 1) + (int)newU;
+					uint32 index = ftoi_t( newV ) * (_hmapSize + 1) + ftoi_t( newU );
 
 					*vertData++ = (s * scale + minU);
 
@@ -872,7 +870,7 @@ namespace Horde3DTerrain
 			for( uint32 i = 0; i < 4; ++i )
 			{
 				createGeometryVertices( lodThreshold, blocks[i].x, blocks[i].y, blocks[i].z, blocks[i].w,
-										level + 1, scale, vertData, indexData, index);
+				                        level + 1, scale, vertData, indexData, index);
 			}
 		}
 	}

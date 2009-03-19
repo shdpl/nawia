@@ -42,17 +42,17 @@
 
 QDomElement QTerrainNode::createNode(QWidget* parent)
 {
-	QDomElement terrainNode;
+	QDomDocument terrainNode;
 	QWizard wizard(parent);
 	wizard.addPage(new QTerrainNodePage(&wizard));
 	if (wizard.exec() == QDialog::Accepted)
 	{			
-		terrainNode = QDomDocument().createElement("Terrain");
-		terrainNode.setAttribute("name", wizard.field("name").toString());
-		terrainNode.setAttribute("material", wizard.field("material").toString());
-		terrainNode.setAttribute("heightmap", wizard.field("heightmap").toString());
+		terrainNode.setContent( QString( "<Terrain/>" ) );
+		terrainNode.documentElement().setAttribute("name", wizard.field("name").toString());
+		terrainNode.documentElement().setAttribute("material", wizard.field("material").toString());
+		terrainNode.documentElement().setAttribute("heightmap", wizard.field("heightmap").toString());
 	}
-	return terrainNode;
+	return terrainNode.documentElement();
 }
 
 QSceneNode* QTerrainNode::loadNode(const QDomElement& xmlNode, int row, SceneTreeModel* model, QSceneNode* parentNode)
@@ -88,7 +88,7 @@ void QTerrainNode::setMaterial(const Material& material)
 		m_xmlNode.setAttribute("material", material.FileName);
 		Horde3D::removeResource(m_materialID);
 		m_materialID = Horde3D::addResource( ResourceTypes::Material, qPrintable(material.FileName), 0 );		
-		Horde3DUtils::loadResourcesFromDisk("");
+		Horde3DUtils::loadResourcesFromDisk(".");
 		Horde3D::setNodeParami(m_hordeID, TerrainNodeParams::MaterialRes, m_materialID);
 	}
 	else if (material != QTerrainNode::material())
@@ -97,7 +97,7 @@ void QTerrainNode::setMaterial(const Material& material)
 
 Texture QTerrainNode::heightMap() const
 {
-	return Texture(m_xmlNode.attribute("heightmap"), ResourceTypes::Texture2D);
+	return Texture(m_xmlNode.attribute("heightmap"), ResourceTypes::Texture);
 }
 
 void QTerrainNode::setHeightMap(const Texture& heightMap)
@@ -106,8 +106,8 @@ void QTerrainNode::setHeightMap(const Texture& heightMap)
 	{
 		m_xmlNode.setAttribute("heightmap", heightMap.FileName);
 		Horde3D::removeResource(m_heightMapID);
-		m_heightMapID = Horde3D::addResource( ResourceTypes::Texture2D, qPrintable(heightMap.FileName), 0 );		
-		Horde3DUtils::loadResourcesFromDisk("");
+		m_heightMapID = Horde3D::addResource( ResourceTypes::Texture, qPrintable(heightMap.FileName), 0 );		
+		Horde3DUtils::loadResourcesFromDisk(".");
 		Horde3D::setNodeParami(m_hordeID, TerrainNodeParams::HeightMapRes, m_heightMapID);
 	}
 	else if (heightMap != QTerrainNode::heightMap())
@@ -174,12 +174,12 @@ void QTerrainNode::setSkirtHeight(const float height)
 void QTerrainNode::addRepresentation()
 {
 	m_heightMapID = Horde3D::addResource(
-		ResourceTypes::Texture2D, 
+		ResourceTypes::Texture, 
 		qPrintable(m_xmlNode.attribute("heightmap")), 
-		ResourceFlags::NoTexCompression | ResourceFlags::NoTexMipmaps | ResourceFlags::NoTexFiltering);
+		ResourceFlags::NoTexCompression | ResourceFlags::NoTexMipmaps );
 	m_materialID = Horde3D::addResource(ResourceTypes::Material, qPrintable(m_xmlNode.attribute("material")), 0);
 	// Load resource immediately since a later call to loadResourceFromDisk results in a bad behaviour of the Horde3D engine
-	QDir textureDir(Horde3DUtils::getResourcePath(ResourceTypes::Texture2D));
+	QDir textureDir(Horde3DUtils::getResourcePath(ResourceTypes::Texture));
 	QFile file(textureDir.absoluteFilePath(m_xmlNode.attribute("heightmap")));
 	if (!file.open(QIODevice::ReadOnly))
 		qWarning("Error opening resource %s", qPrintable(m_xmlNode.attribute("heightmap")));

@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -349,8 +349,8 @@ bool GeometryResource::load( const char *data, int size )
 	{
 		for( uint32 j = 0; j < _morphTargets[i].diffs.size(); ++j )
 		{
-			_minMorphIndex = min( _minMorphIndex, _morphTargets[i].diffs[j].vertIndex );
-			_maxMorphIndex = max( _maxMorphIndex, _morphTargets[i].diffs[j].vertIndex );
+			_minMorphIndex = std::min( _minMorphIndex, _morphTargets[i].diffs[j].vertIndex );
+			_maxMorphIndex = std::max( _maxMorphIndex, _morphTargets[i].diffs[j].vertIndex );
 		}
 	}
 	if( _minMorphIndex > _maxMorphIndex )

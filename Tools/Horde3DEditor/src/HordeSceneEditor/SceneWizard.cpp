@@ -23,7 +23,6 @@
 #include "SceneWizard.h"
 #include "SceneFile.h"
 #include "SceneFilePage.h"
-#include "PathPage.h"
 #include "PlugInPage.h"
 
 #include "QCameraNodePage.h"
@@ -51,7 +50,6 @@ namespace SceneWizard
 		SceneFile* sceneFile = 0;
 		QWizard* wizard = new QWizard(parent);
 		wizard->addPage(new SceneFilePage(wizard));
-		wizard->addPage(new PathPage(wizard));
 		wizard->addPage(new QCameraNodePage(wizard));
 		wizard->addPage(new QLightNodePage(wizard));
 		wizard->addPage(new PlugInPage(wizard));
@@ -63,9 +61,10 @@ namespace SceneWizard
 			QFileInfo sceneFileInfo(QDir(wizard->field("scenepath").toString()), wizard->field("scenefile").toString());
 			sceneFile->setSceneFileName(sceneFileInfo.absoluteFilePath());
 			// create scenegraph file
-			QFileInfo sceneGraphFile(QDir(wizard->field("scenegraphdir").toString()), sceneFileInfo.baseName() + ".scene.xml");
+			QDir sceneFileDir = sceneFileInfo.absoluteDir();
+			QFileInfo sceneGraphFile(QDir(wizard->field("scenepath").toString()), wizard->field("scenegraphfile").toString() );
 			// set the scene graph file within the configuration file
-			sceneFile->setSceneGraphFile(QDir::current().relativeFilePath(sceneGraphFile.absoluteFilePath()));
+			sceneFile->setSceneGraphFile(sceneFileDir.relativeFilePath(sceneGraphFile.absoluteFilePath()));
 
 			// Create Configuration XML structure
 			QDomDocument sceneFileXml("SceneConfiguration");		
@@ -75,21 +74,9 @@ namespace SceneWizard
 			element.setAttribute("path", QDir::current().relativeFilePath(wizard->field("pipeline").toString()));			
 			// store scenegraph settings
 			element = sceneFileXml.documentElement().appendChild(sceneFileXml.createElement("SceneGraph")).toElement();
-			// save scene graph file relative to the scene graph directory set in Horde3D
-			element.setAttribute("path", QDir( wizard->field("scenegraphdir").toString()).relativeFilePath(sceneGraphFile.absoluteFilePath()));
-			sceneFile->setSceneGraphFile(sceneGraphFile.absoluteFilePath());
+			// save scene graph file relative to the scene file directory 
+			element.setAttribute("path", sceneFileDir.relativeFilePath( sceneFile->sceneGraphFile() ) );			
 			sceneFile->setSceneFileDom(sceneFileXml);
-			// set engine pathes
-			element = sceneFileXml.createElement("EnginePath");
-			element.setAttribute("geometrypath", wizard->field("geometrydir").toString());
-			element.setAttribute("animationpath", wizard->field("animationdir").toString());
-			element.setAttribute("shaderpath", wizard->field("shaderdir").toString());
-			element.setAttribute("materialpath", wizard->field("materialdir").toString());
-			element.setAttribute("texturepath", wizard->field("texturedir").toString());
-			element.setAttribute("scenegraphpath", wizard->field("scenegraphdir").toString());
-			element.setAttribute("effectspath", wizard->field("effectsdir").toString());
-			element.setAttribute("pipelinepath", wizard->field("pipelinedir").toString());
-			sceneFileXml.documentElement().appendChild(element);		
 			// set standard light parameters
 			element = sceneFileXml.createElement("LightParameters");
 			if ( !wizard->field("material").toString().isEmpty() ) // Only create material attribute if necessary
@@ -176,57 +163,57 @@ namespace SceneWizard
 
 	QDomElement createReference(QWidget* parent)
 	{
-		QDomElement referenceNode;
+		QDomDocument referenceNode;
 		QWizard* wizard = new QWizard(parent);
 		wizard->addPage(new QReferenceNodePage(wizard));
 		if (wizard->exec() == QDialog::Accepted)
-		{			
-			referenceNode = QDomDocument().createElement("Reference");
-			referenceNode.setAttribute("name", wizard->field("name").toString());
-			referenceNode.setAttribute("sceneGraph", wizard->field("file").toString());
-			referenceNode.setAttribute("sx", 1.0f);
-			referenceNode.setAttribute("sy", 1.0f);
-			referenceNode.setAttribute("sz", 1.0f);
+		{						
+			referenceNode.setContent( QString( "<Reference/>" ) );
+			referenceNode.documentElement().setAttribute("name", wizard->field("name").toString());
+			referenceNode.documentElement().setAttribute("sceneGraph", wizard->field("file").toString());
+			referenceNode.documentElement().setAttribute("sx", 1.0f);
+			referenceNode.documentElement().setAttribute("sy", 1.0f);
+			referenceNode.documentElement().setAttribute("sz", 1.0f);
 		}
-		return referenceNode;
+		return referenceNode.documentElement();
 	}
 
 	QDomElement createLight(QWidget* parent)
 	{
-		QDomElement lightNode;
+		QDomDocument lightNode;
 		QWizard* wizard = new QWizard(parent);
 		wizard->addPage(new QLightNodePage(wizard));
 		if (wizard->exec() == QDialog::Accepted)
 		{			
-			lightNode = QDomDocument().createElement("Light");
-			lightNode.setAttribute("name", wizard->field("lightname").toString());
-			lightNode.setAttribute("radius", wizard->field("radius").toDouble());
-			lightNode.setAttribute("fov", wizard->field("lightfov").toDouble());
-			lightNode.setAttribute("shadowMapBias", wizard->field("shadowmapbias").toDouble());
-			lightNode.setAttribute("shadowMapEnabled", wizard->field("shadowmap").toBool() ? "true" : "false");
-			lightNode.setAttribute("col_R", 1.0f);
-			lightNode.setAttribute("col_G", 1.0f);
-			lightNode.setAttribute("col_B", 1.0f);
-			lightNode.setAttribute("shadowSplitLambda", wizard->field("lambda").toDouble());
-			lightNode.setAttribute("shadowMapCount", wizard->field("slices").toInt());
-			lightNode.setAttribute("shadowContext", wizard->field("shadowcontext").toString());
-			lightNode.setAttribute("lightingContext", wizard->field("lightingcontext").toString());
+			lightNode.setContent( QString( "<Light/>" ) );
+			lightNode.documentElement().setAttribute("name", wizard->field("lightname").toString());
+			lightNode.documentElement().setAttribute("radius", wizard->field("radius").toDouble());
+			lightNode.documentElement().setAttribute("fov", wizard->field("lightfov").toDouble());
+			lightNode.documentElement().setAttribute("shadowMapBias", wizard->field("shadowmapbias").toDouble());
+			lightNode.documentElement().setAttribute("shadowMapEnabled", wizard->field("shadowmap").toBool() ? "true" : "false");
+			lightNode.documentElement().setAttribute("col_R", 1.0f);
+			lightNode.documentElement().setAttribute("col_G", 1.0f);
+			lightNode.documentElement().setAttribute("col_B", 1.0f);
+			lightNode.documentElement().setAttribute("shadowSplitLambda", wizard->field("lambda").toDouble());
+			lightNode.documentElement().setAttribute("shadowMapCount", wizard->field("slices").toInt());
+			lightNode.documentElement().setAttribute("shadowContext", wizard->field("shadowcontext").toString());
+			lightNode.documentElement().setAttribute("lightingContext", wizard->field("lightingcontext").toString());
 			if ( !wizard->field("material").toString().isEmpty() ) // Only create material attribute if necessary
-				lightNode.setAttribute("material", wizard->field("material").toString());
+				lightNode.documentElement().setAttribute("material", wizard->field("material").toString());
 		}
 		delete wizard;
-		return lightNode;
+		return lightNode.documentElement();
 	}
 
 	QDomElement createCamera(QWidget* parent)
 	{
-		QDomElement cameraNode;
+		QDomDocument cameraNode;
 		QWizard* wizard = new QWizard(parent);
 		wizard->addPage(new QCameraNodePage(/*QDomElement(), */wizard));
 		if (wizard->exec() == QDialog::Accepted)
 		{
-			cameraNode = QDomDocument().createElement("Camera");
-			cameraNode.setAttribute("name", wizard->field("cameraname").toString());
+			cameraNode.setContent( QString( "<Camera/>" ) );
+			cameraNode.documentElement().setAttribute("name", wizard->field("cameraname").toString());
 			float left, right, bottom, top, near, far;
 			if (wizard->field("asymFrustum").toBool())
 			{				
@@ -248,49 +235,49 @@ namespace SceneWizard
 				bottom = -ymax;
 				top = ymax;
 			}
-			cameraNode.setAttribute("leftPlane", left);
-			cameraNode.setAttribute("rightPlane", right);
-			cameraNode.setAttribute("bottomPlane", bottom);
-			cameraNode.setAttribute("topPlane", top);
-			cameraNode.setAttribute("nearPlane", near);
-			cameraNode.setAttribute("farPlane", far);
-			cameraNode.setAttribute("pipeline", wizard->field("pipeline").toString());
+			cameraNode.documentElement().setAttribute("leftPlane", left);
+			cameraNode.documentElement().setAttribute("rightPlane", right);
+			cameraNode.documentElement().setAttribute("bottomPlane", bottom);
+			cameraNode.documentElement().setAttribute("topPlane", top);
+			cameraNode.documentElement().setAttribute("nearPlane", near);
+			cameraNode.documentElement().setAttribute("farPlane", far);
+			cameraNode.documentElement().setAttribute("pipeline", wizard->field("pipeline").toString());
 		}
 		delete wizard;
-		return cameraNode;
+		return cameraNode.documentElement();
 	}
 
 	QDomElement createGroup(QWidget* parent)
 	{
-		QDomElement groupNode;
+		QDomDocument groupNode;
 		QWizard* wizard = new QWizard(parent);
 		wizard->addPage(new QGroupNodePage(wizard));
 		if (wizard->exec() == QDialog::Accepted)
 		{
-			groupNode = QDomDocument().createElement("Group");
-			groupNode.setAttribute("name", wizard->field("name").toString());
+			groupNode.setContent( QString( "<Group/>" ) );
+			groupNode.documentElement().setAttribute("name", wizard->field("name").toString());
 		}
 		delete wizard;
-		return groupNode;
+		return groupNode.documentElement();
 	}
 
 	QDomElement createEmitter(QWidget* parent)
 	{
-		QDomElement emitterNode;
+		QDomDocument emitterNode;
 		QWizard* wizard = new QWizard(parent);
 		wizard->addPage(new QEmitterNodePage(wizard));
 		if (wizard->exec() == QDialog::Accepted)
 		{			
-			emitterNode = QDomDocument().createElement("Emitter");
-			emitterNode.setAttribute("name", wizard->field("name").toString());
-			emitterNode.setAttribute("effect", wizard->field("effect").toString());
-			emitterNode.setAttribute("material", wizard->field("material").toString());
-			emitterNode.setAttribute("maxCount", wizard->field("maxCount").toDouble());
-			emitterNode.setAttribute("respawnCount", wizard->field("respawnCount").toDouble());
-			emitterNode.setAttribute("emissionRate", wizard->field("emissionRate").toUInt());
+			emitterNode.setContent( QString( "<Emitter/>") );
+			emitterNode.documentElement().setAttribute("name", wizard->field("name").toString());
+			emitterNode.documentElement().setAttribute("effect", wizard->field("effect").toString());
+			emitterNode.documentElement().setAttribute("material", wizard->field("material").toString());
+			emitterNode.documentElement().setAttribute("maxCount", wizard->field("maxCount").toDouble());
+			emitterNode.documentElement().setAttribute("respawnCount", wizard->field("respawnCount").toDouble());
+			emitterNode.documentElement().setAttribute("emissionRate", wizard->field("emissionRate").toUInt());
 		}
 		delete wizard;
-		return emitterNode;
+		return emitterNode.documentElement();
 	}
 }
 

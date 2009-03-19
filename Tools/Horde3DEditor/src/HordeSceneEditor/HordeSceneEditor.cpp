@@ -36,7 +36,6 @@
 #include "QGroupNode.h"
 #include "QEmitterNode.h"
 
-#include "PathPage.h"
 #include "GLWidget.h"
 #include "MiscToolBar.h"
 #include "CameraToolBar.h"
@@ -392,7 +391,7 @@ void HordeSceneEditor::sceneCreated()
 			loadScreen.showMessage(tr("Updating Log View"), Qt::AlignLeft, Qt::white);
 			m_glWidget->updateLog();
 			loadScreen.showMessage(tr("Loading resources"), Qt::AlignLeft, Qt::white);
-			Horde3DUtils::loadResourcesFromDisk("");
+			Horde3DUtils::loadResourcesFromDisk(".");
 			loadScreen.showMessage(tr("Updating Recent Files"), Qt::AlignLeft, Qt::white);
 			// Update recent files
 			QHordeSceneEditorSettings settings(this);
@@ -796,15 +795,12 @@ void HordeSceneEditor::fileChanged(const QString& path)
 		qDebug(qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Material)).relativeFilePath(path)));
 		resource = Horde3D::findResource(ResourceTypes::Material, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Material)).relativeFilePath(path)));
 	}
-	// 2D Texture ? 
-	if (resource == 0 && path.contains(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Texture2D)).absolutePath()))
-		resource = Horde3D::findResource(ResourceTypes::Texture2D, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Texture2D)).relativeFilePath(path)));
-	// Cube Texture ?
-	if (resource == 0 && path.contains(QDir(Horde3DUtils::getResourcePath(ResourceTypes::TextureCube)).absolutePath()))
-		resource = Horde3D::findResource(ResourceTypes::TextureCube, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::TextureCube)).relativeFilePath(path)));
+	// Texture ? 
+	if (resource == 0 && path.contains(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Texture)).absolutePath()))
+		resource = Horde3D::findResource(ResourceTypes::Texture, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Texture)).relativeFilePath(path)));
 	// Effect ?
-	if (resource == 0 && path.contains(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Effect)).absolutePath()))
-		resource = Horde3D::findResource(ResourceTypes::Effect, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Effect)).relativeFilePath(path)));
+	if (resource == 0 && path.contains(QDir(Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect)).absolutePath()))
+		resource = Horde3D::findResource(ResourceTypes::ParticleEffect, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect)).relativeFilePath(path)));
 	// Pipeline ?
 	if (resource == 0 && path.contains(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Pipeline)).absolutePath()))
 		resource = Horde3D::findResource(ResourceTypes::Pipeline, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Pipeline)).relativeFilePath(path)));		
@@ -832,7 +828,7 @@ void HordeSceneEditor::fileChanged(const QString& path)
 		QListWidgetItem* item = new QListWidgetItem(tr("Reloading resource: %1").arg(path), m_logWidget);
 		item->setTextColor(QColor("#22CC22"));		
 		// Reload it again
-		Horde3DUtils::loadResourcesFromDisk("");
+		Horde3DUtils::loadResourcesFromDisk(".");
 		// If it's a pipeline check if we have to update the pipeline view
 		if (Horde3D::getResourceType(resource) == ResourceTypes::Pipeline && m_cameraToolBar->currentPipelineID() == resource)
 			m_pipelineWidget->loadPipeline(m_cameraToolBar->currentPipelineFile(), m_cameraToolBar->currentPipelineID());
@@ -929,43 +925,6 @@ void HordeSceneEditor::setModified()
 		setWindowModified(true);
 }
 
-void HordeSceneEditor::configureScenePaths()
-{
-	QWizard wizard(this);	
-	PathPage* page = new PathPage(&wizard);
-	wizard.addPage(page);
-	page->setDirectories(m_sceneFile->geometryDir(), m_sceneFile->materialDir(), m_sceneFile->pipelineDir(), m_sceneFile->textureDir(),
-		m_sceneFile->sceneGraphDir(), m_sceneFile->animationDir(), m_sceneFile->shaderDir(), m_sceneFile->effectDir());
-	if (wizard.exec() == QDialog::Accepted)
-	{
-		m_sceneFile->setAnimationDir(wizard.field("animationdir").toString());
-		m_sceneFile->setGeometryDir(wizard.field("geometrydir").toString());
-		m_sceneFile->setShaderDir(wizard.field("shaderdir").toString());
-		m_sceneFile->setMaterialDir(wizard.field("materialdir").toString());
-		m_sceneFile->setTextureDir(wizard.field("texturedir").toString());
-		m_sceneFile->setSceneGraphDir(wizard.field("scenegraphdir").toString());
-		m_sceneFile->setEffectDir(wizard.field("effectsdir").toString());
-		m_sceneFile->setPipelineDir(wizard.field("pipelinedir").toString());
-		if( m_sceneFile->pluginManager()->attachmentPlugIn() )
-		{
-			m_sceneFile->pluginManager()->attachmentPlugIn()->sceneFileConfig();
-		}
-		if(QMessageBox::question(
-			this, 
-			tr("Attention"), 
-			tr("To make the changes taking effect, you have to reload the scene!\nDo you want to reload it now?\n\n(The scene will be saved before reload)"),
-			QMessageBox::Yes | QMessageBox::Default,
-			QMessageBox::No | QMessageBox::Escape)==QMessageBox::Yes)
-		{
-			saveScene();
-			openScene(m_sceneFile->absoluteSceneFilePath());
-		}
-		else
-			setWindowModified(true);
-	}
-}
-
-
 void HordeSceneEditor::nodeRegistered(const QString& name, PlugInManager::NodeType type)
 {
 	QAction* action = new QAction(tr("Add %1").arg(name), this);
@@ -1011,9 +970,9 @@ void HordeSceneEditor::updateFileSystemWatcher()
 	{
 		m_fileSystemWatcher->addPath(m_sceneFile->absoluteSceneFilePath());
 		QStringList textureFilter;
-		textureFilter << "*.jpg" << "*.tga" << "*.png" << "*.bmp";
-		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::Texture2D)).absoluteFilePath(), textureFilter );
-		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::Effect)).absoluteFilePath(), QStringList("*.effect.xml"));
+		textureFilter << "*.jpg" << "*.tga" << "*.png" << "*.bmp" << "*.psd" << "*.dds";
+		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::Texture)).absoluteFilePath(), textureFilter );
+		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect)).absoluteFilePath(), QStringList("*.effect.xml"));
 		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::Material)).absoluteFilePath(), QStringList("*.material.xml"));
 		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::Shader)).absoluteFilePath(), QStringList("*.shader.xml"));
 		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::Code)).absoluteFilePath(), QStringList("*.glsl"));

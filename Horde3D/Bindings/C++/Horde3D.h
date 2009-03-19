@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -53,15 +53,15 @@
 /* Group: Typedefs and constants */
 
 /*	Constants: Typedefs
-	ResHandle	- handle to resource (int)
-	NodeHandle	- handle to scene node (int)
+	ResHandle   - handle to resource (int)
+	NodeHandle  - handle to scene node (int)
 */
 typedef int ResHandle;
 typedef int NodeHandle;
 
 
 /*	Constants: Predefined constants
-	RootNode		- Scene root node handle
+	RootNode  - Scene root node handle
 */
 const NodeHandle RootNode = 1;
 
@@ -72,33 +72,31 @@ struct EngineOptions
 	/*	Enum: EngineOptions
 			The available engine option parameters.
 		
-		MaxLogLevel			- Defines the maximum log level; only messages which are smaller or equal to this value
-							  (hence more important) are published in the message queue. (Default: 4)
+		MaxLogLevel         - Defines the maximum log level; only messages which are smaller or equal to this value
+		                      (hence more important) are published in the message queue. (Default: 4)
 		MaxNumMessages      - Defines the maximum number of messages that can be stored in the message queue (Default: 512)
-		TrilinearFiltering	- Enables or disables trilinear filtering for textures; only affects textures
-							  that are loaded after setting the option. (Values: 0, 1; Default: 1)
-		AnisotropyFactor	- Sets the quality for anisotropic filtering; only affects textures that
-							  are loaded after setting the option. (Values: 1, 2, 4, 8; Default: 1)
-		TexCompression		- Enables or disables texture compression; only affects textures that are
-							  loaded after setting the option. (Values: 0, 1; Default: 0)
-		LoadTextures		- Enables or disables loading of texture images; option can be used to
-							  minimize loading times for testing. (Values: 0, 1; Default: 1)
-		FastAnimation		- Disables or enables inter-frame interpolation for animations. (Values: 0, 1; Default: 1)
-		ShadowMapSize		- Sets the size of the shadow map buffer (Values: 128, 256, 512, 1024, 2048; Default: 1024)
-		SampleCount			- Maximum number of samples used for multisampled render targets; only affects pipelines
-							  that are loaded after setting the option. (Values: 0, 2, 4, 8, 16; Default: 0)
-		WireframeMode		- Enables or disables wireframe rendering
-		DebugViewMode		- Enables or disables debug view where geometry is rendered in wireframe without shaders and
-							  lights are visualized using their screen space bounding box. (Values: 0, 1; Default: 0)
-		DumpFailedShaders	- Enables or disables storing of shader code that failed to compile in a text file; this can be
-							  useful in combination with the line numbers given back by the shader compiler. (Values: 0, 1; Default: 0)
+		TrilinearFiltering  - Enables or disables trilinear filtering for textures. (Values: 0, 1; Default: 1)
+		MaxAnisotropy       - Sets the maximum quality for anisotropic filtering. (Values: 1, 2, 4, 8; Default: 1)
+		TexCompression      - Enables or disables texture compression; only affects textures that are
+		                      loaded after setting the option. (Values: 0, 1; Default: 0)
+		LoadTextures        - Enables or disables loading of texture images; option can be used to
+		                      minimize loading times for testing. (Values: 0, 1; Default: 1)
+		FastAnimation       - Disables or enables inter-frame interpolation for animations. (Values: 0, 1; Default: 1)
+		ShadowMapSize       - Sets the size of the shadow map buffer (Values: 128, 256, 512, 1024, 2048; Default: 1024)
+		SampleCount         - Maximum number of samples used for multisampled render targets; only affects pipelines
+		                      that are loaded after setting the option. (Values: 0, 2, 4, 8, 16; Default: 0)
+		WireframeMode       - Enables or disables wireframe rendering
+		DebugViewMode       - Enables or disables debug view where geometry is rendered in wireframe without shaders and
+		                      lights are visualized using their screen space bounding box. (Values: 0, 1; Default: 0)
+		DumpFailedShaders   - Enables or disables storing of shader code that failed to compile in a text file; this can be
+		                      useful in combination with the line numbers given back by the shader compiler. (Values: 0, 1; Default: 0)
 	*/
 	enum List
 	{
 		MaxLogLevel = 1,
 		MaxNumMessages,
 		TrilinearFiltering,
-		AnisotropyFactor,
+		MaxAnisotropy,
 		TexCompression,
 		LoadTextures,
 		FastAnimation,
@@ -115,15 +113,19 @@ struct EngineStats
 	/*	Enum: EngineStats
 			The available engine statistic parameters.
 		
-		TriCount		- Number of triangles that were pushed to the renderer
-		BatchCount		- Number of batches (draw calls)
-		LightPassCount	- Number of lighting passes
+		TriCount        - Number of triangles that were pushed to the renderer
+		BatchCount      - Number of batches (draw calls)
+		LightPassCount  - Number of lighting passes
+		FrameTime       - Time in ms between two finalizeFrame calls
+		CustomTime      - Value of custom timer (useful for profiling engine functions)
 	*/
 	enum List
 	{
 		TriCount = 100,
 		BatchCount,
-		LightPassCount
+		LightPassCount,
+		FrameTime,
+		CustomTime
 	};
 };
 
@@ -132,17 +134,16 @@ struct ResourceTypes
 	/*	Enum: ResourceTypes
 			The available resource types.
 		
-		Undefined	- An undefined resource, returned by getResourceType in case of error
-		SceneGraph	- Scene graph subtree stored in XML format
-		Geometry	- Geometrical data containing bones, vertices and triangles
-		Animation	- Animation data
-		Material	- Material script
-		Code		- Text block containing shader source code
-		Shader		- Shader program
-		Texture2D	- Two-dimensional texture map
-		TextureCube	- Cube map texture
-		Effect		- Particle configuration
-		Pipeline	- Rendering pipeline
+		Undefined       - An undefined resource, returned by getResourceType in case of error
+		SceneGraph      - Scene graph subtree stored in XML format
+		Geometry        - Geometrical data containing bones, vertices and triangles
+		Animation       - Animation data
+		Material        - Material script
+		Code            - Text block containing shader source code
+		Shader          - Shader program
+		Texture         - Texture map
+		ParticleEffect  - Particle configuration
+		Pipeline        - Rendering pipeline
 	*/
 	enum List
 	{
@@ -153,9 +154,8 @@ struct ResourceTypes
 		Material,
 		Code,
 		Shader,
-		Texture2D,
-		TextureCube,
-		Effect,
+		Texture,
+		ParticleEffect,
 		Pipeline
 	};
 };
@@ -165,33 +165,27 @@ struct ResourceFlags
 	/*	Enum: ResourceFlags
 			The available flags used when adding a resource.
 			
-		NoQuery				- Excludes resource from being listed by queryUnloadedResource function.
-		NoTexPOTConversion	- Disables texture conversion to power-of-two dimensions on hardware without NPOT-support.
-		NoTexCompression	- Disables texture compression for Texture2D or TextureCube resource.
-		NoTexMipmaps		- Disables generation of mipmaps for textures.
-		NoTexFiltering		- Disables bilinear filtering for textures.
-		NoTexRepeat			- Disables tiling (repeat mode) for textures and enables clamping instead.
+		NoQuery           - Excludes resource from being listed by queryUnloadedResource function.
+		NoTexCompression  - Disables texture compression for Texture resource.
+		NoTexMipmaps      - Disables generation of mipmaps for Texture resources.
 	*/
 	enum Flags
 	{
 		NoQuery = 1,
-		NoTexPOTConversion = 2,
-		NoTexCompression = 4,
-		NoTexMipmaps = 8,
-		NoTexFiltering = 16,
-		NoTexRepeat = 32
+		NoTexCompression = 2,
+		NoTexMipmaps = 4
 	};
 };
 
 struct GeometryResParams
 {
 	/*	Enum: GeometryResParams
-		   The available Geometry resource parameters.	  
-	   
-		VertexCount	- Number of vertices; valid for getResourceParami
-		IndexCount	- Number of triangle indices; valid for getResourceParami
-		VertexData	- Vertex positon data (pointer to float); valid for getResourceData
-		IndexData	- Triangle indices (pointer to uint); valid for getResourceData
+			The available Geometry resource parameters.	  
+		
+		VertexCount  - Number of vertices; valid for getResourceParami
+		IndexCount   - Number of triangle indices; valid for getResourceParami
+		VertexData   - Vertex positon data (pointer to float); valid for getResourceData
+		IndexData    - Triangle indices (pointer to uint); valid for getResourceData
 	 */
 	enum List
 	{
@@ -206,8 +200,8 @@ struct AnimationResParams
 {
 	/*	Enum: AnimationResParams
 			The available Animation resource parameters.
-	  
-	   FrameCount	- Number of animation frames; valid for getResourceParami
+
+		FrameCount  - Number of animation frames; valid for getResourceParami
 	*/
 	enum List
 	{
@@ -220,128 +214,88 @@ struct MaterialResParams
 	/*	Enum: MaterialResParams
 			The available Material resource parameters.
 
-		Class   	- Hierarchical class name (Default: empty string);
-					  valid for get-/setResourceParamstr
-		Link	    - Link to other material resource;
-					  valid for get-/setResourceParami
-		Shader      - Shader resource used for rendering;
-					  valid for get-/setResourceParami
-		TexUnit_0	- Texture resource for the first unit;	
-					  valid for get-/setResourceParami
-		TexUnit_1	- Texture resource for the second unit;
-					  valid for get-/setResourceParami
-		TexUnit_2	- Texture resource for the third unit;
-					  valid for get-/setResourceParami
-		TexUnit_3	- Texture resource for the fourth unit;
-					  valid for get-/setResourceParami
-		TexUnit_4	- Texture resource for the fifth unit;
-					  valid for get-/setResourceParami
-		TexUnit_5	- Texture resource for the sixth unit;
-					  valid for get-/setResourceParami
-		TexUnit_6	- Texture resource for the seventh unit;
-					  valid for get-/setResourceParami
-		TexUnit_7	- Texture resource for the eighth unit;
-					  valid for get-/setResourceParami
-		TexUnit_8	- Texture resource for the ninth unit;
-					  valid for get-/setResourceParami
-		TexUnit_9	- Texture resource for the tenth unit;
-					  valid for get-/setResourceParami
-		TexUnit_10	- Texture resource for the eleventh unit;
-					  valid for get-/setResourceParami
-		TexUnit_11	- Texture resource for the twelfth unit;
-					  valid for get-/setResourceParami
+		Class   - Hierarchical class name (Default: empty string); valid for get-/setResourceParamstr
+		Link    - Link to other material resource; valid for get-/setResourceParami
+		Shader  - Shader resource used for rendering; valid for get-/setResourceParami
 	 */
 	enum List
 	{
 		Class = 400,
 		Link,
-		Shader,
-		TexUnit_0,
-		TexUnit_1,
-		TexUnit_2,
-		TexUnit_3,
-		TexUnit_4,
-		TexUnit_5,
-		TexUnit_6,
-		TexUnit_7,
-		TexUnit_8,
-		TexUnit_9,
-		TexUnit_10,
-		TexUnit_11
+		Shader
 	};	
 };
 
 struct TextureResParams
 {
 	/*	Enum: TextureResParams
-			The available Texture2D and TextureCube resource parameters.
+			The available Texture resource parameters.
 
-		PixelData	- Image pixel data (pointer to unsigned char); valid for updateResourceData for Texture2D
-		Width		- Image width in pixels; valid for getResourceParami
-		Height		- Image height in pixels; valid for getResourceParami
-		Comps		- Number of channels in image (e.g. an RGBA image has 4 channels); valid for getResourceParami
-		HDR			- Flag indicating whether the texture is a HDR image (returns 1) or a usual 8 bit per channel image (returns 0);
-		              valid for getResourceParami
+		PixelData  - Image pixel data (pointer to unsigned char); valid for updateResourceData for 2D Textures
+		TexType    - Texture type (2D or Cube); valid for getResourceParami
+		TexFormat  - Pixel format; valid for getResourceParami
+		Width      - Image width in pixels; valid for getResourceParami
+		Height     - Image height in pixels; valid for getResourceParami
 	 */
 	enum List
 	{
 		PixelData = 700,
+		TexType,
+		TexFormat,
 		Width,
-		Height,
-		Comps,
-		HDR
+		Height
 	};
 };
 
-struct EffectResParams
+struct ParticleEffectResParams
 {
-	/*	Enum: EffectResParams
-			The available Effect resource parameters.
-	  
-	   LifeMin          - Minimum value for selecting random life time; valid for get-/setResourceParamf
-	   LifeMax	        - Maximum value for selecting random life time; valid for get-/setResourceParamf
-	   MoveVelMin       - Minimum value for selecting random initial value of velocity defining 
-						  how many units per second particle is moving; valid for get-/setResourceParamf 
-	   MoveVelMax       - Maximum value for selecting random initial value of velocity defining 
-						  how many units per second particle is moving; valid for get-/setResourceParamf
-	   MoveVelEndRate   - Percentage of the initial translation velocity value when particle is dying;
-						  valid for get-/setResourceParamf
-	   RotVelMin        - Minimum value for selecting random initial value of velocity defining 
-						  how many degrees per second particle is rotating; valid for get-/setResourceParamf
-	   RotVelMax        - Maximum value for selecting random initial value of velocity defining 
-					  	  how many degrees per second particle is rotating; valid for get-/setResourceParamf
-	   RotVelEndRate    - Percentage of the initial rotation velocity value when particle is dying;		
-						  valid for get-/setResourceParamf
-	   SizeVelMin       - Minimum value for selecting random initial size value; 
-	                      valid for get-/setResourceParamf
-	   SizeVelMax       - Maximum value for selecting random initial size value; 
-						  valid for get-/setResourceParamf					      
-	   SizeVelEndRate   - Percentage of the initial size value when particle is dying;
-						  valid for get-/setResourceParamf					      
-	   Col_R_Min        - Minimum value for selecting random initial red color value;					     
-						  valid for get-/setResourceParamf					      
-	   Col_R_Max        - Maximum value for selecting random initial red color value;					      
-						  valid for get-/setResourceParamf					      
-	   Col_R_EndRate    - Percentage of the initial red value when particle is dying;	   
-						  valid for get-/setResourceParamf					      
-	   Col_G_Min        - Minimum value for selecting random initial green color value;
-						  valid for get-/setResourceParamf					      
-	   Col_G_Max        - Maximum value for selecting random initial green color value;
-						  valid for get-/setResourceParamf					      
-	   Col_G_EndRate    - Percentage of the initial green value when particle is dying;
-						  valid for get-/setResourceParamf					      
-	   Col_B_Min        - Minimum value for selecting random initial blue color value;
-						  valid for get-/setResourceParamf					      
-	   Col_B_Max        - Maximum value for selecting random initial blue color value;
-						  valid for get-/setResourceParamf					      
-	   Col_B_EndRate    - Percentage of the initial blue value when particle is dying;
-						  valid for get-/setResourceParamf					      
-	   Col_A_Min        - Minimum value for selecting random initial alpha color value;
-						  valid for get-/setResourceParamf					      
-	   Col_A_Max        - Maximum value for selecting random initial alpha color value;
-						  valid for get-/setResourceParamf					      
-	   Col_A_EndRate    - Percentage of the initial alpha value when particle is dying;
-						  valid for get-/setResourceParamf					      
+	/*	Enum: ParticleEffectResParams
+			The available ParticleEffect resource parameters.
+
+		LifeMin         - Minimum value for selecting random life time; valid for get-/setResourceParamf
+		LifeMax	        - Maximum value for selecting random life time; valid for get-/setResourceParamf
+		MoveVelMin      - Minimum value for selecting random initial value of velocity defining 
+		                  how many units per second particle is moving; valid for get-/setResourceParamf 
+		MoveVelMax      - Maximum value for selecting random initial value of velocity defining 
+		                   how many units per second particle is moving; valid for get-/setResourceParamf
+		MoveVelEndRate  - Percentage of the initial translation velocity value when particle is dying;
+		                  valid for get-/setResourceParamf
+		RotVelMin       - Minimum value for selecting random initial value of velocity defining 
+		                  how many degrees per second particle is rotating; valid for get-/setResourceParamf
+		RotVelMax       - Maximum value for selecting random initial value of velocity defining 
+		                   how many degrees per second particle is rotating; valid for get-/setResourceParamf
+		RotVelEndRate   - Percentage of the initial rotation velocity value when particle is dying;		
+		                  valid for get-/setResourceParamf
+		SizeVelMin      - Minimum value for selecting random initial size value; 
+		                  valid for get-/setResourceParamf
+		SizeVelMax      - Maximum value for selecting random initial size value; 
+		                  valid for get-/setResourceParamf					      
+		SizeVelEndRate  - Percentage of the initial size value when particle is dying;
+		                  valid for get-/setResourceParamf					      
+		Col_R_Min       - Minimum value for selecting random initial red color value;					     
+		                  valid for get-/setResourceParamf					      
+		Col_R_Max       - Maximum value for selecting random initial red color value;					      
+		                  valid for get-/setResourceParamf					      
+		Col_R_EndRate   - Percentage of the initial red value when particle is dying;	   
+		                  valid for get-/setResourceParamf					      
+		Col_G_Min       - Minimum value for selecting random initial green color value;
+		                  valid for get-/setResourceParamf					      
+		Col_G_Max       - Maximum value for selecting random initial green color value;
+		                  valid for get-/setResourceParamf					      
+		Col_G_EndRate   - Percentage of the initial green value when particle is dying;
+		                  valid for get-/setResourceParamf					      
+		Col_B_Min       - Minimum value for selecting random initial blue color value;
+		                  valid for get-/setResourceParamf					      
+		Col_B_Max       - Maximum value for selecting random initial blue color value;
+		                  valid for get-/setResourceParamf					      
+		Col_B_EndRate   - Percentage of the initial blue value when particle is dying;
+		                  valid for get-/setResourceParamf					      
+		Col_A_Min       - Minimum value for selecting random initial alpha color value;
+		                  valid for get-/setResourceParamf					      
+		Col_A_Max       - Maximum value for selecting random initial alpha color value;
+		                  valid for get-/setResourceParamf					      
+		Col_A_EndRate   - Percentage of the initial alpha value when particle is dying;
+		                  valid for get-/setResourceParamf					      
 	*/
 	enum List
 	{
@@ -376,14 +330,14 @@ struct SceneNodeTypes
 	/*	Enum: SceneNodeTypes
 			The available scene node types.
 		
-		Undefined	- An undefined node type, returned by getNodeType in case of error
-		Group		- Group of different scene nodes
-		Model		- 3D model with optional skeleton
-		Mesh		- Subgroup of a model with triangles of one material
-		Joint		- Joint for skeletal animation
-		Light		- Light source
-		Camera		- Camera giving view on scene
-		Emitter		- Particle system emitter
+		Undefined  - An undefined node type, returned by getNodeType in case of error
+		Group      - Group of different scene nodes
+		Model      - 3D model with optional skeleton
+		Mesh       - Subgroup of a model with triangles of one material
+		Joint      - Joint for skeletal animation
+		Light      - Light source
+		Camera     - Camera giving view on scene
+		Emitter    - Particle system emitter
 	*/
 	enum List
 	{
@@ -400,12 +354,12 @@ struct SceneNodeTypes
 
 struct SceneNodeParams
 {
-	/*  Enum: SceneNodeParams
-	        The available scene node parameters.
+	/*	Enum: SceneNodeParams
+			The available scene node parameters.
 
-			Name				- Name of the scene node [type: string]
-		    AttachmentString    - Optional application-specific meta data for a node
-								  encapsulated in an 'Attachment' XML string [type: string]
+		Name              - Name of the scene node [type: string]
+		AttachmentString  - Optional application-specific meta data for a node
+		                    encapsulated in an 'Attachment' XML string [type: string]
 	*/
 	enum List
 	{
@@ -420,16 +374,16 @@ struct ModelNodeParams
 	/*	Enum: ModelNodeParams
 			The available Model node parameters
 
-		GeometryRes			- Geometry resource used for the model [type: ResHandle]
-		SoftwareSkinning	- Enables or disables software skinning (default: 0) [type: int]
-		LodDist1            - Distance to camera from which on LOD1 is used (default: infinite) [type: float]
-		                      (must be a positive value larger than 0.0)
-		LodDist2            - Distance to camera from which on LOD2 is used
-		                      (may not be smaller than LodDist1) (default: infinite) [type: float]
-		LodDist3            - Distance to camera from which on LOD3 is used
-		                      (may not be smaller than LodDist2) (default: infinite) [type: float]
-		LodDist4            - Distance to camera from which on LOD4 is used
-		                      (may not be smaller than LodDist3) (default: infinite) [type: float]
+		GeometryRes       - Geometry resource used for the model [type: ResHandle]
+		SoftwareSkinning  - Enables or disables software skinning (default: 0) [type: int]
+		LodDist1          - Distance to camera from which on LOD1 is used (default: infinite) [type: float]
+		                    (must be a positive value larger than 0.0)
+		LodDist2          - Distance to camera from which on LOD2 is used
+		                    (may not be smaller than LodDist1) (default: infinite) [type: float]
+		LodDist3          - Distance to camera from which on LOD3 is used
+		                    (may not be smaller than LodDist2) (default: infinite) [type: float]
+		LodDist4          - Distance to camera from which on LOD4 is used
+		                    (may not be smaller than LodDist3) (default: infinite) [type: float]
 	*/
 	enum List
 	{
@@ -447,13 +401,13 @@ struct MeshNodeParams
 	/*	Enum: MeshNodeParams
 			The available Mesh node parameters.
 		
-		MaterialRes	- Material resource used for the mesh [type: ResHandle]
-		BatchStart	- First triangle index of mesh in Geometry resource of parent Model node [type: int, read-only]
-		BatchCount	- Number of triangle indices used for drawing mesh [type: int, read-only]
-		VertRStart	- First vertex in Geometry resource of parent Model node [type: int, read-only]
-		VertREnd	- Last vertex in Geometry resource of parent Model node [type: int, read-only]
-		LodLevel    - LOD level of Mesh; the mesh is only rendered if its LOD level corresponds to
-		              the model's current LOD level which is calculated based on the LOD distances (default: 0) [type: int]
+		MaterialRes  - Material resource used for the mesh [type: ResHandle]
+		BatchStart   - First triangle index of mesh in Geometry resource of parent Model node [type: int, read-only]
+		BatchCount   - Number of triangle indices used for drawing mesh [type: int, read-only]
+		VertRStart   - First vertex in Geometry resource of parent Model node [type: int, read-only]
+		VertREnd     - Last vertex in Geometry resource of parent Model node [type: int, read-only]
+		LodLevel     - LOD level of Mesh; the mesh is only rendered if its LOD level corresponds to
+		               the model's current LOD level which is calculated based on the LOD distances (default: 0) [type: int]
 	*/
 	enum List
 	{
@@ -471,7 +425,7 @@ struct JointNodeParams
 	/*	Enum: JointNodeParams
 			The available Joint node parameters.
 
-		JointIndex - Index of joint in Geometry resource of parent Model node [type: int, read-only]
+		JointIndex  - Index of joint in Geometry resource of parent Model node [type: int, read-only]
 	*/
 	enum List
 	{
@@ -484,16 +438,16 @@ struct LightNodeParams
 	/*	Enum: LightNodeParams
 			The available Light node parameters.
 		
-		MaterialRes			- Material resource used for the light [type: ResHandle]
-		Radius				- Radius of influence (default: 100.0) [type: float]
-		FOV					- Field of view (FOV) angle (default: 90.0) [type: float]
-		Col_R				- Red component of light diffuse color (default: 1.0) [type: float]
-		Col_G				- Green component of light diffuse color (default: 1.0) [type: float]
-		Col_B				- Blue component of light diffuse color (default: 1.0) [type: float]
-		ShadowMapCount		- Number of shadow maps used for light source (values: 0, 1, 2, 3, 4; default: 0) [type: int]
-		ShadowSplitLambda	- Constant determining segmentation of view frustum for Parallel Split Shadow Maps
-							  (default: 0.5) [type: float]
-		ShadowMapBias		- Bias value for shadow mapping to reduce shadow acne (default: 0.005) [type: float]
+		MaterialRes         - Material resource used for the light [type: ResHandle]
+		Radius              - Radius of influence (default: 100.0) [type: float]
+		FOV                 - Field of view (FOV) angle (default: 90.0) [type: float]
+		Col_R               - Red component of light diffuse color (default: 1.0) [type: float]
+		Col_G               - Green component of light diffuse color (default: 1.0) [type: float]
+		Col_B               - Blue component of light diffuse color (default: 1.0) [type: float]
+		ShadowMapCount      - Number of shadow maps used for light source (values: 0, 1, 2, 3, 4; default: 0) [type: int]
+		ShadowSplitLambda   - Constant determining segmentation of view frustum for Parallel Split Shadow Maps
+		                      (default: 0.5) [type: float]
+		ShadowMapBias       - Bias value for shadow mapping to reduce shadow acne (default: 0.005) [type: float]
 	*/
 	enum List
 	{
@@ -514,17 +468,17 @@ struct CameraNodeParams
 	/*	Enum: CameraNodeParams
 			The available Camera node parameters.
 		
-		PipelineRes			- Pipeline resource used for rendering [type: ResHandle]
-		OutputTex			- Texture2D resource used as output buffer (can be 0 to use main framebuffer) (default: 0) [type: ResHandle]
-		OutputBufferIndex	- Index of the output buffer for stereo rendering (values: 0 for left eye, 1 for right eye) (default: 0) [type: int]
-		LeftPlane			- Coordinate of left plane relative to near plane center (default: -0.055228457) [type: float]
-		RightPlane			- Coordinate of right plane relative to near plane center (default: 0.055228457) [type: float]
-		BottomPlane			- Coordinate of bottom plane relative to near plane center (default: -0.041421354f) [type: float]
-		TopPlane			- Coordinate of top plane relative to near plane center (default: 0.041421354f) [type: float]
-		NearPlane			- Distance of near clipping plane (default: 0.1) [type: float]
-		FarPlane			- Distance of far clipping plane (default: 1000) [type: float]
-		Orthographic		- Flag for setting up an orthographic frustum instead of a perspective one (default: 0) [type:int]
-		OcclusionCulling	- Flag for enabling occlusion culling (default: 0) [type:int]
+		PipelineRes        - Pipeline resource used for rendering [type: ResHandle]
+		OutputTex          - 2D Texture resource used as output buffer (can be 0 to use main framebuffer) (default: 0) [type: ResHandle]
+		OutputBufferIndex  - Index of the output buffer for stereo rendering (values: 0 for left eye, 1 for right eye) (default: 0) [type: int]
+		LeftPlane          - Coordinate of left plane relative to near plane center (default: -0.055228457) [type: float]
+		RightPlane         - Coordinate of right plane relative to near plane center (default: 0.055228457) [type: float]
+		BottomPlane        - Coordinate of bottom plane relative to near plane center (default: -0.041421354f) [type: float]
+		TopPlane           - Coordinate of top plane relative to near plane center (default: 0.041421354f) [type: float]
+		NearPlane          - Distance of near clipping plane (default: 0.1) [type: float]
+		FarPlane           - Distance of far clipping plane (default: 1000) [type: float]
+		Orthographic       - Flag for setting up an orthographic frustum instead of a perspective one (default: 0) [type:int]
+		OcclusionCulling   - Flag for enabling occlusion culling (default: 0) [type:int]
 	*/
 	enum List
 	{
@@ -547,21 +501,21 @@ struct EmitterNodeParams
 	/*	Enum: EmitterNodeParams
 			The available Emitter node parameters.
 		
-		MaterialRes		- Material resource used for rendering [type: ResHandle]
-		EffectRes		- Effect resource which configures particle properties [type: ResHandle]
-		MaxCount		- Maximal number of particles living at the same time [type: int]
-		RespawnCount	- Number of times a single particle is recreated after dying (-1 for infinite) [type: int]
-		Delay			- Time in seconds before emitter begins creating particles (default: 0.0) [type: float]
-		EmissionRate	- Maximal number of particles to be created per second (default: 0.0) [type: float]
-		SpreadAngle		- Angle of cone for random emission direction (default: 0.0) [type: float]
-		ForceX			- X-component of force vector applied to particles (default: 0.0) [type: float]
-		ForceY			- Y-component of force vector applied to particles (default: 0.0) [type: float]
-		ForceZ			- Z-component of force vector applied to particles (default: 0.0) [type: float]
+		MaterialRes        - Material resource used for rendering [type: ResHandle]
+		ParticleEffectRes  - ParticleEffect resource which configures particle properties [type: ResHandle]
+		MaxCount           - Maximal number of particles living at the same time [type: int]
+		RespawnCount       - Number of times a single particle is recreated after dying (-1 for infinite) [type: int]
+		Delay              - Time in seconds before emitter begins creating particles (default: 0.0) [type: float]
+		EmissionRate       - Maximal number of particles to be created per second (default: 0.0) [type: float]
+		SpreadAngle        - Angle of cone for random emission direction (default: 0.0) [type: float]
+		ForceX             - X-component of force vector applied to particles (default: 0.0) [type: float]
+		ForceY             - Y-component of force vector applied to particles (default: 0.0) [type: float]
+		ForceZ             - Z-component of force vector applied to particles (default: 0.0) [type: float]
 	*/
 	enum List
 	{
 		MaterialRes = 700,
-		EffectRes,
+		ParticleEffectRes,
 		MaxCount,
 		RespawnCount,
 		Delay,
@@ -596,7 +550,7 @@ namespace Horde3D
 		This function checks if a specified extension is contained in the DLL/shared object of the engine.
 		
 		Parameters:
-			extensionName	- name of the extension
+			extensionName  - name of the extension
 			
 		Returns:
 			true if extension is implemented, otherwise false
@@ -645,11 +599,11 @@ namespace Horde3D
 
 		
 		Parameters:
-			x				- the x-position of the lower left corner of the viewport rectangle
-			y				- the y-position of the lower left corner of the viewport rectangle
-			width			- the width of the viewport
-			height			- the height of the viewport
-			resizeBuffers	- specifies whether render targets should be adapted to new size
+			x              - the x-position of the lower left corner of the viewport rectangle
+			y              - the y-position of the lower left corner of the viewport rectangle
+			width          - the width of the viewport
+			height         - the height of the viewport
+			resizeBuffers  - specifies whether render targets should be adapted to new size
 			
 		Returns:
 			nothing
@@ -664,7 +618,7 @@ namespace Horde3D
 		output buffers.
 		
 		Parameters:
-			cameraNode	- camera node used for rendering scene
+			cameraNode  - camera node used for rendering scene
 			
 		Returns:
 			true in case of success, otherwise false
@@ -689,8 +643,8 @@ namespace Horde3D
 			Removes all resources and scene nodes.
 		
 		This function removes all nodes from the scene graph except the root node and releases all resources.
-        
-        *Warning: All resource and node IDs are invalid after calling this function*
+		
+		*Warning: All resource and node IDs are invalid after calling this function*
 		
 		Parameters:
 			none
@@ -706,11 +660,11 @@ namespace Horde3D
 			Gets the next message from the message queue.
 		
 		This function returns the next message string from the message queue and writes additional information
-        to the specified variables. If no message is left over in the queue an empty string is returned.
+		to the specified variables. If no message is left over in the queue an empty string is returned.
 		
 		Parameters:
-			level	- pointer to variable for storing message level indicating importance (can be NULL)
-			time	- pointer to variable for storing time when message was added (can be NULL)
+			level  - pointer to variable for storing message level indicating importance (can be NULL)
+			time   - pointer to variable for storing time when message was added (can be NULL)
 			
 		Returns:
 			message string or empty string if no message is in queue
@@ -723,7 +677,7 @@ namespace Horde3D
 		This function gets a specified option parameter and returns its value.
 		
 		Parameters:
-			param	- option parameter
+			param  - option parameter
 			
 		Returns:
 			current value of the specified option parameter
@@ -736,8 +690,8 @@ namespace Horde3D
 		This function sets a specified option parameter to a specified value.
 		
 		Parameters:
-			param	- option parameter
-			value	- value of the option parameter
+			param  - option parameter
+			value  - value of the option parameter
 			
 		Returns:
 			true if the option could be set to the specified value, otherwise false
@@ -751,8 +705,8 @@ namespace Horde3D
 		to reset the statistic value after reading.
 		
 		Parameters:
-			param	- statistic parameter
-			reset	- flag specifying whether statistic value should be reset
+			param  - statistic parameter
+			reset  - flag specifying whether statistic value should be reset
 			
 		Returns:
 			current value of the specified statistic parameter
@@ -763,30 +717,32 @@ namespace Horde3D
 			Shows an overlay on the screen.
 		
 		This function displays an overlay with a specified material at a specified position on the screen.
-        An overlay is a 2D image that can be used to render 2D GUI elements. The coordinate system
-        used has its origin (0, 0) at the lower left corner of the screen and its maximum (1, 1) at
-        the upper right corner. Texture coordinates are using the same system, where the coordinates
-        (0, 0) correspond to the lower left corner of the image.
-        Overlays can have different layers which describe the order in which they are drawn. Overlays with
-        smaller layer numbers are drawn before overlays with higher layer numbers.
-        Note that the overlays have to be removed manually using the function clearOverlays.
+		An overlay is a 2D image that can be used to render 2D GUI elements. The coordinate system
+		used has its origin (0, 0) at the top-left corner of the screen and its maximum (1, 1) at
+		the bottom-right corner. Texture coordinates are using a system where the coordinates (0, 0)
+		correspond to the lower left corner of the image.
+		Overlays can have different layers which describe the order in which they are drawn. Overlays with
+		smaller layer numbers are drawn before overlays with higher layer numbers.
+		Note that the overlays have to be removed manually using the function clearOverlays.
 		
 		Parameters:
-			x_ll, y_ll, u_ll, v_ll	- position and texture coordinates of the lower left corner
-			x_lr, y_lr, u_lr, v_lr	- position and texture coordinates of the lower right corner
-			x_ur, y_ur, u_ur, v_ur	- position and texture coordinates of the upper right corner
-			x_ul, y_ul, u_ul, v_ul	- position and texture coordinates of the upper left corner
-			layer					- layer index of the overlay (Values: from 0 to 7)
-			materialRes				- material resource used for rendering
+			x_tl, y_tl, u_tl, v_tl  - position and texture coordinates of the top-left corner
+			x_bl, y_bl, u_bl, v_bl  - position and texture coordinates of the bottom-left corner
+			x_br, y_br, u_br, v_br  - position and texture coordinates of the bottom-right corner
+			x_tr, y_tr, u_tr, v_tr  - position and texture coordinates of the top-right corner
+			colR, colG, colB, colA  - color of the overlay that is set for the material's shader
+			materialRes             - material resource used for rendering
+			layer                   - layer index of the overlay (Values: from 0 to 7)
 			
 		Returns:
 			nothing
 	*/
-	DLL void showOverlay( float x_ll, float y_ll, float u_ll, float v_ll,
-						  float x_lr, float y_lr, float u_lr, float v_lr,
-						  float x_ur, float y_ur, float u_ur, float v_ur,
-						  float x_ul, float y_ul, float u_ul, float v_ul,
-						  int layer, ResHandle materialRes );
+	DLL void showOverlay( float x_tl, float y_tl, float u_tl, float v_tl,
+	                      float x_bl, float y_bl, float u_bl, float v_bl,
+	                      float x_br, float y_br, float u_br, float v_br,
+	                      float x_tr, float y_tr, float u_tr, float v_tr,
+	                      float colR, float colG, float colB, float colA,
+	                      ResHandle materialRes, int layer );
 
 	/* 	Function: clearOverlays
 			Removes all overlays.
@@ -807,10 +763,10 @@ namespace Horde3D
 			Returns the type of a resource.
 		
 		This function returns the type of a specified resource. If the resource handle is invalid,
-        the function returns the resource type 'Unknown'.
+		the function returns the resource type 'Unknown'.
 		
 		Parameters:
-			res	- handle to the resource
+			res  - handle to the resource
 			
 		Returns:
 			type of the resource
@@ -823,11 +779,11 @@ namespace Horde3D
 		This function returns a pointer to the name of a specified resource. If the resource handle
 		is invalid, the function returns an empty string.
 
-        *Important Note: The pointer is const and allows only read access to the data. Do never try to modify the
-        data of the pointer since that can corrupt the engine's internal states!*
+		*Important Note: The pointer is const and allows only read access to the data. Do never try to modify the
+		data of the pointer since that can corrupt the engine's internal states!*
 		
 		Parameters:
-			res	- handle to the resource
+			res  - handle to the resource
 			
 		Returns:
 			name of the resource or empty string in case of failure
@@ -844,8 +800,8 @@ namespace Horde3D
 		The first iteration step should start at 0 and iteration can be ended when the function returns 0.
 		
 		Parameters:
-			type	- type of resource to be searched (ResourceTypes::Undefined for all types)
-			start	- resource handle after which the search begins (can be 0 for beginning of resource list)
+			type   - type of resource to be searched (ResourceTypes::Undefined for all types)
+			start  - resource handle after which the search begins (can be 0 for beginning of resource list)
 			
 		Returns:
 			handle to the found resource or 0 if it does not exist
@@ -856,11 +812,11 @@ namespace Horde3D
 			Finds a resource and returns its handle.
 		
 		This function searches the resource of the specified type and name and returns its handle. If
-        the resource is not available in the resource manager a zero handle is returned.
+		the resource is not available in the resource manager a zero handle is returned.
 		
 		Parameters:
-			type	- type of the resource
-			name	- name of the resource
+			type  - type of the resource
+			name  - name of the resource
 			
 		Returns:
 			handle to the resource or 0 if not found
@@ -871,15 +827,15 @@ namespace Horde3D
 			Adds a resource.
 		
 		This function tries to add a resource of a specified type and name to the resource manager. If
-        a resource of the same type and name is already existing, the handle to the existing resource is returned
-        instead of creating a new one and the user reference count of the resource is increased.
+		a resource of the same type and name is already existing, the handle to the existing resource is returned
+		instead of creating a new one and the user reference count of the resource is increased.
 
 		*Note: The name string may not contain a colon character (:)*
 		
 		Parameters:
-			type	- type of the resource
-			name	- name of the resource
-			flags	- flags used for creating the resource
+			type   - type of the resource
+			name   - name of the resource
+			flags  - flags used for creating the resource
 			
 		Returns:
 			handle to the resource to be added or 0 in case of failure
@@ -897,8 +853,8 @@ namespace Horde3D
 		*Note: The name string may not contain a colon character (:)*
 		
 		Parameters:
-			sourceRes	- handle to resource to be cloned
-			name		- name of new resource (can be empty for auto-naming)
+			sourceRes  - handle to resource to be cloned
+			name       - name of new resource (can be empty for auto-naming)
 			
 		Returns:
 			handle to the cloned resource or 0 in case of failure
@@ -926,7 +882,7 @@ namespace Horde3D
 		This function checks if the specified resource has been successfully loaded.
 		
 		Parameters:
-			res		- handle to the resource to be checked
+			res  - handle to the resource to be checked
 			
 		Returns:
 			true if resource is loaded, otherwise or in case of failure false
@@ -937,17 +893,17 @@ namespace Horde3D
 			Loads a resource.
 		
 		This function loads data for a resource that was previously added to the resource manager.
-        If data is a NULL-pointer the resource manager is told that the resource doesn't have any data
+		If data is a NULL-pointer the resource manager is told that the resource doesn't have any data
 		(e.g. the corresponding file was not found). In this case, the resource remains in the unloaded state
 		but is no more returned when querying unloaded resources. When the specified resource is already loaded,
 		the function returns false.
 		
-        *Important Note: XML-data must be NULL-terminated*
+		*Important Note: XML-data must be NULL-terminated*
 		
 		Parameters:
-			res		- handle to the resource for which data will be loaded
-			data	- pointer to the data to be loaded
-			size	- size of the data block
+			res   - handle to the resource for which data will be loaded
+			data  - pointer to the data to be loaded
+			size  - size of the data block
 			
 		Returns:
 			true in case of success, otherwise false
@@ -958,11 +914,11 @@ namespace Horde3D
 			Unloads a resource.
 		
 		This function unloads a previously loaded resource and restores the default values
-        it had before loading. The state is set back to unloaded which makes it possible to load
-        the resource again.
+		it had before loading. The state is set back to unloaded which makes it possible to load
+		the resource again.
 		
 		Parameters:
-			res	- handle to resource to be unloaded
+			res  - handle to resource to be unloaded
 			
 		Returns:
 			true in case of success, otherwise false
@@ -975,10 +931,10 @@ namespace Horde3D
 		
 		This function returns a specified property of the specified resource.
 		The property must be of the type int.
- 		
+		
 		Parameters:
-			res		- handle to the resource to be accessed
-			param	- parameter to be accessed
+			res    - handle to the resource to be accessed
+			param  - parameter to be accessed
 			
 		Returns:
 			value of the parameter
@@ -990,11 +946,11 @@ namespace Horde3D
 		
 		This function sets a specified property of the specified resource to a specified value.
 		The property must be of the type int.
- 		
+		
 		Parameters:
-			node	- handle to the node to be modified
-			param	- parameter to be modified
-			value	- new value for the specified parameter
+			node   - handle to the node to be modified
+			param  - parameter to be modified
+			value  - new value for the specified parameter
 			
 		Returns:
 			 true in case of success otherwise false
@@ -1006,10 +962,10 @@ namespace Horde3D
 		
 		This function returns a specified property of the specified resource.
 		The property must be of the type float.
- 		
+		
 		Parameters:
-			res		- handle to the resource to be accessed
-			param	- parameter to be accessed
+			res    - handle to the resource to be accessed
+			param  - parameter to be accessed
 			
 		Returns:
 			value of the parameter
@@ -1021,14 +977,14 @@ namespace Horde3D
 		
 		This function sets a specified property of the specified resource to a specified value.
 		The property must be of the type float.
- 		
+		
 		Parameters:
-			node	- handle to the node to be modified
-			param	- parameter to be modified
-			value	- new value for the specified parameter
+			node   - handle to the node to be modified
+			param  - parameter to be modified
+			value  - new value for the specified parameter
 			
 		Returns:
-			 true in case of success otherwise false
+			true in case of success otherwise false
 	*/
 	DLL bool setResourceParamf( ResHandle res, int param, float value );
 
@@ -1039,11 +995,11 @@ namespace Horde3D
 		The property must be of the type string (const char *).
 
 		*Important Note: The pointer is const and allows only read access to the data. Do never try to modify the
-        data of the pointer since that can corrupt the engine's internal states!*
- 		
+		data of the pointer since that can corrupt the engine's internal states!*
+		
 		Parameters:
-			res		- handle to the resource to be accessed
-			param	- parameter to be accessed
+			res    - handle to the resource to be accessed
+			param  - parameter to be accessed
 			
 		Returns:
 			value of the property or empty string if no such property exists
@@ -1055,14 +1011,14 @@ namespace Horde3D
 		
 		This function sets a specified property of the specified resource to a specified value.
 		The property must be of the type string (const char *).
- 		
+		
 		Parameters:
-			node	- handle to the node to be modified
-			param	- parameter to be modified
-			value	- new value for the specified parameter
+			node   - handle to the node to be modified
+			param  - parameter to be modified
+			value  - new value for the specified parameter
 			
 		Returns:
-			 true in case of success otherwise false
+			true in case of success otherwise false
 	*/
 	DLL bool setResourceParamstr( ResHandle res, int param, const char *value );
 
@@ -1070,14 +1026,14 @@ namespace Horde3D
 			Gives access to resource data.
 		
 		This function returns a pointer to the specified data of a specified resource. For information on the
-        format (uint, float, ..) of the pointer see the ResourceData description.
- 
-        *Important Note: The pointer is const and allows only read access to the data. Do never try to modify the
-        data of the pointer since that can corrupt the engine's internal states!*
+		format (uint, float, ..) of the pointer see the ResourceData description.
+
+		*Important Note: The pointer is const and allows only read access to the data. Do never try to modify the
+		data of the pointer since that can corrupt the engine's internal states!*
 		
 		Parameters:
-			res		- handle to the resource to be accessed
-			param	- parameter indicating data of the resource that will be accessed
+			res    - handle to the resource to be accessed
+			param  - parameter indicating data of the resource that will be accessed
 			
 		Returns:
 			pointer to the specified resource data if it is available, otherwise NULL-pointer
@@ -1088,21 +1044,21 @@ namespace Horde3D
 			Updates the data of a resource.
 		
 		This function updates the content of a resource that was successfully loaded before. The new data must
-        have exactly the same data layout as the data that was loaded.
-        
-        Notes on available ResourceData parameters:
-		- Texture2DResData::PixelData
-			Sets the image data of a Texture2D resource. The data pointer must point to a memory block that contains
+		have exactly the same data layout as the data that was loaded.
+
+		Notes on available ResourceData parameters:
+		- TextureResParams::PixelData
+			Sets the image data of a 2D Texture resource. The data pointer must point to a memory block that contains
 			the pixels of the image. Each pixel needs to have 32 bit color data in BGRA format and the dimensions
 			of the image (width, height) must be exactly the same as the dimensions of the image that was
 			originally loaded for the resource. The first element in the data array corresponds to the lower left
 			corner of the image and subsequent elements progress from left to right in the image.
 		
 		Parameters:
-			res		- handle to the resource for which the data is modified
-			param	- data structure which will be updated
-			data	- pointer to the new data
-			size	- size of the new data block
+			res    - handle to the resource for which the data is modified
+			param  - data structure which will be updated
+			data   - pointer to the new data
+			size   - size of the new data block
 			
 		Returns:
 			true in case of success, otherwise false
@@ -1113,11 +1069,11 @@ namespace Horde3D
 			Returns handle to an unloaded resource.
 		
 		This function looks for a resource that is not yet loaded and returns its handle.
-        If there are no unloaded resources or the zero based index specified is greater than the number
+		If there are no unloaded resources or the zero based index specified is greater than the number
 		of the currently unloaded resources, 0 is returned.
 		
 		Parameters:
-			index    - index of unloaded resource within the internal list of unloaded resources (starting with 0) 
+			index  - index of unloaded resource within the internal list of unloaded resources (starting with 0) 
 			
 		Returns:
 			handle to an unloaded resource or 0
@@ -1142,10 +1098,10 @@ namespace Horde3D
 
 	/* Group: Specific resource management functions */
 	/* 	Function: createTexture2D
-			Adds a Texture2D resource.
+			Adds a 2D Texture resource.
 		
-		This function tries to create and add a Texture2D resource with the specified name to the resource
-		manager. If a Texture2D resource with the same name is already existing, the function fails. The
+		This function tries to create and add a 2D Texture resource with the specified name to the resource
+		manager. If a Texture resource with the same name is already existing, the function fails. The
 		texture is initialized with the specified dimensions and the resource is declared as loaded. This
 		function is especially useful to create dynamic textures (e.g. for displaying videos) or output buffers
 		for render-to-texture.
@@ -1153,11 +1109,11 @@ namespace Horde3D
 		*Note: The name string may not contain a colon character (:)*
 		
 		Parameters:
-			name		- name of the resource
-			flags		- flags used for creating the resource
-			width		- width of the texture image
-			height		- height of the texture image
-			renderable	- flag indicating whether the texture can be used as an output buffer for a Camera node
+			name        - name of the resource
+			flags       - flags used for creating the resource
+			width       - width of the texture image
+			height      - height of the texture image
+			renderable  - flag indicating whether the texture can be used as an output buffer for a Camera node
 			
 		Returns:
 			handle to the created resource or 0 in case of failure
@@ -1173,8 +1129,8 @@ namespace Horde3D
 		creating several shader code paths, e.g. for supporting different hardware capabilities.
 		
 		Parameters:
-			vertPreamble	- preamble text of vertex shaders (default: empty string)
-			fragPreamble	- preamble text of fragment shaders (default: empty string)
+			vertPreamble  - preamble text of vertex shaders (default: empty string)
+			fragPreamble  - preamble text of fragment shaders (default: empty string)
 			
 		Returns:
 			nothing
@@ -1187,14 +1143,29 @@ namespace Horde3D
 		This function sets the specified shader uniform of the specified material to the specified values.
 		
 		Parameters:
-			materialRes	- handle to the Material resource to be accessed
-			name		- name of the uniform as defined in Material resource
-			a, b, c, d	- values of the four components
+			materialRes  - handle to the Material resource to be accessed
+			name         - name of the uniform as defined in Material resource
+			a, b, c, d   - values of the four components
 			
 		Returns:
 			true in case of success, otherwise false
 	*/
 	DLL bool setMaterialUniform( ResHandle materialRes, const char *name, float a, float b, float c, float d );
+
+	/* 	Function: setMaterialSampler
+			Binds a texture to a sampler of a Material resource.
+		
+		This function binds a texture resource to the specified sampler of the specified material.
+		
+		Parameters:
+			materialRes  - handle to the Material resource to be accessed
+			name         - name of the sampler
+			texRes       - handle to texture resource
+			
+		Returns:
+			true in case of success, otherwise false
+	*/
+	DLL bool setMaterialSampler( ResHandle materialRes, const char *name, ResHandle texRes );
 
 	/* 	Function: setPipelineStageActivation
 			Sets the activation state of a pipeline stage.
@@ -1202,9 +1173,9 @@ namespace Horde3D
 		This function enables or disables a specified stage of the specified pipeline resource.
 		
 		Parameters:
-			pipelineRes	- handle to the Pipeline resource to be accessed
-			stageName	- name of the stage to be modified
-			enabled		- flag indicating whether the stage shall be enabled or disabled
+			pipelineRes  - handle to the Pipeline resource to be accessed
+			stageName    - name of the stage to be modified
+			enabled      - flag indicating whether the stage shall be enabled or disabled
 			
 		Returns:
 			true in case of success, otherwise false
@@ -1222,21 +1193,21 @@ namespace Horde3D
 		For more information about the render buffers please refer to the Pipeline documentation.
 		
 		Parameters:
-			pipelineRes	- handle to pipeline resource
-			targetName	- unique name of render target to access
-			bufIndex	- index of buffer to be accessed
-			width		- pointer to variable where the width of the buffer will be stored (can be NULL)
-			height		- pointer to variable where the height of the buffer will be stored (can be NULL)
-			compCount	- pointer to variable where the number of components will be stored (can be NULL)
-			dataBuffer	- pointer to float array where the pixel data will be stored (can be NULL)
-			bufferSize	- size of dataBuffer array in bytes
+			pipelineRes  - handle to pipeline resource
+			targetName   - unique name of render target to access
+			bufIndex     - index of buffer to be accessed
+			width        - pointer to variable where the width of the buffer will be stored (can be NULL)
+			height       - pointer to variable where the height of the buffer will be stored (can be NULL)
+			compCount    - pointer to variable where the number of components will be stored (can be NULL)
+			dataBuffer   - pointer to float array where the pixel data will be stored (can be NULL)
+			bufferSize   - size of dataBuffer array in bytes
 			
 		Returns:
 			true in case of success, otherwise false
 	*/
 	DLL bool getPipelineRenderTargetData( ResHandle pipelineRes, const char *targetName,
-										  int bufIndex, int *width, int *height, int *compCount,
-										  float *dataBuffer, int bufferSize );
+	                                      int bufIndex, int *width, int *height, int *compCount,
+	                                      float *dataBuffer, int bufferSize );
 
 
 	/* Group: General scene graph functions */
@@ -1244,10 +1215,10 @@ namespace Horde3D
 			Returns the type of a scene node.
 		
 		This function returns the type of a specified scene node. If the node handle is invalid,
-        the function returns the node type 'Unknown'.
+		the function returns the node type 'Unknown'.
 		
 		Parameters:
-			node	- handle to the scene node
+			node  - handle to the scene node
 			
 		Returns:
 			type of the scene node
@@ -1261,7 +1232,7 @@ namespace Horde3D
 		node handle is invalid or the root node, 0 is returned.
 		
 		Parameters:
-			node	- handle to the scene node
+			node  - handle to the scene node
 			
 		Returns:
 			handle to parent node or 0 in case of failure
@@ -1277,8 +1248,8 @@ namespace Horde3D
 		function returns false. Relocation is not possible for the RootNode.
 		
 		Parameters:
-			node	- handle to the scene node to be relocated
-			parent	- handle to the new parent node
+			node    - handle to the scene node to be relocated
+			parent  - handle to the new parent node
 			
 		Returns:
 			true in case of success, otherwise false
@@ -1292,8 +1263,8 @@ namespace Horde3D
 		doesn't exist, the function returns 0.
 		
 		Parameters:
-			node	- handle to the parent node
-			index	- index of the child node
+			node   - handle to the parent node
+			index  - index of the child node
 			
 		Returns:
 			handle to the child node or 0 if child doesn't exist
@@ -1306,12 +1277,12 @@ namespace Horde3D
 			Adds nodes from a SceneGraph resource to the scene.
 		
 		This function creates several new nodes as described in a SceneGraph resource and
-        attaches them to a specified parent node. If an invalid scenegraph resource is specified
+		attaches them to a specified parent node. If an invalid scenegraph resource is specified
 		or the scenegraph resource is unloaded, the function returns 0.
 		
 		Parameters:
-			parent			- handle to parent node to which the root of the new nodes will be attached
-			sceneGraphRes	- handle to loaded SceneGraph resource
+			parent         - handle to parent node to which the root of the new nodes will be attached
+			sceneGraphRes  - handle to loaded SceneGraph resource
 			
 		Returns:
 			handle to the root of the created nodes or 0 in case of failure
@@ -1324,7 +1295,7 @@ namespace Horde3D
 		This function removes the specified node and all of it's children from the scene.
 		
 		Parameters:
-			node	- handle to the node to be removed
+			node  - handle to the node to be removed
 			
 		Returns:
 			true in case of success otherwise false
@@ -1335,11 +1306,11 @@ namespace Horde3D
 			Sets the activation (visibility) state of a node.
 		
 		This function sets the activation state of the specified node to active or inactive. Inactive
-        nodes with all their children are excluded from rendering.
+		nodes with all their children are excluded from rendering.
 		
 		Parameters:
-			node	- handle to the node to be modified
-			active	- boolean value indicating whether node shall be active or inactive
+			node    - handle to the node to be modified
+			active  - boolean value indicating whether node shall be active or inactive
 			
 		Returns:
 			true in case of success otherwise false
@@ -1356,8 +1327,8 @@ namespace Horde3D
 		transformation flag.
 		
 		Parameters:
-			node	- handle to the node to be accessed
-			reset	- flag indicating whether transformation flag shall be reset
+			node   - handle to the node to be accessed
+			reset  - flag indicating whether transformation flag shall be reset
 			
 		Returns:
 			true if node has been transformed, otherwise false
@@ -1371,17 +1342,17 @@ namespace Horde3D
 		coordinates are in local space and contain the transformation of the node relative to its parent.
 		
 		Parameters:
-			node		- handle to the node which will be accessed
-			tx, ty, tz	- pointers to variables where translation of the node will be stored (can be NULL)
-			rx, ry, rz	- pointers to variables where rotation of the node in Euler angles
-						  will be stored (can be NULL)
-			sx, sy, sz	- pointers to variables where scale of the node will be stored (can be NULL)
+			node        - handle to the node which will be accessed
+			tx, ty, tz  - pointers to variables where translation of the node will be stored (can be NULL)
+			rx, ry, rz  - pointers to variables where rotation of the node in Euler angles
+			              will be stored (can be NULL)
+			sx, sy, sz  - pointers to variables where scale of the node will be stored (can be NULL)
 			
 		Returns:
 			true in case of success otherwise false
 	*/
 	DLL bool getNodeTransform( NodeHandle node, float *tx, float *ty, float *tz,
-							   float *rx, float *ry, float *rz, float *sx, float *sy, float *sz );
+	                           float *rx, float *ry, float *rz, float *sx, float *sy, float *sz );
 	
 	/* 	Function: setNodeTransform
 			Sets the relative transformation of a node.
@@ -1390,29 +1361,29 @@ namespace Horde3D
 		The coordinates are in local space and contain the transformation of the node relative to its parent.
 		
 		Parameters:
-			node		- handle to the node which will be modified
-			tx, ty, tz	- translation of the node
-			rx, ry, rz	- rotation of the node in Euler angles
-			sx, sy, sz	- scale of the node
+			node        - handle to the node which will be modified
+			tx, ty, tz  - translation of the node
+			rx, ry, rz  - rotation of the node in Euler angles
+			sx, sy, sz  - scale of the node
 			
 		Returns:
 			true in case of success otherwise false
 	*/
 	DLL bool setNodeTransform( NodeHandle node, float tx, float ty, float tz,
-							   float rx, float ry, float rz, float sx, float sy, float sz );
+	                           float rx, float ry, float rz, float sx, float sy, float sz );
 	
 	/* 	Function: getNodeTransformMatrices
 			Returns the transformation matrices of a node.
 		
 		This function stores a pointer to the relative and absolute transformation matrices
-        of the specified node in the specified pointer varaibles.
+		of the specified node in the specified pointer varaibles.
 		
 		Parameters:
-			node	- handle to the scene node to be accessed
-			relMat	- pointer to a variable where the address of the relative transformation matrix will be stored
-                      (can be NULL if matrix is not required)
-			absMat	- pointer to a variable where the address of the absolute transformation matrix will be stored
-                      (can be NULL if matrix is not required)
+			node    - handle to the scene node to be accessed
+			relMat  - pointer to a variable where the address of the relative transformation matrix will be stored
+			          (can be NULL if matrix is not required)
+			absMat  - pointer to a variable where the address of the absolute transformation matrix will be stored
+			          (can be NULL if matrix is not required)
 			
 			
 		Returns:
@@ -1427,8 +1398,8 @@ namespace Horde3D
         same as setNodeTransform but takes directly a matrix instead of individual transformation parameters.
 		
 		Parameters:
-			node	- handle to the node which will be modified
-			mat4x4	- pointer to a 4x4 matrix in column major order
+			node    - handle to the node which will be modified
+			mat4x4  - pointer to a 4x4 matrix in column major order
 			
 		Returns:
 			true in case of success otherwise false
@@ -1442,11 +1413,11 @@ namespace Horde3D
 		The property must be of the type float.
 		
 		Parameters:
-			node	- handle to the node to be accessed
-			param	- parameter to be accessed
+			node   - handle to the node to be accessed
+			param  - parameter to be accessed
 			
 		Returns:
-			 value of the parameter
+			value of the parameter
 	*/
 	DLL float getNodeParamf( NodeHandle node, int param );
 	
@@ -1457,12 +1428,12 @@ namespace Horde3D
 		The property must be of the type float.
 		
 		Parameters:
-			node	- handle to the node to be modified
-			param	- parameter to be modified
-			value	- new value for the specified parameter
+			node   - handle to the node to be modified
+			param  - parameter to be modified
+			value  - new value for the specified parameter
 			
 		Returns:
-			 true in case of success otherwise false
+			true in case of success otherwise false
 	*/
 	DLL bool setNodeParamf( NodeHandle node, int param, float value );
 
@@ -1473,11 +1444,11 @@ namespace Horde3D
 		The property must be of the type int or ResHandle.
 		
 		Parameters:
-			node	- handle to the node to be accessed
-			param	- parameter to be accessed
+			node   - handle to the node to be accessed
+			param  - parameter to be accessed
 			
 		Returns:
-			 value of the parameter
+			value of the parameter
 	*/
 	DLL int getNodeParami( NodeHandle node, int param );
 	
@@ -1488,12 +1459,12 @@ namespace Horde3D
 		The property must be of the type int or ResHandle.
 		
 		Parameters:
-			node	- handle to the node to be modified
-			param	- parameter to be modified
-			value	- new value for the specified parameter
+			node   - handle to the node to be modified
+			param  - parameter to be modified
+			value  - new value for the specified parameter
 			
 		Returns:
-			 true in case of success otherwise false
+			true in case of success otherwise false
 	*/
 	DLL bool setNodeParami( NodeHandle node, int param, int value );
 
@@ -1507,11 +1478,11 @@ namespace Horde3D
         data of the pointer since that can corrupt the engine's internal states!*
 		
 		Parameters:
-			node	- handle to the node to be accessed
-			param	- parameter to be accessed
+			node   - handle to the node to be accessed
+			param  - parameter to be accessed
 			
 		Returns:
-			 value of the property or empty string if no such property exists
+			value of the property or empty string if no such property exists
 	*/
 	DLL const char *getNodeParamstr( NodeHandle node, int param );
 	
@@ -1522,12 +1493,12 @@ namespace Horde3D
 		The property must be of the type string (const char *).
 		
 		Parameters:
-			node	- handle to the node to be modified
-			param	- parameter to be modified
-			value	- new value for the specified parameter
+			node   - handle to the node to be modified
+			param  - parameter to be modified
+			value  - new value for the specified parameter
 			
 		Returns:
-			 true in case of success otherwise false
+			true in case of success otherwise false
 	*/
 	DLL bool setNodeParamstr( NodeHandle node, int param, const char *value );
 
@@ -1540,15 +1511,15 @@ namespace Horde3D
 		on all three axes.
 		
 		Parameters:
-			node				- handle to the node which will be accessed
-			minX, minY, minZ	- pointers to variables where minimum coordinates will be stored
-			maxX, maxY, maxZ	- pointers to variables where maximum coordinates will be stored
+			node              - handle to the node which will be accessed
+			minX, minY, minZ  - pointers to variables where minimum coordinates will be stored
+			maxX, maxY, maxZ  - pointers to variables where maximum coordinates will be stored
 			
 		Returns:
 			true in case of success otherwise false
 	*/
 	DLL bool getNodeAABB( NodeHandle node, float *minX, float *minY, float *minZ,
-						  float *maxX, float *maxY, float *maxZ );
+	                      float *maxX, float *maxY, float *maxZ );
 	
 	/* 	Function: findNodes
 			Finds scene nodes with the specified properties.
@@ -1558,9 +1529,9 @@ namespace Horde3D
 		function is called. The function returns the number of nodes which were found and added to the list.
 		
 		Parameters:
-			startNode	- handle to the node where the search begins
-			name		- name of nodes to be searched (empty string for all nodes)
-			type		- type of nodes to be searched (SceneNodeTypes::Undefined for all types)
+			startNode  - handle to the node where the search begins
+			name       - name of nodes to be searched (empty string for all nodes)
+			type       - type of nodes to be searched (SceneNodeTypes::Undefined for all types)
 			
 		Returns:
 			number of search results
@@ -1575,7 +1546,7 @@ namespace Horde3D
 		result list the function returns 0.
 		
 		Parameters:
-			index	- index of search result
+			index  - index of search result
 			
 		Returns:
 			handle to scene node from findNodes query or 0 if result doesn't exist
@@ -1592,10 +1563,10 @@ namespace Horde3D
 		For Meshes, the base LOD (LOD0) is always used for performing the ray-triangle intersection tests.
 		
 		Parameters:
-			node		- node at which intersection check is beginning
-			ox, oy, oz	- ray origin
-			dx, dy, dz	- ray direction vector also specifying ray length
-			numNearest	- maximum number of intersection points to be stored (0 for all)
+			node        - node at which intersection check is beginning
+			ox, oy, oz  - ray origin
+			dx, dy, dz  - ray direction vector also specifying ray length
+			numNearest  - maximum number of intersection points to be stored (0 for all)
 			
 		Returns:
 			number of intersections
@@ -1609,10 +1580,10 @@ namespace Horde3D
 		a specific result. The intersection data is copied to the specified variables.
 
 		Parameters:
-			index			- index of result to be accessed (range: 0 to number of results returned by castRay)
-			node			- handle of intersected node
-			distance		- distance from ray origin to intersection point
-			intersection	- coordinates of intersection point (float[3] array)
+			index         - index of result to be accessed (range: 0 to number of results returned by castRay)
+			node          - handle of intersected node
+			distance      - distance from ray origin to intersection point
+			intersection  - coordinates of intersection point (float[3] array)
 
 		Returns:
 			true if index was valid and data could be copied, otherwise false
@@ -1630,13 +1601,13 @@ namespace Horde3D
 		is not visible, otherwise 0 (base LOD level) or the computed LOD level.
 
 		Parameters:
-			node			- node to be checked for visibility
-			cameraNode		- camera node from which the visibility test is done
-			checkOcclusion	- specifies if occlusion info from previous frame should be taken into account
-			calcLod			- specifies if LOD level should be computed
+			node            - node to be checked for visibility
+			cameraNode      - camera node from which the visibility test is done
+			checkOcclusion  - specifies if occlusion info from previous frame should be taken into account
+			calcLod         - specifies if LOD level should be computed
 
 		Returns:
-			Computed LOD level or -1 if node is not visible
+			computed LOD level or -1 if node is not visible
 	*/
 	DLL int checkNodeVisibility( NodeHandle node, NodeHandle cameraNode, bool checkOcclusion, bool calcLod );
 
@@ -1648,11 +1619,11 @@ namespace Horde3D
 		This function creates a new Group node and attaches it to the specified parent node.
 		
 		Parameters:
-			parent	- handle to parent node to which the new node will be attached
-			name	- name of the node
+			parent  - handle to parent node to which the new node will be attached
+			name    - name of the node
 			
 		Returns:
-			 handle to the created node or 0 in case of failure
+			handle to the created node or 0 in case of failure
 	*/
 	DLL NodeHandle addGroupNode( NodeHandle parent, const char *name );
 	
@@ -1664,12 +1635,12 @@ namespace Horde3D
 		This function creates a new Model node and attaches it to the specified parent node.
 		
 		Parameters:
-			parent		- handle to parent node to which the new node will be attached
-			name		- name of the node
-			geometryRes	- Geometry resource used by Model node
+			parent       - handle to parent node to which the new node will be attached
+			name         - name of the node
+			geometryRes  - Geometry resource used by Model node
 			
 		Returns:
-			 handle to the created node or 0 in case of failure
+			handle to the created node or 0 in case of failure
 	*/
 	DLL NodeHandle addModelNode( NodeHandle parent, const char *name, ResHandle geometryRes );
 	
@@ -1677,48 +1648,48 @@ namespace Horde3D
 			Configures an animation stage of a Model node.
 		
 		This function is used to setup the specified animation stage (channel) of the specified Model node.
-        
-        The function is used for animation blending. There is a fixed number of stages (by default 16) on
-        which different animations can be played. The start node determines the first node (Joint or Mesh)
-        to which the animation is recursively applied. If the start node is an empty string, the animation
-        affects all animatable nodes (Joints and Meshes) of the model. If a NULL-handle is used for animationRes,
+		
+		The function is used for animation blending. There is a fixed number of stages (by default 16) on
+		which different animations can be played. The start node determines the first node (Joint or Mesh)
+		to which the animation is recursively applied. If the start node is an empty string, the animation
+		affects all animatable nodes (Joints and Meshes) of the model. If a NULL-handle is used for animationRes,
 		the stage is cleared and the previous animation is removed.
-        
-        A simple way to do animation mixing is using additive animations. If a stage is configured to be
-        additive  the engine calculates the difference between the current frame and the first frame in the
-        animation and adds this delta to the current transformation of the joints or meshes.
+		
+		A simple way to do animation mixing is using additive animations. If a stage is configured to be
+		additive  the engine calculates the difference between the current frame and the first frame in the
+		animation and adds this delta to the current transformation of the joints or meshes.
 		
 		Parameters:
-			modelNode		- handle to the Model node to be modified
-			stage			- index of the animation stage to be configured
-			animationRes	- handle to Animation resource (can be 0)
-			startNode		- name of first node to which animation shall be applied (or empty string)
-			additive		- flag indicating whether stage is additive
+			modelNode     - handle to the Model node to be modified
+			stage         - index of the animation stage to be configured
+			animationRes  - handle to Animation resource (can be 0)
+			startNode     - name of first node to which animation shall be applied (or empty string)
+			additive      - flag indicating whether stage is additive
 			
 		Returns:
-			 true in case of success, otherwise false
+			true in case of success, otherwise false
 	*/
 	DLL bool setupModelAnimStage( NodeHandle modelNode, int stage, ResHandle animationRes,
-								  const char *startNode, bool additive );
+	                              const char *startNode, bool additive );
 	
 	/* 	Function: setModelAnimParams
 			Sets the parameters of an animation stage in a Model node.
 		
 		This function sets the current animation time and weight for a specified stage of the specified model.
-        The time corresponds to the frames of the animation and the animation is looped if the
-        time is higher than the maximum number of frames in the Animation resource. The weight is used for
-        animation blending and determines how much influence the stage has compared to the other active
-        stages. When the sum of the weights of all stages is more than one, the animations on the lower
-        stages get priority.
+		The time corresponds to the frames of the animation and the animation is looped if the
+		time is higher than the maximum number of frames in the Animation resource. The weight is used for
+		animation blending and determines how much influence the stage has compared to the other active
+		stages. When the sum of the weights of all stages is more than one, the animations on the lower
+		stages get priority.
 		
 		Parameters:
-			modelNode	- handle to the Model node to be modified
-			stage		- index of the animation stage to be modified
-			time		- new animation time/frame
-			weight		- new blend weight
+			modelNode  - handle to the Model node to be modified
+			stage      - index of the animation stage to be modified
+			time       - new animation time/frame
+			weight     - new blend weight
 			
 		Returns:
-			 true in case of success, otherwise false
+			true in case of success, otherwise false
 	*/
 	DLL bool setModelAnimParams( NodeHandle modelNode, int stage, float time, float weight );
 	
@@ -1726,16 +1697,16 @@ namespace Horde3D
 			Sets the weight of a morph target.
 		
 		This function sets the weight of a specified morph target. If the target parameter
-        is an empty string the weight of all morph targets in the specified Model node is modified.
-        If the specified morph target is not found the function returns false.
+		is an empty string the weight of all morph targets in the specified Model node is modified.
+		If the specified morph target is not found the function returns false.
 		
 		Parameters:
-			modelNode	- handle to the Model node to be modified
-			target		- name of morph target
-			weight		- new weight for morph target
+			modelNode  - handle to the Model node to be modified
+			target     - name of morph target
+			weight     - new weight for morph target
 			
 		Returns:
-			 true in case of success, otherwise false
+			true in case of success, otherwise false
 	*/
 	DLL bool setModelMorpher( NodeHandle modelNode, const char *target, float weight );
 	
@@ -1747,19 +1718,19 @@ namespace Horde3D
 		This function creates a new Mesh node and attaches it to the specified parent node.
 		
 		Parameters:
-			parent		- handle to parent node to which the new node will be attached
-			name		- name of the node
-			materialRes	- material resource used by Mesh node
-			batchStart	- first triangle index of mesh in Geometry resource of parent Model node
-			batchCount	- number of triangle indices used for drawing mesh
-			vertRStart	- first vertex in Geometry resource of parent Model node
-			vertREnd	- last vertex in Geometry resource of parent Model node
+			parent       - handle to parent node to which the new node will be attached
+			name         - name of the node
+			materialRes  - material resource used by Mesh node
+			batchStart   - first triangle index of mesh in Geometry resource of parent Model node
+			batchCount   - number of triangle indices used for drawing mesh
+			vertRStart   - first vertex in Geometry resource of parent Model node
+			vertREnd     - last vertex in Geometry resource of parent Model node
 			
 		Returns:
-			 handle to the created node or 0 in case of failure
+			handle to the created node or 0 in case of failure
 	*/
 	DLL NodeHandle addMeshNode( NodeHandle parent, const char *name, ResHandle materialRes, 
-								int batchStart, int batchCount, int vertRStart, int vertREnd );
+	                            int batchStart, int batchCount, int vertRStart, int vertREnd );
 
 	
 	/* Group: Joint-specific scene graph functions */
@@ -1769,12 +1740,12 @@ namespace Horde3D
 		This function creates a new Joint node and attaches it to the specified parent node.
 		
 		Parameters:
-			parent		- handle to parent node to which the new node will be attached
-			name		- name of the node
-			jointIndex	- index of joint in Geometry resource of parent Model node
+			parent      - handle to parent node to which the new node will be attached
+			name        - name of the node
+			jointIndex  - index of joint in Geometry resource of parent Model node
 			
 		Returns:
-			 handle to the created node or 0 in case of failure
+			handle to the created node or 0 in case of failure
 	*/
 	DLL NodeHandle addJointNode( NodeHandle parent, const char *name, int jointIndex );
 	
@@ -1784,39 +1755,39 @@ namespace Horde3D
 			Adds a Light node to the scene.
 		
 		This function creates a new Light node and attaches it to the specified parent node.
-        The direction vector of the untransformed light node is pointing along the the negative
-        z-axis. The specified material resource can define uniforms and projective textures.
-        Furthermore it can contain a shader for doing lighting calculations if deferred shading
-        is used. If no material is required the parameter can be zero. The context names
-        define which shader contexts are used when rendering shadow maps or doing light calculations for
-        forward rendering configurations.
+		The direction vector of the untransformed light node is pointing along the the negative
+		z-axis. The specified material resource can define uniforms and projective textures.
+		Furthermore it can contain a shader for doing lighting calculations if deferred shading
+		is used. If no material is required the parameter can be zero. The context names
+		define which shader contexts are used when rendering shadow maps or doing light calculations for
+		forward rendering configurations.
 		
 		Parameters:
-			parent			- handle to parent node to which the new node will be attached
-			name			- name of the node
-			materialRes		- material resource for light configuration or 0 if not used
-			lightingContext	- name of the shader context used for doing light calculations
-			shadowContext	- name of the shader context used for doing shadow map rendering
+			parent           - handle to parent node to which the new node will be attached
+			name             - name of the node
+			materialRes      - material resource for light configuration or 0 if not used
+			lightingContext  - name of the shader context used for doing light calculations
+			shadowContext    - name of the shader context used for doing shadow map rendering
 			
 		Returns:
-			 handle to the created node or 0 in case of failure
+			handle to the created node or 0 in case of failure
 	*/
 	DLL NodeHandle addLightNode( NodeHandle parent, const char *name, ResHandle materialRes,
-								 const char *lightingContext, const char *shadowContext );
+	                             const char *lightingContext, const char *shadowContext );
 	
 	/* 	Function: setLightContexts
 			Sets the shader contexts used by a light source.
 		
 		This function sets the lighting and shadow shader contexts of the specified light source. The contexts
-        define which shader code is used when doing lighting calculations or rendering the shadow map.
+		define which shader code is used when doing lighting calculations or rendering the shadow map.
 		
 		Parameters:
-			lightNode		- handle to the Light node to be modified
-			lightingContext	- name of the shader context used for performing lighting calculations
-			shadowContext	- name of the shader context used for rendering shadow maps
+			lightNode        - handle to the Light node to be modified
+			lightingContext  - name of the shader context used for performing lighting calculations
+			shadowContext    - name of the shader context used for rendering shadow maps
 			
 		Returns:
-			 true in case of success otherwise false
+			true in case of success otherwise false
 	*/
 	DLL bool setLightContexts( NodeHandle lightNode, const char *lightingContext, const char *shadowContext );
 
@@ -1828,12 +1799,12 @@ namespace Horde3D
 		This function creates a new Camera node and attaches it to the specified parent node.
 		
 		Parameters:
-			parent		- handle to parent node to which the new node will be attached
-			name		- name of the node
-			pipelineRes	- pipeline resource used for rendering
+			parent       - handle to parent node to which the new node will be attached
+			name         - name of the node
+			pipelineRes  - pipeline resource used for rendering
 			
 		Returns:
-			 handle to the created node or 0 in case of failure
+			handle to the created node or 0 in case of failure
 	*/
 	DLL NodeHandle addCameraNode( NodeHandle parent, const char *name, ResHandle pipelineRes );
 	
@@ -1841,17 +1812,17 @@ namespace Horde3D
 			Sets the planes of a camera viewing frustum.
 		
 		This function calculates the view frustum planes of the specified camera node using the specified view
-        parameters.
+		parameters.
 		
 		Parameters:
-			cameraNode	- handle to the Camera node which will be modified
-			fov			- field of view (FOV) angle
-			aspect		- aspect ratio
-			nearDist	- distance of near clipping plane
-			farDist		- distance of far clipping plane 
+			cameraNode  - handle to the Camera node which will be modified
+			fov         - field of view (FOV) angle
+			aspect      - aspect ratio
+			nearDist    - distance of near clipping plane
+			farDist     - distance of far clipping plane 
 			
 		Returns:
-			 true in case of success otherwise false
+			true in case of success otherwise false
 	*/
 	DLL bool setupCameraView( NodeHandle cameraNode, float fov, float aspect, float nearDist, float farDist );
 	
@@ -1859,14 +1830,14 @@ namespace Horde3D
 			Gets the camera projection matrix.
 		
 		This function gets the camera projection matrix used for bringing the geometry to
-        screen space and copies it to the specified array.
+		screen space and copies it to the specified array.
 		
 		Parameters:
-			cameraNode	- handle to Camera node
-			projMat		- pointer to float array with 16 elements
+			cameraNode  - handle to Camera node
+			projMat     - pointer to float array with 16 elements
 			
 		Returns:
-			 true in case of success otherwise false
+			true in case of success otherwise false
 	*/
 	DLL bool getCameraProjectionMatrix( NodeHandle cameraNode, float *projMat );
 
@@ -1878,33 +1849,33 @@ namespace Horde3D
 		This function creates a new Emitter node and attaches it to the specified parent node.
 		
 		Parameters:
-			parent				- handle to parent node to which the new node will be attached
-			name				- name of the node
-			materialRes			- handle to Material resource used for rendering
-			effectRes			- handle to Effect resource used for configuring particle properties
-			maxParticleCount	- maximal number of particles living at the same time
-			respawnCount		- number of times a single particle is recreated after dying (-1 for infinite)
+			parent             - handle to parent node to which the new node will be attached
+			name               - name of the node
+			materialRes        - handle to Material resource used for rendering
+			particleEffectRes  - handle to ParticleEffect resource used for configuring particle properties
+			maxParticleCount   - maximal number of particles living at the same time
+			respawnCount       - number of times a single particle is recreated after dying (-1 for infinite)
 			
 			
 		Returns:
-			 handle to the created node or 0 in case of failure
+			handle to the created node or 0 in case of failure
 	*/
 	DLL NodeHandle addEmitterNode( NodeHandle parent, const char *name, ResHandle materialRes,
-								   ResHandle effectRes, int maxParticleCount, int respawnCount );
+	                               ResHandle particleEffectRes, int maxParticleCount, int respawnCount );
 	
 	/* 	Function: advanceEmitterTime
 			Advances the time value of an Emitter node.
 		
 		This function advances the simulation time of a particle system and continues the particle simulation
-        with timeDelta being the time elapsed since the last call of this function. The specified
-        node must be an Emitter node.
+		with timeDelta being the time elapsed since the last call of this function. The specified
+		node must be an Emitter node.
 		
 		Parameters:
-			emitterNode	- handle to the Emitter node which will be modified
-			timeDelta	- time delta in seconds
+			emitterNode  - handle to the Emitter node which will be modified
+			timeDelta    - time delta in seconds
 			
 		Returns:
-			 true in case of success otherwise false
+			true in case of success otherwise false
 	*/
 	DLL bool advanceEmitterTime( NodeHandle emitterNode, float timeDelta );
 
@@ -1917,10 +1888,10 @@ namespace Horde3D
 		removed from the scene.
 		
 		Parameters:
-			emitterNode	- handle to the Emitter node which is checked
+			emitterNode  - handle to the Emitter node which is checked
 			
 		Returns:
-			 true if Emitter will no more emit any particles, otherwise or in case of failure false
+			true if Emitter will no more emit any particles, otherwise or in case of failure false
 	*/
 	DLL bool hasEmitterFinished( NodeHandle emitterNode );
 }

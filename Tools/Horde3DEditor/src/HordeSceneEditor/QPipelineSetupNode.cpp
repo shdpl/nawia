@@ -30,7 +30,7 @@ QXmlTreeNode(xmlNode, row, model, parent)
 {
 	m_knownNodeNames << "RenderTarget";
 	// Create special render target for main render buffer
-	m_xmlNode.insertBefore(QDomDocument().createElement("RenderTarget"), QDomElement());
+	m_xmlNode.insertBefore( m_xmlNode.ownerDocument().createElement("RenderTarget"), QDomElement());
 	setProperty("Type", QPipelineNode::PIPELINESETUPNODE);
 }
 

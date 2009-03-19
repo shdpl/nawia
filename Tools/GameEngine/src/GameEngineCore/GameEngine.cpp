@@ -142,10 +142,11 @@ namespace GameEngine
 
 		// get path of file loaded
 		std::string fileNameStr = sceneFile;
-		size_t index = fileNameStr.find_last_of("\\");
-		if (index == std::string::npos)	index = fileNameStr.find_last_of("/");
-		if (index != std::string::npos)
+		size_t lastSeparator1 = fileNameStr.find_last_of( '/' );
+		size_t lastSeparator2 = fileNameStr.find_last_of( '\\' );		
+		if (lastSeparator1 != std::string::npos || lastSeparator2 != std::string::npos )
 		{
+			size_t index = max( (int) lastSeparator1, (int) lastSeparator2 );
 			// change working directory to directory containing the scene file
 			_chdir(fileNameStr.substr(0, index).c_str());
 			fileNameStr = fileNameStr.substr(index+1);

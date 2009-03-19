@@ -37,14 +37,13 @@ PipelineComboBox::~PipelineComboBox()
 {
 }
 
-void PipelineComboBox::init(const QString& pipelinePath, const QString& materialPath, const QString& texture2DPath, 
-							const QString& textureCubePath, const QString& shaderPath, const QString& codePath )
+void PipelineComboBox::init(const QString& pipelinePath, const QString& materialPath, const QString& texturePath, 
+							const QString& shaderPath, const QString& codePath )
 {
 	clear();
 	m_pipelinePath = pipelinePath;
 	m_materialPath = materialPath;
-	m_texture2DPath = texture2DPath;
-	m_textureCubePath = textureCubePath;
+	m_texturePath = texturePath;
 	m_shaderPath = shaderPath;
 	m_codePath = codePath;
 	blockSignals(true);
@@ -59,7 +58,7 @@ Pipeline PipelineComboBox::pipeline() const
 {
 	Pipeline pipeline(currentText());
 	pipeline.ResourceID = Horde3D::addResource(ResourceTypes::Pipeline, qPrintable(currentText()), 0);
-	Horde3DUtils::loadResourcesFromDisk("");
+	Horde3DUtils::loadResourcesFromDisk(".");
 	return pipeline;
 }
 
@@ -80,8 +79,7 @@ void PipelineComboBox::currentChanged(int index)
 		paths.ShaderPath = m_shaderPath;
 		paths.PipelinePath = m_pipelinePath;
 		paths.MaterialPath = m_materialPath;
-		paths.Texture2DPath = m_texture2DPath;
-		paths.TextureCubePath = m_textureCubePath;
+		paths.TexturePath = m_texturePath;
 		QString newPipeline = HordeFileDialog::getPipelineFile(paths, this, tr("Select pipeline to import"));
 		if (!newPipeline.isEmpty())
 		{

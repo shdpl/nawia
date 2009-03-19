@@ -59,13 +59,10 @@ m_scenePaths(targetPaths)
 	case ResourceTypes::Material:
 		initMaterialView();
 		break;
-	case ResourceTypes::Texture2D:
-		initTextureView(ResourceTypes::Texture2D);
+	case ResourceTypes::Texture:
+		initTextureView(ResourceTypes::Texture);
 		break;
-	case ResourceTypes::TextureCube:
-		initTextureView(ResourceTypes::TextureCube);
-		break;
-	case ResourceTypes::Effect:
+	case ResourceTypes::ParticleEffect:
 		initEffectView();
 		break;
 	case ResourceTypes::Pipeline:
@@ -80,9 +77,8 @@ m_scenePaths(targetPaths)
 	m_importer->setTargetPath(ResourceTypes::SceneGraph, targetPaths.SceneGraphPath);
 	m_importer->setTargetPath(ResourceTypes::Material, targetPaths.MaterialPath);
 	m_importer->setTargetPath(ResourceTypes::Shader, targetPaths.ShaderPath);
-	m_importer->setTargetPath(ResourceTypes::Texture2D, targetPaths.Texture2DPath);
-	m_importer->setTargetPath(ResourceTypes::TextureCube, targetPaths.TextureCubePath);
-	m_importer->setTargetPath(ResourceTypes::Effect, targetPaths.EffectPath);
+	m_importer->setTargetPath(ResourceTypes::Texture, targetPaths.TexturePath);
+	m_importer->setTargetPath(ResourceTypes::ParticleEffect, targetPaths.EffectPath);
 	m_importer->setTargetPath(ResourceTypes::Code, targetPaths.CodePath);
 	m_importer->setTargetPath(ResourceTypes::Geometry, targetPaths.GeometryPath);
 	m_importer->setTargetPath(ResourceTypes::Pipeline, targetPaths.PipelinePath);
@@ -122,17 +118,14 @@ void HordeFileDialog::accept()
 			target = QFileInfo(m_scenePaths.ShaderPath, fileName());
 			customData = m_xmlView->toPlainText();
 			break;
-		case ResourceTypes::Texture2D:
-			target = QFileInfo(m_scenePaths.Texture2DPath, fileName());
-			break;
-		case ResourceTypes::TextureCube:
-			target = QFileInfo(m_scenePaths.TextureCubePath, fileName());						
+		case ResourceTypes::Texture:
+			target = QFileInfo(m_scenePaths.TexturePath, fileName());						
 			break;
 		case ResourceTypes::Material:
 			target = QFileInfo(m_scenePaths.MaterialPath, fileName());						
 			customData = m_xmlView->toPlainText();
 			break;
-		case ResourceTypes::Effect:
+		case ResourceTypes::ParticleEffect:
 			target = QFileInfo(m_scenePaths.EffectPath, fileName());									
 			customData = m_xmlView->toPlainText();
 			break;
@@ -185,25 +178,19 @@ void HordeFileDialog::accept()
 				QFileInfo(m_importer->targetPath(ResourceTypes::Shader), fileName()).absoluteFilePath(),
 				m_xmlView->toPlainText());
 			break;
-		case ResourceTypes::Texture2D:
+		case ResourceTypes::Texture:
 			m_importer->importTexture(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
-				QFileInfo(m_importer->targetPath(ResourceTypes::Texture2D), fileName()).absoluteFilePath(),
-				m_type);
-			break;
-		case ResourceTypes::TextureCube:
-			m_importer->importTexture(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
-				QFileInfo(m_importer->targetPath(ResourceTypes::TextureCube), fileName()).absoluteFilePath(),
+				QFileInfo(m_importer->targetPath(ResourceTypes::Texture), fileName()).absoluteFilePath(),
 				m_type);
 			break;
 		case ResourceTypes::Material:
 			m_importer->importMaterial(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
 				QFileInfo(m_importer->targetPath(ResourceTypes::Material), fileName()).absoluteFilePath(),
 				m_xmlView->toPlainText());
-			break;
-			break;
-		case ResourceTypes::Effect:
+			break;			
+		case ResourceTypes::ParticleEffect:
 			m_importer->importEffect(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
-				QFileInfo(m_importer->targetPath(ResourceTypes::Effect), fileName()).absoluteFilePath(),
+				QFileInfo(m_importer->targetPath(ResourceTypes::ParticleEffect), fileName()).absoluteFilePath(),
 				m_xmlView->toPlainText());
 			break;
 		case ResourceTypes::Pipeline:
@@ -235,10 +222,7 @@ void HordeFileDialog::initTextureView(ResourceTypes::List type)
 	QHordeSceneEditorSettings settings(this);
 	settings.beginGroup("Repository");
 	m_currentFilter = "*.jpg;*.png;*.tga;*.bmp;*.psd";
-	if ( type == ResourceTypes::Texture2D )
-		populateList(m_scenePaths.Texture2DPath.absolutePath(), m_scenePaths.Texture2DPath, m_currentFilter, false);
-	else
-		populateList(m_scenePaths.TextureCubePath.absolutePath(), m_scenePaths.TextureCubePath, m_currentFilter, false);
+	populateList(m_scenePaths.TexturePath.absolutePath(), m_scenePaths.TexturePath, m_currentFilter, false);
 	populateList(settings.value("textureDir", DefaultTextureRepoPath.absolutePath()).toString(), QDir(settings.value("textureDir", DefaultTextureRepoPath.absolutePath()).toString()), m_currentFilter, true);
 	m_stackedWidget->setCurrentWidget(m_imageView);
 }
@@ -314,12 +298,11 @@ void HordeFileDialog::itemChanged(QListWidgetItem* current, QListWidgetItem* /*p
 	if (current)
 	{
 		switch(m_type)
-		{
-		case ResourceTypes::Texture2D:
-		case ResourceTypes::TextureCube:
+		{		
+		case ResourceTypes::Texture:
 			loadTexture(current->data(Qt::UserRole).value<QFileInfo>());
 			break;		
-		case ResourceTypes::Effect:
+		case ResourceTypes::ParticleEffect:
 		case ResourceTypes::Material:
 		case ResourceTypes::Shader:
 		case ResourceTypes::Pipeline:
@@ -391,13 +374,12 @@ void HordeFileDialog::restoreHordePath()
 {
 	Horde3DUtils::setResourcePath(ResourceTypes::SceneGraph, qPrintable(m_scenePaths.SceneGraphPath.absolutePath()));
 	Horde3DUtils::setResourcePath(ResourceTypes::Geometry, qPrintable(m_scenePaths.GeometryPath.absolutePath()));
-	Horde3DUtils::setResourcePath(ResourceTypes::Texture2D, qPrintable(m_scenePaths.Texture2DPath.absolutePath()));
-	Horde3DUtils::setResourcePath(ResourceTypes::TextureCube, qPrintable(m_scenePaths.TextureCubePath.absolutePath()));
+	Horde3DUtils::setResourcePath(ResourceTypes::Texture, qPrintable(m_scenePaths.TexturePath.absolutePath()));	
 	Horde3DUtils::setResourcePath(ResourceTypes::Shader, qPrintable(m_scenePaths.ShaderPath.absolutePath()));
 	Horde3DUtils::setResourcePath(ResourceTypes::Code, qPrintable(m_scenePaths.CodePath.absolutePath()));
 	Horde3DUtils::setResourcePath(ResourceTypes::Material, qPrintable(m_scenePaths.MaterialPath.absolutePath()));
 	Horde3DUtils::setResourcePath(ResourceTypes::Animation, qPrintable(m_scenePaths.AnimationPath.absolutePath()));
-	Horde3DUtils::setResourcePath(ResourceTypes::Effect, qPrintable(m_scenePaths.EffectPath.absolutePath()));
+	Horde3DUtils::setResourcePath(ResourceTypes::ParticleEffect, qPrintable(m_scenePaths.EffectPath.absolutePath()));
 	Horde3DUtils::setResourcePath(ResourceTypes::Pipeline, qPrintable(m_scenePaths.PipelinePath.absolutePath()));
 }
 
@@ -430,7 +412,7 @@ QString HordeFileDialog::getMaterialFile(const HordePathSettings& targetPaths, Q
 
 QString HordeFileDialog::getEffectFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption)
 {
-	HordeFileDialog dlg(ResourceTypes::Effect, targetPaths, parent);
+	HordeFileDialog dlg(ResourceTypes::ParticleEffect, targetPaths, parent);
 	dlg.setWindowTitle(caption);	
 	if (dlg.exec() == QDialog::Accepted)
 	{
@@ -441,9 +423,9 @@ QString HordeFileDialog::getEffectFile(const HordePathSettings& targetPaths, QWi
 }
 
 
-QString HordeFileDialog::getTextureFile(const HordePathSettings& targetPaths, QWidget *parent, const QString& caption, ResourceTypes::List type)
+QString HordeFileDialog::getTextureFile(const HordePathSettings& targetPaths, QWidget *parent, const QString& caption)
 {	
-	HordeFileDialog dlg(type, targetPaths, parent);
+	HordeFileDialog dlg(ResourceTypes::Texture, targetPaths, parent);
 	dlg.setWindowTitle(caption);
 	if (dlg.exec() == QDialog::Accepted)
 		return dlg.fileName();

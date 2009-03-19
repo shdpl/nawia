@@ -39,6 +39,7 @@ SceneFilePage::SceneFilePage(QWidget* parent /*= 0*/) : QWizardPage(parent)
 		"All resource directories specified on the next page will be set relative to this directory."));
 	registerField("scenefile*", m_sceneFile);
 	registerField("scenepath*", m_scenePath);
+	registerField("scenegraphfile*", m_sceneGraphFile );
 	QCompleter *completer = new QCompleter(m_scenePath);
 	completer->setModel(new QDirModel(completer));
 	m_scenePath->setCompleter(completer);
@@ -64,6 +65,7 @@ void SceneFilePage::initializePage()
 	while (QFile::exists(QString("NewScene%1.scn").arg(i)))
 		++i;
 	m_sceneFile->setText(QString("NewScene%1.scn").arg(i));
+	m_sceneGraphFile->setText( QString("models") + QDir::separator() + QString("NewScene%1.scene.xml").arg(i) );
 	m_scenePath->setText(QDir::currentPath());
 }
 

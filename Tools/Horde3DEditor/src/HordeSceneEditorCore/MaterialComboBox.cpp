@@ -35,14 +35,13 @@ MaterialComboBox::~MaterialComboBox()
 {
 }
 
-void MaterialComboBox::init(const QString& materialPath, const QString& codePath, const QString& shaderPath, const QString& texture2DPath, const QString& textureCubePath)
+void MaterialComboBox::init(const QString& materialPath, const QString& codePath, const QString& shaderPath, const QString& texturePath )
 {
 	clear();	
 	addItem(tr("No material"), QVariant((int) -1));
 	m_shaderPath = shaderPath;
 	m_codePath = codePath;
-	m_texture2DPath = texture2DPath;
-	m_textureCubePath = textureCubePath;
+	m_texturePath = texturePath;	
 	m_materialPath = materialPath;
 	blockSignals(true);
 	if (!materialPath.isEmpty())
@@ -88,8 +87,7 @@ void MaterialComboBox::currentChanged(int index)
 	{
 		HordePathSettings paths;
 		paths.CodePath = m_codePath;
-		paths.Texture2DPath = m_texture2DPath;
-		paths.TextureCubePath = m_textureCubePath;
+		paths.TexturePath = m_texturePath;		
 		paths.ShaderPath = m_shaderPath;
 		paths.MaterialPath = m_materialPath;
 		QString newMaterial = HordeFileDialog::getMaterialFile(paths, this, tr("Select material to import"));

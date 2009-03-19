@@ -77,28 +77,6 @@ SCENEGRAPHPLUGINEXP void dllLoadScene( const char* sceneFile )
 	
 	XMLResults results;
 	XMLNode scene = XMLNode::parseFile( sceneFile, "Configuration", &results);
-	XMLNode& pathes(scene.getChildNode("EnginePath"));
-	if (!pathes.isEmpty())
-	{
-		GameLog::logMessage("- Setting SceneGraph = %s", pathes.getAttribute("scenegraphpath", "models"));
-		Horde3DUtils::setResourcePath(ResourceTypes::SceneGraph, pathes.getAttribute("scenegraphpath", "models"));
-		GameLog::logMessage("- Setting GeometryPath = %s", pathes.getAttribute("modelpath", "models"));
-		Horde3DUtils::setResourcePath(ResourceTypes::Geometry, pathes.getAttribute("modelpath", "models"));
-		GameLog::logMessage("- Setting ShaderPath = %s", pathes.getAttribute("shaderpath", "shaders"));
-		Horde3DUtils::setResourcePath(ResourceTypes::Shader, pathes.getAttribute("shaderpath", "shaders"));
-		Horde3DUtils::setResourcePath(ResourceTypes::Code, pathes.getAttribute("shaderpath", "shaders"));
-		GameLog::logMessage("- Setting Texture2DPath = %s", pathes.getAttribute("texturepath", "textures"));
-		Horde3DUtils::setResourcePath(ResourceTypes::Texture2D, pathes.getAttribute("texturepath", "textures"));	
-		GameLog::logMessage("- Setting TextureCube = %s", pathes.getAttribute("texturepath", "textures"));
-		Horde3DUtils::setResourcePath(ResourceTypes::TextureCube, pathes.getAttribute("texturepath", "textures"));	
-		GameLog::logMessage("- Setting MaterialPath = %s", pathes.getAttribute("materialpath", "materials"));
-		Horde3DUtils::setResourcePath(ResourceTypes::Material, pathes.getAttribute("materialpath", "materials"));	
-		GameLog::logMessage("- Setting EffectPath = %s", pathes.getAttribute("effectspath", "effects"));
-		Horde3DUtils::setResourcePath(ResourceTypes::Effect, pathes.getAttribute("effectspath", "effects"));	
-		GameLog::logMessage("- Setting Pipeline = %s", pathes.getAttribute("pipelinepath", "pipelines"));
-		Horde3DUtils::setResourcePath(ResourceTypes::Pipeline, pathes.getAttribute("pipelinepath", "pipelines"));	
-	}
-
 	XMLNode& engineSettings(scene.getChildNode("EngineConfig"));
 	if ( !engineSettings.isEmpty() )
 	{				
@@ -112,7 +90,7 @@ SCENEGRAPHPLUGINEXP void dllLoadScene( const char* sceneFile )
 		Horde3D::setOption( EngineOptions::ShadowMapSize, float( shadowMapSize) );
 		int anisotropyFactor = atoi(engineSettings.getAttribute("anisotropyFactor", "1"));
 		GameLog::logMessage("Anisotropy: %d", anisotropyFactor);
-		Horde3D::setOption( EngineOptions::AnisotropyFactor, float( anisotropyFactor ) );
+		Horde3D::setOption( EngineOptions::MaxAnisotropy, float( anisotropyFactor ) );
 		bool texCompression = 
 			_stricmp(engineSettings.getAttribute("texCompression", "true"), "true") == 0 ||
 			_stricmp(engineSettings.getAttribute("texCompression", "1"), "1") == 0;
@@ -132,7 +110,7 @@ SCENEGRAPHPLUGINEXP void dllLoadScene( const char* sceneFile )
 		ResHandle sceneGraphID = Horde3D::addResource( ResourceTypes::SceneGraph, sceneGraph.getAttribute("path"), 0 );
 		GameLog::logMessage("Loading Resources...");
 		// Load resources
-		Horde3DUtils::loadResourcesFromDisk( "" );
+		Horde3DUtils::loadResourcesFromDisk( "." );
 		GameLog::logMessage("Adding scene graph to root node");
 		// Add scene nodes	
 		NodeHandle newSceneID = Horde3D::addNodes( RootNode, sceneGraphID);

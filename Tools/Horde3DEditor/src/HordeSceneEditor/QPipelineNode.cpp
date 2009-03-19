@@ -30,7 +30,7 @@ QXmlTreeNode(xmlNode, row, model, parent), m_noSetupNode(false), m_pipelineID(pi
 	m_knownNodeNames << "Setup" << "CommandQueue";
 	if (m_xmlNode.firstChildElement("Setup").isNull())
 	{
-		m_xmlNode.insertBefore(QDomDocument().createElement("Setup"), QDomElement());
+		m_xmlNode.insertBefore( m_xmlNode.ownerDocument().createElement("Setup"), QDomElement());
 		m_noSetupNode = true;
 	}
 	setProperty("Type", PIPELINENODE);

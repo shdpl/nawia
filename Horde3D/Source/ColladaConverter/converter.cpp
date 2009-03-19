@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -28,20 +28,14 @@
 #	endif
 #endif
 
-
 #include "converter.h"
 #include "optimizer.h"
 #include "utPlatform.h"
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 
 using namespace std;
-
-#ifdef PLATFORM_WIN
-#	include <direct.h>
-#else
-#	include <sys/stat.h>
-#endif
 
 
 Converter::Converter( float *lodDists )
@@ -115,6 +109,55 @@ Matrix4f Converter::getNodeTransform( ColladaDocument &doc, DaeNode &node, unsig
 }
 
 
+SceneNode *Converter::findNode( const char *name, SceneNode *ignoredNode )
+{
+	for( size_t i = 0, s = _joints.size(); i < s; ++i )
+	{
+		if( _joints[i] != ignoredNode && strcmp( _joints[i]->name, name ) == 0 )
+			return _joints[i];
+	}
+
+	for( size_t i = 0, s = _meshes.size(); i < s; ++i )
+	{
+		if( _meshes[i] != ignoredNode && strcmp( _meshes[i]->name, name ) == 0 )
+			return _meshes[i];
+	}
+
+	return 0x0;
+}
+
+
+void Converter::checkNodeName( SceneNode *node )
+{
+	// Check if a different node with the same name exists
+	if( findNode( node->name, node ) != 0x0 )
+	{
+		// If necessary, cut name to make room for the postfix
+		if( strlen( node->name ) > 240 ) node->name[240] = '\0';
+
+		char newName[256];
+		unsigned int index = 2;
+
+		// Find a free name
+		while( true )
+		{
+			sprintf( newName, "%s_%i", node->name, index++ );
+
+			if( !findNode( newName, node ) )
+			{
+				char msg[1024];
+				sprintf( msg, "Warning: Node with name '%s' already exists. "
+				         "Node was renamed to '%s'.", node->name, newName );
+				log( msg );
+				
+				strcpy( node->name, newName );
+				break;
+			}
+		}
+	}
+}
+
+
 SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNode *parentNode,
 								   Matrix4f transAccum, vector< Matrix4f > animTransAccum )
 {
@@ -171,6 +214,9 @@ SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNod
 			node.name.erase( 255, node.name.length() - 255 );
 		}
 		strcpy( oNode->name, node.name.c_str() );
+
+		// Check for duplicate node name
+		checkNodeName( oNode );
 			
 		// Calculate absolute transformation
 		if( parentNode != 0x0 ) oNode->matAbs = parentNode->matAbs * oNode->matRel;
@@ -327,18 +373,33 @@ void Converter::calcTangentSpaceBasis( vector<Vertex> &verts )
 			}
 		}
 	}
+
 	// Normalize tangent space basis
+	unsigned int numInvalidBasis = 0;
 	for( unsigned int i = 0; i < verts.size(); ++i )
 	{
+		// Check if tangent space basis is valid
+		if( verts[i].normal.length() == 0 || verts[i].tangent.length() == 0 || verts[i].bitangent.length() == 0 )
+		{
+			++numInvalidBasis;
+		}
+		
+		// Normalize
 		const Vec3f &n = verts[i].normal.normalized();
 		const Vec3f &t = verts[i].tangent;
-		verts[i].tangent = (t - n * (n * t)).normalized();
+		verts[i].tangent = (t - n * n.dot( t )).normalized();
 		verts[i].normal = n;
 				
-		if( n.crossProduct( t ) * verts[i].bitangent < 0.0f )
-			verts[i].bitangent = (n * -1).crossProduct( t );
+		if( n.cross( t ).dot( verts[i].bitangent ) < 0.0f )
+			verts[i].bitangent = (n * -1).cross( t );
 		else
-			verts[i].bitangent = n.crossProduct( t );
+			verts[i].bitangent = n.cross( t );
+	}
+
+	if( numInvalidBasis > 0 )
+	{
+		log( "Warning: Geometry has zero-length basis vectors" );
+		log( "   Maybe two faces point in opposite directions and share same vertices" );
 	}
 }
 
@@ -540,32 +601,40 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 					{
 						DaeVertWeights vertWeights = skin->vertWeights[v.daePosIndex];
 						
-						// Sort weights if necessary
-						if( vertWeights.size() > 4 )
+						// Sort weights
+						for( unsigned int xx = 0; xx < vertWeights.size(); ++xx )
 						{
-							for( unsigned int xx = 0; xx < vertWeights.size(); ++xx )
+							for( unsigned int yy = 0; yy < xx; ++yy )
 							{
-								for( unsigned int yy = 0; yy < vertWeights.size(); ++yy )
+								if( skin->weightArray->floatArray[(int)vertWeights[xx].weight] >
+								    skin->weightArray->floatArray[(int)vertWeights[yy].weight] )
 								{
-									if( skin->weightArray->floatArray[(int)vertWeights[xx].weight] >
-									    skin->weightArray->floatArray[(int)vertWeights[yy].weight] )
-									{
-										swap( vertWeights[xx], vertWeights[yy] );
-									}
+									swap( vertWeights[xx], vertWeights[yy] );
 								}
 							}
 						}
 						
+						// Take the four most significant weights
 						for( unsigned int l = 0; l < vertWeights.size(); ++l )
 						{
 							if( l == 4 ) break;
-							v.weights[l] = skin->weightArray->floatArray[(int)vertWeights[l].weight];
+							v.weights[l] = skin->weightArray->floatArray[vertWeights[l].weight];
 							v.joints[l] = jointLookup[vertWeights[l].joint];
 						}
 
-						if( vertWeights.size() > 4 )
+						// Normalize weights
+						float weightSum = v.weights[0] + v.weights[1] + v.weights[2] + v.weights[3];
+						if( weightSum > Math::Epsilon )
 						{
-							v.weights[0] = 1.0f - (v.weights[1] + v.weights[2] + v.weights[3]);
+							v.weights[0] /= weightSum;
+							v.weights[1] /= weightSum;
+							v.weights[2] /= weightSum;
+							v.weights[3] /= weightSum;
+						}
+						else
+						{
+							v.weights[0] = 1.0f;
+							v.weights[1] = v.weights[2] = v.weights[3] = 0.0f;
 						}
 
 						// Apply skinning to vertex
@@ -719,17 +788,33 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 	}
 
 	// Optimization and clean up
+	float effBefore = 0, effAfter = 0;
+	unsigned int numCalls = 0;
 	for( unsigned int i = 0; i < _meshes.size(); ++i )
 	{
 		for( unsigned int j = 0; j < _meshes[i]->triGroups.size(); ++j )
 		{
 			// Optimize order of indices for best vertex cache usage
 			if( optimize )
+			{
+				++numCalls;
+				effBefore += MeshOptimizer::calcCacheEfficiency( _meshes[i]->triGroups[j], _indices );
 				MeshOptimizer::optimizeIndexOrder( _meshes[i]->triGroups[j], _vertices, _indices );
+				effAfter += MeshOptimizer::calcCacheEfficiency( _meshes[i]->triGroups[j], _indices );
+			}
 			
 			delete[] _meshes[i]->triGroups[j].posIndexToVertices;
 			_meshes[i]->triGroups[j].posIndexToVertices = 0x0;
 		}
+	}
+
+	if( numCalls > 0 )
+	{
+		stringstream ss;
+		ss << fixed << setprecision( 3 );
+		ss << "Optimized geometry for vertex cache: from ATVR " << effBefore / numCalls;
+		ss << " to ATVR " << effAfter / numCalls;
+		log( ss.str() );
 	}
 }
 
@@ -762,7 +847,7 @@ bool Converter::convertModel( ColladaDocument &doc, bool optimize )
 
 bool Converter::writeGeometry( const string &name )
 {
-	FILE *f = fopen( (name + ".geo").c_str(), "wb" );
+	FILE *f = fopen( (string() + "models/" + name + "/" + name + ".geo").c_str(), "wb" );
 
 	// Write header
 	unsigned int version = 5;
@@ -1000,7 +1085,7 @@ void Converter::writeSGNode( const string &modelName, SceneNode *node, unsigned 
 			outf << "name=\"" << (i > 0 ? "#" : "") << mesh->name << "\" ";
 			if( mesh->lodLevel > 0 ) outf << "lodLevel=\"" << mesh->lodLevel << "\" ";
 			outf << "material=\"";
-			outf << modelName + "/" + mesh->triGroups[i].matName + ".material.xml\" ";
+			outf << "models/" << modelName + "/" + mesh->triGroups[i].matName + ".material.xml\" ";
 			
 			if( i == 0 )
 			{
@@ -1081,9 +1166,9 @@ void Converter::writeSGNode( const string &modelName, SceneNode *node, unsigned 
 bool Converter::writeSceneGraph( const string &name )
 {
 	ofstream outf;
-	outf.open( (name + ".scene.xml").c_str(), ios::out );
+	outf.open( (string() + "models/" + name + "/" + name + ".scene.xml").c_str(), ios::out );
 	
-	outf << "<Model name=\"" << name << "\" geometry=\"" << name << ".geo\"";
+	outf << "<Model name=\"" << name << "\" geometry=\"models/" << name << "/" << name << ".geo\"";
 	if( _maxLodLevel >= 1 ) outf << " lodDist1=\"" << _lodDist1 << "\"";
 	if( _maxLodLevel >= 2 ) outf << " lodDist2=\"" << _lodDist2 << "\"";
 	if( _maxLodLevel >= 3 ) outf << " lodDist3=\"" << _lodDist3 << "\"";
@@ -1132,11 +1217,8 @@ bool Converter::saveModel( const string &name )
 }
 
 
-bool Converter::writeMaterials( ColladaDocument &doc, const string &name, const string &defShader )
+bool Converter::writeMaterials( ColladaDocument &doc, const string &name )
 {
-	_mkdir( "materials" );
-	_mkdir( ("materials/" + name).c_str() );
-	
 	for( unsigned int i = 0; i < doc.libMaterials.materials.size(); ++i )
 	{
 		DaeMaterial &material = *doc.libMaterials.materials[i];
@@ -1144,19 +1226,23 @@ bool Converter::writeMaterials( ColladaDocument &doc, const string &name, const 
 		if( !material.used ) continue;
 		
 		ofstream outf;
-		string fileName = "materials/" + name + "/" + material.id + ".material.xml";
+		string fileName = "models/" + name + "/" + material.id + ".material.xml";
 		outf.open( fileName.c_str(), ios::out );
 
 		outf << "<Material>\n";
 		
 		if( material.effect != 0x0 )
 		{
-			outf << "\t<Shader source=\"" + defShader + "\" />\n\n";
+			outf << "\t<Shader source=\"shaders/model.shader\" />\n";
+
+			if( !_joints.empty() )
+				outf << "\t<ShaderFlag name=\"_F01_Skinning\" />\n";
+			outf << "\n";
 			
 			if( material.effect->diffuseMap != 0x0 )
 			{
-				outf << "\t<TexUnit unit=\"0\" map=\"";
-				outf << material.effect->diffuseMap->fileName;
+				outf << "\t<Sampler name=\"albedoMap\" map=\"";
+				outf << "models/" << name << "/" << material.effect->diffuseMap->fileName;
 				outf << "\" />\n";
 			}
 		}
@@ -1220,7 +1306,7 @@ void Converter::writeAnimFrames( SceneNode &node, FILE *f )
 
 bool Converter::writeAnimation( const string &name )
 {
-	FILE *f = fopen( (name + ".anim").c_str(), "wb" );
+	FILE *f = fopen( (string() + "animations/" + name + ".anim").c_str(), "wb" );
 
 	// Write header
 	unsigned int version = 3;

@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@
 #include <math.h>
 #ifdef PLATFORM_WIN
 #	define WIN32_LEAN_AND_MEAN 1
+#	define NOMINMAX
 #	include <windows.h>
 #endif
 #ifndef PLATFORM_MAC
@@ -49,13 +50,22 @@ using namespace std;
 
 namespace Horde3DUtils
 {
-	ofstream			outf;
-	map< int, string >	resourcePaths;
+	struct InfoBox
+	{
+		ResHandle  fontMatRes;
+		float      x, y_row0;
+		float      width;
+		int        row;
+	} infoBox;
 
-	#ifdef PLATFORM_WIN
-	HDC		hDC = 0;
-	HGLRC	hRC = 0;
-	#endif
+	
+	ofstream            outf;
+	map< int, string >  resourcePaths;
+
+#ifdef PLATFORM_WIN
+	HDC    hDC = 0;
+	HGLRC  hRC = 0;
+#endif
 
 
 	string cleanPath( string path )
@@ -91,7 +101,7 @@ namespace Horde3DUtils
 	
 	DLLEXP bool initOpenGL( int hdc )
 	{
-		#ifdef PLATFORM_WIN
+	#ifdef PLATFORM_WIN
 		hDC = (HDC)(__int64)hdc;
 		
 		// Init OpenGL rendering context
@@ -99,24 +109,24 @@ namespace Horde3DUtils
 
 		static PIXELFORMATDESCRIPTOR pfd = 
 		{
-			sizeof( PIXELFORMATDESCRIPTOR ),			// Size of this pixel format descriptor
-			1,											// Version number
-			PFD_DRAW_TO_WINDOW |						// Format must support window
-			PFD_SUPPORT_OPENGL |						// Format must support OpenGL
-			PFD_DOUBLEBUFFER,							// Must support double buffering
-			PFD_TYPE_RGBA,								// Request a RGBA format
-			32,											// Select our color depth
-			0, 0, 0, 0, 0, 0,							// Color bits ignored
-			8,											// 8Bit alpha buffer
-			0,											// Shift bit ignored
-			0,											// No accumulation buffer
-			0, 0, 0, 0,									// Accumulation bits ignored
-			32,											// 32Bit z-buffer (depth buffer)  
-			8,											// 8Bit stencil buffer
-			0,											// No auxiliary buffer
-			PFD_MAIN_PLANE,								// Main drawing layer
-			0,											// Reserved
-			0, 0, 0										// Layer masks ignored
+			sizeof( PIXELFORMATDESCRIPTOR ),            // Size of this pixel format descriptor
+			1,                                          // Version number
+			PFD_DRAW_TO_WINDOW |                        // Format must support window
+			PFD_SUPPORT_OPENGL |                        // Format must support OpenGL
+			PFD_DOUBLEBUFFER,                           // Must support double buffering
+			PFD_TYPE_RGBA,                              // Request a RGBA format
+			32,                                         // Select our color depth
+			0, 0, 0, 0, 0, 0,                           // Color bits ignored
+			8,                                          // 8Bit alpha buffer
+			0,                                          // Shift bit ignored
+			0,                                          // No accumulation buffer
+			0, 0, 0, 0,                                 // Accumulation bits ignored
+			32,                                         // 32Bit z-buffer (depth buffer)  
+			8,                                          // 8Bit stencil buffer
+			0,                                          // No auxiliary buffer
+			PFD_MAIN_PLANE,                             // Main drawing layer
+			0,                                          // Reserved
+			0, 0, 0                                     // Layer masks ignored
 		};
 
 		if( !(pixelFormat = ChoosePixelFormat( hDC, &pfd )) ) 
@@ -142,15 +152,15 @@ namespace Horde3DUtils
 
 		return true;
 		
-		#else
+	#else
 		return false;
-		#endif
+	#endif
 	}
 
 
 	DLLEXP void releaseOpenGL()
 	{
-		#ifdef PLATFORM_WIN
+	#ifdef PLATFORM_WIN
 		if( hDC == 0 || hRC == 0 ) return;
 
 		if( !wglMakeCurrent( 0x0, 0x0 ) ) 
@@ -162,17 +172,17 @@ namespace Horde3DUtils
 			return;
 		}
 		hRC = 0;
-		#endif
+	#endif
 	}
 
 
 	DLLEXP void swapBuffers()
 	{
-		#ifdef PLATFORM_WIN
+	#ifdef PLATFORM_WIN
 		if( hDC == 0 || hRC == 0 ) return;
 
 		SwapBuffers( hDC );
-		#endif
+	#endif
 	}
 
 
@@ -222,7 +232,7 @@ namespace Horde3DUtils
 			for( unsigned int i = 0; i < dirs.size(); ++i )
 			{
 				string fileName = dirs[i] + resourcePaths[Horde3D::getResourceType( res )] + "/" +
-								  Horde3D::getResourceName( res );
+				                  Horde3D::getResourceName( res );
 				inf.clear();
 				inf.open( fileName.c_str(), ios::binary );
 				if( inf.good() ) break;
@@ -368,11 +378,13 @@ namespace Horde3DUtils
 
 
 	DLLEXP void showText( const char *text, float x, float y, float size,
-						  int layer, ResHandle fontMaterialRes )
+	                      float colR, float colG, float colB,
+	                      ResHandle fontMaterialRes, int layer )
 	{
 		if( text == 0x0 ) return;
 		
 		int pos = 0;
+		float width = size;
 		
 		do
 		{
@@ -381,50 +393,129 @@ namespace Horde3DUtils
 			float u0 = 0.0625f * (ch % 16);
 			float v0 = 1.0f - 0.0625f * (ch / 16);
 
-			Horde3D::showOverlay( x + size * 0.55f * pos, y, u0, v0 - 0.0625f,
-								  x + size * 0.55f * pos + size, y, u0 + 0.0625f,v0 - 0.0625f,
-								  x + size * 0.55f * pos + size, y + size, u0 + 0.0625f, v0,
-								  x + size * 0.55f * pos, y + size, u0, v0,
-								  layer, fontMaterialRes );
+			Horde3D::showOverlay( x + width * 0.5f * pos, y, u0, v0,
+			                      x + width * 0.5f * pos, y + size, u0, v0 - 0.0625f,
+			                      x + width * 0.5f * pos + width, y + size, u0 + 0.0625f, v0 - 0.0625f,
+			                      x + width * 0.5f * pos + width, y, u0 + 0.0625f, v0,
+			                      colR, colG, colB, 1, fontMaterialRes, layer );
 			++pos;
-		} while ( *text );
+		} while( *text );
 	}
 
 
-	DLLEXP void showFrameStats( ResHandle fontMaterialRes, float curFPS )
+	void beginInfoBox( float x, float y, float width, int numRows, const char *title,
+	                   ResHandle fontMaterialRes, ResHandle boxMaterialRes )
+	{
+		float fontSize = 0.028f;
+		float barHeight = fontSize + 0.01f;
+		float bodyHeight = numRows * 0.035f + 0.005f;
+		
+		infoBox.fontMatRes = fontMaterialRes;
+		infoBox.x = x;
+		infoBox.y_row0 = y + barHeight + 0.005f;
+		infoBox.width = width;
+		infoBox.row = 0;
+		
+		// Title bar
+		Horde3D::showOverlay( x, y, 0, 1, x, y + barHeight, 0, 0,
+		                      x + width, y + barHeight, 1, 0, x + width, y, 1, 1,
+							  0.15f, 0.23f, 0.31f, 0.8f, boxMaterialRes, 6 );
+
+		// Title text
+		showText( title, x + 0.005f, y + 0.005f, fontSize, 0.7f, 0.85f, 0.95f, fontMaterialRes, 7 );
+
+		// Body
+		float yy = y + barHeight;
+		Horde3D::showOverlay( x, yy, 0, 1, x, yy + bodyHeight, 0, 0,
+		                      x + width, yy + bodyHeight, 1, 0, x + width, yy, 1, 1,
+							  0.12f, 0.12f, 0.12f, 0.5f, boxMaterialRes, 6 );
+	}
+
+
+	void addInfoBoxRow( const char *column1, const char *column2 )
+	{
+		float fontSize = 0.026f;
+		float fontWidth = fontSize * 0.5f;
+		float x = infoBox.x;
+		float y = infoBox.y_row0 + infoBox.row++ * 0.035f;
+
+		// First column
+		showText( column1, x + 0.005f, y, fontSize, 1, 1, 1, infoBox.fontMatRes, 7 );
+
+		// Second column
+		x = infoBox.x + infoBox.width - ((strlen( column2 ) - 1) * fontWidth + fontSize);
+		showText( column2, x - 0.005f, y, fontSize, 1, 1, 1, infoBox.fontMatRes, 7 );
+	}
+
+
+	DLLEXP void showFrameStats( ResHandle fontMaterialRes, ResHandle boxMaterialRes, int mode )
 	{
 		static stringstream text;
-		static float timer = 0;
-		static float fps = curFPS, minFPS = 10000, maxFPS = 0;
+		static float curFPS = 30;
+		static float timer = 100;
+		static float fps = 30;
+		static float frameTime = 0;
+		static float customTime = 0;
+
+		// Calculate FPS
+		float curFrameTime = Horde3D::getStat( EngineStats::FrameTime, true );
+		curFPS = 1000.0f / curFrameTime;
 		
-		// FPS (current, worst, best)
-		timer += 1.0f / curFPS;
-		if( timer > 0.3f )
-		{
-			if( curFPS < minFPS ) minFPS = curFPS;
-			if( curFPS > maxFPS ) maxFPS = curFPS;
+		timer += curFrameTime / 1000.0f;
+		if( timer > 0.8f )
+		{	
 			fps = curFPS;
+			frameTime = curFrameTime;
+			customTime = Horde3D::getStat( EngineStats::CustomTime, true );
 			timer = 0;
 		}
-		text.str( "" );
-		text << "FPS     " << fixed << setprecision( 2 ) << fps;
-		text << setprecision( 1 ) << " [" << minFPS << ", " << maxFPS << "]";
-		Horde3DUtils::showText( text.str().c_str(), 0, 0.95f, 0.03f, 0, fontMaterialRes );
+		else
+		{
+			// Reset counters
+			Horde3D::getStat( EngineStats::CustomTime, true );
+		}
+		
+		if( mode > 0 )
+		{
+			// InfoBox
+			beginInfoBox( 0.03f, 0.03f, 0.3f, 4, "Frame Stats", fontMaterialRes, boxMaterialRes );
+			
+			// FPS
+			text.str( "" );
+			text << fixed << setprecision( 2 ) << fps;
+			addInfoBoxRow( "FPS", text.str().c_str() );
+			
+			// Triangle count
+			text.str( "" );
+			text << (int)Horde3D::getStat( EngineStats::TriCount, true );
+			addInfoBoxRow( "Tris", text.str().c_str() );
+			
+			// Number of batches
+			text.str( "" );
+			text << (int)Horde3D::getStat( EngineStats::BatchCount, true );
+			addInfoBoxRow( "Batches", text.str().c_str() );
+			
+			// Number of lighting passes
+			text.str( "" );
+			text << (int)Horde3D::getStat( EngineStats::LightPassCount, true );
+			addInfoBoxRow( "Lights", text.str().c_str() );
+		}
 
-		// Triangle count
-		text.str( "" );
-		text << "Tris    " << (int)Horde3D::getStat( EngineStats::TriCount, true );
-		Horde3DUtils::showText( text.str().c_str(), 0, 0.91f, 0.03f, 0, fontMaterialRes );
-
-		// Number of batches
-		text.str( "" );
-		text << "Batches " << (int)Horde3D::getStat( EngineStats::BatchCount, true );
-		Horde3DUtils::showText( text.str().c_str(), 0, 0.88f, 0.03f, 0, fontMaterialRes );
-
-		// Number of lighting passes
-		text.str( "" );
-		text << "Lights  " << (int)Horde3D::getStat( EngineStats::LightPassCount, true );
-		Horde3DUtils::showText( text.str().c_str(), 0, 0.85f, 0.03f, 0, fontMaterialRes );
+		if( mode > 1 )
+		{
+			// CPU time
+			beginInfoBox( 0.03f, 0.3f, 0.3f, 2, "CPU Time", fontMaterialRes, boxMaterialRes );
+			
+			// Frame time
+			text.str( "" );
+			text << frameTime << "ms";
+			addInfoBoxRow( "Frame Total", text.str().c_str() );
+			
+			// Custom time
+			text.str( "" );
+			text << customTime << "ms";
+			addInfoBoxRow( "Custom", text.str().c_str() );
+		}
 	}
 
 
@@ -437,7 +528,7 @@ namespace Horde3DUtils
 
 	
 	DLLEXP bool createTGAImage( const unsigned char *pixels, int width, int height, int bpp,
-								char **outData, int *outSize )
+	                            char **outData, int *outSize )
 	{
 		if( pixels == 0x0 || outData == 0x0 || outSize == 0x0 ) return false;
 		
@@ -452,18 +543,18 @@ namespace Horde3DUtils
 		// Build TGA header
 		char c;
 		short s;
-		c = 0;		memcpy( data, &c, 1 ); data += 1;	// idLength
-		c = 0;		memcpy( data, &c, 1 ); data += 1;	// colmapType
-		c = 2;		memcpy( data, &c, 1 ); data += 1;	// imageType
-		s = 0;		memcpy( data, &s, 2 ); data += 2;	// colmapStart
-		s = 0;		memcpy( data, &s, 2 ); data += 2;	// colmapLength
-		c = 16;		memcpy( data, &c, 1 ); data += 1;	// colmapBits
-		s = 0;		memcpy( data, &s, 2 ); data += 2;	// x
-		s = 0;		memcpy( data, &s, 2 ); data += 2;	// y
-		s = width;	memcpy( data, &s, 2 ); data += 2;	// width
-		s = height;	memcpy( data, &s, 2 ); data += 2;	// height
-		c = bpp;	memcpy( data, &c, 1 ); data += 1;	// bpp
-		c = 0;		memcpy( data, &c, 1 ); data += 1;	// imageDesc
+		c = 0;      memcpy( data, &c, 1 ); data += 1;  // idLength
+		c = 0;      memcpy( data, &c, 1 ); data += 1;  // colmapType
+		c = 2;      memcpy( data, &c, 1 ); data += 1;  // imageType
+		s = 0;      memcpy( data, &s, 2 ); data += 2;  // colmapStart
+		s = 0;      memcpy( data, &s, 2 ); data += 2;  // colmapLength
+		c = 16;     memcpy( data, &c, 1 ); data += 1;  // colmapBits
+		s = 0;      memcpy( data, &s, 2 ); data += 2;  // x
+		s = 0;      memcpy( data, &s, 2 ); data += 2;  // y
+		s = width;  memcpy( data, &s, 2 ); data += 2;  // width
+		s = height; memcpy( data, &s, 2 ); data += 2;  // height
+		c = bpp;    memcpy( data, &c, 1 ); data += 1;  // bpp
+		c = 0;      memcpy( data, &c, 1 ); data += 1;  // imageDesc
 
 		// Copy data
 		memcpy( data, pixels, width * height * (bpp / 8) );

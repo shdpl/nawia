@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -148,6 +148,8 @@ private:
 
 
 	Matrix4f getNodeTransform( ColladaDocument &doc, DaeNode &node, unsigned int frame );
+	SceneNode *findNode( const char *name, SceneNode *ignoredNode );
+	void checkNodeName( SceneNode *node );
 	SceneNode *processNode( ColladaDocument &doc, DaeNode &node, SceneNode *parentNode,
 	                        Matrix4f transAccum, std::vector< Matrix4f > animTransAccum );
 	void calcTangentSpaceBasis( std::vector< Vertex > &vertices );
@@ -166,7 +168,7 @@ public:
 	bool convertModel( ColladaDocument &doc, bool optimize );
 	bool saveModel( const std::string &name );
 	
-	bool writeMaterials( ColladaDocument &doc, const std::string &name, const std::string &defShader );
+	bool writeMaterials( ColladaDocument &doc, const std::string &name );
 	bool hasAnimation();
 	bool writeAnimation( const std::string &name );
 };

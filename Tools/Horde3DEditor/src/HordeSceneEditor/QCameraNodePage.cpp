@@ -69,8 +69,7 @@ void QCameraNodePage::initializePage()
 		m_pipeline->init(
 			field("pipelinedir").toString(),
 			field("materialdir").toString(), 
-			field("texturedir").toString(), 
-			field("texturedir").toString(), 
+			field("texturedir").toString(), 			
 			field("shaderdir").toString(), 
 			field("shaderdir").toString()
 		);
@@ -79,8 +78,7 @@ void QCameraNodePage::initializePage()
 		m_pipeline->init(
 			Horde3DUtils::getResourcePath(ResourceTypes::Pipeline), 
 			Horde3DUtils::getResourcePath(ResourceTypes::Material),
-			Horde3DUtils::getResourcePath(ResourceTypes::Texture2D),
-			Horde3DUtils::getResourcePath(ResourceTypes::TextureCube),
+			Horde3DUtils::getResourcePath(ResourceTypes::Texture),			
 			Horde3DUtils::getResourcePath(ResourceTypes::Shader),
 			Horde3DUtils::getResourcePath(ResourceTypes::Code)
 		);	

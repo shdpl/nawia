@@ -336,7 +336,7 @@ void QLightNode::setMaterial(const Material& material)
 		{
 			m_xmlNode.setAttribute("material", material.FileName);
 			m_resourceID = Horde3D::addResource( ResourceTypes::Material, qPrintable(material.FileName), 0 );
-			Horde3DUtils::loadResourcesFromDisk("");
+			Horde3DUtils::loadResourcesFromDisk(".");
 		}
 		Horde3D::setNodeParami(m_hordeID, LightNodeParams::MaterialRes, m_resourceID);
 	}

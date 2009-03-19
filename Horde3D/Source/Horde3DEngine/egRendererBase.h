@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -67,6 +67,33 @@ struct RenderBuffer
 	}
 };
 
+struct TextureFormats
+{
+	enum List
+	{
+		RGB8,
+		BGR8,
+		RGBX8,
+		BGRX8,
+		RGBA8,
+		BGRA8,
+		DXT1,
+		DXT3,
+		DXT5,
+		RGBA16F,
+		RGBA32F
+	};
+};
+
+struct TextureTypes
+{
+	enum List
+	{
+		Tex2D,
+		TexCube
+	};
+};
+
 // =================================================================================================
 
 class RendererBase
@@ -103,23 +130,23 @@ public:
 	uint32 cloneIndexBuffer( uint32 idxBufId );
 
 	// Texture map functions
-	bool supportsNPOTTextures();
-	uint32 uploadTexture2D( void *pixels, int width, int height, int comps, bool hdr, bool allowCompression,
-	                        bool mipmaps, bool filtering, bool repeatMode, uint32 texId = 0 );
-	void updateTexture2D( unsigned char *pixels, int width, int height, int comps, bool filtering, uint32 texId );
-	uint32 uploadTextureCube( void *pixels, int width, int height, int comps, bool hdr, uint32 cubeFace,
-	                          bool allowCompression, bool mipmaps, bool filtering, uint32 texId = 0 );
-	void unloadTexture( uint32 texId, bool cubeMap );
+	uint32 calcTexSize( TextureFormats::List format, int width, int height );
+	uint32 uploadTexture( TextureTypes::List type, void *pixels, int width, int height, TextureFormats::List format,
+	                      int slice, int mipLevel, bool genMips, bool compress, uint32 texId = 0 );
+	void updateTexture2D( unsigned char *pixels, int width, int height, int comps, uint32 texId );
+	void unloadTexture( uint32 texId, TextureTypes::List type );
 	float *downloadTexture2DData( uint32 texId, int *width, int *height );
 
 	// Shader functions
 	virtual uint32 uploadShader( const char *vertexShader, const char *fragmentShader );
 	void unloadShader( uint32 shaderId );
+	int getShaderVar( uint32 shaderId, const char *var );
+	bool setShaderVar1i( uint32 shaderId, const char *var, int value );
 	std::string &getShaderLog() { return _shaderLog; }
 
 	// Render buffer functions
 	RenderBuffer createRenderBuffer( uint32 width, uint32 height, RenderBufferFormats::List format,
-	                                 bool depth, uint32 numColBufs, bool bilinear, uint32 samples );
+	                                 bool depth, uint32 numColBufs, uint32 samples );
 	void destroyRenderBuffer( RenderBuffer &rb );
 	void setRenderBuffer( RenderBuffer *rb );
 	bool getBufferData( RenderBuffer *rb, int bufIndex, int *width, int *height,

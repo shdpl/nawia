@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -296,7 +296,7 @@ void LightNode::onPostUpdate()
 	Matrix4f m = _absTrans;
 	m.c[3][0] = 0; m.c[3][1] = 0; m.c[3][2] = 0;
 	_spotDir = m * Vec3f( 0, 0, -1 );
-	_spotDir = _spotDir.normalized();
+	_spotDir.normalize();
 	_absPos = Vec3f( _absTrans.c[3][0], _absTrans.c[3][1], _absTrans.c[3][2] );
 
 	// Generate frustum

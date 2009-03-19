@@ -43,8 +43,7 @@ public:
 		const QString& materialPath, 
 		const QString& codePath, 
 		const QString& shaderPath, 
-		const QString& texture2DPath,
-		const QString& textureCubePath);
+		const QString& texturePath);
 
 	QString materialFile() const;
 	void setMaterialFile(const QString& filename);
@@ -66,8 +65,7 @@ private:
 
 	QString	m_materialPath;
 	QString	m_shaderPath;
-	QString m_texture2DPath;
-	QString m_textureCubePath;
+	QString m_texturePath;
 	QString m_codePath;
 };
 #endif

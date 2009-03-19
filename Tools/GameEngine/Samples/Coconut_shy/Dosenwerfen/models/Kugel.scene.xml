@@ -1,5 +1,0 @@
-<Model geometry="Kugel.geo" name="Kugel" >
-    <Mesh vertREnd="4031" batchStart="0" name="Sphere" batchCount="5952" material="Kugel/wood_green_tga.material.xml" vertRStart="0" >
-        <Attachment type="GameEngine" name="Kugel" />
-    </Mesh>
-</Model>

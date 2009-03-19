@@ -40,8 +40,7 @@ struct HordePathSettings
 
 	QDir SceneGraphPath;
 	QDir CodePath;
-	QDir Texture2DPath;
-	QDir TextureCubePath;
+	QDir TexturePath;	
 	QDir GeometryPath;
 	QDir ShaderPath;
 	QDir EffectPath;
@@ -53,11 +52,10 @@ struct HordePathSettings
 	{
 		SceneGraphPath = Horde3DUtils::getResourcePath(ResourceTypes::SceneGraph);
 		CodePath = Horde3DUtils::getResourcePath(ResourceTypes::Code);
-		Texture2DPath = Horde3DUtils::getResourcePath(ResourceTypes::Texture2D);
-		TextureCubePath = Horde3DUtils::getResourcePath(ResourceTypes::TextureCube);
+		TexturePath = Horde3DUtils::getResourcePath(ResourceTypes::Texture);		
 		GeometryPath = Horde3DUtils::getResourcePath(ResourceTypes::Geometry);
 		ShaderPath = Horde3DUtils::getResourcePath(ResourceTypes::Shader);
-		EffectPath = Horde3DUtils::getResourcePath(ResourceTypes::Effect);
+		EffectPath = Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect);
 		MaterialPath = Horde3DUtils::getResourcePath(ResourceTypes::Material);
 		AnimationPath = Horde3DUtils::getResourcePath(ResourceTypes::Animation);
 		PipelinePath = Horde3DUtils::getResourcePath(ResourceTypes::Pipeline);
@@ -110,11 +108,10 @@ public:
 	/**
 	 * Returns the selected texture filename relative to the currently set Horde3D texture path
 	 * @param parent widget the HordeFileDialog will be child of
-	 * @param caption string to be displayed as window caption	 
-	 * @param type indicates the texture type (CUBE / 2D)
+	 * @param caption string to be displayed as window caption	 	 
 	 * @return QString filename of the selected texture
 	 */
-	static QString getTextureFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption, ResourceTypes::List type);
+	static QString getTextureFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption);
 
 
 	/**

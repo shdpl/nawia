@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -130,15 +130,19 @@ const string PipelineResource::parseStage( XMLNode &node, PipelineStage &stage )
 		}
 		else if( strcmp( node1.getName(), "BindBuffer" ) == 0 )
 		{
-			if( node1.getAttribute( "texUnit" ) == 0x0 || node1.getAttribute( "target" ) == 0x0 ||
+			if( node1.getAttribute( "sampler" ) == 0x0 || node1.getAttribute( "sourceRT" ) == 0x0 ||
 				node1.getAttribute( "bufIndex" ) == 0x0 ) return "Missing BindBuffer attribute";
-			if( findRenderTarget( node1.getAttribute( "target" ) ) == 0x0 ) return "Reference to undefined render target in BindBuffer";
+			if( findRenderTarget( node1.getAttribute( "sourceRT" ) ) == 0x0 ) return "Reference to undefined render target in BindBuffer";
 			stage.commands.push_back( PipelineCommand( PipelineCommands::BindBuffer ) );
-			stage.commands.back().refParams.push_back( findRenderTarget( node1.getAttribute( "target" ) ) );
+			stage.commands.back().refParams.push_back( findRenderTarget( node1.getAttribute( "sourceRT" ) ) );
 			vector< PCParam * > &valParams = stage.commands.back().valParams;
 			valParams.resize( 2 );
-			valParams[0] = new PCFloatParam( (float)atof( node1.getAttribute( "texUnit" ) ) );
-			valParams[1] = new PCFloatParam( (float)atof( node1.getAttribute( "bufIndex" ) ) );
+			valParams[0] = new PCStringParam( node1.getAttribute( "sampler" ) );
+			valParams[1] = new PCIntParam( atoi( node1.getAttribute( "bufIndex" ) ) );
+		}
+		else if( strcmp( node1.getName(), "UnbindBuffers" ) == 0 )
+		{
+			stage.commands.push_back( PipelineCommand( PipelineCommands::UnbindBuffers ) );
 		}
 		else if( strcmp( node1.getName(), "ClearTarget" ) == 0 )
 		{
@@ -254,7 +258,7 @@ const string PipelineResource::parseStage( XMLNode &node, PipelineStage &stage )
 
 
 void PipelineResource::addRenderTarget( const string &id, bool depthBuf, uint32 numColBufs,
-										RenderBufferFormats::List format, bool bilinear, uint32 samples,
+										RenderBufferFormats::List format, uint32 samples,
 										uint32 width, uint32 height, float scale )
 {
 	if( numColBufs > RenderBuffer::MaxColorAttachmentCount ) return;
@@ -265,7 +269,6 @@ void PipelineResource::addRenderTarget( const string &id, bool depthBuf, uint32 
 	rt.hasDepthBuf = depthBuf;
 	rt.numColBufs = numColBufs;
 	rt.format = format;
-	rt.bilinear = bilinear;
 	rt.samples = samples;
 	rt.width = width;
 	rt.height = height;
@@ -297,19 +300,19 @@ bool PipelineResource::createRenderTargets()
 	{
 		RenderTarget &rt = _renderTargets[i];
 	
-		uint32 width = (int)(rt.width * rt.scale), height = (int)(rt.height * rt.scale);
-		if( width == 0 ) width = (int)(Modules::renderer().getVPWidth() * rt.scale);
-		if( height == 0 ) height = (int)(Modules::renderer().getVPHeight() * rt.scale);
+		uint32 width = ftoi_r( rt.width * rt.scale ), height = ftoi_r( rt.height * rt.scale );
+		if( width == 0 ) width = ftoi_r( Modules::renderer().getVPWidth() * rt.scale );
+		if( height == 0 ) height = ftoi_r( Modules::renderer().getVPHeight() * rt.scale );
 		
 		rt.rendBuf = Modules::renderer().createRenderBuffer(
-			width, height, rt.format, rt.hasDepthBuf, rt.numColBufs, rt.bilinear, 0 );
+			width, height, rt.format, rt.hasDepthBuf, rt.numColBufs, 0 );
 		if( rt.rendBuf.fbo == 0 ) return false;
 
 		if( rt.samples > 0 )
 		{
 			// Also create a multisampled renderbuffer
 			rt.rendBufMultisample = Modules::renderer().createRenderBuffer(
-				width, height, rt.format, rt.hasDepthBuf, rt.numColBufs, rt.bilinear, rt.samples );
+				width, height, rt.format, rt.hasDepthBuf, rt.numColBufs, rt.samples );
 			if( rt.rendBufMultisample.fbo == 0 ) return false;
 		}
 	}
@@ -374,19 +377,14 @@ bool PipelineResource::load( const char *data, int size )
 				else return raiseError( "Unknown RenderTarget format" );
 			}
 
-			bool bilinear = false;
-			if( _stricmp( node2.getAttribute( "bilinear", "false" ), "true" ) == 0 ||
-				_stricmp( node2.getAttribute( "bilinear", "0" ), "1" ) == 0 )
-				bilinear = true;
-
 			int maxSamples = atoi( node2.getAttribute( "maxSamples", "0" ) );
 
 			uint32 width = atoi( node2.getAttribute( "width", "0" ) );
 			uint32 height = atoi( node2.getAttribute( "height", "0" ) );
 			float scale = (float)atof( node2.getAttribute( "scale", "1" ) );
 
-			addRenderTarget( id, depth, numBuffers, format, bilinear,
-				min( maxSamples, Modules::config().sampleCount ), width, height, scale );
+			addRenderTarget( id, depth, numBuffers, format,
+				std::min( maxSamples, Modules::config().sampleCount ), width, height, scale );
 
 			node2 = node1.getChildNode( "RenderTarget", ++nodeItr2 );
 		}

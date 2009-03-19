@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -46,9 +46,8 @@ struct ResourceTypes
 		Material,
 		Code,
 		Shader,
-		Texture2D,
-		TextureCube,
-		Effect,
+		Texture,
+		ParticleEffect,
 		Pipeline
 	};
 };
@@ -58,11 +57,8 @@ struct ResourceFlags
 	enum Flags
 	{
 		NoQuery = 1,
-		NoTexPOTConversion = 2,
-		NoTexCompression = 4,
-		NoTexMipmaps = 8,
-		NoTexFiltering = 16,
-		NoTexRepeat = 32
+		NoTexCompression = 2,
+		NoTexMipmaps = 4
 	};
 };
 
@@ -105,6 +101,7 @@ public:
 	virtual bool updateData( int param, const void *data, int size );
 
 	int &getType() { return _type; }
+	int getFlags() { return _flags; }
 	const std::string &getName() { return _name; }
 	ResHandle getHandle() { return _handle; }
 	bool isLoaded() { return _loaded; }

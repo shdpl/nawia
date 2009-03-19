@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2008 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
 // This library is free software; you can redistribute it and/or
@@ -103,6 +103,25 @@ struct TestModes
 	};
 };
 
+struct TexFilterModes
+{
+	enum List
+	{
+		None,
+		Bilinear,
+		Trilinear
+	};
+};
+
+struct TexAddressModes
+{
+	enum List
+	{
+		Wrap,
+		Clamp
+	};
+};
+
 
 struct ShaderCombination
 {
@@ -122,12 +141,13 @@ struct ShaderCombination
 	int                             uni_skinMatRows;
 	int                             uni_parCorners;
 	int                             uni_parPosArray, uni_parSizeAndRotArray, uni_parColorArray;
+	int                             uni_olayColor;
 	int                             attrib_normal, attrib_tangent, attrib_bitangent;
 	int                             attrib_joints, attrib_weights;
 	int                             attrib_texCoords0, attrib_texCoords1;
 
-	// Custom uniforms
-	std::map< std::string, int >    customUniforms;
+	std::vector< int >              customSamplers;
+	std::vector< int >              customUniforms;
 
 
 	ShaderCombination() :
@@ -172,6 +192,28 @@ struct ShaderContext
 
 // =================================================================================================
 
+struct ShaderSampler
+{
+	std::string            id;
+	int                    texUnit;
+	TexAddressModes::List  addressMode;
+	TexFilterModes::List   filterMode;
+	int                    maxAnisotropy;
+
+
+	ShaderSampler() :
+		addressMode( TexAddressModes::Wrap ), filterMode( TexFilterModes::Trilinear ), maxAnisotropy( 8 )
+	{
+	}
+};
+
+struct ShaderUniform
+{
+	std::string  id;
+	float        defValues[4];
+};
+
+
 class ShaderResource : public Resource
 {
 private:
@@ -180,11 +222,13 @@ private:
 	static std::string            _tmpCode0, _tmpCode1;
 	
 	std::vector< ShaderContext >  _contexts;
+	std::vector< ShaderSampler >  _samplers;
+	std::vector< ShaderUniform >  _uniforms;
 	std::set< uint32 >            _preLoadList;
 
 	bool raiseError( const std::string &msg, int line = -1 );
 	bool parseXMLCode( XMLNode &node, std::string &code );
-	bool parseFXSection( const char *data, bool oldFormat );
+	bool parseFXSection( const char *data );
 	void compileCombination( ShaderContext &context, ShaderCombination &sc );
 
 public:

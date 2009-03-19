@@ -6,10 +6,10 @@ Horde3D
 		-S D K-
 		-------
 		
-		Version 1.0.0 Beta2
+		Version 1.0.0 Beta3
 		
 
-Copyright (C) 2006-2008 Nicolas Schulz and the Horde3D Team
+Copyright (C) 2006-2009 Nicolas Schulz and the Horde3D Team
 
 http://www.horde3d.org
 
@@ -36,12 +36,14 @@ These libraries are included directly as code in the SDK.
 
 Release Notes:
 	
-	The Beta2 release contains many bugfixes and smaller updates reported and contributed
-	by the community. Besides these, it brings some noticeable improvements like
-	increased shadow quality and extended occlusion culling. A further important
-	enhancement is the expanded support for dynamic resource updates. On the Collada
-	side, the compatibility was improved by supporting non-baked animation data. Finally,
-	the previous makefile system has been replaced by CMake-based build scripts.
+	The new Beta3 release brings a few substantial improvements. It features a refactored
+	shader system with a cleaner and more powerful FX-like file format along with support for 
+	automatic shader permutation generation. The performance of Beta3 has been optimized 
+	considerably, for example by the introduction of an enhanced LOD system. Another new 
+	feature is support for loading textures from DDS files. Besides these major upgrades, 
+	there are many smaller API improvements, optimizations and bug fixes. Finally, Beta3 
+	features improvements to the Collada Converter such that it supports a wider range of 
+	DCC tools.
 
 
 Special thanks go to the University of Augsburg for supporting this project!

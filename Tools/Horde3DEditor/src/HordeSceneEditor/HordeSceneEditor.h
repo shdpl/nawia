@@ -158,8 +158,6 @@ private slots:
 	void setTransformationMode(int mode = -1);
 
 	void setModified();
-
-	void configureScenePaths();
 	
 	void nodeRegistered(const QString& name, PlugInManager::NodeType type);
 	void nodeUnregistered(const QString& name, PlugInManager::NodeType type);
