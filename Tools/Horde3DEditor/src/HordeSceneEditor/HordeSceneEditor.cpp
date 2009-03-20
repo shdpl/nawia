@@ -183,9 +183,6 @@ m_sceneFile(0), m_glWidget(0)
 	// Actions may depend on the dynamic properties
 	connect(m_sceneTreeWidget, SIGNAL(nodePropertyChanged(QXmlTreeNode*)), this, SLOT(updateNodeActions(QXmlTreeNode*)));
 
-	// Action to reconfigure pathes
-	connect(m_actionPaths, SIGNAL(triggered()), this, SLOT(configureScenePaths()));
-
 	m_sceneTreeWidget->m_sceneTreeView->addAction(m_actionAddAttachment);
 	connect(m_actionAddAttachment, SIGNAL(triggered()), m_sceneTreeWidget->m_sceneTreeView, SLOT(addAttachmentNode()));
 
@@ -645,7 +642,6 @@ void HordeSceneEditor::updateMenus()
 	m_actionFullscreen->setEnabled(m_sceneFile!=0);
 	m_actionCollisionCheck->setEnabled(m_sceneFile!=0);
 	m_actionDebugView->setEnabled(m_sceneFile!=0);
-	m_actionPaths->setEnabled(m_sceneFile!=0);
 	m_actionSave->setEnabled(m_sceneFile!=0);
 	m_actionSaveAs->setEnabled(m_sceneFile!=0);
 	m_actionClose->setEnabled(m_sceneFile!=0);

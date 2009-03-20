@@ -429,20 +429,6 @@
     <string>Configures application specific settings like the model repository or the used shader editor</string>
    </property>
   </action>
-  <action name="m_actionPaths">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Resource &amp;Paths</string>
-   </property>
-   <property name="statusTip">
-    <string>Let you change the pipeline configuration of the current scene</string>
-   </property>
-   <property name="shortcut">
-    <string>P</string>
-   </property>
-  </action>
   <action name="m_actionCopy">
    <property name="enabled">
     <bool>false</bool>
