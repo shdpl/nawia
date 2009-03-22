@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9,00"
 	Name="Extension Terrain"
 	ProjectGUID="{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}"
 	RootNamespace="Extension_Terrain"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

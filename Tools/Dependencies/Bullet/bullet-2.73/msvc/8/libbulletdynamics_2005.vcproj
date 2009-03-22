@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9,00"
 	Name="libbulletdynamics"
 	ProjectGUID="{61BD1097-CF2E-B296-DAA9-73A6FE135319}"
 	RootNamespace="libbulletdynamics"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
