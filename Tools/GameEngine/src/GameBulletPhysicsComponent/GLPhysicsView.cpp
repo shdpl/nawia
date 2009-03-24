@@ -37,7 +37,6 @@
 
 #include <btBulletDynamicsCommon.h>
 //#include <Bullet/BulletCollision/BroadphaseCollision/btMultiSapBroadphase.h>
-#include <Horde3D/Horde3D.h>
 
 #include <gl/gl.h>
 #include <gl/glu.h>
