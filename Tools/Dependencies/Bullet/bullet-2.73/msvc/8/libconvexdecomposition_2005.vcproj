@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="8,00"
 	Name="libconvexdecomposition"
 	ProjectGUID="{8050F819-5B5B-1504-BC6D-7F2B4C6C85F3}"
 	RootNamespace="libconvexdecomposition"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

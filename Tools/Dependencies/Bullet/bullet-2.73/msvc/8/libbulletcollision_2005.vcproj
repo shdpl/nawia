@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="8,00"
 	Name="libbulletcollision"
 	ProjectGUID="{6ADA430D-009C-2ED4-A787-2AC2D6FEB8CE}"
 	RootNamespace="libbulletcollision"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

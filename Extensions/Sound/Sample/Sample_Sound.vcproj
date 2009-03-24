@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8,00"
 	Name="Sample Sound"
-	ProjectGUID="{544CEDFA-ADC1-49C0-9B7F-27E916419575}"
+	ProjectGUID="{38F25986-F76E-49EC-BEB0-354B189EAA4A}"
 	RootNamespace="Sample_Sound"
 	Keyword="Win32Proj"
 	>
