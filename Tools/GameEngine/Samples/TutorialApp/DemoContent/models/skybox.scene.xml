@@ -1,3 +1,0 @@
-<Model geometry="skybox.geo" name="skybox" >
-    <Mesh tx="0" sx="2" vertREnd="23" ty="0" rx="-90" sy="2" tz="-1" ry="0" sz="2" rz="180" batchStart="0" name="Box01" batchCount="36" material="skybox/skybox.material.xml" vertRStart="0" />
-</Model>

@@ -1,3 +1,0 @@
-<Model geometry="woodencrate.geo" name="woodencrate" >
-    <Mesh vertREnd="167" batchStart="0" name="woodencrate" batchCount="324" material="woodencrate/woodcrate.material.xml" vertRStart="0" />
-</Model>

@@ -1,0 +1,108 @@
+<Model geometry="models/male/male.geo" name="male" >
+    <!-- Morph targets: "kopf_augenpartie" "kopf_breite" "kopf_nase_kurz" "kopf_kinn" "kopf_nase_lang" "kopf_mund" "kopf_augen_ani" "kopf_mund_ani" "oy" "ae_ax_ah_aa_ao_er_ay" "ey_eh_uh" "f_v" "r" "w_uw" "th_dh" "l" "s_z_t_d_n" "sh_ch_jh_zh" "aw_y_iy_ih_ix_h_k_g_ng" "ow" "torso_lang_big" -->
+    <Joint tx="0.000391" ty="15.3568" tz="-0.145863" rx="-0" ry="-89.9999" rz="0" jointIndex="1" name="Bip01" >
+        <Joint tx="0" ty="-15.3002" tz="0" rx="-0" ry="89.9999" rz="0" jointIndex="2" name="Bip01_Footsteps" />
+        <Joint rx="-0" ry="-89.9999" rz="89.9999" jointIndex="3" name="Bip01_Pelvis" >
+            <Joint tx="1.59108" ty="2e-006" tz="0.299842" rx="-0.000229183" ry="1.82409" rz="5.72958e-005" jointIndex="4" name="Bip01_Spine" >
+                <Joint tx="-1.58072" ty="1.78897" tz="-0.350332" rx="-0.0820476" ry="4.25411" rz="176.94" jointIndex="5" name="Bip01_L_Thigh" >
+                    <Joint tx="6.342" ty="0" tz="0" rx="-0" ry="-0.168965" rz="0" jointIndex="6" name="Bip01_L_Calf" >
+                        <Joint tx="7.4666" ty="0" tz="0" rx="-5.39843" ry="5.96882" rz="3.04744" jointIndex="7" name="Bip01_L_Foot" >
+                            <Joint tx="1.59102" ty="0" tz="-2.36823" rx="-0" ry="100.298" rz="0" jointIndex="8" name="Bip01_L_Toe0" />
+                        </Joint>
+                    </Joint>
+                </Joint>
+                <Joint tx="-1.58072" ty="-1.78897" tz="-0.350341" rx="0.0823341" ry="4.25411" rz="-176.94" jointIndex="9" name="Bip01_R_Thigh" >
+                    <Joint tx="6.342" ty="0" tz="0" rx="-0" ry="-0.168965" rz="0" jointIndex="10" name="Bip01_R_Calf" >
+                        <Joint tx="7.4666" ty="0" tz="0" rx="5.39843" ry="5.96882" rz="-3.04744" jointIndex="11" name="Bip01_R_Foot" >
+                            <Joint tx="1.59102" ty="0" tz="-2.36823" rx="-0" ry="100.298" rz="0" jointIndex="12" name="Bip01_R_Toe0" />
+                        </Joint>
+                    </Joint>
+                </Joint>
+                <Joint tx="2.2079" ty="0" tz="0.001735" rx="-0" ry="-8.52715" rz="0" jointIndex="13" name="Bip01_Spine1" >
+                    <Joint tx="2.2039" ty="0" tz="0.002331" rx="-0" ry="-5.46686" rz="0" jointIndex="14" name="Bip01_Spine2" >
+                        <Joint tx="3.46989" ty="0" tz="-0.292861" rx="-5.72958e-005" ry="30.1214" rz="0.000114592" jointIndex="15" name="Bip01_Neck" >
+                            <Joint tx="1.25176" ty="0" tz="0" rx="-0" ry="-12.9516" rz="-5.72958e-005" jointIndex="16" name="Bip01_Head" >
+                                <Joint tx="1.66308" ty="-0.539754" sx="0.625059" tz="-1.39378" rx="-0" sy="1.01387" ry="-96.7896" sz="0.625059" rz="180" jointIndex="17" name="Bone_auge_r" />
+                                <Joint tx="1.66308" ty="0.547513" sx="0.625059" tz="-1.39378" rx="-0" sy="1.01387" ry="-96.7896" sz="0.625059" rz="180" jointIndex="18" name="Bone_auge_l" />
+                            </Joint>
+                            <Joint tx="-0.661252" ty="0.944701" tz="-0.254535" rx="-0.000114592" ry="149.833" rz="82.3863" jointIndex="19" name="Bip01_L_Clavicle" >
+                                <Joint tx="2.04122" ty="1e-006" tz="0" rx="18.1279" ry="1.14965" rz="-32.9068" jointIndex="20" name="Bip01_L_UpperArm" >
+                                    <Joint tx="4.49557" ty="-1e-006" tz="0" rx="-0" ry="-2.63195" rz="0" jointIndex="21" name="Bip01_L_Forearm" >
+                                        <Joint tx="3.71841" ty="0" tz="0" rx="-83.1076" ry="172.466" rz="-170.402" jointIndex="22" name="Bip01_L_Hand" >
+                                            <Joint tx="0.377036" ty="-0.608215" tz="-0.211378" rx="53.5683" ry="-86.0439" rz="-122.128" jointIndex="23" name="Bip01_L_Finger0" >
+                                                <Joint tx="0.462601" ty="0" tz="0" rx="-0" ry="8.36821" rz="0" jointIndex="24" name="Bip01_L_Finger01" >
+                                                    <Joint tx="0.462598" ty="0" tz="0" rx="-0" ry="4.89431" rz="0" jointIndex="25" name="Bip01_L_Finger02" />
+                                                </Joint>
+                                            </Joint>
+                                            <Joint tx="1.49494" ty="-0.558185" tz="0.000444" rx="1.14742" ry="11.6552" rz="-5.76843" jointIndex="26" name="Bip01_L_Finger1" >
+                                                <Joint tx="0.465858" ty="0" tz="0" rx="-0" ry="13.369" rz="0" jointIndex="27" name="Bip01_L_Finger11" >
+                                                    <Joint tx="0.465854" ty="0" tz="0" rx="-0" ry="13.369" rz="0" jointIndex="28" name="Bip01_L_Finger12" />
+                                                </Joint>
+                                            </Joint>
+                                            <Joint tx="1.49615" ty="-0.141466" tz="0.001311" rx="-0.0452637" ry="7.07168" rz="-0.00561499" jointIndex="29" name="Bip01_L_Finger2" >
+                                                <Joint tx="0.559411" ty="0" tz="-1e-006" rx="-0" ry="15.8689" rz="0" jointIndex="30" name="Bip01_L_Finger21" >
+                                                    <Joint tx="0.55941" ty="0" tz="0" rx="-0" ry="13.369" rz="0" jointIndex="31" name="Bip01_L_Finger22" />
+                                                </Joint>
+                                            </Joint>
+                                            <Joint tx="1.4955" ty="0.206786" tz="0.000392" rx="-0.0452064" ry="7.4689" rz="-0.00590146" jointIndex="32" name="Bip01_L_Finger3" >
+                                                <Joint tx="0.51881" ty="0" tz="0" rx="-0" ry="13.369" rz="0" jointIndex="33" name="Bip01_L_Finger31" >
+                                                    <Joint tx="0.518812" ty="0" tz="0" rx="-0" ry="13.369" rz="0" jointIndex="34" name="Bip01_L_Finger32" />
+                                                </Joint>
+                                            </Joint>
+                                            <Joint tx="1.49494" ty="0.558185" tz="-0.000444" rx="-0.366237" ry="6.47607" rz="7.48356" jointIndex="35" name="Bip01_L_Finger4" >
+                                                <Joint tx="0.359911" ty="0" tz="0" rx="-0" ry="18.3579" rz="0" jointIndex="36" name="Bip01_L_Finger41" >
+                                                    <Joint tx="0.359911" ty="0" tz="0" rx="-0" ry="13.369" rz="0" jointIndex="37" name="Bip01_L_Finger42" />
+                                                </Joint>
+                                            </Joint>
+                                        </Joint>
+                                    </Joint>
+                                </Joint>
+                            </Joint>
+                            <Joint tx="-0.661254" ty="-0.944698" tz="-0.254542" rx="-0.000114592" ry="149.833" rz="-82.386" jointIndex="38" name="Bip01_R_Clavicle" >
+                                <Joint tx="2.04122" ty="-1e-006" tz="0" rx="-18.1279" ry="1.14965" rz="32.9068" jointIndex="39" name="Bip01_R_UpperArm" >
+                                    <Joint tx="4.49557" ty="0" tz="0" rx="-0" ry="-2.63195" rz="0" jointIndex="40" name="Bip01_R_Forearm" >
+                                        <Joint tx="3.71841" ty="-1e-006" tz="0" rx="83.1076" ry="172.466" rz="170.402" jointIndex="41" name="Bip01_R_Hand" >
+                                            <Joint tx="0.377037" ty="0.608215" tz="-0.211378" rx="-53.5683" ry="-86.0439" rz="122.128" jointIndex="42" name="Bip01_R_Finger0" >
+                                                <Joint tx="0.462601" ty="0" tz="-1e-006" rx="-0" ry="8.36821" rz="0" jointIndex="43" name="Bip01_R_Finger01" >
+                                                    <Joint tx="0.462599" ty="0" tz="0" rx="-0" ry="4.89431" rz="0" jointIndex="44" name="Bip01_R_Finger02" />
+                                                </Joint>
+                                            </Joint>
+                                            <Joint tx="1.49494" ty="0.558185" tz="0.000444" rx="-1.14742" ry="11.6552" rz="5.76843" jointIndex="45" name="Bip01_R_Finger1" >
+                                                <Joint tx="0.465858" ty="0" tz="0" rx="-0" ry="13.369" rz="0" jointIndex="46" name="Bip01_R_Finger11" >
+                                                    <Joint tx="0.465854" ty="0" tz="0" rx="-0" ry="13.369" rz="0" jointIndex="47" name="Bip01_R_Finger12" />
+                                                </Joint>
+                                            </Joint>
+                                            <Joint tx="1.49615" ty="0.141467" tz="0.001311" rx="0.0452637" ry="7.07168" rz="0.00561499" jointIndex="48" name="Bip01_R_Finger2" >
+                                                <Joint tx="0.559412" ty="0" tz="-2e-006" rx="-0" ry="15.8689" rz="0" jointIndex="49" name="Bip01_R_Finger21" >
+                                                    <Joint tx="0.55941" ty="0" tz="0" rx="-0" ry="13.369" rz="0" jointIndex="50" name="Bip01_R_Finger22" />
+                                                </Joint>
+                                            </Joint>
+                                            <Joint tx="1.4955" ty="-0.206786" tz="0.000392" rx="0.0452064" ry="7.4689" rz="0.00590146" jointIndex="51" name="Bip01_R_Finger3" >
+                                                <Joint tx="0.51881" ty="0" tz="0" rx="-0" ry="13.369" rz="0" jointIndex="52" name="Bip01_R_Finger31" >
+                                                    <Joint tx="0.518812" ty="0" tz="0" rx="-0" ry="13.369" rz="0" jointIndex="53" name="Bip01_R_Finger32" />
+                                                </Joint>
+                                            </Joint>
+                                            <Joint tx="1.49495" ty="-0.558185" tz="-0.000445" rx="0.366237" ry="6.47607" rz="-7.48356" jointIndex="54" name="Bip01_R_Finger4" >
+                                                <Joint tx="0.359911" ty="0" tz="0" rx="-0" ry="18.3579" rz="0" jointIndex="55" name="Bip01_R_Finger41" >
+                                                    <Joint tx="0.35991" ty="0" tz="-1e-006" rx="-0" ry="13.369" rz="0" jointIndex="56" name="Bip01_R_Finger42" />
+                                                </Joint>
+                                            </Joint>
+                                        </Joint>
+                                    </Joint>
+                                </Joint>
+                            </Joint>
+                        </Joint>
+                    </Joint>
+                </Joint>
+            </Joint>
+        </Joint>
+    </Joint>
+    <Mesh vertREnd="659" batchStart="0" name="kopf" batchCount="2988" material="models/male/kopf.material.xml" vertRStart="0" />
+    <Mesh vertREnd="972" batchStart="2988" name="torso_lang" batchCount="1434" material="models/male/torso_lang_4.material.xml" vertRStart="660" />
+    <Mesh vertREnd="1110" batchStart="4422" name="haar_4" batchCount="636" material="models/male/haar_4_3.material.xml" vertRStart="973" />
+    <Mesh vertREnd="1266" batchStart="5058" name="schuhe_norm" batchCount="552" material="models/male/schuhe_1.material.xml" vertRStart="1111" />
+    <Mesh vertREnd="1279" batchStart="5610" name="auge_r" batchCount="60" material="models/male/auge1.material.xml" vertRStart="1267" />
+    <Mesh vertREnd="1292" batchStart="5670" name="auge_l" batchCount="60" material="models/male/auge1.material.xml" vertRStart="1280" />
+    <Mesh vertREnd="1702" batchStart="6180" name="hose_lang" batchCount="1308" material="models/male/hose_lang_1.material.xml" vertRStart="1384" />
+    <Mesh vertREnd="2114" batchStart="7488" name="hand" batchCount="1728" material="models/male/hand.material.xml" vertRStart="1703" />
+</Model>

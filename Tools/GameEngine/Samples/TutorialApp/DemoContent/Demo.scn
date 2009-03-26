@@ -1,8 +1,8 @@
 <!DOCTYPE SceneConfiguration>
 <Configuration>
-    <SceneGraph path="demo.scene.xml" />
-    <LightParameters lightingcontext="LIGHTING" shadowcontext="SHADOWMAP" material="lighting.material.xml" />
-    <EnginePath texturepath="textures" geometrypath="models" pipelinepath="pipelines" mediapath="media" shaderpath="shaders" trackerpath="tracker" scenegraphpath="models" animationpath="animations" materialpath="materials" />
+    <Pipeline path="pipelines/forward.pipeline.xml" />
+    <SceneGraph path="models/demo.scene.xml" />
+    <LightParameters lightingcontext="LIGHTING" shadowcontext="SHADOWMAP" material="materials/lighting.material.xml" />
     <AttachmentPlugIn name="GameEngine" />
     <EngineConfig shadowMapSize="2048" texCompression="true" loadTextures="true" maxNumMessages="5000" fastAnimation="true" />
     <ActiveCamera name="camera" />

@@ -1,0 +1,5 @@
+<Material>
+	<Shader source="shaders/model.shader" />
+
+	<Sampler name="albedoMap" map="models/female/schuhe_abs_1.tga" />
+</Material>

@@ -3,7 +3,7 @@
 // --------------------------------------
 //		- Lighting functions -
 //
-// Copyright (C) 2006-2007 Nicolas Schulz
+// Copyright (C) 2006-2009 Nicolas Schulz
 //
 // You may use the following code in projects based on the Horde3D graphics engine.
 //
@@ -36,7 +36,8 @@ float PCF( const vec4 projShadow )
 }
 
 
-vec3 calcPhongSpotLight( const vec3 pos, const vec3 normal, const vec3 albedo, const float specMask, const float viewDist )
+vec3 calcPhongSpotLight( const vec3 pos, const vec3 normal, const vec3 albedo, const float specMask,
+						 const float specExp, const float viewDist, const float ambientIntensity )
 {
 	vec3 light = lightPos.xyz - pos;
 	
@@ -49,36 +50,34 @@ vec3 calcPhongSpotLight( const vec3 pos, const vec3 normal, const vec3 albedo, c
 	float angle = dot( lightDir, -light );
 	att *= clamp( (angle - lightCosCutoff) / 0.2, 0.0, 1.0 );
 		
-	// Half lambert lighting
-	float NdotL = dot( normal, light );
-	float diffuse = NdotL * 0.5 + 0.5;
-	diffuse = diffuse * diffuse;
+	// Lambert diffuse contribution
+	float ndotl = dot( normal, light );
+	float diffuse = max( ndotl, 0.0 );
 	
-	// Final color
-	vec3 col = albedo * lightColor * (diffuse + 0.3) * att; 	// Diffuse & ambient color
+	// Diffuse color
+	vec3 col = albedo * lightColor * diffuse;
 	
 	// Shadow
-	if( NdotL > 0.0 && att > 0.0 )
+	if( ndotl > 0.0 && att > 0.0 )
 	{	
-		mat4 lightMat;
-		if( viewDist < shadowSplitDists.x ) lightMat = shadowMats[0];
-		else if( viewDist < shadowSplitDists.y ) lightMat = shadowMats[1];
-		else if( viewDist < shadowSplitDists.z ) lightMat = shadowMats[2];
-		else lightMat = shadowMats[3];
+		vec4 projShadow = shadowMats[3] * vec4( pos, 1.0 );
+		if( viewDist < shadowSplitDists.x ) projShadow = shadowMats[0] * vec4( pos, 1.0 );
+		else if( viewDist < shadowSplitDists.y ) projShadow = shadowMats[1] * vec4( pos, 1.0 );
+		else if( viewDist < shadowSplitDists.z ) projShadow = shadowMats[2] * vec4( pos, 1.0 );
 		
-		vec4 projShadow = lightMat * vec4( pos, 1.0 );
 		projShadow.z = lightDist;
 		projShadow.xy /= projShadow.w;
 		
 		float shadowFac = PCF( projShadow );
-		col *= max( 0.5, shadowFac );
 		
-		// Specular
+		// Specular contribution
 		vec3 eye = normalize( viewer - pos );
 		vec3 refl = reflect( -light, normal );
-		float spec = pow( clamp( dot( refl, eye ), 0.0, 1.0 ), 8.0 ) * specMask;
-		col += vec3( 0.3, 0.3, 0.4 ) * spec * att * shadowFac; 
+		float spec = pow( clamp( dot( refl, eye ), 0.0, 1.0 ), specExp ) * specMask;
+		col += lightColor * spec * shadowFac;
+		
+		col *= max( shadowFac, ambientIntensity );
 	}
 	
-	return col;
+	return col * att;
 }
