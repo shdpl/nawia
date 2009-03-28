@@ -293,6 +293,12 @@ public:
 		IK_SET_RESTRICT,		/// Sets the value of the DOFR flag
 		IK_SET_OPTIMIZE,		/// Sets the value of the IKMO flag
 		IK_SET_ZLOCK,			/// Sets the value of the z_lock flag
+		GB_ON_OFF,				/// activates/deactivates character's gaze behaviour
+		GB_CONTROL_ON_OFF,		/// activates/deactivates direct control of character via arrow keys
+		GB_SEARCH_ON_OFF,		/// activates/deactivates character's searching behaviour
+		GB_WAVE_BACK,			/// makes the npc react to a waving event
+		GB_RESET,				/// reset all collected data
+		GB_KEY_PRESSED,			/// inidicates a key press event
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
 	static GameEvent::EventID convertStringEvent(std::string in)
