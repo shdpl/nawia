@@ -57,7 +57,7 @@ private:
 
 	QString	m_init;
 
-	QString m_texturePath;	
+	QString m_resourcePath;	
 };
 #endif
 

@@ -6,7 +6,7 @@
 #include "ColladaImporter.h"
 #include "GLWidget.h"
 
-HordeModelDialog::HordeModelDialog(const HordePathSettings& targetPaths, QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : HordeFileDialog(ResourceTypes::SceneGraph, targetPaths, parent, flags),
+HordeModelDialog::HordeModelDialog(const QString& targetPath, QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : HordeFileDialog(ResourceTypes::SceneGraph, targetPath, parent, flags),
 m_glWidget(0), m_oldScene(0), m_newScene(0), m_currentModel(0), m_cameraID(0)
 {
 	m_glFrame->setLayout(new QHBoxLayout());
@@ -62,22 +62,17 @@ void HordeModelDialog::importCollada()
 	if (!importDlg.setColladaFiles()) return;
 	QSettings settings(QApplication::applicationDirPath()+QDir::separator()+"HordeSceneEditor.ini", QSettings::IniFormat, this);
 	settings.beginGroup("Repository");
-	importDlg.initImportPath(
-		settings.value("sceneGraphDir", DefaultModelsRepoPath.absolutePath()).toString(),
-		settings.value("geometryDir", DefaultModelsRepoPath.absolutePath()).toString(),
-		settings.value("textureDir", DefaultTextureRepoPath.absolutePath()).toString(),
-		settings.value("shaderDir", DefaultShaderRepoPath.absolutePath()).toString(),	
-		settings.value("materialDir", DefaultMaterialRepoPath.absolutePath()).toString(),
-		settings.value("animationDir", DefaultModelsRepoPath.absolutePath()).toString());
+	QString defaultRepoPath = settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString();
+	importDlg.initImportPath( defaultRepoPath );
 	settings.endGroup();	
 	importDlg.exec();	
 	m_fileList->clear();
 	if ( HordeSceneEditor::instance()->currentScene() )
 		// Add all files already existing in the current scene
-		populateList(m_scenePaths.SceneGraphPath.absolutePath(), m_scenePaths.SceneGraphPath.absolutePath(), m_currentFilter, false);
+		populateList(m_sceneResourcePath.absolutePath(), m_sceneResourcePath.absolutePath(), m_currentFilter, false);
 	settings.beginGroup("Repository");
 	// Add all files existing in the repository
-	populateList(settings.value("sceneGraphDir", DefaultModelsRepoPath.absolutePath()).toString(), QDir(settings.value("sceneGraphDir", DefaultModelsRepoPath.absolutePath()).toString()), m_currentFilter, true);
+	populateList( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString(), QDir( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString() ), m_currentFilter, true);
 	settings.endGroup();
 }
 
@@ -136,26 +131,19 @@ void HordeModelDialog::initModelViewer()
 	settings.beginGroup("Repository");
 	m_currentFilter = "*.scene.xml";
 	if ( HordeSceneEditor::instance()->currentScene() )
-		populateList(m_scenePaths.SceneGraphPath.absolutePath(), m_scenePaths.SceneGraphPath, m_currentFilter, false);
-	populateList(settings.value("sceneGraphDir", DefaultModelsRepoPath.absolutePath()).toString(), QDir(settings.value("sceneGraphDir", DefaultModelsRepoPath.absolutePath()).toString()), m_currentFilter, true);
+		populateList( m_sceneResourcePath.absolutePath(), m_sceneResourcePath, m_currentFilter, false);
+	populateList( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString(), QDir( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString() ), m_currentFilter, true);
 	m_stackedWidget->setCurrentWidget(m_glFrame);
 }
 
 void HordeModelDialog::loadModel(const QString& fileName, bool repoFile)
 {
+	QString scenePath = QDir::currentPath();
 	if( repoFile ) // set repository pathes
 	{
 		QSettings settings(QApplication::applicationDirPath()+QDir::separator()+"HordeSceneEditor.ini", QSettings::IniFormat, this);
 		settings.beginGroup("Repository");
-		Horde3DUtils::setResourcePath(ResourceTypes::SceneGraph, qPrintable(settings.value("sceneGraphDir", DefaultModelsRepoPath.absolutePath()).toString()));
-		Horde3DUtils::setResourcePath(ResourceTypes::Geometry, qPrintable(settings.value("geometryDir", DefaultModelsRepoPath.absolutePath()).toString()));
-		Horde3DUtils::setResourcePath(ResourceTypes::Texture, qPrintable(settings.value("textureDir", DefaultTextureRepoPath.absolutePath()).toString()));
-		Horde3DUtils::setResourcePath(ResourceTypes::Shader, qPrintable(settings.value("shaderDir", DefaultShaderRepoPath.absolutePath()).toString()));
-		Horde3DUtils::setResourcePath(ResourceTypes::Code, qPrintable(settings.value("shaderDir", DefaultShaderRepoPath.absolutePath()).toString()));
-		Horde3DUtils::setResourcePath(ResourceTypes::Material, qPrintable(settings.value("materialDir", DefaultMaterialRepoPath.absolutePath()).toString()));
-		Horde3DUtils::setResourcePath(ResourceTypes::Animation, qPrintable(settings.value("animationDir", DefaultModelsRepoPath.absolutePath()).toString()));
-		Horde3DUtils::setResourcePath(ResourceTypes::ParticleEffect, qPrintable(settings.value("effectsDir", DefaultEffectsRepoPath.absolutePath()).toString()));
-		Horde3DUtils::setResourcePath(ResourceTypes::Pipeline, qPrintable(settings.value("pipelineDir", DefaultPipelineRepoPath.absolutePath()).toString()));
+		QDir::setCurrent( settings.value( "repositoryDir", DefaultRepoPath.absolutePath() ).toString() );
 		settings.endGroup();
 	}
 	if (m_currentModel != 0)
@@ -195,9 +183,10 @@ void HordeModelDialog::loadModel(const QString& fileName, bool repoFile)
 		// Show XML View Widget
 		m_stackedWidget->setCurrentWidget(m_xmlView);	
 		// Remove the added resource
-		if( envRes ) Horde3D::removeResource(envRes);
+		if( envRes ) Horde3D::removeResource(envRes);		
 		// Restore Path settings if the selected model was from the repository
-		if( repoFile ) restoreHordePath();
+		if( repoFile ) 
+			QDir::setCurrent( scenePath );
 		// Release unused resources within Horde3D
 		Horde3D::releaseUnusedResources();
 		return;
@@ -231,13 +220,13 @@ void HordeModelDialog::loadModel(const QString& fileName, bool repoFile)
 	// reset camera position
 	Horde3D::setNodeTransform(m_cameraID, 0, 0, 0, 0, 0, 0, 1, 1, 1);	
 	if( repoFile )
-		restoreHordePath();
+		QDir::setCurrent( scenePath );
 }
 
 
-QString HordeModelDialog::getModelFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption)
+QString HordeModelDialog::getModelFile(const QString& targetPath, QWidget* parent, const QString& caption)
 {
-	HordeModelDialog dlg(targetPaths, parent);
+	HordeModelDialog dlg(targetPath, parent);
 	dlg.setWindowTitle(caption);
 	if (dlg.exec() == QDialog::Accepted)
 	{

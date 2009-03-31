@@ -101,5 +101,23 @@ bool SceneFilePage::validatePage()
 			return false;
 	}
 	QDir::setCurrent(m_scenePath->text());	
+	QFileInfo sceneGraphFile( m_sceneGraphFile->text() );
+	if( sceneGraphFile.isAbsolute() )
+	{
+		QMessageBox::information( this, tr("Error"), tr("The scene graph file must be relative to the scene path!") );
+		return false;
+	}
+	if( !sceneGraphFile.dir().exists() )
+		path.mkpath( sceneGraphFile.path() );
+	if( !sceneGraphFile.exists() )
+	{
+		QFile sceneGraph( sceneGraphFile.absoluteFilePath() );
+		if( !sceneGraph.open( QIODevice::WriteOnly ) )
+		{
+			QMessageBox::warning( this, tr("Error"), tr("The scene graph file '%1' does not exist and couldn't be created!").arg( m_sceneGraphFile->text() ) );
+			return false;
+		}
+		sceneGraph.close();
+	}
 	return true;
 }

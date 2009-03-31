@@ -37,7 +37,7 @@ public:
 	ShaderComboBox(QWidget* parent = 0);
 	virtual ~ShaderComboBox();
 
-	void init(const QString& shaderPath, const QString& codePath);
+	void init(const QString& resourcePath);
 
 	QString shaderFile() const {return currentText();}
 
@@ -56,8 +56,7 @@ private:
 
 	QString	m_init;
 
-	QString m_shaderPath;
-	QString m_codePath;
+	QString m_resourcePath;	
 };
 #endif
 

@@ -69,7 +69,7 @@ private:
 
 	QString				m_currentMaterialFile;
 	QDomDocument		m_materialXml;
-
+	QString				m_resourcePath;
 
 };
 #endif

@@ -35,13 +35,12 @@ ShaderComboBox::~ShaderComboBox()
 {
 }
 
-void ShaderComboBox::init(const QString& shaderPath, const QString& codePath)
+void ShaderComboBox::init( const QString& resourcePath )
 {
 	clear();
-	m_shaderPath = shaderPath;
-	m_codePath = codePath;
+	m_resourcePath = resourcePath;
 	blockSignals(true);
-	addShader(shaderPath);
+	addShader(resourcePath);
 	addItem(tr("Import from Repository"), QVariant((int) QVariant::UserType));
 	if (count() == 1)
 		setCurrentIndex(-1);
@@ -64,11 +63,8 @@ void ShaderComboBox::setShader(Shader shader)
 void ShaderComboBox::currentChanged(int index)
 {
 	if (itemData(index).isValid() && itemData(index) == QVariant((int)QVariant::UserType))
-	{
-		HordePathSettings paths;
-		paths.CodePath = m_codePath;
-		paths.ShaderPath = m_shaderPath;
-		QString newShader = HordeFileDialog::getShaderFile(paths, this, tr("Select shader to import"));
+	{		
+		QString newShader = HordeFileDialog::getResourceFile( ResourceTypes::Shader, m_resourcePath, this, tr("Select shader to import"));
 		if (!newShader.isEmpty())
 		{
 			if (findText(newShader) == -1)
@@ -93,8 +89,8 @@ void ShaderComboBox::currentChanged(int index)
 
 void ShaderComboBox::addShader(const QString dir)
 {
-	QDir base(m_shaderPath);
-	QList<QFileInfo> shaders = QDir(dir).entryInfoList(QStringList("*.shader.xml"), QDir::Files | QDir::Readable);
+	QDir base(m_resourcePath);
+	QList<QFileInfo> shaders = QDir(dir).entryInfoList(QStringList("*.shader"), QDir::Files | QDir::Readable);
 	foreach(QFileInfo shader, shaders)
 	{
 		addItem(base.relativeFilePath(shader.absoluteFilePath()));

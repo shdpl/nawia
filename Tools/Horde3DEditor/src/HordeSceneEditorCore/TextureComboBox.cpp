@@ -36,12 +36,12 @@ TextureComboBox::~TextureComboBox()
 {
 }
 
-void TextureComboBox::init(const QString& texturePath)
+void TextureComboBox::init(const QString& resourcePath)
 {
 	clear();
-	m_texturePath = texturePath;
+	m_resourcePath = resourcePath;
 
-	addTextures(texturePath, texturePath);
+	addTextures(resourcePath, resourcePath);
 	addItem(tr("Import Texture2D from Repository"), QVariant((int) ResourceTypes::Texture));
 
 }
@@ -61,10 +61,8 @@ void TextureComboBox::setTexture(Texture texture)
 void TextureComboBox::currentChanged(int index)
 {
 	if ( itemData(index).isValid() && itemData(index) == QVariant((int) ResourceTypes::Texture) )
-	{
-		HordePathSettings paths;
-		paths.TexturePath = m_texturePath;
-		QString newTexture = HordeFileDialog::getTextureFile(paths, this, tr("Select texture to import") );
+	{		
+		QString newTexture = HordeFileDialog::getResourceFile( ResourceTypes::Texture, m_resourcePath, this, tr("Select texture to import") );
 		if (!newTexture.isEmpty())
 		{
 			if (findText(newTexture) == -1)

@@ -65,7 +65,7 @@ MaterialWidget::~MaterialWidget()
 void MaterialWidget::init()
 {
 	m_shader->blockSignals(true);
-	m_shader->init(Horde3DUtils::getResourcePath(ResourceTypes::Shader), Horde3DUtils::getResourcePath(ResourceTypes::Code));
+	m_shader->init( QDir::currentPath() );
 	if( m_currentMaterialFile.isEmpty() ) 
 		m_shader->setCurrentIndex(-1);
 	else
@@ -215,10 +215,8 @@ void MaterialWidget::addTexUnit()
 	types.append("CUBE");
 	bool ok = false;
 	QString type = QInputDialog::getItem(this, tr("Texture type"), tr("Texture type"), types, 0, false, &ok);
-	if (!ok) return;
-	HordePathSettings paths;
-	paths.TexturePath = Horde3DUtils::getResourcePath(ResourceTypes::Texture);	
-	QString texture = HordeFileDialog::getTextureFile(paths, this, tr("Select texture") );
+	if (!ok) return;		
+	QString texture = HordeFileDialog::getResourceFile( ResourceTypes::Texture, m_resourcePath, this, tr("Select texture") );
 	if (!texture.isEmpty())
 	{				
 		QDomElement element(m_materialXml.documentElement().appendChild( m_materialXml.createElement("TexUnit")).toElement());

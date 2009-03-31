@@ -23,8 +23,8 @@
 #include "PipelineProperty.h"
 #include "PipelineComboBox.h"
 #include "CustomTypes.h"
-#include <Horde3D.h>
-#include <Horde3DUtils.h>
+
+#include <QtCore/QDir>
 
 PipelineProperty::PipelineProperty(const QString& name /*= QString()*/, QObject* propertyObject /*= 0*/, QObject* parent /*= 0*/) : Property(name, propertyObject, parent)
 {	
@@ -46,12 +46,7 @@ QVariant PipelineProperty::value(int role) const
 QWidget* PipelineProperty::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/)
 {
 	PipelineComboBox* editor = new PipelineComboBox(parent);
-	editor->init(
-		Horde3DUtils::getResourcePath(ResourceTypes::Pipeline), 
-		Horde3DUtils::getResourcePath(ResourceTypes::Material),
-		Horde3DUtils::getResourcePath(ResourceTypes::Texture),		
-		Horde3DUtils::getResourcePath(ResourceTypes::Shader),
-		Horde3DUtils::getResourcePath(ResourceTypes::Code));
+	editor->init( QDir::currentPath() );
 	return editor;
 }
 

@@ -39,11 +39,7 @@ public:
 	MaterialComboBox(QWidget* parent = 0);
 	virtual ~MaterialComboBox();
 
-	void init(
-		const QString& materialPath, 
-		const QString& codePath, 
-		const QString& shaderPath, 
-		const QString& texturePath);
+	void init( const QString& resourcePath );
 
 	QString materialFile() const;
 	void setMaterialFile(const QString& filename);
@@ -63,10 +59,7 @@ private:
 
 	QString	m_init;
 
-	QString	m_materialPath;
-	QString	m_shaderPath;
-	QString m_texturePath;
-	QString m_codePath;
+	QString	m_resourcePath;
 };
 #endif
 

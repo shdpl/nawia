@@ -21,7 +21,7 @@
 // ****************************************************************************************
 #include "QTerrainNodePage.h"
 
-#include <Horde3DUtils.h>
+#include <QtCore/QDir>
 
 QTerrainNodePage::QTerrainNodePage(QWidget* parent /*= 0*/) : QWizardPage(parent)
 {
@@ -40,12 +40,7 @@ QTerrainNodePage::~QTerrainNodePage()
 
 void QTerrainNodePage::initializePage()
 {
-	m_material->init(
-		Horde3DUtils::getResourcePath(ResourceTypes::Material), 
-		Horde3DUtils::getResourcePath(ResourceTypes::Code),
-		Horde3DUtils::getResourcePath(ResourceTypes::Shader),
-		Horde3DUtils::getResourcePath(ResourceTypes::Texture)		
-		);	
-	m_heightMap->init( Horde3DUtils::getResourcePath(ResourceTypes::Texture) );
+	m_material->init( QDir::currentPath() );	
+	m_heightMap->init( QDir::currentPath() );
 }
 

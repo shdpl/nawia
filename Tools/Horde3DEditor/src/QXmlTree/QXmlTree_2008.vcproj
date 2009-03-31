@@ -131,7 +131,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="QtCore4.lib QtXml4.lib "
 				OutputFile="$(SolutionDir)/lib/$(ProjectName).lib"
 				AdditionalLibraryDirectories="$(QTDIR)/lib"
 			/>

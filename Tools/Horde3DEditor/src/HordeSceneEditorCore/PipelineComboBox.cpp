@@ -37,17 +37,12 @@ PipelineComboBox::~PipelineComboBox()
 {
 }
 
-void PipelineComboBox::init(const QString& pipelinePath, const QString& materialPath, const QString& texturePath, 
-							const QString& shaderPath, const QString& codePath )
+void PipelineComboBox::init( const QString& resourcePath )
 {
 	clear();
-	m_pipelinePath = pipelinePath;
-	m_materialPath = materialPath;
-	m_texturePath = texturePath;
-	m_shaderPath = shaderPath;
-	m_codePath = codePath;
+	m_resourcePath = resourcePath;
 	blockSignals(true);
-	addPipeline(pipelinePath);
+	addPipeline(resourcePath);
 	addItem(tr("Import from Repository"), QVariant((int) QVariant::UserType));
 	if (count() == 1)
 		setCurrentIndex(-1);
@@ -73,14 +68,8 @@ void PipelineComboBox::setPipeline(Pipeline pipeline)
 void PipelineComboBox::currentChanged(int index)
 {
 	if (itemData(index).isValid() && itemData(index) == QVariant((int)QVariant::UserType))
-	{
-		HordePathSettings paths;
-		paths.CodePath = m_codePath;
-		paths.ShaderPath = m_shaderPath;
-		paths.PipelinePath = m_pipelinePath;
-		paths.MaterialPath = m_materialPath;
-		paths.TexturePath = m_texturePath;
-		QString newPipeline = HordeFileDialog::getPipelineFile(paths, this, tr("Select pipeline to import"));
+	{		
+		QString newPipeline = HordeFileDialog::getResourceFile( ResourceTypes::Pipeline, m_resourcePath, this, tr("Select pipeline to import"));
 		if (!newPipeline.isEmpty())
 		{
 			if (findText(newPipeline) == -1)
@@ -105,7 +94,7 @@ void PipelineComboBox::currentChanged(int index)
 
 void PipelineComboBox::addPipeline(const QString dir)
 {
-	QDir base(m_pipelinePath);
+	QDir base(m_resourcePath);
 	QList<QFileInfo> pipelines = QDir(dir).entryInfoList(QStringList("*.pipeline.xml"), QDir::Files | QDir::Readable);
 	foreach(QFileInfo pipeline, pipelines)
 	{

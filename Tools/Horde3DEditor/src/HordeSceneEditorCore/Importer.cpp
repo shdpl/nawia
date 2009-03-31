@@ -33,33 +33,25 @@ Importer::Importer()
 {
 	QHordeSceneEditorSettings settings;
 	settings.beginGroup("Repository");
-	m_sourceResourcePaths[ResourceTypes::SceneGraph] = settings.value("sceneGraphDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"models").toString();
-	m_sourceResourcePaths[ResourceTypes::Geometry]   = settings.value("sceneGraphDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"models").toString();
-	m_sourceResourcePaths[ResourceTypes::Material]   = settings.value("materialDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"materials").toString();		
-	m_sourceResourcePaths[ResourceTypes::Texture]  = settings.value("textureDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"textures").toString();			
-	m_sourceResourcePaths[ResourceTypes::Shader]     = settings.value("shaderDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"shaders").toString();		
-	m_sourceResourcePaths[ResourceTypes::ParticleEffect] = settings.value("effectsDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"effects").toString();		
-	m_sourceResourcePaths[ResourceTypes::Code]       = settings.value("shaderDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"shaders").toString();		
-	m_sourceResourcePaths[ResourceTypes::Animation]  = settings.value("animationDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"animations").toString();		
-	m_sourceResourcePaths[ResourceTypes::Pipeline]   = settings.value("pipelineDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"pipelines").toString();		
+	m_sourceResourcePath = settings.value("repositoryDir", QApplication::applicationDirPath()+QDir::separator()+"Repository").toString();
 	settings.endGroup();
 
 }
 
-void Importer::setTargetPath(ResourceTypes::List type, const QDir& path)
+void Importer::setTargetPath( const QDir& path )
 {
-	m_targetResourcePaths[type] = path;
-	if (!m_targetResourcePaths[type].exists())
-		m_targetResourcePaths[type].mkpath(m_targetResourcePaths[type].absolutePath());
+	m_targetResourcePath = path;
+	if( !m_targetResourcePath.exists() )
+		m_targetResourcePath.mkpath( m_targetResourcePath.absolutePath() );
 
 }
 
 
 void Importer::setSourcePath(ResourceTypes::List type, const QDir& path)
 {
-	m_sourceResourcePaths[type] = path;
-	if (!m_sourceResourcePaths[type].exists())
-		m_sourceResourcePaths[type].mkpath(m_sourceResourcePaths[type].absolutePath());
+	m_sourceResourcePath = path;
+	if( !m_sourceResourcePath.exists() )
+		m_sourceResourcePath.mkpath( m_sourceResourcePath.absolutePath() );
 
 }
 
@@ -72,7 +64,8 @@ void Importer::importScene(const QFileInfo& file, const QString& targetFileName)
 	if (!m_filesToOverwrite.isEmpty())
 	{
 		OverwriteFilesDialog dlg(m_filesToOverwrite);
-		dlg.exec();
+		if( dlg.numFilesToOverwrite() > 0 )
+			dlg.exec();
 	}
 }
 
@@ -84,19 +77,21 @@ void Importer::importShader(const QFileInfo& file, const QString& targetFileName
 	if (!m_filesToOverwrite.isEmpty())
 	{
 		OverwriteFilesDialog dlg(m_filesToOverwrite);
-		dlg.exec();
+		if( dlg.numFilesToOverwrite() > 0 )
+			dlg.exec();
 	}
 }
 
-void Importer::importTexture(const QFileInfo& texture, const QString& targetFileName, ResourceTypes::List type)
+void Importer::importTexture( const QFileInfo& texture, const QString& targetFileName )
 {
 	m_filesToOverwrite.clear();
 	m_alreadyCopied.clear();
-	importTextureFile(texture, targetFileName, type);
+	importTextureFile( texture, targetFileName );
 	if (!m_filesToOverwrite.isEmpty())
 	{
 		OverwriteFilesDialog dlg(m_filesToOverwrite);
-		dlg.exec();
+		if( dlg.numFilesToOverwrite() > 0 )
+			dlg.exec();
 	}
 }
 
@@ -108,7 +103,8 @@ void Importer::importMaterial(const QFileInfo& materialFile, const QString& targ
 	if (!m_filesToOverwrite.isEmpty())
 	{
 		OverwriteFilesDialog dlg(m_filesToOverwrite);
-		dlg.exec();
+		if( dlg.numFilesToOverwrite() > 0 )
+			dlg.exec();
 	}
 }
 
@@ -120,7 +116,8 @@ void Importer::importEffect(const QFileInfo& effect, const QString& targetFileNa
 	if (!m_filesToOverwrite.isEmpty())
 	{
 		OverwriteFilesDialog dlg(m_filesToOverwrite);
-		dlg.exec();
+		if( dlg.numFilesToOverwrite() > 0 )
+			dlg.exec();
 	}
 }
 
@@ -128,9 +125,9 @@ void Importer::importPipeline(const QFileInfo& pipeline, const QString& targetFi
 {
 	m_filesToOverwrite.clear();
 	m_alreadyCopied.clear();
-	QFileInfo target(m_targetResourcePaths[ResourceTypes::Pipeline], targetFileName);
+	QFileInfo target(m_targetResourcePath, targetFileName);
 	if (!target.absoluteDir().exists())
-		m_targetResourcePaths[ResourceTypes::Pipeline].mkpath(target.absolutePath());		
+		m_targetResourcePath.mkpath(target.absolutePath());		
 	const CopyJob job(pipeline, target);
 
 	QFile file(pipeline.absoluteFilePath());
@@ -168,7 +165,7 @@ void Importer::importPipeline(const QFileInfo& pipeline, const QString& targetFi
 	for( int i=0; i<materialNodes.size(); ++i )
 		if( materialNodes.at(i).toElement().hasAttribute("link") )
 			importMaterialFile(
-				QFileInfo(m_sourceResourcePaths[ResourceTypes::Material], materialNodes.at(i).toElement().attribute("link")),
+				QFileInfo(m_sourceResourcePath, materialNodes.at(i).toElement().attribute("link")),
 				materialNodes.at(i).toElement().attribute("link"),
 				QString());
 
@@ -176,21 +173,22 @@ void Importer::importPipeline(const QFileInfo& pipeline, const QString& targetFi
 	for (int i=0; i<materialNodes.size(); ++i)
 		if (materialNodes.at(i).toElement().hasAttribute("material"))
 			importMaterialFile(
-				QFileInfo(m_sourceResourcePaths[ResourceTypes::Material], materialNodes.at(i).toElement().attribute("material")),
+				QFileInfo(m_sourceResourcePath, materialNodes.at(i).toElement().attribute("material")),
 				materialNodes.at(i).toElement().attribute("material"),
 				QString());
 	materialNodes = root.documentElement().elementsByTagName("SetUniform");
 	for (int i=0; i<materialNodes.size(); ++i)
 		if (materialNodes.at(i).toElement().hasAttribute("material"))
 			importMaterialFile(
-				QFileInfo(m_sourceResourcePaths[ResourceTypes::Material], materialNodes.at(i).toElement().attribute("material")),
+				QFileInfo(m_sourceResourcePath, materialNodes.at(i).toElement().attribute("material")),
 				materialNodes.at(i).toElement().attribute("material"),
 				QString());
 
 	if (!m_filesToOverwrite.isEmpty())
 	{
 		OverwriteFilesDialog dlg(m_filesToOverwrite);
-		dlg.exec();
+		if( dlg.numFilesToOverwrite() > 0 )
+			dlg.exec();
 	}
 }
 
@@ -205,9 +203,9 @@ void Importer::importSceneFile(const QFileInfo& file, const QString& targetFileN
 	QDomDocument root;
 	root.setContent(&sceneFile);
 	sceneFile.close();
-	QFileInfo target(m_targetResourcePaths[ResourceTypes::SceneGraph], targetFileName);
-	if (!target.absoluteDir().exists())
-		m_targetResourcePaths[ResourceTypes::SceneGraph].mkpath(target.absolutePath());
+	QFileInfo target(m_targetResourcePath, targetFileName);
+	if( !target.absoluteDir().exists() )
+		m_targetResourcePath.mkpath(target.absolutePath());
 
 	if (!sceneFile.copy(target.absoluteFilePath()))
 	{
@@ -226,7 +224,7 @@ void Importer::importSceneFile(const QFileInfo& file, const QString& targetFileN
 void Importer::importSceneElement(const QDomElement& element)
 {
 	if (element.hasAttribute("sceneGraph"))
-		importSceneFile(QFileInfo(m_sourceResourcePaths[ResourceTypes::SceneGraph], element.attribute("sceneGraph")), element.attribute("sceneGraph"));
+		importSceneFile(QFileInfo(m_sourceResourcePath, element.attribute("sceneGraph")), element.attribute("sceneGraph"));
 	QDomNodeList childs = element.childNodes();
 	for (int i=0; i<childs.count(); ++i)
 		importSceneElement(childs.at(i).toElement());
@@ -241,9 +239,9 @@ void Importer::importMaterialFile(const QFileInfo& materialFile, const QString& 
 		return;
 	}
 
-	QFileInfo target(m_targetResourcePaths[ResourceTypes::Material], targetFileName);
+	QFileInfo target(m_targetResourcePath, targetFileName);
 	if (!target.absoluteDir().exists())
-		m_targetResourcePaths[ResourceTypes::Material].mkpath(target.absolutePath());
+		m_targetResourcePath.mkpath(target.absolutePath());
 
 
 	QDomDocument material;
@@ -285,20 +283,20 @@ void Importer::importMaterialFile(const QFileInfo& materialFile, const QString& 
 
 	QString linkedMaterial = material.documentElement().attribute("link");
 	if( !linkedMaterial.isEmpty() )
-		importMaterialFile( QFileInfo(m_sourceResourcePaths[ResourceTypes::Material], linkedMaterial), linkedMaterial, QString() );
+		importMaterialFile( QFileInfo(m_sourceResourcePath, linkedMaterial), linkedMaterial, QString() );
 
 	QDomNodeList shaders = material.documentElement().elementsByTagName("Shader");
 	for (int j=0; j<shaders.count(); ++j)
 		importShaderFile(
-			QFileInfo(m_sourceResourcePaths[ResourceTypes::Shader], shaders.at(j).toElement().attribute("source")),
+			QFileInfo(m_sourceResourcePath, shaders.at(j).toElement().attribute("source")),
 			shaders.at(j).toElement().attribute("source"),
 			QString());
-	QDomNodeList textures = material.documentElement().elementsByTagName("TexUnit");
+	QDomNodeList textures = material.documentElement().elementsByTagName("Sampler");
 	for (int j=0; j<textures.count(); ++j)
 	{
 			importTextureFile(
-				QFileInfo(m_sourceResourcePaths[ResourceTypes::Texture], textures.at(j).toElement().attribute("map")),
-				textures.at(j).toElement().attribute("map"), ResourceTypes::Texture);		
+				QFileInfo(m_sourceResourcePath, textures.at(j).toElement().attribute("map")),
+				textures.at(j).toElement().attribute("map"));		
 	}
 }
 
@@ -306,7 +304,7 @@ void Importer::importMaterialElement(const QDomElement& element)
 {
 	if (element.hasAttribute("material"))		
 		importMaterialFile(
-			QFileInfo(m_sourceResourcePaths[ResourceTypes::Material], element.attribute("material")), 
+			QFileInfo(m_sourceResourcePath, element.attribute("material")), 
 			element.attribute("material"), 
 			QString());		
 	QDomNodeList childs = element.childNodes();
@@ -322,11 +320,10 @@ void Importer::importShaderFile(const QFileInfo& shader, const QString& targetFi
 		return;
 	}
 
-	QFileInfo target(m_targetResourcePaths[ResourceTypes::Shader], targetFileName);
+	QFileInfo target(m_targetResourcePath, targetFileName);
 	if (!target.absoluteDir().exists())
-		m_targetResourcePaths[ResourceTypes::Shader].mkpath(target.absolutePath());
+		m_targetResourcePath.mkpath(target.absolutePath());
 
-	QDomDocument shaderXml;
 	const CopyJob job(shader, target);
 	QFile file(shader.absoluteFilePath());
 	if (!file.copy(target.absoluteFilePath()) && !m_filesToOverwrite.contains(job) && !m_alreadyCopied.contains(job) )
@@ -354,15 +351,69 @@ void Importer::importShaderFile(const QFileInfo& shader, const QString& targetFi
 		file.write(customData.toLocal8Bit());
 		file.seek(0);
 	}
-	shaderXml.setContent(&file);
-	file.close();
-	QDomNodeList codes = shaderXml.elementsByTagName("InsCode");
+	
+	QByteArray data = file.readAll();
+	const char* pData = data.constData();	
+	bool lineComment = false, blockComment = false;		
+	const char* eof = pData + data.size();
+	QStringList codes;
+	// Parse code
+	while( pData < eof )
+	{				
+		// Check for begin of comment
+		if( pData < eof - 1 && !lineComment && !blockComment )
+		{
+			if( *pData == '/' && *(pData+1) == '/' )
+				lineComment = true;
+			else if( *pData == '/' &&  *(pData+1) == '*' )
+				blockComment = true;
+		}
+
+		// Check for end of comment
+		if( lineComment && (*pData == '\n' || *pData == '\r') )
+			lineComment = false;
+		else if( blockComment && pData < eof - 1 && *pData == '*' && *(pData+1) == '/' )
+			blockComment = false;
+
+		// Check for includes
+		if( !lineComment && !blockComment && pData < eof - 7 )
+		{
+			if( *pData == '#' && *(pData+1) == 'i' && *(pData+2) == 'n' && *(pData+3) == 'c' &&
+			    *(pData+4) == 'l' && *(pData+5) == 'u' && *(pData+6) == 'd' && *(pData+7) == 'e' )
+			{
+				pData += 6;
+				
+				// Parse resource name
+				const char *nameBegin = 0x0, *nameEnd = 0x0;
+				
+				while( ++pData < eof )
+				{
+					if( *pData == '"' )
+					{
+						if( nameBegin == 0x0 )
+							nameBegin = pData+1;
+						else
+							nameEnd = pData;
+					}
+					else if( *pData == '\n' || *pData == '\r' ) break;
+				}
+
+				if( nameBegin != 0x0 && nameEnd != 0x0 )
+				{
+					QString resName = QString::fromLocal8Bit( nameBegin, nameEnd - nameBegin );																	
+					codes.append( resName );
+				}
+			}
+		}
+		++pData;
+	}
+
 	for (int i=0; i<codes.count(); ++i)
 	{		
-		target = QFileInfo(m_targetResourcePaths[ResourceTypes::Code], codes.at(i).toElement().attribute("code"));
+		target = codes.at(i);
 		if (!target.absoluteDir().exists())
-			m_targetResourcePaths[ResourceTypes::Code].mkpath(target.absolutePath());
-		QFileInfo source(m_sourceResourcePaths[ResourceTypes::Code], codes.at(i).toElement().attribute("code"));
+			m_targetResourcePath.mkpath(target.absolutePath());
+		QFileInfo source(m_sourceResourcePath, codes.at(i) );
 		CopyJob job(source, target);
 		if (!job.exec() && !m_filesToOverwrite.contains(job) && !m_alreadyCopied.contains(job))
 			m_filesToOverwrite.append(job);
@@ -372,11 +423,11 @@ void Importer::importShaderFile(const QFileInfo& shader, const QString& targetFi
 }
 
 
-void Importer::importTextureFile(const QFileInfo& textureFile, const QString& targetFileName, ResourceTypes::List type)
+void Importer::importTextureFile( const QFileInfo& textureFile, const QString& targetFileName )
 {
-	QFileInfo target = QFileInfo(m_targetResourcePaths[type], targetFileName);
+	QFileInfo target = QFileInfo(m_targetResourcePath, targetFileName);
 	if (!target.absoluteDir().exists())
-		m_targetResourcePaths[type].mkpath(target.absolutePath());
+		m_targetResourcePath.mkpath(target.absolutePath());
 
 	const CopyJob job(textureFile, target);
 	if (!job.exec() && !m_filesToOverwrite.contains(job) && !m_alreadyCopied.contains(job))
@@ -392,11 +443,11 @@ void Importer::importGeometrieElement(const QDomElement& element)
 {
 	if (element.hasAttribute("geometry"))
 	{
-		QFileInfo source = QFileInfo(m_sourceResourcePaths[ResourceTypes::Geometry], element.attribute("geometry"));
+		QFileInfo source = QFileInfo(m_sourceResourcePath, element.attribute("geometry"));
 		QFile geometryFile(source.absoluteFilePath());
-		QFileInfo target(m_targetResourcePaths[ResourceTypes::Geometry], element.attribute("geometry"));
+		QFileInfo target(m_targetResourcePath, element.attribute("geometry"));
 		if (!target.absoluteDir().exists())
-			QDir(Horde3DUtils::getResourcePath(ResourceTypes::Geometry)).mkpath(target.absolutePath());
+			m_targetResourcePath.mkpath(target.absolutePath());
 		if (!geometryFile.copy(target.absoluteFilePath()))
 		{
 			CopyJob job(source, target);
@@ -413,9 +464,9 @@ void Importer::importGeometrieElement(const QDomElement& element)
 
 void Importer::importEffectFile(const QFileInfo& effectFile, const QString& targetFileName, const QString& customData)
 {
-	QFileInfo target(m_targetResourcePaths[ResourceTypes::ParticleEffect], targetFileName);
+	QFileInfo target(m_targetResourcePath, targetFileName);
 	if (!target.absoluteDir().exists())
-		m_targetResourcePaths[ResourceTypes::ParticleEffect].mkpath(target.absolutePath());		
+		m_targetResourcePath.mkpath(target.absolutePath());		
 	const CopyJob job(effectFile, target);
 	if (!job.exec() && !m_filesToOverwrite.contains(job) && !m_alreadyCopied.contains(job))
 	{
@@ -441,7 +492,7 @@ void Importer::importEffectElement(const QDomElement& element)
 {
 	if (element.hasAttribute("effect"))
 	{
-		QFileInfo effectFile(m_sourceResourcePaths[ResourceTypes::ParticleEffect], element.attribute("effect"));
+		QFileInfo effectFile(m_sourceResourcePath, element.attribute("effect"));
 		importEffectFile(effectFile, element.attribute("effect"), QString());
 	}
 	QDomNodeList childs = element.childNodes();

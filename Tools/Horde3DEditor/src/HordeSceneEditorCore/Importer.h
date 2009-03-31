@@ -59,10 +59,10 @@ class Importer
 public:
 	Importer();
 
-	const QDir& targetPath(ResourceTypes::List type)  {return m_targetResourcePaths[type];}
-	void setTargetPath(ResourceTypes::List type, const QDir& path );
+	const QDir& targetPath()  {return m_targetResourcePath;}
+	void setTargetPath(const QDir& path );
 
-	const QDir& sourcePath(ResourceTypes::List type) {return m_sourceResourcePaths[type];}
+	const QDir& sourcePath(ResourceTypes::List type) {return m_sourceResourcePath;}
 	void setSourcePath(ResourceTypes::List type, const QDir& path );
 
 	void importScene(const QFileInfo& file, const QString& targetFileName);
@@ -71,7 +71,7 @@ public:
 
 	void importShader(const QFileInfo& shader, const QString& targetFileName, const QString& customData = QString());
 
-	void importTexture(const QFileInfo& texture, const QString& targetFileName, ResourceTypes::List type);
+	void importTexture(const QFileInfo& texture, const QString& targetFileName );
 
 	void importEffect(const QFileInfo& effect, const QString& targetFileName, const QString& customData = QString());
 
@@ -93,7 +93,7 @@ private:
 	void importEffectFile(const QFileInfo& effectFile, const QString& targetFileName, const QString& customData);
 	void importEffectElement(const QDomElement& element);
 
-	void importTextureFile(const QFileInfo& textureFile, const QString& targetFileName, ResourceTypes::List type);
+	void importTextureFile( const QFileInfo& textureFile, const QString& targetFileName );
 
 	void importGeometrieElement(const QDomElement& element);
 
@@ -102,8 +102,8 @@ private:
 
 	QStringList		m_errorLog;
 
-	QDir			m_targetResourcePaths[11];
-	QDir			m_sourceResourcePaths[11];
+	QDir			m_targetResourcePath;
+	QDir			m_sourceResourcePath;
 };
 
 #endif

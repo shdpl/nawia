@@ -1357,10 +1357,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\moc_PathPage.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\moc_PipelineTreeModel.cpp"
 				>
 			</File>
@@ -1897,78 +1893,6 @@
 		<Filter
 			Name="SceneWizard"
 			>
-			<File
-				RelativePath=".\PathPage.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PathPage.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing file $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						Outputs="&quot;$(InputDir)moc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing file $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						Outputs="&quot;$(InputDir)moc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Memory Check|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing file $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						Outputs="&quot;$(InputDir)moc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\PathPage.ui"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Compiling UI file $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/uic.exe&quot; &quot;$(InputPath)&quot; -o &quot;ui_$(InputName).h&quot;&#x0D;&#x0A;"
-						Outputs="&quot;$(InputDir)ui_$(InputName).h&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Compiling UI file $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/uic.exe&quot; &quot;$(InputPath)&quot; -o &quot;ui_$(InputName).h&quot;&#x0D;&#x0A;"
-						Outputs="&quot;$(InputDir)ui_$(InputName).h&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Memory Check|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Compiling UI file $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/uic.exe&quot; &quot;$(InputPath)&quot; -o &quot;ui_$(InputName).h&quot;&#x0D;&#x0A;"
-						Outputs="&quot;$(InputDir)ui_$(InputName).h&quot;"
-					/>
-				</FileConfiguration>
-			</File>
 			<File
 				RelativePath=".\PlugInPage.cpp"
 				>

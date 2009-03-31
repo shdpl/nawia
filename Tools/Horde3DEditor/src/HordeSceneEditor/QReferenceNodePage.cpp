@@ -45,17 +45,15 @@ QReferenceNodePage::~QReferenceNodePage()
 
 void QReferenceNodePage::setFile()
 {
-	HordePathSettings paths;
-	paths.initFromHorde();
-	QString fileName = HordeModelDialog::getModelFile(paths, this, tr("Select scene file"));
+	QString fileName = HordeModelDialog::getModelFile( QDir::currentPath(), this, tr("Select scene file"));
 	if (!fileName.isEmpty())
 	{
-		m_fileName->setText(QDir(Horde3DUtils::getResourcePath(ResourceTypes::SceneGraph)).relativeFilePath(fileName));
+		m_fileName->setText(QDir::current().relativeFilePath(fileName));
 	}
 }
 
 bool QReferenceNodePage::validatePage()
 {
-	m_fileName->setText(QDir(Horde3DUtils::getResourcePath(ResourceTypes::SceneGraph)).relativeFilePath(m_fileName->text()));
+	m_fileName->setText(QDir::current().relativeFilePath(m_fileName->text()));
 	return true;
 }

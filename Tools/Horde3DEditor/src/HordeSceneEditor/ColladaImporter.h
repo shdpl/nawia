@@ -36,7 +36,7 @@ public:
 	ColladaImporter(QWidget* parent = 0, Qt::WFlags flags = 0);
 	virtual ~ColladaImporter();
 
-	void initImportPath(const QString& sceneGraphDir, const QString& geometryDir, const QString& textureDir, const QString& shaderDir, const QString& materialDir, const QString& animationDir);
+	void initImportPath(const QString& resourcePath);
 
 public slots:
 	bool setColladaFiles();
@@ -49,13 +49,7 @@ private slots:
 private:
 	void cleanUp();
 
-	QDir m_sceneGraphDir;
-	QDir m_textureDir;
-	QDir m_shaderDir;
-	QDir m_materialDir;
-	QDir m_geometryDir;
-	QDir m_animationDir;
-
+	QDir m_resourceDir;
 	// Temp dir for conversion
 	QDir m_outputDir;
 

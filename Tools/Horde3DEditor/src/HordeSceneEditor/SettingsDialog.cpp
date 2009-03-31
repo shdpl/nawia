@@ -35,7 +35,7 @@ SettingsDialog::SettingsDialog(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/
 	QHordeSceneEditorSettings settings(this);
 	settings.beginGroup("General");
 	m_shaderEditor->setText(settings.value("ShaderEditor", "notepad.exe").toString());
-	m_plugInPath->setText(settings.value("PlugInPath", QApplication::applicationDirPath()+QDir::separator()+"plugins").toString());
+	m_plugInPath->setText( QDir::convertSeparators( settings.value("PlugInPath", QApplication::applicationDirPath()+QDir::separator()+"plugins").toString() ) );
 	m_undoSteps->setValue(settings.value("UndoStackSize", 250).toInt());
 	switch(settings.value("SelectButton", Qt::RightButton).toInt())
 	{
@@ -84,12 +84,7 @@ SettingsDialog::SettingsDialog(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/
 	settings.endGroup();
 
 	settings.beginGroup("Repository");
-	m_pipelines->setText(settings.value("pipelineDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"pipelines").toString());
-	m_sceneGraph->setText(settings.value("sceneGraphDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"models").toString());
-	m_material->setText(settings.value("materialDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"materials").toString());		
-	m_texture->setText(settings.value("textureDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"textures").toString());		
-	m_shader->setText(settings.value("shaderDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"shaders").toString());		
-	m_effects->setText(settings.value("effectsDir", QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"effects").toString());		
+	m_repositoryPath->setText( QDir::convertSeparators( settings.value("repositoryDir", QApplication::applicationDirPath()+QDir::separator()+"Repository").toString() ) );
 	settings.endGroup();
 
 	settings.beginGroup("ConfirmDialogs");
@@ -105,18 +100,8 @@ SettingsDialog::SettingsDialog(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/
 
 	connect(m_setPluginPath, SIGNAL(clicked()), m_mapper, SLOT(map()));
 	m_mapper->setMapping(m_setPluginPath, m_plugInPath);
-	connect(m_setPipelines, SIGNAL(clicked()), m_mapper, SLOT(map()));
-	m_mapper->setMapping(m_setPipelines, m_pipelines);
-	connect(m_setMaterial, SIGNAL(clicked()), m_mapper, SLOT(map()));
-	m_mapper->setMapping(m_setMaterial, m_material);
-	connect(m_setShader, SIGNAL(clicked()), m_mapper, SLOT(map()));
-	m_mapper->setMapping(m_setShader, m_shader);	
-	connect(m_setTexture, SIGNAL(clicked()), m_mapper, SLOT(map()));
-	m_mapper->setMapping(m_setTexture, m_texture);
-	connect(m_setSceneGraph, SIGNAL(clicked()), m_mapper, SLOT(map()));
-	m_mapper->setMapping(m_setSceneGraph, m_sceneGraph);
-	connect(m_setEffects, SIGNAL(clicked()), m_mapper, SLOT(map()));
-	m_mapper->setMapping(m_setEffects, m_effects);
+	connect(m_setRepositoryPath, SIGNAL(clicked()), m_mapper, SLOT(map()));
+	m_mapper->setMapping(m_setRepositoryPath, m_repositoryPath);
 	connect(m_mapper, SIGNAL(mapped(QWidget*)), this, SLOT(setPath(QWidget*)));
 	connect(m_setShaderEditor, SIGNAL(clicked()), this, SLOT(setShaderEditor()));
 	connect(m_plugInPath, SIGNAL(textChanged(const QString&)), this, SLOT(restart()));
@@ -157,7 +142,7 @@ void SettingsDialog::saveSettings()
 	settings.beginGroup("General");	
 	if ( !m_styleCombo->currentText().isEmpty() )
 		settings.setValue("Style", m_styleCombo->currentText());
-	settings.setValue("PlugInPath", m_plugInPath->text());
+	settings.setValue("PlugInPath", QDir::convertSeparators( m_plugInPath->text() ) );
 	settings.setValue("ShaderEditor", m_shaderEditor->text());
 	settings.setValue("UndoStackSize", m_undoSteps->value());
 	switch(m_resetSelectButton->currentIndex())
@@ -198,13 +183,7 @@ void SettingsDialog::saveSettings()
 	}
 	settings.endGroup();	
 	settings.beginGroup("Repository");
-	settings.setValue("pipelineDir", m_pipelines->text());
-	settings.setValue("textureDir", m_texture->text());
-	settings.setValue("shaderDir", m_shader->text());
-	settings.setValue("sceneGraphDir", m_sceneGraph->text());
-	settings.setValue("geometryDir", m_sceneGraph->text());
-	settings.setValue("materialDir", m_material->text());
-	settings.setValue("effectsDir", m_effects->text());
+	settings.setValue("repositoryDir", QDir::convertSeparators( m_repositoryPath->text() ) );
 	settings.endGroup();
 
 	settings.beginGroup("ConfirmDialogs");

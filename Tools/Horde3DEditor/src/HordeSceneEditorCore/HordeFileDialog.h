@@ -32,35 +32,6 @@
 #include <Horde3D.h>
 #include <Horde3DUtils.h>
 
-struct HordePathSettings
-{
-	HordePathSettings(bool empty = true) : Empty(empty) {}
-
-	bool Empty;
-
-	QDir SceneGraphPath;
-	QDir CodePath;
-	QDir TexturePath;	
-	QDir GeometryPath;
-	QDir ShaderPath;
-	QDir EffectPath;
-	QDir PipelinePath;
-	QDir MaterialPath;
-	QDir AnimationPath;
-
-	void initFromHorde()
-	{
-		SceneGraphPath = Horde3DUtils::getResourcePath(ResourceTypes::SceneGraph);
-		CodePath = Horde3DUtils::getResourcePath(ResourceTypes::Code);
-		TexturePath = Horde3DUtils::getResourcePath(ResourceTypes::Texture);		
-		GeometryPath = Horde3DUtils::getResourcePath(ResourceTypes::Geometry);
-		ShaderPath = Horde3DUtils::getResourcePath(ResourceTypes::Shader);
-		EffectPath = Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect);
-		MaterialPath = Horde3DUtils::getResourcePath(ResourceTypes::Material);
-		AnimationPath = Horde3DUtils::getResourcePath(ResourceTypes::Animation);
-		PipelinePath = Horde3DUtils::getResourcePath(ResourceTypes::Pipeline);
-	}
-};
 
 class Importer;
 
@@ -76,51 +47,20 @@ class HordeFileDialog : public QDialog, protected Ui_HordeFileDialog
 {
 	Q_OBJECT
 public:
-	HordeFileDialog(ResourceTypes::List type, const HordePathSettings& targetPaths, QWidget* parent = 0, Qt::WFlags flags = 0);
+	HordeFileDialog(ResourceTypes::List type, const QString& resourcePath, QWidget* parent = 0, Qt::WFlags flags = 0);
 	virtual ~HordeFileDialog();
 
 	QString fileName();
 
 	/**
-	 * Returns the selected shader filename relative to the currently set Horde3D shader path
-     * @param parent widget the HordeFileDialog will be child of
-	 * @param caption string to be displayed as window caption
-	 * @return QString filename of the selected shader
-	 */
-	static QString getShaderFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption);
-
-	/**
-	 * Returns the selected material filename relative to the currently set Horde3D material path
-     * @param parent widget the HordeFileDialog will be child of
-	 * @param caption string to be displayed as window caption
-	 * @return QString filename of the selected material
-	 */
-	static QString getMaterialFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption);
-
-	/**
-	 * Returns the selected effect filename relative to the currently set Horde3D effect path
-     * @param parent widget the HordeFileDialog will be child of
-	 * @param caption string to be displayed as window caption
-	 * @return QString filename of the selected effect
-	 */
-	static QString getEffectFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption);
-
-	/**
-	 * Returns the selected texture filename relative to the currently set Horde3D texture path
-	 * @param parent widget the HordeFileDialog will be child of
-	 * @param caption string to be displayed as window caption	 	 
-	 * @return QString filename of the selected texture
-	 */
-	static QString getTextureFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption);
-
-
-	/**
-	 * Returns the selected pipeline filename relative to the currently set Horde3D pipeline path
+	 * Returns the selected pipeline filename relative to the currently set scene resource path
+	 * @param resourceType
+	 * @param targetPath 
 	 * @param parent widget the HordeFileDialog will be child of
 	 * @param caption string to be displayed as window caption	 
 	 * @return QString filename of the selected pipeline
 	 */
-	static QString getPipelineFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption);
+	static QString getResourceFile( ResourceTypes::List resourceType, const QString& targetPath, QWidget* parent, const QString& caption);
 
 public slots:
 	void accept();
@@ -143,9 +83,6 @@ protected:
 	void loadXmlFile(const QFileInfo& fileName);
 	void loadTexture(const QFileInfo& fileName);
 
-	void restoreHordePath();
-
-
 	Importer*				m_importer;
 
 	QString					m_currentFilter;
@@ -155,14 +92,9 @@ protected:
 	
 	ResourceTypes::List		m_type;
 
-	const QDir DefaultModelsRepoPath;
-	const QDir DefaultTextureRepoPath;
-	const QDir DefaultShaderRepoPath;
-	const QDir DefaultMaterialRepoPath;	
-	const QDir DefaultEffectsRepoPath;
-	const QDir DefaultPipelineRepoPath;
+	const QDir				DefaultRepoPath;	
 
-	HordePathSettings		m_scenePaths;
+	QDir					m_sceneResourcePath;
 
 };
 

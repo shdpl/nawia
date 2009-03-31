@@ -35,17 +35,14 @@ MaterialComboBox::~MaterialComboBox()
 {
 }
 
-void MaterialComboBox::init(const QString& materialPath, const QString& codePath, const QString& shaderPath, const QString& texturePath )
+void MaterialComboBox::init(const QString& resourcePath )
 {
 	clear();	
 	addItem(tr("No material"), QVariant((int) -1));
-	m_shaderPath = shaderPath;
-	m_codePath = codePath;
-	m_texturePath = texturePath;	
-	m_materialPath = materialPath;
+	m_resourcePath = resourcePath;
 	blockSignals(true);
-	if (!materialPath.isEmpty())
-		addMaterials(materialPath, materialPath);
+	if (!resourcePath.isEmpty())
+		addMaterials(resourcePath, resourcePath);
 	addItem(tr("Import from Repository"), QVariant((int) QVariant::UserType));
 	if (count() == 1)
 		setCurrentIndex(-1);
@@ -85,12 +82,7 @@ void MaterialComboBox::currentChanged(int index)
 {
 	if (itemData(index).isValid() && itemData(index) == QVariant((int)QVariant::UserType))
 	{
-		HordePathSettings paths;
-		paths.CodePath = m_codePath;
-		paths.TexturePath = m_texturePath;		
-		paths.ShaderPath = m_shaderPath;
-		paths.MaterialPath = m_materialPath;
-		QString newMaterial = HordeFileDialog::getMaterialFile(paths, this, tr("Select material to import"));
+		QString newMaterial = HordeFileDialog::getResourceFile( ResourceTypes::Material, m_resourcePath, this, tr("Select material to import"));
 		if (!newMaterial.isEmpty())
 		{
 			if (findText(newMaterial) == -1)

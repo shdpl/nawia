@@ -36,6 +36,7 @@ public:
 	OverwriteFilesDialog(const QList<CopyJob>& filesToOverwrite, QWidget* parent = 0, Qt::WFlags flags = 0);
 	virtual ~OverwriteFilesDialog();
 
+	int numFilesToOverwrite() { return m_fileList->count(); }
 
 private slots:
 	void renameSelectedFiles();

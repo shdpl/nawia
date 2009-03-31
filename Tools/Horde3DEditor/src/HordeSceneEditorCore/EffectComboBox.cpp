@@ -35,13 +35,13 @@ EffectComboBox::~EffectComboBox()
 {
 }
 
-void EffectComboBox::init(const QString& effectPath)
+void EffectComboBox::init(const QString& resourcePath)
 {
 	clear();	
-	m_effectPath = effectPath;
+	m_resourcePath = resourcePath;
 	blockSignals(true);
-	if (!effectPath.isEmpty())
-		addEffects(effectPath, effectPath);
+	if (!resourcePath.isEmpty())
+		addEffects(resourcePath, resourcePath);
 	addItem(tr("Import from Repository"), QVariant((int) QVariant::UserType));
 	if (count() == 1)
 		setCurrentIndex(-1);
@@ -70,9 +70,7 @@ void EffectComboBox::currentChanged(int index)
 {
 	if (itemData(index).isValid() && itemData(index) == QVariant((int)QVariant::UserType))
 	{
-		HordePathSettings paths;
-		paths.EffectPath = m_effectPath;
-		QString newEffect = HordeFileDialog::getEffectFile(paths, this, tr("Select effect to import"));
+		QString newEffect = HordeFileDialog::getResourceFile( ResourceTypes::ParticleEffect, m_resourcePath, this, tr("Select effect to import"));
 		if (!newEffect.isEmpty())
 		{
 			if (findText(newEffect) == -1)

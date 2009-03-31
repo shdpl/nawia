@@ -45,16 +45,7 @@ QEmitterNodePage::~QEmitterNodePage()
 
 void QEmitterNodePage::initializePage()
 {
-	// Hack to check if Horde3D has been initialized already
-	if (HordeSceneEditor::instance()->glContext() != 0)
-	{
-		m_material->init(
-			Horde3DUtils::getResourcePath(ResourceTypes::Material), 
-			Horde3DUtils::getResourcePath(ResourceTypes::Code),
-			Horde3DUtils::getResourcePath(ResourceTypes::Shader),
-			Horde3DUtils::getResourcePath(ResourceTypes::Texture)			
-		);	
-		m_effect->init( Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect) );	
-	}
+	m_material->init( QDir::currentPath() );
+	m_effect->init( QDir::currentPath() );		
 }
 

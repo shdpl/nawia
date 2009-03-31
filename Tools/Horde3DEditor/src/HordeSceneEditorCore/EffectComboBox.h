@@ -39,7 +39,7 @@ public:
 	EffectComboBox(QWidget* parent = 0);
 	virtual ~EffectComboBox();
 
-	void init(const QString& effectPath);
+	void init(const QString& resourcePath);
 
 	QString effectFile() const;
 
@@ -58,7 +58,7 @@ private:
 
 	QString	m_init;
 
-	QString	m_effectPath;
+	QString	m_resourcePath;
 };
 #endif
 

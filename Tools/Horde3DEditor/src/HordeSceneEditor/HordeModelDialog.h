@@ -9,7 +9,7 @@ class HordeModelDialog : public HordeFileDialog
 {
 	Q_OBJECT
 public:
-	HordeModelDialog(const HordePathSettings& targetPaths, QWidget* parent = 0, Qt::WFlags flags = 0);
+	HordeModelDialog(const QString& targetPath, QWidget* parent = 0, Qt::WFlags flags = 0);
 	virtual ~HordeModelDialog();
 
 		/**
@@ -18,7 +18,7 @@ public:
 	 * @param caption string to be displayed as window caption
 	 * @return QString filename of the selected model
 	 */
-	static QString getModelFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption);
+	static QString getModelFile(const QString& targetPath, QWidget* parent, const QString& caption);
 
 protected slots:
 	virtual void itemChanged(QListWidgetItem* current, QListWidgetItem* previous);

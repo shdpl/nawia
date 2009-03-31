@@ -24,8 +24,7 @@
 #include "MaterialComboBox.h"
 #include "CustomTypes.h"
 
-#include <Horde3D.h>
-#include <Horde3DUtils.h>
+#include <QtCore/QDir>
 
 MaterialProperty::MaterialProperty(const QString& name /*= QString()*/, QObject* propertyObject /*= 0*/, QObject* parent /*= 0*/) : Property(name, propertyObject, parent)
 {	
@@ -46,13 +45,8 @@ QVariant MaterialProperty::value(int role) const
 
 QWidget* MaterialProperty::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/)
 {
-	MaterialComboBox* editor = new MaterialComboBox(parent);
-	editor->init(
-		Horde3DUtils::getResourcePath(ResourceTypes::Material), 
-		Horde3DUtils::getResourcePath(ResourceTypes::Code), 
-		Horde3DUtils::getResourcePath(ResourceTypes::Shader),
-		Horde3DUtils::getResourcePath(ResourceTypes::Texture)
-	);
+	MaterialComboBox* editor = new MaterialComboBox(parent);	
+	editor->init( QDir::currentPath() );
 	return editor;
 }
 

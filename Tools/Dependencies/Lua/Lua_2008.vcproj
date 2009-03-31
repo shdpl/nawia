@@ -405,7 +405,7 @@
 			>
 		</Filter>
 		<File
-			RelativePath=".\src\src.pro"
+			RelativePath=".\Lua.pro"
 			>
 		</File>
 	</Files>

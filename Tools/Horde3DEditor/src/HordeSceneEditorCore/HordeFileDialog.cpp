@@ -37,15 +37,10 @@
 #include <math.h>
 Q_DECLARE_METATYPE(QFileInfo)
 
-HordeFileDialog::HordeFileDialog(ResourceTypes::List type, const HordePathSettings& targetPaths, QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QDialog(parent, flags), 
+HordeFileDialog::HordeFileDialog(ResourceTypes::List type, const QString& resourcePath, QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QDialog(parent, flags), 
 m_type(type), 
-DefaultModelsRepoPath(QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"models"),
-DefaultTextureRepoPath(QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"textures"),
-DefaultShaderRepoPath(QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"shaders"),
-DefaultMaterialRepoPath(QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"materials"), 
-DefaultEffectsRepoPath(QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"effects"),
-DefaultPipelineRepoPath(QApplication::applicationDirPath()+QDir::separator()+"Repository"+QDir::separator()+"pipelines"),
-m_scenePaths(targetPaths)
+DefaultRepoPath(QApplication::applicationDirPath()+QDir::separator()+"Repository"),
+m_sceneResourcePath(resourcePath)
 {
 	setupUi(this);
 	m_xmlView->setTabStopWidth(12);
@@ -73,15 +68,7 @@ m_scenePaths(targetPaths)
 	}
 	connect(m_fileList, SIGNAL(currentItemChanged(QListWidgetItem* , QListWidgetItem*)), this, SLOT(itemChanged(QListWidgetItem*, QListWidgetItem*)));
 	m_importer = new Importer();
-	m_importer->setTargetPath(ResourceTypes::Animation, targetPaths.AnimationPath);
-	m_importer->setTargetPath(ResourceTypes::SceneGraph, targetPaths.SceneGraphPath);
-	m_importer->setTargetPath(ResourceTypes::Material, targetPaths.MaterialPath);
-	m_importer->setTargetPath(ResourceTypes::Shader, targetPaths.ShaderPath);
-	m_importer->setTargetPath(ResourceTypes::Texture, targetPaths.TexturePath);
-	m_importer->setTargetPath(ResourceTypes::ParticleEffect, targetPaths.EffectPath);
-	m_importer->setTargetPath(ResourceTypes::Code, targetPaths.CodePath);
-	m_importer->setTargetPath(ResourceTypes::Geometry, targetPaths.GeometryPath);
-	m_importer->setTargetPath(ResourceTypes::Pipeline, targetPaths.PipelinePath);
+	m_importer->setTargetPath(m_sceneResourcePath);	
 }
 
 
@@ -111,33 +98,20 @@ void HordeFileDialog::accept()
 		QFileInfo target;
 		switch (m_type)
 		{
-		case ResourceTypes::SceneGraph:
-			target = QFileInfo(m_scenePaths.SceneGraphPath, fileName());
-			break;
 		case ResourceTypes::Shader:
-			target = QFileInfo(m_scenePaths.ShaderPath, fileName());
-			customData = m_xmlView->toPlainText();
-			break;
-		case ResourceTypes::Texture:
-			target = QFileInfo(m_scenePaths.TexturePath, fileName());						
-			break;
 		case ResourceTypes::Material:
-			target = QFileInfo(m_scenePaths.MaterialPath, fileName());						
-			customData = m_xmlView->toPlainText();
-			break;
 		case ResourceTypes::ParticleEffect:
-			target = QFileInfo(m_scenePaths.EffectPath, fileName());									
-			customData = m_xmlView->toPlainText();
-			break;
 		case ResourceTypes::Pipeline:
-			target = QFileInfo(m_scenePaths.PipelinePath, fileName());									
 			customData = m_xmlView->toPlainText();
+		case ResourceTypes::SceneGraph:
+		case ResourceTypes::Texture:
+			target = QFileInfo(m_sceneResourcePath, fileName());
 			break;
 		default:
 			QMessageBox::warning(this, tr("Error"), tr("Unresolved type in HordeFileDialog"));
 			return;
 		}
-		QFile file(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>().absoluteFilePath());
+		QFile file( m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>().absoluteFilePath() );
 		if (file.fileName() != target.absoluteFilePath())
 		{				
 			if ( target.exists() && 
@@ -171,31 +145,30 @@ void HordeFileDialog::accept()
 		{
 		case ResourceTypes::SceneGraph:
 			m_importer->importScene(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
-				QFileInfo(m_importer->targetPath(ResourceTypes::SceneGraph), fileName()).absoluteFilePath());
+				QFileInfo(m_importer->targetPath(), fileName()).absoluteFilePath());
 			break;
 		case ResourceTypes::Shader:
 			m_importer->importShader(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
-				QFileInfo(m_importer->targetPath(ResourceTypes::Shader), fileName()).absoluteFilePath(),
+				QFileInfo(m_importer->targetPath(), fileName()).absoluteFilePath(),
 				m_xmlView->toPlainText());
 			break;
 		case ResourceTypes::Texture:
 			m_importer->importTexture(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
-				QFileInfo(m_importer->targetPath(ResourceTypes::Texture), fileName()).absoluteFilePath(),
-				m_type);
+				QFileInfo(m_importer->targetPath(), fileName()).absoluteFilePath() );
 			break;
 		case ResourceTypes::Material:
 			m_importer->importMaterial(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
-				QFileInfo(m_importer->targetPath(ResourceTypes::Material), fileName()).absoluteFilePath(),
+				QFileInfo(m_importer->targetPath(), fileName()).absoluteFilePath(),
 				m_xmlView->toPlainText());
 			break;			
 		case ResourceTypes::ParticleEffect:
 			m_importer->importEffect(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
-				QFileInfo(m_importer->targetPath(ResourceTypes::ParticleEffect), fileName()).absoluteFilePath(),
+				QFileInfo(m_importer->targetPath(), fileName()).absoluteFilePath(),
 				m_xmlView->toPlainText());
 			break;
 		case ResourceTypes::Pipeline:
 			m_importer->importPipeline(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(),
-				QFileInfo(m_importer->targetPath(ResourceTypes::Pipeline), fileName()).absoluteFilePath(),
+				QFileInfo(m_importer->targetPath(), fileName()).absoluteFilePath(),
 				m_xmlView->toPlainText());
 			break;
 		default:
@@ -222,8 +195,8 @@ void HordeFileDialog::initTextureView(ResourceTypes::List type)
 	QHordeSceneEditorSettings settings(this);
 	settings.beginGroup("Repository");
 	m_currentFilter = "*.jpg;*.png;*.tga;*.bmp;*.psd";
-	populateList(m_scenePaths.TexturePath.absolutePath(), m_scenePaths.TexturePath, m_currentFilter, false);
-	populateList(settings.value("textureDir", DefaultTextureRepoPath.absolutePath()).toString(), QDir(settings.value("textureDir", DefaultTextureRepoPath.absolutePath()).toString()), m_currentFilter, true);
+	populateList( m_sceneResourcePath.absolutePath(), m_sceneResourcePath, m_currentFilter, false);
+	populateList( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString(), QDir( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString() ), m_currentFilter, true);
 	m_stackedWidget->setCurrentWidget(m_imageView);
 }
 
@@ -231,9 +204,9 @@ void HordeFileDialog::initShaderView()
 {
 	QHordeSceneEditorSettings settings(this);
 	settings.beginGroup("Repository");
-	m_currentFilter = "*.shader.xml";
-	populateList(m_scenePaths.ShaderPath.absolutePath(), m_scenePaths.ShaderPath, m_currentFilter, false);
-	populateList(settings.value("shaderDir", DefaultShaderRepoPath.absolutePath()).toString(), QDir(settings.value("shaderDir", DefaultShaderRepoPath.absolutePath()).toString()), m_currentFilter, true);
+	m_currentFilter = "*.shader";
+	populateList( m_sceneResourcePath.absolutePath(), m_sceneResourcePath, m_currentFilter, false);
+	populateList( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString(), QDir( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString() ), m_currentFilter, true);
 	m_stackedWidget->setCurrentWidget(m_xmlView);
 }
 
@@ -242,8 +215,8 @@ void HordeFileDialog::initMaterialView()
 	QSettings settings(QApplication::applicationDirPath()+QDir::separator()+"HordeSceneEditor.ini", QSettings::IniFormat, this);
 	settings.beginGroup("Repository");
 	m_currentFilter = "*.material.xml";
-	populateList(m_scenePaths.MaterialPath.absolutePath(), m_scenePaths.MaterialPath, m_currentFilter, false);
-	populateList(settings.value("materialDir", DefaultMaterialRepoPath.absolutePath()).toString(), QDir(settings.value("materialDir", DefaultMaterialRepoPath.absolutePath()).toString()), m_currentFilter, true);
+	populateList(m_sceneResourcePath.absolutePath(), m_sceneResourcePath, m_currentFilter, false);
+	populateList( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString(), QDir( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString() ), m_currentFilter, true);
 	m_stackedWidget->setCurrentWidget(m_xmlView);
 }
 
@@ -252,8 +225,8 @@ void HordeFileDialog::initEffectView()
 	QHordeSceneEditorSettings settings(this);
 	settings.beginGroup("Repository");
 	m_currentFilter = "*.effect.xml";
-	populateList(m_scenePaths.EffectPath.absolutePath(), m_scenePaths.EffectPath.absolutePath(), m_currentFilter, false);
-	populateList(settings.value("effectsDir", DefaultEffectsRepoPath.absolutePath()).toString(), QDir(settings.value("effectsDir", DefaultEffectsRepoPath.absolutePath()).toString()), m_currentFilter, true);
+	populateList(m_sceneResourcePath.absolutePath(), m_sceneResourcePath.absolutePath(), m_currentFilter, false);
+	populateList( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString(), QDir( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString() ), m_currentFilter, true);
 	m_stackedWidget->setCurrentWidget(m_xmlView);
 }
 
@@ -262,8 +235,8 @@ void HordeFileDialog::initPipelineView()
 	QHordeSceneEditorSettings settings(this);
 	settings.beginGroup("Repository");
 	m_currentFilter = "*.pipeline.xml";
-	populateList(m_scenePaths.PipelinePath.absolutePath(), m_scenePaths.PipelinePath.absolutePath(), m_currentFilter, false);
-	populateList(settings.value("pipelineDir", DefaultPipelineRepoPath.absolutePath()).toString(), QDir(settings.value("pipelineDir", DefaultPipelineRepoPath.absolutePath()).toString()), m_currentFilter, true);
+	populateList(m_sceneResourcePath.absolutePath(), m_sceneResourcePath.absolutePath(), m_currentFilter, false);
+	populateList( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString(), QDir( settings.value("repositoryDir", DefaultRepoPath.absolutePath()).toString() ), m_currentFilter, true);
 	m_stackedWidget->setCurrentWidget(m_xmlView);
 }
 
@@ -323,22 +296,6 @@ void HordeFileDialog::itemChanged(QListWidgetItem* current, QListWidgetItem* /*p
 }
 
 
-//void HordeFileDialog::setFile()
-//{
-//	QString file = QFileDialog::getOpenFileName(this, tr("Select file"), QDir::currentPath(), m_currentFilter);
-//	if (!file.isEmpty())
-//	{
-//		QFileInfo info(file);
-//		if (!m_fileList->findItems(info.fileName(), Qt::MatchFixedString).isEmpty())
-//		{
-//			QMessageBox::information(this, tr("Error"), tr("Another item with this name already exists"));
-//			return;
-//		}
-//		QListWidgetItem* item = new QListWidgetItem(info.fileName(), m_fileList);
-//		item->setData(Qt::UserRole, QVariant::fromValue<QFileInfo>(info));
-//	}
-//}
-
 
 void HordeFileDialog::loadXmlFile(const QFileInfo& fileName)
 {
@@ -370,72 +327,10 @@ void HordeFileDialog::loadTexture(const QFileInfo& fileName)
 }
 
 
-void HordeFileDialog::restoreHordePath()
-{
-	Horde3DUtils::setResourcePath(ResourceTypes::SceneGraph, qPrintable(m_scenePaths.SceneGraphPath.absolutePath()));
-	Horde3DUtils::setResourcePath(ResourceTypes::Geometry, qPrintable(m_scenePaths.GeometryPath.absolutePath()));
-	Horde3DUtils::setResourcePath(ResourceTypes::Texture, qPrintable(m_scenePaths.TexturePath.absolutePath()));	
-	Horde3DUtils::setResourcePath(ResourceTypes::Shader, qPrintable(m_scenePaths.ShaderPath.absolutePath()));
-	Horde3DUtils::setResourcePath(ResourceTypes::Code, qPrintable(m_scenePaths.CodePath.absolutePath()));
-	Horde3DUtils::setResourcePath(ResourceTypes::Material, qPrintable(m_scenePaths.MaterialPath.absolutePath()));
-	Horde3DUtils::setResourcePath(ResourceTypes::Animation, qPrintable(m_scenePaths.AnimationPath.absolutePath()));
-	Horde3DUtils::setResourcePath(ResourceTypes::ParticleEffect, qPrintable(m_scenePaths.EffectPath.absolutePath()));
-	Horde3DUtils::setResourcePath(ResourceTypes::Pipeline, qPrintable(m_scenePaths.PipelinePath.absolutePath()));
-}
 
-
-
-
-QString HordeFileDialog::getShaderFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption)
-{
-	HordeFileDialog dlg(ResourceTypes::Shader, targetPaths, parent);
-	dlg.setWindowTitle(caption);	
-	if (dlg.exec() == QDialog::Accepted)
-	{
-		return dlg.fileName();
-	}
-	else
-		return QString();
-}
-
-QString HordeFileDialog::getMaterialFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption)
-{
-	HordeFileDialog dlg(ResourceTypes::Material, targetPaths, parent);
-	dlg.setWindowTitle(caption);	
-	if (dlg.exec() == QDialog::Accepted)
-	{
-		return dlg.fileName();
-	}
-	else
-		return QString();
-}
-
-QString HordeFileDialog::getEffectFile(const HordePathSettings& targetPaths, QWidget* parent, const QString& caption)
-{
-	HordeFileDialog dlg(ResourceTypes::ParticleEffect, targetPaths, parent);
-	dlg.setWindowTitle(caption);	
-	if (dlg.exec() == QDialog::Accepted)
-	{
-		return dlg.fileName();
-	}
-	else
-		return QString();
-}
-
-
-QString HordeFileDialog::getTextureFile(const HordePathSettings& targetPaths, QWidget *parent, const QString& caption)
+QString HordeFileDialog::getResourceFile( ResourceTypes::List resourceType, const QString& targetPath, QWidget *parent, const QString& caption)
 {	
-	HordeFileDialog dlg(ResourceTypes::Texture, targetPaths, parent);
-	dlg.setWindowTitle(caption);
-	if (dlg.exec() == QDialog::Accepted)
-		return dlg.fileName();
-	else
-		return QString();	
-}
-
-QString HordeFileDialog::getPipelineFile(const HordePathSettings& targetPaths, QWidget *parent, const QString& caption)
-{	
-	HordeFileDialog dlg(ResourceTypes::Pipeline, targetPaths, parent);
+	HordeFileDialog dlg( resourceType, targetPath, parent);
 	dlg.setWindowTitle(caption);
 	if (dlg.exec() == QDialog::Accepted)
 		return dlg.fileName();

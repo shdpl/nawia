@@ -55,26 +55,21 @@ ColladaImporter::~ColladaImporter()
 }
 
 
-void ColladaImporter::initImportPath(const QString& sceneGraphDir, const QString& geometryDir, const QString& textureDir, const QString& shaderDir, const QString& materialDir, const QString& animationDir)
+void ColladaImporter::initImportPath(const QString& resourcePath)
 {
-	m_sceneGraphDir = sceneGraphDir;
-	m_geometryDir = geometryDir;
-	m_textureDir = textureDir;
-	m_shaderDir = shaderDir;
-	m_shaderDirWatcher->addPath(m_shaderDir.absolutePath());
-	shaderDirModified(m_shaderDir.absolutePath());
+	m_resourceDir = resourcePath;
+	m_shaderDirWatcher->addPath(m_resourceDir.absolutePath());
+	shaderDirModified(m_resourceDir.absolutePath());
 	QHordeSceneEditorSettings settings(this);
 	settings.beginGroup("ColladaImporter");
 	m_defaultShader->setCurrentIndex(m_defaultShader->findText(settings.value("defaultShader", "skinning.shader.xml").toString()));	
 	m_noOptimizeGeometry->setChecked(settings.value("noOptimizeGeometry", false).toBool());
 	settings.endGroup();
-	m_materialDir = materialDir;
-	m_animationDir = animationDir;	
 }
 
 void ColladaImporter::shaderDirModified(const QString& path)
 {	
-	QStringList shaders = QDir(path).entryList(QStringList("*.shader.xml"), QDir::Files | QDir::Readable | QDir::NoSymLinks);	
+	QStringList shaders = QDir(path).entryList(QStringList("*.shader"), QDir::Files | QDir::Readable | QDir::NoSymLinks);	
 	foreach(QString shader, shaders)
 	{
 		if (m_defaultShader->findText(shader) == -1)
@@ -190,7 +185,7 @@ void ColladaImporter::importFiles()
 		{
 			QString input(tempColladaFile.absoluteDir().absoluteFilePath(sceneGraphFiles[i]));
 			createdFiles.append(input);
-			QString output(QFileInfo(m_sceneGraphDir, sceneGraphFiles[i]).absoluteFilePath());
+			QString output(QFileInfo(m_resourceDir, sceneGraphFiles[i]).absoluteFilePath());
 			CopyJob job(input, output);
 			if (!job.exec() && !filesToOverwrite.contains(job) && !alreadyCopied.contains(job))
 				filesToOverwrite.push_back(job);
@@ -206,7 +201,7 @@ void ColladaImporter::importFiles()
 		{
 			QString input(tempColladaFile.absoluteDir().absoluteFilePath(geoFiles[i]));
 			createdFiles.append(input);
-			QString output(QFileInfo(QDir(m_geometryDir), geoFiles[i]).absoluteFilePath());
+			QString output(QFileInfo(m_resourceDir, geoFiles[i]).absoluteFilePath());
 			CopyJob job(input, output);
 			if (!job.exec() && !filesToOverwrite.contains(job) && !alreadyCopied.contains(job))
 				filesToOverwrite.push_back(job);
@@ -222,7 +217,7 @@ void ColladaImporter::importFiles()
 		{
 			QString input(tempColladaFile.absoluteDir().absoluteFilePath(animationFiles[i]));
 			createdFiles.append(input);
-			QString output(QFileInfo(m_animationDir, animationFiles[i]).absoluteFilePath());
+			QString output(QFileInfo(m_resourceDir, animationFiles[i]).absoluteFilePath());
 			CopyJob job(input, output);
 			if (!job.exec() && !filesToOverwrite.contains(job) && !alreadyCopied.contains(job))
 				filesToOverwrite.push_back(job);
@@ -238,14 +233,14 @@ void ColladaImporter::importFiles()
 		// the input directory containing the material files
 		QDir materialDir(tempColladaFile.absolutePath()+QDir::separator()+"materials"+QDir::separator() + tempColladaFile.baseName());
 		// Search for materials
-		QStringList materialFiles = materialDir.entryList(QStringList("*.material.xml"), QDir::Files | QDir::Readable);	
+		QStringList materialFiles = m_resourceDir.entryList(QStringList("*.material.xml"), QDir::Files | QDir::Readable);	
 		// if we have new materials, create a corresponding directory in the repository
 		if (!materialFiles.isEmpty())
-			m_materialDir.mkpath(tempColladaFile.baseName());
+			m_resourceDir.mkpath(tempColladaFile.baseName());
 		// now parse the materials for textures and copy them to the repository
 		for (int i=0; i<materialFiles.size(); ++i)
 		{			
-			QString input(materialDir.absoluteFilePath(materialFiles[i]));
+			QString input(m_resourceDir.absoluteFilePath(materialFiles[i]));
 			createdFiles.append(input);
 			QFile material(input);
 			QDomDocument materialXml;
@@ -257,7 +252,7 @@ void ColladaImporter::importFiles()
 				for (int j=0; j<textures.size(); ++j)
 					textureFiles << textures.at(j).toElement().attribute("map");
 			}
-			QString output(QFileInfo(QDir(m_materialDir.absoluteFilePath(tempColladaFile.baseName())), materialFiles[i]).absoluteFilePath());
+			QString output(QFileInfo(QDir(m_resourceDir.absoluteFilePath(tempColladaFile.baseName())), materialFiles[i]).absoluteFilePath());
 			CopyJob job(input, output);
 			if (!job.exec() && !filesToOverwrite.contains(job) && !alreadyCopied.contains(job))
 				filesToOverwrite.push_back(job);
@@ -270,8 +265,8 @@ void ColladaImporter::importFiles()
 
 		for (int i=0; i<textureFiles.size(); ++i)
 		{	
-			QString output(QFileInfo(QDir(m_textureDir), textureFiles[i]).absoluteFilePath());
-			QString input(QFileInfo(QDir(textureDir), textureFiles[i]).absoluteFilePath());
+			QString output(QFileInfo(m_resourceDir, textureFiles[i]).absoluteFilePath());
+			QString input(QFileInfo(m_resourceDir, textureFiles[i]).absoluteFilePath());
 			if (!QFile::exists(input))
 			{
 				input = QFileDialog::getOpenFileName(

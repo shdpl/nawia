@@ -65,24 +65,8 @@ QCameraNodePage::~QCameraNodePage()
 void QCameraNodePage::initializePage()
 {
 	// init from pathpage wizard if available
-	if (field("materialdir").isValid())
-		m_pipeline->init(
-			field("pipelinedir").toString(),
-			field("materialdir").toString(), 
-			field("texturedir").toString(), 			
-			field("shaderdir").toString(), 
-			field("shaderdir").toString()
-		);
-	// Hack to check if Horde3D has been initialized already
-	else if (HordeSceneEditor::instance()->glContext() != 0)
-		m_pipeline->init(
-			Horde3DUtils::getResourcePath(ResourceTypes::Pipeline), 
-			Horde3DUtils::getResourcePath(ResourceTypes::Material),
-			Horde3DUtils::getResourcePath(ResourceTypes::Texture),			
-			Horde3DUtils::getResourcePath(ResourceTypes::Shader),
-			Horde3DUtils::getResourcePath(ResourceTypes::Code)
-		);	
-
+	m_pipeline->init( QDir::currentPath() );
+		
 }
 //void QCameraNodePage::initializePage()
 //{

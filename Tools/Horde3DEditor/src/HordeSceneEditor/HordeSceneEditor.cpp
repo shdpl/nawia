@@ -967,12 +967,12 @@ void HordeSceneEditor::updateFileSystemWatcher()
 		m_fileSystemWatcher->addPath(m_sceneFile->absoluteSceneFilePath());
 		QStringList textureFilter;
 		textureFilter << "*.jpg" << "*.tga" << "*.png" << "*.bmp" << "*.psd" << "*.dds";
-		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::Texture)).absoluteFilePath(), textureFilter );
-		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect)).absoluteFilePath(), QStringList("*.effect.xml"));
-		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::Material)).absoluteFilePath(), QStringList("*.material.xml"));
-		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::Shader)).absoluteFilePath(), QStringList("*.shader.xml"));
-		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::Code)).absoluteFilePath(), QStringList("*.glsl"));
-		addWatches(QFileInfo(Horde3DUtils::getResourcePath(ResourceTypes::Pipeline)).absoluteFilePath(), QStringList("*.pipeline.xml"));
+		addWatches(QDir::currentPath(), textureFilter );
+		addWatches(QDir::currentPath(), QStringList("*.particle.xml"));
+		addWatches(QDir::currentPath(), QStringList("*.material.xml"));
+		addWatches(QDir::currentPath(), QStringList("*.shader"));
+		addWatches(QDir::currentPath(), QStringList("*.glsl"));
+		addWatches(QDir::currentPath(), QStringList("*.pipeline.xml"));
 		m_materialWidget->init();
 	}
 }
