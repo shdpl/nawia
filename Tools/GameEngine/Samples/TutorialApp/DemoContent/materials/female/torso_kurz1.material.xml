@@ -1,4 +1,0 @@
-<Material>
-	<TexUnit unit="0" map="female/torso_kurz_1.tga" />
-	<Shader source="skinning.shader.xml" />
-</Material>

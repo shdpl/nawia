@@ -25,9 +25,15 @@ public:
 
 private:
 
+	int m_camID; // handle for the camera
+	float m_camRX, m_camRY; // values for camera rotation
+
+	int m_characterID; // handle for a character
+
+	bool m_firstPersonView; // 1st person view?
+
 	char m_keys[256];
 	bool m_running;
-
 };
 
 #endif

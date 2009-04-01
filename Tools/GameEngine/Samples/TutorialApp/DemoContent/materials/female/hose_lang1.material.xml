@@ -1,4 +1,0 @@
-<Material>
-	<TexUnit unit="0" map="female/hose_lang_1.tga" />
-	<Shader source="skinning.shader.xml" />
-</Material>

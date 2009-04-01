@@ -1,6 +1,6 @@
 <!DOCTYPE SceneConfiguration>
 <Configuration>
-    <Pipeline path="pipelines/forward.pipeline.xml" />
+    <Pipeline path="pipelines/deferred.pipeline.xml" />
     <SceneGraph path="models/demo.scene.xml" />
     <LightParameters lightingcontext="LIGHTING" shadowcontext="SHADOWMAP" material="materials/lighting.material.xml" />
     <AttachmentPlugIn name="GameEngine" />

@@ -1,4 +1,0 @@
-<Material>
-    <Shader source="standard.shader.xml" />
-    <TexUnit unit="0" map="drum001a.png" type="2D" allowCompression="1" />
-</Material>
