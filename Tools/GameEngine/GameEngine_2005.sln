@@ -66,15 +66,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lua", "..\Dependencies\Lua\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XmlParser", "..\Dependencies\XMLParser\XmlParserLib_2005.vcproj", "{3BF9D44F-4A29-46EE-9A04-EE706E602620}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbulletcollision", "..\Dependencies\Bullet\bullet-2.73\msvc\8\libbulletcollision_2005.vcproj", "{6ADA430D-009C-2ED4-A787-2AC2D6FEB8CE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbulletcollision", "..\Dependencies\Bullet\bullet-2.74\msvc\8\libbulletcollision_2005.vcproj", "{6ADA430D-009C-2ED4-A787-2AC2D6FEB8CE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbulletdynamics", "..\Dependencies\Bullet\bullet-2.73\msvc\8\libbulletdynamics_2005.vcproj", "{61BD1097-CF2E-B296-DAA9-73A6FE135319}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbulletdynamics", "..\Dependencies\Bullet\bullet-2.74\msvc\8\libbulletdynamics_2005.vcproj", "{61BD1097-CF2E-B296-DAA9-73A6FE135319}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbulletmath", "..\Dependencies\Bullet\bullet-2.73\msvc\8\libbulletmath_2005.vcproj", "{7D6E339F-9C2C-31DA-FDB0-5EE50973CF2A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbulletmath", "..\Dependencies\Bullet\bullet-2.74\msvc\8\libbulletmath_2005.vcproj", "{7D6E339F-9C2C-31DA-FDB0-5EE50973CF2A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libconvexdecomposition", "..\Dependencies\Bullet\bullet-2.73\msvc\8\libconvexdecomposition_2005.vcproj", "{8050F819-5B5B-1504-BC6D-7F2B4C6C85F3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libconvexdecomposition", "..\Dependencies\Bullet\bullet-2.74\msvc\8\libconvexdecomposition_2005.vcproj", "{8050F819-5B5B-1504-BC6D-7F2B4C6C85F3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGIMPACTUtils", "..\Dependencies\Bullet\bullet-2.73\msvc\8\libGIMPACTUtils_2005.vcproj", "{B1B5F775-54A9-2437-E4AC-7E817E492142}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGIMPACTUtils", "..\Dependencies\Bullet\bullet-2.74\msvc\8\libGIMPACTUtils_2005.vcproj", "{B1B5F775-54A9-2437-E4AC-7E817E492142}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "..\..\Horde3D\Dependencies\Source\glfw\glfw.vcproj", "{2A423B83-D582-49BA-A45F-E27148099850}"
 EndProject
