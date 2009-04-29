@@ -26,6 +26,7 @@
 #include "ui_MaterialWidget.h"
 
 #include <QtXml/qdom.h>
+#include <ShaderData.h>
 
 class QFileSystemWatcher;
 
@@ -56,17 +57,15 @@ private slots:
 	void initValues();
 	void texUnitChanged(int);
 	void texUnitDataChanged();
-	void addTexUnit();
-	void removeTexUnit();
-	void addUniform();
-	void removeUniform();
 	void uniformChanged(int);
 	void uniformDataChanged();
 	void shaderChanged();
 	void classChanged();
 
 private:
+	void syncWithShader();
 
+	ShaderData			m_shaderData;
 	QString				m_currentMaterialFile;
 	QDomDocument		m_materialXml;
 	QString				m_resourcePath;

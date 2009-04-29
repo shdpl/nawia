@@ -23,7 +23,7 @@
 #include "MaterialWidget.h"
 #include "HordeFileDialog.h"
 #include "QTexUnit.h"
-#include "QUniform.h"
+#include <QUniform.h>
 #include "QHordeSceneEditorSettings.h"
 
 #include <Horde3D.h>
@@ -43,15 +43,10 @@ MaterialWidget::MaterialWidget(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/
 	setupUi(this);
 	connect(m_editShader, SIGNAL(clicked()), this, SLOT(editShader()));
 	connect(m_texUnitCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(texUnitChanged(int)));
-	connect(m_addTexUnit, SIGNAL(clicked()), this, SLOT(addTexUnit()));
-	connect(m_removeTexUnit, SIGNAL(clicked()), this, SLOT(removeTexUnit()));
-	connect(m_addUniform, SIGNAL(clicked()), this, SLOT(addUniform()));
-	connect(m_removeUniform, SIGNAL(clicked()), this, SLOT(removeUniform()));
 	connect(m_uniformCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(uniformChanged(int)));
 	connect(m_saveButton, SIGNAL(clicked()), this, SLOT(save()));
 	connect(m_className, SIGNAL(textEdited(const QString&)), this, SLOT(classChanged()));
 	m_texUnitProperties->registerCustomPropertyCB(CustomTypes::createCustomProperty);
-	m_uniformProperties->registerCustomPropertyCB(CustomTypes::createCustomProperty);
 	connect(m_texUnitProperties->model(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex& )), this, SLOT(texUnitDataChanged()));
 	connect(m_uniformProperties->model(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex& )), this, SLOT(uniformDataChanged()));
 	connect(m_shader, SIGNAL(shaderChanged()), this, SLOT(shaderChanged()));
@@ -161,7 +156,8 @@ void MaterialWidget::editShader()
 	// TODO either create a shader editor or add a file system watcher or something like that
 	QProcess::startDetached(
 		settings.value("ShaderEditor", "notepad.exe").toString(), 
-		QStringList(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Shader)).absoluteFilePath(m_shader->currentText())));
+		QStringList( QDir::current().absoluteFilePath( m_shader->currentText() ) ) 
+	);
 	settings.endGroup();	
 }
 
@@ -180,7 +176,6 @@ void MaterialWidget::initValues()
 		QTexUnit* unit = new QTexUnit(texUnit);
 		m_texUnitCombo->insertItem(texUnit.attribute("unit").toInt(), texUnit.attribute("map"), QVariant::fromValue<void*>(unit));
 	}
-	m_removeTexUnit->setDisabled(texUnits.isEmpty());
 	QDomNodeList uniforms = m_materialXml.documentElement().elementsByTagName("Uniform");
 	for (int i=0; i<uniforms.count(); ++i)
 	{
@@ -188,7 +183,6 @@ void MaterialWidget::initValues()
 		QUniform* uni = new QUniform(uniform);
 		m_uniformCombo->addItem(uniform.attribute("name"), QVariant::fromValue<void*>(uni));
 	}
-	m_removeUniform->setDisabled(uniforms.isEmpty());
 	if (parentWidget())
 		parentWidget()->setWindowTitle(tr("Material - %1").arg(m_currentMaterialFile));	
 	m_saveButton->setEnabled(false);
@@ -208,70 +202,6 @@ void MaterialWidget::texUnitDataChanged()
 	m_saveButton->setEnabled(true);	
 }
 
-void MaterialWidget::addTexUnit()
-{
-	QStringList types;
-	types.append("2D");
-	types.append("CUBE");
-	bool ok = false;
-	QString type = QInputDialog::getItem(this, tr("Texture type"), tr("Texture type"), types, 0, false, &ok);
-	if (!ok) return;		
-	QString texture = HordeFileDialog::getResourceFile( ResourceTypes::Texture, m_resourcePath, this, tr("Select texture") );
-	if (!texture.isEmpty())
-	{				
-		QDomElement element(m_materialXml.documentElement().appendChild( m_materialXml.createElement("TexUnit")).toElement());
-		element.setAttribute("unit", m_texUnitCombo->count());
-		element.setAttribute("type", type);
-		element.setAttribute("map", texture);
-		QTexUnit* texUnit = new QTexUnit(element, m_texUnitCombo);
-		m_texUnitCombo->addItem(texture, QVariant::fromValue<void*>(texUnit));
-		m_saveButton->setEnabled(true);	
-	}
-	m_removeTexUnit->setDisabled(m_texUnitCombo->count() == 0);
-}
-
-void MaterialWidget::removeTexUnit()
-{
-	QTexUnit* texUnit = static_cast<QTexUnit*>(m_texUnitCombo->itemData(m_texUnitCombo->currentIndex()).value<void*>());	
-	m_materialXml.documentElement().removeChild(texUnit->xmlNode());
-	m_texUnitCombo->removeItem(m_texUnitCombo->currentIndex());
-	delete texUnit;
-	m_saveButton->setEnabled(true);	
-}
-
-void MaterialWidget::addUniform()
-{
-	QString uniformName = QInputDialog::getText(this, tr("Uniform name"), tr("Specify uniform name")); 
-	if ( !uniformName.isEmpty() )
-	{
-		int index = m_uniformCombo->findText(uniformName);
-		if (index != -1)
-			m_uniformCombo->setCurrentIndex(index);
-		else
-		{
-			QDomElement uniform = m_materialXml.documentElement().appendChild( m_materialXml.createElement("Uniform")).toElement();
-			uniform.setAttribute("name", uniformName);
-			QUniform* uni = new QUniform(uniform);
-			m_uniformCombo->addItem(uniformName, QVariant::fromValue<void*>(uni));
-			m_saveButton->setEnabled(true);	
-		}
-	}
-	m_removeUniform->setDisabled(m_uniformCombo->count() == 0);
-}
-
-void MaterialWidget::removeUniform()
-{
-	QUniform* uniform = static_cast<QUniform*>(m_uniformCombo->itemData(m_uniformCombo->currentIndex()).value<void*>());	
-	if( uniform )
-	{
-		m_materialXml.documentElement().removeChild(uniform->xmlNode());
-		m_uniformCombo->removeItem(m_uniformCombo->currentIndex());
-		delete uniform;
-		m_saveButton->setEnabled(true);	
-		m_removeUniform->setDisabled(m_uniformCombo->count() == 0);
-	}	
-}
-
 void MaterialWidget::uniformChanged(int)
 {
 	QUniform* uniform = static_cast<QUniform*>(m_uniformCombo->itemData(m_uniformCombo->currentIndex()).value<void*>());	
@@ -289,15 +219,38 @@ void MaterialWidget::uniformDataChanged()
 void MaterialWidget::shaderChanged()
 {
 	QDomElement shader = m_materialXml.documentElement().firstChildElement("Shader");
-	if (shader.isNull() && !m_shader->currentText().isEmpty())
+	if( shader.isNull() && !m_shader->currentText().isEmpty() )
 		shader = m_materialXml.insertBefore( m_materialXml.createElement("Shader"), QDomNode()).toElement();
 	shader.setAttribute("source", m_shader->currentText());
 	if ( m_shader->currentText().isEmpty() )
 		m_materialXml.documentElement().removeChild(shader);
+	syncWithShader();
 	m_saveButton->setEnabled(true);
 }
 
 void MaterialWidget::classChanged()
 {
 	m_saveButton->setEnabled(true);
+}
+
+void MaterialWidget::syncWithShader()
+{	
+	QFile shaderFile( QDir::current().absoluteFilePath( m_shader->currentText() ) );
+	if( !shaderFile.open( QIODevice::ReadOnly ) )
+	{
+		QMessageBox::warning( this, tr("Error"), tr("Error opening shader file\n\n%1").arg( QDir::current().absoluteFilePath( m_shader->currentText() ) ) );
+		return;
+	}
+	m_shaderData = ShaderData( shaderFile.readAll() );
+	if( !m_shaderData.isValid() )
+	{
+		QMessageBox::warning( 
+			this, 
+			tr("Error"), 
+			tr("Error reading shader file\n\n%1\n\n%2").arg( QDir::current().absoluteFilePath( m_shader->currentText() ) ).arg( m_shaderData.lastError() ) 
+		);
+		return;
+	}
+
+
 }

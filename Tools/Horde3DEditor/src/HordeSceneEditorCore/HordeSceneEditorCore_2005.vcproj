@@ -218,6 +218,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\QUniform.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SceneFile.cpp"
 				>
 			</File>
@@ -227,6 +231,10 @@
 			</File>
 			<File
 				RelativePath=".\ShaderComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ShaderData.cpp"
 				>
 			</File>
 			<File
@@ -532,6 +540,30 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\QUniform.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(SolutionDir)/Build/$(ProjectName)/moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						Outputs="&quot;$(SolutionDir)/Build/$(ProjectName)/moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(SolutionDir)/Build/$(ProjectName)/moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						Outputs="&quot;$(SolutionDir)/Build/$(ProjectName)/moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\SceneFile.h"
 				>
 			</File>
@@ -582,6 +614,10 @@
 						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\ShaderData.h"
+				>
 			</File>
 			<File
 				RelativePath=".\TextureComboBox.h"
@@ -712,6 +748,10 @@
 			</File>
 			<File
 				RelativePath=".\moc_QSceneNode.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Build\HordeSceneEditorCore\moc_QUniform.cpp"
 				>
 			</File>
 			<File

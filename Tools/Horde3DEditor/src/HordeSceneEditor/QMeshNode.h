@@ -35,6 +35,7 @@ class QMeshNode : public QSceneNode
 	Q_PROPERTY(int BatchCount READ batchCount DESIGNABLE true USER true)
 	Q_PROPERTY(int VerticeRStart READ vertRStart DESIGNABLE true USER true)
 	Q_PROPERTY(int VerticeREnd READ vertREnd DESIGNABLE true USER true)
+	Q_PROPERTY(int Lod_Level READ lodLevel WRITE setLodLevel DESIGNABLE true USER true)
 
 
 public:
@@ -53,6 +54,9 @@ public:
 	int vertRStart() const;
 
 	int vertREnd() const;
+
+	int lodLevel() const;
+	void setLodLevel( int lodLevel );
 
 	void activate();
 

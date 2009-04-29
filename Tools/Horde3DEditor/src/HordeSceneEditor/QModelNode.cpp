@@ -37,6 +37,8 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
+#include <float.h>
+
 #include <Horde3D.h>
 #include <Horde3DUtils.h>
 
@@ -80,6 +82,70 @@ void QModelNode::setSoftwareSkinning(bool softwareSkinning)
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Software Skinning", this, "Software_Skinning", QVariant::fromValue(softwareSkinning), SoftwareSkinningID));
 }
 
+float QModelNode::lodDist1() const
+{
+	return m_xmlNode.attribute("lodDist1", QString::number( FLT_MAX ) ).toFloat();
+}
+
+void QModelNode::setLodDist1( float lodDist1 ) 
+{
+	if (signalsBlocked())
+	{
+		m_xmlNode.setAttribute("lodDist1", lodDist1);
+		Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist1, lodDist1);
+	}
+	else if( lodDist1 != QModelNode::lodDist1() )
+		m_model->undoStack()->push( new QXmlNodePropertyCommand("Set Lod Distance 1", this, "Lod_Distance_1", QVariant::fromValue(lodDist1), LodDistID) );
+}
+
+float QModelNode::lodDist2() const
+{
+	return m_xmlNode.attribute("lodDist2", QString::number( FLT_MAX ) ).toFloat();
+}
+
+void QModelNode::setLodDist2( float lodDist2 ) 
+{
+	if (signalsBlocked())
+	{
+		m_xmlNode.setAttribute("lodDist2", lodDist2);
+		Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist2, lodDist2);
+	}
+	else if( lodDist2 != QModelNode::lodDist2() )
+		m_model->undoStack()->push( new QXmlNodePropertyCommand("Set Lod Distance 2", this, "Lod_Distance_2", QVariant::fromValue(lodDist2), LodDistID) );
+}
+
+float QModelNode::lodDist3() const
+{
+	return m_xmlNode.attribute("lodDist3", QString::number( FLT_MAX ) ).toFloat();
+}
+
+void QModelNode::setLodDist3( float lodDist3 ) 
+{
+	if (signalsBlocked())
+	{
+		m_xmlNode.setAttribute("lodDist3", lodDist3 );
+		Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist3, lodDist3);
+	}
+	else if( lodDist3 != QModelNode::lodDist3() )
+		m_model->undoStack()->push( new QXmlNodePropertyCommand("Set Lod Distance 3", this, "Lod_Distance_3", QVariant::fromValue(lodDist3), LodDistID) );
+}
+
+float QModelNode::lodDist4() const
+{
+	return m_xmlNode.attribute("lodDist4", QString::number( FLT_MAX ) ).toFloat();
+}
+
+void QModelNode::setLodDist4( float lodDist4 ) 
+{
+	if (signalsBlocked())
+	{
+		m_xmlNode.setAttribute("lodDist4", lodDist4);
+		Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist4, lodDist4);
+	}
+	else if( lodDist4 != QModelNode::lodDist4() )
+		m_model->undoStack()->push( new QXmlNodePropertyCommand("Set Lod Distance 4", this, "Lod_Distance_4", QVariant::fromValue(lodDist4), LodDistID) );
+}
+
 void QModelNode::addRepresentation()
 {
 	m_resourceID = Horde3D::addResource(ResourceTypes::Geometry, qPrintable(m_xmlNode.attribute("geometry")), 0);
@@ -108,6 +174,10 @@ void QModelNode::addRepresentation()
 	Horde3D::setNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
 	
 	Horde3D::setNodeParami(m_hordeID, ModelNodeParams::SoftwareSkinning, softwareSkinning());
+	Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist1, lodDist1());
+	Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist2, lodDist2());
+	Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist3, lodDist3());
+	Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist4, lodDist4());
 
 	// Attachment
 	QDomElement attachment = m_xmlNode.firstChildElement("Attachment");	

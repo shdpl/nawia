@@ -231,6 +231,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ShaderData.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TextureComboBox.cpp"
 				>
 			</File>
@@ -583,6 +587,10 @@
 						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\ShaderData.h"
+				>
 			</File>
 			<File
 				RelativePath=".\TextureComboBox.h"

@@ -34,12 +34,20 @@ QUniform::~QUniform()
 
 QString QUniform::name() const
 {
-	return m_uniformNode.attribute("name");
+	if( m_uniformNode.hasAttribute( "name" ) )
+		return m_uniformNode.attribute("name");
+	else if( m_uniformNode.hasAttribute( "id" ) )
+		return m_uniformNode.attribute( "id" );
+	else
+		return tr("No Uniform Identifier");
 }
 
 void QUniform::setName(const QString& name)
 {
-	m_uniformNode.setAttribute("name", name);
+	if( m_uniformNode.hasAttribute( "name" ) )
+		m_uniformNode.setAttribute("name", name);
+	else if( m_uniformNode.hasAttribute( "id" ) )
+		m_uniformNode.setAttribute( "id", name );
 }
 
 double QUniform::a() const

@@ -82,7 +82,7 @@ void QMeshNode::addRepresentation()
 	getTransformation(x,y,z,rx,ry,rz,sx,sy,sz);
 	// ...and update scene representation
 	Horde3D::setNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
-	
+	Horde3D::setNodeParami( m_hordeID, MeshNodeParams::LodLevel, lodLevel() );
 	// Attachment
 	QDomElement attachment = m_xmlNode.firstChildElement("Attachment");	
 	SceneTreeModel* model = static_cast<SceneTreeModel*>(m_model);
@@ -132,6 +132,23 @@ int QMeshNode::vertRStart() const
 int QMeshNode::vertREnd() const
 {
 	return m_xmlNode.attribute("vertREnd").toInt();
+}
+
+int QMeshNode::lodLevel() const
+{
+	return m_xmlNode.attribute("lodLevel", "0").toInt();
+}
+
+void QMeshNode::setLodLevel( int lodLevel )
+{
+	if (signalsBlocked())
+	{
+		m_xmlNode.setAttribute( "lodLevel", lodLevel );
+		Horde3D::setNodeParami( m_hordeID, MeshNodeParams::LodLevel, lodLevel );
+	}
+	else if (lodLevel != QMeshNode::lodLevel())
+		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Lod Level", this, "Lod_Level", QVariant::fromValue(lodLevel), LodLevelID ));
+	
 }
 
 void QMeshNode::activate()

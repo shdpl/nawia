@@ -23,6 +23,7 @@
 #include "Importer.h"
 #include "OverwriteFilesDialog.h"
 #include "QHordeSceneEditorSettings.h"
+#include "ShaderData.h"
 
 #include <QtXml/qdom.h>
 #include <QtGui/QMessageBox>
@@ -352,68 +353,14 @@ void Importer::importShaderFile(const QFileInfo& shader, const QString& targetFi
 		file.seek(0);
 	}
 	
-	QByteArray data = file.readAll();
-	const char* pData = data.constData();	
-	bool lineComment = false, blockComment = false;		
-	const char* eof = pData + data.size();
-	QStringList codes;
-	// Parse code
-	while( pData < eof )
-	{				
-		// Check for begin of comment
-		if( pData < eof - 1 && !lineComment && !blockComment )
-		{
-			if( *pData == '/' && *(pData+1) == '/' )
-				lineComment = true;
-			else if( *pData == '/' &&  *(pData+1) == '*' )
-				blockComment = true;
-		}
-
-		// Check for end of comment
-		if( lineComment && (*pData == '\n' || *pData == '\r') )
-			lineComment = false;
-		else if( blockComment && pData < eof - 1 && *pData == '*' && *(pData+1) == '/' )
-			blockComment = false;
-
-		// Check for includes
-		if( !lineComment && !blockComment && pData < eof - 7 )
-		{
-			if( *pData == '#' && *(pData+1) == 'i' && *(pData+2) == 'n' && *(pData+3) == 'c' &&
-			    *(pData+4) == 'l' && *(pData+5) == 'u' && *(pData+6) == 'd' && *(pData+7) == 'e' )
-			{
-				pData += 6;
-				
-				// Parse resource name
-				const char *nameBegin = 0x0, *nameEnd = 0x0;
-				
-				while( ++pData < eof )
-				{
-					if( *pData == '"' )
-					{
-						if( nameBegin == 0x0 )
-							nameBegin = pData+1;
-						else
-							nameEnd = pData;
-					}
-					else if( *pData == '\n' || *pData == '\r' ) break;
-				}
-
-				if( nameBegin != 0x0 && nameEnd != 0x0 )
-				{
-					QString resName = QString::fromLocal8Bit( nameBegin, nameEnd - nameBegin );																	
-					codes.append( resName );
-				}
-			}
-		}
-		++pData;
-	}
-
-	for (int i=0; i<codes.count(); ++i)
+	ShaderData shaderData( file.readAll() );
+	const QStringList includedFiles = shaderData.includeFiles();
+	for (int i=0; i<includedFiles.count(); ++i)
 	{		
-		target = codes.at(i);
+		target = includedFiles.at(i);
 		if (!target.absoluteDir().exists())
 			m_targetResourcePath.mkpath(target.absolutePath());
-		QFileInfo source(m_sourceResourcePath, codes.at(i) );
+		QFileInfo source(m_sourceResourcePath,includedFiles.at(i) );
 		CopyJob job(source, target);
 		if (!job.exec() && !m_filesToOverwrite.contains(job) && !m_alreadyCopied.contains(job))
 			m_filesToOverwrite.append(job);
