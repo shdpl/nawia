@@ -1,8 +1,7 @@
 <!DOCTYPE SceneConfiguration>
 <Configuration>
-    <SceneGraph path="Particle.scene.xml" />
-    <EnginePath texturepath="./textures" geometrypath="./models" pipelinepath="./pipelines" shaderpath="./shaders" scenegraphpath="./models" animationpath="./animations" materialpath="./materials" effectspath="./effects" />
-    <LightParameters lightingcontext="LIGHTING" shadowcontext="SHADOWMAP" material="light.material.xml" />
+    <SceneGraph path="particles/particle.scene.xml" />    
+    <LightParameters lightingcontext="LIGHTING" shadowcontext="SHADOWMAP" material="material/light.material.xml" />
     <Extras/>
     <ActiveCamera name="Camera" />
 </Configuration>

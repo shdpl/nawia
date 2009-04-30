@@ -40,8 +40,7 @@ void EffectComboBox::init(const QString& resourcePath)
 	clear();	
 	m_resourcePath = resourcePath;
 	blockSignals(true);
-	if (!resourcePath.isEmpty())
-		addEffects(resourcePath, resourcePath);
+	addEffects(resourcePath, resourcePath);
 	addItem(tr("Import from Repository"), QVariant((int) QVariant::UserType));
 	if (count() == 1)
 		setCurrentIndex(-1);
@@ -97,7 +96,7 @@ void EffectComboBox::currentChanged(int index)
 
 void EffectComboBox::addEffects(const QDir& base, const QString dir)
 {	
-	QList<QFileInfo> effects = QDir(dir).entryInfoList(QStringList("*.effect.xml"), QDir::Files | QDir::Readable);
+	QList<QFileInfo> effects = QDir(dir).entryInfoList(QStringList("*.particle.xml"), QDir::Files | QDir::Readable);
 	foreach(QFileInfo effect, effects)
 	{
 		addItem(base.relativeFilePath(effect.absoluteFilePath()));

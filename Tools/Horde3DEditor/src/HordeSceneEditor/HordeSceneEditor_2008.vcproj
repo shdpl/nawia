@@ -343,10 +343,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\QUniform.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\rc_resources.cpp"
 				>
 			</File>
@@ -989,40 +985,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\QUniform.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Memory Check|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputName)"
-						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\RenderTargetView.h"
 				>
 				<FileConfiguration
@@ -1450,10 +1412,6 @@
 			</File>
 			<File
 				RelativePath=".\moc_QTexUnit.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\moc_QUniform.cpp"
 				>
 			</File>
 			<File

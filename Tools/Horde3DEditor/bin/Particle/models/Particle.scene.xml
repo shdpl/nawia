@@ -1,6 +1,0 @@
-<!DOCTYPE HordeSceneGraph>
-<Group name="I_Love_Horde" >
-    <Emitter effect="particle1.effect.xml" emissionRate="160" maxCount="1000" respawnCount="-1" name="i_love" material="particle1.material.xml" />
-    <Emitter effect="particle2.effect.xml" forceZ="0" emissionRate="200" maxCount="1000" spreadAngle="40" respawnCount="-1" name="Horde3D" material="particle2.material.xml" forceX="0" forceY="0" />
-    <Camera pipeline="forwardHDR.pipeline.xml" topPlane="0.0414214" bottomPlane="-0.0414214" tx="0" ty="0" tz="22.8582" leftPlane="-0.0552285" keepAspect="1" farPlane="1000" name="Camera" rightPlane="0.0552285" nearPlane="0.1" />
-</Group>

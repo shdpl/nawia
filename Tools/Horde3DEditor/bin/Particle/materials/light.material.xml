@@ -1,3 +1,0 @@
-<Material>
-	<Shader source="deferredLighting.shader.xml"/>
-</Material>
