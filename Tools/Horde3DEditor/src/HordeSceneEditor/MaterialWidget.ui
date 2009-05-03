@@ -57,33 +57,36 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="3" column="0" colspan="3">
+    <widget class="CheckBoxList" name="m_shaderFlags"/>
+   </item>
+   <item row="4" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
       <string>Sampler</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1" colspan="2">
+   <item row="4" column="1" colspan="2">
     <widget class="QComboBox" name="m_texUnitCombo"/>
    </item>
-   <item row="4" column="0" colspan="3">
+   <item row="5" column="0" colspan="3">
     <widget class="QPropertyEditorWidget" name="m_texUnitProperties"/>
    </item>
-   <item row="5" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="label_4">
      <property name="text">
       <string>Uniform:</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="1" colspan="2">
+   <item row="6" column="1" colspan="2">
     <widget class="QComboBox" name="m_uniformCombo"/>
    </item>
-   <item row="6" column="0" colspan="3">
+   <item row="7" column="0" colspan="3">
     <widget class="QPropertyEditorWidget" name="m_uniformProperties"/>
    </item>
-   <item row="7" column="0" colspan="3">
+   <item row="8" column="0" colspan="3">
     <layout class="QHBoxLayout">
      <item>
       <spacer>
@@ -140,6 +143,11 @@
    <class>MaterialComboBox</class>
    <extends>QComboBox</extends>
    <header>MaterialCombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CheckBoxList</class>
+   <extends>QComboBox</extends>
+   <header>CheckBoxList.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

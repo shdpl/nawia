@@ -273,6 +273,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CheckBoxList.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ColladaImporter.cpp"
 				>
 			</File>
@@ -435,6 +439,40 @@
 						Description="Moc&apos;ing $(InputName)"
 						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(InputDir)./moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						Outputs="&quot;$(InputDir)./moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\CheckBoxList.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(SolutionDir)/Build/$(ProjectName)/moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						Outputs="&quot;$(SolutionDir)/Build/$(ProjectName)/moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(SolutionDir)/Build/$(ProjectName)/moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						Outputs="&quot;$(SolutionDir)/Build/$(ProjectName)/moc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Memory Check|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing $(InputName)"
+						CommandLine="&quot;$(QTDIR)/bin/moc.exe&quot; &quot;$(InputPath)&quot; -o &quot;$(SolutionDir)/Build/$(ProjectName)/moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						Outputs="&quot;$(SolutionDir)/Build/$(ProjectName)/moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
@@ -1274,6 +1312,10 @@
 			</File>
 			<File
 				RelativePath=".\moc_CameraToolBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Build\HordeSceneEditor\moc_CheckBoxList.cpp"
 				>
 			</File>
 			<File

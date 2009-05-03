@@ -38,7 +38,7 @@
 #include <QtCore/QProcess>
 #include <QtCore/QFileSystemWatcher>
 
-MaterialWidget::MaterialWidget(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QWidget(parent, flags)
+MaterialWidget::MaterialWidget(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QWidget(parent, flags), m_shaderData(0)
 {
 	setupUi(this);
 	connect(m_editShader, SIGNAL(clicked()), this, SLOT(editShader()));
@@ -50,6 +50,8 @@ MaterialWidget::MaterialWidget(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/
 	connect(m_texUnitProperties->model(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex& )), this, SLOT(texUnitDataChanged()));
 	connect(m_uniformProperties->model(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex& )), this, SLOT(uniformDataChanged()));
 	connect(m_shader, SIGNAL(shaderChanged()), this, SLOT(shaderChanged()));
+	connect(m_shaderFlags, SIGNAL(stateChanged( int, bool ) ), this, SLOT( flagsChanged( int, bool ) ) );
+	m_shaderFlags->setDisplayText( tr( "Shader Flags" ) );
 }
 
 
@@ -169,20 +171,6 @@ void MaterialWidget::initValues()
 	if (m_shader->currentIndex() == -1)
 		QMessageBox::warning(this, tr("Error"), tr("Shader \"%1\" not found in shader directory").arg(shader));
 
-	QDomNodeList texUnits = m_materialXml.documentElement().elementsByTagName("TexUnit");
-	for (int i=0; i<texUnits.count(); ++i)
-	{
-		QDomElement texUnit = texUnits.at(i).toElement();
-		QTexUnit* unit = new QTexUnit(texUnit);
-		m_texUnitCombo->insertItem(texUnit.attribute("unit").toInt(), texUnit.attribute("map"), QVariant::fromValue<void*>(unit));
-	}
-	QDomNodeList uniforms = m_materialXml.documentElement().elementsByTagName("Uniform");
-	for (int i=0; i<uniforms.count(); ++i)
-	{
-		QDomElement uniform = uniforms.at(i).toElement();
-		QUniform* uni = new QUniform(uniform);
-		m_uniformCombo->addItem(uniform.attribute("name"), QVariant::fromValue<void*>(uni));
-	}
 	if (parentWidget())
 		parentWidget()->setWindowTitle(tr("Material - %1").arg(m_currentMaterialFile));	
 	m_saveButton->setEnabled(false);
@@ -233,6 +221,11 @@ void MaterialWidget::classChanged()
 	m_saveButton->setEnabled(true);
 }
 
+void MaterialWidget::flagsChanged( int index, bool checked )
+{
+
+}
+
 void MaterialWidget::syncWithShader()
 {	
 	QFile shaderFile( QDir::current().absoluteFilePath( m_shader->currentText() ) );
@@ -241,16 +234,67 @@ void MaterialWidget::syncWithShader()
 		QMessageBox::warning( this, tr("Error"), tr("Error opening shader file\n\n%1").arg( QDir::current().absoluteFilePath( m_shader->currentText() ) ) );
 		return;
 	}
-	m_shaderData = ShaderData( shaderFile.readAll() );
-	if( !m_shaderData.isValid() )
+	delete m_shaderData;
+	m_shaderData = new ShaderData( shaderFile.readAll() );
+	if( !m_shaderData->isValid() )
 	{
 		QMessageBox::warning( 
 			this, 
 			tr("Error"), 
-			tr("Error reading shader file\n\n%1\n\n%2").arg( QDir::current().absoluteFilePath( m_shader->currentText() ) ).arg( m_shaderData.lastError() ) 
+			tr("Error reading shader file\n\n%1\n\n%2").arg( QDir::current().absoluteFilePath( m_shader->currentText() ) ).arg( m_shaderData->lastError() ) 
 		);
+		delete m_shaderData;
+		m_shaderData = 0;
 		return;
 	}
+	m_shaderFlags->clear();
+	QDomNodeList flags = m_materialXml.elementsByTagName( "ShaderFlag" );
+	for( int i = 0; i < m_shaderData->flags().size(); ++i)
+	{
+		bool set = false;
+		for( int j = 0; j < flags.size(); ++j )
+		{
+			QString flag = flags.at(j).toElement().attribute( "name" );
+			if( flag.compare( 
+				QString( "_F%1_%2" ).arg( m_shaderData->flags().at(i).Flag, 2, 10, QChar::fromLatin1('0') ).arg( m_shaderData->flags().at(i).Name ),
+				Qt::CaseInsensitive ) == 0 )
+			{
+				set = true;
+				break;
+			}
+		}
+		m_shaderFlags->addItem( m_shaderData->flags().at(i).Name, set );
+		m_shaderFlags->setItemData( m_shaderFlags->count(), m_shaderData->flags().at(i).Flag, Qt::UserRole + 1 );
+	}
+	m_texUnitCombo->clear();
+	for( int i = 0; i < m_shaderData->samplers().size(); ++i )
+	{
+		m_texUnitCombo->addItem( m_shaderData->samplers().at(i).Id );
+		QString tip("Texture Unit %1");
+		tip.arg( m_shaderData->samplers().at(i).TexUnit );
+		m_texUnitCombo->setItemData( m_texUnitCombo->count(), tip, Qt::ToolTipRole );
+		m_texUnitCombo->setItemData( m_texUnitCombo->count(), tip, Qt::StatusTipRole);
+	}
 
+	m_uniformCombo->clear();
+	for( int i = 0; i < m_shaderData->uniforms().size(); ++i )
+	{
+		m_uniformCombo->addItem( m_shaderData->uniforms().at(i)->name(), QVariant::fromValue<void*>( m_shaderData->uniforms().at( i ) ) );
+	}
+
+	//QDomNodeList texUnits = m_materialXml.documentElement().elementsByTagName("TexUnit");
+	//for (int i=0; i<texUnits.count(); ++i)
+	//{
+	//	QDomElement texUnit = texUnits.at(i).toElement();
+	//	QTexUnit* unit = new QTexUnit(-1, texUnit);
+	//	m_texUnitCombo->addItem( texUnit.attribute("map"), QVariant::fromValue<void*>(unit));
+	//}
+	//QDomNodeList uniforms = m_materialXml.documentElement().elementsByTagName("Uniform");
+	//for (int i=0; i<uniforms.count(); ++i)
+	//{
+	//	QDomElement uniform = uniforms.at(i).toElement();
+	//	QUniform* uni = new QUniform(uniform);
+	//	m_uniformCombo->addItem(uniform.attribute("name"), QVariant::fromValue<void*>(uni));
+	//}
 
 }

@@ -23,7 +23,8 @@
 
 #include <Horde3D.h>
 
-QTexUnit::QTexUnit(const QDomElement& texUnitNode, QObject* parent /*= 0*/) : QObject(parent), m_texUnitNode(texUnitNode)
+QTexUnit::QTexUnit( int unit, const QDomElement& texUnitNode, QObject* parent /*= 0*/) : QObject(parent), m_texUnitNode(texUnitNode),
+m_unit(unit)
 {
 	
 }
@@ -33,17 +34,15 @@ QTexUnit::~QTexUnit()
 {
 }
 
+QString QTexUnit::name() const 
+{
+	return m_texUnitNode.attribute("name");
+}
+
 int QTexUnit::unit() const
 {
-	return m_texUnitNode.attribute("unit").toInt();
-
+	return m_unit;
 }
-
-void QTexUnit::setUnit(const int unit)
-{
-	m_texUnitNode.setAttribute("unit", unit);
-}
-
 
 Texture QTexUnit::map() const
 {
@@ -59,7 +58,7 @@ void QTexUnit::setMap(const Texture& map)
 bool QTexUnit::compressed() const
 {
 	return m_texUnitNode.attribute("allowCompression", "true").compare("true", Qt::CaseInsensitive)==0 ||
-		   m_texUnitNode.attribute("allowCompression", "1").compare("1", Qt::CaseInsensitive)==0;
+		   m_texUnitNode.attribute("allowCompression").compare("1")==0;
 }
 
 void QTexUnit::setCompressed(bool compressionAllowed)
@@ -67,14 +66,16 @@ void QTexUnit::setCompressed(bool compressionAllowed)
 	m_texUnitNode.setAttribute("allowCompression", compressionAllowed);
 }
 
-bool QTexUnit::cube() const
+bool QTexUnit::mipmaps() const
 {
-	return m_texUnitNode.attribute("type", "2D").compare("CUBE") == 0;
+	return
+		m_texUnitNode.attribute("mipmaps", "true").compare("true", Qt::CaseInsensitive) == 0 ||
+		m_texUnitNode.attribute("mipmaps").compare("1") == 0 ;
 }
 
-void QTexUnit::setCube(bool cube)
+void QTexUnit::setMipmaps( bool mipmaps )
 {
-	m_texUnitNode.setAttribute("type", cube ? "CUBE" : "2D");
+	m_texUnitNode.setAttribute("mipmaps", mipmaps ? "true" : "false" );
 }
 
 

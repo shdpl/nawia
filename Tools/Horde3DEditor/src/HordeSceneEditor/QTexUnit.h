@@ -31,24 +31,26 @@ class QTexUnit : public QObject
 {
 	Q_OBJECT
 
-	Q_PROPERTY(int Unit READ unit WRITE setUnit DESIGNABLE true USER true)
-	Q_CLASSINFO("Unit", "minimum=0;maximum=7;");
+	Q_CLASSINFO("QTexUnit", "Sampler");
+
+	Q_PROPERTY(int Unit READ unit DESIGNABLE true USER true)
+	Q_PROPERTY(QString Name READ name DESIGNABLE true USER true)
 	Q_PROPERTY(Texture Map READ map WRITE setMap DESIGNABLE true USER true)
-	Q_PROPERTY(bool Cube_Texture READ cube WRITE setCube DESIGNABLE true USER true)
+	Q_PROPERTY(bool Mipmaps READ mipmaps WRITE setMipmaps DESIGNABLE true USER true)
 	Q_PROPERTY(bool Compressed READ compressed WRITE setCompressed DESIGNABLE true USER true)
 
 public:
-	QTexUnit(const QDomElement& texUnitNode, QObject* parent = 0);
+	QTexUnit( int unit, const QDomElement& texUnitNode, QObject* parent = 0 );
 	virtual ~QTexUnit();
 
 	int unit() const;
-	void setUnit(const int unit);
+	QString name() const;
 	
 	Texture map() const;
 	void setMap(const Texture& map);
 
-	bool cube() const;
-	void setCube(bool cube);
+	bool mipmaps() const;
+	void setMipmaps(bool cube);
 
 	bool compressed() const;
 	void setCompressed(bool compressionAllowed);
@@ -57,6 +59,6 @@ public:
 private:
 
 	QDomElement		m_texUnitNode;
-	
+	int				m_unit;	
 };
 #endif

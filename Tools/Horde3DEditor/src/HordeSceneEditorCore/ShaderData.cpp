@@ -4,7 +4,7 @@
 
 typedef unsigned int uint32;
 
-ShaderData::ShaderData( const QByteArray& data )
+ShaderData::ShaderData( const QByteArray& data, QObject* parent ) : QObject(parent)
 {	
 	m_valid = loadShader( data );
 }
@@ -130,7 +130,8 @@ bool ShaderData::loadCode( const QByteArray& data )
 				// Ignore rest of name
 				while( pData < eof && *pData != ' ' && *pData != '\t' && *pData != '\n' && *pData != '\r' )
 					flag.Name.append( *pData++ );
-				m_flags.append( flag );
+				if( !m_flags.contains( flag ) )
+					m_flags.append( flag );
 			}
 		}
 

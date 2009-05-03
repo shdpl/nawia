@@ -61,11 +61,12 @@ private slots:
 	void uniformDataChanged();
 	void shaderChanged();
 	void classChanged();
+	void flagsChanged( int index, bool checked );
 
 private:
 	void syncWithShader();
 
-	ShaderData			m_shaderData;
+	ShaderData*			m_shaderData;
 	QString				m_currentMaterialFile;
 	QDomDocument		m_materialXml;
 	QString				m_resourcePath;

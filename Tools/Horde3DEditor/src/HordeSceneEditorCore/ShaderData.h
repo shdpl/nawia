@@ -14,22 +14,26 @@ struct ShaderFlag
 {
 	int		Flag;
 	QString	Name;
+
+	bool operator==(const ShaderFlag& flag ) const { return Flag == flag.Flag; }
 };
 
-class ShaderData
+class ShaderData : public QObject
 {
 public:
-	ShaderData() : m_valid( false ) {}
-	ShaderData( const QByteArray& data );
+	ShaderData( QObject* parent = 0) : QObject(parent), m_valid( false ) {}
+	ShaderData( const QByteArray& data, QObject* parent = 0 );
+	
 	~ShaderData();
 
 	bool isValid() const { return m_valid; }
 	QString lastError() const { return m_lastError; }
 
-	enum BlendModes { Blend, Add, AddBlended, Mult, Replace };
-	enum TestModes { Always, Equal, Less, Greater, GreaterEqual, LessEqual };
-
 	const QStringList& includeFiles() { return m_includedFiles; }
+	
+	const QList<ShaderFlag>& flags() { return m_flags; }
+	const QList<QUniform*>& uniforms() { return m_uniforms; }
+	const QList<ShaderSampler>& samplers() { return m_samplers; }
 
 private:
 	bool loadShader( const QByteArray& data );
