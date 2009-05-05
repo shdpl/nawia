@@ -22,7 +22,8 @@
 #include "QUniform.h"
 
 
-QUniform::QUniform(const QDomElement& uniformNode, QObject* parent /*= 0*/) : QObject(parent), m_uniformNode(uniformNode)
+QUniform::QUniform(const QDomElement& uniformNode, bool shaderUniform, QObject* parent /*= 0*/) : QObject(parent), m_uniformNode(uniformNode),
+m_shaderUniform( shaderUniform )
 {
 	
 }

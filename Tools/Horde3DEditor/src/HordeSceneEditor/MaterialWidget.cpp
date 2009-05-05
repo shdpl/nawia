@@ -155,7 +155,6 @@ void MaterialWidget::editShader()
 {
 	QHordeSceneEditorSettings settings(this);
 	settings.beginGroup("General");
-	// TODO either create a shader editor or add a file system watcher or something like that
 	QProcess::startDetached(
 		settings.value("ShaderEditor", "notepad.exe").toString(), 
 		QStringList( QDir::current().absoluteFilePath( m_shader->currentText() ) ) 
@@ -199,8 +198,6 @@ void MaterialWidget::uniformChanged(int)
 void MaterialWidget::uniformDataChanged()
 {
 	QUniform* uniform = static_cast<QUniform*>(m_uniformCombo->itemData(m_uniformCombo->currentIndex()).value<void*>());	
-	if (uniform && m_uniformCombo->currentText() != uniform->name() )
-		m_uniformCombo->setItemText( m_uniformCombo->currentIndex(), uniform->name() );		
 	m_saveButton->setEnabled(true);	
 }
 
@@ -234,6 +231,17 @@ void MaterialWidget::syncWithShader()
 		QMessageBox::warning( this, tr("Error"), tr("Error opening shader file\n\n%1").arg( QDir::current().absoluteFilePath( m_shader->currentText() ) ) );
 		return;
 	}
+	for( int i = 0; i < m_uniformCombo->count(); ++i )
+	{
+		QUniform* uniform = static_cast<QUniform*>( m_uniformCombo->itemData( i ).value<void*>() );
+		if( !uniform->isShaderUniform() )
+		{
+			delete uniform;
+			m_uniformCombo->setItemData( i, QVariant::fromValue<void*>( 0 ) );
+		}
+	}
+	m_uniformCombo->clear();
+
 	delete m_shaderData;
 	m_shaderData = new ShaderData( shaderFile.readAll() );
 	if( !m_shaderData->isValid() )
@@ -276,10 +284,22 @@ void MaterialWidget::syncWithShader()
 		m_texUnitCombo->setItemData( m_texUnitCombo->count(), tip, Qt::StatusTipRole);
 	}
 
-	m_uniformCombo->clear();
+	QDomNodeList uniforms = m_materialXml.documentElement().elementsByTagName("Uniform");
 	for( int i = 0; i < m_shaderData->uniforms().size(); ++i )
 	{
-		m_uniformCombo->addItem( m_shaderData->uniforms().at(i)->name(), QVariant::fromValue<void*>( m_shaderData->uniforms().at( i ) ) );
+		QUniform* uni = 0;		
+		for( int j = 0;  j < uniforms.count(); ++j)
+		{
+			QDomElement uniform = uniforms.at(j).toElement();
+			if( uniform.attribute("name").compare( m_shaderData->uniforms().at( i )->name() ) == 0 )
+			{
+				uni = new QUniform( uniform, false );
+				break;
+			}	
+		}
+		if( !uni )
+			uni = m_shaderData->uniforms().at(i);
+		m_uniformCombo->addItem( uni->name(), QVariant::fromValue<void*>( uni ) );
 	}
 
 	//QDomNodeList texUnits = m_materialXml.documentElement().elementsByTagName("TexUnit");
@@ -288,13 +308,6 @@ void MaterialWidget::syncWithShader()
 	//	QDomElement texUnit = texUnits.at(i).toElement();
 	//	QTexUnit* unit = new QTexUnit(-1, texUnit);
 	//	m_texUnitCombo->addItem( texUnit.attribute("map"), QVariant::fromValue<void*>(unit));
-	//}
-	//QDomNodeList uniforms = m_materialXml.documentElement().elementsByTagName("Uniform");
-	//for (int i=0; i<uniforms.count(); ++i)
-	//{
-	//	QDomElement uniform = uniforms.at(i).toElement();
-	//	QUniform* uni = new QUniform(uniform);
-	//	m_uniformCombo->addItem(uniform.attribute("name"), QVariant::fromValue<void*>(uni));
 	//}
 
 }

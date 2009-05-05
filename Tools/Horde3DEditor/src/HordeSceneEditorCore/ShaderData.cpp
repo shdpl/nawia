@@ -176,7 +176,7 @@ bool ShaderData::parseFXSection(const QByteArray &data)
 	{
 		if( !node1.hasAttribute( "id" ) ) return raiseError( "Missing Uniform attribute 'id'" );
 		
-		QUniform* uniform = new QUniform( node1 );
+		QUniform* uniform = new QUniform( node1, true );
 		m_uniforms.push_back( uniform );
 		
 		node1 = node1.nextSiblingElement( "Uniform" );

@@ -41,7 +41,7 @@ class QUniform : public QObject
 	Q_PROPERTY(double d READ d WRITE setD DESIGNABLE true USER true)
 
 public:
-	QUniform( const QDomElement& uniformNodeNode, QObject* parent = 0);
+	QUniform( const QDomElement& uniformNodeNode, bool shaderUniform, QObject* parent = 0);
 	virtual ~QUniform();
 
 	QString name() const;
@@ -60,8 +60,11 @@ public:
 	void setD(const double d);
 	
 	QDomElement& xmlNode() {return m_uniformNode;}
-private:
 
+	bool isShaderUniform() const { return m_shaderUniform; }
+private:
+	// Indicates if this uniform belongs to a shader ( or a material otherwise )
+	bool			m_shaderUniform;
 	QDomElement		m_uniformNode;
 	
 };
