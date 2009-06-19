@@ -35,10 +35,10 @@ static Application *app;
 
 std::string generatePath(char p[], const std::string& file) {
 #ifdef __APPLE__
-   string s(p);
+	std::string s(p);
    for (int i = 0; i < 4; i++)
       s = s.substr(0, s.rfind("/"));   
-   return s + "/" + file;
+   return s + "/../" + file;
 #else
     const std::string s( p );
     if ( s.find("/") != std::string::npos) {

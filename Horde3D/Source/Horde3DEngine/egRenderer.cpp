@@ -127,7 +127,7 @@ bool Renderer::init()
 	if( glExt::majorVersion < 2 || glExt::minorVersion < 0 )
 	{
 		Modules::log().writeError( "OpenGL 2.0 not supported" );
-		failed = true;
+		//failed = true;
 	}
 	
 	// Check extensions
