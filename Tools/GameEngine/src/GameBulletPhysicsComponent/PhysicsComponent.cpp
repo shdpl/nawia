@@ -321,9 +321,8 @@ void PhysicsComponent::loadFromXml(const XMLNode* description)
 
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,m_motionState,m_collisionShape,localInertia);
 	rbInfo.m_startWorldTransform = tr;
-	//DOMINIK SOLLFRANK: IS BEEING LOADED WITH DEFAULT VALUES IF TAG IN XML NOT GIVEN.
-	rbInfo.m_restitution = btScalar( atof(description->getAttribute("restitution", "0")) );
-	rbInfo.m_friction = btScalar( atof(description->getAttribute("static_friction", "0.5")) );
+	//rbInfo.m_restitution = btScalar( atof(description->getAttribute("restitution", "0")) );
+	//rbInfo.m_friction = btScalar( atof(description->getAttribute("static_friction", "0.5")) );
 	// Threshold for deactivation of objects (if movement is below this value the object gets deactivated)
 	//rbInfo.m_angularSleepingThreshold = 0.8f;
 	//rbInfo.m_linearSleepingThreshold = 0.8f;
