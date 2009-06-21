@@ -1,6 +1,6 @@
 
 # CMAKE_BINARY_DIR is used for inclusion of automatically generated files
-include_directories(. ../Shared ../../../ ${CMAKE_BINARY_DIR})
+include_directories(. ../Shared ../../Bindings/C++ ../../../ ${CMAKE_BINARY_DIR})
 
 
 set(HORDE3D_SOURCES 
@@ -51,6 +51,7 @@ set(HORDE3D_SOURCES
 	utImage.h
 	utTimer.h
 	utOpenGL.h
+	../../Bindings/C++/Horde3D.h
 	../Shared/utXMLParser.cpp
 
 	${HORDE3D_EXTENSION_SOURCES}
@@ -77,6 +78,11 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	set_target_properties(Horde3D PROPERTIES
+		FRAMEWORK TRUE
+		PRIVATE_HEADER "egAnimatables.h;egAnimation.h;egCamera.h;egCom.h;egExtensions.h;egGeometry.h;egLight.h;egMaterial.h;egModel.h;egModules.h;egParticle.h;egPipeline.h;egPrerequisites.h;egPrimitives.h;egRenderer.h;egRendererBase.h;egResource.h;egScene.h;egSceneGraphRes.h;egShader.h;egTextures.h;utImage.h;utTimer.h;utOpenGL.h;"
+		PUBLIC_HEADER "../../Bindings/C++/Horde3D.h")
+	
 	FIND_LIBRARY(OPENGL_LIBRARY OpenGL)
 	FIND_LIBRARY(CORE_FOUNDATION_LIBRARY CoreFoundation)
 	target_link_libraries(Horde3D ${OPENGL_LIBRARY} ${CORE_FOUNDATION_LIBRARY})
