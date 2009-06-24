@@ -45,13 +45,14 @@
 using namespace std;
 
 struct MorphTargetAnimationStruct {
+	unsigned int ownerID; //somehow all Entities use the same morphTargetAnimations...
 	string name;
 	float fromWeight;
 	float toWeight;
 	float startTime;
 	float endTime;
-	MorphTargetAnimationStruct ( string _name, float _fromWeight, float _toWeight, float _startTime, float _endTime )
-		: name(_name), fromWeight(_fromWeight), toWeight(_toWeight), startTime(_startTime), endTime(_endTime) { }
+	MorphTargetAnimationStruct ( unsigned int _ownerID, string _name, float _fromWeight, float _toWeight, float _startTime, float _endTime )
+		: ownerID(_ownerID), name(_name), fromWeight(_fromWeight), toWeight(_toWeight), startTime(_startTime), endTime(_endTime) { }
 };
 
 vector<MorphTargetAnimationStruct> morphTargetAnimations;
@@ -89,7 +90,8 @@ void MorphtargetAnimComponent::executeEvent(GameEvent *event)
 		{
 			const MorphTargetAnimation* mtAnim = static_cast<const MorphTargetAnimation*>( event->data() );
 			string name( mtAnim->Name );
-			MorphTargetAnimationStruct mt( name, m_currentMorphtargetWeights[name], mtAnim->ToWeight, GameEngine::timeStamp(), GameEngine::timeStamp() + mtAnim->Duration );
+			
+			MorphTargetAnimationStruct mt( m_owner->worldId(), name, m_currentMorphtargetWeights[name], mtAnim->ToWeight, GameEngine::timeStamp(), GameEngine::timeStamp() + mtAnim->Duration );
 			morphTargetAnimations.push_back( mt );
 		}
 		break;
@@ -102,10 +104,10 @@ void MorphtargetAnimComponent::loadFromXml(const XMLNode* description)
 
 void MorphtargetAnimComponent::update(float timeStamp)
 {
-
 	for ( unsigned int i=0; i < morphTargetAnimations.size(); ++i )
 	{
-
+		if (m_owner->worldId() != morphTargetAnimations[i].ownerID) continue; //somehow all Entities use the same morphTargetAnimations...
+		
 		if ( GameEngine::timeStamp() < morphTargetAnimations[i].endTime )
 		{
 			// TODO: Simplify: start time not necessary?
