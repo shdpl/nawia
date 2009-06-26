@@ -40,6 +40,8 @@
 
 #include <map>
 #include <string>
+#include <vector>
+using namespace std;
 
 /**
  * \brief Automatic animation control for morph targets
@@ -47,6 +49,21 @@
  * @author Nikolaus Bee
  * @date Aug 2008
  */ 
+
+struct MorphTargetAnimationStruct {
+	//unsigned int ownerID; //somehow all Entities use the same morphTargetAnimations...
+	string name;
+	float fromWeight;
+	float toWeight;
+	float startTime;
+	float endTime;
+	//MorphTargetAnimationStruct ( unsigned int _ownerID, string _name, float _fromWeight, float _toWeight, float _startTime, float _endTime )
+	//	: ownerID(_ownerID), name(_name), fromWeight(_fromWeight), toWeight(_toWeight), startTime(_startTime), endTime(_endTime) { }
+	MorphTargetAnimationStruct ( string _name, float _fromWeight, float _toWeight, float _startTime, float _endTime )
+		: name(_name), fromWeight(_fromWeight), toWeight(_toWeight), startTime(_startTime), endTime(_endTime) { }
+};
+
+
 class MorphtargetAnimComponent : public GameComponent
 {
 
@@ -110,7 +127,7 @@ public:
 
 private:
 	std::map<std::string, float> m_currentMorphtargetWeights;
-
+	std::vector<MorphTargetAnimationStruct> morphTargetAnimations;
 };
 
 
