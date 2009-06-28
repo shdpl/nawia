@@ -1,6 +1,6 @@
 
 # CMAKE_BINARY_DIR is used for inclusion of automatically generated files
-include_directories(. ../Shared ../../Bindings/C++ ../../../ ${CMAKE_BINARY_DIR})
+include_directories(. ../Shared ../../Bindings/C++ ../../../ ${CMAKE_BINARY_DIR} ${HORDE3D_EXTENSION_INCLUDE_DIRS})
 
 
 set(HORDE3D_SOURCES 
@@ -69,7 +69,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	target_link_libraries(Horde3D GL)
+	target_link_libraries(Horde3D GL ${HORDE3D_EXTENSION_LIBS})
 	install(TARGETS Horde3D
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION lib
