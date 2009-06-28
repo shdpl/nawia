@@ -23,6 +23,8 @@
 #
 # *************************************************************************************************
 
+# Updated to Horde3D version beta 3
+
 from ctypes import *
 
 if not 'c_bool' in globals():
@@ -50,8 +52,6 @@ except:
 	pass
 
 
-
-
 try:
 	h3d = cdll.LoadLibrary('libHorde3D.so')
 except OSError:
@@ -66,7 +66,7 @@ class EngineOptions(object):
 	MaxLogLevel = 1
 	MaxNumMessages = 2
 	TrilinearFilterung = 3
-	AnisotropyFactor = 4
+	MaxAnisotropy = 4
 	TexCompression = 5
 	LoadTextures = 6
 	FastAnimation = 7
@@ -82,6 +82,8 @@ class EngineStats(object):
 	TriCount = 100
 	BatchCount = 101
 	LightPassCount = 102
+	FrameTime = 103
+	CustomTime = 104
 __all__.append(EngineStats)
 
 
@@ -93,20 +95,16 @@ class ResourceTypes(object):
 	Material = 4
 	Code = 5
 	Shader = 6
-	Texture2D = 7
-	TextureCube = 8
-	Effect = 9
-	Pipeline = 10
+	Texture = 7
+	ParticleEffect = 8
+	Pipeline = 9
 __all__.append('ResourceTypes')
 
 
 class ResourceFlags(object):
 	NoQuery = 1
-	NoTexPOTConversion = 2
-	NoTexCompression = 4
-	NoTexMipmaps = 8
-	NoTexFiltering = 16
-	NoTexRepeat = 32
+	NoTexCompression = 2
+	NoTexMipmaps = 4
 __all__.append('ResourceFlags')
 
 
@@ -127,27 +125,15 @@ class MaterialResParams(object):
 	Class = 400
 	Link = 401
 	Shader = 402
-	TexUnit_0 = 403
-	TexUnit_1 = 404
-	TexUnit_2 = 405
-	TexUnit_3 = 406
-	TexUnit_4 = 407
-	TexUnit_5 = 408
-	TexUnit_6 = 409
-	TexUnit_7 = 410
-	TexUnit_8 = 411
-	TexUnit_9 = 412
-	TexUnit_10 = 413
-	TexUnit_11 = 414
 __all__.append('MaterialResParams')
 
 
 class TextureResParams(object):
 	PixelData = 700
-	Width = 701
-	Height = 702
-	Comps = 703
-	HDR = 704
+	TexType = 701
+	TexFormat = 702
+	Width = 703
+	Height = 704
 __all__.append('TextureResParams')
 
 
@@ -172,6 +158,9 @@ class EffectResParams(object):
 	Col_B_Min = 917
 	Col_B_Max = 918
 	Col_B_EndRate = 919
+	Col_A_Min = 920		 ##NEW
+	Col_A_Max = 921		 ##NEW
+	Col_A_EndRate = 922	 ##NEW
 __all__.append('EffectResParams')
 
 
@@ -248,7 +237,7 @@ __all__.append('CameraNodeParams')
 
 class EmitterNodeParams(object):
 	MaterialRes = 700
-	EffectRes = 701
+	ParticleEffectRes = 701
 	MaxCount = 702
 	RespawnCount = 703
 	Delay = 704
@@ -350,19 +339,22 @@ _showOverlay.argtypes = [
 		c_float, c_float, c_float, c_float,
 		c_float, c_float, c_float, c_float,
 		c_float, c_float, c_float, c_float,
+		c_float, c_float, c_float, c_float,
 		c_int, c_int]
 def showOverlay(
-		x_ll, y_ll, u_ll, v_ll,
-		x_lr, y_lr, u_lr, v_lr,
-		x_ur, y_ur, u_ur, v_ur,
-		x_ul, y_ul, u_ul, v_ul,
-		layer, materialRes):
+		x_tl, y_tl, u_tl, v_tl,
+		x_bl, y_bl, u_bl, v_bl,
+		x_br, y_br, u_br, v_br,
+		x_tr, y_tr, u_tr, v_tr,
+		r, g, b, a,
+		materialRes, layer):
 	return _showOverlay(
-			c_float(x_ll), c_float(y_ll), c_float(u_ll), c_float(v_ll),
-			c_float(x_lr), c_float(y_lr), c_float(u_lr), c_float(v_lr),
-			c_float(x_ur), c_float(y_ur), c_float(u_ur), c_float(v_ur),
-			c_float(x_ul), c_float(y_ul), c_float(u_ul), c_float(v_ul),
-			layer, materialRes
+			c_float(x_tl), c_float(y_tl), c_float(u_tl), c_float(v_tl),
+			c_float(x_bl), c_float(y_bl), c_float(u_bl), c_float(v_bl),
+			c_float(x_br), c_float(y_br), c_float(u_br), c_float(v_br),
+			c_float(x_tr), c_float(y_tr), c_float(u_tr), c_float(v_tr),
+			c_float(r), c_float(g), c_float(b), c_float(a),
+			materialRes, layer
 			)
 __all__.append('showOverlay')
 
@@ -385,11 +377,10 @@ getResourceName.argtypes = [c_int]
 __all__.append('getResourceName')
 
 
-# FIXME not in r190 svn HEAD...
-#getNextResource = h3d.getNextResource
-#getNextResource.restype = c_int
-#getNextResource.append = [c_int, c_int]
-#__all__.append('getNextResource')
+getNextResource = h3d.getNextResource
+getNextResource.restype = c_int
+getNextResource.append = [c_int, c_int]
+__all__.append('getNextResource')
 
 
 findResource = h3d.findResource
@@ -474,8 +465,11 @@ setResourceParamstr.argtypes = [c_int, c_int, c_char_p]
 __all__.append('setResourceParamstr')
 
 
-# TODO
 # getResourceData
+getResourceData = h3d.getResourceData
+getResourceData.restype = c_void_p
+getResourceData.argtypes = [c_int, c_int]
+__all__.append('getResourceData')
 
 _updateResourceData = h3d.updateResourceData
 _updateResourceData.restype = c_bool
@@ -516,10 +510,17 @@ def setMaterialUniform(materialRes, name, a, b, c, d):
 __all__.append('setMaterialUniform')
 
 
+setMaterialSampler = h3d.setMaterialSampler
+setMaterialSampler.restype = c_bool
+setMaterialSampler.argtypes = [c_int, c_char_p, c_int]
+__all__.append('setMaterialSampler')
+
+
 setPipelineStageActivation = h3d.setPipelineStageActivation
 setPipelineStageActivation.restype = c_bool
 setPipelineStageActivation.argtypes = [c_int, c_char_p, c_bool]
 __all__.append('setPipelineStageActivation')
+
 
 _getPipelineRenderTargetData = h3d.getPipelineRenderTargetData
 _getPipelineRenderTargetData.restype = c_bool
@@ -839,6 +840,19 @@ def setupCameraView(cameraNode, fov, aspect, nearDist, farDist):
 __all__.append('setupCameraView')
 
 
+_getCameraProjectionMatrix = h3d.getCameraProjectionMatrix
+_getCameraProjectionMatrix.restype = c_bool
+_getCameraProjectionMatrix.argtypes = [c_int, c_float * 16]
+def getCameraProjectionMatrix(node, mat):
+	t = c_float * 16
+	f16 = t()
+	for i in range(16):
+		f16[i] = mat[i]
+	# FIXME really assert?
+	assert(_getCameraProjectionMatrix(node, f16))
+__all__.append('getCameraProjectionMatrix')
+
+
 addEmitterNode = h3d.addEmitterNode
 addEmitterNode.restype = c_int
 addEmitterNode.argtypes = [c_int, c_char_p, c_int, c_int, c_int, c_int]
@@ -857,8 +871,6 @@ hasEmitterFinished = h3d.hasEmitterFinished
 hasEmitterFinished.restype = c_bool
 hasEmitterFinished.argtypes = [c_int]
 __all__.append('hasEmitterFinished')
-
-
 
 
 

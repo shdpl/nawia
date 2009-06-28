@@ -62,6 +62,7 @@ loadResourcesFromDisk.restype = c_bool
 loadResourcesFromDisk.argtypes = [c_char_p]
 __all__.append('loadResourcesFromDisk')
 
+
 _pickRay = h3dutils.pickRay
 _pickRay.restype = None
 _pickRay.argtypes = [
@@ -92,17 +93,15 @@ __all__.append('pickNode')
 
 _showText = h3dutils.showText
 _showText.restype = None
-_showText.argtypes = [c_char_p, c_float, c_float, c_float, c_int, c_int]
-def showText(text, x, y, size, layer, fontMaterialRes):
-	return _showText(text, c_float(x), c_float(y), c_float(size), layer, fontMaterialRes)
+_showText.argtypes = [c_char_p, c_float, c_float, c_float, c_float, c_float, c_float, c_int, c_int]
+def showText(text, x, y, size, r, g, b, fontMaterialRes, layer):
+	return _showText(text, c_float(x), c_float(y), c_float(size), c_float(r), c_float(g), c_float(b), fontMaterialRes, layer)
 __all__.append('showText')
 
 
 _showFrameStats = h3dutils.showFrameStats
 _showFrameStats.restype = None
-_showFrameStats.argtypes = [c_int, c_float]
-def showFrameStats(fontMaterialRes, curFPS):
-	return _showFrameStats(fontMaterialRes, c_float(curFPS))
+_showFrameStats.argtypes = [c_int, c_int, c_int]
+def showFrameStats(fontMaterialRes, boxMaterialRes, mode):
+	return _showFrameStats(fontMaterialRes, boxMaterialRes, mode)
 __all__.append('showFrameStats')
-
-

@@ -4,7 +4,7 @@
 #   Next-Generation Graphics Engine
 # --------------------------------------
 # Copyright (C) 2006-2009 Nicolas Schulz
-#               2008-2009 Florian Noeding (Python wrapper)
+#			   2008-2009 Florian Noeding (Python wrapper)
 #
 #
 # This library is free software; you can redistribute it and/or
@@ -169,6 +169,7 @@ if hasattr(h3d, 'getActiveListener'):
 	rewindSound = h3d.rewindSound
 	rewindSound.restype = None
 	rewindSound.argtypes = [c_int]
+
 
 
 

@@ -7,25 +7,24 @@
 # Sample Application
 # --------------------------------------
 # Copyright (C) 2006-2008 Nicolas Schulz
-#               2008 Florian Noeding
+#			   2008 Florian Noeding
 #
 #
 # This sample source file is not covered by the LGPL as the rest of the SDK
 # and may be used without any restrictions
 #
 # *************************************************************************************************
+import os, sys
 
 import pyglet
 import pyglet.gl
 import pyglet.window
 import pyglet.clock
 
-import sys
 sys.path.append('../../Bindings/Python')
 import horde3d as h3d
 
 from optparse import OptionParser
-
 
 
 class Window(pyglet.window.Window):
@@ -53,7 +52,6 @@ class Window(pyglet.window.Window):
 		self.camera = h3d.addCameraNode(h3d.RootNode, name, pipeRes)
 		h3d.setNodeTransform(self.camera, 0, 0, -100, 0, 0, 0, 1, 1, 1)
 
-
 	def on_resize(self, width, height):
 		self._width = width
 		self._height = height
@@ -72,8 +70,6 @@ class Window(pyglet.window.Window):
 			w = self._app._createWindow('Horde3D multi window test')
 			self._app._initHorde3DWindow(w)
 			self._app._windows.append(w)
-
-
 
 
 class App(object):
@@ -103,6 +99,8 @@ class App(object):
 
 		if not options.contentPaths:
 			op.error('no content path set')
+		else:
+			options.contentPaths = '|'.join(options.contentPaths)
 
 		self._parseOptions_moreChecks(options, args)
 
@@ -113,7 +111,6 @@ class App(object):
 	def _parseOptions_moreChecks(self, options, args):
 		# override to check more options, on error call op.error('message')
 		pass
-
 
 	def _createWindow(self, name):
 		config = pyglet.gl.Config(buffer_size=32, depth_size=24, double_buffer=True)
@@ -137,50 +134,31 @@ class App(object):
 		# FPS limit
 		pyglet.clock.set_fps_limit(self._options.fpsLimit)
 
-
 	def _initHorde3D(self):
 		# init Horde3D
 		h3d.init()
-
-		self._h3dResourceLocations()
+		
 		self._h3dEngineOptions()
 		self._h3dAddResources()
 
 		# load resources from disk
-		if not h3d.utils.loadResourcesFromDisk('|'.join(self._options.contentPaths)):
+		if not h3d.utils.loadResourcesFromDisk(self._options.contentPaths):
 			print 'loading of some resources failed: See EngineLog.html'
-
-		self._h3dSetupScene()
 
 		for w in self._windows:
 			self._initHorde3DWindow(w)
 
+		self._h3dSetupScene()
 
 	def _initHorde3DWindow(self, w):
 		w.setupCamera('cam %d' % id(w), self._h3dres.forwardPipe)
-
-
-
-
-	def _h3dResourceLocations(self):
-		# resource locations
-		h3d.utils.setResourcePath(h3d.ResourceTypes.SceneGraph, 'models')
-		h3d.utils.setResourcePath(h3d.ResourceTypes.Geometry, 'models')
-		h3d.utils.setResourcePath(h3d.ResourceTypes.Animation, 'models')
-		h3d.utils.setResourcePath(h3d.ResourceTypes.Material, 'materials')
-		h3d.utils.setResourcePath(h3d.ResourceTypes.Code, 'shaders')
-		h3d.utils.setResourcePath(h3d.ResourceTypes.Shader, 'shaders')
-		h3d.utils.setResourcePath(h3d.ResourceTypes.Texture2D, 'textures')
-		h3d.utils.setResourcePath(h3d.ResourceTypes.TextureCube, 'textures')
-		h3d.utils.setResourcePath(h3d.ResourceTypes.Effect, 'effects')
-		h3d.utils.setResourcePath(h3d.ResourceTypes.Pipeline, 'pipelines')
 
 	def _h3dEngineOptions(self):
 		# engine options
 		h3d.setOption(h3d.EngineOptions.LoadTextures, 1)
 		h3d.setOption(h3d.EngineOptions.TexCompression, 0)
 		h3d.setOption(h3d.EngineOptions.FastAnimation, 0)
-		h3d.setOption(h3d.EngineOptions.AnisotropyFactor, 8)
+		h3d.setOption(h3d.EngineOptions.MaxAnisotropy, 4)
 		h3d.setOption(h3d.EngineOptions.ShadowMapSize, 2048)
 
 	def _h3dAddResources(self):
@@ -190,16 +168,13 @@ class App(object):
 		h3dres = H3DRes()
 		self._h3dres = h3dres
 
-		h3dres.forwardPipe = h3d.addResource(h3d.ResourceTypes.Pipeline, 'forward.pipeline.xml', 0)
-		h3dres.fontMaterial = h3d.addResource(h3d.ResourceTypes.Material, 'font.material.xml', 0)
-		h3dres.logoMaterial = h3d.addResource(h3d.ResourceTypes.Material, 'logo.material.xml', 0)
-
+		h3dres.forwardPipe = h3d.addResource(h3d.ResourceTypes.Pipeline, "pipelines/forward.pipeline.xml", 0)
+		h3dres.vfontMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/font.material.xml", 0)
+		h3dres.logoMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/logo.material.xml", 0)
 
 	def _h3dSetupScene(self):
 		pass
-
 		
-
 	def mainloop(self):
 		while self._windows:
 			closed = []
@@ -207,13 +182,10 @@ class App(object):
 				if w.has_exit:
 					closed.append(w)
 					continue
-
 				w.dispatch_events()
 			for w in closed:
 				w.close()
 				self._windows.remove(w)
-
-
 
 			dt = pyglet.clock.tick()
 
@@ -246,25 +218,20 @@ class App(object):
 
 	def _mainloopRenderOverlays(self, w, dt):
 		h3d.clearOverlays()
-
-		h3d.utils.showText('%s' % (self._fpsString), 0, 0.95, 0.03, 0, self._h3dres.fontMaterial)
-		h3d.showOverlay(0.75, 0, 0, 0, 1, 0, 1, 0, 1, 0.2, 1, 1, 0.75, 0.2, 0, 1, 7, self._h3dres.logoMaterial)
+		## h3d.utils.showText('%s' % (self._fpsString), 0, 0.95, 0.03, 0, self._h3dres.fontMaterial)
+		h3d.showOverlay(0.75, 0.8, 0, 1, 0.75, 1, 0, 0,
+						1, 1, 1, 0, 1, 0.8, 1, 1,
+						1, 1, 1, 1, self._h3dres.logoMat, 7)
 
 
 	def _mainloopRender(self, w, dt):
-
-
 		h3d.render(w.camera)
-
-
 
 
 def main():
 	app = App(Window)
 	app.init()
 	app.mainloop()
-
-
 
 
 if __name__ == '__main__':
