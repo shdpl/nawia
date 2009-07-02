@@ -84,7 +84,7 @@ class EngineStats(object):
 	LightPassCount = 102
 	FrameTime = 103
 	CustomTime = 104
-__all__.append(EngineStats)
+__all__.append('EngineStats')
 
 
 class ResourceTypes(object):
@@ -799,7 +799,7 @@ _setModelMorper.restype = c_bool
 _setModelMorper.argtypes = [c_int, c_char_p, c_float]
 def setModelMorpher(modelNode, target, weight):
 	return _setModelMorper(modelNode, target, c_float(weight))
-__all__.append(setModelMorpher)
+__all__.append('setModelMorpher')
 
 
 addMeshNode = h3d.addMeshNode
