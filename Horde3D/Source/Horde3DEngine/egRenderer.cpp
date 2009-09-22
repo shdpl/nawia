@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -29,7 +17,7 @@
 #include "egModel.h"
 #include "egParticle.h"
 #include "egMaterial.h"
-#include "egTextures.h"
+#include "egTexture.h"
 #include "egShader.h"
 #include "egLight.h"
 
@@ -39,14 +27,12 @@ using namespace std;
 
 const char *vsDefColor =
 	"uniform mat4 worldMat;\n"
-	"varying vec4 color;\n"
 	"void main() {\n"
-	"	color = gl_Color;\n"
 	"	gl_Position = gl_ModelViewProjectionMatrix * worldMat * gl_Vertex;\n"
 	"}\n";
 
 const char *fsDefColor =
-	"varying vec4 color;\n"
+	"uniform vec4 color;\n"
 	"void main() {\n"
 	"	gl_FragColor = color;\n"
 	"}\n";
@@ -62,14 +48,11 @@ const char *fsOccBox =
 	"}\n";
 
 
-ShaderCombination Renderer::defColorShader;
-ShaderCombination Renderer::occShader;
-
-
 Renderer::Renderer() : RendererBase()
 {
+	_scratchBuf = 0x0;
+	_scratchBufSize = 0;
 	_frameID = 0;
-	_smFBO = 0; _smTex = 0;
 	_defShadowMap = 0;
 	_particleVBO = 0;
 	_curCamera = 0x0;
@@ -83,9 +66,15 @@ Renderer::Renderer() : RendererBase()
 
 Renderer::~Renderer()
 {
-	destroyShadowBuffer();
-	unloadTexture( _defShadowMap, TextureTypes::Tex2D );
-	if( _particleVBO != 0 ) unloadBuffers( _particleVBO, 0 );
+	releaseShadowRB();
+	releaseTexture( _defShadowMap );
+	releaseBuffer( _particleVBO );
+	releaseVertexLayout( _vlModel );
+	releaseVertexLayout( _vlParticle );
+	Modules::renderer().releaseShaderComb( _defColorShader );
+	Modules::renderer().releaseShaderComb( _occShader );
+
+	delete[] _scratchBuf;
 }
 
 
@@ -93,90 +82,59 @@ Renderer::~Renderer()
 // Basic Initialization and Setup
 // =================================================================================================
 
-void Renderer::initStates()
+unsigned char *Renderer::useScratchBuf( uint32 minSize )
 {
-	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
-	glDepthFunc( GL_LEQUAL );
-	glShadeModel( GL_SMOOTH );
-	glDisable( GL_MULTISAMPLE );
-	glDisable( GL_SAMPLE_ALPHA_TO_COVERAGE );
-	glEnable( GL_DEPTH_TEST );
-	glEnable( GL_CULL_FACE );
-	glDisable( GL_ALPHA_TEST );
-	glClearDepth( 1.0f );
-	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );	
+	if( _scratchBufSize < minSize )
+	{
+		delete[] _scratchBuf;
+		_scratchBuf = new unsigned char[minSize + 15];
+		_scratchBufSize = minSize;
+	}
+
+	return _scratchBuf + (uintptr_t)_scratchBuf % 16;  // 16 byte aligned
 }
 
 
 bool Renderer::init()
 {
-	bool failed = false;
+	// Init backend
+	if( !RendererBase::init() ) return false;
+
+	// Check capabilities
+	if( !_caps[RenderCaps::Tex_Float] )
+		Modules::log().writeWarning( "Renderer: No floating point texture support available" );
+	if( !_caps[RenderCaps::Tex_NPOT] )
+		Modules::log().writeWarning( "Renderer: No non-Power-of-two texture support available" );
+	if( !_caps[RenderCaps::RT_Multisampling] )
+		Modules::log().writeWarning( "Renderer: No multisampling for render targets available" );
 	
-	if( !RendererBase::init() ) failed = true;
+	// Create vertex layouts
+	_vlModel = createVertexLayout( 8 );
+	setVertexLayoutElem( _vlModel, 0, "gl_Vertex", 0, 3, 0 );
+	setVertexLayoutElem( _vlModel, 1, "tangent", 1, 3, 0 );
+	setVertexLayoutElem( _vlModel, 2, "bitangent", 2, 3, 0 );
+	setVertexLayoutElem( _vlModel, 3, "normal", 3, 3, 0 );
+	setVertexLayoutElem( _vlModel, 4, "joints", 4, 4, 8 );
+	setVertexLayoutElem( _vlModel, 5, "weights", 4, 4, 24 );
+	setVertexLayoutElem( _vlModel, 6, "texCoords0", 4, 2, 0 );
+	setVertexLayoutElem( _vlModel, 7, "texCoords1", 4, 2, 40 );
 
-	char *vendor = (char *)glGetString( GL_VENDOR );
-	char *renderer = (char *)glGetString( GL_RENDERER );
-	char *version = (char *)glGetString( GL_VERSION );
-	
-	Modules::log().writeInfo( "Initializing OpenGL renderer using OGL '%s' by '%s' on '%s'",
-	                          version, vendor, renderer );
+	_vlParticle = createVertexLayout( 4 );
+	setVertexLayoutElem( _vlParticle, 0, "gl_Vertex", 0, 3, 0 );
+	setVertexLayoutElem( _vlParticle, 1, "parIdx", 0, 1, 24 );
+	setVertexLayoutElem( _vlParticle, 2, "parCornerIdx", 0, 1, 20 );
+	setVertexLayoutElem( _vlParticle, 3, "texCoords0", 0, 2, 12 );
 
-	// Check that OpenGL 2.0 is available
-	if( glExt::majorVersion < 2 || glExt::minorVersion < 0 )
-	{
-		Modules::log().writeError( "OpenGL 2.0 not supported" );
-		//failed = true;
-	}
-	
-	// Check extensions
-	if( !glExt::EXT_framebuffer_object )
-	{
-		Modules::log().writeError( "Extension EXT_framebuffer_object not supported" );
-		failed = true;
-	}
-	if( !glExt::EXT_texture_filter_anisotropic )
-	{
-		Modules::log().writeError( "Extension EXT_texture_filter_anisotropic not supported" );
-		failed = true;
-	}
-	if( !glExt::EXT_texture_compression_s3tc )
-	{
-		Modules::log().writeError( "Extension EXT_texture_compression_s3tc not supported" );
-		failed = true;
-	}
-	if( !glExt::ARB_texture_float )
-	{
-		Modules::log().writeWarning( "Extension ARB_texture_float not supported" );
-	}
-	if( !glExt::ARB_texture_non_power_of_two )
-	{
-		Modules::log().writeWarning( "Extension ARB_texture_non_power_of_two not supported" );
-	}
-	if( !glExt::EXT_framebuffer_multisample )
-	{
-		Modules::log().writeWarning( "Extension EXT_framebuffer_multisample and/or EXT_framebuffer_blit not supported" );
-	}
-
-	if( failed )
-	{
-		Modules::log().writeError( "Failed to init renderer, debug info following" );
-		char *exts = (char *)glGetString( GL_EXTENSIONS );
-		Modules::log().writeInfo( "Supported extensions: '%s'", exts );
-
-		return false;
-	}
-
-	// Init OpenGL states
-	initStates();
 	
 	// Upload default shaders
-	uploadShader( vsDefColor, fsDefColor, defColorShader );
-	uploadShader( vsOccBox, fsOccBox, occShader );
+	createShaderComb( vsDefColor, fsDefColor, _defColorShader );
+	createShaderComb( vsOccBox, fsOccBox, _occShader );
+
+	// Cache common uniforms
+	_defColShader_color = glGetUniformLocation( _defColorShader.shaderObj, "color" );
 	
-	// Create shadow map
-	if( !createShadowBuffer( Modules::config().shadowMapSize, Modules::config().shadowMapSize ) )
+	// Create shadow map render target
+	if( !createShadowRB( Modules::config().shadowMapSize, Modules::config().shadowMapSize ) )
 	{
 		Modules::log().writeError( "Failed to create shadow map" );
 		return false;
@@ -187,10 +145,8 @@ bool Renderer::init()
 	                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-	glGenTextures( 1, &_defShadowMap );
-	glBindTexture( GL_TEXTURE_2D, _defShadowMap );
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, 8, 8, 0,
-	              GL_DEPTH_COMPONENT, GL_FLOAT, shadowTex );
+	_defShadowMap = createTexture( TextureTypes::Tex2D, 8, 8, TextureFormats::DEPTH, false, false, false );
+	uploadTextureData( _defShadowMap, 8, 8, TextureFormats::DEPTH, 0, 0, shadowTex );
 
 	// Create particle geometry array
 	ParticleVert v0( 0, 0, 0 );
@@ -207,13 +163,13 @@ bool Renderer::init()
 		parVerts[i * 4 + 3] = v3; parVerts[i * 4 + 3].index = (float)i;
 
 	}
-	_particleVBO = Modules::renderer().uploadVertices(
-		(float *)parVerts, ParticlesPerBatch * 4 * sizeof( ParticleVert ) );
+	_particleVBO = Modules::renderer().createVertexBuffer(
+		ParticlesPerBatch * 4 * sizeof( ParticleVert ), (float *)parVerts );
 
 	_overlays.reserve( 100 );
 
-	// Reset GL states
-	finishRendering();
+	// Init scratch buffer with some default size
+	useScratchBuf( 4 * 1024*1024 );
 
 	// Start frame timer
 	Timer *timer = Modules::stats().getTimer( EngineStats::FrameTime );
@@ -227,7 +183,6 @@ bool Renderer::init()
 void Renderer::resize( int x, int y, int width, int height )
 {
 	RendererBase::resize( x, y, width, height );
-	setRenderBuffer( _curRendBuf );
 }
 
 
@@ -271,81 +226,55 @@ void Renderer::setupViewMatrices( CameraNode *cam )
 // Material System
 // =================================================================================================
 
-bool Renderer::uploadShader( const char *vertexShader, const char *fragmentShader, ShaderCombination &sc )
+bool Renderer::createShaderComb( const char *vertexShader, const char *fragmentShader, ShaderCombination &sc )
 {
 	// Create shader program
-	uint32 shaderId = loadShader( vertexShader, fragmentShader );
-	if( shaderId == 0 ) return false;
+	uint32 shdObj = RendererBase::createShader( vertexShader, fragmentShader );
+	if( shdObj == 0 ) return false;
 	
-	// Bind attributes
-	// Note: Index 0 is reserved for gl_Vertex when enabling GL_VERTEX_ARRAY
-	// Mesh
-	glBindAttribLocation( shaderId, 1, "normal" );
-	glBindAttribLocation( shaderId, 2, "tangent" );
-	glBindAttribLocation( shaderId, 3, "bitangent" );
-	glBindAttribLocation( shaderId, 4, "joints" );
-	glBindAttribLocation( shaderId, 5, "weights" );
-	glBindAttribLocation( shaderId, 6, "texCoords0" );
-	glBindAttribLocation( shaderId, 7, "texCoords1" );
-	
-	// Particles
-	glBindAttribLocation( shaderId, 1, "parIdx" );
-	glBindAttribLocation( shaderId, 2, "parCornerIdx" );
-
-	// Link shader
-	if( !linkShader( shaderId ) ) return false;
-	glUseProgram( shaderId );
-	sc.shaderObject = shaderId;
+	sc.shaderObj = shdObj;
+	bindShader( shdObj );
 	
 	// Set standard uniforms
-	int loc = glGetUniformLocation( shaderId, "shadowMap" );
+	int loc = glGetUniformLocation( shdObj, "shadowMap" );
 	if( loc >= 0 ) glUniform1i( loc, 12 );
 
 	// Get uniform locations
-	sc.uni_frameBufSize = glGetUniformLocation( shaderId, "frameBufSize" );
-	sc.uni_worldMat = glGetUniformLocation( shaderId, "worldMat" );
-	sc.uni_worldNormalMat = glGetUniformLocation( shaderId, "worldNormalMat" );
-	sc.uni_viewer = glGetUniformLocation( shaderId, "viewer" );
-	sc.uni_lightPos = glGetUniformLocation( shaderId, "lightPos" );
-	sc.uni_lightDir = glGetUniformLocation( shaderId, "lightDir" );
-	sc.uni_lightColor = glGetUniformLocation( shaderId, "lightColor" );
-	sc.uni_lightCosCutoff = glGetUniformLocation( shaderId, "lightCosCutoff" );
-	sc.uni_shadowSplitDists = glGetUniformLocation( shaderId, "shadowSplitDists" );
-	sc.uni_shadowMats = glGetUniformLocation( shaderId, "shadowMats" );
-	sc.uni_shadowMapSize = glGetUniformLocation( shaderId, "shadowMapSize" );
-	sc.uni_shadowBias = glGetUniformLocation( shaderId, "shadowBias" );
-	sc.uni_skinMatRows = glGetUniformLocation( shaderId, "skinMatRows[0]" );
-	sc.uni_parCorners = glGetUniformLocation( shaderId, "parCorners" );
-	sc.uni_parPosArray = glGetUniformLocation( shaderId, "parPosArray" );
-	sc.uni_parSizeAndRotArray = glGetUniformLocation( shaderId, "parSizeAndRotArray" );
-	sc.uni_parColorArray = glGetUniformLocation( shaderId, "parColorArray" );
-	sc.uni_olayColor = glGetUniformLocation( shaderId, "olayColor" );
-
-	// Get attribute locations
-	sc.attrib_normal = glGetAttribLocation( shaderId, "normal" );
-	sc.attrib_tangent = glGetAttribLocation( shaderId, "tangent" );
-	sc.attrib_bitangent = glGetAttribLocation( shaderId, "bitangent" );
-	sc.attrib_joints = glGetAttribLocation( shaderId, "joints" );
-	sc.attrib_weights = glGetAttribLocation( shaderId, "weights" );
-	sc.attrib_texCoords0 = glGetAttribLocation( shaderId, "texCoords0" );
-	sc.attrib_texCoords1 = glGetAttribLocation( shaderId, "texCoords1" );
+	sc.uni_frameBufSize = glGetUniformLocation( shdObj, "frameBufSize" );
+	sc.uni_worldMat = glGetUniformLocation( shdObj, "worldMat" );
+	sc.uni_worldNormalMat = glGetUniformLocation( shdObj, "worldNormalMat" );
+	sc.uni_viewer = glGetUniformLocation( shdObj, "viewer" );
+	sc.uni_lightPos = glGetUniformLocation( shdObj, "lightPos" );
+	sc.uni_lightDir = glGetUniformLocation( shdObj, "lightDir" );
+	sc.uni_lightColor = glGetUniformLocation( shdObj, "lightColor" );
+	sc.uni_lightCosCutoff = glGetUniformLocation( shdObj, "lightCosCutoff" );
+	sc.uni_shadowSplitDists = glGetUniformLocation( shdObj, "shadowSplitDists" );
+	sc.uni_shadowMats = glGetUniformLocation( shdObj, "shadowMats" );
+	sc.uni_shadowMapSize = glGetUniformLocation( shdObj, "shadowMapSize" );
+	sc.uni_shadowBias = glGetUniformLocation( shdObj, "shadowBias" );
+	sc.uni_skinMatRows = glGetUniformLocation( shdObj, "skinMatRows[0]" );
+	sc.uni_parCorners = glGetUniformLocation( shdObj, "parCorners" );
+	sc.uni_parPosArray = glGetUniformLocation( shdObj, "parPosArray" );
+	sc.uni_parSizeAndRotArray = glGetUniformLocation( shdObj, "parSizeAndRotArray" );
+	sc.uni_parColorArray = glGetUniformLocation( shdObj, "parColorArray" );
+	sc.uni_olayColor = glGetUniformLocation( shdObj, "olayColor" );
 
 	return true;
 }
 
 
-void Renderer::setShader( ShaderCombination *sc )
+void Renderer::releaseShaderComb( ShaderCombination &sc )
 {
-	if( sc == 0x0 || sc->shaderObject == 0 )
-	{
-		_curShader = 0x0;
-		glUseProgram( 0 );
-	}
-	else
-	{
-		_curShader = sc;
-		glUseProgram( sc->shaderObject );
-	}
+	RendererBase::releaseShader( sc.shaderObj );
+}
+
+
+void Renderer::setShaderComb( ShaderCombination *sc )
+{
+	if( sc == 0x0 ) bindShader( 0 );
+	else bindShader( sc->shaderObj );
+
+	_curShader = sc;
 }
 
 
@@ -369,8 +298,8 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		
 		// Set shader combination
 		ShaderCombination *sc = shaderRes->getCombination( *context, materialRes->_combMask );
-		if( sc != _curShader ) setShader( sc );
-		if( _curShader == 0x0 ) return false;
+		if( sc != _curShader ) setShaderComb( sc );
+		if( _curShader == 0x0 || _curShaderObj == 0 ) return false;
 
 		// Configure depth mask
 		if( context->writeDepth ) glDepthMask( GL_TRUE );
@@ -428,43 +357,11 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 			break;
 		}
 
-		// Configure alpha test and alpha-to-coverage
+		// Configure alpha-to-coverage
 		if( context->alphaToCoverage && Modules::config().sampleCount > 0 )
-		{
-			glDisable( GL_ALPHA_TEST );
 			glEnable( GL_SAMPLE_ALPHA_TO_COVERAGE );
-		}
 		else
-		{
 			glDisable( GL_SAMPLE_ALPHA_TO_COVERAGE );
-			
-			switch( context->alphaTest )
-			{
-			case TestModes::Always:
-				glDisable( GL_ALPHA_TEST );
-				break;
-			case TestModes::Less:
-				glEnable( GL_ALPHA_TEST );
-				glAlphaFunc( GL_LESS, context->alphaRef );
-				break;
-			case TestModes::LessEqual:
-				glEnable( GL_ALPHA_TEST );
-				glAlphaFunc( GL_LEQUAL, context->alphaRef );
-				break;
-			case TestModes::Greater:
-				glEnable( GL_ALPHA_TEST );
-				glAlphaFunc( GL_GREATER, context->alphaRef );
-				break;
-			case TestModes::GreaterEqual:
-				glEnable( GL_ALPHA_TEST );
-				glAlphaFunc( GL_GEQUAL, context->alphaRef );
-				break;
-			case TestModes::Equal:
-				glEnable( GL_ALPHA_TEST );
-				glAlphaFunc( GL_EQUAL, context->alphaRef );
-				break;
-			}
-		}
 	}
 	
 	// Setup standard shader uniforms
@@ -489,8 +386,7 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 				glUniform3fv( _curShader->uni_lightDir, 1, &_curLight->_spotDir.x );
 			
 			if( _curShader->uni_lightColor >= 0 )
-				glUniform3f( _curShader->uni_lightColor, _curLight->_diffCol_R,
-							 _curLight->_diffCol_G, _curLight->_diffCol_B );
+				glUniform3fv( _curShader->uni_lightColor, 1, &_curLight->_diffuseCol.x );
 			
 			if( _curShader->uni_lightCosCutoff >= 0 )
 				glUniform1f( _curShader->uni_lightCosCutoff, cosf( degToRad( _curLight->_fov/ 2 ) ) );
@@ -533,14 +429,26 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 				{
 					target = GL_TEXTURE_2D;
 					mips = matSampler.texRes->hasMipMaps();
-					glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
-					glBindTexture( GL_TEXTURE_2D, matSampler.texRes->getTexObject() );
+					
+					if( matSampler.texRes->getRBObject() == 0 )
+					{
+						bindTexture( shaderRes->_samplers[i].texUnit, matSampler.texRes->getTexObject() );
+					}
+					else if( matSampler.texRes->getRBObject() != _curRendBuf )
+					{
+						glActiveTexture( GL_TEXTURE0 + shaderRes->_samplers[i].texUnit );
+						glBindTexture( GL_TEXTURE_2D, getRenderBufferTex( matSampler.texRes->getRBObject(), 0 ) );
+					}
+					else  // Trying to bind active render buffer as texture
+					{
+						bindTexture( shaderRes->_samplers[i].texUnit, TextureResource::defTex2DObject );
+					}
 				}
 				else if( matSampler.texRes->getTexType() == TextureTypes::TexCube )
 				{
 					target = GL_TEXTURE_CUBE_MAP;
 					mips = matSampler.texRes->hasMipMaps();
-					glBindTexture( GL_TEXTURE_CUBE_MAP, matSampler.texRes->getTexObject() );
+					bindTexture( shaderRes->_samplers[i].texUnit, matSampler.texRes->getTexObject() );
 				}
 
 				break;
@@ -556,19 +464,9 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 				mips = false;
 				glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
 
-				uint32 bufIndex = _pipeSamplerBindings[j].bufIndex;
-				RenderBuffer *rb = _pipeSamplerBindings[j].rb;
-				
-				if( bufIndex < 4 && rb->colBufs[bufIndex] != 0 )
-				{
-					glBindTexture( GL_TEXTURE_2D, rb->colBufs[bufIndex] );
-				}
-				else if( bufIndex == 32 && rb->depthBuf != 0 )
-				{
-					glBindTexture( GL_TEXTURE_2D, rb->depthBuf );
-					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
-					glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE );
-				}
+				glBindTexture( GL_TEXTURE_2D, getRenderBufferTex(
+					_pipeSamplerBindings[j].rbObj, _pipeSamplerBindings[j].bufIndex ) );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
 
 				break;
 			}
@@ -655,7 +553,7 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		}
 
 		// Use default values if not found
-		if( !found )
+		if( !found && firstRec )
 		{
 			ShaderUniform &uniform = shaderRes->_uniforms[i];
 			glUniform4f( _curShader->customUniforms[i], uniform.defValues[0], uniform.defValues[1],
@@ -687,9 +585,9 @@ bool Renderer::setMaterial( MaterialResource *materialRes, const string &shaderC
 	if( materialRes == 0x0 )
 	{	
 		_curMatRes = 0x0;
-		_curShader = 0x0;
+		setShaderComb( 0x0 );
 		glDisable( GL_BLEND );
-		glDisable( GL_ALPHA_TEST );
+		glDisable( GL_SAMPLE_ALPHA_TO_COVERAGE );
 		glEnable( GL_DEPTH_TEST );
 		glDepthFunc( GL_LEQUAL );
 		glDepthMask( 1 );
@@ -715,47 +613,17 @@ bool Renderer::setMaterial( MaterialResource *materialRes, const string &shaderC
 // Shadowing
 // =================================================================================================
 
-bool Renderer::createShadowBuffer( uint32 width, uint32 height )
+bool Renderer::createShadowRB( uint32 width, uint32 height )
 {
-	int curFBO;
-	glGetIntegerv( GL_FRAMEBUFFER_BINDING_EXT, &curFBO );
+	_shadowRB = createRenderBuffer( width, height, RenderBufferFormats::RGBA8, true, 0, 0 );
 	
-	// Create framebuffer
-	glGenFramebuffersEXT( 1, &_smFBO );
-	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, _smFBO );
-	glDrawBuffer( GL_NONE );
-	glReadBuffer( GL_NONE );
-
-	// Attach renderable textures
-	glGenTextures( 1, &_smTex );
-	glBindTexture( GL_TEXTURE_2D, _smTex );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0x0 );
-	glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, _smTex, 0 );
-
-	int depthBits;
-	glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_DEPTH_SIZE, &depthBits );
-	if( depthBits == 16 )
-	{
-		Modules::log().writeWarning( "Shadow map precision is limited to 16 bit" );
-	}
-
-	// Check if successful
-	uint32 status = glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT );
-	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, curFBO );
-	
-	if( status != GL_FRAMEBUFFER_COMPLETE_EXT ) return false;
-	
-	return true;
+	return _shadowRB != 0;
 }
 
 
-void Renderer::destroyShadowBuffer()
+void Renderer::releaseShadowRB()
 {
-	if( _smTex != 0 ) glDeleteTextures( 1, &_smTex );
-	if( _smFBO != 0 ) glDeleteFramebuffersEXT( 1, &_smFBO );
-
-	_smTex = 0; _smFBO = 0;
+	releaseRenderBuffer( _shadowRB );
 }
 
 
@@ -764,8 +632,10 @@ void Renderer::setupShadowMap( bool noShadows )
 	// Bind shadow map
 	glActiveTexture( GL_TEXTURE12 );
 
-	if( !noShadows && _curLight->_shadowMapCount > 0 )glBindTexture( GL_TEXTURE_2D, _smTex );
-	else glBindTexture( GL_TEXTURE_2D, _defShadowMap );
+	if( !noShadows && _curLight->_shadowMapCount > 0 )
+		glBindTexture( GL_TEXTURE_2D, getRenderBufferTex( _shadowRB, 32 ) );
+	else
+		bindTexture( 12, _defShadowMap );
 
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1 );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
@@ -791,15 +661,12 @@ Matrix4f Renderer::calcLightMat( const Frustum &frustum )
 		bBox.makeUnion( Modules::sceneMan().getRenderableQueue()[j].node->getBBox() ); 
 	}
 	
-	// Get light matrix
-	float projMat[16];
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-	myPerspective( _curLight->_fov, 1, _curCamera->_frustNear, _curLight->_radius );
-	glGetFloatv( GL_PROJECTION_MATRIX, projMat );
-	glMatrixMode( GL_MODELVIEW );
-
-	Matrix4f lightMat = Matrix4f( projMat ) * _curLight->getViewMat();
+	// Calculate light matrix
+	float ymax = _curCamera->_frustNear * tan( degToRad( _curLight->_fov / 2 ) );
+	float xmax = ymax * 1.0f;  // ymax * aspect
+	Matrix4f projMat = Matrix4f::PerspectiveMat( -xmax, xmax, -ymax, ymax,
+	                                             _curCamera->_frustNear, _curLight->_radius );
+	Matrix4f lightMat = projMat * _curLight->getViewMat();
 
 	// Get frustum and bounding box extents in post-projective space
 	float frustMinX =  Math::MaxFloat, bbMinX =  Math::MaxFloat;
@@ -868,7 +735,7 @@ Matrix4f Renderer::calcLightMat( const Frustum &frustum )
 	cropView.x[13] = offsetY;
 	cropView.x[14] = offsetZ;
 
-	return cropView * Matrix4f( projMat );
+	return cropView * projMat;
 }
 
 
@@ -876,11 +743,9 @@ void Renderer::updateShadowMap()
 {
 	if( _curLight == 0x0 || _curCamera == 0x0 ) return;
 	
-	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, _smFBO );
-	glViewport( 0, 0, Modules::config().shadowMapSize, Modules::config().shadowMapSize );
-	_fbWidth = Modules::config().shadowMapSize;
-	_fbHeight = Modules::config().shadowMapSize;
-	
+	uint32 _prevRendBuf = _curRendBuf;
+	setRenderBuffer( _shadowRB );
+
 	glDepthMask( GL_TRUE );
 	glClearDepth( 1.0f );
     glClear( GL_DEPTH_BUFFER_BIT );
@@ -912,7 +777,7 @@ void Renderer::updateShadowMap()
 	// split volumes are empty
 	minDist = _curCamera->_frustNear;
 	
-	// Caluclate split distances using PSSM scheme
+	// Calculate split distances using PSSM scheme
 	const float nearDist = maxf( minDist, _curCamera->_frustNear );
 	const float farDist = maxf( maxDist, minDist + 1 );
 	const uint32 numMaps = _curLight->_shadowMapCount;
@@ -1011,7 +876,7 @@ void Renderer::updateShadowMap()
 	glMatrixMode( GL_MODELVIEW );
 	glCullFace( GL_BACK );
 		
-	setRenderBuffer( _curRendBuf );
+	setRenderBuffer( _prevRendBuf );
 }
 
 
@@ -1023,22 +888,22 @@ void Renderer::drawAABB( const Vec3f &bbMin, const Vec3f &bbMax )
 {
 	static const unsigned int indices[24] = {
 		0, 1, 2, 3,
-		7, 6, 5, 4,
 		1, 5, 6, 2,
+		5, 4, 7, 6,
 		4, 0, 3, 7,
 		3, 2, 6, 7,
 		4, 5, 1, 0
 	};
 	
 	Vec3f corners[8] = {
-		Vec3f( bbMin.x, bbMin.y, bbMin.z ),
-		Vec3f( bbMax.x, bbMin.y, bbMin.z ),
-		Vec3f( bbMax.x, bbMax.y, bbMin.z ),
-		Vec3f( bbMin.x, bbMax.y, bbMin.z ),
 		Vec3f( bbMin.x, bbMin.y, bbMax.z ),
 		Vec3f( bbMax.x, bbMin.y, bbMax.z ),
 		Vec3f( bbMax.x, bbMax.y, bbMax.z ),
-		Vec3f( bbMin.x, bbMax.y, bbMax.z )
+		Vec3f( bbMin.x, bbMax.y, bbMax.z ),
+		Vec3f( bbMin.x, bbMin.y, bbMin.z ),
+		Vec3f( bbMax.x, bbMin.y, bbMin.z ),
+		Vec3f( bbMax.x, bbMax.y, bbMin.z ),
+		Vec3f( bbMin.x, bbMax.y, bbMin.z )
 	};
 
 	glBegin( GL_QUADS );
@@ -1047,79 +912,6 @@ void Renderer::drawAABB( const Vec3f &bbMin, const Vec3f &bbMax )
 		glVertex3fv( &corners[indices[i]].x );
 	}
 	glEnd();
-}
-
-
-void Renderer::drawDebugAABB( const Vec3f &bbMin, const Vec3f &bbMax, bool saveStates )
-{
-	static const unsigned int indices[24] = {
-		0, 1, 2, 3,
-		7, 6, 5, 4,
-		1, 5, 6, 2,
-		4, 0, 3, 7,
-		3, 2, 6, 7,
-		4, 5, 1, 0
-	};
-	
-	Vec3f corners[8] = {
-		Vec3f( bbMin.x, bbMin.y, bbMin.z ),
-		Vec3f( bbMax.x, bbMin.y, bbMin.z ),
-		Vec3f( bbMax.x, bbMax.y, bbMin.z ),
-		Vec3f( bbMin.x, bbMax.y, bbMin.z ),
-		Vec3f( bbMin.x, bbMin.y, bbMax.z ),
-		Vec3f( bbMax.x, bbMin.y, bbMax.z ),
-		Vec3f( bbMax.x, bbMax.y, bbMax.z ),
-		Vec3f( bbMin.x, bbMax.y, bbMax.z )
-	};
-
-	GLint array_buffer = 0; 
-	GLint element_buffer = 0; 
-	GLint shader = 0; 
-	GLboolean vertexArray = 0;
-	GLint vSize = 0; 
-	GLint vType = 0; 
-	GLint vStride = 0; 
-	GLvoid *vArray = 0x0; 
-	
-	// Save old states
-	if( saveStates )
-	{
-		glGetIntegerv( GL_ARRAY_BUFFER_BINDING, &array_buffer );
-		glGetIntegerv( GL_ELEMENT_ARRAY_BUFFER_BINDING, &element_buffer );
-		glGetIntegerv( GL_CURRENT_PROGRAM, &shader );
-		glIsEnabled( GL_VERTEX_ARRAY );	
-		glGetIntegerv( GL_VERTEX_ARRAY_SIZE, &vSize );
-		glGetIntegerv( GL_VERTEX_ARRAY_TYPE, &vType );
-		glGetIntegerv( GL_VERTEX_ARRAY_STRIDE, &vStride );
-		glGetPointerv( GL_VERTEX_ARRAY_POINTER, &vArray );
-		glPushClientAttrib( GL_CLIENT_PIXEL_STORE_BIT | GL_CLIENT_VERTEX_ARRAY_BIT );
-	}
-
-	glPushAttrib(GL_POLYGON_BIT | GL_CURRENT_BIT); 
-	
-	// Prepare rendering box
-	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	glDisable( GL_CULL_FACE );
-	glUseProgram( defColorShader.shaderObject );
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-	glColor4f( 1, 1, 1, 1 );
-	glVertexPointer( 3, GL_FLOAT, 0, corners );
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glDrawElements( GL_QUADS, 24, GL_UNSIGNED_INT, indices );	
-	glEnable(GL_CULL_FACE);
-	
-	// Restore old states
-	glPopAttrib();
-	
-	if( saveStates )
-	{
-		glUseProgram( shader );
-		glBindBuffer( GL_ARRAY_BUFFER, array_buffer );
-		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, element_buffer );
-		if( vertexArray ) glVertexPointer( vSize, vType, vStride, vArray );
-		glPopClientAttrib();
-	}
 }
 
 
@@ -1145,10 +937,9 @@ void Renderer::drawOverlays( const string &shaderContext )
 	++_curUpdateStamp;
 	
 	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-	glOrtho( 0, 1, 1, 0, -1, 1 );
+	glLoadMatrixf( Matrix4f::OrthoMat( 0, 1, 1, 0, -1, 1 ).x );
 	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity();
+	glLoadMatrixf( Matrix4f().x );
 	
 	for( int i = 0; i < 8; ++i )
 	{
@@ -1177,9 +968,9 @@ void Renderer::drawOverlays( const string &shaderContext )
 // Pipeline Functions
 // =================================================================================================
 
-void Renderer::bindBuffer( RenderBuffer *rb, const string &sampler, uint32 bufIndex )
+void Renderer::bindPipeBuffer( uint32 rbObj, const string &sampler, uint32 bufIndex )
 {
-	if( rb == 0x0 )
+	if( rbObj == 0 )
 	{
 		// Clear buffer bindings
 		_pipeSamplerBindings.resize( 0 );
@@ -1199,7 +990,7 @@ void Renderer::bindBuffer( RenderBuffer *rb, const string &sampler, uint32 bufIn
 		{
 			if( strcmp( _pipeSamplerBindings[i].sampler, sampler.c_str() ) == 0 )
 			{
-				_pipeSamplerBindings[i].rb = rb;
+				_pipeSamplerBindings[i].rbObj = rbObj;
 				_pipeSamplerBindings[i].bufIndex = bufIndex;
 				return;
 			}
@@ -1210,7 +1001,7 @@ void Renderer::bindBuffer( RenderBuffer *rb, const string &sampler, uint32 bufIn
 		size_t len = std::min( sampler.length(), (size_t)63 );
 		strncpy_s( _pipeSamplerBindings.back().sampler, 63, sampler.c_str(), len );
 		_pipeSamplerBindings.back().sampler[len] = '\0';
-		_pipeSamplerBindings.back().rb = rb;
+		_pipeSamplerBindings.back().rbObj = rbObj;
 		_pipeSamplerBindings.back().bufIndex = bufIndex;
 	}
 }
@@ -1220,8 +1011,10 @@ void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
                       float r, float g, float b, float a )
 {
 	int mask = 0;
+	uint32 prevBuffers[4];
 
-	glPushAttrib( GL_COLOR_BUFFER_BIT );	// Store state of glDrawBuffers
+	// Store state of glDrawBuffers
+	for( uint32 i = 0; i < 4; ++i ) glGetIntegerv( GL_DRAW_BUFFER0 + i, (int *)&prevBuffers[i] );
 	
 	glDisable( GL_BLEND );	// Clearing floating point buffers causes problems when blending is enabled on Radeon 9600
 	glDepthMask( GL_TRUE );
@@ -1229,14 +1022,15 @@ void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
 
 	if( _curRendBuf != 0x0 )
 	{
+		RBRenderBuffer &rb = _rendBufs.getRef( _curRendBuf );
 		uint32 buffers[4], cnt = 0;
 
-		if( depth && _curRendBuf->depthBuf != 0 ) mask |= GL_DEPTH_BUFFER_BIT;
+		if( depth && rb.depthTex != 0 ) mask |= GL_DEPTH_BUFFER_BIT;
 		
-		if( buf0 && _curRendBuf->colBufs[0] != 0 ) buffers[cnt++] = GL_COLOR_ATTACHMENT0_EXT;
-		if( buf1 && _curRendBuf->colBufs[1] != 0 ) buffers[cnt++] = GL_COLOR_ATTACHMENT1_EXT;
-		if( buf2 && _curRendBuf->colBufs[2] != 0 ) buffers[cnt++] = GL_COLOR_ATTACHMENT2_EXT;
-		if( buf3 && _curRendBuf->colBufs[3] != 0 ) buffers[cnt++] = GL_COLOR_ATTACHMENT3_EXT;
+		if( buf0 && rb.colTexs[0] != 0 ) buffers[cnt++] = GL_COLOR_ATTACHMENT0_EXT;
+		if( buf1 && rb.colTexs[1] != 0 ) buffers[cnt++] = GL_COLOR_ATTACHMENT1_EXT;
+		if( buf2 && rb.colTexs[2] != 0 ) buffers[cnt++] = GL_COLOR_ATTACHMENT2_EXT;
+		if( buf3 && rb.colTexs[3] != 0 ) buffers[cnt++] = GL_COLOR_ATTACHMENT3_EXT;
 
 		if( cnt > 0 )
 		{	
@@ -1254,7 +1048,10 @@ void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
 	
 	if( mask != 0 ) glClear( mask );
 	glDisable( GL_SCISSOR_TEST );
-	glPopAttrib();
+	
+	// Restore state of glDrawBuffers
+	uint32 cnt = 4;
+	glDrawBuffers( cnt, prevBuffers );
 }
 
 
@@ -1269,13 +1066,12 @@ void Renderer::drawFSQuad( Resource *matRes, const string &shaderContext )
 	if( !setMaterial( (MaterialResource *)matRes, shaderContext ) ) return;
 	
 	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-	glOrtho( 0, 1, 0, 1, -1, 1 );
+	glLoadMatrixf( Matrix4f::OrthoMat( 0, 1, 0, 1, -1, 1 ).x );
 	glMatrixMode( GL_MODELVIEW );
 	if( _curCamera != 0x0 )
 		glLoadMatrixf( _curCamera->getViewMat().x );
 	else
-		glLoadIdentity();
+		glLoadMatrixf( Matrix4f().x );
 	
 	glBegin(GL_QUADS);
 	glTexCoord2f( 0, 0 ); glVertex3f( 0, 0, 1 );
@@ -1330,7 +1126,7 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 			}
 			if( _curLight->_occQueries[occSet] == 0 )
 			{
-				_curLight->_occQueries[occSet] = Modules::renderer().createOccQuery();
+				_curLight->_occQueries[occSet] = Modules::renderer().createOcclusionQuery();
 				_curLight->_lastVisited[occSet] = 0;
 			}
 			else
@@ -1349,16 +1145,16 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 						Modules::renderer().setMaterial( 0x0, "" );
 						glColorMask( 0, 0, 0, 0 );
 						glDepthMask( 0 );
-						Modules::renderer().beginOccQuery( _curLight->_occQueries[occSet] );
-						Modules::renderer().setShader( &Modules::renderer().occShader );
+						Modules::renderer().beginQuery( _curLight->_occQueries[occSet] );
+						Modules::renderer().setShaderComb( &Modules::renderer()._occShader );
 						Modules::renderer().drawAABB( mins, maxs );
-						Modules::renderer().endOccQuery( _curLight->_occQueries[occSet] );
+						Modules::renderer().endQuery( _curLight->_occQueries[occSet] );
 						glDepthMask( 1 );
 						glColorMask( 1, 1, 1, 1 );
 						Modules::renderer().setMaterial( 0x0, "" );
 
 						// Check query result from previous frame
-						if( Modules::renderer().getOccQueryResult( _curLight->_occQueries[occSet] ) < 1 )
+						if( Modules::renderer().getQueryResult( _curLight->_occQueries[occSet] ) < 1 )
 						{
 							continue;
 						}
@@ -1434,7 +1230,7 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 			}
 			if( _curLight->_occQueries[occSet] == 0 )
 			{
-				_curLight->_occQueries[occSet] = Modules::renderer().createOccQuery();
+				_curLight->_occQueries[occSet] = Modules::renderer().createOcclusionQuery();
 				_curLight->_lastVisited[occSet] = 0;
 			}
 			else
@@ -1453,16 +1249,16 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 						Modules::renderer().setMaterial( 0x0, "" );
 						glColorMask( 0, 0, 0, 0 );
 						glDepthMask( 0 );
-						Modules::renderer().beginOccQuery( _curLight->_occQueries[occSet] );
-						Modules::renderer().setShader( &Modules::renderer().occShader );
+						Modules::renderer().beginQuery( _curLight->_occQueries[occSet] );
+						Modules::renderer().setShaderComb( &Modules::renderer()._occShader );
 						Modules::renderer().drawAABB( mins, maxs );
-						Modules::renderer().endOccQuery( _curLight->_occQueries[occSet] );
+						Modules::renderer().endQuery( _curLight->_occQueries[occSet] );
 						glDepthMask( 1 );
 						glColorMask( 1, 1, 1, 1 );
 						Modules::renderer().setMaterial( 0x0, "" );
 
 						// Check query result from previous frame
-						if( Modules::renderer().getOccQueryResult( _curLight->_occQueries[occSet] ) < 1 )
+						if( Modules::renderer().getQueryResult( _curLight->_occQueries[occSet] ) < 1 )
 						{
 							continue;
 						}
@@ -1481,8 +1277,7 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 
 		// Prepare postprocessing step (set the camera transformation in MV matrix)
 		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity();
-		glOrtho( 0, 1, 0, 1, -1, 1 );
+		glLoadMatrixf( Matrix4f::OrthoMat( 0, 1, 0, 1, -1, 1 ).x );
 		glMatrixMode( GL_MODELVIEW );
 		glLoadMatrixf( _curCamera->getViewMat().x );
 		
@@ -1525,6 +1320,10 @@ void Renderer::drawRenderables( const string &shaderContext, const string &theCl
 		glDisable( GL_CULL_FACE );
 		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 	}
+	else
+	{
+		glEnable( GL_CULL_FACE );
+	}
 	
 	map< int, NodeRegEntry >::const_iterator itr = Modules::sceneMan()._registry.begin();
 	while( itr != Modules::sceneMan()._registry.end() )
@@ -1535,9 +1334,9 @@ void Renderer::drawRenderables( const string &shaderContext, const string &theCl
 		++itr;
 	}
 
+	// Reset states
 	if( Modules::config().wireframeMode && !Modules::config().debugViewMode )
 	{
-		glEnable( GL_CULL_FACE );
 		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	}
 }
@@ -1557,9 +1356,6 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 
 	Modules::renderer().setMaterial( 0x0, "" );
 
-	// Enable vertex array
-	glEnableClientState( GL_VERTEX_ARRAY );
-
 	// Loop over model queue
 	for( size_t i = 0, s = Modules::sceneMan().getRenderableQueue().size(); i < s; ++i )
 	{
@@ -1568,7 +1364,7 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 		ModelNode *modelNode = (ModelNode *)Modules::sceneMan().getRenderableQueue()[i].node;
 		if( modelNode->getGeometryResource() == 0x0 ) continue;
 
-		bool occCulling = false;
+		bool occQuery = false;
 		bool modelChanged = true;
 
 		// Occlusion culling
@@ -1581,8 +1377,9 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			}
 			if( modelNode->_occQueries[occSet] == 0 )
 			{
-				modelNode->_occQueries[occSet] = Modules::renderer().createOccQuery();
+				modelNode->_occQueries[occSet] = Modules::renderer().createOcclusionQuery();
 				modelNode->_lastVisited[occSet] = 0;
+				occQuery = true;
 			}
 			else
 			{
@@ -1591,19 +1388,18 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 					modelNode->_lastVisited[occSet] = Modules::renderer().getFrameID();
 				
 					// Check query result (viewer must be outside of bounding box)
-					if( nearestDistToAABB( frust1->getOrigin(), modelNode->getBBox().getMinCoords(),
-					                       modelNode->getBBox().getMaxCoords() ) != 0 &&
-						Modules::renderer().getOccQueryResult( modelNode->_occQueries[occSet] ) < 1 )
+					if( nearestDistToAABB( frust1->getOrigin(), modelNode->getBBox().min,
+					                       modelNode->getBBox().max ) != 0 &&
+						Modules::renderer().getQueryResult( modelNode->_occQueries[occSet] ) < 1 )
 					{
 						// Draw occlusion box
 						Modules::renderer().setMaterial( 0x0, "" );
 						glColorMask( 0, 0, 0, 0 );
 						glDepthMask( 0 );
-						Modules::renderer().beginOccQuery( modelNode->_occQueries[occSet] );
-						Modules::renderer().setShader( &Modules::renderer().occShader );
-						Modules::renderer().drawAABB( modelNode->getBBox().getMinCoords(),
-						                              modelNode->getBBox().getMaxCoords() );
-						Modules::renderer().endOccQuery( modelNode->_occQueries[occSet] );
+						Modules::renderer().beginQuery( modelNode->_occQueries[occSet] );
+						Modules::renderer().setShaderComb( &Modules::renderer()._occShader );
+						Modules::renderer().drawAABB( modelNode->getBBox().min, modelNode->getBBox().max );
+						Modules::renderer().endQuery( modelNode->_occQueries[occSet] );
 						glDepthMask( 1 );
 						glColorMask( 1, 1, 1, 1 );
 						Modules::renderer().setMaterial( 0x0, "" );
@@ -1611,7 +1407,7 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 						continue;
 					}
 					else
-						occCulling = true;
+						occQuery = true;
 				}
 			}
 		}
@@ -1623,57 +1419,50 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			Modules::renderer().setMaterial( 0x0, "" );
 		
 			// Indices
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, curGeoRes->getIndexBuffer() );
+			Modules::renderer().bindIndexBuffer( curGeoRes->getIndexBuf() );
 
 			// Vertices
-			uint32 vertCount = curGeoRes->_vertCount;
-			glBindBuffer( GL_ARRAY_BUFFER, curGeoRes->getVertBuffer() );
-			glVertexPointer( 3, GL_FLOAT, 0, (char *)0 );
-			glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 0, (char *)0 + vertCount * 12 );
-			glVertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, 0, (char *)0 + vertCount * 24 );
-			glVertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, 0, (char *)0 + vertCount * 36 );
-			glVertexAttribPointer( 4, 4, GL_FLOAT, GL_FALSE,
-			                       sizeof( VertexDataStatic ), (char *)0 + vertCount * 48 + 8 );
-			glVertexAttribPointer( 5, 4, GL_FLOAT, GL_FALSE,
-			                       sizeof( VertexDataStatic ), (char *)0 + vertCount * 48 + 24 );
-			glVertexAttribPointer( 6, 2, GL_FLOAT, GL_FALSE,
-			                       sizeof( VertexDataStatic ), (char *)0 + vertCount * 48 );
-			glVertexAttribPointer( 7, 2, GL_FLOAT, GL_FALSE,
-			                       sizeof( VertexDataStatic ), (char *)0 + vertCount * 48 + 40 );
+			uint32 posVBuf = curGeoRes->getPosVBuf();
+			uint32 tanVBuf = curGeoRes->getTanVBuf();
+			uint32 staticVBuf = curGeoRes->getStaticVBuf();
+			uint32 size = curGeoRes->_vertCount * sizeof( Vec3f );
+			
+			Modules::renderer().bindVertexBuffer( 0, posVBuf, 0, sizeof( Vec3f ) );
+			Modules::renderer().bindVertexBuffer( 1, tanVBuf, sizeof( Vec3f ) * 0, sizeof( Vec3f ) * 3 );
+			Modules::renderer().bindVertexBuffer( 2, tanVBuf, sizeof( Vec3f ) * 1, sizeof( Vec3f ) * 3 );
+			Modules::renderer().bindVertexBuffer( 3, tanVBuf, sizeof( Vec3f ) * 2, sizeof( Vec3f ) * 3 );
+			Modules::renderer().bindVertexBuffer( 4, staticVBuf, 0, sizeof( VertexDataStatic ) );
 		}
 		
 		// Sort meshes
 		if( order == RenderingOrder::FrontToBack || order == RenderingOrder::BackToFront && frust1 != 0x0 )
 		{
-			for( uint32 j = 0; j < modelNode->_meshCount; ++j )
+			for( size_t j = 0, s = modelNode->_meshList.size(); j < s; ++j )
 			{
-				MeshNode *meshNode = (MeshNode *)modelNode->_nodeList[j].node;
+				MeshNode *meshNode = (MeshNode *)modelNode->_meshList[j];
 
 				meshNode->tmpSortValue = nearestDistToAABB( frust1->getOrigin(),
-					meshNode->_bBox.getMinCoords(), meshNode->_bBox.getMaxCoords() );
+					meshNode->_bBox.min, meshNode->_bBox.max );
 			}
 		}
 
 		if( order == RenderingOrder::FrontToBack )
-			std::sort( modelNode->_nodeList.begin(), modelNode->_nodeList.begin() + modelNode->_meshCount,
-			           nodeFrontToBackOrder );
+			std::sort( modelNode->_meshList.begin(), modelNode->_meshList.end(), nodeFrontToBackOrder );
 		else if( order == RenderingOrder::BackToFront )
-			std::sort( modelNode->_nodeList.begin(), modelNode->_nodeList.begin() + modelNode->_meshCount,
-			           nodeBackToFrontOrder );
+			std::sort( modelNode->_meshList.begin(), modelNode->_meshList.end(), nodeBackToFrontOrder );
 		else if( order == RenderingOrder::StateChanges )
 			// Sort meshes by material to minimize state changes
-			std::sort( modelNode->_nodeList.begin(), modelNode->_nodeList.begin() + modelNode->_meshCount,
-			           meshMaterialOrder );
+			std::sort( modelNode->_meshList.begin(), modelNode->_meshList.end(), meshMaterialOrder );
 		
 		// LOD
 		uint32 curLod = modelNode->calcLodLevel( camPos );
 		
-		if( occCulling )
-			Modules::renderer().beginOccQuery( modelNode->_occQueries[occSet] );
+		if( occQuery )
+			Modules::renderer().beginQuery( modelNode->_occQueries[occSet] );
 		
-		for( uint32 j = 0; j < modelNode->_meshCount; ++j )
+		for( size_t j = 0, s = modelNode->_meshList.size(); j < s; ++j )
 		{
-			MeshNode *meshNode = (MeshNode *)modelNode->_nodeList[j].node;
+			MeshNode *meshNode = (MeshNode *)modelNode->_meshList[j];
 
 			if( !meshNode->_active || meshNode->getLodLevel() != curLod ) continue;
 
@@ -1685,7 +1474,7 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			}
 			
 			// Check that mesh is valid
-			if( meshNode->getBatchStart() + meshNode->getBatchCount() > curGeoRes->_indices.size() )
+			if( meshNode->getBatchStart() + meshNode->getBatchCount() > curGeoRes->_indexCount )
 				continue;
 			
 			ShaderCombination *prevShader = Modules::renderer().getCurShader();
@@ -1693,16 +1482,25 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			if( !debugView )
 			{
 				if( !meshNode->getMaterialRes()->isOfClass( theClass ) ) continue;
+				
+				// Set material
 				if( !Modules::renderer().setMaterial( meshNode->getMaterialRes(), shaderContext ) ) continue;
 			}
 			else
 			{
-				Modules::renderer().setShader( &defColorShader );
-				if( curLod == 0 ) glColor3f( 0.5f, 0.75f, 1 );
-				else if( curLod == 1 ) glColor3f( 0.25f, 0.75, 0.75f );
-				else if( curLod == 2 ) glColor3f( 0.25f, 0.75, 0.5f );
-				else if( curLod == 3 ) glColor3f( 0.5f, 0.5f, 0.25f );
-				else glColor3f( 0.75f, 0.5, 0.25f );
+				Modules::renderer().setShaderComb( &Modules::renderer()._defColorShader );
+				
+				Vec4f color;
+				if( curLod == 0 ) color = Vec4f( 0.5f, 0.75f, 1, 1 );
+				else if( curLod == 1 ) color = Vec4f( 0.25f, 0.75, 0.75f, 1 );
+				else if( curLod == 2 ) color = Vec4f( 0.25f, 0.75, 0.5f, 1 );
+				else if( curLod == 3 ) color = Vec4f( 0.5f, 0.5f, 0.25f, 1 );
+				else color = Vec4f( 0.75f, 0.5, 0.25f, 1 );
+
+				// Darken models with skeleton so that bones are more noticable
+				if( !modelNode->_jointList.empty() ) color = color * 0.3f;
+
+				glUniform4fv( Modules::renderer()._defColShader_color, 1, &color.x );
 			}
 
 			ShaderCombination *curShader = Modules::renderer().getCurShader();
@@ -1737,24 +1535,9 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 				glUniformMatrix3fv( curShader->uni_worldNormalMat, 1, false, normalMat );
 			}
 
-			// Enable required vertex streams and disable others to save bandwidth
+			// Apply vertex layout
 			if( curShader != prevShader )
-			{
-				if( curShader->attrib_normal >= 0 ) glEnableVertexAttribArray( 1 );
-				else glDisableVertexAttribArray( 1 );
-				if( curShader->attrib_tangent >= 0 ) glEnableVertexAttribArray( 2 );
-				else glDisableVertexAttribArray( 2 );
-				if( curShader->attrib_bitangent >= 0 ) glEnableVertexAttribArray( 3 );
-				else glDisableVertexAttribArray( 3 );
-				if( curShader->attrib_joints >= 0 ) glEnableVertexAttribArray( 4 );
-				else glDisableVertexAttribArray( 4 );
-				if( curShader->attrib_weights >= 0 ) glEnableVertexAttribArray( 5 );
-				else glDisableVertexAttribArray( 5 );
-				if( curShader->attrib_texCoords0 >= 0 ) glEnableVertexAttribArray( 6 );
-				else glDisableVertexAttribArray( 6 );
-				if( curShader->attrib_texCoords1 >= 0 ) glEnableVertexAttribArray( 7 );
-				else glDisableVertexAttribArray( 7 );
-			}
+				Modules::renderer().applyVertexLayout( Modules::renderer()._vlModel );
 
 			// Render
 			glDrawRangeElements( GL_TRIANGLES, meshNode->getVertRStart(), meshNode->getVertREnd(),
@@ -1766,13 +1549,11 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			Modules::stats().incStat( EngineStats::TriCount, meshNode->getBatchCount() / 3.0f );
 		}
 
-		if( occCulling )
-			Modules::renderer().endOccQuery( modelNode->_occQueries[occSet] );
+		if( occQuery )
+			Modules::renderer().endQuery( modelNode->_occQueries[occSet] );
 	}
 
-	// Disable vertex streams
-	glDisableClientState( GL_VERTEX_ARRAY );
-	for( uint32 i = 1; i < 8; ++i ) glDisableVertexAttribArray( i );
+	Modules::renderer().applyVertexLayout( 0 );
 }
 
 
@@ -1780,28 +1561,22 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
                               const Frustum *frust1, const Frustum * /*frust2*/, RenderingOrder::List /*order*/,
                               int occSet )
 {
-	if( frust1 == 0x0 ) return;
+	if( frust1 == 0x0 || Modules::renderer().getCurCamera() == 0x0 ) return;
 	if( debugView ) return;  // Don't render particles in debug view
 	
 	Modules::renderer().setMaterial( 0x0, "" );
 
 	// Calculate right and up vectors for camera alignment
-	float mat[16];
-	glGetFloatv( GL_MODELVIEW_MATRIX, mat );
-	Vec3f right = Vec3f( mat[0], mat[4], mat[8] );
-	Vec3f up = Vec3f (mat[1], mat[5], mat[9] );
-	Vec3f corners[4] = { -right - up, right - up, right + up, -right + up };
+	Matrix4f mat = Modules::renderer().getCurCamera()->getViewMat();
+	Vec3f right = Vec3f( mat.x[0], mat.x[4], mat.x[8] );
+	Vec3f up = Vec3f (mat.x[1], mat.x[5], mat.x[9] );
+	float cornerCoords[12] = { -right.x - up.x, -right.y - up.y, -right.z - up.z,
+	                            right.x - up.x,  right.y - up.y,  right.z - up.z,
+                                right.x + up.x,  right.y + up.y,  right.z + up.z,
+							   -right.x + up.x, -right.y + up.y, -right.z + up.z };
 
-	// Bind particle geometry arrays
-	glBindBuffer( GL_ARRAY_BUFFER, Modules::renderer().getParticleVBO() );
-	glVertexPointer( 3, GL_FLOAT, sizeof( ParticleVert ), (char *)0 );
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexAttribPointer( 1, 1, GL_FLOAT, GL_FALSE, sizeof( ParticleVert ), (char *)0 + sizeof( float ) * 6 );
-	glEnableVertexAttribArray( 1 );
-	glVertexAttribPointer( 2, 1, GL_FLOAT, GL_FALSE, sizeof( ParticleVert ), (char *)0 + sizeof( float ) * 5 );
-	glEnableVertexAttribArray( 2 );
-	glVertexAttribPointer( 6, 3, GL_FLOAT, GL_FALSE, sizeof( ParticleVert ), (char *)0 + sizeof( float ) * 3 );
-	glEnableVertexAttribArray( 6 );
+	// Bind particle geometry
+	Modules::renderer().bindVertexBuffer( 0, Modules::renderer().getParticleVBO(), 0, sizeof( ParticleVert ) );
 
 	// Loop through emitter queue
 	for( uint32 i = 0; i < Modules::sceneMan().getRenderableQueue().size(); ++i )
@@ -1814,7 +1589,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 		if( !emitter->_materialRes->isOfClass( theClass ) ) continue;
 		
 		// Occlusion culling
-		bool occCulling = false;
+		bool occQuery = false;
 		if( occSet >= 0 )
 		{
 			if( occSet > (int)emitter->_occQueries.size() - 1 )
@@ -1824,8 +1599,9 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 			}
 			if( emitter->_occQueries[occSet] == 0 )
 			{
-				emitter->_occQueries[occSet] = Modules::renderer().createOccQuery();
+				emitter->_occQueries[occSet] = Modules::renderer().createOcclusionQuery();
 				emitter->_lastVisited[occSet] = 0;
+				occQuery = true;
 			}
 			else
 			{
@@ -1834,19 +1610,18 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 					emitter->_lastVisited[occSet] = Modules::renderer().getFrameID();
 				
 					// Check query result (viewer must be outside of bounding box)
-					if( nearestDistToAABB( frust1->getOrigin(), emitter->getLocalBBox()->getMinCoords(),
-					                       emitter->getLocalBBox()->getMaxCoords() ) != 0 &&
-						Modules::renderer().getOccQueryResult( emitter->_occQueries[occSet] ) < 1 )
+					if( nearestDistToAABB( frust1->getOrigin(), emitter->getBBox().min,
+					                       emitter->getBBox().max ) != 0 &&
+						Modules::renderer().getQueryResult( emitter->_occQueries[occSet] ) < 1 )
 					{
 						// Draw occlusion box
 						Modules::renderer().setMaterial( 0x0, "" );
 						glColorMask( 0, 0, 0, 0 );
 						glDepthMask( 0 );
-						Modules::renderer().beginOccQuery( emitter->_occQueries[occSet] );
-						Modules::renderer().setShader( &Modules::renderer().occShader );
-						Modules::renderer().drawAABB( emitter->getLocalBBox()->getMinCoords(),
-						                              emitter->getLocalBBox()->getMaxCoords() );
-						Modules::renderer().endOccQuery( emitter->_occQueries[occSet] );
+						Modules::renderer().beginQuery( emitter->_occQueries[occSet] );
+						Modules::renderer().setShaderComb( &Modules::renderer()._occShader );
+						Modules::renderer().drawAABB( emitter->getBBox().min, emitter->getBBox().max );
+						Modules::renderer().endQuery( emitter->_occQueries[occSet] );
 						glDepthMask( 1 );
 						glColorMask( 1, 1, 1, 1 );
 						Modules::renderer().setMaterial( 0x0, "" );
@@ -1854,19 +1629,23 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 						continue;
 					}
 					else
-						occCulling = true;
+						occQuery = true;
 				}
 			}
 		}
 		
+		// Set material
 		if( !Modules::renderer().setMaterial( emitter->_materialRes, shaderContext ) ) continue;
 
-		if( occCulling )
-			Modules::renderer().beginOccQuery( emitter->_occQueries[occSet] );
+		// Set vertex layout
+		Modules::renderer().applyVertexLayout( Modules::renderer()._vlParticle );
+		
+		if( occQuery )
+			Modules::renderer().beginQuery( emitter->_occQueries[occSet] );
 		
 		// Shader uniforms
 		ShaderCombination *curShader = Modules::renderer().getCurShader();
-		if( curShader->uni_parCorners >= 0 ) glUniform3fv( curShader->uni_parCorners, 4, (float *)corners );
+		if( curShader->uni_parCorners >= 0 ) glUniform3fv( curShader->uni_parCorners, 4, (float *)cornerCoords );
 
 		// Divide particles in batches and render them
 		for( uint32 j = 0; j < emitter->_particleCount / ParticlesPerBatch; ++j )
@@ -1926,14 +1705,11 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 			Modules::stats().incStat( EngineStats::TriCount, count * 2.0f );
 		}
 
-		if( occCulling )
-			Modules::renderer().endOccQuery( emitter->_occQueries[occSet] );
+		if( occQuery )
+			Modules::renderer().endQuery( emitter->_occQueries[occSet] );
 	}
 	
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableVertexAttribArray( 1 );
-	glDisableVertexAttribArray( 2 );
-	glDisableVertexAttribArray( 6 );
+	Modules::renderer().applyVertexLayout( 0 );
 }
 
 
@@ -1941,10 +1717,10 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 // Main Rendering Functions
 // =================================================================================================
 
-bool Renderer::render( CameraNode *camNode )
+void Renderer::render( CameraNode *camNode )
 {
 	_curCamera = camNode;
-	if( _curCamera == 0x0 ) return false;
+	if( _curCamera == 0x0 ) return;
 
 	++_frameID;
 	
@@ -1952,15 +1728,15 @@ bool Renderer::render( CameraNode *camNode )
 	{
 		renderDebugView();
 		finishRendering();
-		return true;
+		return;
 	}
 	
 	// Initialize
 	_outputBufferIndex = _curCamera->_outputBufferIndex;
 	if( _curCamera->_outputTex != 0x0 )
-		setRenderBuffer( _curCamera->_outputTex->getRenderBuffer() );
+		setRenderBuffer( _curCamera->_outputTex->getRBObject() );
 	else 
-		setRenderBuffer( 0x0 );
+		setRenderBuffer( 0 );
 
 	// Process pipeline commands
 	for( uint32 i = 0; i < _curCamera->_pipelineRes->_stages.size(); ++i )
@@ -1978,40 +1754,28 @@ bool Renderer::render( CameraNode *camNode )
 			{
 			case PipelineCommands::SwitchTarget:
 				// Unbind all textures
-				bindBuffer( 0x0, "", 0 );
-				if( _curRenderTarget != 0x0 && _curRenderTarget->samples > 0 )
-				{
-					// Current render target is multisampled, so resolve it now
-					blitRenderBuffer( _curRenderTarget->rendBufMultisample, _curRenderTarget->rendBuf );
-				}
+				bindPipeBuffer( 0x0, "", 0 );
 				
 				// Bind new render target
 				rt = (RenderTarget *)pc.refParams[0];
 				_curRenderTarget = rt;
 
 				if( rt != 0x0 )
-				{
-					if( rt->samples > 0 ) setRenderBuffer( &rt->rendBufMultisample );
-					else setRenderBuffer( &rt->rendBuf );
-				}
+					setRenderBuffer( rt->rendBuf );
 				else
-				{
-					if( _curCamera->_outputTex != 0x0 )
-						setRenderBuffer( _curCamera->_outputTex->getRenderBuffer() );
-					else 
-						setRenderBuffer( 0x0 );
-				}
+					setRenderBuffer( _curCamera->_outputTex != 0x0 ?
+					                 _curCamera->_outputTex->getRBObject() : 0 );
 				break;
 
 			case PipelineCommands::BindBuffer:
 				rt = (RenderTarget *)pc.refParams[0];
 			
-				bindBuffer( &rt->rendBuf, ((PCStringParam *)pc.valParams[0])->get(),
+				bindPipeBuffer( rt->rendBuf, ((PCStringParam *)pc.valParams[0])->get(),
 				            (uint32)((PCIntParam *)pc.valParams[1])->get() );
 				break;
 
 			case PipelineCommands::UnbindBuffers:
-				bindBuffer( 0x0, "", 0 );
+				bindPipeBuffer( 0x0, "", 0 );
 				break;
 
 			case PipelineCommands::ClearTarget:
@@ -2060,7 +1824,6 @@ bool Renderer::render( CameraNode *camNode )
 	}
 	
 	finishRendering();
-	return true;
 }
 
 
@@ -2079,10 +1842,9 @@ void Renderer::renderDebugView()
 {
 	if( _curCamera == 0x0 ) return;
 	
-	setRenderBuffer( 0x0 );
+	setRenderBuffer( 0 );
 	setMaterial( 0x0, "" );
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	glDisable( GL_CULL_FACE );
 
 	glClearColor( 0, 0, 0, 1 );
 	glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
@@ -2091,32 +1853,75 @@ void Renderer::renderDebugView()
 	setupViewMatrices( _curCamera );
 
 	// Draw nodes
-	glColor4f( 0.5f, 0.75f, 1, 1 );
 	drawRenderables( "", "", true, &_curCamera->getFrustum(), 0x0, RenderingOrder::None, -1 );
 
 	// Draw bounding boxes
+	//glDisable( GL_CULL_FACE );
 	setMaterial( 0x0, "" );
-	setShader( &defColorShader );
-	glUniformMatrix4fv( defColorShader.uni_worldMat, 1, false, &Matrix4f().x[0] );
-	glColor4f( 0.4f, 0.4f, 0.4f, 1 );
+	setShaderComb( &_defColorShader );
+	glUniformMatrix4fv( _defColorShader.uni_worldMat, 1, false, &Matrix4f().x[0] );
+	glUniform4f( Modules::renderer()._defColShader_color, 0.4f, 0.4f, 0.4f, 1 );
 	for( uint32 i = 0, s = (uint32)Modules::sceneMan().getRenderableQueue().size(); i < s; ++i )
 	{
 		SceneNode *sn = Modules::sceneMan().getRenderableQueue()[i].node;
 		
-		drawDebugAABB( sn->_bBox.getMinCoords(), sn->_bBox.getMaxCoords(), false );
+		drawAABB( sn->_bBox.min, sn->_bBox.max );
+
+		/*// Draw mesh AABBs
+		if( sn->getType() == SceneNodeTypes::Model )
+		{
+			ModelNode *model = (ModelNode *)sn;
+
+			for( uint32 j = 0, s = (uint32)model->_meshList.size(); j < s; ++j )
+			{
+				drawAABB( model->_meshList[j]->_bBox.min, model->_meshList[j]->_bBox.max );
+			}
+		}*/
 	}
 
+	// Draw skeleton
+	glUniform4f( Modules::renderer()._defColShader_color, 1.0f, 0, 0, 1 );
+	glLineWidth( 2.0f );
+	glPointSize( 5.0f );
+	for( uint32 i = 0, s = (uint32)Modules::sceneMan().getRenderableQueue().size(); i < s; ++i )
+	{
+		SceneNode *sn = Modules::sceneMan().getRenderableQueue()[i].node;
+		
+		if( sn->getType() == SceneNodeTypes::Model )
+		{
+			ModelNode *model = (ModelNode *)sn;
+
+			for( uint32 j = 0, s = (uint32)model->_jointList.size(); j < s; ++j )
+			{
+				if( model->_jointList[j]->_parent->getType() != SceneNodeTypes::Model )
+				{
+					Vec3f pos1 = model->_jointList[j]->_absTrans * Vec3f( 0, 0, 0 );
+					Vec3f pos2 = model->_jointList[j]->_parent->_absTrans * Vec3f( 0, 0, 0 );
+
+					glBegin( GL_LINES );
+					glVertex3fv( (float *)&pos1.x );
+					glVertex3fv( (float *)&pos2.x );
+					glEnd();
+
+					glBegin( GL_POINTS );
+					glVertex3fv( (float *)&pos1.x );
+					glEnd();
+				}
+			}
+		}
+	}
+	glLineWidth( 1.0f );
+	glPointSize( 1.0f );
+
 	// Draw light volumes
-	glColor4f( 1, 1, 0, 0.25f );
-	glLineWidth( 2 );
+	glUniform4f( Modules::renderer()._defColShader_color, 1, 1, 0, 0.25f );
 	for( size_t i = 0, s = Modules::sceneMan().getLightQueue().size(); i < s; ++i )
 	{
 		LightNode *lightNode = (LightNode *)Modules::sceneMan().getLightQueue()[i];
 		
 		if( lightNode->_fov < 180 )
 		{
-			glPushMatrix();
-			glMultMatrixf( lightNode->_absTrans.x );
+			glLoadMatrixf( (_curCamera->getViewMat() * lightNode->_absTrans).x );
 			
 			// Render cone
 			float r = lightNode->_radius * tanf( degToRad( lightNode->_fov / 2 ) );
@@ -2130,26 +1935,24 @@ void Renderer::renderDebugView()
 			}
 			glEnd();
 
-			glPopMatrix();
+			glLoadMatrixf( _curCamera->getViewMat().x );
 		}
 		else
 		{
-			drawDebugAABB( Vec3f( lightNode->_absPos.x - lightNode->_radius,
-			                      lightNode->_absPos.y - lightNode->_radius,
-			                      lightNode->_absPos.z - lightNode->_radius ),
-						   Vec3f( lightNode->_absPos.x + lightNode->_radius,
-			                      lightNode->_absPos.y + lightNode->_radius,
-			                      lightNode->_absPos.z + lightNode->_radius ), 
-			                      false );
+			drawAABB( Vec3f( lightNode->_absPos.x - lightNode->_radius,
+			                 lightNode->_absPos.y - lightNode->_radius,
+			                 lightNode->_absPos.z - lightNode->_radius ),
+			          Vec3f( lightNode->_absPos.x + lightNode->_radius,
+			                 lightNode->_absPos.y + lightNode->_radius,
+			                 lightNode->_absPos.z + lightNode->_radius ) );
 		}
 	}
-	glLineWidth( 1 );
 
 	// Draw screen space projection of light sources
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-	glColor4f( 1, 1, 1, 0.25f );
+	glUniform4f( Modules::renderer()._defColShader_color, 1, 1, 1, 0.25f );
 	
 	for( size_t i = 0, s = Modules::sceneMan().getLightQueue().size(); i < s; ++i )
 	{
@@ -2163,10 +1966,9 @@ void Renderer::renderDebugView()
 		                                bbx, bby, bbw, bbh );
 
 		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity();
-		glOrtho( 0, 1, 0, 1, -1, 1 );
+		glLoadMatrixf( Matrix4f::OrthoMat( 0, 1, 0, 1, -1, 1 ).x );
 		glMatrixMode( GL_MODELVIEW );
-		glLoadIdentity();
+		glLoadMatrixf( Matrix4f().x );
 		
 		glBegin( GL_QUADS );
 		glVertex3f( bbx, bby, 1 );
@@ -2183,19 +1985,10 @@ void Renderer::renderDebugView()
 
 void Renderer::finishRendering()
 {
-	// Reset states for apps using debug mode to draw custom geometry
-	// with direct OpenGL calls (e.g. Horde scene editor)
-	setRenderBuffer( 0x0 );
-	glDisable( GL_BLEND );
-	glDisable( GL_ALPHA_TEST );
-	glDisable( GL_SAMPLE_ALPHA_TO_COVERAGE );
-	glDepthMask( 1 );
-	glEnable( GL_DEPTH_TEST );
-	glDepthFunc( GL_LEQUAL );
-	setShader( 0x0 );
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-	if( _curCamera != 0x0 ) setupViewMatrices( _curCamera );
-
-	ASSERT( glGetError() == GL_NO_ERROR );
+	setRenderBuffer( 0 );
+	setMaterial( 0x0, "" );
+	applyVertexLayout( 0 );
+	bindIndexBuffer( 0 );
+	
+	//ASSERT( glGetError() == GL_NO_ERROR );
 }

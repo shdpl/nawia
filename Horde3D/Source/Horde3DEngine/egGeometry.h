@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -36,67 +24,29 @@
 // Geometry Resource
 // =================================================================================================
 
-struct GeometryResParams
+struct GeometryResData
 {
 	enum List
 	{
-		VertexCount = 200,
-		IndexCount,
-		VertexData,
-		IndexData
+		GeometryElem = 200,
+		GeoIndexCountI,
+		GeoVertexCountI,
+		GeoIndices16I,
+		GeoIndexStream,
+		GeoVertPosStream,
+		GeoVertTanStream,
+		GeoVertStaticStream
 	};
 };
 
 // =================================================================================================
 
-struct VertexDataStatic		// Static data
+struct VertexDataStatic		// Vertex data that is usally static
 {
 	float  u0, v0;
-	float  jointVec[4];		// Float faster than int for GPU
+	float  jointVec[4];		// Float faster than int for some GPUs
 	float  weightVec[4];
 	float  u1, v1;
-};
-
-struct VertexData
-{
-private:
-
-	char              *memory;  // Continous memory block for data
-	
-public:
-
-	// Dynamic stream data
-	Vec3f             *positions;
-	Vec3f             *normals;
-	Vec3f             *tangents;
-	Vec3f             *bitangents;
-
-	// Interleaved static data
-	VertexDataStatic  *staticData;
-
-	friend class GeometryResource;
-	friend class ModelNode;
-
-
-	VertexData( uint32 vertCount )
-	{
-		memory = new char[(sizeof( Vec3f ) * 4 + sizeof( VertexDataStatic )) * vertCount];
-		
-		positions = (Vec3f *)memory;
-		normals = (Vec3f *)(memory + (sizeof( Vec3f ) * vertCount));
-		tangents = (Vec3f *)(memory + (sizeof( Vec3f ) * 2 * vertCount));
-		bitangents = (Vec3f *)(memory + (sizeof( Vec3f ) * 3 * vertCount));
-		staticData = (VertexDataStatic *)(memory + (sizeof( Vec3f ) * 4 * vertCount));
-
-		// Fill with default data
-		memset( memory, 0, (sizeof( Vec3f ) * 4 + sizeof( VertexDataStatic )) * vertCount );
-		for( uint32 i = 0; i < vertCount; ++i ) staticData[i].weightVec[0] = 1;
-	}
-
-	~VertexData()
-	{
-		delete[] memory;
-	}
 };
 
 
@@ -126,14 +76,19 @@ class GeometryResource : public Resource
 {
 private:
 
-	uint32                      _vertBuffer, _indexBuffer;
+	static int                  mappedWriteStream;
+	
+	uint32                      _indexBuf, _posVBuf, _tanVBuf, _staticVBuf;
 
-	uint32                      _vertCount;
-	VertexData                  *_vertData;	
+	uint32                      _indexCount, _vertCount;
 	bool                        _16BitIndices;
-	std::vector< uint32 >       _indices;
+	char                        *_indexData;
+	Vec3f                       *_vertPosData;
+	Vec3f                       *_vertTanData;
+	VertexDataStatic            *_vertStaticData;
 	
 	std::vector< Joint >        _joints;
+	BoundingBox                 _skelAABB;
 	std::vector< MorphTarget >  _morphTargets;
 	uint32                      _minMorphIndex, _maxMorphIndex;
 
@@ -156,15 +111,22 @@ public:
 	void release();
 	bool load( const char *data, int size );
 
-	int getParami( int param );
-	const void *getData( int param );
+	int getElemCount( int elem );
+	int getElemParamI( int elem, int elemIdx, int param );
+	void *mapStream( int elem, int elemIdx, int stream, bool read, bool write );
+	void unmapStream();
 
 	void updateDynamicVertData();
 
 	uint32 getVertCount() { return _vertCount; }
-	VertexData *getVertData() { return _vertData; }
-	uint32 getVertBuffer() { return _vertBuffer; }
-	uint32 getIndexBuffer() { return _indexBuffer; }
+	char *getIndexData() { return _indexData; }
+	Vec3f *getVertPosData() { return _vertPosData; }
+	Vec3f *getVertTanData() { return _vertTanData; }
+	VertexDataStatic *getVertStaticData() { return _vertStaticData; }
+	uint32 getPosVBuf() { return _posVBuf; }
+	uint32 getTanVBuf() { return _tanVBuf; }
+	uint32 getStaticVBuf() { return _staticVBuf; }
+	uint32 getIndexBuf() { return _indexBuf; }
 	Matrix4f &getInvBindMat( uint32 jointIndex ) { return _joints[jointIndex].invBindMat; }
 
 	friend class Renderer;

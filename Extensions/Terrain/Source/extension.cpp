@@ -4,20 +4,8 @@
 // --------------------------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz and Volker Wiendl
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -41,8 +29,13 @@ namespace Horde3DTerrain
 		Modules::sceneMan().registerType( SNT_TerrainNode, "Terrain",
 			TerrainNode::parsingFunc, TerrainNode::factoryFunc, TerrainNode::renderFunc );
 
+		// Create vertex layout
+		TerrainNode::vlTerrain = Modules::renderer().createVertexLayout( 2 );
+		Modules::renderer().setVertexLayoutElem( TerrainNode::vlTerrain, 0, "gl_Vertex", 0, 3, 0 );
+		Modules::renderer().setVertexLayoutElem( TerrainNode::vlTerrain, 1, "terHeight", 1, 1, 0 );
+
 		// Upload default shader used for debug view
-		Modules::renderer().uploadShader(
+		Modules::renderer().createShaderComb(
 			vsTerrainDebugView, fsTerrainDebugView, TerrainNode::debugViewShader );
 		
 		return true;
@@ -51,6 +44,8 @@ namespace Horde3DTerrain
 	
 	void releaseExtension()
 	{
+		Modules::renderer().releaseVertexLayout( TerrainNode::vlTerrain );
+		Modules::renderer().releaseShaderComb( TerrainNode::debugViewShader );
 	}
 
 	
@@ -61,8 +56,8 @@ namespace Horde3DTerrain
 	}
 
 	
-	DLLEXP NodeHandle addTerrainNode( NodeHandle parent, const char *name, ResHandle heightMapRes,
-									  ResHandle materialRes )
+	DLLEXP NodeHandle h3dextAddTerrainNode( NodeHandle parent, const char *name, ResHandle heightMapRes,
+	                                        ResHandle materialRes )
 	{
 		SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
 		if( parentNode == 0x0 ) return 0;
@@ -82,7 +77,7 @@ namespace Horde3DTerrain
 	}
 
 	
-	DLLEXP ResHandle createGeometryResource( NodeHandle node, const char *name, float meshQuality )
+	DLLEXP ResHandle h3dextCreateTerrainGeoRes( NodeHandle node, const char *name, float meshQuality )
 	{	
 		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
 		if( sn != 0x0 && sn->getType() == SNT_TerrainNode )

@@ -59,7 +59,7 @@ public:
 	void undo()
 	{
 		QRemoveXmlNodeUndoCommand::undo();
-		Horde3DUtils::loadResourcesFromDisk(".");
+		h3dutLoadResourcesFromDisk(".");
 	}	
 
 };
@@ -83,24 +83,26 @@ public:
 			
 			const float* camera = 0;	
 			unsigned int cameraID = HordeSceneEditor::instance()->glContext()->activeCam();
-			if ( Horde3D::getNodeTransformMatrices(cameraID, 0, &camera) )
+			h3dGetNodeTransMats(cameraID, 0, &camera);
+			if ( camera )
 			{
 				newNode->blockSignals(true);
-				const float* node;
-				NodeHandle parentNode = Horde3D::getNodeParent(newNode->hordeId());
-				if ( Horde3D::getNodeTransformMatrices(parentNode, 0, &node) ) 
+				const float* node = 0;
+				H3DNode parentNode = h3dGetNodeParent(newNode->hordeId());
+				h3dGetNodeTransMats(parentNode, 0, &node);
+				if ( node ) 
 				{
 					QVec3f t, r, s;
 					(QMatrix4f(node).inverted() * QMatrix4f(camera)).decompose(t, r, s);															
 
 					// Get bounding box
 					float minX, minY, minZ, maxX, maxY, maxZ;
-					Horde3D::getNodeAABB( newNode->hordeId(), &minX, &minY, &minZ, &maxX, &maxY, &maxZ );
+					h3dGetNodeAABB( newNode->hordeId(), &minX, &minY, &minZ, &maxX, &maxY, &maxZ );
 					
 					if( fabs(maxY - minY) > 0.0001f ) 
 					{
-						float frustumHeight = Horde3D::getNodeParamf(cameraID, CameraNodeParams::TopPlane) - Horde3D::getNodeParamf(cameraID, CameraNodeParams::BottomPlane);
-						float x = Horde3D::getNodeParamf(cameraID, CameraNodeParams::NearPlane);
+						float frustumHeight = h3dGetNodeParamF(cameraID, H3DCamera::TopPlaneF, 0) - h3dGetNodeParamF(cameraID, H3DCamera::BottomPlaneF, 0);
+						float x = h3dGetNodeParamF(cameraID, H3DCamera::NearPlaneF, 0);
 						float scale = (frustumHeight * 10 / x) / fabs(maxY - minY) ;					
 						newNode->setScale( QVec3f( scale, scale, scale ) );
 					}
@@ -110,7 +112,7 @@ public:
 				newNode->blockSignals(false);								
 			}
 		}
-		Horde3DUtils::loadResourcesFromDisk(".");
+		h3dutLoadResourcesFromDisk(".");
 		qApp->restoreOverrideCursor();
 	}
 
@@ -135,7 +137,7 @@ bool SceneTreeView::loadSceneGraph(const QString& fileName)
 	QDomDocument root;
 	root.setContent( QString( "<Reference/>" ) );
 	root.documentElement().setAttribute("name", fileName);	
-	root.documentElement().setAttribute("sceneGraph", QDir(Horde3DUtils::getResourcePath(ResourceTypes::SceneGraph)).relativeFilePath(fileName));
+	root.documentElement().setAttribute("sceneGraph", QDir(h3dutGetResourcePath(H3DResTypes::SceneGraph)).relativeFilePath(fileName));
 	m_rootNode = new QReferenceNode(root.documentElement(), 0, 0, 0);
 	if (!m_rootNode->model())
 	{		
@@ -213,9 +215,9 @@ void SceneTreeView::nodeActivated(const QModelIndex& index /*=QModelIndex()*/)
 }
 
 
-bool SceneTreeView::selectNode( int nodeHandle )
+bool SceneTreeView::selectNode( int H3DNode )
 {
-	if (nodeHandle == 0)
+	if (H3DNode == 0)
 	{
 		while (popSceneGraph())	{}		
 		setCurrentIndex(QModelIndex());
@@ -224,7 +226,7 @@ bool SceneTreeView::selectNode( int nodeHandle )
 	// First check the trees already loaded 
 	for (int i = m_activeModels.count(); i>0; --i)
 	{
-		QModelIndexList items(m_activeModels[i-1]->match(m_activeModels[i-1]->index(0,2), Qt::DisplayRole, nodeHandle, 1, Qt::MatchExactly | Qt::MatchCaseSensitive | Qt::MatchRecursive));
+		QModelIndexList items(m_activeModels[i-1]->match(m_activeModels[i-1]->index(0,2), Qt::DisplayRole, H3DNode, 1, Qt::MatchExactly | Qt::MatchCaseSensitive | Qt::MatchRecursive));
 		if (!items.isEmpty())
 		{
 			while (m_activeModels.count() > i && popSceneGraph()) {}
@@ -238,7 +240,7 @@ bool SceneTreeView::selectNode( int nodeHandle )
 	// Not found? Then we have to take the hard way	and search through all models
 	QApplication::setOverrideCursor(Qt::BusyCursor);
 	QStringList fileCache;
-	QList<SceneTreeModel*> models = findSceneGraph(m_activeModels.first(), nodeHandle);
+	QList<SceneTreeModel*> models = findSceneGraph(m_activeModels.first(), H3DNode);
 	QApplication::restoreOverrideCursor();
 	if (models.isEmpty())
 		return false;
@@ -247,7 +249,7 @@ bool SceneTreeView::selectNode( int nodeHandle )
 		m_activeModels.clear();
 		while (!models.isEmpty())
 			pushSceneGraph(models.takeFirst());
-		selectNode(nodeHandle);
+		selectNode(H3DNode);
 		return true;
 	}
 }
@@ -354,7 +356,7 @@ void SceneTreeView::currentNodeChanged(const QModelIndex& current, const QModelI
 	if (current.isValid() && current.internalPointer())
 	{
 		QSceneNode* node = static_cast<QSceneNode*>(current.internalPointer());
-		if (Horde3D::getNodeType(node->hordeId()) == SceneNodeTypes::Undefined)
+		if (h3dGetNodeType(node->hordeId()) == H3DNodeTypes::Undefined)
 			HordeSceneEditor::instance()->updateLog(new QListWidgetItem(tr("The selected node has no valid scenegraph ID.\nMaybe it was removed from the scene graph by a plugin or failed to load properly!"), 0, 2));
 	}
 	if ( current.internalPointer() != previous.internalPointer() )
@@ -370,12 +372,14 @@ void SceneTreeView::useCameraTransformation()
 		const float* camera = 0;	
 		unsigned int cameraID = HordeSceneEditor::instance()->glContext()->activeCam();
 		// TODO create a useCameraTransformation( cameraID ) method in QSceneNode to handle setting of the transformation indivdually
-		if ( Horde3D::getNodeTransformMatrices(cameraID, 0, &camera) )
+		h3dGetNodeTransMats(cameraID, 0, &camera);
+		if ( camera )
 		{
 			// TODO maybe we should remove scale from camera transformation (e.g. when camera is in parallel projection mode)
-			const float* node;
-			NodeHandle parentNode = Horde3D::getNodeParent(object->hordeId());
-			if ( Horde3D::getNodeTransformMatrices(parentNode, 0, &node) ) 
+			const float* node = 0;
+			H3DNode parentNode = h3dGetNodeParent(object->hordeId());
+			h3dGetNodeTransMats(parentNode, 0, &node);
+			if ( node ) 
 			{
 				QVec3f t, r, s;
 				(QMatrix4f(node).inverted() * QMatrix4f(camera)).decompose(t, r, s);
@@ -394,13 +398,15 @@ void SceneTreeView::setCameraTransformation()
 		QSceneNode* object = static_cast<QSceneNode*>(currentIndex().internalPointer());
 
 		unsigned int cameraID = HordeSceneEditor::instance()->glContext()->activeCam();
-		const float* cameraParent;
-		NodeHandle parentNode = Horde3D::getNodeParent(cameraID);
-		if ( !Horde3D::getNodeTransformMatrices(parentNode, 0, &cameraParent) ) return;
+		const float* cameraParent = 0;
+		H3DNode parentNode = h3dGetNodeParent(cameraID);
+		h3dGetNodeTransMats(parentNode, 0, &cameraParent); 
+		if ( !cameraParent ) return;
 
 		const float* node;
-		if ( Horde3D::getNodeTransformMatrices(object->hordeId(), 0, &node) ) 
-			Horde3D::setNodeTransformMatrix(cameraID, (QMatrix4f(cameraParent).inverted() * QMatrix4f(node)).x);	
+		h3dGetNodeTransMats(object->hordeId(), 0, &node);
+		if( node ) 
+			h3dSetNodeTransMat(cameraID, (QMatrix4f(cameraParent).inverted() * QMatrix4f(node)).x);	
 	}
 }
 
@@ -438,10 +444,10 @@ void SceneTreeView::pushSceneGraph(SceneTreeModel* model)
 	}
 }
 
-QList<SceneTreeModel*> SceneTreeView::findSceneGraph(SceneTreeModel* model, unsigned int nodeHandle)
+QList<SceneTreeModel*> SceneTreeView::findSceneGraph(SceneTreeModel* model, unsigned int H3DNode)
 {	
 	QList<SceneTreeModel*> retVal;
-	QModelIndexList list = model->match(model->index(0,2), Qt::DisplayRole, nodeHandle, 1, Qt::MatchExactly | Qt::MatchRecursive);
+	QModelIndexList list = model->match(model->index(0,2), Qt::DisplayRole, H3DNode, 1, Qt::MatchExactly | Qt::MatchRecursive);
 	if (!list.isEmpty())
 	{
 		retVal.push_back(model);
@@ -451,7 +457,7 @@ QList<SceneTreeModel*> SceneTreeView::findSceneGraph(SceneTreeModel* model, unsi
 	for (int i=0; i<list.size(); ++i)
 	{
 		QReferenceNode* refNode = static_cast<QReferenceNode*>(list.at(i).internalPointer());
-		retVal = findSceneGraph(refNode->model(), nodeHandle);
+		retVal = findSceneGraph(refNode->model(), H3DNode);
 		if (!retVal.isEmpty())
 		{
 			retVal.push_front(model);

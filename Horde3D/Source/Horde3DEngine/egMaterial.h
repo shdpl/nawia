@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -28,21 +16,28 @@
 #include "egPrerequisites.h"
 #include "egResource.h"
 #include "egShader.h"
-#include "egTextures.h"
+#include "egTexture.h"
 
 
 // =================================================================================================
 // Material Resource
 // =================================================================================================
 
-struct MaterialResParams
+struct MaterialResData
 {
 	enum List
 	{
-		Class = 400,
-		Link,
-		Shader
-	};	
+		MaterialElem = 400,
+		SamplerElem,
+		UniformElem,
+		MatClassStr,
+		MatLinkI,
+		MatShaderI,
+		SampNameStr,
+		SampTexResI,
+		UnifNameStr,
+		UnifValueF4
+	};
 };
 
 // =================================================================================================
@@ -98,13 +93,15 @@ public:
 	void release();
 	bool load( const char *data, int size );
 	bool setUniform( const std::string &name, float a, float b, float c, float d );
-	bool setSampler( const std::string &name, TextureResource *texRes );
 	bool isOfClass( const std::string &theClass );
 
-	int getParami( int param );
-	bool setParami( int param, int value );
-	const char *getParamstr( int param );
-	bool setParamstr( int param, const char *value );
+	int getElemCount( int elem );
+	int getElemParamI( int elem, int elemIdx, int param );
+	void setElemParamI( int elem, int elemIdx, int param, int value );
+	float getElemParamF( int elem, int elemIdx, int param, int compIdx );
+	void setElemParamF( int elem, int elemIdx, int param, int compIdx, float value );
+	const char *getElemParamStr( int elem, int elemIdx, int param );
+	void setElemParamStr( int elem, int elemIdx, int param, const char *value );
 
 	friend class ResourceManager;
 	friend class Renderer;

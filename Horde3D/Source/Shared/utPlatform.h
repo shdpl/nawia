@@ -5,25 +5,15 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
 #ifndef _utPlatform_H_
 #define _utPlatform_H_
+
+#include <assert.h>
 
 #ifndef PLATFORM_WIN
 #	if defined( WIN32 ) || defined( _WINDOWS )
@@ -43,11 +33,11 @@
 #	ifdef PLATFORM_WIN
 #		define DLLEXP extern "C" __declspec( dllexport )
 #	else
-#   if defined( __GNUC__ ) && __GNUC__ >= 4
-#     define DLLEXP extern "C" __attribute__ ((visibility("default")))
-#   else
+#		if defined( __GNUC__ ) && __GNUC__ >= 4
+#		  define DLLEXP extern "C" __attribute__ ((visibility("default")))
+#   	else
 #		  define DLLEXP extern "C"
-#   endif
+#   	endif
 #	endif
 #endif
 
@@ -59,6 +49,9 @@
 #ifndef _MSC_VER
 # define strncpy_s( dst, dstSize, src, count ) strncpy( dst, src, count < dstSize ? count : dstSize )
 #endif
+
+typedef long long int64;
+typedef unsigned long long uint64;
 
 // Runtime assertion
 #if defined( _DEBUG )
@@ -80,6 +73,7 @@ namespace StaticAssert
 // Note: this function is never called but just wraps the compile time asserts
 static void __ValidatePlatform__()
 {
+	ASSERT_STATIC( sizeof( int64 ) == 8 );
 	ASSERT_STATIC( sizeof( int ) == 4 );
 	ASSERT_STATIC( sizeof( short ) == 2 );
 	ASSERT_STATIC( sizeof( char ) == 1 );

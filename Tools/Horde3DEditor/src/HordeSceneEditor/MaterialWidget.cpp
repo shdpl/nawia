@@ -57,6 +57,7 @@ MaterialWidget::MaterialWidget(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/
 
 MaterialWidget::~MaterialWidget()
 {
+	release();
 }
 
 void MaterialWidget::init()
@@ -80,7 +81,7 @@ void MaterialWidget::setCurrentMaterial(const QString &materialFileName)
 	m_currentMaterialFile = materialFileName;			
 	if (!materialFileName.isEmpty())
 	{
-		QFile file(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Material)).absoluteFilePath(m_currentMaterialFile));
+		QFile file( QDir::current().absoluteFilePath(m_currentMaterialFile) );
 		if (file.open(QIODevice::ReadOnly))
 		{	
 			QString errorMsg;
@@ -122,8 +123,7 @@ void MaterialWidget::closeMaterial()
 	if (parentWidget())
 		parentWidget()->setWindowTitle(tr("Material Settings"));
 	m_materialXml.setContent( QString("<Material/>") );	
-	m_texUnitCombo->clear();	
-	m_uniformCombo->clear();
+	release();
 }
 
 void MaterialWidget::save()
@@ -134,7 +134,7 @@ void MaterialWidget::save()
 			m_materialXml.documentElement().removeAttribute("class");
 		else
 			m_materialXml.documentElement().setAttribute("class", m_className->text());		
-		QFile file(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Material)).absoluteFilePath(m_currentMaterialFile));
+		QFile file( QDir::current().absoluteFilePath(m_currentMaterialFile));
 		if (file.open(QIODevice::WriteOnly | QIODevice::Truncate))
 		{
 			QTextStream stream(&file);
@@ -168,7 +168,7 @@ void MaterialWidget::initValues()
 	QString shader = m_materialXml.documentElement().firstChildElement("Shader").attribute("source");
 	m_shader->setCurrentIndex(m_shader->findText(shader));
 	if (m_shader->currentIndex() == -1)
-		QMessageBox::warning(this, tr("Error"), tr("Shader \"%1\" not found in shader directory").arg(shader));
+		QMessageBox::warning(this, tr("Error"), tr("Shader \"%1\" not found!").arg(shader));
 
 	if (parentWidget())
 		parentWidget()->setWindowTitle(tr("Material - %1").arg(m_currentMaterialFile));	
@@ -183,9 +183,7 @@ void MaterialWidget::texUnitChanged(int /*index*/)
 
 void MaterialWidget::texUnitDataChanged()
 {
-	QTexUnit* unit = static_cast<QTexUnit*>(m_texUnitCombo->itemData(m_texUnitCombo->currentIndex()).value<void*>());
-	if (unit && m_texUnitCombo->currentText() != QFileInfo(unit->map().FileName).fileName() )
-		m_texUnitCombo->setItemText(m_texUnitCombo->currentIndex(), QFileInfo(unit->map().FileName).fileName());	
+	//QTexUnit* unit = static_cast<QTexUnit*>(m_texUnitCombo->itemData(m_texUnitCombo->currentIndex()).value<void*>());
 	m_saveButton->setEnabled(true);	
 }
 
@@ -220,6 +218,33 @@ void MaterialWidget::classChanged()
 
 void MaterialWidget::flagsChanged( int index, bool checked )
 {
+	m_saveButton->setEnabled(true);
+}
+
+void MaterialWidget::release()
+{
+	// Release all QUniform instances that are not allocated by the m_shaderData
+	for( int i = 0; i < m_uniformCombo->count(); ++i )
+	{
+		QUniform* uniform = static_cast<QUniform*>( m_uniformCombo->itemData( i ).value<void*>() );
+		if( !uniform->isShaderUniform() )
+			delete uniform;			
+	}
+	m_uniformCombo->clear();
+
+	// Delete the shader data
+	delete m_shaderData;
+	m_shaderData = 0;
+
+	// Release all QTexUnit instances
+	for( int i = 0; i < m_texUnitCombo->count(); ++i )
+	{
+		QTexUnit* unit = static_cast<QTexUnit*>( m_texUnitCombo->itemData( i ).value<void*>() );
+		delete unit;
+	}
+	m_texUnitCombo->clear();
+	
+	m_shaderFlags->clear();
 
 }
 
@@ -231,18 +256,8 @@ void MaterialWidget::syncWithShader()
 		QMessageBox::warning( this, tr("Error"), tr("Error opening shader file\n\n%1").arg( QDir::current().absoluteFilePath( m_shader->currentText() ) ) );
 		return;
 	}
-	for( int i = 0; i < m_uniformCombo->count(); ++i )
-	{
-		QUniform* uniform = static_cast<QUniform*>( m_uniformCombo->itemData( i ).value<void*>() );
-		if( !uniform->isShaderUniform() )
-		{
-			delete uniform;
-			m_uniformCombo->setItemData( i, QVariant::fromValue<void*>( 0 ) );
-		}
-	}
-	m_uniformCombo->clear();
+	release();
 
-	delete m_shaderData;
 	m_shaderData = new ShaderData( shaderFile.readAll() );
 	if( !m_shaderData->isValid() )
 	{
@@ -255,7 +270,7 @@ void MaterialWidget::syncWithShader()
 		m_shaderData = 0;
 		return;
 	}
-	m_shaderFlags->clear();
+	
 	QDomNodeList flags = m_materialXml.elementsByTagName( "ShaderFlag" );
 	for( int i = 0; i < m_shaderData->flags().size(); ++i)
 	{
@@ -274,14 +289,30 @@ void MaterialWidget::syncWithShader()
 		m_shaderFlags->addItem( m_shaderData->flags().at(i).Name, set );
 		m_shaderFlags->setItemData( m_shaderFlags->count(), m_shaderData->flags().at(i).Flag, Qt::UserRole + 1 );
 	}
-	m_texUnitCombo->clear();
+
+	QDomNodeList samplers = m_materialXml.documentElement().elementsByTagName("Sampler");
 	for( int i = 0; i < m_shaderData->samplers().size(); ++i )
 	{
-		m_texUnitCombo->addItem( m_shaderData->samplers().at(i).Id );
 		QString tip("Texture Unit %1");
 		tip.arg( m_shaderData->samplers().at(i).TexUnit );
 		m_texUnitCombo->setItemData( m_texUnitCombo->count(), tip, Qt::ToolTipRole );
 		m_texUnitCombo->setItemData( m_texUnitCombo->count(), tip, Qt::StatusTipRole);
+		QDomElement sampler;
+		for( int j = 0;  j < samplers.count(); ++j)
+		{			
+			if( samplers.at(j).toElement().attribute("name") == m_shaderData->samplers().at( i ).Id )
+			{
+				sampler = samplers.at(j).toElement();
+				break;
+			}	
+		}
+		if( sampler.isNull() )
+		{
+			sampler = m_materialXml.appendChild( m_materialXml.createElement("Sampler") ).toElement();
+			sampler.setAttribute( "name", m_shaderData->samplers().at( i ).Id );
+		}
+		QTexUnit *unit = new QTexUnit( m_shaderData->samplers().at(i).TexUnit, sampler, m_texUnitCombo );
+		m_texUnitCombo->addItem( m_shaderData->samplers().at(i).Id, QVariant::fromValue<void*>( unit ) );
 	}
 
 	QDomNodeList uniforms = m_materialXml.documentElement().elementsByTagName("Uniform");
@@ -302,12 +333,5 @@ void MaterialWidget::syncWithShader()
 		m_uniformCombo->addItem( uni->name(), QVariant::fromValue<void*>( uni ) );
 	}
 
-	//QDomNodeList texUnits = m_materialXml.documentElement().elementsByTagName("TexUnit");
-	//for (int i=0; i<texUnits.count(); ++i)
-	//{
-	//	QDomElement texUnit = texUnits.at(i).toElement();
-	//	QTexUnit* unit = new QTexUnit(-1, texUnit);
-	//	m_texUnitCombo->addItem( texUnit.attribute("map"), QVariant::fromValue<void*>(unit));
-	//}
 
 }

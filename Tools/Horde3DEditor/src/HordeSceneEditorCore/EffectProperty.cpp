@@ -24,6 +24,8 @@
 #include "EffectComboBox.h"
 #include "CustomTypes.h"
 
+#include <QtCore/QDir>
+
 #include <Horde3D.h>
 #include <Horde3DUtils.h>
 
@@ -47,7 +49,7 @@ QVariant EffectProperty::value(int role) const
 QWidget* EffectProperty::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/)
 {
 	EffectComboBox* editor = new EffectComboBox(parent);
-	editor->init(Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect));
+	editor->init( QDir::currentPath() );
 	return editor;
 }
 

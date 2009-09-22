@@ -26,8 +26,6 @@
 
 #include "decode.h"
 
-namespace Horde3DSound
-{
 	class WaveDecoder : public SoundDecoder
 	{
 	private:
@@ -51,6 +49,5 @@ namespace Horde3DSound
 		size_t _size;
 		size_t _sizeRead;
 	};
-}
 
 #endif // _Horde3DSound_decode_wave_H_

@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -101,21 +89,21 @@ void Frustum::buildViewFrustum( const Matrix4f &viewMat, const Matrix4f &projMat
 
 	// Calculate corners
 	Matrix4f mm = m.inverted();
-	Vec4f corner = mm * Vec4f( -1, -1,  1, 1 );
+	Vec4f corner = mm * Vec4f( -1, -1,  -1, 1 );
 	_corners[0] = Vec3f( corner.x / corner.w, corner.y / corner.w, corner.z / corner.w );
-	corner = mm * Vec4f( 1, -1,  1, 1 );
+	corner = mm * Vec4f( 1, -1,  -1, 1 );
 	_corners[1] = Vec3f( corner.x / corner.w, corner.y / corner.w, corner.z / corner.w );
-	corner = mm * Vec4f( 1,  1,  1, 1 );
+	corner = mm * Vec4f( 1,  1,  -1, 1 );
 	_corners[2] = Vec3f( corner.x / corner.w, corner.y / corner.w, corner.z / corner.w );
-	corner = mm * Vec4f( -1,  1,  1, 1 );
+	corner = mm * Vec4f( -1,  1,  -1, 1 );
 	_corners[3] = Vec3f( corner.x / corner.w, corner.y / corner.w, corner.z / corner.w );
-	corner = mm * Vec4f( -1, -1, -1, 1 );
+	corner = mm * Vec4f( -1, -1, 1, 1 );
 	_corners[4] = Vec3f( corner.x / corner.w, corner.y / corner.w, corner.z / corner.w );
-	corner = mm * Vec4f( 1, -1, -1, 1 );
+	corner = mm * Vec4f( 1, -1, 1, 1 );
 	_corners[5] = Vec3f( corner.x / corner.w, corner.y / corner.w, corner.z / corner.w );
-	corner = mm * Vec4f( 1, 1, -1, 1 );
+	corner = mm * Vec4f( 1, 1, 1, 1 );
 	_corners[6] = Vec3f( corner.x / corner.w, corner.y / corner.w, corner.z / corner.w );
-	corner = mm * Vec4f( -1, 1, -1, 1 );
+	corner = mm * Vec4f( -1, 1, 1, 1 );
 	_corners[7] = Vec3f( corner.x / corner.w, corner.y / corner.w, corner.z / corner.w );
 }
 
@@ -169,10 +157,10 @@ bool Frustum::cullBox( BoundingBox &b ) const
 	{
 		const Vec3f &n = _planes[i].normal;
 		
-		Vec3f positive = b.getMinCoords();
-		if( n.x <= 0 ) positive.x = b.getMaxCoords().x;
-		if( n.y <= 0 ) positive.y = b.getMaxCoords().y;
-		if( n.z <= 0 ) positive.z = b.getMaxCoords().z;
+		Vec3f positive = b.min;
+		if( n.x <= 0 ) positive.x = b.max.x;
+		if( n.y <= 0 ) positive.y = b.max.y;
+		if( n.z <= 0 ) positive.z = b.max.z;
 
 		if( _planes[i].distToPoint( positive ) > 0 ) return true;
 	}

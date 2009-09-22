@@ -46,7 +46,7 @@ int QTexUnit::unit() const
 
 Texture QTexUnit::map() const
 {
-	return Texture(m_texUnitNode.attribute("map"), ResourceTypes::Texture );
+	return Texture(m_texUnitNode.attribute("map") );
 
 }
 

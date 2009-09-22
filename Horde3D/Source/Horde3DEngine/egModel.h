@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -34,9 +22,6 @@
 #include "utMath.h"
 
 
-const uint32 MaxNumAnimStages = 16;
-
-
 // =================================================================================================
 // Model Node
 // =================================================================================================
@@ -45,12 +30,12 @@ struct ModelNodeParams
 {
 	enum List
 	{
-		GeometryRes = 200,
-		SoftwareSkinning,
-		LodDist1,
-		LodDist2,
-		LodDist3,
-		LodDist4
+		GeoResI = 200,
+		SWSkinningI,
+		LodDist1F,
+		LodDist2F,
+		LodDist3F,
+		LodDist4F
 	};
 };
 
@@ -79,34 +64,6 @@ struct Morpher	// Morph modifier
 	float        weight;
 };
 
-struct AnimStage
-{
-	PAnimationResource  anim;
-	float               animTime;
-	float               blendWeight;
-	std::string         startNode;
-	bool                additive;
-};
-
-struct NodeListEntry
-{
-	AnimatableSceneNode  *node;
-	AnimResEntity        *animEntities[MaxNumAnimStages];
-
-
-	NodeListEntry()
-	{
-		node = 0x0;
-		for( uint32 i = 0; i < MaxNumAnimStages; ++i ) animEntities[i] = 0x0;
-	}
-
-	NodeListEntry( AnimatableSceneNode *node )
-	{
-		NodeListEntry();
-		this->node = node;
-	}
-};
-
 // =================================================================================================
 
 class ModelNode : public SceneNode
@@ -116,15 +73,14 @@ protected:
 	PGeometryResource             _geometryRes;
 	PGeometryResource             _baseGeoRes;	// NULL if model does not have a private geometry copy
 	float                         _lodDist1, _lodDist2, _lodDist3, _lodDist4;
-	std::vector< Vec4f >          _skinMatRows;
 	
-	uint32                        _meshCount;  // Number of meshes in _animatedNodes
-	std::vector< NodeListEntry >  _nodeList;  // List of the model's meshes followed by joints
-	AnimStage                     *_animStages[MaxNumAnimStages];
+	std::vector< MeshNode * >     _meshList;  // List of the model's meshes
+	std::vector< JointNode * >    _jointList;
+	std::vector< Vec4f >          _skinMatRows;
+	AnimationController           _animCtrl;
 
 	std::vector< Morpher >        _morphers;
 	bool                          _softwareSkinning, _skinningDirty;
-	bool                          _animDirty;  // Animation has changed	
 	bool                          _nodeListDirty;  // An animatable node has been attached to model
 	bool                          _morpherUsed, _morpherDirty;
 	
@@ -133,8 +89,8 @@ protected:
 
 	ModelNode( const ModelNodeTpl &modelTpl );
 	void recreateNodeListRec( SceneNode *node, bool firstCall );
-	void updateStageAnimations( uint32 stage, const std::string &startNode );
-	void markMeshBBoxesDirty();
+	void updateLocalMeshAABBs();
+	void setGeometryRes( GeometryResource &geoRes );
 
 	void onPostUpdate();
 	void onFinishedUpdate();
@@ -147,14 +103,15 @@ public:
 	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
 
 	void recreateNodeList();
-	bool setupAnimStage( int stage, uint32 animRes, const std::string &startNode, bool additive );
-	bool setAnimParams( int stage, float time, float weight );
+	void setupAnimStage( int stage, AnimationResource *anim, int layer,
+	                     const std::string &startNode, bool additive );
+	void setAnimParams( int stage, float time, float weight );
 	bool setMorphParam( const std::string &targetName, float weight );
 
-	float getParamf( int param );
-	bool setParamf( int param, float value );
-	int getParami( int param );
-	bool setParami( int param, int value );
+	int getParamI( int param );
+	void setParamI( int param, int value );
+	float getParamF( int param, int compIdx );
+	void setParamF( int param, int compIdx, float value );
 
 	bool updateGeometry();
 	uint32 calcLodLevel( const Vec3f &viewPoint );
@@ -168,6 +125,7 @@ public:
 	void markNodeListDirty() { _nodeListDirty = true; }
 
 	friend class SceneManager;
+	friend class SceneNode;
 	friend class Renderer;
 };
 

@@ -6,7 +6,7 @@ Horde3D
 		-S D K-
 		-------
 		
-		Version 1.0.0 Beta3
+		Version 1.0.0 Beta4
 		
 
 Copyright (C) 2006-2009 Nicolas Schulz and the Horde3D Team
@@ -16,8 +16,7 @@ http://www.horde3d.org
 Contact: See website
 
 	
-The complete SDK is licensed under the terms of the GNU Lesser General Public License (LGPL).
-See the documentation for more information.
+The complete SDK is licensed under the terms of the Eclipse Public License (EPL).
 
 Horde3D requires an OpenGL 2.0 compatible graphics card with the latest drivers.
 A GeForce 6 or Radeon X1000 series card is the minimum requirement to run the samples.
@@ -36,14 +35,14 @@ These libraries are included directly as code in the SDK.
 
 Release Notes:
 	
-	The new Beta3 release brings a few substantial improvements. It features a refactored
-	shader system with a cleaner and more powerful FX-like file format along with support
-	for automatic shader permutation generation. The performance of Beta3 has been optimized 
-	considerably, for example by the introduction of an enhanced LOD system. Another new 
-	feature is support for loading textures from DDS files. Besides these major upgrades, 
-	there are many smaller API improvements, optimizations and bug fixes. Finally, Beta3 
-	features improvements to the Collada Converter such that it supports a wider range of 
-	DCC tools.
+	The new Beta4 release features an improved API which is clearer and less verbose.
+	Moreover, the enhanced API provides more powerful access to resource data
+	and has better support for dynamic content.
+	Besides the API enhancements and many smaller fixes, Beta4 features updates to the
+	animation system and a more familiar CgFX-like shader effect syntax.
+	The new release is distributed under a different license now, namely the Eclipse
+	Public License. This license is less restrictive than the LGPL and allows static
+	linking as well as development of proprietary extensions.
 
 
 Special thanks go to the University of Augsburg for supporting this project!

@@ -47,6 +47,7 @@ void QPipelineStageNode::setEnabled(bool enabled)
 {
 	m_active = enabled;
 	QPipelineNode* root = qobject_cast<QPipelineNode*>(m_model->rootNode());
-	Horde3D::setPipelineStageActivation(root->hordeId(), qPrintable(m_xmlNode.attribute("id")), enabled);
+	H3DRes handle = h3dFindResource( H3DResTypes::Pipeline, qPrintable( m_xmlNode.attribute("id") ) );
+	h3dSetResParamI(root->hordeId(), handle, 0, H3DPipeRes::StageActivationI, enabled);
 }
 

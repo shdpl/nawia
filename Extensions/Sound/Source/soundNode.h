@@ -34,8 +34,7 @@
 
 #include "soundResource.h"
 
-namespace Horde3DSound
-{
+
 	const int SNT_SoundNode = 202;
 
 	struct SoundNodeParams
@@ -99,10 +98,10 @@ namespace Horde3DSound
 		static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
 		static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
 
-		float getParamf( int param );
-		bool setParamf( int param, float value );
-		int getParami( int param );
-		bool setParami( int param, int value );
+		float getParamF( int param, int compIdx );
+		void setParamF( int param, int compIdx, float value );
+		int getParamI( int param );
+		void setParamI( int param, int value );
 
 		void onPostUpdate();
 
@@ -112,6 +111,6 @@ namespace Horde3DSound
 		void pause();
 		void rewind();
 	};
-}
+
 
 #endif // _Horde3DSound_soundNode_H_

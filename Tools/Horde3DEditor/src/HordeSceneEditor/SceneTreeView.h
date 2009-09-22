@@ -116,7 +116,7 @@ protected:
 	/**
 	 * Tries to select the specified node
 	 */
-	bool selectNode( int nodeHandle );
+	bool selectNode( int H3DNode );
 
 	virtual void contextMenuEvent(QContextMenuEvent* event);
 	virtual void dropEvent(QDropEvent* event);
@@ -155,10 +155,10 @@ private:
 	/**
 	 * Searches recursively for the scenegraph that contains a node with a specific id
 	 * @param model the root model that will be searched for the specific id
-	 * @param nodeHandle the id of the node to find
+	 * @param H3DNode the id of the node to find
 	 * @return QList<SceneTreeModel*> a list containing the model that contains the id and all of it's parent models
 	 */
-	QList<SceneTreeModel*> findSceneGraph(SceneTreeModel* model, unsigned int nodeHandle);
+	QList<SceneTreeModel*> findSceneGraph(SceneTreeModel* model, unsigned int H3DNode);
 
 	QList<SceneTreeModel*>	m_activeModels;
 

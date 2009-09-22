@@ -4,20 +4,8 @@
 // --------------------------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz and Volker Wiendl
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -27,7 +15,7 @@
 #include "egPrerequisites.h"
 #include "utMath.h"
 #include "egMaterial.h"
-#include "egTextures.h"
+#include "egTexture.h"
 #include "egScene.h"
 
 
@@ -58,11 +46,11 @@ namespace Horde3DTerrain
 	{
 		enum List
 		{
-			HeightMapRes = 10000,
-			MaterialRes,
-			MeshQuality,
-			SkirtHeight,
-			BlockSize
+			HeightTexResI = 10000,
+			MatResI,
+			MeshQualityF,
+			SkirtHeightF,
+			BlockSizeI
 		};
 	};
 	
@@ -85,7 +73,7 @@ namespace Horde3DTerrain
 		float              _lodThreshold;
 		
 		uint32             _hmapSize;
-		unsigned short     *_heightData;
+		uint16             *_heightData;
 		uint32             _maxLevel;
 		float              *_heightArray;
 		uint32             _vertexBuffer, _indexBuffer;
@@ -96,13 +84,15 @@ namespace Horde3DTerrain
 
 		TerrainNode( const TerrainNodeTpl &terrainTpl );
 		
+		void onPostUpdate();
+		
 		bool updateHeightData( TextureResource &hmap );
 		void calcMaxLevel();
 		
 		uint32 getVertexCount();
 		float *createVertices();
 		uint32 getIndexCount();
-		unsigned short *createIndices();
+		uint16 *createIndices();
 		void recreateVertexBuffer();
 		
 		void buildBlockInfo( BlockInfo &block, float minU, float minV, float maxU, float maxV );
@@ -120,6 +110,7 @@ namespace Horde3DTerrain
 
 	public:
 
+		static uint32 vlTerrain;
 		static ShaderCombination debugViewShader;
 		
 		~TerrainNode();
@@ -130,16 +121,15 @@ namespace Horde3DTerrain
 			const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order, int occSet );
 
 		bool canAttach( SceneNode &parent );
-		int getParami( int param );
-		bool setParami( int param, int value );
-		float getParamf( int param );
-		bool setParamf( int param, float value );
+		int getParamI( int param );
+		void setParamI( int param, int value );
+		float getParamF( int param, int compIdx );
+		void setParamF( int param, int compIdx, float value );
 
 		bool checkIntersection( const Vec3f &rayOrig, const Vec3f &rayDir, Vec3f &intsPos ) const;
 
 		ResHandle createGeometryResource( const std::string &name, float lodThreshold );
 		
-		BoundingBox *getLocalBBox() { return &_localBBox; }
 		float getHeight( float x, float y )
 			{ return _heightData[ftoi_r( y * _hmapSize ) * (_hmapSize + 1) + ftoi_r( x * _hmapSize ) ] / 65535.0f; }
 	};

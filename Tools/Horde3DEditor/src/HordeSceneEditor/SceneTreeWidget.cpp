@@ -160,17 +160,17 @@ void SceneTreeWidget::pasteNode()
 	}
 }
 
-void SceneTreeWidget::selectNode( int nodeHandle )
+void SceneTreeWidget::selectNode( int H3DNode )
 {
-	if( m_sceneTreeView->selectNode( nodeHandle ) )
+	if( m_sceneTreeView->selectNode( H3DNode ) )
 		m_tabWidget->setCurrentWidget( m_sceneWidget );
-	else if( m_extraTreeView->selectNode( nodeHandle ) )
+	else if( m_extraTreeView->selectNode( H3DNode ) )
 		m_tabWidget->setCurrentWidget( m_extraWidget );
-	else if( nodeHandle != 0 )
+	else if( H3DNode != 0 )
 		QMessageBox::information(
 		this, 
 		tr("Error"), 
-		tr("The scenegraph file for the node '%1' (ID: %2) couldn't be found").arg(Horde3D::getNodeParamstr(nodeHandle, SceneNodeParams::Name)).arg(nodeHandle));
+		tr("The scenegraph file for the node '%1' (ID: %2) couldn't be found").arg(h3dGetNodeParamStr(H3DNode, H3DNodeParams::NameStr)).arg(H3DNode));
 }
 
 void SceneTreeWidget::setRootLayer(const QString& layer)

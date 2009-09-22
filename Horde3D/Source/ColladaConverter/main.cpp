@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -41,29 +29,31 @@ using namespace std;
 int main( int argc, char **argv )
 {
 	log( "Horde3D Collada Converter" );
-	log( "Version 1.0.0 Beta3" );
+	log( "Version 1.0.0 Beta4" );
 	log( "" );
 	
 	if( argc < 2 )
 	{
 		log( "Usage:" );
-		log( "ColladaConv inputFile [-o outputName] [-s shaderName] [-noopt]" );
+		log( "ColladaConv inputFile [optional arguments]" );
 		log( "" );
-		log( "inputFile:      filename of the COLLADA document" );
-		log( "-o outputName:  name of the output files (without extension)" );
-		log( "-s shaderName:  filename of the default shader for materials" );
-		log( "-noopt:         disable geometry optimization" );
-		log( "-anim:          export animations only" );
-		log( "-lodDist1:      distance for LOD1" );
-		log( "-lodDist2:      distance for LOD2" );
-		log( "-lodDist3:      distance for LOD3" );
-		log( "-lodDist4:      distance for LOD4" );
+		log( "inputFile       filename of the COLLADA document" );
+		log( "-o outputName   name of the output files (without extension)" );
+		log( "-dest outPath   destination path to which output is written" );
+		log( "-noopt          disable geometry optimization" );
+		log( "-anim           export animations only" );
+		log( "-forceMat       force update of existing materials" );
+		log( "-lodDist1       distance for LOD1" );
+		log( "-lodDist2       distance for LOD2" );
+		log( "-lodDist3       distance for LOD3" );
+		log( "-lodDist4       distance for LOD4" );
 		return 0;
 	}
 	
 	string inName = argv[1];
 	string outName = extractFileName( inName, false );
-	bool optimize = true, animsOnly = false;
+	string outPath = ".";
+	bool forceMat = false, optimize = true, animsOnly = false;
 	float lodDists[4] = { 10, 20, 40, 80 };
 
 	for( int i = 2; i < argc; ++i )
@@ -80,6 +70,18 @@ int main( int argc, char **argv )
 				return 0;
 			}
 		}
+		else if( strcmp( argv[i], "-dest" ) == 0 )
+		{
+			if( argc > i + 1 )
+			{	
+				outPath = argv[++i];
+			}
+			else
+			{
+				log( "Invalid argument" );
+				return 0;
+			}
+		}
 		else if( strcmp( argv[i], "-noopt" ) == 0 )
 		{
 			optimize = false;
@@ -87,6 +89,10 @@ int main( int argc, char **argv )
 		else if( strcmp( argv[i], "-anim" ) == 0 )
 		{
 			animsOnly = true;
+		}
+		else if( strcmp( argv[i], "-forceMat" ) == 0 )
+		{
+			forceMat = true;
 		}
 		else if( strcmp( argv[i], "-lodDist1" ) == 0 ||
 		         strcmp( argv[i], "-lodDist2" ) == 0 ||
@@ -135,13 +141,13 @@ int main( int argc, char **argv )
 	// Convert
 	log( "Converting data for model " + outName + "..." );
 	if( !optimize ) log( "Geometry optimization disabled" );
-	Converter *converter = new Converter( lodDists );
+	Converter *converter = new Converter( outPath, lodDists );
 	converter->convertModel( *colladaFile, optimize );
 	log( "Done." );
 
-	_mkdir( "animations" );
-	_mkdir( "models" );
-	_mkdir( ("models/" + outName).c_str() );
+	_mkdir( (outPath + "/animations").c_str() );
+	_mkdir( (outPath + "/models").c_str() );
+	_mkdir( (outPath + "/models/" + outName).c_str() );
 	
 	if( !animsOnly )
 	{
@@ -150,7 +156,7 @@ int main( int argc, char **argv )
 		log( "Done." );
 		
 		log( "Writing materials..." );
-		converter->writeMaterials( *colladaFile, outName );
+		converter->writeMaterials( *colladaFile, outName, forceMat );
 		log( "Done." );
 	}
 

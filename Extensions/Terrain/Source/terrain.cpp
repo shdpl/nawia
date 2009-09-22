@@ -4,20 +4,8 @@
 // --------------------------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz and Volker Wiendl
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -34,20 +22,19 @@ namespace Horde3DTerrain
 		"uniform mat4 worldMat;\n"
 		"uniform vec4 terBlockParams;\n"
 		"attribute float terHeight;\n"
-		"varying vec4 color;\n"
 		"void main() {\n"
-		"	color = gl_Color;\n"
 		"	gl_Position = gl_ModelViewProjectionMatrix * worldMat *"
 		"		vec4( gl_Vertex.x * terBlockParams.z + terBlockParams.x, terHeight, "
 		"			  gl_Vertex.z * terBlockParams.z + terBlockParams.y, gl_Vertex.w );\n"
 		"}";
 
 	const char *fsTerrainDebugView =
-		"varying vec4 color;\n"
+		"uniform vec4 color;\n"
 		"void main() {\n"
 		"	gl_FragColor = color;\n"
 		"}\n";
 
+	uint32 TerrainNode::vlTerrain;
 	ShaderCombination TerrainNode::debugViewShader;
 
 	
@@ -68,8 +55,8 @@ namespace Horde3DTerrain
 		calcMaxLevel();
 		createBlockTree();
 
-		_localBBox.getMinCoords() = Vec3f( 0, 0, 0 );
-		_localBBox.getMaxCoords() = Vec3f( 1, 1, 1 );
+		_localBBox.min = Vec3f( 0, 0, 0 );
+		_localBBox.max = Vec3f( 1, 1, 1 );
 	}
 
 
@@ -128,6 +115,13 @@ namespace Horde3DTerrain
 	}
 
 
+	void TerrainNode::onPostUpdate()
+	{
+		_bBox = _localBBox;
+		_bBox.transform( _absTrans );
+	}
+
+
 	void TerrainNode::drawTerrainBlock( TerrainNode *terrain, float minU, float minV, float maxU, float maxV,
 	                                    int level, float scale, const Vec3f &localCamPos, const Frustum *frust1,
 	                                    const Frustum *frust2, int uni_terBlockParams )
@@ -146,8 +140,8 @@ namespace Horde3DTerrain
 		
 		// Frustum culling
 		BoundingBox bb;
-		bb.getMinCoords() = terrain->_absTrans * bBMin;
-		bb.getMaxCoords() = terrain->_absTrans * bBMax;
+		bb.min = terrain->_absTrans * bBMin;
+		bb.max = terrain->_absTrans * bBMax;
 		if( frust1 != 0x0 && frust1->cullBox( bb ) ) return;
 		if( frust2 != 0x0 && frust2->cullBox( bb ) ) return;
 
@@ -191,8 +185,9 @@ namespace Horde3DTerrain
 				}
 			}
 			
-			Modules::renderer().updateVertices( terrain->_heightArray, terrain->getVertexCount() * sizeof( float ) * 3,
-				terrain->getVertexCount() * sizeof( float ), terrain->_vertexBuffer );
+			Modules::renderer().updateBufferData(
+				terrain->_vertexBuffer, terrain->getVertexCount() * sizeof( float ) * 3,
+				terrain->getVertexCount() * sizeof( float ), terrain->_heightArray );
 			glDrawElements( GL_TRIANGLE_STRIP, terrain->getIndexCount(), GL_UNSIGNED_SHORT, (char *)0 );
 			Modules::stats().incStat( EngineStats::BatchCount, 1 );
 			Modules::stats().incStat( EngineStats::TriCount, (terrain->_blockSize - 1) * (terrain->_blockSize - 1) * 2.0f );
@@ -254,24 +249,21 @@ namespace Horde3DTerrain
 			}
 			else
 			{
-				Modules::renderer().setShader( &debugViewShader );
+				Modules::renderer().setShaderComb( &debugViewShader );
+				int loc = glGetUniformLocation( debugViewShader.shaderObj, "color" );
+				glUniform4f( loc, 0.5f, 0.75f, 1, 1 );
 			}
 			
-			int attrib_terHeight = glGetAttribLocation( Modules::renderer().getCurShader()->shaderObject, "terHeight" );
-			if( attrib_terHeight < 0 ) continue;
-			int uni_terBlockParams = glGetUniformLocation( Modules::renderer().getCurShader()->shaderObject, "terBlockParams" );
+			int uni_terBlockParams = glGetUniformLocation( Modules::renderer().getCurShader()->shaderObj, "terBlockParams" );
 
 			Vec3f localCamPos( curCam->getAbsTrans().x[12], curCam->getAbsTrans().x[13], curCam->getAbsTrans().x[14] );
 			localCamPos = terrain->_absTrans.inverted() * localCamPos;
 			
-			// Bind VBO
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, terrain->_indexBuffer );
-			glBindBuffer( GL_ARRAY_BUFFER, terrain->_vertexBuffer );
-			glVertexPointer( 3, GL_FLOAT, sizeof( float ) * 3, (char *)0 );
-			glEnableClientState( GL_VERTEX_ARRAY );
-			glVertexAttribPointer( attrib_terHeight, 1, GL_FLOAT, GL_FALSE, sizeof( float ),
-			                       (char *)0 + terrain->getVertexCount() * sizeof( float ) * 3 );
-			glEnableVertexAttribArray( attrib_terHeight );
+			// Bind geometry and apply vertex layout
+			Modules::renderer().bindIndexBuffer( terrain->_indexBuffer );
+			Modules::renderer().bindVertexBuffer( 0, terrain->_vertexBuffer, 0, 12 );
+			Modules::renderer().bindVertexBuffer( 1, terrain->_vertexBuffer, terrain->getVertexCount() * 12, 4 );
+			Modules::renderer().applyVertexLayout( vlTerrain );
 		
 			// World transformation
 			ShaderCombination *curShader = Modules::renderer().getCurShader();
@@ -290,8 +282,7 @@ namespace Horde3DTerrain
 
 			drawTerrainBlock( terrain, 0.0f, 0.0f, 1.0f, 1.0f, 0, 1.0f, localCamPos, frust1, frust2, uni_terBlockParams );
 
-			glDisableClientState( GL_VERTEX_ARRAY );
-			glDisableVertexAttribArray( attrib_terHeight );
+			Modules::renderer().applyVertexLayout( 0 );
 		}
 	}
 
@@ -306,54 +297,51 @@ namespace Horde3DTerrain
 	{
 		delete[] _heightData; _heightData = 0x0;
 
-		if( hmap.getWidth() == hmap.getHeight() &&
-			(hmap.getWidth() == 32 || hmap.getWidth() == 64 || hmap.getWidth() == 128 ||
-			hmap.getWidth() == 256 || hmap.getWidth() == 512 || hmap.getWidth() == 1024 ||
-			hmap.getWidth() == 2048 || hmap.getWidth() == 4096 || hmap.getWidth() == 8192) )
+		if( hmap.getTexFormat() == TextureFormats::BGRA8 &&
+		    hmap.getWidth() == hmap.getHeight() &&
+		    (hmap.getWidth() == 32 || hmap.getWidth() == 64 || hmap.getWidth() == 128 ||
+		    hmap.getWidth() == 256 || hmap.getWidth() == 512 || hmap.getWidth() == 1024 ||
+		    hmap.getWidth() == 2048 || hmap.getWidth() == 4096 || hmap.getWidth() == 8192) )
 		{
 			_hmapSize = hmap.getWidth();
-			_heightData = new unsigned short[(_hmapSize + 1) * (_hmapSize + 1)];
+			_heightData = new uint16[(_hmapSize+1) * (_hmapSize+1)];
 			
-			float *pixels = hmap.downloadImageData();
+			unsigned char *pixels = (unsigned char *)hmap.mapStream(
+				TextureResData::ImageElem, 0, TextureResData::ImgPixelStream, true, false );
+			ASSERT( pixels != 0x0 );
 			
 			for( uint32 i = 0; i < _hmapSize; ++i )
 			{
 				for( uint32 j = 0; j < _hmapSize; ++j )
 				{
-					unsigned short height;
-					
 					// Decode 16 bit data from red and green channels
-					height = (unsigned short)(clamp( pixels[(i * _hmapSize + j) * 4], 0, 1 ) * 255 * 256 +
-						clamp( pixels[(i * _hmapSize + j) * 4 + 1], 0, 1 ) * 255);
-					
-					_heightData[i * (_hmapSize + 1) + j] = height;
+					_heightData[i*(_hmapSize+1)+j] =
+						pixels[(i*_hmapSize+j)*4+2] * 256 + pixels[(i*_hmapSize+j)*4+1];
 				}
-			}                                                                                                     
-            // Fill in last rows (just repeat last texture pixels)                                               
-            for( uint32 i = 0; i < _hmapSize; ++i )                                                               
-			{                                                                                                     
-				unsigned short height;                                                                       
-				// Decode 16 bit data from red and green channels                                             
-				height = (unsigned short)(clamp( pixels[(i * _hmapSize + _hmapSize - 1) * 4], 0, 1 ) * 255 * 256 +
-					clamp( pixels[(i * _hmapSize + _hmapSize - 1) * 4 + 1], 0, 1 ) * 255);                                                                                                                         
-				_heightData[i * (_hmapSize + 1) + _hmapSize] = height;                                           
-			}                                                                                                         
-                                                                                                                      
-			for( uint32 i = 0; i < _hmapSize + 1; ++i )                                                               
-			{                                                                                                         
-				_heightData[_hmapSize * (_hmapSize + 1) + i] = _heightData[(_hmapSize - 1) * (_hmapSize + 1) + i];
-			}                             
+			}
+			
+			// Fill in last rows (just repeat last texture pixels)
+			for( uint32 i = 0; i < _hmapSize; ++i )
+			{
+				// Decode 16 bit data from red and green channels
+				_heightData[i*(_hmapSize+1)+_hmapSize] =
+					pixels[(i*_hmapSize+_hmapSize-1)*4+2] * 256 + pixels[(i*_hmapSize+_hmapSize-1)*4+1];
+			}
 
-			delete[] pixels;
+			for( uint32 i = 0; i < _hmapSize + 1; ++i )
+			{
+				_heightData[_hmapSize*(_hmapSize+1)+i] = _heightData[(_hmapSize-1)*(_hmapSize+1)+i];
+			}
+
+			hmap.unmapStream();
 			return true;
 		}
 		else
 		{
 			// Init default data
 			_hmapSize = 32;
-			_heightData = new unsigned short[ (_hmapSize + 1) * (_hmapSize + 1)];
+			_heightData = new uint16[ (_hmapSize + 1) * (_hmapSize + 1)];
 			memset( _heightData, 0, (_hmapSize + 1) * (_hmapSize + 1) );
-			Modules::log().writeDebugInfo( "Invalid heightmap data in Terrain node %i", _handle );
 			return false;
 		}
 	}
@@ -410,10 +398,10 @@ namespace Horde3DTerrain
 	}
 
 
-	unsigned short *TerrainNode::createIndices()
+	uint16 *TerrainNode::createIndices()
 	{
-		unsigned short *indices = new unsigned short[getIndexCount()];
-		unsigned short *indexItr = indices;
+		uint16 *indices = new uint16[getIndexCount()];
+		uint16 *indexItr = indices;
 		const uint32 size = _blockSize + 2;
 		bool forward = true;
 
@@ -441,16 +429,17 @@ namespace Horde3DTerrain
 
 	void TerrainNode::recreateVertexBuffer()
 	{
-		Modules::renderer().unloadBuffers( _vertexBuffer, _indexBuffer );
+		Modules::renderer().releaseBuffer( _vertexBuffer );
+		Modules::renderer().releaseBuffer( _indexBuffer );
 		
 		delete[] _heightArray; _heightArray = 0x0;
 		_heightArray = new float[getVertexCount()];
 		float *posArray = createVertices();
-		_vertexBuffer = Modules::renderer().uploadVertices( posArray, getVertexCount() * sizeof( float ) * 4 );
+		_vertexBuffer = Modules::renderer().createVertexBuffer( getVertexCount() * sizeof( float ) * 4, posArray );
 		delete[] posArray;
 
-		unsigned short *indices = createIndices();
-		_indexBuffer = Modules::renderer().uploadIndices( indices, getIndexCount() * sizeof( short ) );
+		uint16 *indices = createIndices();
+		_indexBuffer = Modules::renderer().createIndexBuffer( getIndexCount() * sizeof( short ), indices );
 		delete[] indices;
 	}
 
@@ -522,97 +511,91 @@ namespace Horde3DTerrain
 	}
 
 
-	int TerrainNode::getParami( int param )
+	int TerrainNode::getParamI( int param )
 	{
 		switch( param )
 		{
-		case TerrainNodeParams::MaterialRes:
-			if( _materialRes != 0x0 ) return _materialRes->getHandle();
-			else return 0;
-		case TerrainNodeParams::BlockSize:
+		case TerrainNodeParams::MatResI:
+			return _materialRes != 0x0 ? _materialRes->getHandle() : 0;
+		case TerrainNodeParams::BlockSizeI:
 			return _blockSize;
-		default:
-			return SceneNode::getParami( param );
 		}
+
+		return SceneNode::getParamI( param );
 	}
 
 
-	bool TerrainNode::setParami( int param, int value )
+	void TerrainNode::setParamI( int param, int value )
 	{
 		Resource *res;
 		switch( param )
 		{
-		case TerrainNodeParams::HeightMapRes:
+		case TerrainNodeParams::HeightTexResI:
 			res = Modules::resMan().resolveResHandle( value );
-			if ( res == 0x0 || res->getType() != ResourceTypes::Texture ||
-				((TextureResource *)res)->getTexType() != TextureTypes::Tex2D )
+			if( res != 0x0 && res->getType() == ResourceTypes::Texture &&
+			    ((TextureResource *)res)->getTexType() != TextureTypes::Tex2D )
 			{
-				Modules::log().writeDebugInfo( "Invalid 2D Texture resource for Terrain node %i", _handle );
-				return false;
+				bool result = updateHeightData( *((TextureResource *)res) );
+				recreateVertexBuffer();
+				calcMaxLevel();
+				createBlockTree();
+				if( result ) return;
 			}
-			updateHeightData( *((TextureResource *)res) );
-			
-			recreateVertexBuffer();
-			calcMaxLevel();
-			createBlockTree();
-			return true;
-		case TerrainNodeParams::MaterialRes:
+			Modules::setError( "Invalid texture in h3dSetNodeParamI for H3DLight::HeightTexResI" );
+			return;
+		case TerrainNodeParams::MatResI:
 			res = Modules::resMan().resolveResHandle( value );
-			if( res == 0x0 || res->getType() != ResourceTypes::Material )
-			{	
-				Modules::log().writeDebugInfo( "Invalid Material resource for Terrain node %i", _handle );
-				return false;
-			}
-			_materialRes = (MaterialResource *)res;
-			return true;
-		case TerrainNodeParams::BlockSize:
-			if( _hmapSize % (value - 1) != 0 || (unsigned)value > _hmapSize )
+			if( res != 0x0 && res->getType() == ResourceTypes::Material )
+				_materialRes = (MaterialResource *)res;
+			else
+				Modules::setError( "Invalid handle in h3dSetNodeParamI for H3DEXTTerrain::MatResI" );
+			return;
+		case TerrainNodeParams::BlockSizeI:
+			if( _hmapSize % (value - 1) == 0 && (unsigned)value <= _hmapSize )
 			{
-				Modules::log().writeDebugInfo( "Invalid blockSize for Terrain node %i (must be 2^x + 1)", _handle );
-				return false;
-			}			
-			
-			if (_blockSize == value)
-				return true;
+				if( _blockSize == value ) return;
 
-			_blockSize = value;
-			recreateVertexBuffer();
-			calcMaxLevel();
-			createBlockTree();
-			return true;
-		default:
-			return SceneNode::setParami( param, value );
+				_blockSize = value;
+				recreateVertexBuffer();
+				calcMaxLevel();
+				createBlockTree();
+			}
+			else
+				Modules::setError( "Invalid value in h3dSetNodeParamI for H3DEXTTerrain::BlockSizeI (must be 2^x + 1)" );	
+			return;
 		}
+
+		SceneNode::setParamI( param, value );
 	}
 
 
-	float TerrainNode::getParamf( int param )
+	float TerrainNode::getParamF( int param, int compIdx )
 	{
 		switch( param )
 		{
-		case TerrainNodeParams::MeshQuality:
+		case TerrainNodeParams::MeshQualityF:
 			return 1.0f / _lodThreshold;
-		case TerrainNodeParams::SkirtHeight:
+		case TerrainNodeParams::SkirtHeightF:
 			return _skirtHeight;
-		default:
-			return SceneNode::getParamf( param );
 		}
+
+		return SceneNode::getParamF( param, compIdx );
 	}
 
 
-	bool TerrainNode::setParamf( int param, float value )
+	void TerrainNode::setParamF( int param, int compIdx, float value )
 	{
 		switch( param )
 		{
-		case TerrainNodeParams::MeshQuality:
+		case TerrainNodeParams::MeshQualityF:
 			_lodThreshold = 1.0f / value; 
-			return true;
-		case TerrainNodeParams::SkirtHeight:
+			return;
+		case TerrainNodeParams::SkirtHeightF:
 			_skirtHeight = value; 
-			return true;
-		default:
-			return SceneNode::setParamf( param, value );
+			return;
 		}
+
+		SceneNode::setParamF( param, compIdx, value );
 	}
 
 	
@@ -883,7 +866,7 @@ namespace Horde3DTerrain
 		Resource *resObj = Modules::resMan().findResource( ResourceTypes::Geometry, name );
 		if (resObj != 0x0)
 		{	
-			Modules::log().writeDebugInfo( "Resource name specified in createGeometryResource already exists" );
+			Modules::log().writeDebugInfo( "Resource name specified in h3dextCreateTerrainGeoRes already exists" );
 			return 0;
 		}
 
@@ -904,42 +887,42 @@ namespace Horde3DTerrain
 		// Create geometry data block
 		char *data = new char[size];
 
-		char *mydata = data;
+		char *pData = data;
 		// Write Horde flag
-		mydata[0] = 'H'; mydata[1] = '3'; mydata[2] = 'D'; mydata[3] = 'G'; mydata += 4;
+		pData[0] = 'H'; pData[1] = '3'; pData[2] = 'D'; pData[3] = 'G'; pData += 4;
 		// Set version to 5 
-		*( (uint32 *)mydata ) = 5; mydata += sizeof( uint32 );
+		*( (uint32 *)pData ) = 5; pData += sizeof( uint32 );
 		// Set joint count (zero for terrains)
-		*( (uint32 *)mydata ) = 0; mydata += sizeof( uint32 );
+		*( (uint32 *)pData ) = 0; pData += sizeof( uint32 );
 		// Set number of streams
-		*( (uint32 *)mydata ) = 1; mydata += sizeof( uint32 );
+		*( (uint32 *)pData ) = 1; pData += sizeof( uint32 );
 		// Write size of each stream
-		*( (uint32 *)mydata ) = streamSize; mydata += sizeof( uint32 );
+		*( (uint32 *)pData ) = streamSize; pData += sizeof( uint32 );
 		
 		// Beginning of stream data
 		// Stream ID
-		*( (uint32 *)mydata ) = 0; mydata += sizeof( uint32 );
+		*( (uint32 *)pData ) = 0; pData += sizeof( uint32 );
 		// set stream element size
-		*( (uint32 *)mydata ) = streamElementSize; mydata += sizeof( uint32 );
+		*( (uint32 *)pData ) = streamElementSize; pData += sizeof( uint32 );
 
 		uint32 index = 0;
-		float *vertexData = (float *)mydata;
-		//const unsigned int* const refIndexData = (unsigned int*)(mydata + streamSize * streamElementSize + sizeof( uint32 ));
-		uint32 *indexData = (uint32 *)(mydata + streamSize * streamElementSize + sizeof( uint32 ));
+		float *vertexData = (float *)pData;
+		//const unsigned int* const refIndexData = (unsigned int*)(pData + streamSize * streamElementSize + sizeof( uint32 ));
+		uint32 *indexData = (uint32 *)(pData + streamSize * streamElementSize + sizeof( uint32 ));
 		
 		createGeometryVertices( lodThreshold, 0.0f, 0.0f, 1.0f, 1.0f, 0, 1.0f, vertexData, indexData, index );
 		
 		// Skip vertex data
-		mydata += streamSize * streamElementSize;
+		pData += streamSize * streamElementSize;
 
 		// Set number of indices
-		*( (uint32 *) mydata ) = indexCount; mydata += sizeof( uint32 );
+		*( (uint32 *) pData ) = indexCount; pData += sizeof( uint32 );
 		
 		// Skip index data
-		mydata += indexCount * sizeof( uint32 );				
+		pData += indexCount * sizeof( uint32 );				
 
 		// Set number of morph targets
-		*( (uint32 *) mydata ) = 0;	mydata += sizeof( uint32 );
+		*( (uint32 *) pData ) = 0;	pData += sizeof( uint32 );
 
 		ResHandle res = Modules::resMan().addResource( ResourceTypes::Geometry, name, 0, true );
 		resObj = Modules::resMan().resolveResHandle( res );

@@ -8,8 +8,9 @@
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
-// This sample source file is not covered by the LGPL as the rest of the SDK
-// and may be used without any restrictions
+// This sample source file is not covered by the EPL as the rest of the SDK
+// and may be used without any restrictions. However, the EPL's disclaimer of
+// warranty and liability shall be in effect for this file.
 //
 // *************************************************************************************************
 
@@ -46,58 +47,58 @@ Application::Application( const string &contentDir )
 bool Application::init()
 {	
 	// Initialize engine
-	if( !Horde3D::init() )
+	if( !h3dInit() )
 	{	
-		Horde3DUtils::dumpMessages();
+		h3dutDumpMessages();
 		return false;
 	}
 
 	// Set options
-	Horde3D::setOption( EngineOptions::LoadTextures, 1 );
-	Horde3D::setOption( EngineOptions::TexCompression, 0 );
-	Horde3D::setOption( EngineOptions::MaxAnisotropy, 4 );
-	Horde3D::setOption( EngineOptions::ShadowMapSize, 2048 );
-	Horde3D::setOption( EngineOptions::FastAnimation, 1 );
+	h3dSetOption( H3DOptions::LoadTextures, 1 );
+	h3dSetOption( H3DOptions::TexCompression, 0 );
+	h3dSetOption( H3DOptions::MaxAnisotropy, 4 );
+	h3dSetOption( H3DOptions::ShadowMapSize, 2048 );
+	h3dSetOption( H3DOptions::FastAnimation, 1 );
 
 	// Add resources
 	// Pipelines
-	_forwardPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/forward.pipeline.xml", 0 );
-	_deferredPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/deferred.pipeline.xml", 0 );
+	_forwardPipeRes = h3dAddResource( H3DResTypes::Pipeline, "pipelines/forward.pipeline.xml", 0 );
+	_deferredPipeRes = h3dAddResource( H3DResTypes::Pipeline, "pipelines/deferred.pipeline.xml", 0 );
 	// Overlays
-	_fontMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/font.material.xml", 0 );
-	_panelMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/panel.material.xml", 0 );
-	_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/logo.material.xml", 0 );
+	_fontMatRes = h3dAddResource( H3DResTypes::Material, "overlays/font.material.xml", 0 );
+	_panelMatRes = h3dAddResource( H3DResTypes::Material, "overlays/panel.material.xml", 0 );
+	_logoMatRes = h3dAddResource( H3DResTypes::Material, "overlays/logo.material.xml", 0 );
 	// Shader for deferred shading
-	ResHandle lightMatRes = Horde3D::addResource( ResourceTypes::Material, "materials/light.material.xml", 0 );
+	H3DRes lightMatRes = h3dAddResource( H3DResTypes::Material, "materials/light.material.xml", 0 );
 	// Environment
-	ResHandle envRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/platform/platform.scene.xml", 0 );
+	H3DRes envRes = h3dAddResource( H3DResTypes::SceneGraph, "models/platform/platform.scene.xml", 0 );
 	// Skybox
-	ResHandle skyBoxRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/skybox/skybox.scene.xml", 0 );
+	H3DRes skyBoxRes = h3dAddResource( H3DResTypes::SceneGraph, "models/skybox/skybox.scene.xml", 0 );
 	
 	// Load resources
-	Horde3DUtils::loadResourcesFromDisk( _contentDir.c_str() );
+	h3dutLoadResourcesFromDisk( _contentDir.c_str() );
 
 	// Add scene nodes
 	// Add camera
-	_cam = Horde3D::addCameraNode( RootNode, "Camera", _forwardPipeRes );
-	//Horde3D::setNodeParami( _cam, CameraNodeParams::OcclusionCulling, 1 );
+	_cam = h3dAddCameraNode( H3DRootNode, "Camera", _forwardPipeRes );
+	//h3dSetNodeParami( _cam, H3DCamera::OccCullingI, 1 );
 	// Add environment
-	NodeHandle env = Horde3D::addNodes( RootNode, envRes );
-	Horde3D::setNodeTransform( env, 0, 0, 0, 0, 0, 0, 0.23f, 0.23f, 0.23f );
+	H3DNode env = h3dAddNodes( H3DRootNode, envRes );
+	h3dSetNodeTransform( env, 0, 0, 0, 0, 0, 0, 0.23f, 0.23f, 0.23f );
 	// Add skybox
-	NodeHandle sky = Horde3D::addNodes( RootNode, skyBoxRes );
-	Horde3D::setNodeTransform( sky, 0, 0, 0, 0, 0, 0, 210, 50, 210 );
+	H3DNode sky = h3dAddNodes( H3DRootNode, skyBoxRes );
+	h3dSetNodeTransform( sky, 0, 0, 0, 0, 0, 0, 210, 50, 210 );
 	// Add light source
-	NodeHandle light = Horde3D::addLightNode( RootNode, "Light1", lightMatRes, "LIGHTING", "SHADOWMAP" );
-	Horde3D::setNodeTransform( light, 0, 20, 50, -30, 0, 0, 1, 1, 1 );
-	Horde3D::setNodeParamf( light, LightNodeParams::Radius, 200 );
-	Horde3D::setNodeParamf( light, LightNodeParams::FOV, 90 );
-	Horde3D::setNodeParami( light, LightNodeParams::ShadowMapCount, 3 );
-	Horde3D::setNodeParamf( light, LightNodeParams::ShadowSplitLambda, 0.9f );
-	Horde3D::setNodeParamf( light, LightNodeParams::ShadowMapBias, 0.001f );
-	Horde3D::setNodeParamf( light, LightNodeParams::Col_R, 0.9f );
-	Horde3D::setNodeParamf( light, LightNodeParams::Col_G, 0.7f );
-	Horde3D::setNodeParamf( light, LightNodeParams::Col_B, 0.75f );
+	H3DNode light = h3dAddLightNode( H3DRootNode, "Light1", lightMatRes, "LIGHTING", "SHADOWMAP" );
+	h3dSetNodeTransform( light, 0, 20, 50, -30, 0, 0, 1, 1, 1 );
+	h3dSetNodeParamF( light, H3DLight::RadiusF, 0, 200 );
+	h3dSetNodeParamF( light, H3DLight::FovF, 0, 90 );
+	h3dSetNodeParamI( light, H3DLight::ShadowMapCountI, 3 );
+	h3dSetNodeParamF( light, H3DLight::ShadowSplitLambdaF, 0, 0.9f );
+	h3dSetNodeParamF( light, H3DLight::ShadowMapBiasF, 0, 0.001f );
+	h3dSetNodeParamF( light, H3DLight::ColorF3, 0, 0.9f );
+	h3dSetNodeParamF( light, H3DLight::ColorF3, 1, 0.7f );
+	h3dSetNodeParamF( light, H3DLight::ColorF3, 2, 0.75f );
 
 	_crowdSim = new CrowdSim( _contentDir );
 	_crowdSim->init();
@@ -112,8 +113,8 @@ void Application::mainLoop( float fps )
 
 	keyHandler();
 	
-	Horde3D::setOption( EngineOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
-	Horde3D::setOption( EngineOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
+	h3dSetOption( H3DOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
+	h3dSetOption( H3DOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
 	
 	if( !_freeze )
 	{
@@ -121,34 +122,33 @@ void Application::mainLoop( float fps )
 	}
 	
 	// Set camera parameters
-	Horde3D::setNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 );
+	h3dSetNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 );
 	
 	// Show stats
-	Horde3DUtils::showFrameStats( _fontMatRes, _panelMatRes, _statMode );
+	h3dutShowFrameStats( _fontMatRes, _panelMatRes, _statMode );
 	if( _statMode > 0 )
 	{
-		if( Horde3D::getNodeParami( _cam, CameraNodeParams::PipelineRes ) == _forwardPipeRes )
-			Horde3DUtils::showText( "Pipeline: forward", 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+		if( h3dGetNodeParamI( _cam, H3DCamera::PipeResI ) == _forwardPipeRes )
+			h3dutShowText( "Pipeline: forward", 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 		else
-			Horde3DUtils::showText( "Pipeline: deferred", 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+			h3dutShowText( "Pipeline: deferred", 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 	}
 
 	// Show logo
-	Horde3D::showOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
-	                      1, 1, 1, 0, 1, 0.8f, 1, 1,
-	                      1, 1, 1, 1, _logoMatRes, 7 );
+	h3dShowOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0, 1, 1, 1, 0, 1, 0.8f, 1, 1,
+	                1, 1, 1, 1, _logoMatRes, 7 );
 	
 	// Render scene
-	Horde3D::render( _cam );
+	h3dRender( _cam );
 
 	// Finish rendering of frame
-	Horde3D::finalizeFrame();
+	h3dFinalizeFrame();
 
 	// Remove all overlays
-	Horde3D::clearOverlays();
+	h3dClearOverlays();
 
-	// Write all mesages to log file
-	Horde3DUtils::dumpMessages();
+	// Write all messages to log file
+	h3dutDumpMessages();
 }
 
 
@@ -157,17 +157,17 @@ void Application::release()
 	delete _crowdSim; _crowdSim = 0x0;
 	
 	// Release engine
-	Horde3D::release();
+	h3dRelease();
 }
 
 
 void Application::resize( int width, int height )
 {
 	// Resize viewport
-	Horde3D::setupViewport( 0, 0, width, height, true );
+	h3dSetupViewport( 0, 0, width, height, true );
 	
 	// Set virtual camera parameters
-	Horde3D::setupCameraView( _cam, 45.0f, (float)width / height, 0.1f, 1000.0f );
+	h3dSetupCameraView( _cam, 45.0f, (float)width / height, 0.1f, 1000.0f );
 }
 
 
@@ -178,10 +178,10 @@ void Application::keyPressEvent( int key )
 	
 	if( key == 260 )	// F3
 	{
-		if( Horde3D::getNodeParami( _cam, CameraNodeParams::PipelineRes ) == _forwardPipeRes )
-			Horde3D::setNodeParami( _cam, CameraNodeParams::PipelineRes, _deferredPipeRes );
+		if( h3dGetNodeParamI( _cam, H3DCamera::PipeResI ) == _forwardPipeRes )
+			h3dSetNodeParamI( _cam, H3DCamera::PipeResI, _deferredPipeRes );
 		else
-			Horde3D::setNodeParami( _cam, CameraNodeParams::PipelineRes, _forwardPipeRes );
+			h3dSetNodeParamI( _cam, H3DCamera::PipeResI, _forwardPipeRes );
 	}
 	
 	if( key == 264 )	// F7
@@ -193,7 +193,7 @@ void Application::keyPressEvent( int key )
 	if( key == 266 )	// F9
 	{
 		_statMode += 1;
-		if( _statMode > Horde3DUtils::MaxStatMode ) _statMode = 0;
+		if( _statMode > H3DUTMaxStatMode ) _statMode = 0;
 	}
 }
 

@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -26,6 +14,7 @@
 #define _egResource_H_
 
 #include "egPrerequisites.h"
+#include "utMath.h"
 #include <vector>
 #include <map>
 #include <string>
@@ -58,7 +47,10 @@ struct ResourceFlags
 	{
 		NoQuery = 1,
 		NoTexCompression = 2,
-		NoTexMipmaps = 4
+		NoTexMipmaps = 4,
+		TexCubemap = 8,
+		TexDynamic = 16,
+		TexRenderable = 32
 	};
 };
 
@@ -73,7 +65,7 @@ protected:
 	ResHandle            _handle;
 	int                  _flags;
 	
-	uint32               _refCount;  // Number of other objects referencing to this resource
+	uint32               _refCount;  // Number of other objects referencing this resource
 	uint32               _userRefCount;  // Number of handles created by user
 
 	bool                 _loaded;
@@ -90,15 +82,16 @@ public:
 	virtual bool load( const char *data, int size );
 	void unload();
 	
-	virtual int getParami( int param );
-	virtual bool setParami( int param, int value );
-	virtual float getParamf( int param );
-	virtual bool setParamf( int param, float value );
-	virtual const char *getParamstr( int param );
-	virtual bool setParamstr( int param, const char *value );
-
-	virtual const void *getData( int param );
-	virtual bool updateData( int param, const void *data, int size );
+	int findElem( int elem, int param, const char *value );
+	virtual int getElemCount( int elem );
+	virtual int getElemParamI( int elem, int elemIdx, int param );
+	virtual void setElemParamI( int elem, int elemIdx, int param, int value );
+	virtual float getElemParamF( int elem, int elemIdx, int param, int compIdx );
+	virtual void setElemParamF( int elem, int elemIdx, int param, int compIdx, float value );
+	virtual const char *getElemParamStr( int elem, int elemIdx, int param );
+	virtual void setElemParamStr( int elem, int elemIdx, int param, const char *value );
+	virtual void *mapStream( int elem, int elemIdx, int stream, bool read, bool write );
+	virtual void unmapStream();
 
 	int &getType() { return _type; }
 	int getFlags() { return _flags; }
@@ -159,7 +152,7 @@ struct ResourceRegEntry
 	std::string                typeString;
 	ResTypeInitializationFunc  initializationFunc;  // Called when type is registered
 	ResTypeReleaseFunc         releaseFunc;  // Called when type is unregistered
-	ResTypeFactoryFunc         factoryFunc;  // Farctory to create resourec object
+	ResTypeFactoryFunc         factoryFunc;  // Factory to create resource object
 };
 
 // =================================================================================================
@@ -185,8 +178,8 @@ public:
 	Resource *findResource( int type, const std::string &name );
 	ResHandle addResource( int type, const std::string &name, int flags, bool userCall );
 	ResHandle addNonExistingResource( Resource &resource, bool userCall );
-	ResHandle cloneResource( ResHandle sourceRes, const std::string &name );
-	int removeResource( ResHandle handle, bool userCall );
+	ResHandle cloneResource( Resource &sourceRes, const std::string &name );
+	int removeResource( Resource &resource, bool userCall );
 	void clear();
 	ResHandle queryUnloadedResource( int index );
 	void releaseUnusedResources();

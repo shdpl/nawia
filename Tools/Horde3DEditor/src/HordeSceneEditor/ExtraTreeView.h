@@ -97,7 +97,7 @@ protected:
 
 	virtual bool eventFilter( QObject* obj, QEvent* event );
 
-	bool selectNode( int nodeHandle );
+	bool selectNode( int H3DNode );
 
 private slots:
 	void nodeDataChanged(const QModelIndex& index);

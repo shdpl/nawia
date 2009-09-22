@@ -85,7 +85,7 @@ bool PipelineTreeView::loadPipeline(const QString& fileName, unsigned int pipeli
 	closeTree();
 	m_pipelineID = pipelineID;
 
-	QFile file(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Pipeline)).absoluteFilePath(fileName));
+	QFile file( QDir::current().absoluteFilePath(fileName));
 	if (!file.open(QIODevice::ReadOnly))
 	{
 		QMessageBox::warning(this, tr("Error"), tr("Error opening pipeline file %1!\n%2").arg(fileName).arg(file.errorString()));

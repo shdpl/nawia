@@ -32,7 +32,7 @@
 #include "decode_vorbis.h"
 #include "decode_wave.h"
 
-struct DistanceModels
+struct H3DDistanceModels
 {
 	enum List
 	{
@@ -46,15 +46,16 @@ struct DistanceModels
 	};
 };
 
+std::string safeStr( const char *str )
+{
+	if ( str != 0x0 )
+		return str;
+	else
+		return "";
+}
+
 namespace Horde3DSound
 {
-	std::string safeStr( const char *str )
-	{
-		if ( str != 0x0 )
-			return str;
-		else
-			return "";
-	}
 
 	const char *getExtensionName()
 	{
@@ -79,197 +80,199 @@ namespace Horde3DSound
 	{
 		SoundManager::instance()->release();
 	}
+};
 
-	DLLEXP bool openDevice( const char *device )
+DLLEXP bool h3dOpenDevice( const char *device )
+{
+	return SoundManager::instance()->openDevice( device );
+}
+
+DLLEXP void h3dCloseDevice()
+{
+	SoundManager::instance()->closeDevice();
+}
+
+DLLEXP const char *h3dGetOpenDevice()
+{
+	return SoundManager::instance()->getOpenDevice();
+}
+
+DLLEXP const char *h3dQueryDevice( int index )
+{
+	return SoundManager::instance()->queryDevice( index );
+}
+
+DLLEXP H3DDistanceModels::List h3dGetDistanceModel()
+{
+	switch( alGetInteger( AL_DISTANCE_MODEL ) )
 	{
-		return SoundManager::instance()->openDevice( device );
+	case AL_INVERSE_DISTANCE:
+		return H3DDistanceModels::InverseDistance;
+	case AL_INVERSE_DISTANCE_CLAMPED:
+		return H3DDistanceModels::InverseDistanceClamped;
+	case AL_LINEAR_DISTANCE:
+		return H3DDistanceModels::LinearDistance;
+	case AL_LINEAR_DISTANCE_CLAMPED:
+		return H3DDistanceModels::LinearDistanceClamped;
+	case AL_EXPONENT_DISTANCE:
+		return H3DDistanceModels::ExponentDistance;
+	case AL_EXPONENT_DISTANCE_CLAMPED:
+		return H3DDistanceModels::ExponentDistanceClamped;
+	default:
+		return H3DDistanceModels::None;
+	}
+}
+
+DLLEXP void h3dSetDistanceModel( H3DDistanceModels::List model )
+{
+	switch( model )
+	{
+	case H3DDistanceModels::None:
+		alDistanceModel( AL_NONE );
+		return;
+	case H3DDistanceModels::InverseDistance:
+		alDistanceModel( AL_INVERSE_DISTANCE );
+		return;
+	case H3DDistanceModels::InverseDistanceClamped:
+		alDistanceModel( AL_INVERSE_DISTANCE_CLAMPED );
+		return;
+	case H3DDistanceModels::LinearDistance:
+		alDistanceModel( AL_LINEAR_DISTANCE );
+		return;
+	case H3DDistanceModels::LinearDistanceClamped:
+		alDistanceModel( AL_LINEAR_DISTANCE_CLAMPED );
+		return;
+	case H3DDistanceModels::ExponentDistance:
+		alDistanceModel( AL_EXPONENT_DISTANCE );
+		return;
+	case H3DDistanceModels::ExponentDistanceClamped:
+		alDistanceModel( AL_EXPONENT_DISTANCE_CLAMPED );
+		return;
+	default:
+		Modules::setError( "Invalid elem, param or component in h3dSetDistanceModel" );
+		return;
+	}
+}
+
+
+DLLEXP int h3dAddListenerNode( int parent, const char *name )
+{
+	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
+
+	if( parentNode == 0x0 )
+	{
+		Modules::log().writeDebugInfo( "Invalid parent node handle %i in addListenerNode", parent );
+		return 0;
 	}
 
-	DLLEXP void closeDevice()
+	Modules::log().writeInfo( "Adding Listener node '%s'", safeStr( name ).c_str() );
+
+	ListenerNodeTpl tpl( safeStr( name ) );
+	SceneNode *sn = Modules::sceneMan().findType( SNT_ListenerNode )->factoryFunc( tpl );
+
+	return Modules::sceneMan().addNode( sn, *parentNode );
+}
+
+DLLEXP int h3dGetActiveListener()
+{
+	if( SoundManager::instance()->getActiveListener() == 0x0 )
+		return 0;
+	else
+		return SoundManager::instance()->getActiveListener()->getHandle();
+}
+
+DLLEXP bool h3dSetActiveListener( int listenerNode )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( listenerNode );
+
+	if( sn != 0x0 && sn->getType() != SNT_ListenerNode )
 	{
-		SoundManager::instance()->closeDevice();
+		Modules::log().writeDebugInfo( "Invalid Listener node %i in setActiveListener", listenerNode );
+		return false;
 	}
 
-	DLLEXP const char *getOpenDevice()
+	Modules::log().writeInfo( "Setting active Listener node to '%s'", sn != 0x0? sn->getName().c_str() : "NULL");
+	SoundManager::instance()->setActiveListener( (ListenerNode *)sn );
+
+	return true;
+}
+
+DLLEXP int h3dAddSoundNode( int parent, const char *name, ResHandle soundRes )
+{
+	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
+
+	if( parentNode == 0x0 )
 	{
-		return SoundManager::instance()->getOpenDevice();
+		Modules::log().writeDebugInfo( "Invalid parent node handle %i in addSoundNode", parent );
+		return 0;
 	}
 
-	DLLEXP const char *queryDevice( int index )
+	Resource *res = Modules::resMan().resolveResHandle( soundRes );
+
+	if( res == 0x0 || res->getType() != RST_SoundResource )
 	{
-		return SoundManager::instance()->queryDevice( index );
+		Modules::log().writeDebugInfo( "Invalid Sound resource %i in addSoundNode", soundRes );
+		return 0;
 	}
 
-	DLLEXP DistanceModels::List getDistanceModel()
+	Modules::log().writeInfo( "Adding Sound node '%s'", safeStr( name ).c_str() );
+
+	SoundNodeTpl tpl( safeStr( name ), (SoundResource *)res );
+	SceneNode *sn = Modules::sceneMan().findType( SNT_SoundNode )->factoryFunc( tpl );
+
+	return Modules::sceneMan().addNode( sn, *parentNode );
+}
+
+DLLEXP bool h3dIsSoundPlaying( int soundNode )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( soundNode );
+
+	if( sn == 0x0 || sn->getType() != SNT_SoundNode )
 	{
-		switch( alGetInteger( AL_DISTANCE_MODEL ) )
-		{
-		case AL_INVERSE_DISTANCE:
-			return DistanceModels::InverseDistance;
-		case AL_INVERSE_DISTANCE_CLAMPED:
-			return DistanceModels::InverseDistanceClamped;
-		case AL_LINEAR_DISTANCE:
-			return DistanceModels::LinearDistance;
-		case AL_LINEAR_DISTANCE_CLAMPED:
-			return DistanceModels::LinearDistanceClamped;
-		case AL_EXPONENT_DISTANCE:
-			return DistanceModels::ExponentDistance;
-		case AL_EXPONENT_DISTANCE_CLAMPED:
-			return DistanceModels::ExponentDistanceClamped;
-		default:
-			return DistanceModels::None;
-		}
+		Modules::log().writeDebugInfo( "Invalid Sound node %i in isSoundPlaying", soundNode );
+		return false;
 	}
 
-	DLLEXP bool setDistanceModel( DistanceModels::List model )
+	return ((SoundNode *)sn)->isPlaying();
+}
+
+DLLEXP void h3dPlaySound( int soundNode )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( soundNode );
+
+	if( sn == 0x0 || sn->getType() != SNT_SoundNode )
 	{
-		switch( model )
-		{
-		case DistanceModels::None:
-			alDistanceModel( AL_NONE );
-			return true;
-		case DistanceModels::InverseDistance:
-			alDistanceModel( AL_INVERSE_DISTANCE );
-			return true;
-		case DistanceModels::InverseDistanceClamped:
-			alDistanceModel( AL_INVERSE_DISTANCE_CLAMPED );
-			return true;
-		case DistanceModels::LinearDistance:
-			alDistanceModel( AL_LINEAR_DISTANCE );
-			return true;
-		case DistanceModels::LinearDistanceClamped:
-			alDistanceModel( AL_LINEAR_DISTANCE_CLAMPED );
-			return true;
-		case DistanceModels::ExponentDistance:
-			alDistanceModel( AL_EXPONENT_DISTANCE );
-			return true;
-		case DistanceModels::ExponentDistanceClamped:
-			alDistanceModel( AL_EXPONENT_DISTANCE_CLAMPED );
-			return true;
-		default:
-			return false;
-		}
+		return Modules::log().writeDebugInfo( "Invalid Sound node %i in playSound", soundNode );
 	}
 
-	DLLEXP NodeHandle addListenerNode( NodeHandle parent, const char *name )
+	((SoundNode *)sn)->play();
+}
+
+DLLEXP void h3dPauseSound( int soundNode )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( soundNode );
+
+	if( sn == 0x0 || sn->getType() != SNT_SoundNode )
 	{
-		SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-
-		if( parentNode == 0x0 )
-		{
-			Modules::log().writeDebugInfo( "Invalid parent node handle %i in addListenerNode", parent );
-			return 0;
-		}
-
-		Modules::log().writeInfo( "Adding Listener node '%s'", safeStr( name ).c_str() );
-
-		ListenerNodeTpl tpl( safeStr( name ) );
-		SceneNode *sn = Modules::sceneMan().findType( SNT_ListenerNode )->factoryFunc( tpl );
-
-		return Modules::sceneMan().addNode( sn, *parentNode );
+		return Modules::log().writeDebugInfo( "Invalid Sound node %i in pauseSound", soundNode );
 	}
 
-	DLLEXP NodeHandle getActiveListener()
+	((SoundNode *)sn)->pause();
+}
+
+DLLEXP void h3dRewindSound( int soundNode )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( soundNode );
+
+	if( sn == 0x0 || sn->getType() != SNT_SoundNode )
 	{
-		if( SoundManager::instance()->getActiveListener() == 0x0 )
-			return 0;
-		else
-			return SoundManager::instance()->getActiveListener()->getHandle();
+		return Modules::log().writeDebugInfo( "Invalid Sound node %i in rewindSound", soundNode );
 	}
 
-	DLLEXP bool setActiveListener( NodeHandle listenerNode )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( listenerNode );
+	bool wasPlaying = ((SoundNode *)sn)->isPlaying();
 
-		if( sn != 0x0 && sn->getType() != SNT_ListenerNode )
-		{
-			Modules::log().writeDebugInfo( "Invalid Listener node %i in setActiveListener", listenerNode );
-			return false;
-		}
+	((SoundNode *)sn)->rewind();
 
-		Modules::log().writeInfo( "Setting active Listener node to '%s'", sn != 0x0? sn->getName().c_str() : "NULL");
-		SoundManager::instance()->setActiveListener( (ListenerNode *)sn );
-
-		return true;
-	}
-
-	DLLEXP NodeHandle addSoundNode( NodeHandle parent, const char *name, ResHandle soundRes )
-	{
-		SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-
-		if( parentNode == 0x0 )
-		{
-			Modules::log().writeDebugInfo( "Invalid parent node handle %i in addSoundNode", parent );
-			return 0;
-		}
-
-		Resource *res = Modules::resMan().resolveResHandle( soundRes );
-
-		if( res == 0x0 || res->getType() != RST_SoundResource )
-		{
-			Modules::log().writeDebugInfo( "Invalid Sound resource %i in addSoundNode", soundRes );
-			return 0;
-		}
-
-		Modules::log().writeInfo( "Adding Sound node '%s'", safeStr( name ).c_str() );
-
-		SoundNodeTpl tpl( safeStr( name ), (SoundResource *)res );
-		SceneNode *sn = Modules::sceneMan().findType( SNT_SoundNode )->factoryFunc( tpl );
-
-		return Modules::sceneMan().addNode( sn, *parentNode );
-	}
-
-	DLLEXP bool isSoundPlaying( NodeHandle soundNode )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( soundNode );
-
-		if( sn == 0x0 || sn->getType() != SNT_SoundNode )
-		{
-			Modules::log().writeDebugInfo( "Invalid Sound node %i in isSoundPlaying", soundNode );
-			return false;
-		}
-
-		return ((SoundNode *)sn)->isPlaying();
-	}
-
-	DLLEXP void playSound( NodeHandle soundNode )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( soundNode );
-
-		if( sn == 0x0 || sn->getType() != SNT_SoundNode )
-		{
-			return Modules::log().writeDebugInfo( "Invalid Sound node %i in playSound", soundNode );
-		}
-
+	if( wasPlaying )
 		((SoundNode *)sn)->play();
-	}
-
-	DLLEXP void pauseSound( NodeHandle soundNode )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( soundNode );
-
-		if( sn == 0x0 || sn->getType() != SNT_SoundNode )
-		{
-			return Modules::log().writeDebugInfo( "Invalid Sound node %i in pauseSound", soundNode );
-		}
-
-		((SoundNode *)sn)->pause();
-	}
-
-	DLLEXP void rewindSound( NodeHandle soundNode )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( soundNode );
-
-		if( sn == 0x0 || sn->getType() != SNT_SoundNode )
-		{
-			return Modules::log().writeDebugInfo( "Invalid Sound node %i in rewindSound", soundNode );
-		}
-
-		bool wasPlaying = ((SoundNode *)sn)->isPlaying();
-
-		((SoundNode *)sn)->rewind();
-
-		if( wasPlaying )
-			((SoundNode *)sn)->play();
-	}
 }

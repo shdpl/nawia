@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -37,33 +25,23 @@ struct XMLNode;
 // ParticleEffect Resource
 // =================================================================================================
 
-struct ParticleEffectResParams
+struct ParticleEffectResData
 {
 	enum List
 	{
-		LifeMin = 900,
-		LifeMax,
-		MoveVelMin,
-		MoveVelMax,
-		MoveVelEndRate,
-		RotVelMin,
-		RotVelMax,
-		RotVelEndRate,
-		SizeMin,
-		SizeMax,
-		SizeEndRate,
-		Col_R_Min,
-		Col_R_Max,
-		Col_R_EndRate,
-		Col_G_Min,
-		Col_G_Max,
-		Col_G_EndRate,
-		Col_B_Min,
-		Col_B_Max,
-		Col_B_EndRate,
-		Col_A_Min,
-		Col_A_Max,
-		Col_A_EndRate
+		ParticleElem = 800,
+		ChanMoveVelElem,
+		ChanRotVelElem,
+		ChanSizeElem,
+		ChanColRElem,
+		ChanColGElem,
+		ChanColBElem,
+		ChanColAElem,
+		PartLifeMinF,
+		PartLifeMaxF,
+		ChanStartMinF,
+		ChanStartMaxF,
+		ChanEndRateF
 	};
 };
 
@@ -104,8 +82,9 @@ public:
 	void release();
 	bool load( const char *data, int size );
 
-	float getParamf( int param );
-	bool setParamf( int param, float value );
+	int getElemCount( int elem );
+	float getElemParamF( int elem, int elemIdx, int param, int compIdx );
+	void setElemParamF( int elem, int elemIdx, int param, int compIdx, float value );
 
 	friend class EmitterNode;
 };
@@ -121,16 +100,14 @@ struct EmitterNodeParams
 {
 	enum List
 	{
-		MaterialRes = 700,
-		ParticleEffectRes,
-		MaxCount,
-		RespawnCount,
-		Delay,
-		EmissionRate,
-		SpreadAngle,
-		ForceX,
-		ForceY,
-		ForceZ
+		MatResI = 700,
+		PartEffResI,
+		MaxCountI,
+		RespawnCountI,
+		DelayF,
+		EmissionRateF,
+		SpreadAngleF,
+		ForceF3
 	};
 };
 
@@ -189,7 +166,7 @@ protected:
 
 	// Particle data
 	ParticleData             *_particles;
-	Vec3f                    *_parPositions;
+	float                    *_parPositions;
 	float                    *_parSizesANDRotations;
 	float                    *_parColors;
 
@@ -208,10 +185,10 @@ public:
 	static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
 	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
 
-	float getParamf( int param );
-	bool setParamf( int param, float value );
-	int getParami( int param );
-	bool setParami( int param, int value );
+	int getParamI( int param );
+	void setParamI( int param, int value );
+	float getParamF( int param, int compIdx );
+	void setParamF( int param, int compIdx, float value );
 
 	void advanceTime( float timeDelta );
 	bool hasFinished();

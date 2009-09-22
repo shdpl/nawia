@@ -46,7 +46,7 @@ Application::Application( const std::string &contentDir )
 	_soundVolume = 1.0f;
 	_soundPitch = 1.0f;
 	_soundLoop = false;
-	_distanceModel = DistanceModels::InverseDistanceClamped;
+	_distanceModel = H3DDistanceModels::InverseDistanceClamped;
 
 	_statMode = 0;
 	_debugViewMode = false;
@@ -66,76 +66,76 @@ Application::Application( const std::string &contentDir )
 bool Application::init()
 {	
 	// Initialize engine and open default sound device
-	if( !Horde3D::init() || !Horde3DSound::openDevice( 0x0 ) )
+	if( !h3dInit() || !h3dOpenDevice( 0x0 ) )
 	{	
-		Horde3DUtils::dumpMessages();
+		h3dutDumpMessages();
 		return false;
 	}
 
 	// Set options
-	Horde3D::setOption( EngineOptions::LoadTextures, 1 );
-	Horde3D::setOption( EngineOptions::TexCompression, 0 );
-	Horde3D::setOption( EngineOptions::FastAnimation, 0 );
-	Horde3D::setOption( EngineOptions::MaxAnisotropy, 4 );
-	Horde3D::setOption( EngineOptions::ShadowMapSize, 2048 );
+	h3dSetOption( H3DOptions::LoadTextures, 1 );
+	h3dSetOption( H3DOptions::TexCompression, 0 );
+	h3dSetOption( H3DOptions::FastAnimation, 0 );
+	h3dSetOption( H3DOptions::MaxAnisotropy, 4 );
+	h3dSetOption( H3DOptions::ShadowMapSize, 2048 );
 
 	// Add resources
 	// Pipelines
-	_hdrPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/hdr.pipeline.xml", 0 );
-	_forwardPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/forward.pipeline.xml", 0 );
+	_hdrPipeRes = h3dAddResource( H3DResTypes::Pipeline, "pipelines/hdr.pipeline.xml", 0 );
+	_forwardPipeRes = h3dAddResource( H3DResTypes::Pipeline, "pipelines/forward.pipeline.xml", 0 );
 	// Overlays
-	_fontMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/font.material.xml", 0 );
-	_panelMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/panel.material.xml", 0 );
-	_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/logo.material.xml", 0 );
+	_fontMatRes = h3dAddResource( H3DResTypes::Material, "overlays/font.material.xml", 0 );
+	_panelMatRes = h3dAddResource( H3DResTypes::Material, "overlays/panel.material.xml", 0 );
+	_logoMatRes = h3dAddResource( H3DResTypes::Material, "overlays/logo.material.xml", 0 );
 	// Environment
-	ResHandle floorRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/tiles/tiles.scene.xml", 0 );
+	H3DRes floorRes = h3dAddResource( H3DResTypes::SceneGraph, "models/tiles/tiles.scene.xml", 0 );
 	// Knight
-	ResHandle speakerRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/speaker/speaker.scene.xml", 0 );
+	H3DRes speakerRes = h3dAddResource( H3DResTypes::SceneGraph, "models/speaker/speaker.scene.xml", 0 );
 	// Music
-	_soundRes = Horde3D::addResource( RST_SoundResource, "sounds/stringed_disco.ogg", 0 );
+	_soundRes = h3dAddResource( RST_SoundResource, "sounds/stringed_disco.ogg", 0 );
 
 	// Load resources
-	Horde3DUtils::loadResourcesFromDisk( _contentDir.c_str() );
+	h3dutLoadResourcesFromDisk( _contentDir.c_str() );
 
 	// Add scene nodes
 	// Add camera
-	_cam = Horde3D::addCameraNode( RootNode, "Camera", _hdrPipeRes );
-	//Horde3D::setNodeParami( _cam, CameraNodeParams::OcclusionCulling, 1 );
+	_cam = h3dAddCameraNode( H3DRootNode, "Camera", _hdrPipeRes );
+	//h3dSetNodeParamI( _cam, CameraNodeParams::OcclusionCulling, 1 );
 	// Add listener to the camera
-	NodeHandle listener = Horde3DSound::addListenerNode( _cam, "Listener" );
-	Horde3DSound::setActiveListener( listener );
+	H3DNode listener = h3dAddListenerNode( _cam, "Listener" );
+	h3dSetActiveListener( listener );
 	// Add floor
-	NodeHandle floor = Horde3D::addNodes( RootNode, floorRes );
-	Horde3D::setNodeTransform( floor, 0, -0.125, 0, 0, 0, 0, 1, 1, 1 );
+	H3DNode floor = h3dAddNodes( H3DRootNode, floorRes );
+	h3dSetNodeTransform( floor, 0, -0.125, 0, 0, 0, 0, 1, 1, 1 );
 	// Add the speakers
-	NodeHandle speaker1 = Horde3D::addNodes( RootNode, speakerRes );
-	Horde3D::setNodeTransform( speaker1, -2, 0, -2, 0, 215.0f, 0, 1, 1, 1 );
-	NodeHandle speaker2 = Horde3D::addNodes( RootNode, speakerRes );
-	Horde3D::setNodeTransform( speaker2, 2, 0, -2, 0, 145.0f, 0, 1, 1, 1 );
+	H3DNode speaker1 = h3dAddNodes( H3DRootNode, speakerRes );
+	h3dSetNodeTransform( speaker1, -2, 0, -2, 0, 215.0f, 0, 1, 1, 1 );
+	H3DNode speaker2 = h3dAddNodes( H3DRootNode, speakerRes );
+	h3dSetNodeTransform( speaker2, 2, 0, -2, 0, 145.0f, 0, 1, 1, 1 );
 	// Add music to the speakers
-	_sound1 = Horde3DSound::addSoundNode( speaker1, "Sound1", _soundRes );
-	_sound2 = Horde3DSound::addSoundNode( speaker2, "Sound2", _soundRes );
+	_sound1 = h3dAddSoundNode( speaker1, "Sound1", _soundRes );
+	_sound2 = h3dAddSoundNode( speaker2, "Sound2", _soundRes );
 	// Add light source
-	_light = Horde3D::addLightNode( RootNode, "Light1", 0, "LIGHTING", "SHADOWMAP" );
-	Horde3D::setNodeTransform( _light, 0, 7, 0, -90, 0, 0, 1, 1, 1 );
-	Horde3D::setNodeParamf( _light, LightNodeParams::Radius, 30 );
-	Horde3D::setNodeParamf( _light, LightNodeParams::FOV, 90 );
-	Horde3D::setNodeParami( _light, LightNodeParams::ShadowMapCount, 1 );
-	Horde3D::setNodeParamf( _light, LightNodeParams::ShadowMapBias, 0.01f );
+	_light = h3dAddLightNode( H3DRootNode, "Light1", 0, "LIGHTING", "SHADOWMAP" );
+	h3dSetNodeTransform( _light, 0, 7, 0, -90, 0, 0, 1, 1, 1 );
+	h3dSetNodeParamF( _light, H3DLight::RadiusF, 0, 30 );
+	h3dSetNodeParamF( _light, H3DLight::FovF, 0, 90 );
+	h3dSetNodeParamI( _light, H3DLight::ShadowMapCountI, 1 );
+	h3dSetNodeParamF( _light, H3DLight::ShadowMapBiasF, 0, 0.01f );
 
 	// Set the distance model
-	Horde3DSound::setDistanceModel( _distanceModel );
+	h3dSetDistanceModel( _distanceModel );
 	// Set the timer so the light immediately gets a random color
 	_lightTimer = 1.0f;
 
 	// Customize post processing effects
-	NodeHandle matRes = Horde3D::findResource( ResourceTypes::Material, "pipelines/postHDR.material.xml" );
+	H3DRes matRes = h3dFindResource( H3DResTypes::Material, "pipelines/postHDR.material.xml" );
 	// hdrParams: exposure, brightpass threshold, brightpass offset (see shader for description)
-	Horde3D::setMaterialUniform( matRes, "hdrParams", 2.0f, 0.6f, 0.08f, 0 );
+	h3dSetMaterialUniform( matRes, "hdrParams", 2.0f, 0.6f, 0.08f, 0 );
 
 	// Play the music
-	Horde3DSound::playSound( _sound1 );
-	Horde3DSound::playSound( _sound2 );
+	h3dPlaySound( _sound1 );
+	h3dPlaySound( _sound2 );
 
 	return true;
 }
@@ -143,8 +143,8 @@ bool Application::init()
 void Application::release()
 {
 	// Close the sound device and release the engine
-	Horde3DSound::closeDevice();
-	Horde3D::release();
+	h3dCloseDevice();
+	h3dRelease();
 }
 
 void Application::mainLoop( float timeSinceLastFrame )
@@ -152,7 +152,7 @@ void Application::mainLoop( float timeSinceLastFrame )
 	keyHandler( timeSinceLastFrame );
 
 	// Set camera parameters
-	Horde3D::setNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 );
+	h3dSetNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 );
 
 	_lightTimer += timeSinceLastFrame;
 
@@ -164,39 +164,39 @@ void Application::mainLoop( float timeSinceLastFrame )
 		{
 		case 0:
 			// Red
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_R, 1.0f );
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_G, 0.0f );
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_B, 0.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 0, 1.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 1, 0.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 2, 0.0f );
 			break;
 		case 1:
 			// Green
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_R, 0.0f );
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_G, 1.0f );
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_B, 0.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 0, 0.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 1, 1.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 2, 0.0f );
 			break;
 		case 2:
 			// Blue
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_R, 0.0f );
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_G, 0.0f );
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_B, 1.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 0, 0.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 1, 0.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 2, 1.0f );
 			break;
 		case 3:
 			// Yellow
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_R, 1.0f );
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_G, 1.0f );
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_B, 0.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 0, 1.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 1, 1.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 2, 0.0f );
 			break;
 		case 4:
 			// Purple
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_R, 1.0f );
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_G, 0.0f );
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_B, 1.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 0, 1.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 1, 0.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 2, 1.0f );
 			break;
 		case 5:
 			// Cyan
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_R, 0.0f );
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_G, 1.0f );
-			Horde3D::setNodeParamf( _light, LightNodeParams::Col_B, 1.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 0, 0.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 1, 1.0f );
+			h3dSetNodeParamF( _light, H3DLight::ColorF3, 2, 1.0f );
 			break;
 		}
 
@@ -205,37 +205,36 @@ void Application::mainLoop( float timeSinceLastFrame )
 	}
 
 	// Show stats
-	Horde3DUtils::showFrameStats( _fontMatRes, _panelMatRes, _statMode );
+	h3dutShowFrameStats( _fontMatRes, _panelMatRes, _statMode );
 	if( _statMode > 0 )
 	{	
 		displaySoundInfo();
 	}
 
 	// Show logo
-	Horde3D::showOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
-	                      1, 1, 1, 0, 1, 0.8f, 1, 1,
-	                      1, 1, 1, 1, _logoMatRes, 7 );
+	h3dShowOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0, 1, 1, 1, 0, 1, 0.8f, 1, 1,
+	                1, 1, 1, 1, _logoMatRes, 7 );
 
 	// Render scene
-	Horde3D::render( _cam );
+	h3dRender( _cam );
 
 	// Finish rendering of frame
-	Horde3D::finalizeFrame();
+	h3dFinalizeFrame();
 
 	// Remove all overlays
-	Horde3D::clearOverlays();
+	h3dClearOverlays();
 
 	// Write all mesages to log file
-	Horde3DUtils::dumpMessages();
+	h3dutDumpMessages();
 }
 
 void Application::resize( int width, int height )
 {
 	// Resize viewport
-	Horde3D::setupViewport( 0, 0, width, height, true );
+	h3dSetupViewport( 0, 0, width, height, true );
 
 	// Set virtual camera parameters
-	Horde3D::setupCameraView( _cam, 45.0f, (float)width / height, 0.1f, 1000.0f );
+	h3dSetupCameraView( _cam, 45.0f, (float)width / height, 0.1f, 1000.0f );
 }
 
 void Application::mouseMoveEvent( int deltaX, int deltaY )
@@ -257,77 +256,77 @@ void Application::keyPressEvent( int key )
 	switch( key )
 	{
 	case '1':
-		if( Horde3DSound::isSoundPlaying( _sound1 ) )
+		if( h3dIsSoundPlaying( _sound1 ) )
 		{
-			Horde3DSound::pauseSound( _sound1 );
-			Horde3DSound::pauseSound( _sound2 );
+			h3dPauseSound( _sound1 );
+			h3dPauseSound( _sound2 );
 		}
 		else
 		{
-			Horde3DSound::playSound( _sound1 );
-			Horde3DSound::playSound( _sound2 );
+			h3dPlaySound( _sound1 );
+			h3dPlaySound( _sound2 );
 		}
 
 		break;
 	case '2':
-		Horde3DSound::rewindSound( _sound1 );
-		Horde3DSound::rewindSound( _sound2 );
+		h3dRewindSound( _sound1 );
+		h3dRewindSound( _sound2 );
 
 		break;
 	case '7':
 		_soundLoop = !_soundLoop;
 
-		Horde3D::setNodeParami( _sound1, SoundNodeParams::Loop, _soundLoop ? 1 : 0 );
-		Horde3D::setNodeParami( _sound2, SoundNodeParams::Loop, _soundLoop ? 1 : 0 );
+		h3dSetNodeParamI( _sound1, H3DSoundNodeParams::Loop, _soundLoop ? 1 : 0 );
+		h3dSetNodeParamI( _sound2, H3DSoundNodeParams::Loop, _soundLoop ? 1 : 0 );
 		break;
 	case '8':
 		// Rotate between the distance models
 		switch( _distanceModel )
 		{
-		case DistanceModels::None:
-			_distanceModel = DistanceModels::InverseDistance;
+		case H3DDistanceModels::None:
+			_distanceModel = H3DDistanceModels::InverseDistance;
 			break;
-		case DistanceModels::InverseDistance:
-			_distanceModel = DistanceModels::InverseDistanceClamped;
+		case H3DDistanceModels::InverseDistance:
+			_distanceModel = H3DDistanceModels::InverseDistanceClamped;
 			break;
-		case DistanceModels::InverseDistanceClamped:
-			_distanceModel = DistanceModels::LinearDistance;
+		case H3DDistanceModels::InverseDistanceClamped:
+			_distanceModel = H3DDistanceModels::LinearDistance;
 			break;
-		case DistanceModels::LinearDistance:
-			_distanceModel = DistanceModels::LinearDistanceClamped;
+		case H3DDistanceModels::LinearDistance:
+			_distanceModel = H3DDistanceModels::LinearDistanceClamped;
 			break;
-		case DistanceModels::LinearDistanceClamped:
-			_distanceModel = DistanceModels::ExponentDistance;
+		case H3DDistanceModels::LinearDistanceClamped:
+			_distanceModel = H3DDistanceModels::ExponentDistance;
 			break;
-		case DistanceModels::ExponentDistance:
-			_distanceModel = DistanceModels::ExponentDistanceClamped;
+		case H3DDistanceModels::ExponentDistance:
+			_distanceModel = H3DDistanceModels::ExponentDistanceClamped;
 			break;
-		case DistanceModels::ExponentDistanceClamped:
-			_distanceModel = DistanceModels::None;
+		case H3DDistanceModels::ExponentDistanceClamped:
+			_distanceModel = H3DDistanceModels::None;
 			break;
 		}
 
-		Horde3DSound::setDistanceModel( _distanceModel );
+		h3dSetDistanceModel( _distanceModel );
 		break;
 	case GLFW_KEY_F3:
-		if( Horde3D::getNodeParami( _cam, CameraNodeParams::PipelineRes ) == _hdrPipeRes )
-			Horde3D::setNodeParami( _cam, CameraNodeParams::PipelineRes, _forwardPipeRes );
+		if( h3dGetNodeParamI( _cam, H3DCamera::PipeResI ) == _hdrPipeRes )
+			h3dSetNodeParamI( _cam, H3DCamera::PipeResI, _forwardPipeRes );
 		else
-			Horde3D::setNodeParami( _cam, CameraNodeParams::PipelineRes, _hdrPipeRes );
+			h3dSetNodeParamI( _cam, H3DCamera::PipeResI, _hdrPipeRes );
 
 		break;
 	case GLFW_KEY_F7:
 		_debugViewMode = !_debugViewMode;
-		Horde3D::setOption( EngineOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
+		h3dSetOption( H3DOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
 		break;
 	case GLFW_KEY_F8:
 		_wireframeMode = !_wireframeMode;
-		Horde3D::setOption( EngineOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
+		h3dSetOption( H3DOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
 		break;
 	case GLFW_KEY_F9:
 		_statMode += 1;
 
-		if( _statMode > Horde3DUtils::MaxStatMode )
+		if( _statMode > H3DUTMaxStatMode )
 			_statMode = 0;
 
 		break;
@@ -379,8 +378,8 @@ void Application::keyHandler( float timeSinceLastFrame )
 		if( _soundVolume > 2.0f )
 			_soundVolume = 2.0f;
 
-		Horde3D::setNodeParamf( _sound1, SoundNodeParams::Gain, _soundVolume );
-		Horde3D::setNodeParamf( _sound2, SoundNodeParams::Gain, _soundVolume );
+		h3dSetNodeParamF( _sound1, H3DSoundNodeParams::Gain, 0, _soundVolume );
+		h3dSetNodeParamF( _sound2, H3DSoundNodeParams::Gain, 0, _soundVolume );
 	}
 
 	if( _keys['4'] )
@@ -391,8 +390,8 @@ void Application::keyHandler( float timeSinceLastFrame )
 		if( _soundVolume < 0 )
 			_soundVolume = 0;
 
-		Horde3D::setNodeParamf( _sound1, SoundNodeParams::Gain, _soundVolume );
-		Horde3D::setNodeParamf( _sound2, SoundNodeParams::Gain, _soundVolume );
+		h3dSetNodeParamF( _sound1, H3DSoundNodeParams::Gain, 0, _soundVolume );
+		h3dSetNodeParamF( _sound2, H3DSoundNodeParams::Gain, 0, _soundVolume );
 	}
 
 	if( _keys['5'] )
@@ -403,8 +402,8 @@ void Application::keyHandler( float timeSinceLastFrame )
 		if( _soundPitch > 2.0f )
 			_soundPitch = 2.0f;
 
-		Horde3D::setNodeParamf( _sound1, SoundNodeParams::Pitch, _soundPitch );
-		Horde3D::setNodeParamf( _sound2, SoundNodeParams::Pitch, _soundPitch );
+		h3dSetNodeParamF( _sound1, H3DSoundNodeParams::Pitch, 0, _soundPitch );
+		h3dSetNodeParamF( _sound2, H3DSoundNodeParams::Pitch, 0, _soundPitch );
 	}
 
 	if( _keys['6'] )
@@ -415,8 +414,8 @@ void Application::keyHandler( float timeSinceLastFrame )
 		if( _soundPitch < 0.5f )
 			_soundPitch = 0.5f;
 
-		Horde3D::setNodeParamf( _sound1, SoundNodeParams::Pitch, _soundPitch );
-		Horde3D::setNodeParamf( _sound2, SoundNodeParams::Pitch, _soundPitch );
+		h3dSetNodeParamF( _sound1, H3DSoundNodeParams::Pitch, 0, _soundPitch );
+		h3dSetNodeParamF( _sound2, H3DSoundNodeParams::Pitch, 0, _soundPitch );
 	}
 }
 
@@ -425,16 +424,16 @@ void Application::displaySoundInfo()
 	std::stringstream text;
 
 	text.str( "" );
-	text << std::fixed << std::setprecision( 2 ) << Horde3D::getNodeParamf( _sound1, SoundNodeParams::Offset ) << " / " << Horde3D::getResourceParamf( _soundRes, SoundResParams::Runtime );
-	Horde3DUtils::showText( text.str().c_str(), 0.03f, 0.43f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+	text << std::fixed << std::setprecision( 2 ) << h3dGetNodeParamF( _sound1, H3DSoundNodeParams::Offset, 0 ) << " / " << h3dGetResParamF( _soundRes, H3DSoundResParams::Runtime, 0, 0, 0 );
+	h3dutShowText( text.str().c_str(), 0.03f, 0.43f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 
 	text.str( "" );
 	text << "Volume: " << (int)( _soundVolume * 100 ) << "%";
-	Horde3DUtils::showText( text.str().c_str(), 0.03f, 0.46f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+	h3dutShowText( text.str().c_str(), 0.03f, 0.46f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 
 	text.str( "" );
 	text << std::fixed << std::setprecision( 2 ) << "Pitch: " << _soundPitch;
-	Horde3DUtils::showText( text.str().c_str(), 0.03f, 0.49f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+	h3dutShowText( text.str().c_str(), 0.03f, 0.49f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 
 	text.str( "" );
 	text << "Loop: ";
@@ -444,35 +443,35 @@ void Application::displaySoundInfo()
 	else
 		text << "no";
 
-	Horde3DUtils::showText( text.str().c_str(), 0.03f, 0.52f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+	h3dutShowText( text.str().c_str(), 0.03f, 0.52f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 
 	text.str( "" );
 	text << "Distance model: ";
 
 	switch( _distanceModel )
 	{
-	case DistanceModels::None:
+	case H3DDistanceModels::None:
 		text << "None";
 		break;
-	case DistanceModels::InverseDistance:
+	case H3DDistanceModels::InverseDistance:
 		text << "InverseDistance";
 		break;
-	case DistanceModels::InverseDistanceClamped:
+	case H3DDistanceModels::InverseDistanceClamped:
 		text << "InverseDistanceClamped";
 		break;
-	case DistanceModels::LinearDistance:
+	case H3DDistanceModels::LinearDistance:
 		text << "LinearDistance";
 		break;
-	case DistanceModels::LinearDistanceClamped:
+	case H3DDistanceModels::LinearDistanceClamped:
 		text << "LinearDistanceClamped";
 		break;
-	case DistanceModels::ExponentDistance:
+	case H3DDistanceModels::ExponentDistance:
 		text << "ExponentDistance";
 		break;
-	case DistanceModels::ExponentDistanceClamped:
+	case H3DDistanceModels::ExponentDistanceClamped:
 		text << "ExponentDistanceClamped";
 		break;
 	}
 
-	Horde3DUtils::showText( text.str().c_str(), 0.03f, 0.55f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+	h3dutShowText( text.str().c_str(), 0.03f, 0.55f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 }

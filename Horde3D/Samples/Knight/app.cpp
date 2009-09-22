@@ -8,8 +8,9 @@
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
-// This sample source file is not covered by the LGPL as the rest of the SDK
-// and may be used without any restrictions
+// This sample source file is not covered by the EPL as the rest of the SDK
+// and may be used without any restrictions. However, the EPL's disclaimer of
+// warranty and liability shall be in effect for this file.
 //
 // *************************************************************************************************
 
@@ -47,72 +48,72 @@ Application::Application( const std::string &contentDir )
 bool Application::init()
 {	
 	// Initialize engine
-	if( !Horde3D::init() )
+	if( !h3dInit() )
 	{	
-		Horde3DUtils::dumpMessages();
+		h3dutDumpMessages();
 		return false;
 	}
 
 	// Set options
-	Horde3D::setOption( EngineOptions::LoadTextures, 1 );
-	Horde3D::setOption( EngineOptions::TexCompression, 0 );
-	Horde3D::setOption( EngineOptions::FastAnimation, 0 );
-	Horde3D::setOption( EngineOptions::MaxAnisotropy, 4 );
-	Horde3D::setOption( EngineOptions::ShadowMapSize, 2048 );
+	h3dSetOption( H3DOptions::LoadTextures, 1 );
+	h3dSetOption( H3DOptions::TexCompression, 0 );
+	h3dSetOption( H3DOptions::FastAnimation, 0 );
+	h3dSetOption( H3DOptions::MaxAnisotropy, 4 );
+	h3dSetOption( H3DOptions::ShadowMapSize, 2048 );
 
 	// Add resources
 	// Pipelines
-	_hdrPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/hdr.pipeline.xml", 0 );
-	_forwardPipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/forward.pipeline.xml", 0 );
+	_hdrPipeRes = h3dAddResource( H3DResTypes::Pipeline, "pipelines/hdr.pipeline.xml", 0 );
+	_forwardPipeRes = h3dAddResource( H3DResTypes::Pipeline, "pipelines/forward.pipeline.xml", 0 );
 	// Overlays
-	_fontMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/font.material.xml", 0 );
-	_panelMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/panel.material.xml", 0 );
-	_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/logo.material.xml", 0 );
+	_fontMatRes = h3dAddResource( H3DResTypes::Material, "overlays/font.material.xml", 0 );
+	_panelMatRes = h3dAddResource( H3DResTypes::Material, "overlays/panel.material.xml", 0 );
+	_logoMatRes = h3dAddResource( H3DResTypes::Material, "overlays/logo.material.xml", 0 );
 	// Environment
-	ResHandle envRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/sphere/sphere.scene.xml", 0 );
+	H3DRes envRes = h3dAddResource( H3DResTypes::SceneGraph, "models/sphere/sphere.scene.xml", 0 );
 	// Knight
-	ResHandle knightRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/knight/knight.scene.xml", 0 );
-	ResHandle knightAnim1Res = Horde3D::addResource( ResourceTypes::Animation, "animations/knight_order.anim", 0 );
-	ResHandle knightAnim2Res = Horde3D::addResource( ResourceTypes::Animation, "animations/knight_attack.anim", 0 );
+	H3DRes knightRes = h3dAddResource( H3DResTypes::SceneGraph, "models/knight/knight.scene.xml", 0 );
+	H3DRes knightAnim1Res = h3dAddResource( H3DResTypes::Animation, "animations/knight_order.anim", 0 );
+	H3DRes knightAnim2Res = h3dAddResource( H3DResTypes::Animation, "animations/knight_attack.anim", 0 );
 	// Particle system
-	ResHandle particleSysRes = Horde3D::addResource( ResourceTypes::SceneGraph, "particles/particleSys1/particleSys1.scene.xml", 0 );
+	H3DRes particleSysRes = h3dAddResource( H3DResTypes::SceneGraph, "particles/particleSys1/particleSys1.scene.xml", 0 );
 	
 	// Load resources
-	Horde3DUtils::loadResourcesFromDisk( _contentDir.c_str() );
+	h3dutLoadResourcesFromDisk( _contentDir.c_str() );
 
 	// Add scene nodes
 	// Add camera
-	_cam = Horde3D::addCameraNode( RootNode, "Camera", _hdrPipeRes );
-	//Horde3D::setNodeParami( _cam, CameraNodeParams::OcclusionCulling, 1 );
+	_cam = h3dAddCameraNode( H3DRootNode, "Camera", _hdrPipeRes );
+	//h3dSetNodeParami( _cam, H3DCamera::OccCullingI, 1 );
 	// Add environment
-	NodeHandle env = Horde3D::addNodes( RootNode, envRes );
-	Horde3D::setNodeTransform( env, 0, -20, 0, 0, 0, 0, 20, 20, 20 );
+	H3DNode env = h3dAddNodes( H3DRootNode, envRes );
+	h3dSetNodeTransform( env, 0, -20, 0, 0, 0, 0, 20, 20, 20 );
 	// Add knight
-	_knight = Horde3D::addNodes( RootNode, knightRes );
-	Horde3D::setNodeTransform( _knight, 0, 0, 0, 0, 180, 0, 0.1f, 0.1f, 0.1f );
-	Horde3D::setupModelAnimStage( _knight, 0, knightAnim1Res, "", false );
-	Horde3D::setupModelAnimStage( _knight, 1, knightAnim2Res, "", false );
+	_knight = h3dAddNodes( H3DRootNode, knightRes );
+	h3dSetNodeTransform( _knight, 0, 0, 0, 0, 180, 0, 0.1f, 0.1f, 0.1f );
+	h3dSetupModelAnimStage( _knight, 0, knightAnim1Res, 0, "", false );
+	h3dSetupModelAnimStage( _knight, 1, knightAnim2Res, 0, "", false );
 	// Attach particle system to hand joint
-	Horde3D::findNodes( _knight, "Bip01_R_Hand", SceneNodeTypes::Joint );
-	NodeHandle hand = Horde3D::getNodeFindResult( 0 );
-	_particleSys = Horde3D::addNodes( hand, particleSysRes );
-	Horde3D::setNodeTransform( _particleSys, 0, 40, 0, 90, 0, 0, 1, 1, 1 );
+	h3dFindNodes( _knight, "Bip01_R_Hand", H3DNodeTypes::Joint );
+	H3DNode hand = h3dGetNodeFindResult( 0 );
+	_particleSys = h3dAddNodes( hand, particleSysRes );
+	h3dSetNodeTransform( _particleSys, 0, 40, 0, 90, 0, 0, 1, 1, 1 );
 
 	// Add light source
-	NodeHandle light = Horde3D::addLightNode( RootNode, "Light1", 0, "LIGHTING", "SHADOWMAP" );
-	Horde3D::setNodeTransform( light, 0, 15, 10, -60, 0, 0, 1, 1, 1 );
-	Horde3D::setNodeParamf( light, LightNodeParams::Radius, 30 );
-	Horde3D::setNodeParamf( light, LightNodeParams::FOV, 90 );
-	Horde3D::setNodeParami( light, LightNodeParams::ShadowMapCount, 1 );
-	Horde3D::setNodeParamf( light, LightNodeParams::ShadowMapBias, 0.01f );
-	Horde3D::setNodeParamf( light, LightNodeParams::Col_R, 1.0f );
-	Horde3D::setNodeParamf( light, LightNodeParams::Col_G, 0.8f );
-	Horde3D::setNodeParamf( light, LightNodeParams::Col_B, 0.7f );
+	H3DNode light = h3dAddLightNode( H3DRootNode, "Light1", 0, "LIGHTING", "SHADOWMAP" );
+	h3dSetNodeTransform( light, 0, 15, 10, -60, 0, 0, 1, 1, 1 );
+	h3dSetNodeParamF( light, H3DLight::RadiusF, 0, 30 );
+	h3dSetNodeParamF( light, H3DLight::FovF, 0, 90 );
+	h3dSetNodeParamI( light, H3DLight::ShadowMapCountI, 1 );
+	h3dSetNodeParamF( light, H3DLight::ShadowMapBiasF, 0, 0.01f );
+	h3dSetNodeParamF( light, H3DLight::ColorF3, 0, 1.0f );
+	h3dSetNodeParamF( light, H3DLight::ColorF3, 1, 0.8f );
+	h3dSetNodeParamF( light, H3DLight::ColorF3, 2, 0.7f );
 
 	// Customize post processing effects
-	NodeHandle matRes = Horde3D::findResource( ResourceTypes::Material, "pipelines/postHDR.material.xml" );
+	H3DNode matRes = h3dFindResource( H3DResTypes::Material, "pipelines/postHDR.material.xml" );
 	// hdrParams: exposure, brightpass threshold, brightpass offset (see shader for description)
-	Horde3D::setMaterialUniform( matRes, "hdrParams", 2.5f, 0.5f, 0.08f, 0 );
+	h3dSetMaterialUniform( matRes, "hdrParams", 2.5f, 0.5f, 0.08f, 0 );
 	
 	return true;
 }
@@ -124,69 +125,69 @@ void Application::mainLoop( float fps )
 
 	keyHandler();
 	
-	Horde3D::setOption( EngineOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
-	Horde3D::setOption( EngineOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
+	h3dSetOption( H3DOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
+	h3dSetOption( H3DOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
 	
 	if( !_freeze )
 	{
 		_animTime += 1.0f / _curFPS;
 
 		// Do animation blending
-		Horde3D::setModelAnimParams( _knight, 0, _animTime * 24.0f, _weight );
-		Horde3D::setModelAnimParams( _knight, 1, _animTime * 24.0f, 1.0f - _weight );
+		h3dSetModelAnimParams( _knight, 0, _animTime * 24.0f, _weight );
+		h3dSetModelAnimParams( _knight, 1, _animTime * 24.0f, 1.0f - _weight );
 
 		// Animate particle systems (several emitters in a group node)
-		unsigned int cnt = cnt = Horde3D::findNodes( _particleSys, "", SceneNodeTypes::Emitter );
+		unsigned int cnt = cnt = h3dFindNodes( _particleSys, "", H3DNodeTypes::Emitter );
 		for( unsigned int i = 0; i < cnt; ++i )
-			Horde3D::advanceEmitterTime( Horde3D::getNodeFindResult( i ), 1.0f / _curFPS );
+			h3dAdvanceEmitterTime( h3dGetNodeFindResult( i ), 1.0f / _curFPS );
 	}
 	
 	// Set camera parameters
-	Horde3D::setNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 );
+	h3dSetNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 );
 	
 	// Show stats
-	Horde3DUtils::showFrameStats( _fontMatRes, _panelMatRes, _statMode );
+	h3dutShowFrameStats( _fontMatRes, _panelMatRes, _statMode );
 	if( _statMode > 0 )
 	{	
 		// Display weight
 		_text.str( "" );
 		_text << fixed << setprecision( 2 ) << "Weight: " << _weight;
-		Horde3DUtils::showText( _text.str().c_str(), 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+		h3dutShowText( _text.str().c_str(), 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
 	}
 
 	// Show logo
-	Horde3D::showOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
-	                      1, 1, 1, 0, 1, 0.8f, 1, 1,
-	                      1, 1, 1, 1, _logoMatRes, 7 );
+	h3dShowOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
+	                1, 1, 1, 0, 1, 0.8f, 1, 1,
+	                1, 1, 1, 1, _logoMatRes, 7 );
 	
 	// Render scene
-	Horde3D::render( _cam );
+	h3dRender( _cam );
 
 	// Finish rendering of frame
-	Horde3D::finalizeFrame();
+	h3dFinalizeFrame();
 
 	// Remove all overlays
-	Horde3D::clearOverlays();
+	h3dClearOverlays();
 
-	// Write all mesages to log file
-	Horde3DUtils::dumpMessages();
+	// Write all messages to log file
+	h3dutDumpMessages();
 }
 
 
 void Application::release()
 {
 	// Release engine
-	Horde3D::release();
+	h3dRelease();
 }
 
 
 void Application::resize( int width, int height )
 {
 	// Resize viewport
-	Horde3D::setupViewport( 0, 0, width, height, true );
+	h3dSetupViewport( 0, 0, width, height, true );
 	
 	// Set virtual camera parameters
-	Horde3D::setupCameraView( _cam, 45.0f, (float)width / height, 0.1f, 1000.0f );
+	h3dSetupCameraView( _cam, 45.0f, (float)width / height, 0.1f, 1000.0f );
 }
 
 
@@ -197,10 +198,10 @@ void Application::keyPressEvent( int key )
 
 	if( key == 260 )	// F3
 	{
-		if( Horde3D::getNodeParami( _cam, CameraNodeParams::PipelineRes ) == _hdrPipeRes )
-			Horde3D::setNodeParami( _cam, CameraNodeParams::PipelineRes, _forwardPipeRes );
+		if( h3dGetNodeParamI( _cam, H3DCamera::PipeResI ) == _hdrPipeRes )
+			h3dSetNodeParamI( _cam, H3DCamera::PipeResI, _forwardPipeRes );
 		else
-			Horde3D::setNodeParami( _cam, CameraNodeParams::PipelineRes, _hdrPipeRes );
+			h3dSetNodeParamI( _cam, H3DCamera::PipeResI, _hdrPipeRes );
 	}
 	
 	if( key == 264 )	// F7
@@ -212,7 +213,7 @@ void Application::keyPressEvent( int key )
 	if( key == 266 )	// F9
 	{
 		_statMode += 1;
-		if( _statMode > Horde3DUtils::MaxStatMode ) _statMode = 0;
+		if( _statMode > H3DUTMaxStatMode ) _statMode = 0;
 	}
 }
 

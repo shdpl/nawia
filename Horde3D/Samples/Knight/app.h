@@ -8,8 +8,9 @@
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
-// This sample source file is not covered by the LGPL as the rest of the SDK
-// and may be used without any restrictions
+// This sample source file is not covered by the EPL as the rest of the SDK
+// and may be used without any restrictions. However, the EPL's disclaimer of
+// warranty and liability shall be in effect for this file.
 //
 // *************************************************************************************************
 
@@ -37,9 +38,9 @@ private:
 	float              _animTime, _weight;
 	
 	// Engine objects
-	ResHandle          _fontMatRes, _panelMatRes;
-	ResHandle          _pipeRes, _logoMatRes, _hdrPipeRes, _forwardPipeRes;
-	NodeHandle         _cam, _knight, _particleSys;
+	H3DRes             _fontMatRes, _panelMatRes;
+	H3DRes             _pipeRes, _logoMatRes, _hdrPipeRes, _forwardPipeRes;
+	H3DNode            _cam, _knight, _particleSys;
 
 	std::string        _contentDir;
 

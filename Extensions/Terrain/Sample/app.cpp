@@ -8,8 +8,9 @@
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
-// This sample source file is not covered by the LGPL as the rest of the SDK
-// and may be used without any restrictions
+// This sample source file is not covered by the EPL as the rest of the SDK
+// and may be used without any restrictions. However, the EPL's disclaimer of
+// warranty and liability shall be in effect for this file.
 //
 // *************************************************************************************************
 
@@ -46,54 +47,54 @@ Application::Application( const string &contentDir )
 bool Application::init()
 {	
 	// Initialize engine
-	if( !Horde3D::init() )
+	if( !h3dInit() )
 	{	
-		Horde3DUtils::dumpMessages();
+		h3dutDumpMessages();
 		return false;
 	}
 
 	// Set options
-	Horde3D::setOption( EngineOptions::LoadTextures, 1 );
-	Horde3D::setOption( EngineOptions::TexCompression, 0 );
-	Horde3D::setOption( EngineOptions::MaxAnisotropy, 4 );
-	Horde3D::setOption( EngineOptions::ShadowMapSize, 2048 );
-	Horde3D::setOption( EngineOptions::FastAnimation, 1 );
+	h3dSetOption( H3DOptions::LoadTextures, 1 );
+	h3dSetOption( H3DOptions::TexCompression, 0 );
+	h3dSetOption( H3DOptions::MaxAnisotropy, 4 );
+	h3dSetOption( H3DOptions::ShadowMapSize, 2048 );
+	h3dSetOption( H3DOptions::FastAnimation, 1 );
 
 	// Add resources
 	// Pipeline
-	ResHandle pipeRes = Horde3D::addResource( ResourceTypes::Pipeline, "pipelines/forward.pipeline.xml", 0 );
+	H3DRes pipeRes = h3dAddResource( H3DResTypes::Pipeline, "pipelines/forward.pipeline.xml", 0 );
 	// Overlays
-	_fontMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/font.material.xml", 0 );
-	_panelMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/panel.material.xml", 0 );
-	_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "overlays/logo.material.xml", 0 );
+	_fontMatRes = h3dAddResource( H3DResTypes::Material, "overlays/font.material.xml", 0 );
+	_panelMatRes = h3dAddResource( H3DResTypes::Material, "overlays/panel.material.xml", 0 );
+	_logoMatRes = h3dAddResource( H3DResTypes::Material, "overlays/logo.material.xml", 0 );
 	// Terrain
-	ResHandle terrainRes = Horde3D::addResource( ResourceTypes::SceneGraph, "terrains/terrain1/terrain1.scene.xml", 0 );
+	H3DRes terrainRes = h3dAddResource( H3DResTypes::SceneGraph, "terrains/terrain1/terrain1.scene.xml", 0 );
 	
 	
 	// Load resources
-	Horde3DUtils::loadResourcesFromDisk( _contentDir.c_str() );
+	h3dutLoadResourcesFromDisk( _contentDir.c_str() );
 
 	// Add scene nodes
 	// Add camera
-	_cam = Horde3D::addCameraNode( RootNode, "Camera", pipeRes );
+	_cam = h3dAddCameraNode( H3DRootNode, "Camera", pipeRes );
 	// Add terrain
-	NodeHandle terrain = Horde3D::addNodes( RootNode, terrainRes );
+	H3DNode terrain = h3dAddNodes( H3DRootNode, terrainRes );
 	
 	/*// Add light source
-	NodeHandle light = Horde3D::addLightNode( RootNode, "Light1", 0, "LIGHTING", "SHADOWMAP" );
-	Horde3D::setNodeTransform( light, 512, 700, -256, -120, 0, 0, 1, 1, 1 );
-	Horde3D::setNodeParamf( light, LightNodeParams::Radius, 2000 );
-	Horde3D::setNodeParamf( light, LightNodeParams::FOV, 90 );
-	Horde3D::setNodeParami( light, LightNodeParams::ShadowMapCount, 3 );
-	Horde3D::setNodeParamf( light, LightNodeParams::ShadowSplitLambda, 0.5f );
-	Horde3D::setNodeParamf( light, LightNodeParams::ShadowMapBias, 0.005f );
-	Horde3D::setNodeParamf( light, LightNodeParams::Col_R, 1.0f );
-	Horde3D::setNodeParamf( light, LightNodeParams::Col_G, 0.9f );
-	Horde3D::setNodeParamf( light, LightNodeParams::Col_B, 0.7f );*/
+	H3DNode light = h3dAddLightNode( H3DRootNode, "Light1", 0, "LIGHTING", "SHADOWMAP" );
+	h3dSetNodeTransform( light, 512, 700, -256, -120, 0, 0, 1, 1, 1 );
+	h3dSetNodeParamF( light, H3DLight::RadiusF, 0, 2000 );
+	h3dSetNodeParamF( light, H3DLight::FovF, 0, 90 );
+	h3dSetNodeParamI( light, H3DLight::ShadowMapCountI, 3 );
+	h3dSetNodeParamF( light, H3DLight::ShadowSplitLambdaF, 0, 0.5f );
+	h3dSetNodeParamF( light, H3DLight::ShadowMapBiasF, 0, 0.005f );
+	h3dSetNodeParamF( light, H3DLight::ColorF3, 0, 1.0f );
+	h3dSetNodeParamF( light, H3DLight::ColorF3, 1, 0.9f );
+	h3dSetNodeParamF( light, H3DLight::ColorF3, 2, 0.7f );*/
 
 	// Set sun direction for ambient pass
-	NodeHandle matRes = Horde3D::findResource( ResourceTypes::Material, "terrains/terrain1/terrain1.material.xml" );
-	Horde3D::setMaterialUniform( matRes, "sunDir", 1, -1, 0, 0 );
+	H3DRes matRes = h3dFindResource( H3DResTypes::Material, "terrains/terrain1/terrain1.material.xml" );
+	h3dSetMaterialUniform( matRes, "sunDir", 1, -1, 0, 0 );
 
 	return true;
 }
@@ -105,52 +106,47 @@ void Application::mainLoop( float fps )
 
 	keyHandler();
 	
-	Horde3D::setOption( EngineOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
-	Horde3D::setOption( EngineOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
-	
-	if( !_freeze )
-	{
-	}
+	h3dSetOption( H3DOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
+	h3dSetOption( H3DOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
 	
 	// Set camera parameters
-	Horde3D::setNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 );
+	h3dSetNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 );
 	
 	// Show stats
-	Horde3DUtils::showFrameStats( _fontMatRes, _panelMatRes, _statMode );
+	h3dutShowFrameStats( _fontMatRes, _panelMatRes, _statMode );
 
 	// Show logo
-	Horde3D::showOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
-	                      1, 1, 1, 0, 1, 0.8f, 1, 1,
-	                      1, 1, 1, 1, _logoMatRes, 7 );
+	h3dShowOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0, 1, 1, 1, 0, 1, 0.8f, 1, 1,
+	                1, 1, 1, 1, _logoMatRes, 7 );
 	
 	// Render scene
-	Horde3D::render( _cam );
+	h3dRender( _cam );
 
 	// Finish rendering of frame
-	Horde3D::finalizeFrame();
+	h3dFinalizeFrame();
 
 	// Remove all overlays
-	Horde3D::clearOverlays();
+	h3dClearOverlays();
 
-	// Write all mesages to log file
-	Horde3DUtils::dumpMessages();
+	// Write all messages to log file
+	h3dutDumpMessages();
 }
 
 
 void Application::release()
 {
 	// Release engine
-	Horde3D::release();
+	h3dRelease();
 }
 
 
 void Application::resize( int width, int height )
 {
 	// Resize viewport
-	Horde3D::setupViewport( 0, 0, width, height, true );
+	h3dSetupViewport( 0, 0, width, height, true );
 	
 	// Set virtual camera parameters
-	Horde3D::setupCameraView( _cam, 45.0f, (float)width / height, 0.5f, 2048.0f );
+	h3dSetupCameraView( _cam, 45.0f, (float)width / height, 0.5f, 2048.0f );
 }
 
 
@@ -168,7 +164,7 @@ void Application::keyPressEvent( int key )
 	if( key == 266 )	// F9
 	{
 		_statMode += 1;
-		if( _statMode > Horde3DUtils::MaxStatMode ) _statMode = 0;
+		if( _statMode > H3DUTMaxStatMode ) _statMode = 0;
 	}
 }
 

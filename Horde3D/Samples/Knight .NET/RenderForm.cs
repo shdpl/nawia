@@ -1,13 +1,13 @@
 // *************************************************************************************************
 //
-// Knight .NET - sample application for Horde3D .NET wrapper
+// Knight .NET - sample application for h3d .NET wrapper
 // ----------------------------------------------------------
 //
 // Copyright (C) 2007 Nicolas Schulz and Martin Burkhard
 //
 // This file is intended for use as a code example, and may be used, modified, 
 // or distributed in source or object code form, without restriction. 
-// This sample is not covered by the LGPL.
+// This sample is not covered by the EPL.
 //
 // The code and information is provided "as-is" without warranty of any kind, 
 // either expressed or implied.
@@ -19,12 +19,15 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Diagnostics;
 using Horde3DNET;
-using Horde3DNET.PlatformInvoke;
+using Horde3DNET.Utils;
 
 namespace Horde3DNET.Samples.KnightNET
 {
     internal partial class RenderForm : Form
     {
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern IntPtr GetDC(IntPtr hWnd);
+      
         // standard vars
         private bool appFullscreen = false;
         private float fps = 30.0f;
@@ -69,13 +72,13 @@ namespace Horde3DNET.Samples.KnightNET
         /// <param name="e"></param>
         private void RenderForm_Load(object sender, EventArgs e)
         {
-            if (!Horde3DUtils.initOpenGL(PInvoke.GetDC(renderPanel.Handle).ToInt32()))
+            if (!Horde3DUtils.initOpenGL(GetDC(renderPanel.Handle).ToInt32()))
                 throw new Exception("Failed to initialize OpenGL");
 
             if (!app.init())
             {
                 MessageBox.Show("Failed to init application.\nMake sure you have an OpenGL 2.0 compatible graphics card with the latest drivers installed!\nAlso verify if the pipeline config file exists.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Horde3D.release();
+                h3d.release();
                 Horde3DUtils.releaseOpenGL();
                 Environment.Exit(0);
             }
@@ -216,7 +219,7 @@ namespace Horde3DNET.Samples.KnightNET
             // stop stop watch process
             stopWatch.Stop();
 
-            // release Horde3D
+            // release h3d
             app.release();
             Horde3DUtils.releaseOpenGL();
             Environment.Exit(0);

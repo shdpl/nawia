@@ -1,6 +1,6 @@
 ﻿// *************************************************************************************************
 //
-// Chicago .NET - sample application for Horde3D .NET wrapper
+// Chicago .NET - sample application for h3d .NET wrapper
 // ----------------------------------------------------------
 //
 // Copyright (C) 2006-07 Nicolas Schulz and Martin Burkhard

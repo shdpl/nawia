@@ -85,7 +85,7 @@ const int SNT_SoundNode = 202;
 
 
 /* Group: Enumerations */
-struct SoundResParams
+struct H3DSoundResParams
 {
 	/*	Enum: SoundResParams
 			The available Sound resource parameters.
@@ -106,7 +106,7 @@ struct SoundResParams
 	};
 };
 
-struct ListenerNodeParams
+struct H3DListenerNodeParams
 {
 	/*	Enum: ListenerNodeParams
 			The available Listener node parameters.
@@ -123,7 +123,7 @@ struct ListenerNodeParams
 	};
 };
 
-struct SoundNodeParams
+struct H3DSoundNodeParams
 {
 	/*	Enum: SoundNodeParams
 			The available Sound node parameters.
@@ -168,7 +168,7 @@ struct SoundNodeParams
 };
 
 
-struct DistanceModels
+struct H3DDistanceModels
 {
 	/*	Enum: DistanceModels
 			The available distance models.
@@ -215,198 +215,192 @@ struct DistanceModels
 };
 
 
-namespace Horde3DSound
-{
-	/* Group: Basic functions */
-	/* 	Function: openDevice
-			Opens a sound device for playback.
+/* Group: Basic functions */
+/* 	Function: h3dOpenDevice
+		Opens a sound device for playback.
 
-		This function opens and initializes a sound device for playback. This needs to be called before
-		any sound resources or nodes can be created or used. It will fail if another device is already
-		open.
+	This function opens and initializes a sound device for playback. This needs to be called before
+	any sound resources or nodes can be created or used. It will fail if another device is already
+	open.
 
-		Parameters:
-			device	- name of the device to open (use NULL for default device)
+	Parameters:
+		device	- name of the device to open (use NULL for default device)
 
-		Returns:
-			true in case of success, otherwise false
-	*/
-	DLL bool openDevice( const char *device );
+	Returns:
+		true in case of success, otherwise false
+*/
+DLL bool h3dOpenDevice( const char *device );
 
-	/* 	Function: closeDevice
-			Closes the currently open sound device.
+/* 	Function: h3dCloseDevice
+		Closes the currently open sound device.
 
-		This function closes the currently open sound device.
+	This function closes the currently open sound device.
 
-		Parameters:
-			none
+	Parameters:
+		none
 
-		Returns:
-			nothing
-	*/
-	DLL void closeDevice();
+	Returns:
+		nothing
+*/
+DLL void h3dCloseDevice();
 
-	/* 	Function: getOpenDevice
-			Gets the name of the currently open sound device.
+/* 	Function: h3dGetOpenDevice
+		Gets the name of the currently open sound device.
 
-		This function returns the name of the currently open sound device.
+	This function returns the name of the currently open sound device.
 
-		Parameters:
-			none
+	Parameters:
+		none
 
-		Returns:
-			name of the open device or NULL is none is open.
-	*/
-	DLL const char *getOpenDevice();
+	Returns:
+		name of the open device or NULL is none is open.
+*/
+DLL const char *h3dGetOpenDevice();
 
-	/* 	Function: queryDevice
-			Returns the name of a sound device.
+/* 	Function: h3dQueryDevice
+		Returns the name of a sound device.
 
-		This function returns the name of a sound device from an internal list. If the index specified
-		is greater than the number of the available sound devices, NULL is returned.
+	This function returns the name of a sound device from an internal list. If the index specified
+	is greater than the number of the available sound devices, NULL is returned.
 
-		Parameters:
-			index	- index of sound device within the internal list (starting with 0)
+	Parameters:
+		index	- index of sound device within the internal list (starting with 0)
 
-		Returns:
-			name of a sound device or NULL
-	*/
-	DLL const char *queryDevice( int index );
+	Returns:
+		name of a sound device or NULL
+*/
+DLL const char *h3dQueryDevice( int index );
 
-	/* 	Function: getDistanceModel
-			Gets the active distance model.
+/* 	Function: h3dGetDistanceModel
+		Gets the active distance model.
 
-		This function return the distance model used for calculating distance based attenuation.
+	This function return the distance model used for calculating distance based attenuation.
 
-		Parameters:
-			none
+	Parameters:
+		none
 
-		Returns:
-			currently active distance model
-	*/
-	DLL DistanceModels::List getDistanceModel();
+	Returns:
+		currently active distance model
+*/
+DLL H3DDistanceModels::List h3dGetDistanceModel();
 
-	/* 	Function: setDistanceModel
-			Sets the active distance model.
+/* 	Function: h3dSetDistanceModel
+		Sets the active distance model.
 
-		This function sets the distance model used for calculating distance based attenuation.
+	This function sets the distance model used for calculating distance based attenuation.
 
-		Parameters:
-			model	- distance model to use
+	Parameters:
+		model	- distance model to use
 
-		Returns:
-			true if the distance model could be set, otherwise false
-	*/
-	DLL bool setDistanceModel( DistanceModels::List model );
+*/
+DLL void h3dSetDistanceModel( H3DDistanceModels::List model );
 
-	/* Group: Listener-specific scene graph functions */
-	/* 	Function: addListenerNode
-			Adds a Listener node to the scene.
+/* Group: Listener-specific scene graph functions */
+/* 	Function: h3dAddListenerNode
+		Adds a Listener node to the scene.
 
-		This function creates a new Listener node and attaches it to the specified parent node.
+	This function creates a new Listener node and attaches it to the specified parent node.
 
-		Parameters:
-			parent	- handle to parent node to which the new node will be attached
-			name	- name of the node
+	Parameters:
+		parent	- handle to parent node to which the new node will be attached
+		name	- name of the node
 
-		Returns:
-			 handle to the created node or 0 in case of failure
-	*/
-	DLL NodeHandle addListenerNode( NodeHandle parent, const char *name );
+	Returns:
+		 handle to the created node or 0 in case of failure
+*/
+DLL H3DNode h3dAddListenerNode( H3DNode parent, const char *name );
 
-	/* 	Function: getActiveListener
-			Returns the handle of the active Listener node.
+/* 	Function: h3dGetActiveListener
+		Returns the handle of the active Listener node.
 
-		This function returns the handle of the currently active Listener node.
+	This function returns the handle of the currently active Listener node.
 
-		Parameters:
-			none
+	Parameters:
+		none
 
-		Returns:
-			handle to active Listener node or 0 if there is no active Listener node
-	*/
-	DLL NodeHandle getActiveListener();
+	Returns:
+		handle to active Listener node or 0 if there is no active Listener node
+*/
+DLL H3DNode h3dGetActiveListener();
 
-	/* 	Function: setActiveListener
-			Sets the active Listener node.
+/* 	Function: h3dSetActiveListener
+		Sets the active Listener node.
 
-		This function sets the currently active Listener node. This node will act as the
-		ears and all 3D sound calculations will be based on this node's position and orientation.
+	This function sets the currently active Listener node. This node will act as the
+	ears and all 3D sound calculations will be based on this node's position and orientation.
 
-		Parameters:
-			listenerNode	- handle to the Listener node.
+	Parameters:
+		listenerNode	- handle to the Listener node.
+	
+*/
+DLL void h3dSetActiveListener( H3DNode listenerNode );
 
-		Returns:
-			true in case of success, otherwise false
-	*/
-	DLL bool setActiveListener( NodeHandle listenerNode );
+/* Group: Sound-specific scene graph functions */
+/* 	Function: h3dAddSoundNode
+		Adds a Sound node to the scene.
 
-	/* Group: Sound-specific scene graph functions */
-	/* 	Function: addSoundNode
-			Adds a Sound node to the scene.
+	This function creates a new Sound node and attaches it to the specified parent node.
 
-		This function creates a new Sound node and attaches it to the specified parent node.
+	Parameters:
+		parent		- handle to parent node to which the new node will be attached
+		name		- name of the node
+		soundRes	- handle to Sound resource which will be used for playback
 
-		Parameters:
-			parent		- handle to parent node to which the new node will be attached
-			name		- name of the node
-			soundRes	- handle to Sound resource which will be used for playback
+	Returns:
+		 handle to the created node or 0 in case of failure
+*/
+DLL H3DNode h3dAddSoundNode( H3DNode parent, const char *name, H3DRes soundRes );
 
-		Returns:
-			 handle to the created node or 0 in case of failure
-	*/
-	DLL NodeHandle addSoundNode( NodeHandle parent, const char *name, ResHandle soundRes );
+/* 	Function: h3dIsSoundPlaying
+		Checks if an Sound node is playing.
 
-	/* 	Function: isSoundPlaying
-			Checks if an Sound node is playing.
+	This function returns whether the Sound node is currently playing or not.
 
-		This function returns whether the Sound node is currently playing or not.
+	Parameters:
+		soundNode	- handle to the Sound node
 
-		Parameters:
-			soundNode	- handle to the Sound node
+	Returns:
+		 true if the Sound node is currently playing, otherwise false
+*/
+DLL bool h3dIsSoundPlaying( H3DNode soundNode );
 
-		Returns:
-			 true if the Sound node is currently playing, otherwise false
-	*/
-	DLL bool isSoundPlaying( NodeHandle soundNode );
+/* 	Function: h3dPlaySound
+		Starts the audio playback of a Sound node.
 
-	/* 	Function: playSound
-			Starts the audio playback of a Sound node.
+	This function will start the audio playback of a Sound node.
 
-		This function will start the audio playback of a Sound node.
+	Parameters:
+		soundNode	- handle to the Sound node
 
-		Parameters:
-			soundNode	- handle to the Sound node
+	Returns:
+		 nothing
+*/
+DLL void h3dPlaySound( H3DNode soundNode );
 
-		Returns:
-			 nothing
-	*/
-	DLL void playSound( NodeHandle soundNode );
+/* 	Function: h3dPauseSound
+		Pauses the playback of a Sound node.
 
-	/* 	Function: pauseSound
-			Pauses the playback of a Sound node.
+	This function will pause the playback of a Sound node.
 
-		This function will pause the playback of a Sound node.
+	Parameters:
+		soundNode	- handle to the Sound node
 
-		Parameters:
-			soundNode	- handle to the Sound node
+	Returns:
+		 nothing
+*/
+DLL void h3dPauseSound( H3DNode soundNode );
 
-		Returns:
-			 nothing
-	*/
-	DLL void pauseSound( NodeHandle soundNode );
+/* 	Function: h3dRewindSound
+		Rewinds the playback of a Sound node.
 
-	/* 	Function: rewindSound
-			Rewinds the playback of a Sound node.
+	This function will rewind the playback of a Sound node. If the Sound node is
+	playing while being rewinded it will continue to play from it's rewinded position.
 
-		This function will rewind the playback of a Sound node. If the Sound node is
-		playing while being rewinded it will continue to play from it's rewinded position.
+	Parameters:
+		soundNode	- handle to the Sound node
 
-		Parameters:
-			soundNode	- handle to the Sound node
+	Returns:
+		 nothing
+*/
+DLL void h3dRewindSound( H3DNode soundNode );
 
-		Returns:
-			 nothing
-	*/
-	DLL void rewindSound( NodeHandle soundNode );
-};

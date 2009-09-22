@@ -37,7 +37,7 @@
 #include <math.h>
 Q_DECLARE_METATYPE(QFileInfo)
 
-HordeFileDialog::HordeFileDialog(ResourceTypes::List type, const QString& resourcePath, QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QDialog(parent, flags), 
+HordeFileDialog::HordeFileDialog(H3DResTypes::List type, const QString& resourcePath, QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QDialog(parent, flags), 
 m_type(type), 
 DefaultRepoPath(QApplication::applicationDirPath()+QDir::separator()+"Repository"),
 m_sceneResourcePath(resourcePath)
@@ -48,19 +48,19 @@ m_sceneResourcePath(resourcePath)
 
 	switch(type)
 	{
-	case ResourceTypes::Shader:
+	case H3DResTypes::Shader:
 		initShaderView();
 		break;
-	case ResourceTypes::Material:
+	case H3DResTypes::Material:
 		initMaterialView();
 		break;
-	case ResourceTypes::Texture:
-		initTextureView(ResourceTypes::Texture);
+	case H3DResTypes::Texture:
+		initTextureView(H3DResTypes::Texture);
 		break;
-	case ResourceTypes::ParticleEffect:
+	case H3DResTypes::ParticleEffect:
 		initEffectView();
 		break;
-	case ResourceTypes::Pipeline:
+	case H3DResTypes::Pipeline:
 		initPipelineView();
 		break;
         default:
@@ -98,13 +98,13 @@ void HordeFileDialog::accept()
 		QFileInfo target;
 		switch (m_type)
 		{
-		case ResourceTypes::Shader:
-		case ResourceTypes::Material:
-		case ResourceTypes::ParticleEffect:
-		case ResourceTypes::Pipeline:
+		case H3DResTypes::Shader:
+		case H3DResTypes::Material:
+		case H3DResTypes::ParticleEffect:
+		case H3DResTypes::Pipeline:
 			customData = m_xmlView->toPlainText();
-		case ResourceTypes::SceneGraph:
-		case ResourceTypes::Texture:
+		case H3DResTypes::SceneGraph:
+		case H3DResTypes::Texture:
 			target = QFileInfo(m_sceneResourcePath, fileName());
 			break;
 		default:
@@ -143,30 +143,30 @@ void HordeFileDialog::accept()
 
 		switch (m_type)
 		{
-		case ResourceTypes::SceneGraph:
+		case H3DResTypes::SceneGraph:
 			m_importer->importScene(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
 				QFileInfo(m_importer->targetPath(), fileName()).absoluteFilePath());
 			break;
-		case ResourceTypes::Shader:
+		case H3DResTypes::Shader:
 			m_importer->importShader(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
 				QFileInfo(m_importer->targetPath(), fileName()).absoluteFilePath(),
 				m_xmlView->toPlainText());
 			break;
-		case ResourceTypes::Texture:
+		case H3DResTypes::Texture:
 			m_importer->importTexture(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
 				QFileInfo(m_importer->targetPath(), fileName()).absoluteFilePath() );
 			break;
-		case ResourceTypes::Material:
+		case H3DResTypes::Material:
 			m_importer->importMaterial(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
 				QFileInfo(m_importer->targetPath(), fileName()).absoluteFilePath(),
 				m_xmlView->toPlainText());
 			break;			
-		case ResourceTypes::ParticleEffect:
+		case H3DResTypes::ParticleEffect:
 			m_importer->importEffect(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(), 
 				QFileInfo(m_importer->targetPath(), fileName()).absoluteFilePath(),
 				m_xmlView->toPlainText());
 			break;
-		case ResourceTypes::Pipeline:
+		case H3DResTypes::Pipeline:
 			m_importer->importPipeline(m_fileList->currentItem()->data(Qt::UserRole).value<QFileInfo>(),
 				QFileInfo(m_importer->targetPath(), fileName()).absoluteFilePath(),
 				m_xmlView->toPlainText());
@@ -190,7 +190,7 @@ void HordeFileDialog::reject()
 	QDialog::reject();
 }
 
-void HordeFileDialog::initTextureView(ResourceTypes::List type)
+void HordeFileDialog::initTextureView(H3DResTypes::List type)
 {
 	QHordeSceneEditorSettings settings(this);
 	settings.beginGroup("Repository");
@@ -272,13 +272,13 @@ void HordeFileDialog::itemChanged(QListWidgetItem* current, QListWidgetItem* /*p
 	{
 		switch(m_type)
 		{		
-		case ResourceTypes::Texture:
+		case H3DResTypes::Texture:
 			loadTexture(current->data(Qt::UserRole).value<QFileInfo>());
 			break;		
-		case ResourceTypes::ParticleEffect:
-		case ResourceTypes::Material:
-		case ResourceTypes::Shader:
-		case ResourceTypes::Pipeline:
+		case H3DResTypes::ParticleEffect:
+		case H3DResTypes::Material:
+		case H3DResTypes::Shader:
+		case H3DResTypes::Pipeline:
 			// Load shader
 			loadXmlFile(current->data(Qt::UserRole).value<QFileInfo>());
 			break;					
@@ -328,7 +328,7 @@ void HordeFileDialog::loadTexture(const QFileInfo& fileName)
 
 
 
-QString HordeFileDialog::getResourceFile( ResourceTypes::List resourceType, const QString& targetPath, QWidget *parent, const QString& caption)
+QString HordeFileDialog::getResourceFile( H3DResTypes::List resourceType, const QString& targetPath, QWidget *parent, const QString& caption)
 {	
 	HordeFileDialog dlg( resourceType, targetPath, parent);
 	dlg.setWindowTitle(caption);

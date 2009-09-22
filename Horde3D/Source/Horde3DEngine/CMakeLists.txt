@@ -24,7 +24,7 @@ set(HORDE3D_SOURCES
 	egScene.cpp
 	egSceneGraphRes.cpp
 	egShader.cpp
-	egTextures.cpp
+	egTexture.cpp
 	utImage.cpp
 	utOpenGL.cpp
 	egAnimatables.h
@@ -47,7 +47,7 @@ set(HORDE3D_SOURCES
 	egScene.h
 	egSceneGraphRes.h
 	egShader.h
-	egTextures.h
+	egTexture.h
 	utImage.h
 	utTimer.h
 	utOpenGL.h
@@ -80,7 +80,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set_target_properties(Horde3D PROPERTIES
 		FRAMEWORK TRUE
-		PRIVATE_HEADER "egAnimatables.h;egAnimation.h;egCamera.h;egCom.h;egExtensions.h;egGeometry.h;egLight.h;egMaterial.h;egModel.h;egModules.h;egParticle.h;egPipeline.h;egPrerequisites.h;egPrimitives.h;egRenderer.h;egRendererBase.h;egResource.h;egScene.h;egSceneGraphRes.h;egShader.h;egTextures.h;utImage.h;utTimer.h;utOpenGL.h;"
+		PRIVATE_HEADER "egAnimatables.h;egAnimation.h;egCamera.h;egCom.h;egExtensions.h;egGeometry.h;egLight.h;egMaterial.h;egModel.h;egModules.h;egParticle.h;egPipeline.h;egPrerequisites.h;egPrimitives.h;egRenderer.h;egRendererBase.h;egResource.h;egScene.h;egSceneGraphRes.h;egShader.h;egTexture.h;utImage.h;utTimer.h;utOpenGL.h;"
 		PUBLIC_HEADER "../../Bindings/C++/Horde3D.h")
 	
 	FIND_LIBRARY(OPENGL_LIBRARY OpenGL)

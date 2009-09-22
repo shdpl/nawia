@@ -8,8 +8,9 @@
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
-// This sample source file is not covered by the LGPL as the rest of the SDK
-// and may be used without any restrictions
+// This sample source file is not covered by the EPL as the rest of the SDK
+// and may be used without any restrictions. However, the EPL's disclaimer of
+// warranty and liability shall be in effect for this file.
 //
 // *************************************************************************************************
 
@@ -38,9 +39,9 @@ void CrowdSim::init()
 	srand( 99777 );  // Use fixed value for better performance comparisons
 	
 	// Load character with walk animation
-	ResHandle characterRes = Horde3D::addResource( ResourceTypes::SceneGraph, "models/man/man.scene.xml", 0 );
-	ResHandle characterWalkRes = Horde3D::addResource( ResourceTypes::Animation, "animations/man.anim", 0 );
-	Horde3DUtils::loadResourcesFromDisk( _contentDir.c_str() );
+	H3DRes characterRes = h3dAddResource( H3DResTypes::SceneGraph, "models/man/man.scene.xml", 0 );
+	H3DRes characterWalkRes = h3dAddResource( H3DResTypes::Animation, "animations/man.anim", 0 );
+	h3dutLoadResourcesFromDisk( _contentDir.c_str() );
 	
 	// Add characters
 	for( unsigned int i = 0; i < 100; ++i )
@@ -48,8 +49,8 @@ void CrowdSim::init()
 		Particle p;
 		
 		// Add character to scene and apply animation
-		p.node = Horde3D::addNodes( RootNode, characterRes );
-		Horde3D::setupModelAnimStage( p.node, 0, characterWalkRes, "", false );
+		p.node = h3dAddNodes( H3DRootNode, characterRes );
+		h3dSetupModelAnimStage( p.node, 0, characterWalkRes, 0, "", false );
 		
 		// Characters start in a circle formation
 		p.px = sinf( (i / 100.0f) * 6.28f ) * 10.0f;
@@ -57,7 +58,7 @@ void CrowdSim::init()
 
 		chooseDestination( p );
 
-		Horde3D::setNodeTransform( p.node, p.px, 0.02f, p.pz, 0, 0, 0, 1, 1, 1 );
+		h3dSetNodeTransform( p.node, p.px, 0.02f, p.pz, 0, 0, 0, 1, 1, 1 );
 
 		_particles.push_back( p );
 	}
@@ -131,7 +132,7 @@ void CrowdSim::update( float fps )
 			chooseDestination( p );
 		}
 
-		// Make movement frame rate independence
+		// Make movement framerate independent
 		p.fx *= (30 / fps);
 		p.fz *= (30 / fps);
 		float vel = sqrtf( p.fx * p.fx + p.fz * p.fz );
@@ -139,7 +140,7 @@ void CrowdSim::update( float fps )
 		// Set new position
 		p.px += p.fx; p.pz += p.fz;
 		
-		// Caluclate orientation
+		// Calculate orientation
 		p.ox = (p.ox + p.fx) / 2;
 		p.oz = (p.oz + p.fz) / 2;
 
@@ -149,10 +150,10 @@ void CrowdSim::update( float fps )
 		ry *= 180 / 3.1415f;	// Convert from radians to degrees
 		
 		// Update character scene node position
-		Horde3D::setNodeTransform( p.node, p.px, 0.02f, p.pz, 0, ry, 0, 1, 1, 1 );
+		h3dSetNodeTransform( p.node, p.px, 0.02f, p.pz, 0, ry, 0, 1, 1, 1 );
 		
 		// Update animation
 		p.animTime += vel * 35.0f;
-		Horde3D::setModelAnimParams( p.node, 0, p.animTime, 1.0f );
+		h3dSetModelAnimParams( p.node, 0, p.animTime, 1.0f );
 	}
 }

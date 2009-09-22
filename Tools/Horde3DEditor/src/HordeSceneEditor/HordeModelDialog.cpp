@@ -6,7 +6,7 @@
 #include "ColladaImporter.h"
 #include "GLWidget.h"
 
-HordeModelDialog::HordeModelDialog(const QString& targetPath, QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : HordeFileDialog(ResourceTypes::SceneGraph, targetPath, parent, flags),
+HordeModelDialog::HordeModelDialog(const QString& targetPath, QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : HordeFileDialog(H3DResTypes::SceneGraph, targetPath, parent, flags),
 m_glWidget(0), m_oldScene(0), m_newScene(0), m_currentModel(0), m_cameraID(0)
 {
 	m_glFrame->setLayout(new QHBoxLayout());
@@ -29,18 +29,18 @@ HordeModelDialog::~HordeModelDialog()
 {
 	if (m_newScene)		
 	{
-		Horde3D::removeNode(m_newScene);
+		h3dRemoveNode(m_newScene);
 		while (!m_resources.isEmpty())
-			Horde3D::removeResource(m_resources.takeLast());
-		Horde3D::releaseUnusedResources();
+			h3dRemoveResource(m_resources.takeLast());
+		h3dReleaseUnusedResources();
 	}
 	if (m_oldScene != 0)
-		Horde3D::setNodeActivation(m_oldScene, true);
+		h3dSetNodeActivation(m_oldScene, true);
 }
 
 void HordeModelDialog::itemChanged(QListWidgetItem* current, QListWidgetItem* previous)
 {
-	if (current && m_type == ResourceTypes::SceneGraph)
+	if (current && m_type == H3DResTypes::SceneGraph)
 	{
 		setCursor(Qt::BusyCursor);
 		QHordeSceneEditorSettings settings(this);
@@ -87,37 +87,37 @@ void HordeModelDialog::initModelViewer()
 		// Prepare xmlview for engine log
 		m_xmlView->setStyleSheet("QTextEdit#m_xmlView { background: black;  color: white }");
 		// Get previously used scene
-		m_oldScene = Horde3D::getNodeChild(RootNode, 0);
+		m_oldScene = h3dGetNodeChild(H3DRootNode, 0);
 		// Disable Root scene 
-		Horde3D::setNodeActivation(m_oldScene, false);	
+		h3dSetNodeActivation(m_oldScene, false);	
 		// Add new scene for model view
-		m_newScene = Horde3D::addGroupNode(RootNode, "ModelView");		
+		m_newScene = h3dAddGroupNode(H3DRootNode, "ModelView");		
 
 		// Get Pipeline from the last active camera
-		int pipelineID = Horde3D::getNodeParami(HordeSceneEditor::instance()->glContext()->activeCam(), CameraNodeParams::PipelineRes);
+		int pipelineID = h3dGetNodeParamI(HordeSceneEditor::instance()->glContext()->activeCam(), H3DCamera::PipeResI);
 		// add new camera that will be used within the modelview
-		m_cameraID = Horde3D::addCameraNode(m_newScene, "Camera", pipelineID);
-		Horde3D::setupCameraView(m_cameraID, 45, 4.0f/3.0f, 0.1f, 5000.f);
+		m_cameraID = h3dAddCameraNode(m_newScene, "Camera", pipelineID);
+		h3dSetupCameraView(m_cameraID, 45, 4.0f/3.0f, 0.1f, 5000.f);
 		// Load default light specified in the scene file
 		QDomElement standardLight(scene->sceneFileDom().documentElement().namedItem("LightParameters").toElement());
-		ResHandle lightMaterial = 0;
+		H3DRes lightMaterial = 0;
 		if (standardLight.hasAttribute("material"))
-			lightMaterial = Horde3D::addResource( ResourceTypes::Material, qPrintable(standardLight.attribute("material")), 0 );
-		Horde3DUtils::loadResourcesFromDisk(".");		
+			lightMaterial = h3dAddResource( H3DResTypes::Material, qPrintable(standardLight.attribute("material")), 0 );
+		h3dutLoadResourcesFromDisk(".");		
 		// Add Light to cam
-		NodeHandle light = Horde3D::addLightNode( 
+		H3DNode light = h3dAddLightNode( 
 			m_cameraID, 
 			"ModelViewLight", 
 			lightMaterial, 
 			qPrintable(standardLight.attribute("lightingcontext", "LIGHTING")), 
 			qPrintable(standardLight.attribute("shadowcontext", "SHADOWMAP")));
-		Horde3D::setNodeTransform( light, 0, 0, 0, 0, 0, 0, 1, 1, 1 );
-		Horde3D::setNodeParamf( light, LightNodeParams::Radius, 200.0f );
-		Horde3D::setNodeParamf( light, LightNodeParams::FOV, 110.0f );
-		Horde3D::setNodeParami( light, LightNodeParams::ShadowMapCount, 0 );
-		Horde3D::setNodeParamf( light, LightNodeParams::Col_R, 1.0f );
-		Horde3D::setNodeParamf( light, LightNodeParams::Col_G, 1.0f );
-		Horde3D::setNodeParamf( light, LightNodeParams::Col_B, 1.0f );
+		h3dSetNodeTransform( light, 0, 0, 0, 0, 0, 0, 1, 1, 1 );
+		h3dSetNodeParamF( light, H3DLight::RadiusF, 0, 200.0f );
+		h3dSetNodeParamF( light, H3DLight::FovF, 0, 110.0f );
+		h3dSetNodeParamI( light, H3DLight::ShadowMapCountI, 0 );
+		h3dSetNodeParamF( light, H3DLight::ColorF3, 0, 1.0f );
+		h3dSetNodeParamF( light, H3DLight::ColorF3, 1, 1.0f );
+		h3dSetNodeParamF( light, H3DLight::ColorF3, 2, 1.0f );
 		// Important to create the glwidget after adding the shaders 
 		// because only the first context can create new shader programs
 		m_glWidget = new GLWidget(HordeSceneEditor::instance()->glContext(), m_glFrame);	
@@ -148,7 +148,7 @@ void HordeModelDialog::loadModel(const QString& fileName, bool repoFile)
 	}
 	if (m_currentModel != 0)
 	{
-		Horde3D::removeNode(m_currentModel);
+		h3dRemoveNode(m_currentModel);
 		m_currentModel = 0;
 	}
 	else
@@ -157,15 +157,15 @@ void HordeModelDialog::loadModel(const QString& fileName, bool repoFile)
 	// to create new shader programs that may be loaded by the selected model
 	HordeSceneEditor::instance()->glContext()->makeCurrent();
 	// Add resource for model 
-	ResHandle envRes = Horde3D::addResource( ResourceTypes::SceneGraph, qPrintable(fileName), 0 );
+	H3DRes envRes = h3dAddResource( H3DResTypes::SceneGraph, qPrintable(fileName), 0 );
 	// Load data
-	if (envRes == 0 || !Horde3DUtils::loadResourcesFromDisk( "." )) // if loading failed
+	if (envRes == 0 || !h3dutLoadResourcesFromDisk( "." )) // if loading failed
 	{
 		// Clear log
 		m_xmlView->clear();
 		int level;
 		QString message; // Print log messages to xmlview
-		while(!(message = Horde3D::getMessage(&level, 0)).isEmpty())
+		while(!(message = h3dGetMessage(&level, 0)).isEmpty())
 		{			
 			switch( level )
 			{
@@ -183,42 +183,42 @@ void HordeModelDialog::loadModel(const QString& fileName, bool repoFile)
 		// Show XML View Widget
 		m_stackedWidget->setCurrentWidget(m_xmlView);	
 		// Remove the added resource
-		if( envRes ) Horde3D::removeResource(envRes);		
+		if( envRes ) h3dRemoveResource(envRes);		
 		// Restore Path settings if the selected model was from the repository
 		if( repoFile ) 
 			QDir::setCurrent( scenePath );
 		// Release unused resources within Horde3D
-		Horde3D::releaseUnusedResources();
+		h3dReleaseUnusedResources();
 		return;
 	}
 	if (!m_resources.contains(envRes))
 		m_resources.push_back(envRes);
 	// Add to scene graph
-	m_currentModel = Horde3D::addNodes( m_newScene, envRes );
+	m_currentModel = h3dAddNodes( m_newScene, envRes );
 	float minX, minY, minZ, maxX, maxY, maxZ;			
 	// get bounding box to scale each model to the same size
-	Horde3D::getNodeAABB(m_currentModel, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
+	h3dGetNodeAABB(m_currentModel, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
 	//qDebug("Bounding: %.3f, %.3f, %.3f, %.3f, %.3f, %.3f", minX, minY, minZ, maxX, maxY, maxZ);
 	float scale(8.0f / sqrtf(((maxX-minX)*(maxX-minX) + (maxY-minY)*(maxY-minY) + (maxZ-minZ)*(maxZ-minZ))));
 	// scale model 
-	Horde3D::setNodeTransform(m_currentModel, 0, 0, 0, 0, 0, 0, scale, scale, scale);	
+	h3dSetNodeTransform(m_currentModel, 0, 0, 0, 0, 0, 0, scale, scale, scale);	
 	// get new bounding box
-	Horde3D::getNodeAABB(m_currentModel, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
+	h3dGetNodeAABB(m_currentModel, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
 	// adjust transformation centered to the camera
 	const float* temp;
-	Horde3D::getNodeTransformMatrices(m_currentModel, &temp, 0);
+	h3dGetNodeTransMats(m_currentModel, &temp, 0);
 	const_cast<float*>(temp)[12] -= (maxX+minX)/2;
 	const_cast<float*>(temp)[13] -= (maxY+minY)/2;
 	const_cast<float*>(temp)[14] += -10-maxZ;
-	Horde3D::setNodeTransformMatrix(m_currentModel, temp);
+	h3dSetNodeTransMat(m_currentModel, temp);
 	// Rotate object if it is very small in the y-dimension
 	if (abs(maxY-minY) < 0.5)
-		Horde3D::setNodeTransform(m_currentModel, temp[12], temp[13], temp[14], 45, 0, 0, scale, scale, scale);
+		h3dSetNodeTransform(m_currentModel, temp[12], temp[13], temp[14], 45, 0, 0, scale, scale, scale);
 	// Rotate object if it is very small in the x-dimension
 	if (abs(maxX-minX) < 0.5)
-		Horde3D::setNodeTransform(m_currentModel, temp[12], temp[13], temp[14], 0, 45, 0, scale, scale, scale);
+		h3dSetNodeTransform(m_currentModel, temp[12], temp[13], temp[14], 0, 45, 0, scale, scale, scale);
 	// reset camera position
-	Horde3D::setNodeTransform(m_cameraID, 0, 0, 0, 0, 0, 0, 1, 1, 1);	
+	h3dSetNodeTransform(m_cameraID, 0, 0, 0, 0, 0, 0, 1, 1, 1);	
 	if( repoFile )
 		QDir::setCurrent( scenePath );
 }

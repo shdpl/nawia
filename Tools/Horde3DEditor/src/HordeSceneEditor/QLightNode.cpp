@@ -55,7 +55,7 @@ QLightNode::~QLightNode()
 {
 	if (m_resourceID != 0)
 	{
-		Horde3D::removeResource(m_resourceID);
+		h3dRemoveResource(m_resourceID);
 		m_resourceID = 0;
 	}
 	//removeDebugRepresentation();
@@ -64,32 +64,32 @@ QLightNode::~QLightNode()
 void QLightNode::addRepresentation()
 {	
 	if ( m_xmlNode.hasAttribute("material") )
-		m_resourceID = Horde3D::addResource( ResourceTypes::Material, qPrintable(m_xmlNode.attribute("material")), 0 );
+		m_resourceID = h3dAddResource( H3DResTypes::Material, qPrintable(m_xmlNode.attribute("material")), 0 );
 
 	QSceneNode* parentNode = static_cast<QSceneNode*>(parent());
-	unsigned int rootID = parentNode ? parentNode->hordeId() : RootNode;
+	unsigned int rootID = parentNode ? parentNode->hordeId() : H3DRootNode;
 
-	m_hordeID = Horde3D::addLightNode(
+	m_hordeID = h3dAddLightNode(
 		rootID, 
 		qPrintable(m_xmlNode.attribute("name", "ATTENTION No Node Name")), 
 		m_resourceID,
 		qPrintable(m_xmlNode.attribute("lightingContext", "LIGHTING")),  
 		qPrintable(m_xmlNode.attribute("shadowContext", "SHADOWMAP")));
 
-	Horde3D::setNodeParamf(m_hordeID, LightNodeParams::FOV, fov());
-	Horde3D::setNodeParami(m_hordeID, LightNodeParams::ShadowMapCount, shadowMapCount());
-	Horde3D::setNodeParamf(m_hordeID, LightNodeParams::ShadowMapBias, shadowMapBias());
-	Horde3D::setNodeParamf(m_hordeID, LightNodeParams::ShadowSplitLambda, lambda());
+	h3dSetNodeParamF(m_hordeID, H3DLight::FovF, 0, fov());
+	h3dSetNodeParamI(m_hordeID, H3DLight::ShadowMapCountI, shadowMapCount());
+	h3dSetNodeParamF(m_hordeID, H3DLight::ShadowMapBiasF, 0, shadowMapBias());
+	h3dSetNodeParamF(m_hordeID, H3DLight::ShadowSplitLambdaF, 0, lambda());
 	QColor c = color();
-	Horde3D::setNodeParamf(m_hordeID, LightNodeParams::Col_B, c.blueF());
-	Horde3D::setNodeParamf(m_hordeID, LightNodeParams::Col_G, c.greenF());
-	Horde3D::setNodeParamf(m_hordeID, LightNodeParams::Col_R, c.redF());
-	Horde3D::setNodeParamf(m_hordeID, LightNodeParams::Radius, radius());
+	h3dSetNodeParamF(m_hordeID, H3DLight::ColorF3, 2, c.blueF());
+	h3dSetNodeParamF(m_hordeID, H3DLight::ColorF3, 1, c.greenF());
+	h3dSetNodeParamF(m_hordeID, H3DLight::ColorF3, 0, c.redF());
+	h3dSetNodeParamF(m_hordeID, H3DLight::RadiusF, 0, radius());
 	// load transformation from file...
 	float x, y, z, rx, ry, rz, sx, sy, sz;
 	getTransformation(x,y,z,rx,ry,rz,sx,sy,sz);
 	// ...and update scene representation
-	Horde3D::setNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
+	h3dSetNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
 	// Attachment
 	QDomElement attachment = m_xmlNode.firstChildElement("Attachment");	
 	SceneTreeModel* model = static_cast<SceneTreeModel*>(m_model);
@@ -103,7 +103,7 @@ void QLightNode::addRepresentation()
 //void QLightNode::addDebugRepresentation()
 //{
 //	// Add Light Geometry
-//	m_debugResourceGeo = Horde3D::addResource(ResourceTypes::Geometry, "DebugLightCone.geo", 0);
+//	m_debugResourceGeo = h3dAddResource(H3DResTypes::Geometry, "DebugLightCone.geo", 0);
 //	QFile lightDebugGeometry(":/Models/Resources/DebugLightCone.geo");	
 //	if (!lightDebugGeometry.open(QIODevice::ReadOnly))
 //	{
@@ -111,11 +111,11 @@ void QLightNode::addRepresentation()
 //		return;
 //	}
 //	QByteArray data = lightDebugGeometry.readAll();
-//	QString path = Horde3DUtils::getResourcePath(ResourceTypes::Geometry);
+//	QString path = h3dutGetResourcePath(H3DResTypes::Geometry);
 //	path += "DebugLightCone.geo";
-//	Horde3D::loadResource(qPrintable(path), data.constData(), data.size());
+//	h3dLoadResource(qPrintable(path), data.constData(), data.size());
 //	// add light cone shader	
-//	ResHandle shader = Horde3D::addResource(ResourceTypes::Shader, "DebugLightCone.shader.xml", 0);
+//	ResHandle shader = h3dAddResource(H3DResTypes::Shader, "DebugLightCone.shader.xml", 0);
 //	QFile lightDebugShader(":/Shader/Resources/DebugLightCone.shader.xml");	
 //	if (!lightDebugShader.open(QIODevice::ReadOnly))
 //	{
@@ -123,13 +123,13 @@ void QLightNode::addRepresentation()
 //		return;
 //	}
 //	data = lightDebugShader.readAll();
-//	path = Horde3DUtils::getResourcePath(ResourceTypes::Shader);
+//	path = h3dutGetResourcePath(H3DResTypes::Shader);
 //	path += "DebugLightCone.shader.xml";
-//	Horde3D::loadResource(qPrintable(path), data.constData(), data.size());
+//	h3dLoadResource(qPrintable(path), data.constData(), data.size());
 //	// Add Light Material
 //	QString lightMaterialName("DebugLightCone%1.material.xml");
 //	lightMaterialName = lightMaterialName.arg(m_hordeID);
-//	m_debugResourceMat = Horde3D::addResource(ResourceTypes::Material, qPrintable(lightMaterialName), 0);	
+//	m_debugResourceMat = h3dAddResource(H3DResTypes::Material, qPrintable(lightMaterialName), 0);	
 //	data = "<Material><Shader name=\"DebugLightCone.shader.xml\"/> <Uniform name=\"color\" a=\"";
 //	data += QString::number(Horde3D::getLightParam(m_hordeID, LightNodeParams::Col_R));
 //	data += "\" b=\"";
@@ -137,13 +137,13 @@ void QLightNode::addRepresentation()
 //	data +="\" c=\"";
 //	data += QString::number(Horde3D::getLightParam(m_hordeID, LightNodeParams::Col_B));
 //	data +="\" /></Material>";
-//	path = Horde3DUtils::getResourcePath(ResourceTypes::Material);
+//	path = h3dutGetResourcePath(H3DResTypes::Material);
 //	path += qPrintable(lightMaterialName);
-//	Horde3D::loadResource(qPrintable(path), data.constData(), data.size());
+//	h3dLoadResource(qPrintable(path), data.constData(), data.size());
 //	// Add Light Model 
 //	QString lightSceneName("DebugLightCone%1.scene.xml");
 //	lightSceneName = lightSceneName.arg(m_hordeID);
-//	m_debugID = Horde3D::addResource(ResourceTypes::SceneGraph, qPrintable(lightSceneName), 0);
+//	m_debugID = h3dAddResource(H3DResTypes::SceneGraph, qPrintable(lightSceneName), 0);
 //	QFile lightDebugModel(":/Models/Resources/DebugLightCone.scene.xml");	
 //	if (!lightDebugModel.open(QIODevice::ReadOnly))
 //	{
@@ -152,33 +152,35 @@ void QLightNode::addRepresentation()
 //	}
 //	data = lightDebugModel.readAll();
 //	data.replace("DebugLightCone.material.xml", qPrintable(lightMaterialName));
-//	path = Horde3DUtils::getResourcePath(ResourceTypes::SceneGraph);
+//	path = h3dutGetResourcePath(H3DResTypes::SceneGraph);
 //	path += lightSceneName;
-//	Horde3D::loadResource(qPrintable(path), data.constData(), data.size());
-//	Horde3D::addNodes(m_hordeID, m_debugID);
+//	h3dLoadResource(qPrintable(path), data.constData(), data.size());
+//	h3dAddNodes(m_hordeID, m_debugID);
 //}
 
 //void QLightNode::removeDebugRepresentation()
 //{	
 //	if (m_debugResourceGeo != 0)
 //	{
-//		Horde3D::removeResource(m_debugResourceGeo);
+//		h3dRemoveResource(m_debugResourceGeo);
 //		m_debugResourceGeo = 0;
 //	}
 //	if (m_debugResourceMat != 0)
 //	{
-//		Horde3D::removeResource(m_debugResourceMat);
+//		h3dRemoveResource(m_debugResourceMat);
 //		m_debugResourceMat = 0;
 //	}
 //}
 
 void QLightNode::activate()
 {	
-	NodeHandle cam = HordeSceneEditor::instance()->glContext()->activeCam();
+	H3DNode cam = HordeSceneEditor::instance()->glContext()->activeCam();
 	const float* absMat = 0;	
-	if( !Horde3D::getNodeTransformMatrices(Horde3D::getNodeParent(cam), 0, &absMat) ) return;
+	h3dGetNodeTransMats(h3dGetNodeParent(cam), 0, &absMat);
+	if( !absMat ) return;
 	const float* lightAbsMat = 0;
-	if( !Horde3D::getNodeTransformMatrices(m_hordeID, 0, &lightAbsMat) ) return;
+	h3dGetNodeTransMats(m_hordeID, 0, &lightAbsMat);
+	if( !lightAbsMat) return;
 	
 	// Don't apply scale to camera
 	QMatrix4f l(lightAbsMat);
@@ -188,7 +190,7 @@ void QLightNode::activate()
 	l.x[8] /= s.X; l.x[9] /= s.Y; l.x[10] /= s.Z; 	
 	QMatrix4f m = ( QMatrix4f( absMat ).inverted() * l );
 	
-	Horde3D::setNodeTransformMatrix(cam, m.x);
+	h3dSetNodeTransMat(cam, m.x);
 }
 
 float QLightNode::fov() const
@@ -201,7 +203,7 @@ void QLightNode::setFov(float value)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("fov", value);
-		Horde3D::setNodeParamf(m_hordeID, LightNodeParams::FOV, value);
+		h3dSetNodeParamF(m_hordeID, H3DLight::FovF, 0, value);
 	}
 	else if (value != fov())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Field of View"), this, "Field_Of_View", value, LightFoVID));
@@ -218,7 +220,7 @@ void QLightNode::setShadowMapBias(float value)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("shadowMapBias", value);
-		Horde3D::setNodeParamf(m_hordeID, LightNodeParams::ShadowMapBias, value);
+		h3dSetNodeParamF(m_hordeID, H3DLight::ShadowMapBiasF, 0, value);
 	}
 	else if (value != shadowMapBias())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Shadowmap Bias"), this, "Shadow_Map_Bias", value, LightShadowMapBiasID));
@@ -232,7 +234,7 @@ QString QLightNode::shadowContext() const
 void QLightNode::setShadowContext(const QString& value)
 {
 	m_xmlNode.setAttribute("shadowContext", value);	
-	Horde3D::setLightContexts( m_hordeID, qPrintable( lightContext() ), qPrintable( value ) );
+	h3dSetNodeParamStr( m_hordeID, H3DLight::ShadowContextStr, qPrintable( value ) );
 }
 
 QString QLightNode::lightContext() const
@@ -243,7 +245,7 @@ QString QLightNode::lightContext() const
 void QLightNode::setLightContext(const QString& value)
 {
 	m_xmlNode.setAttribute("lightingContext", value);
-	Horde3D::setLightContexts( m_hordeID, qPrintable( value ), qPrintable(shadowContext()) );
+	h3dSetNodeParamStr( m_hordeID, H3DLight::LightingContextStr, qPrintable( value ) );
 }
 
 QColor QLightNode::color() const
@@ -261,9 +263,9 @@ void QLightNode::setColor(QColor value)
 		m_xmlNode.setAttribute("col_B", value.blueF());
 		m_xmlNode.setAttribute("col_R", value.redF());
 		m_xmlNode.setAttribute("col_G", value.greenF());
-		Horde3D::setNodeParamf(m_hordeID, LightNodeParams::Col_B, value.blueF());
-		Horde3D::setNodeParamf(m_hordeID, LightNodeParams::Col_G, value.greenF());
-		Horde3D::setNodeParamf(m_hordeID, LightNodeParams::Col_R, value.redF());
+		h3dSetNodeParamF(m_hordeID, H3DLight::ColorF3, 2, value.blueF());
+		h3dSetNodeParamF(m_hordeID, H3DLight::ColorF3, 1, value.greenF());
+		h3dSetNodeParamF(m_hordeID, H3DLight::ColorF3, 0, value.redF());
 	}
 	else if (value != color())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Color"), this, "Color", value, LightColorID));
@@ -278,7 +280,7 @@ void QLightNode::setRadius(float value)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("radius", value);
-		Horde3D::setNodeParamf(m_hordeID, LightNodeParams::Radius, value);
+		h3dSetNodeParamF(m_hordeID, H3DLight::RadiusF, 0, value);
 	}
 	else if (value != radius())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Radius"), this, "Radius", value, LightRadiusID));
@@ -294,7 +296,7 @@ void QLightNode::setShadowMapCount(int value)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("shadowMapCount", value);
-		Horde3D::setNodeParami(m_hordeID, LightNodeParams::ShadowMapCount, value);
+		h3dSetNodeParamI(m_hordeID, H3DLight::ShadowMapCountI, value);
 	}
 	else if (value != shadowMapCount())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Shadow Map Count"), this, "Shadow_Map_Count", value, LightShadowMapCountID));
@@ -310,7 +312,7 @@ void QLightNode::setLambda(float value)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("shadowSplitLambda", value);
-		Horde3D::setNodeParamf(m_hordeID, LightNodeParams::ShadowSplitLambda, value);
+		h3dSetNodeParamF(m_hordeID, H3DLight::ShadowSplitLambdaF, 0, value);
 	}
 	else if (value != lambda())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Shadow Map Lambda"), this, "Shadow_Map_Lambda", value, LightShadowMapLambdaID));
@@ -327,7 +329,7 @@ void QLightNode::setMaterial(const Material& material)
 	{
 		if (m_resourceID != 0)
 		{
-			Horde3D::removeResource(m_resourceID);
+			h3dRemoveResource(m_resourceID);
 			m_resourceID = 0;
 		}
 		if ( material.FileName.isEmpty() )
@@ -335,10 +337,10 @@ void QLightNode::setMaterial(const Material& material)
 		else
 		{
 			m_xmlNode.setAttribute("material", material.FileName);
-			m_resourceID = Horde3D::addResource( ResourceTypes::Material, qPrintable(material.FileName), 0 );
-			Horde3DUtils::loadResourcesFromDisk(".");
+			m_resourceID = h3dAddResource( H3DResTypes::Material, qPrintable(material.FileName), 0 );
+			h3dutLoadResourcesFromDisk(".");
 		}
-		Horde3D::setNodeParami(m_hordeID, LightNodeParams::MaterialRes, m_resourceID);
+		h3dSetNodeParamI(m_hordeID, H3DLight::MatResI, m_resourceID);
 	}
 	else if (material != QLightNode::material())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Material", this, "Material", QVariant::fromValue(material), LightMaterialID));

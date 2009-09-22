@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -44,7 +32,9 @@ SceneNode::SceneNode( const SceneNodeTpl &tpl ) :
 	_dirty( true ), _transformed( true ), _renderable( false ), _active( true ),
 	_name( tpl.name ), _attachment( tpl.attachmentString )
 {
-	setTransform( tpl.trans, tpl.rot, tpl.scale );
+	_relTrans = Matrix4f::ScaleMat( tpl.scale.x, tpl.scale.y, tpl.scale.z );
+	_relTrans.rotate( degToRad( tpl.rot.x ), degToRad( tpl.rot.y ), degToRad( tpl.rot.z ) );
+	_relTrans.translate( tpl.trans.x, tpl.trans.y, tpl.trans.z );
 }
 
 
@@ -79,9 +69,14 @@ void SceneNode::getTransform( Vec3f &trans, Vec3f &rot, Vec3f &scale )
 void SceneNode::setTransform( Vec3f trans, Vec3f rot, Vec3f scale )
 {
 	// Hack to avoid making setTransform virtual
-	if( _type == SceneNodeTypes::Joint || _type == SceneNodeTypes::Mesh )
+	if( _type == SceneNodeTypes::Joint )
 	{
-		((AnimatableSceneNode *)this)->_ignoreAnim = true;
+		((JointNode *)this)->_parentModel->_skinningDirty = true;
+		((JointNode *)this)->_ignoreAnim = true;
+	}
+	else if( _type == SceneNodeTypes::Mesh )
+	{
+		((MeshNode *)this)->_ignoreAnim = true;
 	}
 	
 	_relTrans = Matrix4f::ScaleMat( scale.x, scale.y, scale.z );
@@ -95,9 +90,15 @@ void SceneNode::setTransform( Vec3f trans, Vec3f rot, Vec3f scale )
 void SceneNode::setTransform( const Matrix4f &mat )
 {
 	// Hack to avoid making setTransform virtual
-	if( _type == SceneNodeTypes::Joint || _type == SceneNodeTypes::Mesh )
+	if( _type == SceneNodeTypes::Joint )
 	{
-		((AnimatableSceneNode *)this)->_ignoreAnim = true;
+		((JointNode *)this)->_parentModel->_skinningDirty = true;
+		((JointNode *)this)->_ignoreAnim = true;
+	}
+	else if( _type == SceneNodeTypes::Mesh )
+	{
+		((MeshNode *)this)->_parentModel->_skinningDirty = true;
+		((MeshNode *)this)->_ignoreAnim = true;
 	}
 	
 	_relTrans = mat;
@@ -122,57 +123,55 @@ const void SceneNode::getTransMatrices( const float **relMat, const float **absM
 }
 
 
-float SceneNode::getParamf( int /*param*/ )
+int SceneNode::getParamI( int param )
 {
-	return Math::NaN;
-}
-
-
-bool SceneNode::setParamf( int /*param*/, float /*value*/ )
-{
-	return false;
-}
-
-
-int SceneNode::getParami( int /*param*/ )
-{
+	Modules::setError( "Invalid param in h3dGetNodeParamI" );
 	return Math::MinInt32;
 }
 
-
-bool SceneNode::setParami( int /*param*/, int /*value*/ )
+void SceneNode::setParamI( int param, int value )
 {
-	return false;
+	Modules::setError( "Invalid param in h3dSetNodeParamI" );
 }
 
+float SceneNode::getParamF( int param, int compIdx )
+{
+	Modules::setError( "Invalid param in h3dGetNodeParamF" );
+	return Math::NaN;
+}
 
-const char *SceneNode::getParamstr( int param )
+void SceneNode::setParamF( int param, int compIdx, float value )
+{
+	Modules::setError( "Invalid param in h3dSetNodeParamF" );
+}
+
+const char *SceneNode::getParamStr( int param )
 {
 	switch( param )
 	{
-	case SceneNodeParams::Name:
+	case SceneNodeParams::NameStr:
 		return _name.c_str();
-	case SceneNodeParams::AttachmentString:
+	case SceneNodeParams::AttachmentStr:
 		return _attachment.c_str();
-	default:
-		return "";
 	}
+
+	Modules::setError( "Invalid param in h3dGetNodeParamStr" );
+	return "";
 }
 
-
-bool SceneNode::setParamstr( int param, const char *value )
+void SceneNode::setParamStr( int param, const char *value )
 {
 	switch( param )
 	{
-	case SceneNodeParams::Name:
+	case SceneNodeParams::NameStr:
 		_name = value;
-		return true;
-	case SceneNodeParams::AttachmentString:
+		return;
+	case SceneNodeParams::AttachmentStr:
 		_attachment = value;
-		return true;
-	default:
-		return false;
+		return;
 	}
+
+	Modules::setError( "Invalid param in h3dSetNodeParamStr" );
 }
 
 
@@ -219,11 +218,9 @@ void SceneNode::markDirty()
 }
 
 
-bool SceneNode::update()
+void SceneNode::update()
 {
-	if( !_dirty ) return false;
-	
-	bool bBoxChanged = false;
+	if( !_dirty ) return;
 	
 	onPreUpdate();
 	
@@ -232,15 +229,6 @@ bool SceneNode::update()
 		Matrix4f::fastMult43( _absTrans, _parent->_absTrans, _relTrans );
 	else
 		_absTrans = _relTrans;
-	
-	// If there is a local bounding box, transform it to world space
-	BoundingBox *locBBox = getLocalBBox();
-	if( locBBox != 0x0 )
-	{
-		_bBox = *locBBox;
-		_bBox.transform( _absTrans );
-		bBoxChanged = true;
-	}
 	
 	Modules::sceneMan().updateSpatialNode( _sgHandle );
 
@@ -251,27 +239,10 @@ bool SceneNode::update()
 	// Visit children
 	for( uint32 i = 0, s = (uint32)_children.size(); i < s; ++i )
 	{
-		bBoxChanged |= _children[i]->update();
+		_children[i]->update();
 	}	
 
-	// Recalculate bounding box if necessary
-	if( bBoxChanged )
-	{
-		if( locBBox == 0x0 )
-		{	
-			bBoxChanged = false;
-			_bBox.clear();
-		}
-
-		for( uint32 i = 0, s = (uint32)_children.size(); i < s; ++i )
-		{
-			bBoxChanged |= _bBox.makeUnion( _children[i]->_bBox ); 
-		}
-	}
-
 	onFinishedUpdate();
-	
-	return bBoxChanged;
 }
 
 
@@ -279,32 +250,6 @@ bool SceneNode::checkIntersection( const Vec3f &/*rayOrig*/, const Vec3f &/*rayD
 {
 	return false;
 }
-
-
-void SceneNode::onPreUpdate()
-{
-}
-
-
-void SceneNode::onPostUpdate()
-{
-}
-
-
-void SceneNode::onFinishedUpdate()
-{
-}
-
-
-void SceneNode::onAttach( SceneNode &/*parentNode*/ )
-{
-}
-
-
-void SceneNode::onDetach( SceneNode &/*parentNode*/ )
-{
-}
-
 
 
 // *************************************************************************************************
@@ -331,18 +276,6 @@ SceneNode *GroupNode::factoryFunc( const SceneNodeTpl &nodeTpl )
 	if( nodeTpl.type != SceneNodeTypes::Group ) return 0x0;
 	
 	return new GroupNode( *(GroupNodeTpl *)&nodeTpl );
-}
-
-
-float GroupNode::getParamf( int param )
-{
-	return SceneNode::getParamf( param );
-}
-
-
-bool GroupNode::setParamf( int param, float value )
-{
-	return SceneNode::setParamf( param, value );
 }
 
 
@@ -422,7 +355,7 @@ void SpatialGraph::updateQueues( const Frustum &frustum1, const Frustum *frustum
 				if( order != RenderingOrder::None )
 				{
 					node->tmpSortValue = nearestDistToAABB( frustum1.getOrigin(),
-						node->_bBox.getMinCoords(), node->_bBox.getMaxCoords() );
+						node->_bBox.min, node->_bBox.max );
 				}
 				_renderableQueue.push_back( RendQueueEntry( node->_type, node ) );	
 			}
@@ -605,148 +538,124 @@ NodeHandle SceneManager::addNodes( SceneNode &parent, SceneGraphResource &sgRes 
 }
 
 
-void SceneManager::removeNodeRec( SceneNode *node )
+void SceneManager::removeNodeRec( SceneNode &node )
 {
-	NodeHandle handle = node->_handle;
+	NodeHandle handle = node._handle;
 	
 	// Raise event
-	if( handle != RootNode ) node->onDetach( *node->_parent );
+	if( handle != RootNode ) node.onDetach( *node._parent );
 
 	// Remove children
-	for( uint32 i = 0; i < node->_children.size(); ++i )
+	for( uint32 i = 0; i < node._children.size(); ++i )
 	{
-		removeNodeRec( node->_children[i] );
+		removeNodeRec( *node._children[i] );
 	}
 	
 	// Delete node
 	if( handle != RootNode )
 	{
-		_spatialGraph->removeNode( node->_sgHandle );
+		_spatialGraph->removeNode( node._sgHandle );
 		delete _nodes[handle - 1]; _nodes[handle - 1] = 0x0;
 		_freeList.push_back( handle - 1 );
 	}
 }
 
 
-bool SceneManager::removeNode( NodeHandle handle )
+void SceneManager::removeNode( SceneNode &node )
 {
-	SceneNode *sn = resolveNodeHandle( handle );
-	if( sn == 0x0 )		// Call allowed for rootnode
-	{
-		Modules::log().writeDebugInfo( "Invalid node handle %i in removeNode", handle );
-		return false;
-	}
-
-	SceneNode *parent = sn->_parent;
-
-	removeNodeRec( sn );
+	SceneNode *parent = node._parent;
+	SceneNode *nodeAddr = &node;
+	
+	removeNodeRec( node );  // node gets deleted if it is not the rootnode
 	
 	// Remove node from parent
-	if( handle != RootNode )
+	if( parent != 0x0 )
 	{
 		// Find child
 		for( uint32 i = 0; i < parent->_children.size(); ++i )
 		{
-			if( parent->_children[i] == sn )
+			if( parent->_children[i] == nodeAddr )
 			{
 				parent->_children.erase( parent->_children.begin() + i );
 				break;
 			}
 		}
+		parent->markDirty();
 	}
-	else
+	else  // Rootnode
 	{
-		sn->_children.clear();
+		node._children.clear();
+		node.markDirty();
 	}
-	
-	// Mark dirty
-	if( parent != 0x0 ) parent->markDirty();
-	
-	return true;
 }
 
 
-bool SceneManager::relocateNode( NodeHandle node, NodeHandle parent )
+bool SceneManager::relocateNode( SceneNode &node, SceneNode &parent )
 {
-	if( node == RootNode ) return 0;
+	if( node._handle == RootNode ) return false;
 	
-	SceneNode *sn = resolveNodeHandle( node );
-	if ( sn == 0x0 )
+	if( !node.canAttach( parent ) )
 	{	
-		Modules::log().writeDebugInfo( "Invalid node handle %i in relocateNode", node );
-		return 0;
-	}
-	SceneNode *snp = resolveNodeHandle( parent );
-	if ( snp == 0x0 )
-	{	
-		Modules::log().writeDebugInfo( "Invalid parent node handle %i in relocateNode", parent );
-		return 0;
-	}
-
-	if( !sn->canAttach( *snp ) )
-	{	
-		Modules::log().writeDebugInfo( "Can't attach node %i to parent %i in relocateNode", node, parent );
-		return 0;
+		Modules::log().writeDebugInfo( "Can't attach node to parent in h3dSetNodeParent" );
+		return false;
 	}
 	
 	// Detach from old parent
-	sn->onDetach( *sn->_parent );
-	for( uint32 i = 0; i < sn->_parent->_children.size(); ++i )
+	node.onDetach( *node._parent );
+	for( uint32 i = 0; i < node._parent->_children.size(); ++i )
 	{
-		if( sn->_parent->_children[i] == sn )
+		if( node._parent->_children[i] == &node )
 		{
-			sn->_parent->_children.erase( sn->_parent->_children.begin() + i );
+			node._parent->_children.erase( node._parent->_children.begin() + i );
 			break;
 		}
 	}
 
 	// Attach to new parent
-	snp->_children.push_back( sn );
-	sn->_parent = snp;
-	sn->onAttach( *snp );
+	parent._children.push_back( &node );
+	node._parent = &parent;
+	node.onAttach( parent );
 	
-	snp->markDirty();
-	sn->_parent->markDirty();
+	parent.markDirty();
+	node._parent->markDirty();
 	
 	return true;
 }
 
 
-int SceneManager::findNodes( SceneNode *startNode, const string &name, int type )
+int SceneManager::findNodes( SceneNode &startNode, const string &name, int type )
 {
 	int count = 0;
 	
-	if( type == SceneNodeTypes::Undefined || startNode->_type == type )
+	if( type == SceneNodeTypes::Undefined || startNode._type == type )
 	{
-		if( name == "" || startNode->_name == name )
+		if( name == "" || startNode._name == name )
 		{
-			_findResults.push_back( startNode );
+			_findResults.push_back( &startNode );
 			++count;
 		}
 	}
 
-	for( uint32 i = 0; i < startNode->_children.size(); ++i )
+	for( uint32 i = 0; i < startNode._children.size(); ++i )
 	{
-		count += findNodes( startNode->_children[i], name, type );
+		count += findNodes( *startNode._children[i], name, type );
 	}
 
 	return count;
 }
 
 
-void SceneManager::castRayInternal( SceneNode *node )
+void SceneManager::castRayInternal( SceneNode &node )
 {
-	if( !node->_active ) return;
-	
-	if( rayAABBIntersection( _rayOrigin, _rayDirection, node->_bBox.getMinCoords(), node->_bBox.getMaxCoords() ) )
+	if( node._active )
 	{
 		Vec3f intsPos;
-		if( node->checkIntersection( _rayOrigin, _rayDirection, intsPos ) )
+		if( node.checkIntersection( _rayOrigin, _rayDirection, intsPos ) )
 		{
 			float dist = (intsPos - _rayOrigin).length();
 
 			CastRayResult crr;
-			crr.node = node;
+			crr.node = &node;
 			crr.distance = dist;
 			crr.intersection = intsPos;
 
@@ -772,19 +681,19 @@ void SceneManager::castRayInternal( SceneNode *node )
 			}
 		}
 
-		for( size_t i = 0, s = node->_children.size(); i < s; ++i )
+		for( size_t i = 0, s = node._children.size(); i < s; ++i )
 		{
-			castRayInternal( node->_children[i] );
+			castRayInternal( *node._children[i] );
 		}
 	}
 }
 
 
-int SceneManager::castRay( SceneNode *node, const Vec3f &rayOrig, const Vec3f &rayDir, int numNearest )
+int SceneManager::castRay( SceneNode &node, const Vec3f &rayOrig, const Vec3f &rayDir, int numNearest )
 {
-	_castRayResults.resize(0); // empty results vector by resizing it to zero (does not release the memory to avoid reallocation)
+	_castRayResults.resize( 0 );  // Clear without affecting capacity
 
-	if( !node->_active ) return 0;
+	if( !node._active ) return 0;
 
 	_rayOrigin = rayOrig;
 	_rayDirection = rayDir;
@@ -809,37 +718,37 @@ bool SceneManager::getCastRayResult( int index, CastRayResult &crr )
 }
 
 
-int SceneManager::checkNodeVisibility( SceneNode *node, CameraNode *cam, bool checkOcclusion, bool calcLod )
+int SceneManager::checkNodeVisibility( SceneNode &node, CameraNode &cam, bool checkOcclusion, bool calcLod )
 {
 	// Note: This function is a bit hacky with all the hard-coded node types
 	
-	if( node->_dirty ) updateNodes();
+	if( node._dirty ) updateNodes();
 
 	// Check occlusion
-	if( checkOcclusion && cam->_occSet >= 0 )
+	if( checkOcclusion && cam._occSet >= 0 )
 	{
-		if( node->getType() == SceneNodeTypes::Model )
+		if( node.getType() == SceneNodeTypes::Model && cam._occSet < (int)((ModelNode *)&node)->_occQueries.size() )
 		{
-			if( Modules::renderer().getOccQueryResult( ((ModelNode *)node)->_occQueries[cam->_occSet] ) < 1 )
+			if( Modules::renderer().getQueryResult( ((ModelNode *)&node)->_occQueries[cam._occSet] ) < 1 )
 				return -1;
 		}
-		else if( node->getType() == SceneNodeTypes::Emitter )
+		else if( node.getType() == SceneNodeTypes::Emitter && cam._occSet < (int)((EmitterNode *)&node)->_occQueries.size() )
 		{
-			if( Modules::renderer().getOccQueryResult( ((EmitterNode *)node)->_occQueries[cam->_occSet] ) < 1 )
+			if( Modules::renderer().getQueryResult( ((EmitterNode *)&node)->_occQueries[cam._occSet] ) < 1 )
 				return -1;
 		}
-		else if( node->getType() == SceneNodeTypes::Light )
+		else if( node.getType() == SceneNodeTypes::Light && cam._occSet < (int)((LightNode *)&node)->_occQueries.size() )
 		{
-			if( Modules::renderer().getOccQueryResult( ((LightNode *)node)->_occQueries[cam->_occSet] ) < 1 )
+			if( Modules::renderer().getQueryResult( ((LightNode *)&node)->_occQueries[cam._occSet] ) < 1 )
 				return -1;
 		}
 	}
 	
 	// Frustum culling
-	if( cam->getFrustum().cullBox( node->getBBox() ) )
+	if( cam.getFrustum().cullBox( node.getBBox() ) )
 		return -1;
 	else if( calcLod )
-		return node->calcLodLevel( cam->getAbsPos() );
+		return node.calcLodLevel( cam.getAbsPos() );
 	else
 		return 0;
 }

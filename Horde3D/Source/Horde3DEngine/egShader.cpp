@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -33,9 +21,9 @@
 
 using namespace std;
 
-// *************************************************************************************************
-// CodeResource
-// *************************************************************************************************
+// =================================================================================================
+// Code Resource
+// =================================================================================================
 
 CodeResource::CodeResource( const string &name, int flags ) :
 	Resource( ResourceTypes::Code, name, flags )
@@ -266,9 +254,139 @@ void CodeResource::updateShaders()
 }
 
 
-// *************************************************************************************************
-// ShaderResource
-// *************************************************************************************************
+// =================================================================================================
+// Shader Resource
+// =================================================================================================
+
+class Tokenizer
+{
+protected:	
+	
+	static const int tokenSize = 128;
+	
+	char        _token[tokenSize], _prevToken[tokenSize];
+	const char  *_p;
+	int         _line;
+
+
+	void checkLineChange()
+	{
+		if( *_p == '\r' && *(_p+1) == '\n' )
+		{
+			++_p;
+			++_line;
+		}
+		else if( *_p == '\r' || *_p == '\n' ) ++_line;
+	}
+
+	void skip( const char *chars )
+	{
+		while( *_p )
+		{
+			if( !strchr( chars, *_p ) ) break;
+			checkLineChange();
+			++_p;
+		}
+	}
+	
+	bool seekChar( const char *chars )
+	{
+		while( *_p )
+		{
+			if( strchr( chars, *_p ) ) break;
+			checkLineChange();
+			++_p;
+		}
+		return *_p != '\0';
+	}
+	
+	void getNextToken()
+	{
+		// Skip whitespace and comments
+		while( *_p )
+		{
+			const char *p0 = _p;
+			
+			// Skip whitespace
+			skip( " \t\n\r" );
+
+			// Handle comments
+			if( *_p == '/' && *(_p+1) == '/' )
+			{
+				seekChar( "\n\r" );
+			}
+			else if( *_p == '/' && *(_p+1) == '*' )
+			{
+				while( *_p )
+				{
+					seekChar( "*" );
+					if( *++_p == '/' )
+					{	
+						++_p;
+						break;
+					}
+				}
+			}
+
+			if( _p == p0 ) break;  // No more whitespace and comments found
+		}
+
+		// Parse token
+		const char *p0 = _p;
+		seekChar( " \t\n\r{}()<>=,;" );  // Advanve until whitespace or special char found
+		if( _p == p0 && *_p != '\0' ) ++_p;  // Handle special char
+		memcpy( _token, p0, std::min( _p - p0, tokenSize-1 ) );
+		_token[std::min( _p - p0, tokenSize-1 )] = '\0';
+	}
+
+public:
+	
+	Tokenizer( const char *data ) : _p( data ), _line( 1 ) { getNextToken(); }
+
+	int getLine() { return _line; }
+
+	bool hasToken() { return _token[0] != '\0'; }
+	
+	bool checkToken( const char *token )
+	{
+		if( _stricmp( _token, token ) == 0 )
+		{
+			getNextToken();
+			return true;
+		}
+		return false;
+	}
+
+	const char *getToken( const char *charset )
+	{
+		// Validate token
+		const char *p = _token;
+		while( *p )
+		{
+			if( strchr( charset, *p++ ) == 0x0 )
+			{
+				_prevToken[0] = '\0';
+				return _prevToken;
+			}
+		}
+		
+		memcpy( _prevToken, _token, tokenSize );
+		getNextToken();
+		return _prevToken;
+	}
+
+	bool seekAndSkipChar( const char c )
+	{
+		const char chars[2] = { c, '\0' };
+
+		bool result = seekChar( chars );
+		if( result ) ++_p;
+		getNextToken();
+		return result;
+	}
+};
+
+// =================================================================================================
 
 string ShaderResource::_vertPreamble = "";
 string ShaderResource::_fragPreamble = "";
@@ -300,7 +418,7 @@ void ShaderResource::release()
 	{
 		for( uint32 j = 0; j < _contexts[i].shaderCombs.size(); ++j )
 		{
-			Modules::renderer().unloadShader( _contexts[i].shaderCombs[j].shaderObject );
+			Modules::renderer().releaseShader( _contexts[i].shaderCombs[j].shaderObj );
 		}
 	}
 
@@ -321,214 +439,191 @@ bool ShaderResource::raiseError( const string &msg, int line )
 	if( line < 0 )
 		Modules::log().writeError( "Shader resource '%s': %s", _name.c_str(), msg.c_str() );
 	else
-		Modules::log().writeError( "Shader resource '%s' in line %i: %s", _name.c_str(), line, msg.c_str() );
+		Modules::log().writeError( "Shader resource '%s': %s (line %i)", _name.c_str(), msg.c_str(), line );
 	
 	return false;
 }
 
 
-bool ShaderResource::parseXMLCode( XMLNode &node, std::string &code )
-{
-	code = "";
-	
-	int nodeItr1 = 0;
-	XMLNode node1 = node.getChildNode( nodeItr1 );
-	while( !node1.isEmpty() && node1.getName() != 0x0 )
-	{
-		if( strcmp( node1.getName(), "DefCode" ) == 0 )
-		{
-			// Find CDATA
-			for( int i = 0; i < node1.nClear(); ++i )
-			{
-				if( strcmp( node1.getClear( i ).lpszOpenTag, "<![CDATA[" ) == 0 )
-				{
-					code += node1.getClear().lpszValue;
-					break;
-				}
-			}
-		}
-		else if( strcmp( node1.getName(), "InsCode" ) == 0 )
-		{
-			if( node1.getAttribute( "code" ) == 0x0 ) return false;
-		
-			code += "\r\n#include \"";
-			code += node1.getAttribute( "code" );
-			code += "\"\r\n";
-		}
-
-		node1 = node.getChildNode( ++nodeItr1 );
-	}
-
-	return true;
-}
-
-
 bool ShaderResource::parseFXSection( const char *data )
 {
-	// Parse FX section
-	XMLResults res;
-	XMLNode rootNode = XMLNode::parseString( data, "Shader", &res );
-	if( res.error != eXMLErrorNone )
-	{
-		return raiseError( XMLNode::getError( res.error ), res.nLine );
-	}
-
-	// Parse contexts
-	int nodeItr1 = 0;
-	XMLNode node1 = rootNode.getChildNode( "Context", nodeItr1 );
-	while( !node1.isEmpty() )
-	{
-		if( node1.getAttribute( "id" ) == 0x0 ) return raiseError( "Missing Context attribute 'id'" );
-		
-		ShaderContext context;
-
-		context.id = node1.getAttribute( "id" );
-		
-		// Config
-		XMLNode node2 = node1.getChildNode( "RenderConfig" );
-		if( !node2.isEmpty() )
-		{
-			// Depth mask
-			if( _stricmp( node2.getAttribute( "writeDepth", "true" ), "false" ) == 0 ||
-				_stricmp( node2.getAttribute( "writeDepth", "1" ), "0" ) == 0 )
-				context.writeDepth = false;
-			else
-				context.writeDepth = true;
-
-			// Blending
-			if( _stricmp( node2.getAttribute( "blendMode", "REPLACE" ), "BLEND" ) == 0 )
-				context.blendMode = BlendModes::Blend;
-			else if( _stricmp( node2.getAttribute( "blendMode", "REPLACE" ), "ADD" ) == 0 )
-				context.blendMode = BlendModes::Add;
-			else if( _stricmp( node2.getAttribute( "blendMode", "REPLACE" ), "ADD_BLENDED" ) == 0 )
-				context.blendMode = BlendModes::AddBlended;
-			else if( _stricmp( node2.getAttribute( "blendMode", "REPLACE" ), "MULT" ) == 0 )
-				context.blendMode = BlendModes::Mult;
-			else
-				context.blendMode = BlendModes::Replace;
-
-			// Depth test
-			if( _stricmp( node2.getAttribute( "depthTest", "LESS_EQUAL" ), "ALWAYS" ) == 0 )
-				context.depthTest = TestModes::Always;
-			else if( _stricmp( node2.getAttribute( "depthTest", "LESS_EQUAL" ), "EQUAL" ) == 0 )
-				context.depthTest = TestModes::Equal;
-			else if( _stricmp( node2.getAttribute( "depthTest", "LESS_EQUAL" ), "LESS" ) == 0 )
-				context.depthTest = TestModes::Less;
-			else if( _stricmp( node2.getAttribute( "depthTest", "LESS_EQUAL" ), "GREATER" ) == 0 )
-				context.depthTest = TestModes::Greater;
-			else if( _stricmp( node2.getAttribute( "depthTest", "LESS_EQUAL" ), "GREATER_EQUAL" ) == 0 )
-				context.depthTest = TestModes::GreaterEqual;
-			else
-				context.depthTest = TestModes::LessEqual;
-
-			// Alpha test
-			if( _stricmp( node2.getAttribute( "alphaTest", "ALWAYS" ), "EQUAL" ) == 0 )
-				context.alphaTest = TestModes::Equal;
-			else if( _stricmp( node2.getAttribute( "alphaTest", "ALWAYS" ), "LESS" ) == 0 )
-				context.alphaTest = TestModes::Less;
-			else if( _stricmp( node2.getAttribute( "alphaTest", "ALWAYS" ), "LESS_EQUAL" ) == 0 )
-				context.alphaTest = TestModes::LessEqual;
-			else if( _stricmp( node2.getAttribute( "alphaTest", "ALWAYS" ), "GREATER" ) == 0 )
-				context.alphaTest = TestModes::Greater;
-			else if( _stricmp( node2.getAttribute( "alphaTest", "ALWAYS" ), "GREATER_EQUAL" ) == 0 )
-				context.alphaTest = TestModes::GreaterEqual;
-			else
-				context.alphaTest = TestModes::Always;
-			
-			context.alphaRef = (float)atof( node2.getAttribute( "alphaRef", "0" ) );
-
-			// Alpha-to-coverage
-			if( _stricmp( node2.getAttribute( "alphaToCoverage", "false" ), "true" ) == 0 ||
-				_stricmp( node2.getAttribute( "alphaToCoverage", "0" ), "1" ) == 0 )
-				context.alphaToCoverage = true;
-			else
-				context.alphaToCoverage = false;
-		}
-		
-		// Shaders
-		node2 = node1.getChildNode( "Shaders" );
-		if( node2.isEmpty() ) return raiseError( "Missing Shaders node in Context '" + context.id + "'" );
-
-		// Find code resources
-		_tmpCode0 = node2.getAttribute( "vertex", "" );
-		_tmpCode1 = node2.getAttribute( "fragment", "" );
-		for( uint32 i = 0; i < _codeSections.size(); ++i )
-		{
-			if( _codeSections[i].getName() == _tmpCode0 ) context.vertCodeIdx = i;
-			if( _codeSections[i].getName() == _tmpCode1 ) context.fragCodeIdx = i;
-		}
-
-		if( context.vertCodeIdx < 0 )
-			return raiseError( "Context '" + context.id + "' references undefined vertex shader code section" );
-		if( context.fragCodeIdx < 0 )
-			return raiseError( "Context '" + context.id + "' references undefined fragment shader code section" );
-
-		_contexts.push_back( context );
-		
-		node1 = rootNode.getChildNode( "Context", ++nodeItr1 );
-	}
-
-	// Parse samplers
-	bool unitFree[12] = {true, true, true, true, true, true, true, true, true, true, true, true}; 
+	const char *identifier = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+	const char *intnum = "+-0123456789";
+	const char *floatnum = "+-0123456789.eE";
 	
-	nodeItr1 = 0;
-	node1 = rootNode.getChildNode( "Sampler", nodeItr1 );
-	while( !node1.isEmpty() )
+	bool unitFree[12] = {true, true, true, true, true, true, true, true, true, true, true, true}; 
+	Tokenizer tok( data );
+
+	while( tok.hasToken() )
 	{
-		if( node1.getAttribute( "id" ) == 0x0 ) return raiseError( "Missing Sampler attribute 'id'" );
-		
-		ShaderSampler sampler;
-
-		sampler.id = node1.getAttribute( "id" );
-		sampler.texUnit = atoi( node1.getAttribute( "texUnit", "-1" ) );
-		if( sampler.texUnit > 11 ) return raiseError( "texUnit exceeds limit" );
-		if( sampler.texUnit >= 0 ) unitFree[sampler.texUnit] = false;
-
-		// Sampler states
-		XMLNode node2 = node1.getChildNode( "StageConfig" );
-		if( !node2.isEmpty() )
+		if( tok.checkToken( "float4" ) )
 		{
-			// Address mode
-			if( _stricmp( node2.getAttribute( "addressMode", "WRAP" ), "CLAMP" ) == 0 )
-				sampler.addressMode = TexAddressModes::Clamp;
-			else
-				sampler.addressMode = TexAddressModes::Wrap;
+			ShaderUniform uniform;
+			uniform.id = tok.getToken( identifier );
+			if( uniform.id == "" ) return raiseError( "FX: Invalid identifier", tok.getLine() );
+			uniform.defValues[0] = uniform.defValues[1] = uniform.defValues[2] = uniform.defValues[3] = 0.0f;
 			
-			// Filtering
-			if( _stricmp( node2.getAttribute( "filtering", "TRILINEAR" ), "NONE" ) == 0 )
-				sampler.filterMode = TexFilterModes::None;
-			else if( _stricmp( node2.getAttribute( "filtering", "TRILINEAR" ), "BILINEAR" ) == 0 )
-				sampler.filterMode = TexFilterModes::Bilinear;
-			else
-				sampler.filterMode = TexFilterModes::Trilinear;
+			// Skip annotations
+			if( tok.checkToken( "<" ) )
+				if( !tok.seekAndSkipChar( '>' ) ) return raiseError( "FX: expected '>'", tok.getLine() );
+			
+			if( tok.checkToken( "=" ) )
+			{
+				if( !tok.checkToken( "{" ) ) return raiseError( "FX: expected '{'", tok.getLine() );
+				uniform.defValues[0] = (float)atof( tok.getToken( floatnum ) );
+				if( tok.checkToken( "," ) ) uniform.defValues[1] = (float)atof( tok.getToken( floatnum ) );
+				if( tok.checkToken( "," ) ) uniform.defValues[2] = (float)atof( tok.getToken( floatnum ) );
+				if( tok.checkToken( "," ) ) uniform.defValues[3] = (float)atof( tok.getToken( floatnum ) );
+				if( !tok.checkToken( "}" ) ) return raiseError( "FX: expected '}'", tok.getLine() );
+			}
+			if( !tok.checkToken( ";" ) ) return raiseError( "FX: expected ';'", tok.getLine() );
 
-			// Max anisotropy
-			sampler.maxAnisotropy = atoi( node2.getAttribute( "maxAnisotropy", "8" ) );
+			_uniforms.push_back( uniform );
 		}
+		else if( tok.checkToken( "sampler" ) )
+		{
+			ShaderSampler sampler;
+			sampler.id = tok.getToken( identifier );
+			if( sampler.id == "" ) return raiseError( "FX: Invalid identifier", tok.getLine() );
 
-		_samplers.push_back( sampler );
+			// Skip annotations
+			if( tok.checkToken( "<" ) )
+				if( !tok.seekAndSkipChar( '>' ) ) return raiseError( "FX: expected '>'", tok.getLine() );
+			
+			if( tok.checkToken( "=" ) )
+			{
+				if( !tok.checkToken( "sampler_state" ) ) return raiseError( "FX: expected 'sampler_state'", tok.getLine() );
+				if( !tok.checkToken( "{" ) ) return raiseError( "FX: expected '{'", tok.getLine() );
+				while( true )
+				{
+					if( !tok.hasToken() )
+						return raiseError( "FX: expected '}'", tok.getLine() );
+					else if( tok.checkToken( "}" ) )
+						break;
+					else if( tok.checkToken( "TexUnit" ) )
+					{
+						if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
+						sampler.texUnit = (int)atoi( tok.getToken( intnum ) );
+						if( sampler.texUnit > 11 ) return raiseError( "FX: texUnit exceeds limit", tok.getLine() );
+						if( sampler.texUnit >= 0 ) unitFree[sampler.texUnit] = false;
+					}
+					else if( tok.checkToken( "Address" ) )
+					{
+						if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
+						if( tok.checkToken( "Wrap" ) ) sampler.addressMode = TexAddressModes::Wrap;
+						else if( tok.checkToken( "Clamp" ) ) sampler.addressMode = TexAddressModes::Clamp;
+						else return raiseError( "FX: invalid enum value", tok.getLine() );
+					}
+					else if( tok.checkToken( "Filter" ) )
+					{
+						if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
+						if( tok.checkToken( "Trilinear" ) ) sampler.filterMode = TexFilterModes::Trilinear;
+						else if( tok.checkToken( "Bilinear" ) ) sampler.filterMode = TexFilterModes::Bilinear;
+						else return raiseError( "FX: invalid enum value", tok.getLine() );
+					}
+					else if( tok.checkToken( "MaxAnisotropy" ) )
+					{
+						if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
+						sampler.maxAnisotropy = (int)atoi( tok.getToken( intnum ) );
+					}
+					else
+						return raiseError( "FX: unexpected token", tok.getLine() );
+					if( !tok.checkToken( ";" ) ) return raiseError( "FX: expected ';'", tok.getLine() );
+				}
+			}
+			if( !tok.checkToken( ";" ) ) return raiseError( "FX: expected ';'", tok.getLine() );
 
-		node1 = rootNode.getChildNode( "Sampler", ++nodeItr1 );
-	}
+			_samplers.push_back( sampler );
+		}
+		else if( tok.checkToken( "context" ) )
+		{
+			ShaderContext context;
+			_tmpCode0 = _tmpCode1 = "";
+			context.id = tok.getToken( identifier );
+			if( context.id == "" ) return raiseError( "FX: Invalid identifier", tok.getLine() );
 
-	// Parse uniforms
-	nodeItr1 = 0;
-	node1 = rootNode.getChildNode( "Uniform", nodeItr1 );
-	while( !node1.isEmpty() )
-	{
-		if( node1.getAttribute( "id" ) == 0x0 ) return raiseError( "Missing Uniform attribute 'id'" );
-		
-		ShaderUniform uniform;
+			// Skip annotations
+			if( tok.checkToken( "<" ) )
+				if( !tok.seekAndSkipChar( '>' ) ) return raiseError( "FX: expected '>'", tok.getLine() );
+			
+			if( !tok.checkToken( "{" ) ) return raiseError( "FX: expected '{'", tok.getLine() );
+			while( true )
+			{
+				if( !tok.hasToken() )
+					return raiseError( "FX: expected '}'", tok.getLine() );
+				else if( tok.checkToken( "}" ) )
+					break;
+				else if( tok.checkToken( "ZWriteEnable" ) )
+				{
+					if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
+					if( tok.checkToken( "true" ) ) context.writeDepth = true;
+					else if( tok.checkToken( "false" ) ) context.writeDepth = false;
+					else return raiseError( "FX: invalid bool value", tok.getLine() );
+				}
+				else if( tok.checkToken( "ZFunc" ) )
+				{
+					if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
+					if( tok.checkToken( "LessEqual" ) ) context.depthTest = TestModes::LessEqual;
+					else if( tok.checkToken( "Always" ) ) context.depthTest = TestModes::Always;
+					else if( tok.checkToken( "Equal" ) ) context.depthTest = TestModes::Equal;
+					else if( tok.checkToken( "Less" ) ) context.depthTest = TestModes::Less;
+					else if( tok.checkToken( "Greater" ) ) context.depthTest = TestModes::Greater;
+					else if( tok.checkToken( "GreaterEqual" ) ) context.depthTest = TestModes::GreaterEqual;
+					else return raiseError( "FX: invalid enum value", tok.getLine() );
+				}
+				else if( tok.checkToken( "BlendMode" ) )
+				{
+					if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
+					if( tok.checkToken( "Replace" ) ) context.blendMode = BlendModes::Replace;
+					else if( tok.checkToken( "Blend" ) ) context.blendMode = BlendModes::Blend;
+					else if( tok.checkToken( "Add" ) ) context.blendMode = BlendModes::Add;
+					else if( tok.checkToken( "AddBlended" ) ) context.blendMode = BlendModes::AddBlended;
+					else if( tok.checkToken( "Mult" ) ) context.blendMode = BlendModes::Mult;
+					else return raiseError( "FX: invalid enum value", tok.getLine() );
+				}
+				else if( tok.checkToken( "AlphaToCoverage" ) )
+				{
+					if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
+					if( tok.checkToken( "true" ) || tok.checkToken( "1" ) ) context.alphaToCoverage = true;
+					else if( tok.checkToken( "false" ) || tok.checkToken( "1" ) ) context.alphaToCoverage = false;
+					else return raiseError( "FX: invalid bool value", tok.getLine() );
+				}
+				else if( tok.checkToken( "VertexShader" ) )
+				{
+					if( !tok.checkToken( "=" ) || !tok.checkToken( "compile" ) || !tok.checkToken( "GLSL" ) )
+						return raiseError( "FX: expected '= compile GLSL'", tok.getLine() );
+					_tmpCode0 = tok.getToken( identifier );
+					if( _tmpCode0 == "" ) return raiseError( "FX: Invalid name", tok.getLine() );
+				}
+				else if( tok.checkToken( "PixelShader" ) )
+				{
+					if( !tok.checkToken( "=" ) || !tok.checkToken( "compile" ) || !tok.checkToken( "GLSL" ) )
+						return raiseError( "FX: expected '= compile GLSL'", tok.getLine() );
+					_tmpCode1 = tok.getToken( identifier );
+					if( _tmpCode1 == "" ) return raiseError( "FX: Invalid name", tok.getLine() );
+				}
+				else
+					return raiseError( "FX: unexpected token", tok.getLine() );
+				if( !tok.checkToken( ";" ) ) return raiseError( "FX: expected ';'", tok.getLine() );
+			}
 
-		uniform.id = node1.getAttribute( "id" );
-		uniform.defValues[0] = (float)atof( node1.getAttribute( "a", "0.0" ) );
-		uniform.defValues[1] = (float)atof( node1.getAttribute( "b", "0.0" ) );
-		uniform.defValues[2] = (float)atof( node1.getAttribute( "c", "0.0" ) );
-		uniform.defValues[3] = (float)atof( node1.getAttribute( "d", "0.0" ) );
+			// Handle shaders
+			for( uint32 i = 0; i < _codeSections.size(); ++i )
+			{
+				if( _codeSections[i].getName() == _tmpCode0 ) context.vertCodeIdx = i;
+				if( _codeSections[i].getName() == _tmpCode1 ) context.fragCodeIdx = i;
+			}
+			if( context.vertCodeIdx < 0 )
+				return raiseError( "FX: Vertex shader referenced by context '" + context.id + "' not found" );
+			if( context.fragCodeIdx < 0 )
+				return raiseError( "FX: Pixel shader referenced by context '" + context.id + "' not found" );
 
-		_uniforms.push_back( uniform );
-		
-		node1 = rootNode.getChildNode( "Uniform", ++nodeItr1 );
+			_contexts.push_back( context );
+		}
+		else
+		{
+			return raiseError( "FX: unexpected token", tok.getLine() );
+		}
 	}
 
 	// Automatic texture unit assignment
@@ -546,10 +641,10 @@ bool ShaderResource::parseFXSection( const char *data )
 				}
 			}
 			if( _samplers[i].texUnit < 0 )
-				return raiseError( "Automatic texture unit assignment: No free unit found" );
+				return raiseError( "FX: Too many samplers (not enough texture units available)" );
 		}
 	}
-
+	
 	return true;
 }
 
@@ -587,10 +682,8 @@ bool ShaderResource::load( const char *data, int size )
 			if( sectionNameEnd - sectionNameStart == 2 &&
 			    *sectionNameStart == 'F' && *(sectionNameStart+1) == 'X' )
 			{
-				// Parse FX section
-				_tmpCode1 = "<Shader>";
-				_tmpCode1.append( sectionContentStart, sectionContentEnd );
-				_tmpCode1 += "</Shader>";
+				// FX section
+				_tmpCode1.assign( sectionContentStart, sectionContentEnd );
 			}
 			else
 			{
@@ -670,14 +763,14 @@ void ShaderResource::compileCombination( ShaderContext &context, ShaderCombinati
 		_name.c_str(), context.id.c_str(), sc.combMask );
 	
 	// Unload shader if necessary
-	if( sc.shaderObject != 0 )
+	if( sc.shaderObj != 0 )
 	{
-		Modules::renderer().unloadShader( sc.shaderObject );
-		sc.shaderObject = 0;
+		Modules::renderer().releaseShader( sc.shaderObj );
+		sc.shaderObj = 0;
 	}
 	
 	// Compile shader
-	if( !Modules::renderer().uploadShader( _tmpCode0.c_str(), _tmpCode1.c_str(), sc ) )
+	if( !Modules::renderer().createShaderComb( _tmpCode0.c_str(), _tmpCode1.c_str(), sc ) )
 	{
 		Modules::log().writeError( "Shader resource '%s': Failed to compile shader context '%s' (comb %i)",
 			_name.c_str(), context.id.c_str(), sc.combMask );
@@ -697,10 +790,10 @@ void ShaderResource::compileCombination( ShaderContext &context, ShaderCombinati
 	for( uint32 i = 0; i < _samplers.size(); ++i )
 	{
 		sc.customSamplers.push_back(
-			Modules::renderer().getShaderVar( sc.shaderObject, _samplers[i].id.c_str() ) );
+			Modules::renderer().getShaderVar( sc.shaderObj, _samplers[i].id.c_str() ) );
 		
 		// Set texture unit
-		Modules::renderer().setShaderVar1i( sc.shaderObject, _samplers[i].id.c_str(), _samplers[i].texUnit );
+		Modules::renderer().setShaderVar1i( sc.shaderObj, _samplers[i].id.c_str(), _samplers[i].texUnit );
 	}
 	
 	// Find uniforms in compiled shader
@@ -708,7 +801,7 @@ void ShaderResource::compileCombination( ShaderContext &context, ShaderCombinati
 	for( uint32 i = 0; i < _uniforms.size(); ++i )
 	{
 		sc.customUniforms.push_back(
-			Modules::renderer().getShaderVar( sc.shaderObject, _uniforms[i].id.c_str() ) );
+			Modules::renderer().getShaderVar( sc.shaderObj, _uniforms[i].id.c_str() ) );
 	}
 
 	// Output shader log
@@ -807,4 +900,106 @@ uint32 ShaderResource::calcCombMask( const std::vector< std::string > &flags )
 	}
 	
 	return combMask;
+}
+
+
+int ShaderResource::getElemCount( int elem )
+{
+	switch( elem )
+	{
+	case ShaderResData::ContextElem:
+		return (int)_contexts.size();
+	case ShaderResData::SamplerElem:
+		return (int)_samplers.size();
+	case ShaderResData::UniformElem:
+		return (int)_uniforms.size();
+	default:
+		return Resource::getElemCount( elem );
+	}
+}
+
+
+float ShaderResource::getElemParamF( int elem, int elemIdx, int param, int compIdx )
+{
+	switch( elem )
+	{
+	case ShaderResData::UniformElem:
+		if( (unsigned)elemIdx < _uniforms.size() )
+		{
+			switch( param )
+			{
+			case ShaderResData::UnifDefValueF4:
+				if( (unsigned)compIdx < 4 ) return _uniforms[elemIdx].defValues[compIdx];
+				break;
+			}
+		}
+		break;
+	}
+	
+	return Resource::getElemParamF( elem, elemIdx, param, compIdx );
+}
+
+
+void ShaderResource::setElemParamF( int elem, int elemIdx, int param, int compIdx, float value )
+{
+	switch( elem )
+	{
+	case ShaderResData::UniformElem:
+		if( (unsigned)elemIdx < _uniforms.size() )
+		{	
+			switch( param )
+			{
+			case ShaderResData::UnifDefValueF4:
+				if( (unsigned)compIdx < 4 )
+				{	
+					_uniforms[elemIdx].defValues[compIdx] = value;
+					return;
+				}
+				break;
+			}
+		}
+		break;
+	}
+	
+	Resource::setElemParamF( elem, elemIdx, param, compIdx, value );
+}
+
+
+const char *ShaderResource::getElemParamStr( int elem, int elemIdx, int param )
+{
+	switch( elem )
+	{
+	case ShaderResData::ContextElem:
+		if( (unsigned)elemIdx < _contexts.size() )
+		{
+			switch( param )
+			{
+			case ShaderResData::ContNameStr:
+				return _contexts[elemIdx].id.c_str();
+			}
+		}
+		break;
+	case ShaderResData::SamplerElem:
+		if( (unsigned)elemIdx < _samplers.size() )
+		{
+			switch( param )
+			{
+			case ShaderResData::SampNameStr:
+				return _samplers[elemIdx].id.c_str();
+			}
+		}
+		break;
+	case ShaderResData::UniformElem:
+		if( (unsigned)elemIdx < _uniforms.size() )
+		{
+			switch( param )
+			{
+			case ShaderResData::UnifNameStr:
+				return _uniforms[elemIdx].id.c_str();
+			}
+		}
+		break;
+	}
+	
+	return Resource::getElemParamStr( elem, elemIdx, param );
 }

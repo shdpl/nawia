@@ -70,9 +70,9 @@ QTerrainNode::QTerrainNode(const QDomElement& xmlNode, int row, SceneTreeModel* 
 QTerrainNode::~QTerrainNode()
 {
 	if (m_heightMapID != 0)
-		Horde3D::removeResource(m_heightMapID);
+		h3dRemoveResource(m_heightMapID);
 	if (m_materialID != 0)
-		Horde3D::removeResource(m_materialID);
+		h3dRemoveResource(m_materialID);
 }
 
 
@@ -86,10 +86,10 @@ void QTerrainNode::setMaterial(const Material& material)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("material", material.FileName);
-		Horde3D::removeResource(m_materialID);
-		m_materialID = Horde3D::addResource( ResourceTypes::Material, qPrintable(material.FileName), 0 );		
-		Horde3DUtils::loadResourcesFromDisk(".");
-		Horde3D::setNodeParami(m_hordeID, TerrainNodeParams::MaterialRes, m_materialID);
+		h3dRemoveResource(m_materialID);
+		m_materialID = h3dAddResource( H3DResTypes::Material, qPrintable(material.FileName), 0 );		
+		h3dutLoadResourcesFromDisk(".");
+		h3dSetNodeParamI(m_hordeID, H3DEXTTerrain::MatResI, m_materialID);
 	}
 	else if (material != QTerrainNode::material())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Material", this, "Material", QVariant::fromValue(material), TerrainMaterialID));
@@ -97,7 +97,7 @@ void QTerrainNode::setMaterial(const Material& material)
 
 Texture QTerrainNode::heightMap() const
 {
-	return Texture(m_xmlNode.attribute("heightmap"), ResourceTypes::Texture);
+	return Texture(m_xmlNode.attribute("heightmap"));
 }
 
 void QTerrainNode::setHeightMap(const Texture& heightMap)
@@ -105,10 +105,10 @@ void QTerrainNode::setHeightMap(const Texture& heightMap)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("heightmap", heightMap.FileName);
-		Horde3D::removeResource(m_heightMapID);
-		m_heightMapID = Horde3D::addResource( ResourceTypes::Texture, qPrintable(heightMap.FileName), 0 );		
-		Horde3DUtils::loadResourcesFromDisk(".");
-		Horde3D::setNodeParami(m_hordeID, TerrainNodeParams::HeightMapRes, m_heightMapID);
+		h3dRemoveResource(m_heightMapID);
+		m_heightMapID = h3dAddResource( H3DResTypes::Texture, qPrintable(heightMap.FileName), 0 );		
+		h3dutLoadResourcesFromDisk(".");
+		h3dSetNodeParamI(m_hordeID, H3DEXTTerrain::HeightTexResI, m_heightMapID);
 	}
 	else if (heightMap != QTerrainNode::heightMap())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set HeightMap", this, "HeightMap", QVariant::fromValue(heightMap), TerrainHeightMapID));	
@@ -119,7 +119,7 @@ int QTerrainNode::blockSize() const
 	if (m_xmlNode.hasAttribute("blocksize"))
 		return m_xmlNode.attribute("blocksize").toInt();
 	else
-		return Horde3D::getNodeParami(m_hordeID, TerrainNodeParams::BlockSize);
+		return h3dGetNodeParamI(m_hordeID, H3DEXTTerrain::BlockSizeI );
 }
 
 void QTerrainNode::setBlockSize(const int blockSize)
@@ -127,7 +127,7 @@ void QTerrainNode::setBlockSize(const int blockSize)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("blocksize", blockSize);
-		Horde3D::setNodeParami(m_hordeID, TerrainNodeParams::BlockSize, blockSize);
+		h3dSetNodeParamI(m_hordeID, H3DEXTTerrain::BlockSizeI, blockSize);
 	}
 	else if (blockSize != QTerrainNode::blockSize())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set BlockSize", this, "Blocksize", QVariant::fromValue(blockSize), TerrainBlockSizeID));	
@@ -138,7 +138,7 @@ float QTerrainNode::meshQuality() const
 	if (m_xmlNode.hasAttribute("meshQuality"))
 		return m_xmlNode.attribute("meshQuality").toDouble();
 	else
-		return Horde3D::getNodeParamf(m_hordeID, TerrainNodeParams::MeshQuality);
+		return h3dGetNodeParamF(m_hordeID, H3DEXTTerrain::MeshQualityF, 0);
 }
 
 void QTerrainNode::setMeshQuality(const float quality)
@@ -146,7 +146,7 @@ void QTerrainNode::setMeshQuality(const float quality)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("meshQuality", quality);
-		Horde3D::setNodeParamf(m_hordeID, TerrainNodeParams::MeshQuality, quality);
+		h3dSetNodeParamF(m_hordeID, H3DEXTTerrain::MeshQualityF, 0, quality);
 	}
 	else if (quality != QTerrainNode::meshQuality())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Mesh Quality", this, "Mesh_Quality", QVariant::fromValue(quality), TerrainMeshQualityID));	
@@ -157,7 +157,7 @@ float QTerrainNode::skirtHeight() const
 	if (m_xmlNode.hasAttribute("skirtHeight"))
 		return m_xmlNode.attribute("skirtHeight").toDouble();
 	else
-		return Horde3D::getNodeParamf(m_hordeID, TerrainNodeParams::SkirtHeight);
+		return h3dGetNodeParamF(m_hordeID, H3DEXTTerrain::SkirtHeightF, 0);
 }
 
 void QTerrainNode::setSkirtHeight(const float height)
@@ -165,7 +165,7 @@ void QTerrainNode::setSkirtHeight(const float height)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("skirtHeight", height);
-		Horde3D::setNodeParamf(m_hordeID, TerrainNodeParams::SkirtHeight, height);
+		h3dSetNodeParamF(m_hordeID, H3DEXTTerrain::SkirtHeightF, height, 0);
 	}
 	else if (height!= QTerrainNode::skirtHeight())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Skirt Height", this, "Skirt_Height", QVariant::fromValue(height), TerrainSkirtHeightID));	
@@ -173,32 +173,32 @@ void QTerrainNode::setSkirtHeight(const float height)
 
 void QTerrainNode::addRepresentation()
 {
-	m_heightMapID = Horde3D::addResource(
-		ResourceTypes::Texture, 
+	m_heightMapID = h3dAddResource(
+		H3DResTypes::Texture, 
 		qPrintable(m_xmlNode.attribute("heightmap")), 
-		ResourceFlags::NoTexCompression | ResourceFlags::NoTexMipmaps );
-	m_materialID = Horde3D::addResource(ResourceTypes::Material, qPrintable(m_xmlNode.attribute("material")), 0);
+		H3DResFlags::NoTexCompression | H3DResFlags::NoTexMipmaps );
+	m_materialID = h3dAddResource(H3DResTypes::Material, qPrintable(m_xmlNode.attribute("material")), 0);
 	// Load resource immediately since a later call to loadResourceFromDisk results in a bad behaviour of the Horde3D engine
-	QDir textureDir(Horde3DUtils::getResourcePath(ResourceTypes::Texture));
+	QDir textureDir( QDir::current() );
 	QFile file(textureDir.absoluteFilePath(m_xmlNode.attribute("heightmap")));
 	if (!file.open(QIODevice::ReadOnly))
 		qWarning("Error opening resource %s", qPrintable(m_xmlNode.attribute("heightmap")));
 	
 	// Stupid return value, if false it can also be the case that the resource was loaded before instead of that their was an error
-	Horde3D::loadResource(m_heightMapID, file.readAll().constData(), file.size());
+	h3dLoadResource(m_heightMapID, file.readAll().constData(), file.size());
 	file.close();
 
 	QSceneNode* parentNode = static_cast<QSceneNode*>(parent());
-	unsigned int rootID = parentNode ? parentNode->hordeId() : RootNode;
+	unsigned int rootID = parentNode ? parentNode->hordeId() : H3DRootNode;
 
-	m_hordeID = Horde3DTerrain::addTerrainNode(rootID, qPrintable(m_xmlNode.attribute("name", "ATTENTION No Node Name")), m_heightMapID, m_materialID);
-	Horde3D::setNodeParami(m_hordeID, TerrainNodeParams::BlockSize, blockSize());
-	Horde3D::setNodeParamf(m_hordeID, TerrainNodeParams::MeshQuality, meshQuality());
-	Horde3D::setNodeParamf(m_hordeID, TerrainNodeParams::SkirtHeight, skirtHeight());
+	m_hordeID = h3dextAddTerrainNode(rootID, qPrintable(m_xmlNode.attribute("name", "ATTENTION No Node Name")), m_heightMapID, m_materialID);
+	h3dSetNodeParamI(m_hordeID, H3DEXTTerrain::BlockSizeI, blockSize());
+	h3dSetNodeParamF(m_hordeID, H3DEXTTerrain::MeshQualityF, 0, meshQuality());
+	h3dSetNodeParamF(m_hordeID, H3DEXTTerrain::SkirtHeightF, 0, skirtHeight());
 
 	float x, y, z, rx, ry, rz, sx, sy, sz;
 	getTransformation(x,y,z,rx,ry,rz,sx,sy,sz);
-	Horde3D::setNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
+	h3dSetNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
 
 	// Attachment		
 	QDomElement attachment = m_xmlNode.firstChildElement("Attachment");	

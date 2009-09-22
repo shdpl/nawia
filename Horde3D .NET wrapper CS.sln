@@ -1,12 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Horde3D .NET wrapper", "Horde3D\Bindings\C#\Source\Horde3D .NET\Horde3D .NET wrapper.csproj", "{A6EAA3A9-0194-4BCE-B460-8D6808974463}"
-	ProjectSection(ProjectDependencies) = postProject
-		{1D558D7D-DA57-4908-BCFC-902054FE6B63} = {1D558D7D-DA57-4908-BCFC-902054FE6B63}
-		{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D} = {AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Horde3D Engine", "Horde3D\Source\Horde3DEngine\Horde3D Engine.vcproj", "{1D558D7D-DA57-4908-BCFC-902054FE6B63}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6} = {7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}
@@ -39,6 +33,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbis", "Extensions\Sound\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbisfile", "Extensions\Sound\Dependencies\Source\vorbisfile\vorbisfile.vcproj", "{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Horde3D.NET.dll", "Horde3D\Bindings\C#\Source\Horde3D .NET\Horde3D.NET.dll.csproj", "{ABA10827-537E-4260-98A2-8FFDAF188588}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1D558D7D-DA57-4908-BCFC-902054FE6B63} = {1D558D7D-DA57-4908-BCFC-902054FE6B63}
+		{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D} = {AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,20 +51,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Debug|Win32.ActiveCfg = Debug|x86
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Debug|x86.ActiveCfg = Debug|x86
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Debug|x86.Build.0 = Debug|x86
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Release|Mixed Platforms.Build.0 = Release|x86
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Release|Win32.ActiveCfg = Release|x86
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Release|x86.ActiveCfg = Release|x86
-		{A6EAA3A9-0194-4BCE-B460-8D6808974463}.Release|x86.Build.0 = Release|x86
 		{1D558D7D-DA57-4908-BCFC-902054FE6B63}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{1D558D7D-DA57-4908-BCFC-902054FE6B63}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{1D558D7D-DA57-4908-BCFC-902054FE6B63}.Debug|Mixed Platforms.Build.0 = Debug|Win32
@@ -179,6 +165,18 @@ Global
 		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Release|Win32.ActiveCfg = Release|Win32
 		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Release|Win32.Build.0 = Release|Win32
 		{CEBDE98B-A6AA-46E6-BC79-FAAF823DB9EC}.Release|x86.ActiveCfg = Release|Win32
+		{ABA10827-537E-4260-98A2-8FFDAF188588}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABA10827-537E-4260-98A2-8FFDAF188588}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABA10827-537E-4260-98A2-8FFDAF188588}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{ABA10827-537E-4260-98A2-8FFDAF188588}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{ABA10827-537E-4260-98A2-8FFDAF188588}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{ABA10827-537E-4260-98A2-8FFDAF188588}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ABA10827-537E-4260-98A2-8FFDAF188588}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABA10827-537E-4260-98A2-8FFDAF188588}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABA10827-537E-4260-98A2-8FFDAF188588}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ABA10827-537E-4260-98A2-8FFDAF188588}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{ABA10827-537E-4260-98A2-8FFDAF188588}.Release|Win32.ActiveCfg = Release|Any CPU
+		{ABA10827-537E-4260-98A2-8FFDAF188588}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -160,138 +148,137 @@ bool ParticleEffectResource::load( const char *data, int size )
 }
 
 
-float ParticleEffectResource::getParamf( int param )
+int ParticleEffectResource::getElemCount( int elem )
 {
-	switch( param )
+	switch( elem )
 	{
-	case ParticleEffectResParams::LifeMin:
-		return _lifeMin;
-	case ParticleEffectResParams::LifeMax:
-		return _lifeMax;
-	case ParticleEffectResParams::MoveVelMin:
-		return _moveVel.startMin;
-	case ParticleEffectResParams::MoveVelMax:
-		return _moveVel.startMax;
-	case ParticleEffectResParams::MoveVelEndRate:
-		return _moveVel.endRate;
-	case ParticleEffectResParams::RotVelMin:
-		return _moveVel.startMin;
-	case ParticleEffectResParams::RotVelMax:
-		return _moveVel.startMax;
-	case ParticleEffectResParams::RotVelEndRate:
-		return _moveVel.endRate;
-	case ParticleEffectResParams::SizeMin:
-		return _size.startMin;
-	case ParticleEffectResParams::SizeMax:
-		return _size.startMax;
-	case ParticleEffectResParams::SizeEndRate:
-		return _size.endRate;
-	case ParticleEffectResParams::Col_R_Min:
-		return _colR.startMin;
-	case ParticleEffectResParams::Col_R_Max:
-		return _colR.startMax;
-	case ParticleEffectResParams::Col_R_EndRate:
-		return _colR.endRate;
-	case ParticleEffectResParams::Col_G_Min:
-		return _colG.startMin;
-	case ParticleEffectResParams::Col_G_Max:
-		return _colG.startMax;
-	case ParticleEffectResParams::Col_G_EndRate:
-		return _colG.endRate;
-	case ParticleEffectResParams::Col_B_Min:
-		return _colB.startMin;
-	case ParticleEffectResParams::Col_B_Max:
-		return _colB.startMax;
-	case ParticleEffectResParams::Col_B_EndRate:
-		return _colB.endRate;
-	case ParticleEffectResParams::Col_A_Min:
-		return _colA.startMin;
-	case ParticleEffectResParams::Col_A_Max:
-		return _colA.startMax;
-	case ParticleEffectResParams::Col_A_EndRate:
-		return _colA.endRate;
+	case ParticleEffectResData::ParticleElem:
+	case ParticleEffectResData::ChanMoveVelElem:
+	case ParticleEffectResData::ChanRotVelElem:
+	case ParticleEffectResData::ChanSizeElem:
+	case ParticleEffectResData::ChanColRElem:
+	case ParticleEffectResData::ChanColGElem:
+	case ParticleEffectResData::ChanColBElem:
+	case ParticleEffectResData::ChanColAElem:
+		return 1;
 	default:
-		return Resource::getParamf( param );
+		return Resource::getElemCount( elem );
 	}
 }
 
 
-bool ParticleEffectResource::setParamf( int param, float value )
+float ParticleEffectResource::getElemParamF( int elem, int elemIdx, int param, int compIdx )
 {
-	switch( param )
+	ParticleChannel *chan = 0x0;
+	
+	switch( elem )
 	{
-	case ParticleEffectResParams::LifeMin:
-		_lifeMin = value;
-		return true;
-	case ParticleEffectResParams::LifeMax:
-		_lifeMax = value;
-		return true;
-	case ParticleEffectResParams::MoveVelMin:
-		_moveVel.startMin = value;
-		return true;
-	case ParticleEffectResParams::MoveVelMax:
-		_moveVel.startMax = value;
-		return true;
-	case ParticleEffectResParams::MoveVelEndRate:
-		_moveVel.endRate = value;
-		return true;
-	case ParticleEffectResParams::RotVelMin:
-		_rotVel.startMin = value;
-		return true;
-	case ParticleEffectResParams::RotVelMax:
-		_rotVel.startMax = value;
-		return true;
-	case ParticleEffectResParams::RotVelEndRate:
-		_rotVel.endRate = value;
-		return true;
-	case ParticleEffectResParams::SizeMin:
-		_size.startMin = value;
-		return true;
-	case ParticleEffectResParams::SizeMax:
-		_size.startMax = value;
-		return true;
-	case ParticleEffectResParams::SizeEndRate:
-		_size.endRate = value;
-		return true;
-	case ParticleEffectResParams::Col_R_Min:
-		_colR.startMin = value;
-		return true;
-	case ParticleEffectResParams::Col_R_Max:
-		_colR.startMax = value;
-		return true;
-	case ParticleEffectResParams::Col_R_EndRate:
-		_colR.endRate = value;
-		return true;
-	case ParticleEffectResParams::Col_G_Min:
-		_colG.startMin = value;
-		return true;
-	case ParticleEffectResParams::Col_G_Max:
-		_colG.startMax = value;
-		return true;
-	case ParticleEffectResParams::Col_G_EndRate:
-		_colG.endRate = value;
-		return true;
-	case ParticleEffectResParams::Col_B_Min:
-		_colB.startMin = value;
-		return true;
-	case ParticleEffectResParams::Col_B_Max:
-		_colB.startMax = value;
-		return true;
-	case ParticleEffectResParams::Col_B_EndRate:
-		_colB.endRate = value;
-		return true;
-	case ParticleEffectResParams::Col_A_Min:
-		_colA.startMin = value;
-		return true;
-	case ParticleEffectResParams::Col_A_Max:
-		_colA.startMax = value;
-		return true;
-	case ParticleEffectResParams::Col_A_EndRate:
-		_colA.endRate = value;
-		return true;
-	default:
-		return Resource::setParamf( param, value );
+	case ParticleEffectResData::ParticleElem:
+		switch( param )
+		{
+		case ParticleEffectResData::PartLifeMinF:
+			return _lifeMin;
+		case ParticleEffectResData::PartLifeMaxF:
+			return _lifeMax;
+		}
+		break;
+	case ParticleEffectResData::ChanMoveVelElem:
+		chan = &_moveVel;
+		break;
+	case ParticleEffectResData::ChanRotVelElem:
+		chan = &_rotVel;
+		break;
+	case ParticleEffectResData::ChanSizeElem:
+		chan = &_size;
+		break;
+	case ParticleEffectResData::ChanColRElem:
+		chan = &_colR;
+		break;
+	case ParticleEffectResData::ChanColGElem:
+		chan = &_colG;
+		break;
+	case ParticleEffectResData::ChanColBElem:
+		chan = &_colB;
+		break;
+	case ParticleEffectResData::ChanColAElem:
+		chan = &_colA;
+		break;
 	}
+
+	if( chan != 0x0 )
+	{
+		switch( param )
+		{
+		case ParticleEffectResData::ChanStartMinF:
+			return chan->startMin;
+		case ParticleEffectResData::ChanStartMaxF:
+			return chan->startMax;
+		case ParticleEffectResData::ChanEndRateF:
+			return chan->endRate;
+		}
+	}
+
+	return Resource::getElemParamF( elem, elemIdx, param, compIdx );
+}
+
+
+void ParticleEffectResource::setElemParamF( int elem, int elemIdx, int param, int compIdx, float value )
+{
+	ParticleChannel *chan = 0x0;
+	
+	switch( elem )
+	{
+	case ParticleEffectResData::ParticleElem:
+		switch( param )
+		{
+		case ParticleEffectResData::PartLifeMinF:
+			_lifeMin = value;
+			return;
+		case ParticleEffectResData::PartLifeMaxF:
+			_lifeMax = value;
+			return;
+		}
+		break;
+	case ParticleEffectResData::ChanMoveVelElem:
+		chan = &_moveVel;
+		break;
+	case ParticleEffectResData::ChanRotVelElem:
+		chan = &_rotVel;
+		break;
+	case ParticleEffectResData::ChanSizeElem:
+		chan = &_size;
+		break;
+	case ParticleEffectResData::ChanColRElem:
+		chan = &_colR;
+		break;
+	case ParticleEffectResData::ChanColGElem:
+		chan = &_colG;
+		break;
+	case ParticleEffectResData::ChanColBElem:
+		chan = &_colB;
+		break;
+	case ParticleEffectResData::ChanColAElem:
+		chan = &_colA;
+		break;
+	}
+
+	if( chan != 0x0 )
+	{
+		switch( param )
+		{
+		case ParticleEffectResData::ChanStartMinF:
+			chan->startMin = value;
+			return;
+		case ParticleEffectResData::ChanStartMaxF:
+			chan->startMax = value;
+			return;
+		case ParticleEffectResData::ChanEndRateF:
+			chan->endRate = value;
+			return;
+		}
+	}
+
+	Resource::setElemParamF( elem, elemIdx, param, compIdx, value );
 }
 
 
@@ -329,7 +316,7 @@ EmitterNode::~EmitterNode()
 	for( uint32 i = 0; i < _occQueries.size(); ++i )
 	{
 		if( _occQueries[i] != 0 )
-			Modules::renderer().destroyOccQuery( _occQueries[i] );
+			Modules::renderer().releaseQuery( _occQueries[i] );
 	}
 	
 	delete[] _particles;
@@ -409,7 +396,7 @@ void EmitterNode::setMaxParticleCount( uint32 maxParticleCount )
 	// Initialize particles
 	_particleCount = maxParticleCount;
 	_particles = new ParticleData[_particleCount];
-	_parPositions = new Vec3f[_particleCount];
+	_parPositions = new float[_particleCount * 3];
 	_parSizesANDRotations = new float[_particleCount * 2];
 	_parColors = new float[_particleCount * 4];
 	for( uint32 i = 0; i < _particleCount; ++i )
@@ -417,7 +404,9 @@ void EmitterNode::setMaxParticleCount( uint32 maxParticleCount )
 		_particles[i].life = 0;
 		_particles[i].respawnCounter = 0;
 		
-		_parPositions[i] = Vec3f( 0, 0, 0 );
+		_parPositions[i*3+0] = 0.0f;
+		_parPositions[i*3+1] = 0.0f;
+		_parPositions[i*3+2] = 0.0f;
 		_parSizesANDRotations[i*2+0] = 0.0f;
 		_parSizesANDRotations[i*2+1] = 0.0f;
 		_parColors[i*4+0] = 0.0f;
@@ -428,118 +417,106 @@ void EmitterNode::setMaxParticleCount( uint32 maxParticleCount )
 }
 
 
-float EmitterNode::getParamf( int param )
+int EmitterNode::getParamI( int param )
 {
 	switch( param )
 	{
-	case EmitterNodeParams::Delay:
-		return _delay;
-	case EmitterNodeParams::EmissionRate:
-		return _emissionRate;
-	case EmitterNodeParams::SpreadAngle:
-		return _spreadAngle;
-	case EmitterNodeParams::ForceX:
-		return _force.x;
-	case EmitterNodeParams::ForceY:
-		return _force.y;
-	case EmitterNodeParams::ForceZ:
-		return _force.z;
-	default:
-		return SceneNode::getParamf( param );
-	}
-}
-
-
-bool EmitterNode::setParamf( int param, float value )
-{
-	switch( param )
-	{
-	case EmitterNodeParams::Delay:
-		_delay = value;
-		return true;
-	case EmitterNodeParams::EmissionRate:
-		_emissionRate = value;
-		return true;
-	case EmitterNodeParams::SpreadAngle:
-		_spreadAngle = value;
-		return true;
-	case EmitterNodeParams::ForceX:
-		_force.x = value;
-		return true;
-	case EmitterNodeParams::ForceY:
-		_force.y = value;
-		return true;
-	case EmitterNodeParams::ForceZ:
-		_force.z = value;
-		return true;
-	default:
-		return SceneNode::setParamf( param, value );
-	}
-}
-
-
-int EmitterNode::getParami( int param )
-{
-	switch( param )
-	{
-	case EmitterNodeParams::MaterialRes:
+	case EmitterNodeParams::MatResI:
 		if( _materialRes != 0x0 ) return _materialRes->getHandle();
 		else return 0;
-	case EmitterNodeParams::ParticleEffectRes:
+	case EmitterNodeParams::PartEffResI:
 		if( _effectRes != 0x0 ) return _effectRes->getHandle();
 		else return 0;
-	case EmitterNodeParams::MaxCount:
+	case EmitterNodeParams::MaxCountI:
 		return (int)_particleCount;
-	case EmitterNodeParams::RespawnCount:
+	case EmitterNodeParams::RespawnCountI:
 		return _respawnCount;
-	default:
-		return SceneNode::getParami( param );
 	}
+
+	return SceneNode::getParamI( param );
 }
 
 
-bool EmitterNode::setParami( int param, int value )
+void EmitterNode::setParamI( int param, int value )
 {
 	Resource *res;
 	
 	switch( param )
 	{
-	case EmitterNodeParams::MaterialRes:
+	case EmitterNodeParams::MatResI:
 		res = Modules::resMan().resolveResHandle( value );
-		if( res == 0x0 || res->getType() != ResourceTypes::Material )
-		{	
-			Modules::log().writeDebugInfo( "Invalid Material resource for Emitter node %i", _handle );
-			return false;
-		}
-		_materialRes = (MaterialResource *)res;
-		return true;
-	case EmitterNodeParams::ParticleEffectRes:
+		if( res != 0x0 && res->getType() == ResourceTypes::Material )
+			_materialRes = (MaterialResource *)res;
+		else
+			Modules::setError( "Invalid handle in h3dSetNodeParamI for H3DEmitter::MatResI" );
+		return;
+	case EmitterNodeParams::PartEffResI:
 		res = Modules::resMan().resolveResHandle( value );
-		if( res == 0x0 || res->getType() != ResourceTypes::ParticleEffect )
-		{	
-			Modules::log().writeDebugInfo( "Invalid ParticleEffect resource for Emitter node %i", _handle );
-			return false;
-		}
-		_effectRes = (ParticleEffectResource *)res;
-		return true;
-	case EmitterNodeParams::MaxCount:
+		if( res != 0x0 && res->getType() == ResourceTypes::ParticleEffect )
+			_effectRes = (ParticleEffectResource *)res;
+		else
+			Modules::setError( "Invalid handle in h3dSetNodeParamI for H3DLight::PartEffResI" );
+		return;
+	case EmitterNodeParams::MaxCountI:
 		setMaxParticleCount( (uint32)value );
-		return true;
-	case EmitterNodeParams::RespawnCount:
+		return;
+	case EmitterNodeParams::RespawnCountI:
 		_respawnCount = value;
-		return true;
-	default:
-		return SceneNode::setParami( param, value );
+		return;
 	}
+
+	SceneNode::setParamI( param, value );
+}
+
+
+float EmitterNode::getParamF( int param, int compIdx )
+{
+	switch( param )
+	{
+	case EmitterNodeParams::DelayF:
+		return _delay;
+	case EmitterNodeParams::EmissionRateF:
+		return _emissionRate;
+	case EmitterNodeParams::SpreadAngleF:
+		return _spreadAngle;
+	case EmitterNodeParams::ForceF3:
+		if( (unsigned)compIdx < 3 ) return _force[compIdx];
+		break;
+	}
+
+	return SceneNode::getParamF( param, compIdx );
+}
+
+
+void EmitterNode::setParamF( int param, int compIdx, float value )
+{
+	switch( param )
+	{
+	case EmitterNodeParams::DelayF:
+		_delay = value;
+		return;
+	case EmitterNodeParams::EmissionRateF:
+		_emissionRate = value;
+		return;
+	case EmitterNodeParams::SpreadAngleF:
+		_spreadAngle = value;
+		return;
+	case EmitterNodeParams::ForceF3:
+		if( (unsigned)compIdx < 3 )
+		{
+			_force[compIdx] = value;
+			return;
+		}
+		break;
+	}
+
+	SceneNode::setParamF( param, compIdx, value );
 }
 
 
 float randomF( float min, float max )
 {
-	int range = ftoi_r( max * 100.0f ) - ftoi_r( min * 100.0f );
-	
-	if( range == 0 ) return min;
-	else return min + (rand() % range) / 100.0f;
+	return (rand() / (float)RAND_MAX) * (max - min) + min;
 }
 
 
@@ -608,7 +585,9 @@ void EmitterNode::onPostUpdate()
 				p.a0 = randomF( _effectRes->_colA.startMin, _effectRes->_colA.startMax );
 				
 				// Update arrays
-				_parPositions[i] = Vec3f( _absTrans.c[3][0], _absTrans.c[3][1], _absTrans.c[3][2] );
+				_parPositions[i * 3 + 0] = _absTrans.c[3][0];
+				_parPositions[i * 3 + 1] = _absTrans.c[3][1];
+				_parPositions[i * 3 + 2] = _absTrans.c[3][2];
 				_parSizesANDRotations[i * 2 + 0] = p.size0;
 				_parSizesANDRotations[i * 2 + 1] = randomF( 0, 360 );
 				_parColors[i * 4 + 0] = p.r0;
@@ -637,8 +616,9 @@ void EmitterNode::onPostUpdate()
 			_parColors[i * 4 + 3] = p.a0 * (1.0f + (_effectRes->_colA.endRate - 1.0f) * fac);
 
 			// Update particle position and rotation
-			_parPositions[i] += p.dir * moveVel * _timeDelta;
-			_parPositions[i] += _force * _timeDelta;
+			_parPositions[i * 3 + 0] += (p.dir.x * moveVel + _force.x) * _timeDelta;
+			_parPositions[i * 3 + 1] += (p.dir.y * moveVel + _force.y) * _timeDelta;
+			_parPositions[i * 3 + 2] += (p.dir.z * moveVel + _force.z) * _timeDelta;
 			_parSizesANDRotations[i * 2+ 1] +=  rotVel * _timeDelta;
 
 			// Decrease lifetime
@@ -652,7 +632,7 @@ void EmitterNode::onPostUpdate()
 		}
 
 		// Update bounding box
-		Vec3f &vertPos = _parPositions[i];
+		Vec3f vertPos( _parPositions[i*3+0], _parPositions[i*3+1], _parPositions[i*3+2] );
 		if( vertPos.x < bBMin.x ) bBMin.x = vertPos.x;
 		if( vertPos.y < bBMin.y ) bBMin.y = vertPos.y;
 		if( vertPos.z < bBMin.z ) bBMin.z = vertPos.z;
@@ -662,12 +642,12 @@ void EmitterNode::onPostUpdate()
 	}
 
 	// Avoid zero box dimensions for planes
-	if( bBMax.x - bBMin.x == 0 ) bBMax.x += 0.1f;
-	if( bBMax.y - bBMin.y == 0 ) bBMax.y += 0.1f;
-	if( bBMax.z - bBMin.z == 0 ) bBMax.z += 0.1f;
+	if( bBMax.x - bBMin.x == 0 ) bBMax.x += Math::Epsilon;
+	if( bBMax.y - bBMin.y == 0 ) bBMax.y += Math::Epsilon;
+	if( bBMax.z - bBMin.z == 0 ) bBMax.z += Math::Epsilon;
 	
-	_bBox.getMinCoords() = bBMin;
-	_bBox.getMaxCoords() = bBMax;
+	_bBox.min = bBMin;
+	_bBox.max = bBMax;
 
 	_timeDelta = 0;
 }

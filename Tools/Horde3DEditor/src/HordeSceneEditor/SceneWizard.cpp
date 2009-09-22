@@ -95,8 +95,8 @@ namespace SceneWizard
 			sceneFileXml.documentElement().appendChild(sceneFileXml.createElement("ActiveCamera")).toElement().setAttribute("name", wizard->field("cameraname").toString());
 			// create basic scene structure
 			QDomDocument sceneGraphXml("HordeSceneGraph");
-			QDomElement rootNode = sceneGraphXml.createElement("Group");
-			rootNode.setAttribute("name", QFileInfo(sceneFile->sceneGraphFile()).baseName());
+			QDomElement H3DRootNode = sceneGraphXml.createElement("Group");
+			H3DRootNode.setAttribute("name", QFileInfo(sceneFile->sceneGraphFile()).baseName());
 			QDomElement cameraNode = sceneGraphXml.createElement("Camera");
 			cameraNode.setAttribute("name", wizard->field("cameraname").toString());
 			cameraNode.setAttribute("pipeline", wizard->field("pipeline").toString());
@@ -127,7 +127,7 @@ namespace SceneWizard
 			cameraNode.setAttribute("topPlane", top);
 			cameraNode.setAttribute("nearPlane", near);
 			cameraNode.setAttribute("farPlane", far);
-			rootNode.appendChild(cameraNode);
+			H3DRootNode.appendChild(cameraNode);
 			QDomElement lightNode = sceneGraphXml.createElement("Light");			
 			lightNode.setAttribute("name", wizard->field("lightname").toString());
 			lightNode.setAttribute("radius", wizard->field("radius").toDouble());
@@ -142,8 +142,8 @@ namespace SceneWizard
 			lightNode.setAttribute("lightingContext", wizard->field("lightingcontext").toString());
 			if ( !wizard->field("material").toString().isEmpty() ) // Only create material attribute if necessary	
 				lightNode.setAttribute("material", wizard->field("material").toString());
-			rootNode.appendChild(lightNode);
-			sceneGraphXml.appendChild(rootNode);
+			H3DRootNode.appendChild(lightNode);
+			sceneGraphXml.appendChild(H3DRootNode);
 			QFile tempFile(sceneFile->sceneGraphFile());
 			if (!tempFile.open(QIODevice::WriteOnly))
 				QMessageBox::warning(0, QString("Error"), QString("File couldn't be opened for writing: ")+sceneFile->sceneGraphFile());

@@ -47,9 +47,9 @@ m_parentNode(parentNode), m_sceneNodeFactory(factory)
 		QSceneNode* root = static_cast<QSceneNode*>(m_rootItem);
 		float x, y, z, rx, ry, rz, sx, sy, sz;
 		parentNode->getTransformation(x,y,z,rx,ry,rz,sx,sy,sz);
-		Horde3D::setNodeTransform(root->hordeId(), x, y, z, rx, ry, rz, sx, sy, sz);
+		h3dSetNodeTransform(root->hordeId(), x, y, z, rx, ry, rz, sx, sy, sz);
 		// Set node name
-		Horde3D::setNodeParamstr(root->hordeId(), SceneNodeParams::Name, qPrintable(parentNode->name()));
+		h3dSetNodeParamStr(root->hordeId(), H3DNodeParams::NameStr, qPrintable(parentNode->name()));
 
 		// Populate tree
 		m_rootItem->childs();

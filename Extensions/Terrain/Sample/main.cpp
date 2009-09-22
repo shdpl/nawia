@@ -8,24 +8,26 @@
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
-// This sample source file is not covered by the LGPL as the rest of the SDK
-// and may be used without any restrictions
+// This sample source file is not covered by the EPL as the rest of the SDK
+// and may be used without any restrictions. However, the EPL's disclaimer of
+// warranty and liability shall be in effect for this file.
 //
 // *************************************************************************************************
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <iostream>
 #include <cstdlib>
+#include <cstring>
 #include "glfw.h"
 #include "app.h"
-
-using namespace std;
 
 // Configuration
 const char *caption = "Terrain - Horde3D Extension Sample";
 const int appWidth = 800;
 const int appHeight = 600;
 static bool fullScreen = false;
-
+static int benchmarkLength = 600;
 
 bool setupWindow( int, int, bool );
 static bool running;
@@ -33,21 +35,26 @@ static double t0;
 static int mx0, my0;
 static Application *app;
 
-string generatePath(char p[], const string& file) {
+
+std::string generatePath( char p[], const std::string &file )
+{
 #ifdef __APPLE__
-   string s(p);
-   for (int i = 0; i < 4; i++)
-      s = s.substr(0, s.rfind("/"));   
-   return s + "/" + file;
+	std::string s(p);
+	for (int i = 0; i < 4; i++)
+		s = s.substr( 0, s.rfind( "/" ) );
+	return s + "/../" + file;
 #else
-    const string s( p );
-    if ( s.find("/") != string::npos) {
-        return s.substr( 0, s.rfind( "/" ) ) + "/" + file;
-    } else if ( s.find("\\") != string::npos ) {
-        return s.substr( 0, s.rfind( "\\" ) ) + "\\" + file;
-    } else {
-        return file;
-    }
+	const std::string s( p );
+	if( s.find( "/" ) != std::string::npos )
+	{
+		return s.substr( 0, s.rfind( "/" ) ) + "/" + file;
+	}
+	else if( s.find( "\\" ) != std::string::npos )
+	{
+		return s.substr( 0, s.rfind( "\\" ) ) + "\\" + file;
+	}
+	else
+		return file;
 #endif
 }
 
@@ -158,17 +165,25 @@ bool setupWindow( int width, int height, bool fullscreen )
 	return true;
 }
 
+
 int main( int argc, char** argv )
 {
-   
 	// Initialize GLFW
 	glfwInit();
 	if( !setupWindow( appWidth, appHeight, fullScreen ) ) return -1;
+
+	// Check if benchmark mode is requested
+	bool benchmark = false;
+	if( argc > 1 && strcmp( argv[1], "-bm" ) == 0 )
+	{	
+		benchmark = true;
+		glfwDisable( GLFW_AUTO_POLL_EVENTS );
+	}
 	
-	// Initalize application and engine
+	// Initialize application and engine
 	app = new Application( 
 		generatePath( argv[0], "../Content" ) + "|" + 
-		generatePath(argv[0], "../../../Extensions/Terrain/Sample/Content") );
+		generatePath( argv[0], "../../../Extensions/Terrain/Sample/Content" ) );
 
 	if ( !app->init() )
 	{
@@ -194,10 +209,10 @@ int main( int argc, char** argv )
 
 	// Game loop
 	while( running )
-	{
+	{	
 		// Calc FPS
 		++frames;
-		if( frames >= 3 )
+		if( !benchmark && frames >= 3 )
 		{
 			double t = glfwGetTime();
 			fps = frames / (float)(t - t0);
@@ -206,12 +221,26 @@ int main( int argc, char** argv )
 		}
 
 		// Render
-		app->mainLoop( fps );
+		app->mainLoop( benchmark ? 60 : fps );
 		glfwSwapBuffers();
+
+		if( benchmark && frames == benchmarkLength ) break;
 	}
 
 	glfwEnable( GLFW_MOUSE_CURSOR );
 
+	// Show benchmark results
+	if( benchmark )
+	{	
+		double avgFPS = benchmarkLength / (glfwGetTime() - t0);
+		char title[256];
+		sprintf( title, "Average FPS: %.2f", avgFPS );
+		glfwCloseWindow();
+		glfwOpenWindow( 800, 16, 8, 8, 8, 8, 24, 8, GLFW_WINDOW );
+		glfwSetWindowTitle( title );
+		glfwSleep( 5 );
+	}
+	
 	// Quit
 	app->release();
 	delete app;

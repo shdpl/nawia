@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -37,7 +25,7 @@ LightNode::LightNode( const LightNodeTpl &lightTpl ) :
 	_lightingContext = lightTpl.lightingContext;
 	_shadowContext = lightTpl.shadowContext;
 	_radius = lightTpl.radius; _fov = lightTpl.fov;
-	_diffCol_R = lightTpl.col_R; _diffCol_G = lightTpl.col_G; _diffCol_B =lightTpl.col_B;
+	_diffuseCol = Vec3f( lightTpl.col_R, lightTpl.col_G, lightTpl.col_B );
 	_shadowMapCount = lightTpl.shadowMapCount;
 	_shadowSplitLambda = lightTpl.shadowSplitLambda;
 	_shadowMapBias = lightTpl.shadowMapBias;
@@ -49,7 +37,7 @@ LightNode::~LightNode()
 	for( uint32 i = 0; i < _occQueries.size(); ++i )
 	{
 		if( _occQueries[i] != 0 )
-			Modules::renderer().destroyOccQuery( _occQueries[i] );
+			Modules::renderer().releaseQuery( _occQueries[i] );
 	}
 }
 
@@ -108,110 +96,125 @@ SceneNode *LightNode::factoryFunc( const SceneNodeTpl &nodeTpl )
 }
 
 
-float LightNode::getParamf( int param )
+int LightNode::getParamI( int param )
 {
 	switch( param )
 	{
-	case LightNodeParams::Radius:
-		return _radius;
-	case LightNodeParams::Col_R:
-		return _diffCol_R;
-	case LightNodeParams::Col_G:
-		return _diffCol_G;
-	case LightNodeParams::Col_B:
-		return _diffCol_B;
-	case LightNodeParams::FOV:
-		return _fov;
-	case LightNodeParams::ShadowSplitLambda:
-		return _shadowSplitLambda;
-	case LightNodeParams::ShadowMapBias:
-		return _shadowMapBias;
-	default:
-		return SceneNode::getParamf( param );
-	}
-}
-
-
-bool LightNode::setParamf( int param, float value )
-{
-	switch( param )
-	{
-	case LightNodeParams::Radius:
-		_radius = value;
-		markDirty();
-		return true;
-	case LightNodeParams::FOV:
-		_fov = value;
-		markDirty();
-		return true;
-	case LightNodeParams::Col_R:
-		_diffCol_R = value;
-		return true;
-	case LightNodeParams::Col_G:
-		_diffCol_G = value;
-		return true;
-	case LightNodeParams::Col_B:
-		_diffCol_B = value;
-		return true;
-	case LightNodeParams::ShadowSplitLambda:
-		_shadowSplitLambda = value;
-		return true;
-	case LightNodeParams::ShadowMapBias:
-		_shadowMapBias = value;
-		return true;
-	default:	
-		return SceneNode::setParamf( param, value );
-	}
-}
-
-
-int LightNode::getParami( int param )
-{
-	switch( param )
-	{
-	case LightNodeParams::MaterialRes:
+	case LightNodeParams::MatResI:
 		if( _materialRes != 0x0 ) return _materialRes->getHandle();
 		else return 0;
-	case LightNodeParams::ShadowMapCount:
+	case LightNodeParams::ShadowMapCountI:
 		return _shadowMapCount;
-	default:
-		return SceneNode::getParami( param );
 	}
+
+	return SceneNode::getParamI( param );
 }
 
 
-bool LightNode::setParami( int param, int value )
+void LightNode::setParamI( int param, int value )
 {
 	Resource *res;
 	
 	switch( param )
 	{
-	case LightNodeParams::MaterialRes:
+	case LightNodeParams::MatResI:
 		res = Modules::resMan().resolveResHandle( value );
-		if( res != 0x0 && res->getType() != ResourceTypes::Material )
-		{	
-			Modules::log().writeDebugInfo( "Invalid Material resource for Light node %i", _handle );
-			return false;
-		}
-		_materialRes = (MaterialResource *)res;
-		return true;
-	case LightNodeParams::ShadowMapCount:
+		if( res == 0x0 || res->getType() == ResourceTypes::Material )
+			_materialRes = (MaterialResource *)res;
+		else
+			Modules::setError( "Invalid handle in h3dSetNodeParamI for H3DLight::MatResI" );
+		return;
+	case LightNodeParams::ShadowMapCountI:
 		if( value == 0 || value == 1 || value == 2 || value == 3 || value == 4 )
-		{	
 			_shadowMapCount = (uint32)value;
-			return true;
-		}
-		else return false;
-	default:	
-		return SceneNode::setParami( param, value );
+		else
+			Modules::setError( "Invalid value in h3dSetNodeParamI for H3DLight::ShadowMapCountI" );
+		return;
 	}
+
+	return SceneNode::setParamI( param, value );
 }
 
 
-void LightNode::setContexts( const char *lightingContext, const char *shadowContext )
+float LightNode::getParamF( int param, int compIdx )
 {
-	if( lightingContext != 0x0 ) _lightingContext = lightingContext;
-	if( shadowContext != 0x0 ) _shadowContext = shadowContext;
+	switch( param )
+	{
+	case LightNodeParams::RadiusF:
+		return _radius;
+	case LightNodeParams::ColorF3:
+		if( (unsigned)compIdx < 3 ) return _diffuseCol[compIdx];
+		break;
+	case LightNodeParams::FovF:
+		return _fov;
+	case LightNodeParams::ShadowSplitLambdaF:
+		return _shadowSplitLambda;
+	case LightNodeParams::ShadowMapBiasF:
+		return _shadowMapBias;
+	}
+
+	return SceneNode::getParamF( param, compIdx );
+}
+
+
+void LightNode::setParamF( int param, int compIdx, float value )
+{
+	switch( param )
+	{
+	case LightNodeParams::RadiusF:
+		_radius = value;
+		markDirty();
+		return;
+	case LightNodeParams::FovF:
+		_fov = value;
+		markDirty();
+		return;
+	case LightNodeParams::ColorF3:
+		if( (unsigned)compIdx < 3 )
+		{
+			_diffuseCol[compIdx] = value;
+			return;
+		}
+		break;
+	case LightNodeParams::ShadowSplitLambdaF:
+		_shadowSplitLambda = value;
+		return;
+	case LightNodeParams::ShadowMapBiasF:
+		_shadowMapBias = value;
+		return;
+	}
+
+	SceneNode::setParamF( param, compIdx, value );
+}
+
+
+const char *LightNode::getParamStr( int param )
+{
+	switch( param )
+	{
+	case LightNodeParams::LightingContextStr:
+		return _lightingContext.c_str();
+	case LightNodeParams::ShadowContextStr:
+		return _shadowContext.c_str();
+	}
+
+	return SceneNode::getParamStr( param );
+}
+
+
+void LightNode::setParamStr( int param, const char *value )
+{
+	switch( param )
+	{
+	case LightNodeParams::LightingContextStr:
+		_lightingContext = value;
+		return;
+	case LightNodeParams::ShadowContextStr:
+		_shadowContext = value;
+		return;
+	}
+
+	SceneNode::setParamStr( param, value );
 }
 
 

@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -35,7 +23,7 @@ using namespace std;
 // *************************************************************************************************
 
 MeshNode::MeshNode( const MeshNodeTpl &meshTpl ) :
-	AnimatableSceneNode( meshTpl ), _bBoxDirty( true ),
+	SceneNode( meshTpl ), _parentModel( 0x0 ), _ignoreAnim( false ),
 	_materialRes( meshTpl.matRes ), _batchStart( meshTpl.batchStart ), _batchCount( meshTpl.batchCount ),
 	_vertRStart( meshTpl.vertRStart ), _vertREnd( meshTpl.vertREnd ), _lodLevel( meshTpl.lodLevel )
 {
@@ -90,14 +78,16 @@ SceneNode *MeshNode::factoryFunc( const SceneNodeTpl &nodeTpl )
 }
 
 
-void MeshNode::markBBoxesDirty()
+IAnimatableNode *MeshNode::getANParent()
 {
-	_bBoxDirty = true;
-	
-	for( size_t i = 0, s = _children.size(); i < s; ++i )
+	switch( _parent->getType() )
 	{
-		if( _children[i]->getType() == SceneNodeTypes::Mesh )
-			((MeshNode *)_children[i])->markBBoxesDirty();
+	case SceneNodeTypes::Joint:
+		return (IAnimatableNode *)((JointNode *)_parent);
+	case SceneNodeTypes::Mesh:
+		return (IAnimatableNode *)((MeshNode *)_parent);
+	default:
+		return 0x0;
 	}
 }
 
@@ -111,50 +101,48 @@ bool MeshNode::canAttach( SceneNode &parent )
 }
 
 
-int MeshNode::getParami( int param )
+int MeshNode::getParamI( int param )
 {
 	switch( param )
 	{
-	case MeshNodeParams::MaterialRes:
+	case MeshNodeParams::MatResI:
 		if( _materialRes != 0x0 ) return _materialRes->getHandle();
 		else return 0;
-	case MeshNodeParams::BatchStart:
+	case MeshNodeParams::BatchStartI:
 		return _batchStart;
-	case MeshNodeParams::BatchCount:
+	case MeshNodeParams::BatchCountI:
 		return _batchCount;
-	case MeshNodeParams::VertRStart:
+	case MeshNodeParams::VertRStartI:
 		return _vertRStart;
-	case MeshNodeParams::VertREnd:
+	case MeshNodeParams::VertREndI:
 		return _vertREnd;
-	case MeshNodeParams::LodLevel:
+	case MeshNodeParams::LodLevelI:
 		return _lodLevel;
-	default:
-		return SceneNode::getParami( param );
 	}
+
+	return SceneNode::getParamI( param );
 }
 
 
-bool MeshNode::setParami( int param, int value )
+void MeshNode::setParamI( int param, int value )
 {
 	Resource *res;
 	
 	switch( param )
 	{
-	case MeshNodeParams::MaterialRes:
+	case MeshNodeParams::MatResI:
 		res = Modules::resMan().resolveResHandle( value );
-		if( res == 0x0 || res->getType() != ResourceTypes::Material )
-		{	
-			Modules::log().writeDebugInfo( "Invalid Material resource for Mesh node %i", _handle );
-			return false;
-		}
-		_materialRes = (MaterialResource *)res;
-		return true;
-	case MeshNodeParams::LodLevel:
+		if( res != 0x0 && res->getType() == ResourceTypes::Material )
+			_materialRes = (MaterialResource *)res;
+		else
+			Modules::setError( "Invalid handle in h3dSetNodeParamI for H3DMesh::MatResI" );
+		return;
+	case MeshNodeParams::LodLevelI:
 		_lodLevel = value;
-		return true;
-	default:
-		return SceneNode::setParami( param, value );
+		return;
 	}
+
+	SceneNode::setParamI( param, value );
 }
 
 
@@ -162,9 +150,11 @@ bool MeshNode::checkIntersection( const Vec3f &rayOrig, const Vec3f &rayDir, Vec
 {
 	// Collision check is only done for base LOD
 	if( _lodLevel != 0 ) return false;
+
+	if( !rayAABBIntersection( rayOrig, rayDir, _bBox.min, _bBox.max ) ) return false;
 	
 	GeometryResource *geoRes = _parentModel->getGeometryResource();
-	if( geoRes == 0x0 || geoRes->getVertData() == 0x0 ) return false;
+	if( geoRes == 0x0 || geoRes->getIndexData() == 0x0 || geoRes->getVertPosData() == 0x0 ) return false;
 	
 	// Transform ray to local space
 	Matrix4f m = _absTrans.inverted();
@@ -177,11 +167,22 @@ bool MeshNode::checkIntersection( const Vec3f &rayOrig, const Vec3f &rayDir, Vec
 	// Check triangles
 	for( uint32 i = _batchStart; i < _batchStart + _batchCount; i += 3 )
 	{
-		Vec3f &vert0 = geoRes->getVertData()->positions[geoRes->_indices[i + 0]];
-		Vec3f &vert1 = geoRes->getVertData()->positions[geoRes->_indices[i + 1]];
-		Vec3f &vert2 = geoRes->getVertData()->positions[geoRes->_indices[i + 2]];
+		Vec3f *vert0, *vert1, *vert2;
 		
-		if( rayTriangleIntersection( orig, dir, vert0, vert1, vert2, intsPos ) )
+		if( geoRes->_16BitIndices )
+		{
+			vert0 = &geoRes->getVertPosData()[((uint16 *)geoRes->_indexData)[i + 0]];
+			vert1 = &geoRes->getVertPosData()[((uint16 *)geoRes->_indexData)[i + 1]];
+			vert2 = &geoRes->getVertPosData()[((uint16 *)geoRes->_indexData)[i + 2]];
+		}
+		else
+		{
+			vert0 = &geoRes->getVertPosData()[((uint32 *)geoRes->_indexData)[i + 0]];
+			vert1 = &geoRes->getVertPosData()[((uint32 *)geoRes->_indexData)[i + 1]];
+			vert2 = &geoRes->getVertPosData()[((uint32 *)geoRes->_indexData)[i + 2]];
+		}
+		
+		if( rayTriangleIntersection( orig, dir, *vert0, *vert1, *vert2, intsPos ) )
 		{
 			intersection = true;
 			if( (intsPos - orig).length() < (nearestIntsPos - orig).length() )
@@ -197,8 +198,6 @@ bool MeshNode::checkIntersection( const Vec3f &rayOrig, const Vec3f &rayDir, Vec
 
 void MeshNode::onAttach( SceneNode &parentNode )
 {
-	_bBoxDirty = true;
-	
 	// Find parent model node
 	SceneNode *node = &parentNode;
 	while( node->getType() != SceneNodeTypes::Model ) node = node->getParent();
@@ -213,47 +212,10 @@ void MeshNode::onDetach( SceneNode &/*parentNode*/ )
 }
 
 
-void MeshNode::onPreUpdate()
+void MeshNode::onPostUpdate()
 {
-	AnimatableSceneNode::onPreUpdate();
-	// Calculate local bounding box
-	if( _bBoxDirty )
-	{
-		_bBoxDirty = false;
-		
-		GeometryResource *geoRes = _parentModel->getGeometryResource();
-		if( geoRes == 0x0 || geoRes->getVertData() == 0x0 ) return;
-
-		Vec3f &bBMin = _localBBox.getMinCoords();
-		Vec3f &bBMax = _localBBox.getMaxCoords();
-		
-		if( _vertRStart < geoRes->getVertCount() && _vertREnd < geoRes->getVertCount() )
-		{
-			bBMin = Vec3f( Math::MaxFloat, Math::MaxFloat, Math::MaxFloat );
-			bBMax = Vec3f( -Math::MaxFloat, -Math::MaxFloat, -Math::MaxFloat );
-			for( uint32 i = _vertRStart; i <= _vertREnd; ++i )
-			{
-				Vec3f &vertPos = geoRes->getVertData()->positions[i];
-
-				if( vertPos.x < bBMin.x ) bBMin.x = vertPos.x;
-				if( vertPos.y < bBMin.y ) bBMin.y = vertPos.y;
-				if( vertPos.z < bBMin.z ) bBMin.z = vertPos.z;
-				if( vertPos.x > bBMax.x ) bBMax.x = vertPos.x;
-				if( vertPos.y > bBMax.y ) bBMax.y = vertPos.y;
-				if( vertPos.z > bBMax.z ) bBMax.z = vertPos.z;
-			}
-
-			// Avoid zero box dimensions for planes
-			if( bBMax.x - bBMin.x == 0 ) bBMax.x += 0.1f;
-			if( bBMax.y - bBMin.y == 0 ) bBMax.y += 0.1f;
-			if( bBMax.z - bBMin.z == 0 ) bBMax.z += 0.1f;
-		}
-		else
-		{
-			bBMin = Vec3f( 0, 0, 0 );
-			bBMax = Vec3f( 0, 0, 0 );
-		}
-	}
+	_bBox = _localBBox;
+	_bBox.transform( _absTrans );
 }
 
 
@@ -262,7 +224,7 @@ void MeshNode::onPreUpdate()
 // *************************************************************************************************
 
 JointNode::JointNode( const JointNodeTpl &jointTpl ) :
-	AnimatableSceneNode( jointTpl ), _jointIndex( jointTpl.jointIndex )
+	SceneNode( jointTpl ), _jointIndex( jointTpl.jointIndex ), _parentModel( 0x0 ), _ignoreAnim( false )
 {
 }
 
@@ -295,6 +257,20 @@ SceneNode *JointNode::factoryFunc( const SceneNodeTpl &nodeTpl )
 }
 
 
+IAnimatableNode *JointNode::getANParent()
+{
+	switch( _parent->getType() )
+	{
+	case SceneNodeTypes::Joint:
+		return (IAnimatableNode *)((JointNode *)_parent);
+	case SceneNodeTypes::Mesh:
+		return (IAnimatableNode *)((MeshNode *)_parent);
+	default:
+		return 0x0;
+	}
+}
+
+
 bool JointNode::canAttach( SceneNode &parent )
 {
 	// Important: Joints may not live outside of models
@@ -303,15 +279,15 @@ bool JointNode::canAttach( SceneNode &parent )
 }
 
 
-int JointNode::getParami( int param )
+int JointNode::getParamI( int param )
 {
 	switch( param )
 	{
-	case JointNodeParams::JointIndex:
+	case JointNodeParams::JointIndexI:
 		return (int)_jointIndex;
-	default:
-		return SceneNode::getParami( param );
 	}
+
+	return SceneNode::getParamI( param );
 }
 
 

@@ -44,6 +44,7 @@ sample shader.
 ChangeLog
 ---------
 
+0.2.2   - Adapted to Horde3D 1.0.0 Beta4
 0.2.1   - Adapted to Horde3D 1.0.0 Beta3
 0.2.0   - Disabled texture compression for height map
         - Fixed culling issues

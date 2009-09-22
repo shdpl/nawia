@@ -32,8 +32,6 @@
 
 #include "decode.h"
 
-namespace Horde3DSound
-{
 	const int RST_SoundResource = 200;
 
 	struct SoundResParams
@@ -65,15 +63,13 @@ namespace Horde3DSound
 		void release();
 		bool load( const char *data, int size );
 
-		int getParami( int param );
-		bool setParami( int param, int value );
-		float getParamf( int param );
-		bool setParamf( int param, float value );
+		int getElemCount( int elem );
+		int getElemParamI( int elem, int elemIdx, int param );	
+		float getElemParamF( int elem, int elemIdx, int param, int compIdx );
 
 		ALuint getBuffer();
 	};
 
 	typedef SmartResPtr< SoundResource > PSoundResource;
-}
 
 #endif // _Horde3DSound_soundResource_H_

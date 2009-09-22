@@ -80,7 +80,7 @@ m_attachmentPlugIn(shared->m_attachmentPlugIn), m_activeCameraID(shared->m_activ
 GLWidget::~GLWidget()
 {
 	if (!m_shared) // Only release if it's the only widget
-		Horde3D::release();
+		h3dRelease();
 }
 
 // Update the log widget
@@ -90,7 +90,7 @@ void GLWidget::updateLog()
 	float time;
 	QList<QListWidgetItem*> items;
 	QString message;
-	while(!(message = Horde3D::getMessage(&level, &time)).isEmpty())
+	while(!(message = h3dGetMessage(&level, &time)).isEmpty())
 	{
 		// Create List Widget Item (removing HTML Tags from message since Horde3D still adds some tags to the warnings)
 		QListWidgetItem* item = new QListWidgetItem(QString::number(time) + "\t" + message.remove(QRegExp("(<(\\s*)?[a-z/]+(\\s*)?(/)?>)",Qt::CaseInsensitive, QRegExp::RegExp2)), 0, level);
@@ -189,7 +189,7 @@ void GLWidget::resetMode(bool accept)
 
 void GLWidget::enableDebugView(bool debug)
 {
-	Horde3D::setOption(EngineOptions::DebugViewMode, debug ? 1 : 0);
+	h3dSetOption(H3DOptions::DebugViewMode, debug ? 1 : 0);
 }
 
 void GLWidget::setCurrentNode(QXmlTreeNode* node)
@@ -201,14 +201,14 @@ void GLWidget::setCurrentNode(QXmlTreeNode* node)
 
 void GLWidget::initializeGL()
 {		
-	if ( ( m_initialized = Horde3D::init() ) == false)
+	if ( ( m_initialized = h3dInit() ) == false)
 		QMessageBox::warning(this, tr("Error"), tr("Error initializing Horde3D!"));
 }
 
 void GLWidget::resizeGL(int width, int height)
 {	
 	if ( m_initialized )
-		Horde3D::setupViewport( 0, 0, width, height, true);
+		h3dSetupViewport( 0, 0, width, height, true);
 	emit resized(width, height);	
 }
 
@@ -261,8 +261,8 @@ void GLWidget::paintGL()
 		}
 		else
 		{
-			Horde3D::render(m_activeCameraID); // Render scene	
-			Horde3D::finalizeFrame();
+			h3dRender(m_activeCameraID); // Render scene	
+			h3dFinalizeFrame();
 		}
 		
 		renderEditorInfo();
@@ -280,14 +280,14 @@ void GLWidget::wheelEvent(QWheelEvent* event)
 {
 	if (event->delta() > 0)
 	{		
-		if( Horde3D::getNodeParami(m_activeCameraID, CameraNodeParams::Orthographic) == 1 )	
+		if( h3dGetNodeParamI(m_activeCameraID, H3DCamera::OrthoI ) == 1 )	
 		{
 			const float* mat = 0;
-			Horde3D::getNodeTransformMatrices(m_activeCameraID, &mat, 0);
+			h3dGetNodeTransMats(m_activeCameraID, &mat, 0);
 			QMatrix4f matrix(mat);
 			matrix.scale(QVec3f(0.9f, 0.9f, 0.9f));
 			matrix.x[12] = mat[12]; matrix.x[13] = mat[13]; matrix.x[14] = mat[14];
-			Horde3D::setNodeTransformMatrix(m_activeCameraID, matrix.x);
+			h3dSetNodeTransMat(m_activeCameraID, matrix.x);
 		}
 		else
 		{
@@ -298,14 +298,14 @@ void GLWidget::wheelEvent(QWheelEvent* event)
 	}
 	else
 	{
-		if( Horde3D::getNodeParami(m_activeCameraID, CameraNodeParams::Orthographic) == 1 )	
+		if( h3dGetNodeParamI(m_activeCameraID, H3DCamera::OrthoI) == 1 )	
 		{
 			const float* mat = 0;
-			Horde3D::getNodeTransformMatrices(m_activeCameraID, &mat, 0);
+			h3dGetNodeTransMats(m_activeCameraID, &mat, 0);
 			QMatrix4f matrix(mat);
 			matrix.scale(QVec3f(1.0f / 0.9f, 1.0f / 0.9f, 1.0f / 0.9f));
 			matrix.x[12] = mat[12]; matrix.x[13] = mat[13]; matrix.x[14] = mat[14];
-			Horde3D::setNodeTransformMatrix(m_activeCameraID, matrix.x);
+			h3dSetNodeTransMat(m_activeCameraID, matrix.x);
 		}
 		else
 		{
@@ -441,12 +441,12 @@ void GLWidget::mousePressEvent ( QMouseEvent * event )
 		float normalized_x( float(event->pos().x()) / width() );
 		float normalized_y( float((height() - event->pos().y())) / height() );			
 		// Select node under the mouse cursor
-		NodeHandle node = Horde3DUtils::pickNode(m_activeCameraID, normalized_x, normalized_y);
+		H3DNode node = h3dutPickNode(m_activeCameraID, normalized_x, normalized_y);
 		// If it's a mesh node select it's parent model node
-		if (node != 0 && Horde3D::getNodeType(node) == SceneNodeTypes::Mesh)
+		if (node != 0 && h3dGetNodeType(node) == H3DNodeTypes::Mesh)
 		{		
-			while ( node != 0 && Horde3D::getNodeType(node) != SceneNodeTypes::Model )
-				node = Horde3D::getNodeParent(node);					
+			while ( node != 0 && h3dGetNodeType(node) != H3DNodeTypes::Model )
+				node = h3dGetNodeParent(node);					
 		}
 		if (m_currentNode && node == m_currentNode->property("ID").toInt() )
 			emit nodeSelected(0);
@@ -470,7 +470,7 @@ void GLWidget::mouseDoubleClickEvent(QMouseEvent* event)
 		float normalized_x( float(event->pos().x()) / width() );
 		float normalized_y( float((height() - event->pos().y())) / height() );			
 		// Select mesh node under mouse cursor
-		NodeHandle node = Horde3DUtils::pickNode(m_activeCameraID, normalized_x, normalized_y);
+		H3DNode node = h3dutPickNode(m_activeCameraID, normalized_x, normalized_y);
 		if (m_currentNode && m_currentNode->property("ID").toInt() == node)
 			emit nodeSelected(0); // Deselect node 
 		else
@@ -502,7 +502,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 	{
 		bool controlPressed =  
 			( ( ((qApp->keyboardModifiers() & Qt::ControlModifier)) != 0 ) | ( event->buttons() & m_selectButton ) ) ^
-			(Horde3D::getNodeParami(m_activeCameraID, CameraNodeParams::Orthographic) == 1);
+			(h3dGetNodeParamI(m_activeCameraID, H3DCamera::OrthoI) == 1);
 		QPoint globalPos = event->globalPos();
 		float diffX = globalPos.x() - m_navOrigin.x();
 		float diffY = globalPos.y() - m_navOrigin.y();
@@ -553,7 +553,7 @@ void GLWidget::cameraNavigationStart()
 {	
 	// The start and update approach is suffering less from gimble lock than the implementation before,
 	// but it still is not a perfekt solution
-	Horde3D::getNodeTransform(m_activeCameraID, 0,0,0, &m_navRx, &m_navRy, 0,0,0,0);
+	h3dGetNodeTransform(m_activeCameraID, 0,0,0, &m_navRx, &m_navRy, 0,0,0,0);
 	m_navOrigin = QCursor::pos();
 }
 
@@ -564,26 +564,27 @@ void GLWidget::cameraNavigationUpdate(float x, float y, float z, float rx, float
 	if( x != 0.0f || y != 0.0f || z != 0.0f )
 	{
 		const float* transMat = 0;
-		if ( !Horde3D::getNodeTransformMatrices(cameraID, &transMat, 0) ) return;
+		h3dGetNodeTransMats(cameraID, &transMat, 0);
+		if( !transMat ) return;
 
 		float newx, newy, newz;
 		float scale = QVec3f(transMat[0], transMat[1], transMat[2]).length();
 		newx = transMat[0] * x  +  transMat[4] * (-y) + transMat[ 8] * z / scale + transMat[12];
 		newy = transMat[1] * x  +  transMat[5] * (-y) + transMat[ 9] * z / scale + transMat[13];
 		newz = transMat[2] * x  +  transMat[6] * (-y) + transMat[10] * z / scale + transMat[14];
-		if (!m_collisionCheck || Horde3D::castRay(RootNode, transMat[12], transMat[13], transMat[14], newx - transMat[12], newy - transMat[13], newz - transMat[14], 1) == 0)
+		if (!m_collisionCheck || h3dCastRay(H3DRootNode, transMat[12], transMat[13], transMat[14], newx - transMat[12], newy - transMat[13], newz - transMat[14], 1) == 0)
 		{
 			const_cast<float*>(transMat)[12] = newx;
 			const_cast<float*>(transMat)[13] = newy;
 			const_cast<float*>(transMat)[14] = newz;
-			Horde3D::setNodeTransformMatrix(cameraID, transMat);
+			h3dSetNodeTransMat(cameraID, transMat);
 		}
 	}
 	if( rx != 0.0f || ry != 0.0f)
 	{
 		float t_px, t_py, t_pz, t_sx, t_sy, t_sz;
-		Horde3D::getNodeTransform(cameraID, &t_px, &t_py, &t_pz, 0,0,0, &t_sx,&t_sy,&t_sz);		
-		Horde3D::setNodeTransform(cameraID, t_px, t_py, t_pz, m_navRx - ry, m_navRy - rx, 0, t_sx, t_sy, t_sz);
+		h3dGetNodeTransform(cameraID, &t_px, &t_py, &t_pz, 0,0,0, &t_sx,&t_sy,&t_sz);		
+		h3dSetNodeTransform(cameraID, t_px, t_py, t_pz, m_navRx - ry, m_navRy - rx, 0, t_sx, t_sy, t_sz);
 		m_navRx = m_navRx - ry; m_navRy = m_navRy - rx;
 	}
 }
@@ -596,14 +597,15 @@ void GLWidget::translateObject(int x, int y)
 	// Get the currently active scene node transformation
 	QMatrix4f nodeTrans = transProp.value<QMatrix4f>();
 
-	NodeHandle camera = m_activeCameraID;
+	H3DNode camera = m_activeCameraID;
 	const float* cameraTrans = 0;
-	if ( !Horde3D::getNodeTransformMatrices(camera, 0, &cameraTrans) ) return;
+	h3dGetNodeTransMats(camera, 0, &cameraTrans);
+	if ( !cameraTrans ) return;
 
 	
 	const float camScale = QVec3f(cameraTrans[0], cameraTrans[1], cameraTrans[2]).length();
-	const float frustumHeight = Horde3D::getNodeParamf(camera, CameraNodeParams::TopPlane) - Horde3D::getNodeParamf(camera, CameraNodeParams::BottomPlane);
-	const float frustumWidth  = Horde3D::getNodeParamf(camera, CameraNodeParams::RightPlane) - Horde3D::getNodeParamf(camera, CameraNodeParams::LeftPlane);
+	const float frustumHeight = h3dGetNodeParamF(camera, H3DCamera::TopPlaneF, 0) - h3dGetNodeParamF(camera, H3DCamera::BottomPlaneF, 0);
+	const float frustumWidth  = h3dGetNodeParamF(camera, H3DCamera::RightPlaneF, 0) - h3dGetNodeParamF(camera, H3DCamera::LeftPlaneF, 0);
 	float diffX = (x - m_x) * frustumWidth * camScale / width();
 	float diffY = (y - m_y) * frustumHeight * camScale / height();
 
@@ -612,9 +614,9 @@ void GLWidget::translateObject(int x, int y)
 		diffX = (x - m_x) / m_navSpeed;
 		diffY = (y - m_y) / m_navSpeed;
 	}	
-	else if( Horde3D::getNodeParami( camera, CameraNodeParams::Orthographic ) == 0 )
+	else if( h3dGetNodeParamI( camera, H3DCamera::OrthoI ) == 0 )
 	{
-		const float nearPlane = Horde3D::getNodeParamf(camera, CameraNodeParams::NearPlane);
+		const float nearPlane = h3dGetNodeParamF(camera, H3DCamera::NearPlaneF, 0);
 		const float dist = QVec3f( cameraTrans[12] - nodeTrans.x[12], cameraTrans[13] - nodeTrans.x[13], cameraTrans[14] - nodeTrans.x[14] ).length();
 		diffX *= dist / nearPlane;
 		diffY *= dist / nearPlane;
@@ -685,9 +687,10 @@ void GLWidget::rotateObject(int x, int y)
 	QMatrix4f nodeTrans = transProp.value<QMatrix4f>();
 
 	// Get the currently active camera transformation
-	NodeHandle camera = m_activeCameraID;
+	H3DNode camera = m_activeCameraID;
 	const float* cameraTrans = 0;
-	if ( !Horde3D::getNodeTransformMatrices(camera, 0, &cameraTrans) ) return;
+	h3dGetNodeTransMats(camera, 0, &cameraTrans);
+	if ( !cameraTrans ) return;
 
 	// Activate OpenGL Context to use gluProject
 	makeCurrent();
@@ -863,10 +866,12 @@ void GLWidget::applyChanges(bool save)
 
 void GLWidget::renderEditorInfo()
 {
+	return;
 	const float* camera = 0; 
 	// Retrieve camera position		
-	// In case of an invalid camera (e.g. pipeline not set) return
-	if ( !Horde3D::getNodeTransformMatrices(m_activeCameraID, 0, &camera) ) return;	
+	h3dGetNodeTransMats(m_activeCameraID, 0, &camera);
+	// In case of an invalid camera (e.g. pipeline not set) return	
+	if ( !camera ) return;	
 
 	// Save OpenGL States
 	glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT | GL_HINT_BIT | GL_LIGHTING_BIT);
@@ -964,6 +969,7 @@ void GLWidget::renderEditorInfo()
 
 void GLWidget::drawAxis(const QVec3f& start, const QVec3f& dir, const QVec3f& color, const float* modelView /*= 0*/)
 {
+	return;
 	glMatrixMode(GL_MODELVIEW);
 	if( modelView )
 	{
@@ -984,11 +990,12 @@ void GLWidget::drawAxis(const QVec3f& start, const QVec3f& dir, const QVec3f& co
 
 void GLWidget::drawBoundingBox(unsigned int hordeID)
 {
+	return;
 	if( hordeID != 0 )
 	{
 		// Draw AABB of selected object
 		float minX, minY, minZ, maxX, maxY, maxZ;
-		Horde3D::getNodeAABB(hordeID, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
+		h3dGetNodeAABB(hordeID, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
 		glColor3f(0.7f, 0.7f, 0.7f);
 		glBegin(GL_LINE_STRIP);
 		glVertex3f(minX, minY, minZ);
@@ -1015,6 +1022,7 @@ void GLWidget::drawBoundingBox(unsigned int hordeID)
 
 void GLWidget::drawViewportLine(const QPoint& start, const QPoint& end)
 {
+	return;
 	// Save current projection matrix
 	GLdouble projection[16];							// Where The 16 Doubles Of The Projection Matrix Are To Be Stored
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);	// Retrieve The Projection Matrix		
@@ -1046,6 +1054,7 @@ void GLWidget::drawViewportLine(const QPoint& start, const QPoint& end)
 
 void GLWidget::drawViewportCircle(float x, float y, float radius)
 {
+	return;
 	// Save current projection matrix
 	GLdouble projection[16];							// Where The 16 Doubles Of The Projection Matrix Are To Be Stored
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);	// Retrieve The Projection Matrix		
@@ -1078,6 +1087,7 @@ void GLWidget::drawViewportCircle(float x, float y, float radius)
 
 void GLWidget::glGizmo()
 {
+	return;
 	glShadeModel(GL_SMOOTH);
 	// x-axis
 	glColor3f( 1, 0, 0);
@@ -1136,6 +1146,7 @@ void GLWidget::glGizmo()
 
 void GLWidget::drawGizmo(const float* nodeTransform, const float* cam)
 {
+	return;
 	// Save current projection matrix
 	GLdouble projection[16];							// Where The 16 Doubles Of The Projection Matrix Are To Be Stored
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);	// Retrieve The Projection Matrix		
@@ -1152,17 +1163,17 @@ void GLWidget::drawGizmo(const float* nodeTransform, const float* cam)
 	QVec3f camScale = QMatrix4f(cam).getScale();
 	QVec3f nodeScale = QMatrix4f(nodeTransform).getScale();	
 	
-	//const float frustumHeight = Horde3D::getNodeParamf(m_activeCameraID, CameraNodeParams::TopPlane) - Horde3D::getNodeParamf(m_activeCameraID, CameraNodeParams::BottomPlane);
-	const float frustumWidth  = Horde3D::getNodeParamf(m_activeCameraID, CameraNodeParams::RightPlane) - Horde3D::getNodeParamf(m_activeCameraID, CameraNodeParams::LeftPlane);
+	//const float frustumHeight = h3dGetNodeParamF(m_activeCameraID, H3DCamera::TopPlane) - h3dGetNodeParamF(m_activeCameraID, H3DCamera::BottomPlane);
+	const float frustumWidth  = h3dGetNodeParamF(m_activeCameraID, H3DCamera::RightPlaneF, 0) - h3dGetNodeParamF(m_activeCameraID, H3DCamera::LeftPlaneF, 0);
 	// first calculate scale depending on the viewing frustum and viewport settings (10 is a constant factor to make the gizmo big enough and is not
 	// part of the formula
 	float scale = 10 * frustumWidth * camScale.X / width();
 	
 	// If we have an perspective projection
-	if( Horde3D::getNodeParami( m_activeCameraID, CameraNodeParams::Orthographic ) == 0 )
+	if( h3dGetNodeParamI( m_activeCameraID, H3DCamera::OrthoI ) == 0 )
 	{
 		// Take node distance and nearPlane distance into account
-		const float nearPlane = Horde3D::getNodeParamf(m_activeCameraID, CameraNodeParams::NearPlane);
+		const float nearPlane = h3dGetNodeParamF(m_activeCameraID, H3DCamera::NearPlaneF, 0);
 		const float distance = QVec3f(nodeTransform[12] - cam[12], nodeTransform[13] - cam[13], nodeTransform[14] - cam[14]).length(); // Calculate distance between scene node and camera
 		scale *= distance / nearPlane;
 	}
@@ -1219,7 +1230,8 @@ void GLWidget::drawGizmo(const float* nodeTransform, const float* cam)
 
 void GLWidget::drawBaseGrid(const float camX, const float camY, const float camZ)
 {
-	float farPlane = Horde3D::getNodeParamf(m_activeCameraID, CameraNodeParams::FarPlane);
+	return;
+	float farPlane = h3dGetNodeParamF(m_activeCameraID, H3DCamera::FarPlaneF, 0);
 	if (abs(camY) > farPlane)
 		return;
 
@@ -1287,7 +1299,7 @@ bool GLWidget::inSync()
 				if( hordeID != 0 )
 				{
 					const float* mat = 0;
-					Horde3D::getNodeTransformMatrices(Horde3D::getNodeParent(hordeID), 0, &mat);
+					h3dGetNodeTransMats(h3dGetNodeParent(hordeID), 0, &mat);
 					worldScale = QMatrix4f(mat).getScale();
 				}				
 				emit moveObject((actPos.X - pos.X) * worldScale.X, (actPos.Y - pos.Y) * worldScale.Y, (actPos.Z - pos.Z) * worldScale.Z);
@@ -1312,6 +1324,7 @@ bool GLWidget::inSync()
 
 void GLWidget::getViewportProjection(const double px, const double py, const double pz, double &vx, double& vy, double& vz, const float* mat /*=0*/)
 {
+	return;
 	if( mat )
 	{
 		glMatrixMode(GL_MODELVIEW);

@@ -270,7 +270,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\egTextures.cpp"
+				RelativePath=".\egTexture.cpp"
 				>
 			</File>
 			<File
@@ -388,7 +388,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\egTextures.h"
+				RelativePath=".\egTexture.h"
 				>
 			</File>
 			<File

@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -34,11 +22,12 @@
 // Animation Resource
 // =================================================================================================
 
-struct AnimationResParams
+struct AnimationResData
 {
 	enum List
 	{
-		FrameCount = 300
+		EntityElem = 300,
+		EntFrameCountI
 	};
 };
 
@@ -82,7 +71,9 @@ public:
 	void initDefault();
 	void release();
 	bool load( const char *data, int size );
-	int getParami( int param );
+
+	int getElemCount( int elem );
+	int getElemParamI( int elem, int elemIdx, int param );
 
 	AnimResEntity *findEntity( const std::string &name );
 
@@ -91,6 +82,65 @@ public:
 };
 
 typedef SmartResPtr< AnimationResource > PAnimationResource;
+
+
+// =================================================================================================
+// Animation Controller
+// =================================================================================================
+
+const uint32 MaxNumAnimStages = 16;
+
+class IAnimatableNode
+{
+public:
+	virtual ~IAnimatableNode() {}
+	virtual const std::string &getANName() = 0;
+	virtual IAnimatableNode *getANParent() = 0;
+	virtual Matrix4f &getANRelTransRef() = 0;
+	virtual bool &getANIgnoreAnimRef() = 0;
+};
+
+struct AnimStage
+{
+	PAnimationResource  anim;
+	int                 layer;
+	float               animTime;
+	float               weight;
+	std::string         startNode;
+	bool                additive;
+};
+
+struct AnimCtrlNode
+{
+	IAnimatableNode  *node;
+	AnimResEntity    *animEntities[MaxNumAnimStages];
+};
+
+class AnimationController
+{
+protected:
+
+	std::vector< AnimStage * >   _animStages;
+	std::vector< uint32 >        _activeStages;
+	std::vector< AnimCtrlNode >  _nodeList;
+	bool                         _dirty;
+
+	void mapAnimRes( uint32 node, uint32 stage );
+	void updateActiveList();
+
+public:
+	
+	AnimationController();
+	~AnimationController();
+	
+	void clearNodeList();
+	void registerNode( IAnimatableNode *node );
+	
+	bool setupAnimStage( int stage, AnimationResource *anim, int layer,
+	                     const std::string &startNode, bool additive );
+	bool setAnimParams( int stage, float time, float weight );
+	bool animate();
+};
 
 #endif // _egAnimation_H_
 

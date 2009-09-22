@@ -25,8 +25,6 @@
 
 #include "decode_vorbis.h"
 
-namespace Horde3DSound
-{
 	ov_callbacks vorbisCallbacks =
 	{
 		VorbisDecoder::VorbisRead,
@@ -192,4 +190,3 @@ namespace Horde3DSound
 
 		return sizeRead;
 	}
-}

@@ -69,7 +69,7 @@ void EffectComboBox::currentChanged(int index)
 {
 	if (itemData(index).isValid() && itemData(index) == QVariant((int)QVariant::UserType))
 	{
-		QString newEffect = HordeFileDialog::getResourceFile( ResourceTypes::ParticleEffect, m_resourcePath, this, tr("Select effect to import"));
+		QString newEffect = HordeFileDialog::getResourceFile( H3DResTypes::ParticleEffect, m_resourcePath, this, tr("Select effect to import"));
 		if (!newEffect.isEmpty())
 		{
 			if (findText(newEffect) == -1)

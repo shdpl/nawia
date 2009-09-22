@@ -73,35 +73,35 @@ void SceneFile::init()
 {
 	QDir::setCurrent(m_sceneFile.absolutePath());
 	QDomElement pathes = m_sceneFileXml.documentElement().firstChildElement("EnginePath");
-	Horde3DUtils::setResourcePath(ResourceTypes::SceneGraph, qPrintable(pathes.attribute("scenegraphpath", "")));
+	h3dutSetResourcePath(H3DResTypes::SceneGraph, qPrintable(pathes.attribute("scenegraphpath", "")));
 	if (pathes.hasAttribute("modelpath"))  // for compatibility reasons
 	{
 		pathes.setAttribute("geometrypath", pathes.attribute("modelpath"));
 		pathes.removeAttribute("modelpath");
 	}
-	Horde3DUtils::setResourcePath(ResourceTypes::Geometry, qPrintable(pathes.attribute("geometrypath", "")));
-	Horde3DUtils::setResourcePath(ResourceTypes::Animation, qPrintable(pathes.attribute("animationpath", "")));
-	Horde3DUtils::setResourcePath(ResourceTypes::Shader, qPrintable(pathes.attribute("shaderpath", "")));
-	Horde3DUtils::setResourcePath(ResourceTypes::Code, qPrintable(pathes.attribute("shaderpath", "")));
-	Horde3DUtils::setResourcePath(ResourceTypes::Texture, qPrintable(pathes.attribute("texturepath", "")));		
-	Horde3DUtils::setResourcePath(ResourceTypes::Material, qPrintable(pathes.attribute("materialpath", "")));	
-	Horde3DUtils::setResourcePath(ResourceTypes::ParticleEffect, qPrintable(pathes.attribute("effectspath", "")));	
+	h3dutSetResourcePath(H3DResTypes::Geometry, qPrintable(pathes.attribute("geometrypath", "")));
+	h3dutSetResourcePath(H3DResTypes::Animation, qPrintable(pathes.attribute("animationpath", "")));
+	h3dutSetResourcePath(H3DResTypes::Shader, qPrintable(pathes.attribute("shaderpath", "")));
+	h3dutSetResourcePath(H3DResTypes::Code, qPrintable(pathes.attribute("shaderpath", "")));
+	h3dutSetResourcePath(H3DResTypes::Texture, qPrintable(pathes.attribute("texturepath", "")));		
+	h3dutSetResourcePath(H3DResTypes::Material, qPrintable(pathes.attribute("materialpath", "")));	
+	h3dutSetResourcePath(H3DResTypes::ParticleEffect, qPrintable(pathes.attribute("effectspath", "")));	
 	if ( !pathes.hasAttribute("pipelinepath") ) // for compatibility reasons
 		pathes.setAttribute("pipelinepath", "");
-	Horde3DUtils::setResourcePath(ResourceTypes::Pipeline, qPrintable(pathes.attribute("pipelinepath")));
+	h3dutSetResourcePath(H3DResTypes::Pipeline, qPrintable(pathes.attribute("pipelinepath")));
 	QDomElement settings = m_sceneFileXml.documentElement().firstChildElement("EngineConfig");
-	Horde3D::setOption(EngineOptions::FastAnimation, 
+	h3dSetOption(H3DOptions::FastAnimation, 
 		(settings.attribute("fastAnimation", "true").compare("TRUE", Qt::CaseInsensitive) == 0 ||
 		settings.attribute("fastAnimation", "1").compare("1", Qt::CaseInsensitive) == 0) ? 1.0f : 0.0f);
-	Horde3D::setOption(EngineOptions::LoadTextures, 
+	h3dSetOption(H3DOptions::LoadTextures, 
 		(settings.attribute("loadTextures", "true").compare("TRUE", Qt::CaseInsensitive) == 0 ||
 		settings.attribute("loadTextures", "1").compare("1", Qt::CaseInsensitive) == 0) ? 1.0f : 0.0f);
-	Horde3D::setOption(EngineOptions::TexCompression, 
+	h3dSetOption(H3DOptions::TexCompression, 
 		(settings.attribute("texCompression", "true").compare("TRUE", Qt::CaseInsensitive) == 0 ||
 		settings.attribute("texCompression", "1").compare("1", Qt::CaseInsensitive) == 0) ? 1.0f : 0.0f);
-	Horde3D::setOption(EngineOptions::MaxAnisotropy, settings.attribute("maxAnisotropy", "1").toFloat());
-	Horde3D::setOption(EngineOptions::ShadowMapSize, settings.attribute("shadowMapSize", "1024").toFloat());
-	Horde3D::setOption(EngineOptions::MaxNumMessages, settings.attribute("maxNumMessages", "1024").toInt());
+	h3dSetOption(H3DOptions::MaxAnisotropy, settings.attribute("maxAnisotropy", "1").toFloat());
+	h3dSetOption(H3DOptions::ShadowMapSize, settings.attribute("shadowMapSize", "1024").toFloat());
+	h3dSetOption(H3DOptions::MaxNumMessages, settings.attribute("maxNumMessages", "1024").toInt());
 }
 
 bool SceneFile::save()

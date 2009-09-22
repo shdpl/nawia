@@ -1,13 +1,13 @@
 // *************************************************************************************************
 //
-// Chicago .NET - sample application for Horde3D .NET wrapper
+// Chicago .NET - sample application for h3d .NET wrapper
 // ----------------------------------------------------------
 //
 // Copyright (C) 2006-07 Nicolas Schulz and Martin Burkhard
 //
 // This file is intended for use as a code example, and may be used, modified, 
 // or distributed in source or object code form, without restriction. 
-// This sample is not covered by the LGPL.
+// This sample is not covered by the EPL.
 //
 // The code and information is provided "as-is" without warranty of any kind, 
 // either expressed or implied.
@@ -15,12 +15,14 @@
 // *************************************************************************************************
 
 using System.Windows.Forms;
-using Horde3DNET.PlatformInvoke;
 
 namespace Horde3DNET.Samples.ChicagoNET
 {
     internal class InputManager
     {
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern bool GetAsyncKeyState(int vKey);
+
         private static bool[] _keyStates = new bool[256];
 
         /// <summary>
@@ -39,7 +41,7 @@ namespace Horde3DNET.Samples.ChicagoNET
         {
             for (int i = 0; i < 256; ++i)
             {
-                if (PInvoke.GetAsyncKeyState(i) < 0) _keyStates[i] = true;
+                if (GetAsyncKeyState(i) ) _keyStates[i] = true;
                 else _keyStates[i] = false;
             }
         }

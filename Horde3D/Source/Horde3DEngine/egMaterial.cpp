@@ -5,25 +5,13 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
 #include "egMaterial.h"
-#include "egTextures.h"
+#include "egTexture.h"
 #include "egCom.h"
 #include "egModules.h"
 #include "utPlatform.h"
@@ -218,21 +206,6 @@ bool MaterialResource::setUniform( const string &name, float a, float b, float c
 }
 
 
-bool MaterialResource::setSampler( const std::string &name, TextureResource *texRes )
-{
-	for( uint32 i = 0; i < _samplers.size(); ++i )
-	{
-		if( _samplers[i].name == name )
-		{
-			_samplers[i].texRes = texRes;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-
 bool MaterialResource::isOfClass( const string &theClass )
 {
 	static string theClass2;
@@ -271,68 +244,209 @@ bool MaterialResource::isOfClass( const string &theClass )
 }
 
 
-int MaterialResource::getParami( int param )
+int MaterialResource::getElemCount( int elem )
 {
-	switch( param )
+	switch( elem )
 	{
-	case MaterialResParams::Link:
-		return _matLink != 0x0 ? _matLink->getHandle() : 0;		
-	case MaterialResParams::Shader:
-		return _shaderRes != 0x0 ? _shaderRes->getHandle() : 0;
+	case MaterialResData::MaterialElem:
+		return 1;
+	case MaterialResData::SamplerElem:
+		return (int)_samplers.size();
+	case MaterialResData::UniformElem:
+		return (int)_uniforms.size();
 	default:
-		return Resource::getParami( param );
+		return Resource::getElemCount( elem );
 	}
 }
 
 
-bool MaterialResource::setParami( int param, int value )
+int MaterialResource::getElemParamI( int elem, int elemIdx, int param )
 {
-	switch( param )
+	switch( elem )
 	{
-	case MaterialResParams::Link:
+	case MaterialResData::MaterialElem:
+		switch( param )
 		{
-			Resource *res = Modules::resMan().resolveResHandle( value );
-			if( value != 0 && res == 0x0 ) return false;
-			if( res != 0x0 && res->getType() != ResourceTypes::Material ) return false;
-
-			_matLink = (MaterialResource *)res;
-			return true;
+		case MaterialResData::MatLinkI:
+			return _matLink != 0x0 ? _matLink->getHandle() : 0;		
+		case MaterialResData::MatShaderI:
+			return _shaderRes != 0x0 ? _shaderRes->getHandle() : 0;
 		}
-	case MaterialResParams::Shader:
+		break;
+	case MaterialResData::SamplerElem:
+		if( (unsigned)elemIdx < _samplers.size() )
 		{
-			Resource *res = Modules::resMan().resolveResHandle( value );
-			if( value != 0 && res == 0x0 ) return false;
-			if( res != 0x0 && res->getType() != ResourceTypes::Shader ) return false;
-
-			_shaderRes = (ShaderResource *)res;
-			return true;
+			switch( param )
+			{
+			case MaterialResData::SampTexResI:
+				return _samplers[elemIdx].texRes->getHandle();
+			}
 		}
-	default:
-		return Resource::setParami( param, value );
+		break;
 	}
+
+	return Resource::getElemParamI( elem, elemIdx, param );
 }
 
 
-const char *MaterialResource::getParamstr( int param )
+void MaterialResource::setElemParamI( int elem, int elemIdx, int param, int value )
 {
-	switch( param )
+	switch( elem )
 	{
-	case MaterialResParams::Class:
-		return _class.c_str();
-	default:
-		return Resource::getParamstr( param );
+	case MaterialResData::MaterialElem:
+		switch( param )
+		{
+		case MaterialResData::MatLinkI:
+			if( value == 0 )
+			{	
+				_matLink = 0x0;
+				return;
+			}
+			else
+			{
+				Resource *res = Modules::resMan().resolveResHandle( value );
+				if( res != 0x0 && res->getType() == ResourceTypes::Material )
+					_matLink = (MaterialResource *)res;
+				else
+					Modules::setError( "Invalid handle in h3dSetResParamI for H3DMatRes::MatLinkI" );
+				return;
+			}
+			break;
+		case MaterialResData::MatShaderI:
+			if( value == 0 )
+			{	
+				_shaderRes = 0x0;
+				return;
+			}
+			else
+			{
+				Resource *res = Modules::resMan().resolveResHandle( value );
+				if( res != 0x0 && res->getType() == ResourceTypes::Shader )
+					_shaderRes = (ShaderResource *)res;
+				else
+					Modules::setError( "Invalid handle in h3dSetResParamI for H3DMatRes::MatShaderI" );
+				return;
+			}
+			break;
+		}
+		break;
+	case MaterialResData::SamplerElem:
+		if( (unsigned)elemIdx < _samplers.size() )
+		{
+			switch( param )
+			{
+			case MaterialResData::SampTexResI:
+				Resource *res = Modules::resMan().resolveResHandle( value );
+				if( res != 0x0 && res->getType() == ResourceTypes::Texture )
+					_samplers[elemIdx].texRes = (TextureResource *)res;
+				else
+					Modules::setError( "Invalid handle in h3dSetResParamI for H3DMatRes::SampTexResI" );
+				return;
+			}
+		}
+		break;
 	}
+
+	Resource::setElemParamI( elem, elemIdx, param, value );
 }
 
 
-bool MaterialResource::setParamstr( int param, const char *value )
-{	
-	switch( param )
+float MaterialResource::getElemParamF( int elem, int elemIdx, int param, int compIdx )
+{
+	switch( elem )
 	{
-	case MaterialResParams::Class:
-		_class = value;
-		return true;
-	default:
-		return Resource::setParamstr( param, value );
+	case MaterialResData::UniformElem:
+		if( (unsigned)elemIdx < _uniforms.size() )
+		{
+			switch( param )
+			{
+			case MaterialResData::UnifValueF4:
+				if( (unsigned)compIdx < 4 ) return _uniforms[elemIdx].values[compIdx];
+				break;
+			}
+		}
+		break;
 	}
+	
+	return Resource::getElemParamF( elem, elemIdx, param, compIdx );
+}
+
+
+void MaterialResource::setElemParamF( int elem, int elemIdx, int param, int compIdx, float value )
+{
+	switch( elem )
+	{
+	case MaterialResData::UniformElem:
+		if( (unsigned)elemIdx < _uniforms.size() )
+		{	
+			switch( param )
+			{
+			case MaterialResData::UnifValueF4:
+				if( (unsigned)compIdx < 4 )
+				{	
+					_uniforms[elemIdx].values[compIdx] = value;
+					return;
+				}
+				break;
+			}
+		}
+		break;
+	}
+	
+	Resource::setElemParamF( elem, elemIdx, param, compIdx, value );
+}
+
+
+const char *MaterialResource::getElemParamStr( int elem, int elemIdx, int param )
+{
+	switch( elem )
+	{
+	case MaterialResData::MaterialElem:
+		switch( param )
+		{
+		case MaterialResData::MatClassStr:
+			return _class.c_str();
+		}
+		break;
+	case MaterialResData::SamplerElem:
+		if( (unsigned)elemIdx < _samplers.size() )
+		{
+			switch( param )
+			{
+			case MaterialResData::SampNameStr:
+				return _samplers[elemIdx].name.c_str();
+			}
+		}
+		break;
+	case MaterialResData::UniformElem:
+		if( (unsigned)elemIdx < _uniforms.size() )
+		{
+			switch( param )
+			{
+			case MaterialResData::UnifNameStr:
+				return _uniforms[elemIdx].name.c_str();
+			}
+		}
+		break;
+	}
+	
+	return Resource::getElemParamStr( elem, elemIdx, param );
+}
+
+
+void MaterialResource::setElemParamStr( int elem, int elemIdx, int param, const char *value )
+{
+	switch( elem )
+	{
+	case MaterialResData::MaterialElem:
+		switch( param )
+		{
+		case MaterialResData::MatClassStr:
+			_class = value;
+			return;
+		}
+		break;
+	}
+	
+	Resource::setElemParamStr( elem, elemIdx, param, value );
 }

@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -124,12 +112,12 @@
 
 enum
 {
-   STBI_default = 0, // only used for req_comp
+	STBI_default = 0, // only used for req_comp
 
-   STBI_grey       = 1,
-   STBI_grey_alpha = 2,
-   STBI_rgb        = 3,
-   STBI_rgb_alpha  = 4,
+	STBI_grey       = 1,
+	STBI_grey_alpha = 2,
+	STBI_rgb        = 3,
+	STBI_rgb_alpha  = 4,
 };
 
 typedef unsigned char stbi_uc;
@@ -176,7 +164,7 @@ extern void   stbi_ldr_to_hdr_scale(float scale);
 
 // get a VERY brief reason for failure
 // NOT THREADSAFE
-extern char    *stbi_failure_reason  (void); 
+extern const char *stbi_failure_reason  (void); 
 
 // free the loaded image -- this is just free()
 extern void     stbi_image_free      (void *retval_from_stbi_load);
@@ -271,12 +259,12 @@ extern float *  stbi_hdr_load_from_file   (FILE *f,                  int *x, int
 // define new loaders
 typedef struct
 {
-   int       (*test_memory)(stbi_uc const *buffer, int len);
-   stbi_uc * (*load_from_memory)(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp);
-   #ifndef STBI_NO_STDIO
-   int       (*test_file)(FILE *f);
-   stbi_uc * (*load_from_file)(FILE *f, int *x, int *y, int *comp, int req_comp);
-   #endif
+	int       (*test_memory)(stbi_uc const *buffer, int len);
+	stbi_uc * (*load_from_memory)(stbi_uc const *buffer, int len, int *x, int *y, int *comp, int req_comp);
+	#ifndef STBI_NO_STDIO
+	int       (*test_file)(FILE *f);
+	stbi_uc * (*load_from_file)(FILE *f, int *x, int *y, int *comp, int req_comp);
+	#endif
 } stbi_loader;
 
 // register a loader by filling out the above structure (you must defined ALL functions)

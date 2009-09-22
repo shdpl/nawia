@@ -1,13 +1,13 @@
 // *************************************************************************************************
 //
-// Knight .NET - sample application for Horde3D .NET wrapper
+// Knight .NET - sample application for h3d .NET wrapper
 // ----------------------------------------------------------
 //
 // Copyright (C) 2007 Nicolas Schulz and Martin Burkhard
 //
 // This file is intended for use as a code example, and may be used, modified, 
 // or distributed in source or object code form, without restriction. 
-// This sample is not covered by the LGPL.
+// This sample is not covered by the EPL.
 //
 // The code and information is provided "as-is" without warranty of any kind, 
 // either expressed or implied.
@@ -17,6 +17,7 @@
 using System;
 using System.Windows.Forms;
 using Horde3DNET;
+using Horde3DNET.Utils;
 
 namespace Horde3DNET.Samples.KnightNET
 {
@@ -64,36 +65,36 @@ namespace Horde3DNET.Samples.KnightNET
         public bool init()
         { 
 	        // Initialize engine
-            if (!Horde3D.init())
+            if (!h3d.init())
             {
                 Horde3DUtils.dumpMessages();
                 return false;
             }
 
 	        // Set options
-	        Horde3D.setOption( Horde3D.EngineOptions.LoadTextures, 1 );
-	        Horde3D.setOption( Horde3D.EngineOptions.TexCompression, 0 );
-            Horde3D.setOption( Horde3D.EngineOptions.FastAnimation, 0 );
-	        Horde3D.setOption( Horde3D.EngineOptions.MaxAnisotropy, 4 );
-	        Horde3D.setOption( Horde3D.EngineOptions.ShadowMapSize, 2048 );
+	        h3d.setOption( h3d.H3DOptions.LoadTextures, 1 );
+	        h3d.setOption( h3d.H3DOptions.TexCompression, 0 );
+            h3d.setOption( h3d.H3DOptions.FastAnimation, 0 );
+	        h3d.setOption( h3d.H3DOptions.MaxAnisotropy, 4 );
+	        h3d.setOption( h3d.H3DOptions.ShadowMapSize, 2048 );
 
             // Add resources
             // added horde3d 1.0            
 	        // Pipelines
-            _hdrPipeRes = Horde3D.addResource( (int) Horde3D.ResourceTypes.Pipeline, "pipelines/hdr.pipeline.xml", 0);
-            _forwardPipeRes = Horde3D.addResource((int) Horde3D.ResourceTypes.Pipeline, "pipelines/forward.pipeline.xml", 0);
+            _hdrPipeRes = h3d.addResource( (int) h3d.H3DResTypes.Pipeline, "pipelines/hdr.pipeline.xml", 0);
+            _forwardPipeRes = h3d.addResource((int) h3d.H3DResTypes.Pipeline, "pipelines/forward.pipeline.xml", 0);
             // Overlays
-            _fontMatRes = Horde3D.addResource((int)Horde3D.ResourceTypes.Material, "overlays/font.material.xml", 0);
-            _panelMatRes = Horde3D.addResource((int)Horde3D.ResourceTypes.Material, "overlays/panel.material.xml", 0);
-            _logoMatRes = Horde3D.addResource((int)Horde3D.ResourceTypes.Material, "overlays/logo.material.xml", 0);
+            _fontMatRes = h3d.addResource((int)h3d.H3DResTypes.Material, "overlays/font.material.xml", 0);
+            _panelMatRes = h3d.addResource((int)h3d.H3DResTypes.Material, "overlays/panel.material.xml", 0);
+            _logoMatRes = h3d.addResource((int)h3d.H3DResTypes.Material, "overlays/logo.material.xml", 0);
             // Environment
-            int envRes = Horde3D.addResource((int)Horde3D.ResourceTypes.SceneGraph, "models/sphere/sphere.scene.xml", 0);
+            int envRes = h3d.addResource((int)h3d.H3DResTypes.SceneGraph, "models/sphere/sphere.scene.xml", 0);
 	        // Knight
-            int knightRes = Horde3D.addResource((int)Horde3D.ResourceTypes.SceneGraph, "models/knight/knight.scene.xml", 0);
-            int knightAnim1Res = Horde3D.addResource((int)Horde3D.ResourceTypes.Animation, "animations/knight_order.anim", 0);
-            int knightAnim2Res = Horde3D.addResource((int)Horde3D.ResourceTypes.Animation, "animations/knight_attack.anim", 0);
+            int knightRes = h3d.addResource((int)h3d.H3DResTypes.SceneGraph, "models/knight/knight.scene.xml", 0);
+            int knightAnim1Res = h3d.addResource((int)h3d.H3DResTypes.Animation, "animations/knight_order.anim", 0);
+            int knightAnim2Res = h3d.addResource((int)h3d.H3DResTypes.Animation, "animations/knight_attack.anim", 0);
 	        // Particle system
-            int particleSysRes = Horde3D.addResource((int)Horde3D.ResourceTypes.SceneGraph, "particles/particleSys1/particleSys1.scene.xml", 0);
+            int particleSysRes = h3d.addResource((int)h3d.H3DResTypes.SceneGraph, "particles/particleSys1/particleSys1.scene.xml", 0);
 
 
             // Load resources
@@ -102,46 +103,46 @@ namespace Horde3DNET.Samples.KnightNET
 
             // horde3d 1.0
 	        // Add camera
-            _cam = Horde3D.addCameraNode(Horde3D.RootNode, "Camera", _hdrPipeRes);
+            _cam = h3d.addCameraNode(h3d.H3DRootNode, "Camera", _hdrPipeRes);
             /////////////
             // Add scene nodes
             // Add environment
-            int env = Horde3D.addNodes( Horde3D.RootNode, envRes );
-	        Horde3D.setNodeTransform( env, 0, -20, 0, 0, 0, 0, 20, 20, 20 ); //horde3d 1.0
+            int env = h3d.addNodes( h3d.H3DRootNode, envRes );
+	        h3d.setNodeTransform( env, 0, -20, 0, 0, 0, 0, 20, 20, 20 ); //horde3d 1.0
 	        
             // Add knight
-            _knight = Horde3D.addNodes(Horde3D.RootNode, knightRes);
-	        Horde3D.setNodeTransform( _knight, 0, 0, 0, 0, 180, 0, 0.1f, 0.1f, 0.1f );
-	        Horde3D.setupModelAnimStage( _knight, 0, knightAnim1Res, string.Empty, false );
-            Horde3D.setupModelAnimStage(_knight, 1, knightAnim2Res, string.Empty, false);
+            _knight = h3d.addNodes(h3d.H3DRootNode, knightRes);
+	        h3d.setNodeTransform( _knight, 0, 0, 0, 0, 180, 0, 0.1f, 0.1f, 0.1f );
+	        h3d.setupModelAnimStage( _knight, 0, knightAnim1Res, 0, string.Empty, false );
+            h3d.setupModelAnimStage(_knight, 1, knightAnim2Res, 0, string.Empty, false);
 
             //horde3d 1.0
             // Attach particle system to hand joint
-	        Horde3D.findNodes( _knight, "Bip01_R_Hand", (int) Horde3D.SceneNodeTypes.Joint );
-	        int hand = Horde3D.getNodeFindResult( 0 );
-	        _particleSys = Horde3D.addNodes( hand, particleSysRes );
-	        Horde3D.setNodeTransform( _particleSys, 0, 40, 0, 90, 0, 0, 1, 1, 1 );
+	        h3d.findNodes( _knight, "Bip01_R_Hand", (int) h3d.H3DNodeTypes.Joint );
+	        int hand = h3d.getNodeFindResult( 0 );
+	        _particleSys = h3d.addNodes( hand, particleSysRes );
+	        h3d.setNodeTransform( _particleSys, 0, 40, 0, 90, 0, 0, 1, 1, 1 );
             /////////
 
 
             // Add light source
-            int light = Horde3D.addLightNode(Horde3D.RootNode, "Light1", 0, "LIGHTING", "SHADOWMAP");
-            Horde3D.setNodeTransform(light, 0, 1, 15, 30, 0, 0, 1, 1, 1);
+            int light = h3d.addLightNode(h3d.H3DRootNode, "Light1", 0, "LIGHTING", "SHADOWMAP");
+            h3d.setNodeTransform(light, 0, 1, 15, 30, 0, 0, 1, 1, 1);
 
-	        Horde3D.setNodeTransform( light, 0, 15, 10, -60, 0, 0, 1, 1, 1 );
-            Horde3D.setNodeParamf(light,(int) Horde3D.LightNodeParams.Radius, 30);
-            Horde3D.setNodeParamf(light, (int)Horde3D.LightNodeParams.FOV, 90);
-            Horde3D.setNodeParami(light, (int)Horde3D.LightNodeParams.ShadowMapCount, 1);
-            Horde3D.setNodeParamf(light, (int)Horde3D.LightNodeParams.ShadowMapBias, 0.01f);
-            Horde3D.setNodeParamf(light, (int)Horde3D.LightNodeParams.Col_R, 1.0f);
-            Horde3D.setNodeParamf(light, (int)Horde3D.LightNodeParams.Col_G, 0.8f);
-            Horde3D.setNodeParamf(light, (int)Horde3D.LightNodeParams.Col_B, 0.7f);
+	        h3d.setNodeTransform( light, 0, 15, 10, -60, 0, 0, 1, 1, 1 );
+            h3d.setNodeParamF(light,(int) h3d.H3DLight.RadiusF, 0, 30);
+            h3d.setNodeParamF(light, (int)h3d.H3DLight.FovF, 0, 90);
+            h3d.setNodeParamI(light, (int)h3d.H3DLight.ShadowMapCountI, 1);
+            h3d.setNodeParamF(light, (int)h3d.H3DLight.ShadowMapBiasF, 0, 0.01f);
+            h3d.setNodeParamF( light, (int)h3d.H3DLight.ColorF3, 0, 1.0f );
+            h3d.setNodeParamF(light, (int)h3d.H3DLight.ColorF3, 1, 0.8f);
+            h3d.setNodeParamF(light, (int)h3d.H3DLight.ColorF3, 2, 0.7f);            
             /////////////
 
 	        // Customize post processing effects
-            int matRes = Horde3D.findResource((int)Horde3D.ResourceTypes.Material, "pipelines/postHDR.material.xml");
+            int matRes = h3d.findResource((int)h3d.H3DResTypes.Material, "pipelines/postHDR.material.xml");
             // hdrParams: exposure, brightpass threshold, brightpass offset
-            Horde3D.setMaterialUniform(matRes, "hdrParams", 2.5f, 0.5f, 0.08f, 0);
+            h3d.setMaterialUniform(matRes, "hdrParams", 2.5f, 0.5f, 0.08f, 0);
 
             _initialized = true;
 
@@ -153,25 +154,25 @@ namespace Horde3DNET.Samples.KnightNET
 	        _curFPS = fps;
             _timer += 1 / fps;
 
-            Horde3D.setOption( Horde3D.EngineOptions.DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
-	        Horde3D.setOption( Horde3D.EngineOptions.WireframeMode, _wireframeMode ? 1.0f : 0.0f );
+            h3d.setOption( h3d.H3DOptions.DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
+	        h3d.setOption( h3d.H3DOptions.WireframeMode, _wireframeMode ? 1.0f : 0.0f );
         	
 	        if( !_freeze )
 	        {
 		        _animTime += 1.0f / _curFPS;
 
 		        // Do animation blending
-		        Horde3D.setModelAnimParams( _knight, 0, _animTime * 24.0f, _weight );
-		        Horde3D.setModelAnimParams( _knight, 1, _animTime * 24.0f, 1.0f - _weight );
+		        h3d.setModelAnimParams( _knight, 0, _animTime * 24.0f, _weight );
+		        h3d.setModelAnimParams( _knight, 1, _animTime * 24.0f, 1.0f - _weight );
 
 		        // Animate particle system                                
-                int cnt = cnt = Horde3D.findNodes(_particleSys, "", (int)Horde3D.SceneNodeTypes.Emitter);
+                int cnt = cnt = h3d.findNodes(_particleSys, "", (int)h3d.H3DNodeTypes.Emitter);
 		        for( int i = 0; i < cnt; ++i )
-			        Horde3D.advanceEmitterTime( Horde3D.getNodeFindResult( i ), 1.0f / _curFPS );
+			        h3d.advanceEmitterTime( h3d.getNodeFindResult( i ), 1.0f / _curFPS );
 	        }
 
             // Set camera parameters
-	        Horde3D.setNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 ); //horde3d 1.0
+	        h3d.setNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 ); //horde3d 1.0
 
             if (_statMode > 0)
             {
@@ -181,19 +182,19 @@ namespace Horde3DNET.Samples.KnightNET
                 Horde3DUtils.showText(text, 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes, 5);
             }
 
-            // Show logo
-            Horde3D.showOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
-	                      1, 1, 1, 0, 1, 0.8f, 1, 1,
-	                      1, 1, 1, 1, _logoMatRes, 7 );
+            // Show logo            
+            h3d.showOverlay(0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
+                            1, 1, 1, 0, 1, 0.8f, 1, 1,
+                            1, 1, 1, 1, _logoMatRes, 7);
 
 
             // Render scene
-            Horde3D.render( _cam );//horde3D 1.0
+            h3d.render( _cam );//horde3D 1.0
 
-            Horde3D.finalizeFrame();
+            h3d.finalizeFrame();
 
             //horde3D 1.0
-            Horde3D.clearOverlays();
+            h3d.clearOverlays();
 
             // Write all messages to log file
             Horde3DUtils.dumpMessages();
@@ -202,7 +203,7 @@ namespace Horde3DNET.Samples.KnightNET
         public void release()
         {      	
 	        // Release engine
-	        Horde3D.release();
+	        h3d.release();
         }
 
         public void resize(int width, int height)
@@ -210,11 +211,11 @@ namespace Horde3DNET.Samples.KnightNET
             if (!_initialized) return;
 
             // Resize viewport
-            Horde3D.setupViewport( 0, 0, width, height, true );
+            h3d.setupViewport( 0, 0, width, height, true );
 
             // Set virtual camera parameters
-            //depreceated Horde3D.setupCameraView(Horde3D.PrimeTimeCam, 45.0f, (float)width / height, 0.1f, 1000.0f);
-            Horde3D.setupCameraView( _cam, 45.0f, (float)width / height, 0.1f, 1000.0f ); //horde3d 1.0
+            //depreceated h3d.setupCameraView(h3d.PrimeTimeCam, 45.0f, (float)width / height, 0.1f, 1000.0f);
+            h3d.setupCameraView( _cam, 45.0f, (float)width / height, 0.1f, 1000.0f ); //horde3d 1.0
         }
 
         public void keyPressEvent(Keys key)
@@ -225,10 +226,10 @@ namespace Horde3DNET.Samples.KnightNET
                     _freeze = !_freeze;
                     break;
 	            case Keys.F3:
-	                if( Horde3D.getNodeParami( _cam, (int) Horde3D.CameraNodeParams.PipelineRes ) == _hdrPipeRes )
-                        Horde3D.setNodeParami(_cam, (int) Horde3D.CameraNodeParams.PipelineRes, _forwardPipeRes);
+	                if( h3d.getNodeParamI( _cam, (int) h3d.H3DCamera.PipeResI ) == _hdrPipeRes )
+                        h3d.setNodeParamI(_cam, (int) h3d.H3DCamera.PipeResI, _forwardPipeRes);
 		            else
-                        Horde3D.setNodeParami(_cam, (int)Horde3D.CameraNodeParams.PipelineRes, _hdrPipeRes);
+                        h3d.setNodeParamI(_cam, (int)h3d.H3DCamera.PipeResI, _hdrPipeRes);
 	                break;
                 case Keys.F7:
                     _debugViewMode = !_debugViewMode;

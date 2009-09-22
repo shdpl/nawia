@@ -57,7 +57,7 @@ QModelNode::QModelNode(const QDomElement& xmlNode, int row, SceneTreeModel* mode
 QModelNode::~QModelNode()
 {
 	if (m_resourceID != 0)
-		Horde3D::removeResource(m_resourceID);
+		h3dRemoveResource(m_resourceID);
 }
 
 QString QModelNode::geometry() const
@@ -76,7 +76,7 @@ void QModelNode::setSoftwareSkinning(bool softwareSkinning)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("softwareSkinning", softwareSkinning);
-		Horde3D::setNodeParami(m_hordeID, ModelNodeParams::SoftwareSkinning, softwareSkinning);
+		h3dSetNodeParamI(m_hordeID, H3DModel::SWSkinningI, softwareSkinning);
 	}
 	else if( softwareSkinning != QModelNode::softwareSkinning() )
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Software Skinning", this, "Software_Skinning", QVariant::fromValue(softwareSkinning), SoftwareSkinningID));
@@ -92,7 +92,7 @@ void QModelNode::setLodDist1( float lodDist1 )
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("lodDist1", lodDist1);
-		Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist1, lodDist1);
+		h3dSetNodeParamI(m_hordeID, H3DModel::LodDist1F, lodDist1);
 	}
 	else if( lodDist1 != QModelNode::lodDist1() )
 		m_model->undoStack()->push( new QXmlNodePropertyCommand("Set Lod Distance 1", this, "Lod_Distance_1", QVariant::fromValue(lodDist1), LodDistID) );
@@ -108,7 +108,7 @@ void QModelNode::setLodDist2( float lodDist2 )
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("lodDist2", lodDist2);
-		Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist2, lodDist2);
+		h3dSetNodeParamI(m_hordeID, H3DModel::LodDist2F, lodDist2);
 	}
 	else if( lodDist2 != QModelNode::lodDist2() )
 		m_model->undoStack()->push( new QXmlNodePropertyCommand("Set Lod Distance 2", this, "Lod_Distance_2", QVariant::fromValue(lodDist2), LodDistID) );
@@ -124,7 +124,7 @@ void QModelNode::setLodDist3( float lodDist3 )
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("lodDist3", lodDist3 );
-		Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist3, lodDist3);
+		h3dSetNodeParamI(m_hordeID, H3DModel::LodDist3F, lodDist3);
 	}
 	else if( lodDist3 != QModelNode::lodDist3() )
 		m_model->undoStack()->push( new QXmlNodePropertyCommand("Set Lod Distance 3", this, "Lod_Distance_3", QVariant::fromValue(lodDist3), LodDistID) );
@@ -140,7 +140,7 @@ void QModelNode::setLodDist4( float lodDist4 )
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("lodDist4", lodDist4);
-		Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist4, lodDist4);
+		h3dSetNodeParamI(m_hordeID, H3DModel::LodDist4F, lodDist4);
 	}
 	else if( lodDist4 != QModelNode::lodDist4() )
 		m_model->undoStack()->push( new QXmlNodePropertyCommand("Set Lod Distance 4", this, "Lod_Distance_4", QVariant::fromValue(lodDist4), LodDistID) );
@@ -148,10 +148,10 @@ void QModelNode::setLodDist4( float lodDist4 )
 
 void QModelNode::addRepresentation()
 {
-	m_resourceID = Horde3D::addResource(ResourceTypes::Geometry, qPrintable(m_xmlNode.attribute("geometry")), 0);
+	m_resourceID = h3dAddResource(H3DResTypes::Geometry, qPrintable(m_xmlNode.attribute("geometry")), 0);
 
 	// Load resource immediately since a later call to loadResourceFromDisk results in a bad behaviour of the Horde3D engine
-	QString resourceName = Horde3DUtils::getResourcePath(ResourceTypes::Geometry);
+	QString resourceName = h3dutGetResourcePath(H3DResTypes::Geometry);
 	if( !resourceName.isEmpty() && !resourceName.endsWith('/') && !resourceName.endsWith('\\'))
 		resourceName += '/';
 	resourceName += geometry();
@@ -161,23 +161,23 @@ void QModelNode::addRepresentation()
 		qWarning("Error opening resource %s", qPrintable(m_xmlNode.attribute("geometry")));
 	
 	// Stupid return value, if false it can also be the case that the resource was loaded before instead of that their was an error
-	Horde3D::loadResource(m_resourceID, file.readAll().constData(), file.size());
+	h3dLoadResource(m_resourceID, file.readAll().constData(), file.size());
 	file.close();
 
 	QSceneNode* parentNode = static_cast<QSceneNode*>(parent());
-	unsigned int rootID = parentNode ? parentNode->hordeId() : RootNode;
+	unsigned int rootID = parentNode ? parentNode->hordeId() : H3DRootNode;
 
-	m_hordeID = Horde3D::addModelNode(rootID, qPrintable(m_xmlNode.attribute("name", "ATTENTION No Node Name")), m_resourceID);
+	m_hordeID = h3dAddModelNode(rootID, qPrintable(m_xmlNode.attribute("name", "ATTENTION No Node Name")), m_resourceID);
 	
 	float x, y, z, rx, ry, rz, sx, sy, sz;
 	getTransformation(x,y,z,rx,ry,rz,sx,sy,sz);
-	Horde3D::setNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
+	h3dSetNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
 	
-	Horde3D::setNodeParami(m_hordeID, ModelNodeParams::SoftwareSkinning, softwareSkinning());
-	Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist1, lodDist1());
-	Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist2, lodDist2());
-	Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist3, lodDist3());
-	Horde3D::setNodeParami(m_hordeID, ModelNodeParams::LodDist4, lodDist4());
+	h3dSetNodeParamI(m_hordeID, H3DModel::SWSkinningI, softwareSkinning());
+	h3dSetNodeParamI(m_hordeID, H3DModel::LodDist1F, lodDist1());
+	h3dSetNodeParamI(m_hordeID, H3DModel::LodDist2F, lodDist2());
+	h3dSetNodeParamI(m_hordeID, H3DModel::LodDist3F, lodDist3());
+	h3dSetNodeParamI(m_hordeID, H3DModel::LodDist4F, lodDist4());
 
 	// Attachment
 	QDomElement attachment = m_xmlNode.firstChildElement("Attachment");	
@@ -190,18 +190,19 @@ void QModelNode::addRepresentation()
 void QModelNode::activate()
 {
 	float minX, minY, minZ, maxX, maxY, maxZ;
-	Horde3D::getNodeAABB(m_hordeID, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
+	h3dGetNodeAABB(m_hordeID, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
 
 	unsigned int cameraID = HordeSceneEditor::instance()->glContext()->activeCam();
-	float leftPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::LeftPlane);
-	float rightPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::RightPlane);
-	float bottomPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::BottomPlane);
-	float topPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::TopPlane);
-	float nearPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::NearPlane);
+	float leftPlane = h3dGetNodeParamF(cameraID, H3DCamera::LeftPlaneF, 0 );
+	float rightPlane = h3dGetNodeParamF(cameraID, H3DCamera::RightPlaneF, 0);
+	float bottomPlane = h3dGetNodeParamF(cameraID, H3DCamera::BottomPlaneF, 0);
+	float topPlane = h3dGetNodeParamF(cameraID, H3DCamera::TopPlaneF, 0);
+	float nearPlane = h3dGetNodeParamF(cameraID, H3DCamera::NearPlaneF, 0);
 
 	const float* camera = 0;
-	NodeHandle parentNode = Horde3D::getNodeParent(cameraID);
-	if ( !Horde3D::getNodeTransformMatrices(parentNode, 0, &camera) ) return;
+	H3DNode parentNode = h3dGetNodeParent(cameraID);
+	h3dGetNodeTransMats(parentNode, 0, &camera); 
+	if ( !camera ) return;
 	
 	/** 
 	 * (maxX - minX)                           =   width of the bounding box 
@@ -211,7 +212,7 @@ void QModelNode::activate()
 	float offsetY = (maxY - minY) * topPlane / (topPlane - bottomPlane);
 	QMatrix4f newCamTrans = QMatrix4f::TransMat(maxX - offsetX, maxY - offsetY, maxZ);
 	newCamTrans.translate(0, 0, qMax(nearPlane * offsetX / rightPlane, nearPlane * offsetY / topPlane));		
-	Horde3D::setNodeTransformMatrix(cameraID, (QMatrix4f(camera).inverted() * newCamTrans).x);	
+	h3dSetNodeTransMat(cameraID, (QMatrix4f(camera).inverted() * newCamTrans).x);	
 }
 
 

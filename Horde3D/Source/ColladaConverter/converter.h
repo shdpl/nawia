@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -142,14 +130,17 @@ private:
 	std::vector< Joint * >       _joints;
 	std::vector< MorphTarget >   _morphTargets;
 
+	std::string                  _outPath;
 	float                        _lodDist1, _lodDist2, _lodDist3, _lodDist4;
 	unsigned int                 _frameCount;
 	unsigned int                 _maxLodLevel;
+	bool                         _animNotSampled;
 
 
 	Matrix4f getNodeTransform( ColladaDocument &doc, DaeNode &node, unsigned int frame );
 	SceneNode *findNode( const char *name, SceneNode *ignoredNode );
 	void checkNodeName( SceneNode *node );
+	bool validateInstance( ColladaDocument &doc, const std::string &instanceId );
 	SceneNode *processNode( ColladaDocument &doc, DaeNode &node, SceneNode *parentNode,
 	                        Matrix4f transAccum, std::vector< Matrix4f > animTransAccum );
 	void calcTangentSpaceBasis( std::vector< Vertex > &vertices );
@@ -162,13 +153,13 @@ private:
 
 public:
 
-	Converter( float *lodDists );
+	Converter( const std::string &outPath, float *lodDists );
 	~Converter();
 	
 	bool convertModel( ColladaDocument &doc, bool optimize );
 	bool saveModel( const std::string &name );
 	
-	bool writeMaterials( ColladaDocument &doc, const std::string &name );
+	bool writeMaterials( ColladaDocument &doc, const std::string &name, bool replace );
 	bool hasAnimation();
 	bool writeAnimation( const std::string &name );
 };

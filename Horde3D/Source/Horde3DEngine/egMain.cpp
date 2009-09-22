@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -26,7 +14,7 @@
 #include "egModel.h"
 #include "egParticle.h"
 #include "egSceneGraphRes.h"
-#include "egTextures.h"
+#include "egTexture.h"
 #include "utPlatform.h"
 #include <cstdlib>
 #include <cstring>
@@ -40,1211 +28,910 @@ using namespace std;
 #endif
 
 
-// *************************************************************************************************
-// Engine core functions
-// *************************************************************************************************
+bool initialized;
+const char *emptyCString = "";
+std::string emptyString = emptyCString;
+std::string strPool[4];  // String pool for avoiding memory allocations of temporary string objects
 
-namespace Horde3D
+#define VALIDATE_RES( res, func, retVal ) if( res == 0x0 ) { \
+	Modules::setError( (std::string( "Invalid resource handle in " ) + func).c_str() ); return retVal; }
+#define VALIDATE_RES_TYPE( res, type, func, retVal ) if( res == 0x0 || res->getType() != type ) { \
+	Modules::setError( (std::string( "Invalid resource handle in " ) + func).c_str() ); return retVal; }
+#define VALIDATE_NODE( node, func, retVal ) if( node == 0x0 ) { \
+	Modules::setError( (std::string( "Invalid node handle in " ) + func).c_str() ); return retVal; }
+#define VALIDATE_NODE_TYPE( node, type, func, retVal ) if( node == 0x0 || node->getType() != type ) { \
+	Modules::setError( (std::string( "Invalid node handle in " ) + func).c_str() ); return retVal; }
+#define EMPTY
+
+inline const string &safeStr( const char *str, int index )
 {
-	bool initialized;
-	
-	string safeStr( const char *str )
-	{
-		if( str != 0x0 ) return str;
-		else return "";
-	}
-
-	
-	// *********************************************************************************************
-	// Basic functions
-	// *********************************************************************************************
-	
-	DLLEXP const char *getVersionString()
-	{
-		return versionString;
-	}
+	if( str != 0x0 ) return strPool[index] = str;
+	else return emptyString;
+}
 
 
-	DLLEXP bool checkExtension( const char *extensionName )
-	{
-		return Modules::extMan().checkExtension( safeStr( extensionName ) );
-	}
+// =================================================================================================
+// Basic functions
+// =================================================================================================
 
-	
-	DLLEXP bool init()
-	{
-		if( initialized )
-		{	
-			// Init states for additional rendering context
-			Modules::renderer().initStates();
-			return true;
-		}
-		initialized = true;
-	
-		Modules::init();
+DLLEXP const char *h3dGetVersionString()
+{
+	return versionString;
+}
 
-		// Register renderer before resources so that they can upload data to the GPU
-		if( !Modules::renderer().init() ) return false;
 
-		// Register resource types
-		Modules::resMan().registerType( ResourceTypes::SceneGraph, "SceneGraph", 0x0, 0x0,
-			SceneGraphResource::factoryFunc );
-		Modules::resMan().registerType( ResourceTypes::Geometry, "Geometry", GeometryResource::initializationFunc,
-			GeometryResource::releaseFunc, GeometryResource::factoryFunc );
-		Modules::resMan().registerType( ResourceTypes::Animation, "Animation", 0x0, 0x0,
-			AnimationResource::factoryFunc );
-		Modules::resMan().registerType( ResourceTypes::Material, "Material", 0x0, 0x0,
-			MaterialResource::factoryFunc );
-		Modules::resMan().registerType( ResourceTypes::Code, "Code", 0x0, 0x0,
-			CodeResource::factoryFunc );
-		Modules::resMan().registerType( ResourceTypes::Shader, "Shader", 0x0, 0x0,
-			ShaderResource::factoryFunc );
-		Modules::resMan().registerType( ResourceTypes::Texture, "Texture", TextureResource::initializationFunc,
-			TextureResource::releaseFunc, TextureResource::factoryFunc );
-		Modules::resMan().registerType( ResourceTypes::ParticleEffect, "ParticleEffect", 0x0, 0x0,
-			ParticleEffectResource::factoryFunc );
-		Modules::resMan().registerType( ResourceTypes::Pipeline, "Pipeline", 0x0, 0x0,
-			PipelineResource::factoryFunc );
+DLLEXP bool h3dCheckExtension( const char *extensionName )
+{
+	return Modules::extMan().checkExtension( safeStr( extensionName, 0 ) );
+}
 
-		// Register node types
-		Modules::sceneMan().registerType( SceneNodeTypes::Group, "Group",
-			GroupNode::parsingFunc, GroupNode::factoryFunc, 0x0 );
-		Modules::sceneMan().registerType( SceneNodeTypes::Model, "Model",
-			ModelNode::parsingFunc, ModelNode::factoryFunc, Renderer::drawModels );
-		Modules::sceneMan().registerType( SceneNodeTypes::Mesh, "Mesh",
-			MeshNode::parsingFunc, MeshNode::factoryFunc, 0x0 );
-		Modules::sceneMan().registerType( SceneNodeTypes::Joint, "Joint",
-			JointNode::parsingFunc, JointNode::factoryFunc, 0x0 );
-		Modules::sceneMan().registerType( SceneNodeTypes::Light, "Light",
-			LightNode::parsingFunc, LightNode::factoryFunc, 0x0 );
-		Modules::sceneMan().registerType( SceneNodeTypes::Camera, "Camera",
-			CameraNode::parsingFunc, CameraNode::factoryFunc, 0x0 );
-		Modules::sceneMan().registerType( SceneNodeTypes::Emitter, "Emitter",
-			EmitterNode::parsingFunc, EmitterNode::factoryFunc, Renderer::drawParticles );
-		
-		// Register extensions at last so that they can overwrite the registered resources and nodes
-		if( !Modules::extMan().init() ) return false;
 
+DLLEXP bool h3dGetError()
+{
+	return Modules::getError();
+}
+
+
+DLLEXP bool h3dInit()
+{
+	if( initialized )
+	{	
+		// Init states for additional rendering context
+		Modules::renderer().initStates();
 		return true;
 	}
+	initialized = true;
 
+	Modules::init();
 
-	DLLEXP void release()
-	{
-		Modules::release();
-		initialized = false;
-	}
+	// Register renderer before resources so that they can upload data to the GPU
+	if( !Modules::renderer().init() ) return false;
 
+	// Register resource types
+	Modules::resMan().registerType( ResourceTypes::SceneGraph, "SceneGraph", 0x0, 0x0,
+		SceneGraphResource::factoryFunc );
+	Modules::resMan().registerType( ResourceTypes::Geometry, "Geometry", GeometryResource::initializationFunc,
+		GeometryResource::releaseFunc, GeometryResource::factoryFunc );
+	Modules::resMan().registerType( ResourceTypes::Animation, "Animation", 0x0, 0x0,
+		AnimationResource::factoryFunc );
+	Modules::resMan().registerType( ResourceTypes::Material, "Material", 0x0, 0x0,
+		MaterialResource::factoryFunc );
+	Modules::resMan().registerType( ResourceTypes::Code, "Code", 0x0, 0x0,
+		CodeResource::factoryFunc );
+	Modules::resMan().registerType( ResourceTypes::Shader, "Shader", 0x0, 0x0,
+		ShaderResource::factoryFunc );
+	Modules::resMan().registerType( ResourceTypes::Texture, "Texture", TextureResource::initializationFunc,
+		TextureResource::releaseFunc, TextureResource::factoryFunc );
+	Modules::resMan().registerType( ResourceTypes::ParticleEffect, "ParticleEffect", 0x0, 0x0,
+		ParticleEffectResource::factoryFunc );
+	Modules::resMan().registerType( ResourceTypes::Pipeline, "Pipeline", 0x0, 0x0,
+		PipelineResource::factoryFunc );
 
-	DLLEXP bool render( NodeHandle cameraNode )
-	{
-		SceneNode *node = Modules::sceneMan().resolveNodeHandle( cameraNode );
-		if( node == 0x0 || node->getType() != SceneNodeTypes::Camera ) return false;
-		
-		return Modules::renderer().render( (CameraNode *)node );
-	}
-
-
-	DLLEXP bool finalizeFrame()
-	{
-		Modules::renderer().finalizeFrame();
-		return true;
-	}
-
-
-	DLLEXP void setupViewport( int x, int y, int width, int height, bool resizeBuffers )
-	{
-		if( !initialized ) return;
-		
-		Modules::renderer().resize( x, y, width, height );
-
-		if( !resizeBuffers ) return;
-
-		// Update pipeline resources
-		for( uint32 i = 0; i < Modules::resMan().getResources().size(); ++i )
-		{
-			Resource *res = Modules::resMan().getResources()[i];
-			
-			if( res != 0x0 && res->getType() == ResourceTypes::Pipeline )
-			{
-				((PipelineResource *)res)->resize();
-			}
-		}
-	}
-
-
-	DLLEXP void clear()
-	{
-		Modules::sceneMan().removeNode( RootNode );
-		Modules::resMan().clear();
-	}
-
-
-	// *********************************************************************************************
-	// General functions
-	// *********************************************************************************************
-
-	DLLEXP const char *getMessage( int *level, float *time )
-	{
-		static string msgText;
-		static LogMessage msg;
-		
-		if( Modules::log().getMessage( msg ) )
-		{
-			if( level != 0x0 ) *level = msg.level;
-			if( time != 0x0 ) *time = msg.time;
-			return msg.text.c_str();
-		}
-		else
-			return "";
-	}
-
+	// Register node types
+	Modules::sceneMan().registerType( SceneNodeTypes::Group, "Group",
+		GroupNode::parsingFunc, GroupNode::factoryFunc, 0x0 );
+	Modules::sceneMan().registerType( SceneNodeTypes::Model, "Model",
+		ModelNode::parsingFunc, ModelNode::factoryFunc, Renderer::drawModels );
+	Modules::sceneMan().registerType( SceneNodeTypes::Mesh, "Mesh",
+		MeshNode::parsingFunc, MeshNode::factoryFunc, 0x0 );
+	Modules::sceneMan().registerType( SceneNodeTypes::Joint, "Joint",
+		JointNode::parsingFunc, JointNode::factoryFunc, 0x0 );
+	Modules::sceneMan().registerType( SceneNodeTypes::Light, "Light",
+		LightNode::parsingFunc, LightNode::factoryFunc, 0x0 );
+	Modules::sceneMan().registerType( SceneNodeTypes::Camera, "Camera",
+		CameraNode::parsingFunc, CameraNode::factoryFunc, 0x0 );
+	Modules::sceneMan().registerType( SceneNodeTypes::Emitter, "Emitter",
+		EmitterNode::parsingFunc, EmitterNode::factoryFunc, Renderer::drawParticles );
 	
-	DLLEXP float getOption( EngineOptions::List param )
-	{
-		return Modules::config().getOption( param );
-	}
+	// Register extensions at last so that they can overwrite the registered resources and nodes
+	if( !Modules::extMan().init() ) return false;
+
+	return true;
+}
+
+
+DLLEXP void h3dRelease()
+{
+	Modules::release();
+	initialized = false;
+}
+
+
+DLLEXP void h3dRender( NodeHandle cameraNode )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( cameraNode );
+	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Camera, "h3dRender", EMPTY );
 	
+	Modules::renderer().render( (CameraNode *)sn );
+}
+
+
+DLLEXP void h3dFinalizeFrame()
+{
+	Modules::renderer().finalizeFrame();
+}
+
+
+DLLEXP void h3dSetupViewport( int x, int y, int width, int height, bool resizeBuffers )
+{
+	if( !initialized ) return;
 	
-	DLLEXP bool setOption( EngineOptions::List param, float value )
+	Modules::renderer().resize( x, y, width, height );
+
+	if( !resizeBuffers ) return;
+
+	// Update pipeline resources
+	for( uint32 i = 0; i < Modules::resMan().getResources().size(); ++i )
 	{
-		return Modules::config().setOption( param, value );
-	}
-
-
-	DLLEXP float getStat( EngineStats::List param, bool reset )
-	{
-		return Modules::stats().getStat( param, reset );
-	}
-
-
-	DLLEXP void showOverlay( float x_tl, float y_tl, float u_tl, float v_tl,
-	                         float x_bl, float y_bl, float u_bl, float v_bl,
-	                         float x_br, float y_br, float u_br, float v_br,
-	                         float x_tr, float y_tr, float u_tr, float v_tr,
-	                         float colR, float colG, float colB, float colA,
-	                         ResHandle materialRes, int layer )
-	{
-		Resource *res = Modules::resMan().resolveResHandle( materialRes ); 
-		if( res != 0x0 && res->getType() == ResourceTypes::Material )
-		{
-			Modules::renderer().showOverlay(
-				Overlay( x_tl, y_tl, u_tl, v_tl, x_bl, y_bl, u_bl, v_bl,
-				         x_br, y_br, u_br, v_br, x_tr, y_tr, u_tr, v_tr,
-				         colR, colG, colB, colA, (MaterialResource *)res, layer ) );
-		}
-		else
-			Modules::log().writeDebugInfo( "Invalid Material resource handle %i in showOverlay", materialRes );
-	}
-
-
-	DLLEXP void clearOverlays()
-	{
-		Modules::renderer().clearOverlays();
-	}
-
-
-	// *********************************************************************************************
-	// Resource functions
-	// *********************************************************************************************
-
-	DLLEXP int getResourceType( ResHandle res )
-	{
-		Resource *r = Modules::resMan().resolveResHandle( res );
-		
-		if( r != 0x0 ) return r->getType();
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in getResourceType", res );
-			return ResourceTypes::Undefined;
-		}
-	}
-
-
-	DLLEXP const char *getResourceName( ResHandle res )
-	{
-		static char emptyString = '\0';
-		
-		Resource *r = Modules::resMan().resolveResHandle( res );
-		
-		if( r != 0x0 ) return r->getName().c_str();
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in getResourceName", res );
-			return &emptyString;
-		}
-	}
-
-
-	DLLEXP ResHandle getNextResource( int type, ResHandle start )
-	{
-		Resource *res = Modules::resMan().getNextResource( type, start );
-		
-		return res != 0x0 ? res->getHandle() : 0;
-	}
-	
-	
-	DLLEXP ResHandle findResource( int type, const char *name )
-	{
-		Resource *res = Modules::resMan().findResource( type, safeStr( name ) );
-		
-		return res != 0x0 ? res->getHandle() : 0;
-	}
-
-	
-	DLLEXP ResHandle addResource( int type, const char *name, int flags )
-	{
-		return Modules::resMan().addResource( type, safeStr( name ), flags, true );
-	}
-
-
-	DLLEXP ResHandle cloneResource( ResHandle sourceRes, const char *name )
-	{
-		return Modules::resMan().cloneResource( sourceRes, safeStr( name ) );
-	}
-
-
-	DLLEXP int removeResource( ResHandle res )
-	{
-		return Modules::resMan().removeResource( res, true );
-	}
-
-
-	DLLEXP bool isResourceLoaded( ResHandle res )
-	{
-		Resource *resObj = Modules::resMan().resolveResHandle( res );
-		if( resObj == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in isResourceLoaded", res );
-			return false;
-		}
-		
-		return resObj->isLoaded();
-	}
-
-	
-	DLLEXP bool loadResource( ResHandle res, const char *data, int size )
-	{
-		Resource *resObj = Modules::resMan().resolveResHandle( res );
-		if( resObj == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in loadResource", res );
-			return false;
-		}
-		
-		Modules::log().writeInfo( "Loading resource '%s'", resObj->getName().c_str() );
-		return resObj->load( data, size );
-	}
-
-
-	DLLEXP bool unloadResource( ResHandle res )
-	{
-		Resource *resObj = Modules::resMan().resolveResHandle( res );
-
-		if( resObj != 0x0 )
-		{
-			resObj->unload();
-			return true;
-		}
-		else
-		{
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in unloadResource", res );
-			return false;
-		}
-	}
-
-
-	DLLEXP int getResourceParami( ResHandle res, int param )
-	{
-		Resource *resObj = Modules::resMan().resolveResHandle( res );
-		if( resObj == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in getResourceParami", res );
-			return 0x0;
-		}
-
-		return resObj->getParami( param );
-	}
-
-
-	DLLEXP bool setResourceParami( ResHandle res, int param, int value )
-	{
-		Resource *resObj = Modules::resMan().resolveResHandle( res );
-		if( resObj == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in setResourceParami", res );
-			return false;
-		}
-
-		return resObj->setParami( param, value );
-	}
-
-
-	DLLEXP float getResourceParamf( ResHandle res, int param )
-	{
-		Resource *resObj = Modules::resMan().resolveResHandle( res );
-		if( resObj == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in getResourceParamf", res );
-			return 0x0;
-		}
-
-		return resObj->getParamf( param );
-	}
-
-
-	DLLEXP bool setResourceParamf( ResHandle res, int param, float value )
-	{
-		Resource *resObj = Modules::resMan().resolveResHandle( res );
-		if( resObj == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in setResourceParamf", res );
-			return false;
-		}
-
-		return resObj->setParamf( param, value );
-	}
-
-	DLLEXP const char *getResourceParamstr( ResHandle res, int param )
-	{
-		static char emptyString = '\0';
-		
-		Resource *resObj = Modules::resMan().resolveResHandle( res );
-		if( resObj == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in getResourceParamstr", res );
-			return &emptyString;
-		}
-
-		return resObj->getParamstr( param );
-	}
-
-
-	DLLEXP bool setResourceParamstr( ResHandle res, int param, const char *value )
-	{
-		Resource *resObj = Modules::resMan().resolveResHandle( res );
-		if( resObj == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in setResourceParamstr", res );
-			return false;
-		}
-		if( value == 0x0 )
-		{
-			Modules::log().writeDebugInfo( "Invalid value for setResourceParamstr: NULL" );
-			return false;
-		}
-		
-		return resObj->setParamstr( param, value );
-	}
-
-
-	DLLEXP const void *getResourceData( ResHandle res, int param )
-	{
-		Resource *resObj = Modules::resMan().resolveResHandle( res );
-		if( resObj == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in getResourceData", res );
-			return 0x0;
-		}
-
-		return resObj->getData( param );
-	}
-	
-	
-	DLLEXP bool updateResourceData( ResHandle res, int param, const void *data, int size )
-	{
-		if( data == 0x0 ) return false;
-	
-		Resource *resObj = Modules::resMan().resolveResHandle( res );
-		if( resObj == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid resource handle %i in updateResourceData", res );
-			return false;
-		}
-
-		if( !resObj->isLoaded() )
-		{	
-			Modules::log().writeDebugInfo( "Problem in updateResourceData: Resource %i is not loaded", res );
-			return false;
-		}
-		return resObj->updateData( param, data, size );
-	}
-	
-
-	DLLEXP ResHandle queryUnloadedResource( int index )
-	{
-		return Modules::resMan().queryUnloadedResource( index );
-	}
-
-
-	DLLEXP void releaseUnusedResources()
-	{
-		Modules::resMan().releaseUnusedResources();
-	}
-
-
-	DLLEXP ResHandle createTexture2D( const char *name, int flags, int width, int height, bool renderable )
-	{
-		TextureResource *texRes =
-			new TextureResource( safeStr( name ), flags, width, height, renderable );
-
-		ResHandle res = Modules::resMan().addNonExistingResource( *texRes, true );
-		if( res == 0 )
-		{	
-			Modules::log().writeDebugInfo( "Failed to add resource in createTexture2D; might be the name is already in use?", res );
-			delete texRes;
-		}
-
-		return res;
-	}
-
-
-	DLLEXP void setShaderPreambles( const char *vertPreamble, const char *fragPreamble )
-	{
-		ShaderResource::setPreambles( safeStr( vertPreamble ), safeStr( fragPreamble ) );
-	}
-	
-	
-	DLLEXP bool setMaterialUniform( ResHandle materialRes, const char *name, float a, float b, float c, float d )
-	{
-		Resource *res = Modules::resMan().resolveResHandle( materialRes );
-
-		if( res != 0x0 && res->getType() == ResourceTypes::Material )
-			return ((MaterialResource *)res)->setUniform( safeStr( name ), a, b, c, d );
-		else
-		{
-			Modules::log().writeDebugInfo( "Invalid Material resource handle %i in setMaterialUniform", materialRes );
-			return false;
-		}
-	}
-
-
-	DLLEXP bool setMaterialSampler( ResHandle materialRes, const char *name, ResHandle texRes )
-	{
-		Resource *res = Modules::resMan().resolveResHandle( materialRes );
-		if( res == 0x0 || res->getType() != ResourceTypes::Material )
-		{
-			Modules::log().writeDebugInfo( "Invalid Material resource handle %i in setMaterialSampler", materialRes );
-			return false;
-		}
-		
-		Resource *textureRes = Modules::resMan().resolveResHandle( texRes );
-		if( textureRes == 0x0 || textureRes->getType() != ResourceTypes::Texture )
-		{
-			Modules::log().writeDebugInfo( "Invalid Texture resource handle %i in setMaterialSampler", texRes );
-			return false;
-		}
-
-		return ((MaterialResource *)res)->setSampler( safeStr( name ), (TextureResource *)textureRes );
-	}
-
-
-	DLLEXP bool setPipelineStageActivation( ResHandle pipelineRes, const char *stageName, bool enabled )
-	{
-		Resource *res = Modules::resMan().resolveResHandle( pipelineRes );
+		Resource *res = Modules::resMan().getResources()[i];
 		
 		if( res != 0x0 && res->getType() == ResourceTypes::Pipeline )
-			return ((PipelineResource *)res)->setStageActivation( safeStr( stageName ), enabled );
-		else
 		{
-			Modules::log().writeDebugInfo( "Invalid Pipeline resource handle %i in setPipelineStageActivation", pipelineRes );
-			return false;
-		}
-	}
-
-	
-	DLLEXP bool getPipelineRenderTargetData( ResHandle pipelineRes, const char *targetName,
-	                                         int bufIndex, int *width, int *height, int *compCount,
-	                                         float *dataBuffer, int bufferSize )
-	{
-		Resource *res = Modules::resMan().resolveResHandle( pipelineRes );
-		
-		if( res != 0x0 && res->getType() == ResourceTypes::Pipeline )
-			return ((PipelineResource *)res)->getRenderTargetData(
-				safeStr( targetName ), bufIndex, width, height, compCount, dataBuffer, bufferSize );
-		else
-		{
-			Modules::log().writeDebugInfo( "Invalid Pipeline resource handle %i in getPipelineRenderTargetData", pipelineRes );
-			return false;
-		}
-	}
-
-
-	// *********************************************************************************************
-	// Scene graph functions
-	// *********************************************************************************************
-	
-	DLLEXP int getNodeType( NodeHandle node )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		
-		if( sn != 0x0 ) return sn->getType();
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid node handle %i in getNodeType", node );
-			return SceneNodeTypes::Undefined;
-		}
-	}
-
-
-	DLLEXP NodeHandle getNodeParent( NodeHandle node )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		if ( sn == 0x0 )
-		{
-			Modules::log().writeDebugInfo( "Invalid node handle %i in getNodeParent", node );
-			return 0;
-		}
-		if( sn->getParent() != 0x0 ) return sn->getParent()->getHandle();
-		else return 0;
-	}
-
-
-	DLLEXP bool setNodeParent( NodeHandle node, NodeHandle parent )
-	{
-		return Modules::sceneMan().relocateNode( node, parent );
-	}
-
-
-	DLLEXP NodeHandle getNodeChild( NodeHandle parent, int index )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( parent );
-		if( sn == 0x0 )
-		{
-			Modules::log().writeDebugInfo( "Invalid node handle %i in getNodeChild", parent );
-			return 0;
-		}
-
-		if( (unsigned)index < sn->getChildren().size() )
-			return sn->getChildren()[index]->getHandle();
-		else
-			return 0;
-	}
-
-
-	DLLEXP NodeHandle addNodes( NodeHandle parent, ResHandle sceneGraphRes )
-	{
-		SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-		if( parentNode == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid parent node handle %i in addNodes", parent );
-			return 0;
-		}
-		
-		Resource *res = Modules::resMan().resolveResHandle( sceneGraphRes );
-		if( res == 0x0 || res->getType() != ResourceTypes::SceneGraph )
-		{
-			Modules::log().writeDebugInfo( "Invalid SceneGraph resource handle %i in addNodes", sceneGraphRes );
-			return 0;
-		}
-		
-		if( !res->isLoaded() )
-		{
-			Modules::log().writeDebugInfo( "Unloaded SceneGraph resource specified for addNodes (handle: %i)", sceneGraphRes );
-			return 0;
-		}
-		
-		Modules::log().writeInfo( "Adding nodes from SceneGraph resource '%s'", res->getName().c_str() );
-		return Modules::sceneMan().addNodes( *parentNode, *(SceneGraphResource *)res );
-	}
-
-
-	DLLEXP bool removeNode( NodeHandle node )
-	{
-		Modules::log().writeInfo( "Removing node %i", node );
-		
-		return Modules::sceneMan().removeNode( node );
-	}
-
-
-	DLLEXP bool setNodeActivation( NodeHandle node, bool active )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		if( sn != 0x0 )
-		{
-			sn->setActivation( active );
-			return true;
-		}
-		else
-		{
-			Modules::log().writeDebugInfo( "Invalid node handle %i in setNodeActivation", node );
-			return false;
-		}
-	}
-
-
-	DLLEXP bool checkNodeTransformFlag( NodeHandle node, bool reset )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		if( sn == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid node handle %i in checkNodeTransformFlag", node );
-			return false;
-		}
-		
-		return sn->checkTransformFlag( reset );
-	}
-
-	
-	DLLEXP bool getNodeTransform( NodeHandle node, float *tx, float *ty, float *tz,
-	                              float *rx, float *ry, float *rz, float *sx, float *sy, float *sz )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		
-		if( sn != 0x0 )
-		{
-			Vec3f trans, rot, scale;
-			sn->getTransform( trans, rot, scale );
-
-			if( tx != 0x0 ) *tx = trans.x; if( ty != 0x0 ) *ty = trans.y; if( tz != 0x0 ) *tz = trans.z;
-			if( rx != 0x0 ) *rx = rot.x; if( ry != 0x0 ) *ry = rot.y; if( rz != 0x0 ) *rz = rot.z;
-			if( sx != 0x0 ) *sx = scale.x; if( sy != 0x0 ) *sy = scale.y; if( sz != 0x0 ) *sz = scale.z;
-			return true;
-		}
-		else
-		{
-			Modules::log().writeDebugInfo( "Invalid node handle %i in getNodeTransform", node );
-			return false;
-		}
-	}
-	
-	
-	DLLEXP bool setNodeTransform( NodeHandle node, float tx, float ty, float tz,
-	                              float rx, float ry, float rz, float sx, float sy, float sz )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		
-		if( sn != 0x0 )
-		{
-			sn->setTransform( Vec3f( tx, ty, tz ), Vec3f( rx, ry, rz ), Vec3f( sx, sy, sz ) );
-			return true;
-		}
-		else
-		{
-			Modules::log().writeDebugInfo( "Invalid node handle %i in setNodeTransform", node );
-			return false;
-		}
-	}
-
-
-	DLLEXP bool getNodeTransformMatrices( NodeHandle node, const float **relMat, const float **absMat )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		if( sn != 0x0 )
-		{
-			sn->getTransMatrices( relMat, absMat );
-			return true;
-		}
-		else
-		{
-			Modules::log().writeDebugInfo( "Invalid node handle %i in getNodeTransformMatrices", node );
-			return false;
-		}
-	}
-
-
-	DLLEXP bool setNodeTransformMatrix( NodeHandle node, const float *mat4x4 )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		
-		if( sn != 0x0 && mat4x4 != 0x0 )
-		{
-			static Matrix4f mat;
-			memcpy( mat.c, mat4x4, 16 * sizeof( float ) );
-			sn->setTransform( mat );
-			return true;
-		}
-		else if( sn == 0x0 )
-		{
-			Modules::log().writeDebugInfo( "Invalid node handle %i in setNodeTransformMatrix", node );
-			return false;
-		}
-		else 
-		{
-			Modules::log().writeDebugInfo( "Invalid transformation data in setNodeTransformMatrix");
-			return false;
-		}
-	}
-
-
-	DLLEXP float getNodeParamf( NodeHandle node, int param )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		if( sn != 0x0 ) return sn->getParamf( param );
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid node handle %i in getNodeParamf", node );
-			return Math::NaN;
-		}
-	}
-
-
-	DLLEXP bool setNodeParamf( NodeHandle node, int param, float value )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		if( sn != 0x0 ) return sn->setParamf( param, value );
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid node handle %i in setNodeParamf", node );
-			return false;
-		}
-	}
-
-
-	DLLEXP int getNodeParami( NodeHandle node, int param )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		if( sn != 0x0 ) return sn->getParami( param );
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid node handle %i in getNodeParami", node );
-			return Math::MinInt32;
-		}
-	}
-
-
-	DLLEXP bool setNodeParami( NodeHandle node, int param, int value )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		if( sn != 0x0 ) return sn->setParami( param, value );
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid node handle %i in setNodeParami", node );
-			return false;
-		}
-	}
-
-
-	DLLEXP const char *getNodeParamstr( NodeHandle node, int param )
-	{
-		static char emptyString = '\0';
-		
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		
-		if( sn != 0x0 ) return sn->getParamstr( param );
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid node handle %i in getNodeParamstr", node );
-			return &emptyString;
-		}
-	}
-
-
-	DLLEXP bool setNodeParamstr( NodeHandle node, int param, const char *name )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		
-		if( sn != 0x0 )
-		{	
-			sn->setParamstr( param, safeStr( name ).c_str() );
-			return true;
-		}
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid node handle %i in setNodeParamstr", node );
-			return false;
-		}
-	}
-
-
-	DLLEXP bool getNodeAABB( NodeHandle node, float *minX, float *minY, float *minZ,
-	                         float *maxX, float *maxY, float *maxZ )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		if( sn != 0x0 )
-		{
-			Modules::sceneMan().updateNodes();
-			
-			if( minX != 0x0 ) *minX = sn->getBBox().getMinCoords().x;
-			if( minY != 0x0 ) *minY = sn->getBBox().getMinCoords().y;
-			if( minZ != 0x0 ) *minZ = sn->getBBox().getMinCoords().z;
-			if( maxX != 0x0 ) *maxX = sn->getBBox().getMaxCoords().x;
-			if( maxY != 0x0 ) *maxY = sn->getBBox().getMaxCoords().y;
-			if( maxZ != 0x0 ) *maxZ = sn->getBBox().getMaxCoords().z;
-			return true;
-		}
-		else
-		{
-			Modules::log().writeDebugInfo( "Invalid node handle %i in getNodeAABB", node );
-			return false;
-		}
-	}
-
-
-	DLLEXP int findNodes( NodeHandle startNode, const char *name, int type )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( startNode );
-		if( sn == 0x0 )
-		{
-			Modules::log().writeDebugInfo( "Invalid node handle %i in findNodes", startNode );
-			return 0;
-		}
-		
-		Modules::sceneMan().clearFindResults();
-		return Modules::sceneMan().findNodes( sn, safeStr( name ), type );
-	}
-
-
-	DLLEXP NodeHandle getNodeFindResult( int index )
-	{
-		SceneNode *sn = Modules::sceneMan().getFindResult( index );
-		
-		if( sn != 0x0 ) return sn->getHandle();
-		else return 0;
-	}
-
-
-	DLLEXP NodeHandle castRay( NodeHandle node, float ox, float oy, float oz, float dx, float dy, float dz, int numNearest )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		if ( sn == 0x0 )
-		{
-			Modules::log().writeDebugInfo( "Invalid node handle %i in castRay", node );
-			return 0;
-		}
-
-		Modules::sceneMan().updateNodes();
-		
-		return Modules::sceneMan().castRay( sn, Vec3f( ox, oy, oz ), Vec3f( dx, dy, dz ), numNearest );
-	}
-
-
-	DLLEXP bool getCastRayResult( int index, NodeHandle *node, float *distance, float *intersection )
-	{
-		CastRayResult crr;
-		if( Modules::sceneMan().getCastRayResult( index, crr ) )
-		{
-			if( node ) *node = crr.node->getHandle();
-			if( distance ) *distance = crr.distance;
-			if( intersection )
-			{
-				intersection[0] = crr.intersection.x;
-				intersection[1] = crr.intersection.y;
-				intersection[2] = crr.intersection.z;
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
-
-	DLLEXP int checkNodeVisibility( NodeHandle node, NodeHandle cameraNode, bool checkOcclusion, bool calcLod )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-		if ( sn == 0x0 )
-		{
-			Modules::log().writeDebugInfo( "Invalid node handle %i in checkNodeVisibility", node );
-			return -1;
-		}
-
-		SceneNode *cam = Modules::sceneMan().resolveNodeHandle( cameraNode );
-		if ( cam == 0x0 || cam->getType() != SceneNodeTypes::Camera )
-		{
-			Modules::log().writeDebugInfo( "Invalid camera node %i in checkNodeVisibility", cameraNode );
-			return -1;
-		}
-		
-		return Modules::sceneMan().checkNodeVisibility( sn, (CameraNode *)cam, checkOcclusion, calcLod );
-	}
-
-
-	DLLEXP NodeHandle addGroupNode( NodeHandle parent, const char *name )
-	{
-		SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-		if( parentNode == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid parent node handle %i in addGroupNode", parent );
-			return 0;
-		}
-		
-		GroupNodeTpl groupTpl( "" );
-
-		Modules::log().writeInfo( "Adding Group node '%s'", safeStr( name ).c_str() );
-
-		GroupNodeTpl tpl( safeStr( name ) );
-		SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Group )->factoryFunc( tpl );
-		return Modules::sceneMan().addNode( sn, *parentNode );
-	}
-
-
-	DLLEXP NodeHandle addModelNode( NodeHandle parent, const char *name, ResHandle geometryRes )
-	{
-		SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-		if( parentNode == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid parent node handle %i in addModelNode", parent );
-			return 0;
-		}
-		
-		Resource *res = Modules::resMan().resolveResHandle( geometryRes );
-		if( res == 0x0 || res->getType() != ResourceTypes::Geometry ) return 0;
-
-		Modules::log().writeInfo( "Adding Model node '%s'", safeStr( name ).c_str() );
-		
-		ModelNodeTpl tpl( safeStr( name ), (GeometryResource *)res );
-		SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Model )->factoryFunc( tpl );
-		return Modules::sceneMan().addNode( sn, *parentNode );
-	}
-
-
-	DLLEXP bool setupModelAnimStage( NodeHandle modelNode, int stage, ResHandle animationRes,
-	                                 const char *startNode, bool additive )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( modelNode );
-		if( sn != 0x0 && sn->getType() == SceneNodeTypes::Model )
-		{
-			string firstNode( safeStr( startNode ) );
-			return ((ModelNode *)sn)->setupAnimStage( stage, animationRes, firstNode, additive );
-		}
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid Model node handle %i in setupModelAnimStage", modelNode );
-			return false;
-		}
-	}
-
-
-	DLLEXP bool setModelAnimParams( NodeHandle modelNode, int stage, float time, float weight )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( modelNode );
-		if( sn != 0x0 && sn->getType() == SceneNodeTypes::Model )
-		{
-			return ((ModelNode *)sn)->setAnimParams( stage, time, weight );
-		}
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid Model node handle %i in setModelAnimParams", modelNode );
-			return false;
-		}
-	}
-
-
-	DLLEXP bool setModelMorpher( NodeHandle modelNode, const char *target, float weight )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( modelNode );
-		if( sn != 0x0 && sn->getType() == SceneNodeTypes::Model )
-		{
-			return ((ModelNode *)sn)->setMorphParam( safeStr( target ), weight );
-		}
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid Model node handle %i in setModelMorpher", modelNode );
-			return false;
-		}
-	}
-
-
-	DLLEXP NodeHandle addMeshNode( NodeHandle parent, const char *name, ResHandle materialRes,
-	                               int batchStart, int batchCount, int vertRStart, int vertREnd )
-	{
-		SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-		if( parentNode == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid parent node handle %i in addMeshNode", parent );
-			return 0;
-		}
-		
-		Resource *res = Modules::resMan().resolveResHandle( materialRes );
-		if( res == 0x0 || res->getType() != ResourceTypes::Material )
-		{	
-			Modules::log().writeDebugInfo( "Invalid Material resource %i in addMeshNode", materialRes );
-			return 0;
-		}
-
-		Modules::log().writeInfo( "Adding Mesh node '%s'", safeStr( name ).c_str() );
-
-		MeshNodeTpl tpl( safeStr( name ), (MaterialResource *)res, (unsigned)batchStart,
-						 (unsigned)batchCount, (unsigned)vertRStart, (unsigned)vertREnd );
-		SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Mesh )->factoryFunc( tpl );
-		return Modules::sceneMan().addNode( sn, *parentNode );
-	}
-
-
-	DLLEXP NodeHandle addJointNode( NodeHandle parent, const char *name, int jointIndex )
-	{
-		SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-		if( parentNode == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid parent node handle %i in addJointNode", parent );
-			return 0;
-		}
-
-		Modules::log().writeInfo( "Adding Joint node '%s'", safeStr( name ).c_str() );
-
-		JointNodeTpl tpl( safeStr( name ), (unsigned)jointIndex );
-		SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Joint )->factoryFunc( tpl );
-		return Modules::sceneMan().addNode( sn, *parentNode );
-	}
-
-
-	DLLEXP NodeHandle addLightNode( NodeHandle parent, const char *name, ResHandle materialRes,
-	                                const char *lightingContext, const char *shadowContext )
-	{
-		SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-		if( parentNode == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid parent node handle %i in addLightNode", parent );
-			return 0;
-		}
-
-		Resource *res = Modules::resMan().resolveResHandle( materialRes );
-		if( res != 0x0 && res->getType() != ResourceTypes::Material )
-		{	
-			Modules::log().writeDebugInfo( "Invalid Material resource %i in addLightNode", materialRes );
-			return 0;
-		}
-		
-		Modules::log().writeInfo( "Adding Light node '%s'", safeStr( name ).c_str() );
-		
-		LightNodeTpl tpl( safeStr( name ), (MaterialResource *)res,
-		                  safeStr( lightingContext ), safeStr( shadowContext ) );
-		SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Light )->factoryFunc( tpl );
-		return Modules::sceneMan().addNode( sn, *parentNode );
-	}
-
-
-	DLLEXP bool setLightContexts( NodeHandle lightNode, const char *lightingContext, const char *shadowContext )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( lightNode );
-		if( sn != 0x0 && sn->getType() == SceneNodeTypes::Light )
-		{
-			((LightNode *)sn)->setContexts( lightingContext, shadowContext );
-			return true;
-		}
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid Light node handle %i in setLightContexts", lightNode );
-			return false;
-		}
-	}
-
-
-	DLLEXP NodeHandle addCameraNode( NodeHandle parent, const char *name, ResHandle pipelineRes )
-	{
-		SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-		if( parentNode == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid parent node handle %i in addCameraNode", parent );
-			return 0;
-		}
-
-		Resource *res = Modules::resMan().resolveResHandle( pipelineRes );
-		if( res != 0x0 && res->getType() != ResourceTypes::Pipeline )
-		{	
-			Modules::log().writeDebugInfo( "Invalid Pipeline resource %i in addCameraNode", pipelineRes );
-			return 0;
-		}
-		
-		Modules::log().writeInfo( "Adding Camera node '%s'", safeStr( name ).c_str() );
-		
-		CameraNodeTpl tpl( safeStr( name ), (PipelineResource *)res );
-		SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Camera )->factoryFunc( tpl );
-		return Modules::sceneMan().addNode( sn, *parentNode );
-	}
-
-
-	DLLEXP bool setupCameraView( NodeHandle cameraNode, float fov, float aspect, float nearDist, float farDist )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( cameraNode );
-		if( sn != 0x0 && sn->getType() == SceneNodeTypes::Camera )
-		{
-			((CameraNode *)sn)->setupViewParams( fov, aspect, nearDist, farDist );
-			return true;
-		}
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid Camera node handle %i in setupCameraView", cameraNode );
-			return false;	
-		}
-	}
-
-
-	DLLEXP bool getCameraProjectionMatrix( NodeHandle cameraNode, float *projMat )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( cameraNode );
-		if( sn != 0x0 && sn->getType() == SceneNodeTypes::Camera && projMat != 0x0 )
-		{
-			Modules::sceneMan().updateNodes();
-			memcpy( projMat, ((CameraNode *)sn)->getProjMat().x, 16 * sizeof( float ) );
-			return true;
-		}
-		else
-		{
-			Modules::log().writeDebugInfo( "Invalid Camera node handle %i in getCameraProjectionMatrix", cameraNode );
-			return false;
-		}
-	}
-
-
-	DLLEXP NodeHandle addEmitterNode( NodeHandle parent, const char *name, ResHandle materialRes,
-	                                  ResHandle particleEffectRes, int maxParticleCount, int respawnCount )
-	{
-		SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-		if( parentNode == 0x0 )
-		{	
-			Modules::log().writeDebugInfo( "Invalid parent node handle %i in addEmitterNode", parent );
-			return 0;
-		}
-
-		Resource *matRes = Modules::resMan().resolveResHandle( materialRes );
-		if( matRes == 0x0 || matRes->getType() != ResourceTypes::Material )
-		{	
-			Modules::log().writeDebugInfo( "Invalid Material resource %i in addEmitterNode", materialRes );
-			return 0;
-		}
-		Resource *effRes = Modules::resMan().resolveResHandle( particleEffectRes );
-		if( effRes == 0x0 || effRes->getType() != ResourceTypes::ParticleEffect )
-		{	
-			Modules::log().writeDebugInfo( "Invalid ParticleEffect resource %i in addEmitterNode", particleEffectRes );
-			return 0;
-		}
-		
-		Modules::log().writeInfo( "Adding Emitter node '%s'", safeStr( name ).c_str() );
-
-		EmitterNodeTpl tpl( safeStr( name ), (MaterialResource *)matRes, (ParticleEffectResource *)effRes,
-		                    (unsigned)maxParticleCount, respawnCount );
-		SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Emitter )->factoryFunc( tpl );
-		return Modules::sceneMan().addNode( sn, *parentNode );
-	}
-
-
-	DLLEXP bool advanceEmitterTime( NodeHandle emitterNode, float timeDelta )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( emitterNode );
-		if( sn != 0x0 && sn->getType() == SceneNodeTypes::Emitter )
-		{
-			((EmitterNode *)sn)->advanceTime( timeDelta );
-			return true;
-		}
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid Emitter node handle %i in advanceEmitterTime", emitterNode );
-			return false;
-		}
-	}
-
-
-	DLLEXP bool hasEmitterFinished( NodeHandle emitterNode )
-	{
-		SceneNode *sn = Modules::sceneMan().resolveNodeHandle( emitterNode );
-		if( sn != 0x0 && sn->getType() == SceneNodeTypes::Emitter )
-		{
-			return ((EmitterNode *)sn)->hasFinished();
-		}
-		else
-		{	
-			Modules::log().writeDebugInfo( "Invalid Emitter node handle %i in hasEmitterFinished", emitterNode );
-			return false;
+			((PipelineResource *)res)->resize();
 		}
 	}
 }
 
 
-// *************************************************************************************************
+DLLEXP void h3dClear()
+{
+	Modules::sceneMan().removeNode( Modules::sceneMan().getRootNode() );
+	Modules::resMan().clear();
+}
+
+
+// =================================================================================================
+// General functions
+// =================================================================================================
+
+DLLEXP const char *h3dGetMessage( int *level, float *time )
+{
+	static string msgText;
+	static LogMessage msg;
+	
+	if( Modules::log().getMessage( msg ) )
+	{
+		if( level != 0x0 ) *level = msg.level;
+		if( time != 0x0 ) *time = msg.time;
+		return msg.text.c_str();
+	}
+	else
+		return emptyCString;
+}
+
+
+DLLEXP float h3dGetOption( EngineOptions::List param )
+{
+	return Modules::config().getOption( param );
+}
+
+
+DLLEXP bool h3dSetOption( EngineOptions::List param, float value )
+{
+	return Modules::config().setOption( param, value );
+}
+
+
+DLLEXP float h3dGetStat( EngineStats::List param, bool reset )
+{
+	return Modules::stats().getStat( param, reset );
+}
+
+
+DLLEXP void h3dShowOverlay( float x_tl, float y_tl, float u_tl, float v_tl,
+                            float x_bl, float y_bl, float u_bl, float v_bl,
+                            float x_br, float y_br, float u_br, float v_br,
+                            float x_tr, float y_tr, float u_tr, float v_tr,
+                            float colR, float colG, float colB, float colA,
+                            ResHandle materialRes, int layer )
+{
+	Resource *res = Modules::resMan().resolveResHandle( materialRes ); 
+	VALIDATE_RES_TYPE( res, ResourceTypes::Material, "h3dShowOverlay", EMPTY );
+
+	Modules::renderer().showOverlay(
+		Overlay( x_tl, y_tl, u_tl, v_tl, x_bl, y_bl, u_bl, v_bl,
+		         x_br, y_br, u_br, v_br, x_tr, y_tr, u_tr, v_tr,
+		         colR, colG, colB, colA, (MaterialResource *)res, layer ) );
+}
+
+
+DLLEXP void h3dClearOverlays()
+{
+	Modules::renderer().clearOverlays();
+}
+
+
+// =================================================================================================
+// Resource functions
+// =================================================================================================
+
+DLLEXP int h3dGetResType( ResHandle res )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dGetResType", ResourceTypes::Undefined );
+	
+	return resObj->getType();
+}
+
+
+DLLEXP const char *h3dGetResName( ResHandle res )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dGetResName", emptyCString );
+	
+	return resObj->getName().c_str();
+}
+
+
+DLLEXP ResHandle h3dGetNextResource( int type, ResHandle start )
+{
+	Resource *resObj = Modules::resMan().getNextResource( type, start );
+	
+	return resObj != 0x0 ? resObj->getHandle() : 0;
+}
+
+
+DLLEXP ResHandle h3dFindResource( int type, const char *name )
+{
+	Resource *resObj = Modules::resMan().findResource( type, safeStr( name, 0 ) );
+	
+	return resObj != 0x0 ? resObj->getHandle() : 0;
+}
+
+
+DLLEXP ResHandle h3dAddResource( int type, const char *name, int flags )
+{
+	return Modules::resMan().addResource( type, safeStr( name, 0 ), flags, true );
+}
+
+
+DLLEXP ResHandle h3dCloneResource( ResHandle sourceRes, const char *name )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( sourceRes );
+	VALIDATE_RES( resObj, "h3dCloneResource", 0 );
+	
+	return Modules::resMan().cloneResource( *resObj, safeStr( name, 0 ) );
+}
+
+
+DLLEXP int h3dRemoveResource( ResHandle res )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dRemoveResource", -1 );
+	
+	return Modules::resMan().removeResource( *resObj, true );
+}
+
+
+DLLEXP bool h3dIsResLoaded( ResHandle res )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dIsResLoaded", false );
+	
+	return resObj->isLoaded();
+}
+
+
+DLLEXP bool h3dLoadResource( ResHandle res, const char *data, int size )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dLoadResource", false );
+	
+	Modules::log().writeInfo( "Loading resource '%s'", resObj->getName().c_str() );
+	return resObj->load( data, size );
+}
+
+
+DLLEXP void h3dUnloadResource( ResHandle res )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dUnloadResource", EMPTY );
+
+	resObj->unload();
+}
+
+
+DLLEXP int h3dGetResElemCount( ResHandle res, int elem )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dGetResElemCount", 0 );
+
+	return resObj->getElemCount( elem );
+}
+
+
+DLLEXP int h3dFindResElem( ResHandle res, int elem, int param, const char *value )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dFindResElem", -1 );
+
+	return resObj->findElem( elem, param, value != 0x0 ? value : emptyCString );
+}
+
+
+DLLEXP int h3dGetResParamI( ResHandle res, int elem, int elemIdx, int param )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dGetResParamI", Math::MinInt32 );
+	
+	return resObj->getElemParamI( elem, elemIdx, param );
+}
+
+
+DLLEXP void h3dSetResParamI( ResHandle res, int elem, int elemIdx, int param, int value )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dSetResParamI", EMPTY );
+
+	resObj->setElemParamI( elem, elemIdx, param, value );
+}
+
+
+DLLEXP float h3dGetResParamF( ResHandle res, int elem, int elemIdx, int param, int compIdx )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dGetResParamF", Math::NaN );
+
+	return resObj->getElemParamF( elem, elemIdx, param, compIdx );
+}
+
+
+DLLEXP void h3dSetResParamF( ResHandle res, int elem, int elemIdx, int param, int compIdx, float value )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dSetResParamF", EMPTY );
+
+	resObj->setElemParamF( elem, elemIdx, param, compIdx, value );
+}
+
+
+DLLEXP const char *h3dGetResParamStr( ResHandle res, int elem, int elemIdx, int param )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dGetResParamStr", emptyCString );
+
+	return resObj->getElemParamStr( elem, elemIdx, param );
+}
+
+
+DLLEXP void h3dSetResParamStr( ResHandle res, int elem, int elemIdx, int param, const char *value )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dSetResParamStr", EMPTY );
+	
+	resObj->setElemParamStr( elem, elemIdx, param, value != 0x0 ? value : emptyCString );
+}
+
+
+DLLEXP void *h3dMapResStream( ResHandle res, int elem, int elemIdx, int stream, bool read, bool write )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dMapResStream", 0x0 );
+
+	return resObj->mapStream( elem, elemIdx, stream, read, write );
+}
+
+
+DLLEXP void h3dUnmapResStream( ResHandle res )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( res );
+	VALIDATE_RES( resObj, "h3dUnmapResStream", EMPTY );
+
+	resObj->unmapStream();
+}
+
+
+DLLEXP ResHandle h3dQueryUnloadedResource( int index )
+{
+	return Modules::resMan().queryUnloadedResource( index );
+}
+
+
+DLLEXP void h3dReleaseUnusedResources()
+{
+	Modules::resMan().releaseUnusedResources();
+}
+
+
+DLLEXP ResHandle h3dCreateTexture( const char *name, int width, int height, int fmt, int flags )
+{
+	TextureResource *texRes = new TextureResource( safeStr( name, 0 ), (uint32)width,
+		(uint32)height, (TextureFormats::List)fmt, flags );
+
+	ResHandle res = Modules::resMan().addNonExistingResource( *texRes, true );
+	if( res == 0 )
+	{	
+		Modules::log().writeDebugInfo( "Failed to add resource in h3dCreateTexture; maybe the name is already in use?", res );
+		delete texRes;
+	}
+
+	return res;
+}
+
+
+DLLEXP void h3dSetShaderPreambles( const char *vertPreamble, const char *fragPreamble )
+{
+	ShaderResource::setPreambles( safeStr( vertPreamble, 0 ), safeStr( fragPreamble, 1 ) );
+}
+
+
+DLLEXP bool h3dSetMaterialUniform( ResHandle materialRes, const char *name, float a, float b, float c, float d )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( materialRes );
+	VALIDATE_RES_TYPE( resObj, ResourceTypes::Material, "h3dSetMaterialUniform", false );
+
+	return ((MaterialResource *)resObj)->setUniform( safeStr( name, 0 ), a, b, c, d );
+}
+
+
+DLLEXP bool h3dGetPipelineRenderTargetData( ResHandle pipelineRes, const char *targetName,
+                                            int bufIndex, int *width, int *height, int *compCount,
+                                            float *dataBuffer, int bufferSize )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( pipelineRes );
+	VALIDATE_RES_TYPE( resObj, ResourceTypes::Pipeline, "h3dGetPipelineRenderTargetData", false );
+	
+	return ((PipelineResource *)resObj)->getRenderTargetData( safeStr( targetName, 0 ), bufIndex,
+		width, height, compCount, dataBuffer, bufferSize );
+}
+
+
+// =================================================================================================
+// Scene graph functions
+// =================================================================================================
+
+DLLEXP int h3dGetNodeType( NodeHandle node )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dGetNodeType", SceneNodeTypes::Undefined );
+	
+	return sn->getType();
+}
+
+
+DLLEXP NodeHandle h3dGetNodeParent( NodeHandle node )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dGetNodeParent", 0 );
+	
+	return sn->getParent() != 0x0 ? sn->getParent()->getHandle() : 0;
+}
+
+
+DLLEXP bool h3dSetNodeParent( NodeHandle node, NodeHandle parent )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dSetNodeParent", false );
+	SceneNode *snp = Modules::sceneMan().resolveNodeHandle( parent );
+	VALIDATE_NODE( sn, "h3dSetNodeParent", false );
+	
+	return Modules::sceneMan().relocateNode( *sn, *snp );
+}
+
+
+DLLEXP NodeHandle h3dGetNodeChild( NodeHandle parent, int index )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( parent );
+	VALIDATE_NODE( sn, "h3dGetNodeChild", 0 );
+
+	if( (unsigned)index < sn->getChildren().size() )
+		return sn->getChildren()[index]->getHandle();
+	else
+		return 0;
+}
+
+
+DLLEXP NodeHandle h3dAddNodes( NodeHandle parent, ResHandle sceneGraphRes )
+{
+	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
+	VALIDATE_NODE( parentNode, "h3dAddNodes", 0 );
+	
+	Resource *sgRes = Modules::resMan().resolveResHandle( sceneGraphRes );
+	VALIDATE_RES_TYPE( sgRes, ResourceTypes::SceneGraph, "h3dAddNodes", 0 );
+
+	if( !sgRes->isLoaded() )
+	{
+		Modules::log().writeDebugInfo( "Unloaded SceneGraph resource passed to h3dAddNodes" );
+		return 0;
+	}
+	
+	//Modules::log().writeInfo( "Adding nodes from SceneGraph resource '%s'", res->getName().c_str() );
+	return Modules::sceneMan().addNodes( *parentNode, *(SceneGraphResource *)sgRes );
+}
+
+
+DLLEXP void h3dRemoveNode( NodeHandle node )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dRemoveNode", EMPTY );
+
+	//Modules::log().writeInfo( "Removing node %i", node );
+	Modules::sceneMan().removeNode( *sn );
+}
+
+
+DLLEXP void h3dSetNodeActivation( NodeHandle node, bool active )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dSetNodeActivation", EMPTY );
+
+	sn->setActivation( active );
+}
+
+
+DLLEXP bool h3dCheckNodeTransFlag( NodeHandle node, bool reset )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dCheckNodeTransFlag", false );
+	
+	return sn->checkTransformFlag( reset );
+}
+
+
+DLLEXP void h3dGetNodeTransform( NodeHandle node, float *tx, float *ty, float *tz,
+                                 float *rx, float *ry, float *rz, float *sx, float *sy, float *sz )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dGetNodeTransform", EMPTY );
+	
+	Vec3f trans, rot, scale;
+	sn->getTransform( trans, rot, scale );
+
+	if( tx != 0x0 ) *tx = trans.x; if( ty != 0x0 ) *ty = trans.y; if( tz != 0x0 ) *tz = trans.z;
+	if( rx != 0x0 ) *rx = rot.x; if( ry != 0x0 ) *ry = rot.y; if( rz != 0x0 ) *rz = rot.z;
+	if( sx != 0x0 ) *sx = scale.x; if( sy != 0x0 ) *sy = scale.y; if( sz != 0x0 ) *sz = scale.z;
+}
+
+
+DLLEXP void h3dSetNodeTransform( NodeHandle node, float tx, float ty, float tz,
+                                 float rx, float ry, float rz, float sx, float sy, float sz )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dSetNodeTransform", EMPTY );
+	
+	sn->setTransform( Vec3f( tx, ty, tz ), Vec3f( rx, ry, rz ), Vec3f( sx, sy, sz ) );
+}
+
+
+DLLEXP void h3dGetNodeTransMats( NodeHandle node, const float **relMat, const float **absMat )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dGetNodeTransMats", EMPTY );
+	
+	sn->getTransMatrices( relMat, absMat );
+}
+
+
+DLLEXP void h3dSetNodeTransMat( NodeHandle node, const float *mat4x4 )
+{
+	static Matrix4f mat;
+	
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dSetNodeTransMat", EMPTY );
+	if( mat4x4 == 0x0 )
+	{	
+		Modules::setError( "Invalid pointer in h3dSetNodeTransMat" );
+		return;
+	}
+
+	memcpy( mat.c, mat4x4, 16 * sizeof( float ) );
+	sn->setTransform( mat );
+}
+
+
+DLLEXP int h3dGetNodeParamI( NodeHandle node, int param )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dGetNodeParamI", Math::MinInt32 );
+
+	return sn->getParamI( param );
+}
+
+
+DLLEXP void h3dSetNodeParamI( NodeHandle node, int param, int value )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dSetNodeParamI", EMPTY );
+
+	sn->setParamI( param, value );
+}
+
+
+DLLEXP float h3dGetNodeParamF( NodeHandle node, int param, int compIdx )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dGetNodeParamF", Math::NaN );
+	
+	return sn->getParamF( param, compIdx );
+}
+
+
+DLLEXP void h3dSetNodeParamF( NodeHandle node, int param, int compIdx, float value )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dSetNodeParamF", EMPTY );
+
+	sn->setParamF( param, compIdx, value );
+}
+
+
+DLLEXP const char *h3dGetNodeParamStr( NodeHandle node, int param )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dGetNodeParamStr", emptyCString );
+	
+	return sn->getParamStr( param );
+}
+
+
+DLLEXP void h3dSetNodeParamStr( NodeHandle node, int param, const char *name )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dSetNodeParamStr", EMPTY );
+	
+	sn->setParamStr( param, name != 0x0 ? name : emptyCString );
+}
+
+
+DLLEXP void h3dGetNodeAABB( NodeHandle node, float *minX, float *minY, float *minZ,
+                            float *maxX, float *maxY, float *maxZ )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dGetNodeAABB", EMPTY );
+
+	Modules::sceneMan().updateNodes();
+	if( minX != 0x0 ) *minX = sn->getBBox().min.x;
+	if( minY != 0x0 ) *minY = sn->getBBox().min.y;
+	if( minZ != 0x0 ) *minZ = sn->getBBox().min.z;
+	if( maxX != 0x0 ) *maxX = sn->getBBox().max.x;
+	if( maxY != 0x0 ) *maxY = sn->getBBox().max.y;
+	if( maxZ != 0x0 ) *maxZ = sn->getBBox().max.z;
+}
+
+
+DLLEXP int h3dFindNodes( NodeHandle startNode, const char *name, int type )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( startNode );
+	VALIDATE_NODE( sn, "h3dFindNodes", 0 );
+
+	Modules::sceneMan().clearFindResults();
+	return Modules::sceneMan().findNodes( *sn, safeStr( name, 0 ), type );
+}
+
+
+DLLEXP NodeHandle h3dGetNodeFindResult( int index )
+{
+	SceneNode *sn = Modules::sceneMan().getFindResult( index );
+	
+	return sn != 0x0 ? sn->getHandle() : 0;
+}
+
+
+DLLEXP NodeHandle h3dCastRay( NodeHandle node, float ox, float oy, float oz, float dx, float dy, float dz, int numNearest )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dCastRay", 0 );
+
+	Modules::sceneMan().updateNodes();
+	return Modules::sceneMan().castRay( *sn, Vec3f( ox, oy, oz ), Vec3f( dx, dy, dz ), numNearest );
+}
+
+
+DLLEXP bool h3dGetCastRayResult( int index, NodeHandle *node, float *distance, float *intersection )
+{
+	CastRayResult crr;
+	if( Modules::sceneMan().getCastRayResult( index, crr ) )
+	{
+		if( node ) *node = crr.node->getHandle();
+		if( distance ) *distance = crr.distance;
+		if( intersection )
+		{
+			intersection[0] = crr.intersection.x;
+			intersection[1] = crr.intersection.y;
+			intersection[2] = crr.intersection.z;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+
+DLLEXP int h3dCheckNodeVisibility( NodeHandle node, NodeHandle cameraNode, bool checkOcclusion, bool calcLod )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	VALIDATE_NODE( sn, "h3dCheckNodeVisibility", -1 );
+	SceneNode *cam = Modules::sceneMan().resolveNodeHandle( cameraNode );
+	VALIDATE_NODE_TYPE( cam, SceneNodeTypes::Camera, "h3dCheckNodeVisibility", -1 );
+	
+	return Modules::sceneMan().checkNodeVisibility( *sn, *(CameraNode *)cam, checkOcclusion, calcLod );
+}
+
+
+DLLEXP NodeHandle h3dAddGroupNode( NodeHandle parent, const char *name )
+{
+	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
+	VALIDATE_NODE( parentNode, "h3dAddGroupNode", 0 );
+
+	//Modules::log().writeInfo( "Adding Group node '%s'", safeStr( name ).c_str() );
+	GroupNodeTpl tpl( safeStr( name, 0 ) );
+	SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Group )->factoryFunc( tpl );
+	return Modules::sceneMan().addNode( sn, *parentNode );
+}
+
+
+DLLEXP NodeHandle h3dAddModelNode( NodeHandle parent, const char *name, ResHandle geometryRes )
+{
+	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
+	VALIDATE_NODE( parentNode, "h3dAddModelNode", 0 );
+	Resource *geoRes = Modules::resMan().resolveResHandle( geometryRes );
+	VALIDATE_RES_TYPE( geoRes, ResourceTypes::Geometry, "h3dAddModelNode", 0 );
+
+	//Modules::log().writeInfo( "Adding Model node '%s'", safeStr( name ).c_str() );
+	ModelNodeTpl tpl( safeStr( name, 0 ), (GeometryResource *)geoRes );
+	SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Model )->factoryFunc( tpl );
+	return Modules::sceneMan().addNode( sn, *parentNode );
+}
+
+
+DLLEXP void h3dSetupModelAnimStage( NodeHandle modelNode, int stage, ResHandle animationRes, int layer,
+                                    const char *startNode, bool additive )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( modelNode );
+	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Model, "h3dSetupModelAnimStage", EMPTY );
+	Resource *animRes = 0x0;
+	if( animationRes != 0 )
+	{
+		animRes = Modules::resMan().resolveResHandle( animationRes );
+		VALIDATE_RES_TYPE( animRes, ResourceTypes::Animation, "h3dSetupModelAnimStage", EMPTY );
+	}
+	
+	((ModelNode *)sn)->setupAnimStage( stage, (AnimationResource *)animRes, layer,
+	                                   safeStr( startNode, 0 ), additive );
+}
+
+
+DLLEXP void h3dSetModelAnimParams( NodeHandle modelNode, int stage, float time, float weight )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( modelNode );
+	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Model, "h3dSetModelAnimParams", EMPTY );
+	
+	((ModelNode *)sn)->setAnimParams( stage, time, weight );
+}
+
+
+DLLEXP bool h3dSetModelMorpher( NodeHandle modelNode, const char *target, float weight )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( modelNode );
+	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Model, "h3dSetModelMorpher", false );
+	
+	return ((ModelNode *)sn)->setMorphParam( safeStr( target, 0 ), weight );
+}
+
+
+DLLEXP NodeHandle h3dAddMeshNode( NodeHandle parent, const char *name, ResHandle materialRes,
+                                  int batchStart, int batchCount, int vertRStart, int vertREnd )
+{
+	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
+	VALIDATE_NODE( parentNode, "h3dAddMeshNode", 0 );
+	Resource *matRes = Modules::resMan().resolveResHandle( materialRes );
+	VALIDATE_RES_TYPE( matRes, ResourceTypes::Material, "h3dAddMeshNode", 0 );
+
+	//Modules::log().writeInfo( "Adding Mesh node '%s'", safeStr( name ).c_str() );
+	MeshNodeTpl tpl( safeStr( name, 0 ), (MaterialResource *)matRes, (unsigned)batchStart,
+	                 (unsigned)batchCount, (unsigned)vertRStart, (unsigned)vertREnd );
+	SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Mesh )->factoryFunc( tpl );
+	return Modules::sceneMan().addNode( sn, *parentNode );
+}
+
+
+DLLEXP NodeHandle h3dAddJointNode( NodeHandle parent, const char *name, int jointIndex )
+{
+	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
+	VALIDATE_NODE( parentNode, "h3dAddJointNode", 0 );
+
+	//Modules::log().writeInfo( "Adding Joint node '%s'", safeStr( name ).c_str() );
+	JointNodeTpl tpl( safeStr( name, 0 ), (unsigned)jointIndex );
+	SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Joint )->factoryFunc( tpl );
+	return Modules::sceneMan().addNode( sn, *parentNode );
+}
+
+
+DLLEXP NodeHandle h3dAddLightNode( NodeHandle parent, const char *name, ResHandle materialRes,
+                                   const char *lightingContext, const char *shadowContext )
+{
+	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
+	VALIDATE_NODE( parentNode, "h3dAddLightNode", 0 );
+	Resource *matRes = Modules::resMan().resolveResHandle( materialRes );
+	if(matRes != 0x0 )
+		VALIDATE_RES_TYPE( matRes, ResourceTypes::Material, "h3dAddLightNode", 0 );
+	
+	//Modules::log().writeInfo( "Adding Light node '%s'", safeStr( name ).c_str() );
+	LightNodeTpl tpl( safeStr( name, 0 ), (MaterialResource *)matRes,
+	                  safeStr( lightingContext, 1 ), safeStr( shadowContext, 2 ) );
+	SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Light )->factoryFunc( tpl );
+	return Modules::sceneMan().addNode( sn, *parentNode );
+}
+
+
+DLLEXP NodeHandle h3dAddCameraNode( NodeHandle parent, const char *name, ResHandle pipelineRes )
+{
+	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
+	VALIDATE_NODE( parentNode, "h3dAddCameraNode", 0 );
+	Resource *pipeRes = Modules::resMan().resolveResHandle( pipelineRes );
+	VALIDATE_RES_TYPE( pipeRes, ResourceTypes::Pipeline, "h3dAddCameraNode", 0 );
+	
+	//Modules::log().writeInfo( "Adding Camera node '%s'", safeStr( name ).c_str() );
+	CameraNodeTpl tpl( safeStr( name, 0 ), (PipelineResource *)pipeRes );
+	SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Camera )->factoryFunc( tpl );
+	return Modules::sceneMan().addNode( sn, *parentNode );
+}
+
+
+DLLEXP void h3dSetupCameraView( NodeHandle cameraNode, float fov, float aspect, float nearDist, float farDist )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( cameraNode );
+	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Camera, "h3dSetupCameraView", EMPTY );
+	
+	((CameraNode *)sn)->setupViewParams( fov, aspect, nearDist, farDist );
+}
+
+
+DLLEXP void h3dGetCameraProjMat( NodeHandle cameraNode, float *projMat )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( cameraNode );
+	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Camera, "h3dGetCameraProjMat", EMPTY );
+	if( projMat == 0x0 )
+	{
+		Modules::setError( "Invalid pointer in h3dGetCameraProjMat" );
+		return;
+	}
+	
+	Modules::sceneMan().updateNodes();
+	memcpy( projMat, ((CameraNode *)sn)->getProjMat().x, 16 * sizeof( float ) );
+}
+
+
+DLLEXP NodeHandle h3dAddEmitterNode( NodeHandle parent, const char *name, ResHandle materialRes,
+                                     ResHandle particleEffectRes, int maxParticleCount, int respawnCount )
+{
+	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
+	VALIDATE_NODE( parentNode, "h3dAddEmitterNode", 0 );
+	Resource *matRes = Modules::resMan().resolveResHandle( materialRes );
+	VALIDATE_RES_TYPE( matRes, ResourceTypes::Material, "h3dAddEmitterNode", 0 );
+	Resource *effRes = Modules::resMan().resolveResHandle( particleEffectRes );
+	VALIDATE_RES_TYPE( effRes, ResourceTypes::ParticleEffect, "h3dAddEmitterNode", 0 );
+	
+	//Modules::log().writeInfo( "Adding Emitter node '%s'", safeStr( name ).c_str() );
+	EmitterNodeTpl tpl( safeStr( name, 0 ), (MaterialResource *)matRes, (ParticleEffectResource *)effRes,
+	                    (unsigned)maxParticleCount, respawnCount );
+	SceneNode *sn = Modules::sceneMan().findType( SceneNodeTypes::Emitter )->factoryFunc( tpl );
+	return Modules::sceneMan().addNode( sn, *parentNode );
+}
+
+
+DLLEXP void h3dAdvanceEmitterTime( NodeHandle emitterNode, float timeDelta )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( emitterNode );
+	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Emitter, "h3dAdvanceEmitterTime", EMPTY );
+	
+	((EmitterNode *)sn)->advanceTime( timeDelta );
+}
+
+
+DLLEXP bool h3dHasEmitterFinished( NodeHandle emitterNode )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( emitterNode );
+	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Emitter, "h3dHasEmitterFinished", false );
+	
+	return ((EmitterNode *)sn)->hasFinished();
+}
+
+
+// =================================================================================================
 // DLL entry point
-// *************************************************************************************************
+// =================================================================================================
 
 
 #ifdef PLATFORM_WIN

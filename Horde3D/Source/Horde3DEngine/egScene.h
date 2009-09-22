@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -63,8 +51,8 @@ struct SceneNodeParams
 {
 	enum List
 	{
-		Name = 1,
-		AttachmentString
+		NameStr = 1,
+		AttachmentStr
 	};
 };
 
@@ -113,11 +101,11 @@ protected:
 	
 	void markChildrenDirty();
 
-	virtual void onPreUpdate();	// Called before absolute transformation is updated
-	virtual void onPostUpdate();	// Called after absolute transformation has been updated
-	virtual void onFinishedUpdate();  // Called after children have been updated
-	virtual void onAttach( SceneNode &parentNode );	// Called when node is attached to parent
-	virtual void onDetach( SceneNode &parentNode );	// Called when node is detached from parent
+	virtual void onPreUpdate() {}  // Called before absolute transformation is updated
+	virtual void onPostUpdate() {}  // Called after absolute transformation has been updated
+	virtual void onFinishedUpdate() {}  // Called after children have been updated
+	virtual void onAttach( SceneNode &parentNode ) {}  // Called when node is attached to parent
+	virtual void onDetach( SceneNode &parentNode ) {}  // Called when node is detached from parent
 
 public:
 
@@ -132,19 +120,18 @@ public:
 	void setTransform( const Matrix4f &mat );
 	const void getTransMatrices( const float **relMat, const float **absMat );
 
-	virtual float getParamf( int param );
-	virtual bool setParamf( int param, float value );
-	virtual int getParami( int param );
-	virtual bool setParami( int param, int value );
-	virtual const char *getParamstr( int param );
-	virtual bool setParamstr( int param, const char* value );
+	virtual int getParamI( int param );
+	virtual void setParamI( int param, int value );
+	virtual float getParamF( int param, int compIdx );
+	virtual void setParamF( int param, int compIdx, float value );
+	virtual const char *getParamStr( int param );
+	virtual void setParamStr( int param, const char* value );
 
 	virtual uint32 calcLodLevel( const Vec3f &viewPoint );
 
-	virtual BoundingBox *getLocalBBox() { return 0x0; }
 	virtual bool canAttach( SceneNode &parent );
 	void markDirty();
-	bool update();
+	void update();
 	virtual bool checkIntersection( const Vec3f &rayOrig, const Vec3f &rayDir, Vec3f &intsPos ) const;
 
 	int getType() { return _type; };
@@ -190,9 +177,6 @@ public:
 
 	static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
 	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
-
-	float getParamf( int param );
-	bool setParamf( int param, float value );
 
 	friend class Renderer;
 	friend class SceneManager;
@@ -284,9 +268,9 @@ protected:
 	int                            _rayNum;  // Ditto
 
 	NodeHandle parseNode( SceneNodeTpl &tpl, SceneNode *parent );
-	void removeNodeRec( SceneNode *node );
+	void removeNodeRec( SceneNode &node );
 
-	void castRayInternal( SceneNode *node );
+	void castRayInternal( SceneNode &node );
 public:
 
 	SceneManager();
@@ -304,17 +288,17 @@ public:
 	
 	NodeHandle addNode( SceneNode *node, SceneNode &parent );
 	NodeHandle addNodes( SceneNode &parent, SceneGraphResource &sgRes );
-	bool removeNode( NodeHandle handle );
-	bool relocateNode( NodeHandle node, NodeHandle parent );
+	void removeNode( SceneNode &node );
+	bool relocateNode( SceneNode &node, SceneNode &parent );
 	
-	int findNodes( SceneNode *startNode, const std::string &name, int type );
+	int findNodes( SceneNode &startNode, const std::string &name, int type );
 	void clearFindResults() { _findResults.resize( 0 ); }
 	SceneNode *getFindResult( int index ) { return (unsigned)index < _findResults.size() ? _findResults[index] : 0x0; }
 	
-	int castRay( SceneNode *node, const Vec3f &rayOrig, const Vec3f &rayDir, int numNearest );
+	int castRay( SceneNode &node, const Vec3f &rayOrig, const Vec3f &rayDir, int numNearest );
 	bool getCastRayResult( int index, CastRayResult &crr );
 
-	int checkNodeVisibility( SceneNode *node, CameraNode *cam, bool checkOcclusion, bool calcLod );
+	int checkNodeVisibility( SceneNode &node, CameraNode &cam, bool checkOcclusion, bool calcLod );
 
 	SceneNode &getRootNode() { return *_nodes[0]; }
 	SceneNode &getDefCamNode() { return *_nodes[1]; }

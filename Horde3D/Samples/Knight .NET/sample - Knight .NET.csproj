@@ -86,9 +86,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Bindings\C#\Source\Horde3D .NET\Horde3D .NET wrapper.csproj">
-      <Project>{A6EAA3A9-0194-4BCE-B460-8D6808974463}</Project>
-      <Name>Horde3D .NET wrapper</Name>
+    <ProjectReference Include="..\..\Bindings\C#\Source\Horde3D .NET\Horde3D.NET.dll.csproj">
+      <Project>{ABA10827-537E-4260-98A2-8FFDAF188588}</Project>
+      <Name>Horde3D.NET.dll</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

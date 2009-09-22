@@ -64,6 +64,7 @@ private slots:
 	void flagsChanged( int index, bool checked );
 
 private:
+	void release();
 	void syncWithShader();
 
 	ShaderData*			m_shaderData;

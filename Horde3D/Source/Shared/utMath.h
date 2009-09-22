@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -39,7 +27,6 @@
 #define _utMath_H_
 
 #include <math.h>
-#include <float.h>
 
 
 // Constants
@@ -48,7 +35,7 @@ namespace Math
 	const unsigned int MaxUInt32 = 0xFFFFFFFF;
 	const int MinInt32 = 0x80000000;
 	const int MaxInt32 = 0x7FFFFFFF;
-	const float MaxFloat = FLT_MAX;
+	const float MaxFloat = 3.402823466e+38F;
 	
 	const float Pi = 3.141592654f;
 	const float TwoPi = 6.283185307f;
@@ -153,6 +140,14 @@ public:
 	Vec3f( const Vec3f &v ) : x( v.x ), y( v.y ), z( v.z )
 	{
 	}
+
+	// ------
+	// Access
+	// ------
+	float &operator[]( unsigned int index )
+	{
+		return *(&x + index);
+	}
 	
 	// -----------
 	// Comparisons
@@ -162,7 +157,6 @@ public:
 		return (x > v.x - Math::Epsilon && x < v.x + Math::Epsilon && 
 		        y > v.y - Math::Epsilon && y < v.y + Math::Epsilon &&
 		        z > v.z - Math::Epsilon && z < v.z + Math::Epsilon);
-		
 	}
 
 	bool operator!=( const Vec3f &v ) const
@@ -170,11 +164,10 @@ public:
 		return (x < v.x - Math::Epsilon || x > v.x + Math::Epsilon || 
 		        y < v.y - Math::Epsilon || y > v.y + Math::Epsilon ||
 		        z < v.z - Math::Epsilon || z > v.z + Math::Epsilon);
-		
 	}
 	
 	// ---------------------
-	// Artitmetic operations
+	// Arithmetic operations
 	// ---------------------
 	Vec3f operator-() const
 	{
@@ -346,7 +339,7 @@ public:
 	}
 
 	// ---------------------
-	// Artitmetic operations
+	// Arithmetic operations
 	// ---------------------
 	Quaternion operator*( const Quaternion &q ) const
 	{
@@ -368,45 +361,59 @@ public:
 
 	Quaternion slerp( const Quaternion &q, const float t ) const
 	{
-		float omega, cosom, sinom, scale0, scale1;
-		Quaternion q1 = q, res;
-
-        // Calc cosine
-        cosom = x * q.x + y * q.y + z * q.z + w * q.w;
-
-        // Adjust signs (if necessary)
-        if( cosom < 0 )
-		{
-			cosom = -cosom; 
-			q1.x = -q.x;
-			q1.y = -q.y;
-			q1.z = -q.z;
-			q1.w = -q.w;
-        } 
-
-        // Calculate coefficients
-		if( (1 - cosom) > Math::Epsilon )
-		{
-			// Standard case (Slerp)
-			omega = acosf( cosom );
-			sinom = sinf( omega );
-			scale0 = sinf( (1 - t) * omega ) / sinom;
-			scale1 = sinf( t * omega ) / sinom;
-		} 
-		else
-		{        
-			// Quaternions very close, so do linear interpolation
-			scale0 = 1 - t;
-			scale1 = t;
-		}
+		// Spherical linear interpolation between two quaternions
+		// Note: SLERP is not commutative
 		
-		// Calculate final values
-		res.x = x * scale0 + q1.x * scale1;
-		res.y = y * scale0 + q1.y * scale1;
-		res.z = z * scale0 + q1.z * scale1;
-		res.w = w * scale0 + q1.w * scale1;
+		Quaternion q1( q );
 
-		return res;
+        // Calculate cosine
+        float cosTheta = x * q.x + y * q.y + z * q.z + w * q.w;
+
+        // Use the shortest path
+        if( cosTheta < 0 )
+		{
+			cosTheta = -cosTheta; 
+			q1.x = -q.x; q1.y = -q.y;
+			q1.z = -q.z; q1.w = -q.w;
+        }
+
+        // Initialize with linear interpolation
+		float scale0 = 1 - t, scale1 = t;
+		
+		// Use spherical interpolation only if the quaternions are not very close
+		if( (1 - cosTheta) > 0.001f )
+		{
+			// SLERP
+			float theta = acosf( cosTheta );
+			float sinTheta = sinf( theta );
+			scale0 = sinf( (1 - t) * theta ) / sinTheta;
+			scale1 = sinf( t * theta ) / sinTheta;
+		} 
+		
+		// Calculate final quaternion
+		return Quaternion( x * scale0 + q1.x * scale1, y * scale0 + q1.y * scale1,
+		                   z * scale0 + q1.z * scale1, w * scale0 + q1.w * scale1 );
+	}
+
+	Quaternion nlerp( const Quaternion &q, const float t ) const
+	{
+		// Normalized linear quaternion interpolation
+		// Note: NLERP is faster than SLERP and commutative but does not yield constant velocity
+
+		Quaternion qt;
+		float cosTheta = x * q.x + y * q.y + z * q.z + w * q.w;
+		
+		// Use the shortest path and interpolate linearly
+		if( cosTheta < 0 )
+			qt = Quaternion( x + (-q.x - x) * t, y + (-q.y - y) * t,
+							 z + (-q.z - z) * t, w + (-q.w - w) * t );
+		else
+			qt = Quaternion( x + (q.x - x) * t, y + (q.y - y) * t,
+							 z + (q.z - z) * t, w + (q.w - w) * t );
+
+		// Return normalized quaternion
+		float invLen = 1.0f / sqrtf( qt.x * qt.x + qt.y * qt.y + qt.z * qt.z + qt.w * qt.w );
+		return Quaternion( qt.x * invLen, qt.y * invLen, qt.z * invLen, qt.w * invLen );
 	}
 
 	Quaternion inverted() const
@@ -473,6 +480,36 @@ public:
 		return Matrix4f( Quaternion( axis.x, axis.y, axis.z, cosf( angle * 0.5f ) ) );
 	}
 
+	static Matrix4f PerspectiveMat( float l, float r, float b, float t, float n, float f )
+	{
+		Matrix4f m;
+
+		m.x[0] = 2 * n / (r - l);
+		m.x[5] = 2 * n / (t - b);
+		m.x[8] = (r + l) / (r - l);
+		m.x[9] = (t + b) / (t - b);
+		m.x[10] = -(f + n) / (f - n);
+		m.x[11] = -1;
+		m.x[14] = -2 * f * n / (f - n);
+		m.x[15] = 0;
+
+		return m;
+	}
+
+	static Matrix4f OrthoMat( float l, float r, float b, float t, float n, float f )
+	{
+		Matrix4f m;
+
+		m.x[0] = 2 / (r - l);
+		m.x[5] = 2 / (t - b);
+		m.x[10] = -2 / (f - n);
+		m.x[12] = -(r + l) / (r - l);
+		m.x[13] = -(t + b) / (t - b);
+		m.x[14] = -(f + n) / (f - n);
+
+		return m;
+	}
+
 	static void fastMult43( Matrix4f &dst, const Matrix4f &m1, const Matrix4f &m2 )
 	{
 		// Note: dst may not be the same as m1 or m2
@@ -531,14 +568,11 @@ public:
 
 	Matrix4f( const Quaternion &q )
 	{
-		float wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
-
 		// Calculate coefficients
-		x2 = q.x + q.x; y2 = q.y + q.y; z2 = q.z + q.z;
-		xx = q.x * x2;  xy = q.x * y2;  xz = q.x * z2;
-		yy = q.y * y2;  yz = q.y * z2;  zz = q.z * z2;
-		wx = q.w * x2;  wy = q.w * y2;  wz = q.w * z2;
-
+		float x2 = q.x + q.x, y2 = q.y + q.y, z2 = q.z + q.z;
+		float xx = q.x * x2,  xy = q.x * y2,  xz = q.x * z2;
+		float yy = q.y * y2,  yz = q.y * z2,  zz = q.z * z2;
+		float wx = q.w * x2,  wy = q.w * y2,  wz = q.w * z2;
 
 		c[0][0] = 1 - (yy + zz);  c[1][0] = xy - wz;	
 		c[2][0] = xz + wy;        c[3][0] = 0;

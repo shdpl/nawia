@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -27,30 +15,11 @@
 
 #include "egPrerequisites.h"
 #include "egScene.h"
+#include "egAnimation.h"
 #include "egMaterial.h"
 #include "utMath.h"
 
 class ModelNode;
-
-
-// The following class is not real SceneNode, rather some sort of interface
-class AnimatableSceneNode : public SceneNode
-{
-protected:
-
-	ModelNode   *_parentModel;
-	bool        _ignoreAnim;
-
-public:
-
-	AnimatableSceneNode( const SceneNodeTpl &tpl ) :
-		SceneNode( tpl ), _parentModel( 0x0 ), _ignoreAnim( false )
-	{
-	}
-
-	friend class SceneNode;
-	friend class ModelNode;
-};
 
 
 // =================================================================================================
@@ -61,12 +30,12 @@ struct MeshNodeParams
 {
 	enum List
 	{
-		MaterialRes = 300,
-		BatchStart,
-		BatchCount,
-		VertRStart,
-		VertREnd,
-		LodLevel
+		MatResI = 300,
+		BatchStartI,
+		BatchCountI,
+		VertRStartI,
+		VertREndI,
+		LodLevelI
 	};
 };
 
@@ -89,7 +58,7 @@ struct MeshNodeTpl : public SceneNodeTpl
 
 // =================================================================================================
 
-class MeshNode : public AnimatableSceneNode
+class MeshNode : public SceneNode, public IAnimatableNode
 {
 protected:
 
@@ -98,8 +67,9 @@ protected:
 	uint32              _vertRStart, _vertREnd;
 	uint32              _lodLevel;
 	
+	ModelNode           *_parentModel;
 	BoundingBox         _localBBox;
-	bool                _bBoxDirty;
+	bool                _ignoreAnim;
 
 	MeshNode( const MeshNodeTpl &meshTpl );
 
@@ -108,16 +78,20 @@ public:
 	static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
 	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
 
-	void markBBoxesDirty();
-	BoundingBox *getLocalBBox() { return &_localBBox; }
+	// IAnimatableNode
+	const std::string &getANName() { return _name; }
+	Matrix4f &getANRelTransRef() { return _relTrans; }
+	bool &getANIgnoreAnimRef() { return _ignoreAnim; }
+	IAnimatableNode *getANParent();
+	
 	bool canAttach( SceneNode &parent );
-	int getParami( int param );
-	bool setParami( int param, int value );
+	int getParamI( int param );
+	void setParamI( int param, int value );
 	bool checkIntersection( const Vec3f &rayOrig, const Vec3f &rayDir, Vec3f &intsPos ) const;
 
 	void onAttach( SceneNode &parentNode );
 	void onDetach( SceneNode &parentNode );
-	void onPreUpdate();
+	void onPostUpdate();
 
 	MaterialResource *getMaterialRes() { return _materialRes; }
 	uint32 getBatchStart() { return _batchStart; }
@@ -126,6 +100,7 @@ public:
 	uint32 getVertREnd() { return _vertREnd; }
 	uint32 getLodLevel() { return _lodLevel; }
 
+	friend class SceneNode;
 	friend class ModelNode;
 };
 
@@ -138,7 +113,7 @@ struct JointNodeParams
 {
 	enum List
 	{
-		JointIndex = 400,
+		JointIndexI = 400
 	};
 };
 
@@ -156,12 +131,15 @@ struct JointNodeTpl : public SceneNodeTpl
 
 // =================================================================================================
 
-class JointNode : public AnimatableSceneNode
+class JointNode : public SceneNode, public IAnimatableNode
 {
 protected:
 
-	uint32    _jointIndex;
-	Matrix4f  _relModelMat;  // Transformation relative to parent model
+	uint32     _jointIndex;
+	
+	ModelNode  *_parentModel;
+	Matrix4f   _relModelMat;  // Transformation relative to parent model
+	bool       _ignoreAnim;
 
 	JointNode( const JointNodeTpl &jointTpl );
 
@@ -170,13 +148,20 @@ public:
 	static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
 	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
 	
+	// IAnimatableNode
+	const std::string &getANName() { return _name; }
+	Matrix4f &getANRelTransRef() { return _relTrans; }
+	bool &getANIgnoreAnimRef() { return _ignoreAnim; }
+	IAnimatableNode *getANParent();
+	
 	bool canAttach( SceneNode &parent );
-	int getParami( int param );
+	int getParamI( int param );
 
 	void onPostUpdate();
 	void onAttach( SceneNode &parentNode );
 	void onDetach( SceneNode &parentNode );
 
+	friend class SceneNode;
 	friend class ModelNode;
 };
 

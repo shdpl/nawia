@@ -26,8 +26,6 @@
 #include "soundResource.h"
 #include "manager.h"
 
-namespace Horde3DSound
-{
 	Resource *SoundResource::factoryFunc( const std::string &name, int flags )
 	{
 		return new SoundResource( name, flags );
@@ -167,7 +165,22 @@ namespace Horde3DSound
 		return true;
 	}
 
-	int SoundResource::getParami( int param )
+	int SoundResource::getElemCount( int elem )
+	{
+		switch( elem )
+		{
+		case SoundResParams::SamplingRate:
+		case SoundResParams::BitDepth:
+		case SoundResParams::Channels:
+		case SoundResParams::BitRate:
+		case SoundResParams::Runtime:
+			return 1;
+		default:
+			return Resource::getElemCount( elem );
+		}
+	}
+
+	int SoundResource::getElemParamI( int elem, int elemIdx, int param )
 	{
 		switch( param )
 		{
@@ -178,53 +191,25 @@ namespace Horde3DSound
 		case SoundResParams::Channels:
 			return _soundInfo.channels;
 		case SoundResParams::BitRate:
-			return _soundInfo.bitRate;
+			return _soundInfo.bitRate;		
 		default:
-			return Resource::getParami( param );
+			return Resource::getElemParamI( elem, elemIdx, param );
 		}
 	}
-
-	bool SoundResource::setParami( int param, int value )
-	{
-		switch( param )
-		{
-		case SoundResParams::SamplingRate:
-			return false; //read-only
-		case SoundResParams::BitDepth:
-			return false; //read-only
-		case SoundResParams::Channels:
-			return false; //read-only
-		case SoundResParams::BitRate:
-			return false; //read-only
-		default:
-			return Resource::setParami( param, value );
-		}
-	}
-
-	float SoundResource::getParamf( int param )
+	
+	float SoundResource::getElemParamF( int elem, int elemIdx, int param, int compIdx )
 	{
 		switch( param )
 		{
 		case SoundResParams::Runtime:
 			return _soundInfo.runtime;
 		default:
-			return Resource::getParamf( param );
+			return Resource::getElemParamF( elem, elemIdx, param, compIdx );
 		}
 	}
 
-	bool SoundResource::setParamf( int param, float value )
-	{
-		switch( param )
-		{
-		case SoundResParams::Runtime:
-			return false; //read-only
-		default:
-			return Resource::setParamf( param, value );
-		}
-	}
 
 	ALuint SoundResource::getBuffer()
 	{
 		return _buffer;
 	}
-}

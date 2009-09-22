@@ -1,36 +1,49 @@
 [[FX]]
 
-<Sampler id="buf0">
-	<StageConfig addressMode="CLAMP" />
-</Sampler>
+// Samplers
+sampler buf0 = sampler_state
+{
+	Address = Clamp;
+};
 
-<Sampler id="buf1">
-	<StageConfig addressMode="CLAMP" />
-</Sampler>
+sampler buf1 = sampler_state
+{
+	Address = Clamp;
+};
 
-<Uniform id="hdrParams">
-	<!-- Description:
-		a - Exposure (higher values make scene brighter)
-		b - Brightpass threshold (intensity where blooming begins)
-		c - BrightPass offset (smaller values produce stronger blooming) 
-	-->
-</Uniform>
-<Uniform id="blurParams" />
+// Uniforms
+float4 hdrParams
+	// a - Exposure (higher values make scene brighter)
+	// b - Brightpass threshold (intensity where blooming begins)
+	// c - BrightPass offset (smaller values produce stronger blooming) 
+= {2, 0.6, 0.06, 0};
 
-<Context id="BRIGHTPASS">
-	<Shaders vertex="VS_FSQUAD" fragment="FS_BRIGHTPASS" />
-	<RenderConfig writeDepth="false" />
-</Context>
+float4 blurParams;
 
-<Context id="BLUR">
-	<Shaders vertex="VS_FSQUAD" fragment="FS_BLUR" />
-	<RenderConfig writeDepth="false" />
-</Context>
+// Contexts
+context BRIGHTPASS
+{
+	VertexShader = compile GLSL VS_FSQUAD;
+	PixelShader = compile GLSL FS_BRIGHTPASS;
+	
+	ZWriteEnable = false;
+}
 
-<Context id="FINALPASS">
-	<Shaders vertex="VS_FSQUAD" fragment="FS_FINALPASS" />
-	<RenderConfig writeDepth="false" />
-</Context>
+context BLUR
+{
+	VertexShader = compile GLSL VS_FSQUAD;
+	PixelShader = compile GLSL FS_BLUR;
+	
+	ZWriteEnable = false;
+}
+
+context FINALPASS
+{
+	VertexShader = compile GLSL VS_FSQUAD;
+	PixelShader = compile GLSL FS_FINALPASS;
+	
+	ZWriteEnable = false;
+}
 
 
 [[VS_FSQUAD]]

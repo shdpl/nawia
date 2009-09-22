@@ -8,8 +8,9 @@
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
-// This sample source file is not covered by the LGPL as the rest of the SDK
-// and may be used without any restrictions
+// This sample source file is not covered by the EPL as the rest of the SDK
+// and may be used without any restrictions. However, the EPL's disclaimer of
+// warranty and liability shall be in effect for this file.
 //
 // *************************************************************************************************
 
@@ -23,12 +24,12 @@
 
 struct Particle
 {
-	float       px, pz;  // Current postition
-	float       dx, dz;  // Destination position
-	float       fx, fz;  // Force on particle
-	float       ox, oz;  // Orientation vector
-	NodeHandle  node;
-	float       animTime;
+	float    px, pz;  // Current postition
+	float    dx, dz;  // Destination position
+	float    fx, fz;  // Force on particle
+	float    ox, oz;  // Orientation vector
+	H3DNode  node;
+	float    animTime;
 
 
 	Particle()

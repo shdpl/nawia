@@ -1,13 +1,13 @@
 // *************************************************************************************************
 //
-// Knight .NET - sample application for Horde3D .NET wrapper
+// Knight .NET - sample application for h3d .NET wrapper
 // ----------------------------------------------------------
 //
 // Copyright (C) 2007 Nicolas Schulz and Martin Burkhard
 //
 // This file is intended for use as a code example, and may be used, modified, 
 // or distributed in source or object code form, without restriction. 
-// This sample is not covered by the LGPL.
+// This sample is not covered by the EPL.
 //
 // The code and information is provided "as-is" without warranty of any kind, 
 // either expressed or implied.

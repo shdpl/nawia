@@ -82,7 +82,7 @@ void MaterialComboBox::currentChanged(int index)
 {
 	if (itemData(index).isValid() && itemData(index) == QVariant((int)QVariant::UserType))
 	{
-		QString newMaterial = HordeFileDialog::getResourceFile( ResourceTypes::Material, m_resourcePath, this, tr("Select material to import"));
+		QString newMaterial = HordeFileDialog::getResourceFile( H3DResTypes::Material, m_resourcePath, this, tr("Select material to import"));
 		if (!newMaterial.isEmpty())
 		{
 			if (findText(newMaterial) == -1)

@@ -52,13 +52,13 @@ QGroupNode::~QGroupNode()
 void QGroupNode::addRepresentation()
 {
 	QSceneNode* parentNode = static_cast<QSceneNode*>(parent());
-	unsigned int rootID = parentNode ? parentNode->hordeId() : RootNode;
+	unsigned int rootID = parentNode ? parentNode->hordeId() : H3DRootNode;
 
-	m_hordeID = Horde3D::addGroupNode(rootID, qPrintable(m_xmlNode.attribute("name", "ATTENTION No Node Name")));
+	m_hordeID = h3dAddGroupNode(rootID, qPrintable(m_xmlNode.attribute("name", "ATTENTION No Node Name")));
 
 	float x, y, z, rx, ry, rz, sx, sy, sz;
 	getTransformation(x,y,z,rx,ry,rz,sx,sy,sz);
-	Horde3D::setNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
+	h3dSetNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
 
 	// Attachment
 	QDomElement attachment = m_xmlNode.firstChildElement("Attachment");	

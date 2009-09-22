@@ -25,8 +25,6 @@
 
 #include "decode_wave.h"
 
-namespace Horde3DSound
-{
 	size_t WaveDecoder::findChunk( const char *buffer, size_t bufferSize, const char chunkName[4], size_t &chunkSize )
 	{
 		bool found = false;
@@ -157,4 +155,3 @@ namespace Horde3DSound
 
 		return sizeToRead;
 	}
-}

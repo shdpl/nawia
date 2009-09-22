@@ -30,8 +30,6 @@
 #include "listener.h"
 #include "manager.h"
 
-namespace Horde3DSound
-{
 	ListenerNode::ListenerNode( const ListenerNodeTpl &listenerTpl ) :
 		SceneNode( listenerTpl ),
 		_gain( listenerTpl.gain ),
@@ -102,7 +100,7 @@ namespace Horde3DSound
 		return new ListenerNode( *(ListenerNodeTpl *)&nodeTpl );
 	}
 
-	float ListenerNode::getParamf( int param )
+	float ListenerNode::getParamF( int param, int compIdx )
 	{
 		switch( param )
 		{
@@ -113,11 +111,11 @@ namespace Horde3DSound
 		case ListenerNodeParams::SpeedOfSound:
 			return _speedOfSound;
 		default:
-			return SceneNode::getParamf( param );
+			return SceneNode::getParamF( param, compIdx );
 		}
 	}
 
-	bool ListenerNode::setParamf( int param, float value )
+	void ListenerNode::setParamF( int param, int compIdx, float value )
 	{
 		switch( param )
 		{
@@ -131,7 +129,7 @@ namespace Horde3DSound
 			if( SoundManager::instance()->getActiveListener() == this )
 				alListenerf( AL_GAIN, _gain );
 
-			return true;
+			return;
 		case ListenerNodeParams::DopplerFactor:
 			_dopplerFactor = value;
 
@@ -142,7 +140,7 @@ namespace Horde3DSound
 			if( SoundManager::instance()->getActiveListener() == this )
 				alDopplerFactor( _dopplerFactor );
 
-			return true;
+			return;
 		case ListenerNodeParams::SpeedOfSound:
 			_speedOfSound = value;
 
@@ -153,9 +151,9 @@ namespace Horde3DSound
 			if( SoundManager::instance()->getActiveListener() == this )
 				alSpeedOfSound( _speedOfSound );
 
-			return true;
+			return;
 		default:
-			return SceneNode::setParamf( param, value );
+			SceneNode::setParamF( param, compIdx, value );
 		}
 	}
 
@@ -210,4 +208,3 @@ namespace Horde3DSound
 
 		alListenerfv( AL_ORIENTATION, orientation );
 	}
-}

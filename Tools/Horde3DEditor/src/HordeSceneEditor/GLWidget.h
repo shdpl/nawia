@@ -163,7 +163,7 @@ signals:
 	/**
 	 * A node has been selected with the mouse
 	 */
-	void nodeSelected(int nodeHandle);
+	void nodeSelected(int H3DNode);
 
 	/**
 	 * A signal when resizing the context widget

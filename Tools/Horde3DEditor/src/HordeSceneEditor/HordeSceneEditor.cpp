@@ -388,7 +388,7 @@ void HordeSceneEditor::sceneCreated()
 			loadScreen.showMessage(tr("Updating Log View"), Qt::AlignLeft, Qt::white);
 			m_glWidget->updateLog();
 			loadScreen.showMessage(tr("Loading resources"), Qt::AlignLeft, Qt::white);
-			Horde3DUtils::loadResourcesFromDisk(".");
+			h3dutLoadResourcesFromDisk(".");
 			loadScreen.showMessage(tr("Updating Recent Files"), Qt::AlignLeft, Qt::white);
 			// Update recent files
 			QHordeSceneEditorSettings settings(this);
@@ -778,28 +778,25 @@ void HordeSceneEditor::fileChanged(const QString& path)
 			return;
 		}
 	}
-	ResHandle resource = 0;
+	H3DRes resource = 0;
 	// Shader file?
-	if (resource == 0 && path.contains(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Shader)).absolutePath()))
-		resource = Horde3D::findResource(ResourceTypes::Shader, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Shader)).relativeFilePath(path)));
+	if (resource == 0 )
+		resource = h3dFindResource(H3DResTypes::Shader, qPrintable( path ) );
 	// Code file?
-	if (resource == 0 && path.contains(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Code)).absolutePath()))
-		resource = Horde3D::findResource(ResourceTypes::Code, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Code)).relativeFilePath(path)));		
+	if (resource == 0 )
+		resource = h3dFindResource(H3DResTypes::Code, qPrintable( path ) );		
 	// Material ? 
-	if (resource == 0 && path.contains(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Material)).absolutePath()))
-	{
-		qDebug(qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Material)).relativeFilePath(path)));
-		resource = Horde3D::findResource(ResourceTypes::Material, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Material)).relativeFilePath(path)));
-	}
+	if (resource == 0 )
+		resource = h3dFindResource(H3DResTypes::Material, qPrintable( path ) );
 	// Texture ? 
-	if (resource == 0 && path.contains(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Texture)).absolutePath()))
-		resource = Horde3D::findResource(ResourceTypes::Texture, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Texture)).relativeFilePath(path)));
+	if (resource == 0 )
+		resource = h3dFindResource(H3DResTypes::Texture, qPrintable( path ) );
 	// Effect ?
-	if (resource == 0 && path.contains(QDir(Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect)).absolutePath()))
-		resource = Horde3D::findResource(ResourceTypes::ParticleEffect, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect)).relativeFilePath(path)));
+	if (resource == 0 )
+		resource = h3dFindResource(H3DResTypes::ParticleEffect, qPrintable( path ) );
 	// Pipeline ?
-	if (resource == 0 && path.contains(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Pipeline)).absolutePath()))
-		resource = Horde3D::findResource(ResourceTypes::Pipeline, qPrintable(QDir(Horde3DUtils::getResourcePath(ResourceTypes::Pipeline)).relativeFilePath(path)));		
+	if (resource == 0 )
+		resource = h3dFindResource(H3DResTypes::Pipeline, qPrintable( path ) );		
 
 	// If the resource was loaded before 	
 	if (resource != 0)
@@ -820,13 +817,13 @@ void HordeSceneEditor::fileChanged(const QString& path)
 		file.close();
 
 		// Mark it invalid
-		Horde3D::unloadResource(resource);
+		h3dUnloadResource(resource);
 		QListWidgetItem* item = new QListWidgetItem(tr("Reloading resource: %1").arg(path), m_logWidget);
 		item->setTextColor(QColor("#22CC22"));		
 		// Reload it again
-		Horde3DUtils::loadResourcesFromDisk(".");
+		h3dutLoadResourcesFromDisk(".");
 		// If it's a pipeline check if we have to update the pipeline view
-		if (Horde3D::getResourceType(resource) == ResourceTypes::Pipeline && m_cameraToolBar->currentPipelineID() == resource)
+		if (h3dGetResType(resource) == H3DResTypes::Pipeline && m_cameraToolBar->currentPipelineID() == resource)
 			m_pipelineWidget->loadPipeline(m_cameraToolBar->currentPipelineFile(), m_cameraToolBar->currentPipelineID());
 	}
 }

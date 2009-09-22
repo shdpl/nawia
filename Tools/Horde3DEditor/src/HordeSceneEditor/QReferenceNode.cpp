@@ -48,7 +48,7 @@ QReferenceNode::QReferenceNode(const QDomElement& xmlNode, int row, SceneTreeMod
 	QSceneNode(xmlNode, row, model, parentNode), m_treeModel(0)
 {
 	setObjectName("Reference");
-	m_hordeID = parentNode ? parentNode->hordeId() : RootNode;
+	m_hordeID = parentNode ? parentNode->hordeId() : H3DRootNode;
 	QReferenceNode::addRepresentation();
 }
 
@@ -91,7 +91,7 @@ void QReferenceNode::save()
 void QReferenceNode::addRepresentation()
 {		
 	// Get absolute filename for referenced xml file
-	m_fileName = QFileInfo(QDir(QString(Horde3DUtils::getResourcePath(ResourceTypes::SceneGraph))), m_xmlNode.attribute("sceneGraph")).filePath();
+	m_fileName = QFileInfo( QDir::current(), m_xmlNode.attribute("sceneGraph") ).filePath();
 
 	// Try opening referenced file
 	QFile sceneGraphFile(m_fileName);
@@ -134,18 +134,19 @@ void QReferenceNode::addRepresentation()
 void QReferenceNode::activate()
 {
 	float minX, minY, minZ, maxX, maxY, maxZ;
-	Horde3D::getNodeAABB(m_hordeID, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
+	h3dGetNodeAABB(m_hordeID, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
 
 	unsigned int cameraID = HordeSceneEditor::instance()->glContext()->activeCam();
-	float leftPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::LeftPlane);
-	float rightPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::RightPlane);
-	float bottomPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::BottomPlane);
-	float topPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::TopPlane);
-	float nearPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::NearPlane);
+	float leftPlane = h3dGetNodeParamF(cameraID, H3DCamera::LeftPlaneF, 0);
+	float rightPlane = h3dGetNodeParamF(cameraID, H3DCamera::RightPlaneF, 0);
+	float bottomPlane = h3dGetNodeParamF(cameraID, H3DCamera::BottomPlaneF, 0);
+	float topPlane = h3dGetNodeParamF(cameraID, H3DCamera::TopPlaneF, 0);
+	float nearPlane = h3dGetNodeParamF(cameraID, H3DCamera::NearPlaneF, 0);
 
 	const float* camera = 0;
-	NodeHandle parentNode = Horde3D::getNodeParent(cameraID);
-	if ( !Horde3D::getNodeTransformMatrices(parentNode, 0, &camera) ) return;
+	H3DNode parentNode = h3dGetNodeParent(cameraID);
+	h3dGetNodeTransMats(parentNode, 0, &camera); 
+	if ( !camera ) return;
 	
 	/** 
 	 * (maxX - minX)                           =   width of the bounding box 
@@ -155,7 +156,7 @@ void QReferenceNode::activate()
 	float offsetY = (maxY - minY) * topPlane / (topPlane - bottomPlane);
 	QMatrix4f newCamTrans = QMatrix4f::TransMat(maxX - offsetX, maxY - offsetY, maxZ);
 	newCamTrans.translate(0, 0, qMax(nearPlane * offsetX / rightPlane, nearPlane * offsetY / topPlane));		
-	Horde3D::setNodeTransformMatrix(cameraID, (QMatrix4f(camera).inverted() * newCamTrans).x);	
+	h3dSetNodeTransMat(cameraID, (QMatrix4f(camera).inverted() * newCamTrans).x);	
 }
 
 QString QReferenceNode::toolTip(int /*column*/)

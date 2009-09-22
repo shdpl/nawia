@@ -63,8 +63,8 @@ QXmlTreeNode(xmlNode, row, model, parentNode), m_hordeID(0), m_active(true)
 QSceneNode::~QSceneNode()
 { 
 	qDeleteAll(m_childItems);
-	if (m_hordeID != 0 && Horde3D::getNodeType(m_hordeID) != SceneNodeTypes::Undefined)
-		Horde3D::removeNode(m_hordeID);
+	if (m_hordeID != 0 && h3dGetNodeType(m_hordeID) != H3DNodeTypes::Undefined)
+		h3dRemoveNode(m_hordeID);
 	m_hordeID = 0;
 	QDomElement attachment = m_xmlNode.firstChildElement("Attachment");	
 	SceneTreeModel* model = static_cast<SceneTreeModel*>(m_model);
@@ -73,7 +73,7 @@ QSceneNode::~QSceneNode()
 		AttachmentPlugIn* plugIn = model->nodeFactory()->attachmentPlugIn();
 		if (plugIn != 0) plugIn->destroyNodeAttachment(this);
 	}
-	Horde3D::releaseUnusedResources();
+	h3dReleaseUnusedResources();
 	m_childItems.clear();
 }
 
@@ -106,7 +106,7 @@ void QSceneNode::setName(const QString& name)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("name", name);
-		Horde3D::setNodeParamstr(m_hordeID, SceneNodeParams::Name, qPrintable(name));
+		h3dSetNodeParamStr(m_hordeID, H3DNodeParams::NameStr, qPrintable(name));
 	}
 	else if (name!= QSceneNode::name())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Name", this, "Name", name, -1));
@@ -126,13 +126,13 @@ void QSceneNode::setPosition(const QVec3f& position)
 	if (signalsBlocked())
 	{
 		const float* mat = 0;
-		Horde3D::getNodeTransformMatrices(m_hordeID, &mat, 0);
+		h3dGetNodeTransMats(m_hordeID, &mat, 0);
 		// Normally this should never be occure, but in case of an invalid camera this may happen
 		if (mat == 0) return;
 		const_cast<float*>(mat)[12] = position.X;
 		const_cast<float*>(mat)[13] = position.Y;
 		const_cast<float*>(mat)[14] = position.Z;
-		Horde3D::setNodeTransformMatrix(m_hordeID, mat);
+		h3dSetNodeTransMat(m_hordeID, mat);
 		m_xmlNode.setAttribute("tx", position.X);
 		m_xmlNode.setAttribute("ty", position.Y);
 		m_xmlNode.setAttribute("tz", position.Z);
@@ -161,7 +161,7 @@ void QSceneNode::setRotation(const QVec3f& rotation)
 	{		
 		QVec3f pos = position();
 		QVec3f scaling = scale();
-		Horde3D::setNodeTransform(m_hordeID, pos.X, pos.Y, pos.Z, rotation.X, rotation.Y, rotation.Z, scaling.X, scaling.Y, scaling.Z);
+		h3dSetNodeTransform(m_hordeID, pos.X, pos.Y, pos.Z, rotation.X, rotation.Y, rotation.Z, scaling.X, scaling.Y, scaling.Z);
 		m_xmlNode.setAttribute("rx", rotation.X);
 		m_xmlNode.setAttribute("ry", rotation.Y);
 		m_xmlNode.setAttribute("rz", rotation.Z);
@@ -191,7 +191,7 @@ void QSceneNode::setScale(const QVec3f& scale)
 	{		
 		QVec3f pos = position();
 		QVec3f rot = rotation();
-		Horde3D::setNodeTransform(m_hordeID, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z);
+		h3dSetNodeTransform(m_hordeID, pos.X, pos.Y, pos.Z, rot.X, rot.Y, rot.Z, scale.X, scale.Y, scale.Z);
 		m_xmlNode.setAttribute("sx", scale.X);
 		m_xmlNode.setAttribute("sy", scale.Y);
 		m_xmlNode.setAttribute("sz", scale.Z);
@@ -211,7 +211,7 @@ QMatrix4f QSceneNode::absTrans() const
 {
 	if( m_hordeID == 0) return QMatrix4f();
 	const float* mat = 0;
-	Horde3D::getNodeTransformMatrices(m_hordeID, 0, &mat);
+	h3dGetNodeTransMats(m_hordeID, 0, &mat);
 	if( mat ) return QMatrix4f(mat);
 	else return QMatrix4f();
 }
@@ -220,7 +220,7 @@ QMatrix4f QSceneNode::relTrans() const
 {
 	if( m_hordeID == 0) return QMatrix4f();
 	const float* mat = 0;
-	Horde3D::getNodeTransformMatrices(m_hordeID, &mat, 0);
+	h3dGetNodeTransMats(m_hordeID, &mat, 0);
 	if( mat ) return QMatrix4f(mat);
 	else return QMatrix4f();
 }
@@ -228,7 +228,7 @@ QMatrix4f QSceneNode::relTrans() const
 void QSceneNode::setRelTrans( const QMatrix4f& relTrans)
 {
 	// Does not update the XML representation
-	Horde3D::setNodeTransformMatrix(m_hordeID, relTrans.x);
+	h3dSetNodeTransMat(m_hordeID, relTrans.x);
 }
 
 bool QSceneNode::enabled() const
@@ -238,7 +238,7 @@ bool QSceneNode::enabled() const
 
 void QSceneNode::setEnabled(bool enabled)
 {
-	Horde3D::setNodeActivation(m_hordeID, enabled);
+	h3dSetNodeActivation(m_hordeID, enabled);
 	m_active = enabled;
 }
 

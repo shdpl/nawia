@@ -1,13 +1,13 @@
 // *************************************************************************************************
 //
-// Chicago .NET - sample application for Horde3D .NET wrapper
+// Chicago .NET - sample application for h3d .NET wrapper
 // ----------------------------------------------------------
 //
 // Copyright (C) 2006-07 Nicolas Schulz and Martin Burkhard
 //
 // This file is intended for use as a code example, and may be used, modified, 
 // or distributed in source or object code form, without restriction. 
-// This sample is not covered by the LGPL.
+// This sample is not covered by the EPL.
 //
 // The code and information is provided "as-is" without warranty of any kind, 
 // either expressed or implied.
@@ -16,7 +16,7 @@
 
 using System;
 using System.Windows.Forms;
-using Horde3DNET;
+using Horde3DNET.Utils;
 
 namespace Horde3DNET.Samples.ChicagoNET
 {
@@ -58,33 +58,33 @@ namespace Horde3DNET.Samples.ChicagoNET
         public bool init()
         {
 	        // Initialize engine
-            if (!Horde3D.init())
+            if (!h3d.init())
             {
                 Horde3DUtils.dumpMessages();
                 return false;
             }
 
 	        // Set options
-	        Horde3D.setOption( Horde3D.EngineOptions.LoadTextures, 1 );
-	        Horde3D.setOption( Horde3D.EngineOptions.TexCompression, 0 );
-	        Horde3D.setOption( Horde3D.EngineOptions.MaxAnisotropy, 4 );
-	        Horde3D.setOption( Horde3D.EngineOptions.ShadowMapSize, 2048 );
-            Horde3D.setOption( Horde3D.EngineOptions.FastAnimation, 1 );
+	        h3d.setOption( h3d.H3DOptions.LoadTextures, 1 );
+	        h3d.setOption( h3d.H3DOptions.TexCompression, 0 );
+	        h3d.setOption( h3d.H3DOptions.MaxAnisotropy, 4 );
+	        h3d.setOption( h3d.H3DOptions.ShadowMapSize, 2048 );
+            h3d.setOption( h3d.H3DOptions.FastAnimation, 1 );
 
             // Add resources
  	        // Pipelines
-            _forwardPipeRes = Horde3D.addResource((int)Horde3D.ResourceTypes.Pipeline, "pipelines/forward.pipeline.xml", 0);
-            _deferredPipeRes = Horde3D.addResource((int)Horde3D.ResourceTypes.Pipeline, "pipelines/deferred.pipeline.xml", 0);
+            _forwardPipeRes = h3d.addResource((int)h3d.H3DResTypes.Pipeline, "pipelines/forward.pipeline.xml", 0);
+            _deferredPipeRes = h3d.addResource((int)h3d.H3DResTypes.Pipeline, "pipelines/deferred.pipeline.xml", 0);
             // Overlays
-            _fontMatRes = Horde3D.addResource((int)Horde3D.ResourceTypes.Material, "overlays/font.material.xml", 0);            
-            _panelMatRes = Horde3D.addResource( (int) Horde3D.ResourceTypes.Material, "overlays/panel.material.xml", 0 );
-            _logoMatRes = Horde3D.addResource((int)Horde3D.ResourceTypes.Material, "overlays/logo.material.xml", 0);
+            _fontMatRes = h3d.addResource((int)h3d.H3DResTypes.Material, "overlays/font.material.xml", 0);            
+            _panelMatRes = h3d.addResource( (int) h3d.H3DResTypes.Material, "overlays/panel.material.xml", 0 );
+            _logoMatRes = h3d.addResource((int)h3d.H3DResTypes.Material, "overlays/logo.material.xml", 0);
             // Shader for deferred shading
-            int lightMatRes = Horde3D.addResource((int) Horde3D.ResourceTypes.Material, "materials/light.material.xml", 0);
+            int lightMatRes = h3d.addResource((int) h3d.H3DResTypes.Material, "materials/light.material.xml", 0);
             // Environment
-            int envRes = Horde3D.addResource((int) Horde3D.ResourceTypes.SceneGraph, "models/platform/platform.scene.xml", 0);
+            int envRes = h3d.addResource((int) h3d.H3DResTypes.SceneGraph, "models/platform/platform.scene.xml", 0);
             // Skybox
-            int skyBoxRes = Horde3D.addResource((int) Horde3D.ResourceTypes.SceneGraph, "models/skybox/skybox.scene.xml", 0);
+            int skyBoxRes = h3d.addResource((int) h3d.H3DResTypes.SceneGraph, "models/skybox/skybox.scene.xml", 0);
 
 
             // Load resources
@@ -93,25 +93,25 @@ namespace Horde3DNET.Samples.ChicagoNET
 
             // Add scene nodes
 	        // Add camera
-	        _cam = Horde3D.addCameraNode( Horde3D.RootNode, "Camera", _forwardPipeRes );
+	        _cam = h3d.addCameraNode( h3d.H3DRootNode, "Camera", _forwardPipeRes );
             // Add environment
-            int env = Horde3D.addNodes( Horde3D.RootNode, envRes);
-            Horde3D.setNodeTransform( env, 0, 0, 0, 0, 0, 0, 0.23f, 0.23f, 0.23f );
+            int env = h3d.addNodes( h3d.H3DRootNode, envRes);
+            h3d.setNodeTransform( env, 0, 0, 0, 0, 0, 0, 0.23f, 0.23f, 0.23f );
 	        // Add skybox
-            int sky = Horde3D.addNodes(Horde3D.RootNode, skyBoxRes);
-	        Horde3D.setNodeTransform( sky, 0, 0, 0, 0, 0, 0, 210, 50, 210 );
+            int sky = h3d.addNodes(h3d.H3DRootNode, skyBoxRes);
+	        h3d.setNodeTransform( sky, 0, 0, 0, 0, 0, 0, 210, 50, 210 );
             // Add light source
 
-            int light = Horde3D.addLightNode(Horde3D.RootNode, "Light1", lightMatRes, "LIGHTING", "SHADOWMAP");
-            Horde3D.setNodeTransform( light, 0, 20, 50, -30, 0, 0, 1, 1, 1 );
-            Horde3D.setNodeParamf(light, (int) Horde3D.LightNodeParams.Radius, 200);
-            Horde3D.setNodeParamf(light, (int) Horde3D.LightNodeParams.FOV, 90);
-            Horde3D.setNodeParami(light, (int) Horde3D.LightNodeParams.ShadowMapCount, 3);
-            Horde3D.setNodeParamf(light, (int) Horde3D.LightNodeParams.ShadowSplitLambda, 0.9f);
-            Horde3D.setNodeParamf(light, (int) Horde3D.LightNodeParams.ShadowMapBias, 0.001f);
-            Horde3D.setNodeParamf(light, (int) Horde3D.LightNodeParams.Col_R, 0.9f);
-            Horde3D.setNodeParamf(light, (int) Horde3D.LightNodeParams.Col_G, 0.7f);
-            Horde3D.setNodeParamf(light, (int) Horde3D.LightNodeParams.Col_B, 0.75f);
+            int light = h3d.addLightNode(h3d.H3DRootNode, "Light1", lightMatRes, "LIGHTING", "SHADOWMAP");
+            h3d.setNodeTransform( light, 0, 20, 50, -30, 0, 0, 1, 1, 1 );
+            h3d.setNodeParamF(light, (int) h3d.H3DLight.RadiusF, 0, 200);
+            h3d.setNodeParamF(light, (int) h3d.H3DLight.FovF, 0, 90);
+            h3d.setNodeParamI(light, (int) h3d.H3DLight.ShadowMapCountI, 3);
+            h3d.setNodeParamF(light, (int) h3d.H3DLight.ShadowSplitLambdaF, 0, 0.9f);
+            h3d.setNodeParamF(light, (int) h3d.H3DLight.ShadowMapBiasF, 0,  0.001f);
+            h3d.setNodeParamF(light, (int) h3d.H3DLight.ColorF3, 0, 0.9f);
+            h3d.setNodeParamF(light, (int) h3d.H3DLight.ColorF3, 1, 0.7f);
+            h3d.setNodeParamF(light, (int) h3d.H3DLight.ColorF3, 2, 0.75f);
 
             _crowdSim = new CrowdSim();        
 	        _crowdSim.init();
@@ -126,8 +126,8 @@ namespace Horde3DNET.Samples.ChicagoNET
 	        _curFPS = fps;
             _timer += 1 / fps;
             
-	        Horde3D.setOption( Horde3D.EngineOptions.WireframeMode, _wireframeMode ? 1.0f : 0.0f );
-            Horde3D.setOption( Horde3D.EngineOptions.DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
+	        h3d.setOption( h3d.H3DOptions.WireframeMode, _wireframeMode ? 1.0f : 0.0f );
+            h3d.setOption( h3d.H3DOptions.DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
         	
 	        if( !_freeze )
 	        {
@@ -135,7 +135,7 @@ namespace Horde3DNET.Samples.ChicagoNET
 	        }
 
             // Set camera parameters
-            Horde3D.setNodeTransform(_cam, _x, _y, _z, _rx, _ry, 0, 1, 1, 1);
+            h3d.setNodeTransform(_cam, _x, _y, _z, _rx, _ry, 0, 1, 1, 1);
 
             if (_statMode > 0 )
             {
@@ -143,19 +143,19 @@ namespace Horde3DNET.Samples.ChicagoNET
             }
             
             // Show logo
-            Horde3D.showOverlay(0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
-                                1, 1, 1, 0, 1, 0.8f, 1, 1,
-                                1, 1, 1, 1, _logoMatRes, 7);
+            h3d.showOverlay(0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0, 1, 1, 1, 0, 1, 0.8f, 1, 1,
+                1, 1, 1, 1, _logoMatRes, 7);
+
 
 
             // Render scene
-            Horde3D.render(_cam);
+            h3d.render(_cam);
 
             // Finish rendering of frame
-            Horde3D.finalizeFrame();
+            h3d.finalizeFrame();
 
             // Clear Overlays
-            Horde3D.clearOverlays();
+            h3d.clearOverlays();
 
             // Write all messages to log file
             Horde3DUtils.dumpMessages();
@@ -164,7 +164,7 @@ namespace Horde3DNET.Samples.ChicagoNET
         public void release()
         {      	
 	        // Release engine
-	        Horde3D.release();
+	        h3d.release();
         }
 
         public void resize(int width, int height)
@@ -172,10 +172,10 @@ namespace Horde3DNET.Samples.ChicagoNET
             if (!_initialized) return;
 
             // Resize viewport
-            Horde3D.setupViewport( 0, 0, width, height, true );
+            h3d.setupViewport( 0, 0, width, height, true );
 
             // Set virtual camera parameters
-            Horde3D.setupCameraView(_cam, 45.0f, (float) width/height, 0.1f, 1000.0f);
+            h3d.setupCameraView(_cam, 45.0f, (float) width/height, 0.1f, 1000.0f);
         }
 
         public void keyPressEvent(Keys key)
@@ -187,10 +187,10 @@ namespace Horde3DNET.Samples.ChicagoNET
                     break;
 
                 case Keys.F3:
-                    if(  Horde3D.getNodeParami( _cam, (int) Horde3D.CameraNodeParams.PipelineRes ) == _forwardPipeRes )
-                        Horde3D.setNodeParami(_cam, (int) Horde3D.CameraNodeParams.PipelineRes, _deferredPipeRes);
+                    if(  h3d.getNodeParamI( _cam, (int) h3d.H3DCamera.PipeResI ) == _forwardPipeRes )
+                        h3d.setNodeParamI(_cam, (int) h3d.H3DCamera.PipeResI, _deferredPipeRes);
                     else
-                        Horde3D.setNodeParami(_cam, (int) Horde3D.CameraNodeParams.PipelineRes, _forwardPipeRes);
+                        h3d.setNodeParamI(_cam, (int) h3d.H3DCamera.PipeResI, _forwardPipeRes);
                     break;
 
                 case Keys.F7:

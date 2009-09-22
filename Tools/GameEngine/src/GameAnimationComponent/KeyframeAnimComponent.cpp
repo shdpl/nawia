@@ -434,10 +434,9 @@ void KeyframeAnimComponent::loadFromXml(const XMLNode* description)
 			GameLog::errorMessage("Another animation with the name '%s' has been already loaded!", name);
 			return;
 		}
-		//std::string path = Horde3DUtils::getResourcePath(ResourceTypes::Animation);
-		std::string path = "";
-		//if ( path[path.size()] != '\\' && path[path.size()] != '/' )
-		//	path += '/';
+		std::string path = Horde3DUtils::getResourcePath(ResourceTypes::Animation);		
+		if ( path[path.size()] != '\\' && path[path.size()] != '/' )
+			path += '/';
 		// Open resource file
 		std::ifstream inf( (path + file).c_str(), std::ios::binary );
 		if( inf ) // Resource file found

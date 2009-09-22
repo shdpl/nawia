@@ -1,13 +1,13 @@
 // *************************************************************************************************
 //
-// Chicago .NET - sample application for Horde3D .NET wrapper
+// Chicago .NET - sample application for h3d .NET wrapper
 // ----------------------------------------------------------
 //
 // Copyright (C) 2006-07 Nicolas Schulz and Martin Burkhard
 //
 // This file is intended for use as a code example, and may be used, modified, 
 // or distributed in source or object code form, without restriction. 
-// This sample is not covered by the LGPL.
+// This sample is not covered by the EPL.
 //
 // The code and information is provided "as-is" without warranty of any kind, 
 // either expressed or implied.
@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using Horde3DNET;
+using Horde3DNET.Utils;
 
 
 namespace Horde3DNET.Samples.ChicagoNET
@@ -60,8 +61,8 @@ namespace Horde3DNET.Samples.ChicagoNET
 	        _rand = new Random((int)DateTime.Now.Ticks);
         	
 	        // Load character with walk animation
-            int characterRes = Horde3D.addResource((int)Horde3D.ResourceTypes.SceneGraph, "models/man/man.scene.xml", 0);
-            int characterWalkRes = Horde3D.addResource((int)Horde3D.ResourceTypes.Animation, "animations/man.anim", 0);
+            int characterRes = h3d.addResource((int)h3d.H3DResTypes.SceneGraph, "models/man/man.scene.xml", 0);
+            int characterWalkRes = h3d.addResource((int)h3d.H3DResTypes.Animation, "animations/man.anim", 0);
 	        Horde3DUtils.loadResourcesFromDisk( "../Content" );
         	
 	        // Add characters
@@ -70,8 +71,8 @@ namespace Horde3DNET.Samples.ChicagoNET
 		        Particle p = new Particle();
         		
 		        // Add character to scene and apply animation
-                p.node = Horde3D.addNodes(Horde3D.RootNode, characterRes);
-                Horde3D.setupModelAnimStage(p.node, 0, characterWalkRes, string.Empty, false);
+                p.node = h3d.addNodes(h3d.H3DRootNode, characterRes);
+                h3d.setupModelAnimStage(p.node, 0, characterWalkRes, 0, string.Empty, false);
         		
 		        // Characters start in a circle formation
 		        p.px = (float)Math.Sin( (i / 100.0f) * 6.28f ) * 10.0f;
@@ -79,7 +80,7 @@ namespace Horde3DNET.Samples.ChicagoNET
 
 		        chooseDestination( ref p );
 
-		        Horde3D.setNodeTransform( p.node, p.px, 0.02f, p.pz, 0, 0, 0, 1, 1, 1 );
+		        h3d.setNodeTransform( p.node, p.px, 0.02f, p.pz, 0, 0, 0, 1, 1, 1 );
 
 		        _particles.Add( p );
 	        }
@@ -171,11 +172,11 @@ namespace Horde3DNET.Samples.ChicagoNET
 		        ry *= 180 / 3.1415f;	// Convert from radians to degrees
         		
 		        // Update character scene node position
-		        Horde3D.setNodeTransform( p.node, p.px, 0.02f, p.pz, 0, ry, 0, 1, 1, 1 );
+		        h3d.setNodeTransform( p.node, p.px, 0.02f, p.pz, 0, ry, 0, 1, 1, 1 );
         		
 		        // Update animation
 		        p.animTime += vel * 35.0f;
-                Horde3D.setModelAnimParams( p.node, 0, p.animTime, 1.0f );
+                h3d.setModelAnimParams( p.node, 0, p.animTime, 1.0f );
             }
         }
     }

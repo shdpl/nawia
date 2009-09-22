@@ -113,8 +113,6 @@ The final step is to register the decoder using SoundManager::instance()->regist
 Note that registering the decoder needs to be done after SoundManager::instance()->init has been called.
 */
 
-namespace Horde3DSound
-{
 	struct SoundInfo
 	{
 		int samplingRate; //in Hz
@@ -149,6 +147,6 @@ namespace Horde3DSound
 	//first param contains the audio file and second param contains it's size
 	//should return true if the decoder can decode the specified audio file, otherwise false
 	typedef bool (*determineCodecFunc)( const char *, size_t );
-}
+
 
 #endif // _Horde3DSound_decode_H_

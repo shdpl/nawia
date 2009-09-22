@@ -47,7 +47,7 @@ class HordeFileDialog : public QDialog, protected Ui_HordeFileDialog
 {
 	Q_OBJECT
 public:
-	HordeFileDialog(ResourceTypes::List type, const QString& resourcePath, QWidget* parent = 0, Qt::WFlags flags = 0);
+	HordeFileDialog(H3DResTypes::List type, const QString& resourcePath, QWidget* parent = 0, Qt::WFlags flags = 0);
 	virtual ~HordeFileDialog();
 
 	QString fileName();
@@ -60,7 +60,7 @@ public:
 	 * @param caption string to be displayed as window caption	 
 	 * @return QString filename of the selected pipeline
 	 */
-	static QString getResourceFile( ResourceTypes::List resourceType, const QString& targetPath, QWidget* parent, const QString& caption);
+	static QString getResourceFile( H3DResTypes::List resourceType, const QString& targetPath, QWidget* parent, const QString& caption);
 
 public slots:
 	void accept();
@@ -72,7 +72,7 @@ protected slots:
 	
 protected:
 
-	void initTextureView(ResourceTypes::List type);
+	void initTextureView(H3DResTypes::List type);
 	void initShaderView();
 	void initMaterialView();
 	void initEffectView();
@@ -90,7 +90,7 @@ protected:
 	QList<unsigned int>		m_resources;
 	
 	
-	ResourceTypes::List		m_type;
+	H3DResTypes::List		m_type;
 
 	const QDir				DefaultRepoPath;	
 

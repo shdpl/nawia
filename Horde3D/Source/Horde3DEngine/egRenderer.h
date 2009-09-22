@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -101,22 +89,25 @@ struct ParticleVert
 
 struct PipeSamplerBinding
 {
-	char          sampler[64];
-	RenderBuffer  *rb;
-	uint32        bufIndex;
+	char    sampler[64];
+	uint32  rbObj;
+	uint32  bufIndex;
 };
 
 
 class Renderer : public RendererBase
 {
 protected:
-
+	
+	unsigned char                      *_scratchBuf;
+	uint32                             _scratchBufSize;
+	
 	std::vector< PipeSamplerBinding >  _pipeSamplerBindings;
 	std::vector< char >                _occSets;  // Actually bool
 	std::vector< Overlay >             _overlays;
 	
+	uint32                             _shadowRB;
 	uint32                             _frameID;
-	uint32                             _smFBO, _smTex;
 	uint32                             _defShadowMap;
 	uint32                             _particleVBO;
 	MaterialResource                   *_curStageMatLink;
@@ -130,13 +121,16 @@ protected:
 	float                              _splitPlanes[5];
 	Matrix4f                           _lightMats[4];
 
+	uint32                             _vlModel, _vlParticle;
+	ShaderCombination                  _defColorShader, _occShader;
+	int                                _defColShader_color;  // Uniform location
 
-	static bool nodeFrontToBackOrder( NodeListEntry e1, NodeListEntry e2 )
-		{ return ((MeshNode *)e1.node)->tmpSortValue < ((MeshNode *)e2.node)->tmpSortValue; }
-	static bool nodeBackToFrontOrder( NodeListEntry e1, NodeListEntry e2 )
-		{ return ((MeshNode *)e1.node)->tmpSortValue > ((MeshNode *)e2.node)->tmpSortValue; }
-	static bool meshMaterialOrder( NodeListEntry e1, NodeListEntry e2 )
-		{ return ((MeshNode *)e1.node)->getMaterialRes() < ((MeshNode *)e2.node)->getMaterialRes(); }
+	static bool nodeFrontToBackOrder( MeshNode *e1, MeshNode *e2 )
+		{ return e1->tmpSortValue < e2->tmpSortValue; }
+	static bool nodeBackToFrontOrder( MeshNode *e1, MeshNode *e2 )
+		{ return e1->tmpSortValue > e2->tmpSortValue; }
+	static bool meshMaterialOrder( MeshNode *e1, MeshNode *e2 )
+		{ return e1->getMaterialRes() < e2->getMaterialRes(); }
 	
 	void setupViewMatrices( CameraNode *cam );
 	
@@ -148,7 +142,7 @@ protected:
 
 	void drawOverlays( const std::string &shaderContext );
 
-	void bindBuffer( RenderBuffer *rb, const std::string &sampler, uint32 bufIndex );
+	void bindPipeBuffer( uint32 rbObj, const std::string &sampler, uint32 bufIndex );
 	void clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3, float r, float g, float b, float a );
 	void drawFSQuad( Resource *matRes, const std::string &shaderContext );
 	void drawGeometry( const std::string &shaderContext, const std::string &theClass,
@@ -165,38 +159,36 @@ protected:
 
 public:
 	
-	static ShaderCombination  defColorShader;
-	static ShaderCombination  occShader;
-	
 	Renderer();
 	~Renderer();
 	
-	void initStates();
+	unsigned char *useScratchBuf( uint32 minSize );
+	
 	bool init();
 	void resize( int x, int y, int width, int height );
 	
 	int registerOccSet();
 	void unregisterOccSet( int occSet );
 
-	bool uploadShader( const char *vertexShader, const char *fragmentShader, ShaderCombination &sc );
-	void setShader( ShaderCombination *sc );
+	bool createShaderComb( const char *vertexShader, const char *fragmentShader, ShaderCombination &sc );
+	void releaseShaderComb( ShaderCombination &sc );
+	void setShaderComb( ShaderCombination *sc );
 	bool setMaterial( MaterialResource *materialRes, const std::string &shaderContext );
 	
-	bool createShadowBuffer( uint32 width, uint32 height );
-	void destroyShadowBuffer();
+	bool createShadowRB( uint32 width, uint32 height );
+	void releaseShadowRB();
 
 	void showOverlay( const Overlay &overlay );
 	void clearOverlays();
 	
 	void drawAABB( const Vec3f &bbMin, const Vec3f &bbMax );
-	void drawDebugAABB( const Vec3f &bbMin, const Vec3f &bbMax, bool saveStates );
 	
 	static void drawModels( const std::string &shaderContext, const std::string &theClass, bool debugView,
 		const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order, int occSet );
 	static void drawParticles( const std::string &shaderContext, const std::string &theClass, bool debugView,
 		const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order, int occSet );
 
-	bool render( CameraNode *camNode );
+	void render( CameraNode *camNode );
 	void finalizeFrame();
 
 	uint32 getFrameID() { return _frameID; }

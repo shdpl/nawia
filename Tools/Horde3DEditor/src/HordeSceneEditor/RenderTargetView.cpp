@@ -162,11 +162,11 @@ void RenderTargetView::showBuffer(int index)
 		int bufferIndex = m_buffer->itemData(index).toUInt();
 		int width = 0, height = 0;		
 
-		Horde3D::getPipelineRenderTargetData(m_pipelineID, qPrintable(windowTitle()), bufferIndex, &width, &height, &m_imgDepth, 0, 0);
+		h3dGetPipelineRenderTargetData(m_pipelineID, qPrintable(windowTitle()), bufferIndex, &width, &height, &m_imgDepth, 0, 0);
 		
 		unsigned int bufferSize = width * height * m_imgDepth;
 		m_imgData = new float[bufferSize];
-		if (Horde3D::getPipelineRenderTargetData(m_pipelineID, qPrintable(windowTitle()), bufferIndex, &width, &height, &m_imgDepth, m_imgData, bufferSize * sizeof(float)))
+		if (h3dGetPipelineRenderTargetData(m_pipelineID, qPrintable(windowTitle()), bufferIndex, &width, &height, &m_imgDepth, m_imgData, bufferSize * sizeof(float)))
 		{					
 			m_imageLabel->setPixmap(QPixmap::fromImage(convertImageData(m_imgData, width, height, m_imgDepth, true)));
 			scaleImage(1.0);

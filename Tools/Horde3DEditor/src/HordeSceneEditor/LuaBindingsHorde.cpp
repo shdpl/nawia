@@ -52,7 +52,7 @@ namespace Horde3D
 		*/
 		int  lua_getVersionString( lua_State *L )
 		{
-			lua_pushstring(L, Horde3D::getVersionString());
+			lua_pushstring(L, h3dGetVersionString());
 			return 1;
 		}
 
@@ -69,7 +69,7 @@ namespace Horde3D
 		*/
 		int  lua_checkExtension( lua_State *L )
 		{
-			lua_pushboolean( L, Horde3D::checkExtension(luaL_checkstring(L, 1)) );
+			lua_pushboolean( L, h3dCheckExtension(luaL_checkstring(L, 1)) );
 			return 1;
 		}
 
@@ -88,7 +88,7 @@ namespace Horde3D
 		*/
 		int  lua_init( lua_State *L )
 		{
-			lua_pushboolean(L, Horde3D::init());
+			lua_pushboolean(L, h3dInit());
 			return 1;
 		}
 
@@ -132,7 +132,7 @@ namespace Horde3D
 			int width = luaL_checkint(L, 3);
 			int height = luaL_checkint(L, 4);
 			bool resizeBuffers = luaL_checkinteger( L, 5 ) != 0;
-			Horde3D::setupViewport( x, y, width, height, resizeBuffers );
+			h3dSetupViewport( x, y, width, height, resizeBuffers );
 			return 0;
 		}
 
@@ -152,8 +152,8 @@ namespace Horde3D
 		int lua_render( lua_State *L )
 		{
 			int cameraID = luaL_checkint(L, 1);
-			lua_pushboolean(L, Horde3D::render(cameraID));
-			return 1;
+			h3dRender(cameraID);
+			return 0;
 		}
 
 
@@ -172,7 +172,7 @@ namespace Horde3D
 		*/
                 int lua_clear( lua_State * )
 		{
-			Horde3D::clear();
+			h3dClear();
 			return 0;
 		}
 
@@ -193,7 +193,7 @@ namespace Horde3D
 		{
 			float time;
 			int level;
-			const char* msg = Horde3D::getMessage(&level, &time);
+			const char* msg = h3dGetMessage(&level, &time);
 			lua_pushinteger(L, level);
 			lua_pushnumber(L, time);
 			lua_pushstring(L, msg);
@@ -214,8 +214,8 @@ namespace Horde3D
 		*/
 		int  lua_getOption( lua_State *L )
 		{
-			EngineOptions::List option = (EngineOptions::List) luaL_checkint(L,1);			
-			lua_pushnumber(L,Horde3D::getOption(option)); 
+			H3DOptions::List option = (H3DOptions::List) luaL_checkint(L,1);			
+			lua_pushnumber(L,h3dGetOption(option)); 
 			return 1;
 		}
 
@@ -233,9 +233,9 @@ namespace Horde3D
 		*/
 		int  lua_setOption( lua_State *L )
 		{
-			EngineOptions::List param = (EngineOptions::List) luaL_checkint(L, 1);
+			H3DOptions::List param = (H3DOptions::List) luaL_checkint(L, 1);
 			float value = static_cast<float>(luaL_checknumber(L, 2));
-			lua_pushboolean(L, Horde3D::setOption(param, value));
+			lua_pushboolean(L, h3dSetOption(param, value));
 			return 1;
 		}
 
@@ -285,9 +285,9 @@ namespace Horde3D
 			float colG = static_cast<float>(luaL_checknumber(L,18));
 			float colB = static_cast<float>(luaL_checknumber(L,19));
 			float colA = static_cast<float>(luaL_checknumber(L,20));
-			ResHandle material = luaL_checkint(L, 20);
+			H3DRes material = luaL_checkint(L, 20);
 			int layer = luaL_checkint(L, 22);
-			Horde3D::showOverlay(x_ll, y_ll, u_ll, v_ll, x_lr, y_lr, u_lr, v_lr, x_ur, y_ur, u_ur, v_ur, x_ul, y_ul, u_ul, v_ul, colR, colG, colB, colA, material, layer);
+			h3dShowOverlay(x_ll, y_ll, u_ll, v_ll, x_lr, y_lr, u_lr, v_lr, x_ur, y_ur, u_ur, v_ur, x_ul, y_ul, u_ul, v_ul, colR, colG, colB, colA, material, layer);
 			return 0;
 		}
 
@@ -304,7 +304,7 @@ namespace Horde3D
 		*/
                 int  lua_clearOverlays( lua_State * )
 		{
-			Horde3D::clearOverlays();
+			h3dClearOverlays();
 			return 0;
 		}
 
@@ -321,34 +321,12 @@ namespace Horde3D
 		Returns:
 		type of the resource
 		*/
-		int  lua_getResourceType( lua_State *L )
+		int  lua_getResType( lua_State *L )
 		{
-			ResHandle res = luaL_checkint(L, 1);			
-			lua_pushinteger(L, Horde3D::getResourceType(res));
+			H3DRes res = luaL_checkint(L, 1);			
+			lua_pushinteger(L, h3dGetResType(res));
 			return 1;
-		}
-
-		/* 	Function: getResourceName
-		Returns the name of a resource.
-
-		This function returns a pointer to the name of a specified resource. If the resource handle
-		is invalid, the function returns an empty string.
-
-		*Important Note: The pointer is const and allows only read access to the data. Do never try to modify the
-		data of the pointer since that can corrupt the engine's internal states!*
-
-		Parameters:
-		res	- handle to the resource
-
-		Returns:
-		name of the resource or empty string in case of failure
-		*/
-		int  lua_getResourceName( lua_State *L )
-		{
-			ResHandle res = luaL_checkint(L, 1);			
-			lua_pushstring(L, Horde3D::getResourceName(res));
-			return 1;
-		}
+		}		
 
 		/* 	Function: findResource
 		Finds a resource and returns its handle.
@@ -365,9 +343,9 @@ namespace Horde3D
 		*/
 		int  lua_findResource( lua_State *L )
 		{
-			ResourceTypes::List type = (ResourceTypes::List) luaL_checkint(L,1);
+			H3DResTypes::List type = (H3DResTypes::List) luaL_checkint(L,1);
 			const char* name  = luaL_checkstring(L, 2);				
-			lua_pushinteger(L,Horde3D::findResource(type, name)); 
+			lua_pushinteger(L,h3dFindResource(type, name)); 
 			return 1;
 		}
 
@@ -390,10 +368,10 @@ namespace Horde3D
 		*/
 		int  lua_addResource( lua_State *L )
 		{
-			ResourceTypes::List type = (ResourceTypes::List) luaL_checkint(L,1);
+			H3DResTypes::List type = (H3DResTypes::List) luaL_checkint(L,1);
 			const char* name  = luaL_checkstring(L, 2);	
 			unsigned int flags = luaL_checkint(L, 3);			
-			lua_pushinteger(L,Horde3D::addResource(type, name, flags)); 
+			lua_pushinteger(L,h3dAddResource(type, name, flags)); 
 			return 1;
 		}
 
@@ -416,9 +394,9 @@ namespace Horde3D
 		*/
 		int  lua_cloneResource( lua_State *L )
 		{
-			ResHandle res = luaL_checkint(L,1);
+			H3DRes res = luaL_checkint(L,1);
 			const char* name  = luaL_checkstring(L, 2);				
-			lua_pushinteger(L,Horde3D::cloneResource(res, name)); 
+			lua_pushinteger(L,h3dCloneResource(res, name)); 
 			return 1;
 		}
 
@@ -437,8 +415,8 @@ namespace Horde3D
 		*/	
 		int  lua_removeResource( lua_State *L )
 		{
-			ResHandle res = luaL_checkint(L, 1);
-			lua_pushboolean(L, Horde3D::removeResource(res));
+			H3DRes res = luaL_checkint(L, 1);
+			lua_pushboolean(L, h3dRemoveResource(res));
 			return 1;
 		}
 
@@ -481,8 +459,8 @@ namespace Horde3D
 		*/
 		int lua_unloadResource( lua_State *L )
 		{
-			lua_pushboolean(L, Horde3D::unloadResource((ResHandle) luaL_checkint(L, 1)));
-			return 1;
+			h3dUnloadResource((H3DRes) luaL_checkint(L, 1));
+			return 0;
 		}
 
 		/* 	Function: getResourceParami
@@ -498,9 +476,9 @@ namespace Horde3D
 		Returns:
 		value of the parameter
 		*/
-		int lua_getResourceParami( lua_State *L )
+		int lua_getResParamI( lua_State *L )
 		{
-			lua_pushinteger(L, Horde3D::getResourceParami(luaL_checkint(L, 1), luaL_checkint(L, 2)));
+			lua_pushinteger(L, h3dGetResParamI(luaL_checkint(L, 1), luaL_checkint(L, 2), luaL_checkint(L, 3), luaL_checkint(L, 4)));
 			return 1;
 		}
 
@@ -518,10 +496,10 @@ namespace Horde3D
 		Returns:
 			 true in case of success otherwise false
 		*/
-		int lua_setResourceParami( lua_State *L )
+		int lua_setResParamI( lua_State *L )
 		{
-			lua_pushboolean(L, Horde3D::setResourceParami(luaL_checkint(L, 1), luaL_checkint(L, 2), luaL_checkint(L, 3) ));
-			return 1;
+			h3dSetResParamI(luaL_checkint(L, 1), luaL_checkint(L, 2), luaL_checkint(L, 3), luaL_checkint(L, 4), luaL_checkint(L, 5) );
+			return 0;
 		}
 
 		/* 	Function: getResourceParamf
@@ -537,9 +515,9 @@ namespace Horde3D
 		Returns:
 		value of the parameter
 		*/
-		int lua_getResourceParamf( lua_State *L )
+		int lua_getResParamF( lua_State *L )
 		{
-			lua_pushnumber(L, Horde3D::getResourceParami(luaL_checkint(L, 1), luaL_checkint(L, 2)));
+			lua_pushnumber(L, h3dGetResParamF(luaL_checkint(L, 1), luaL_checkint(L, 2), luaL_checkint(L, 3), luaL_checkint(L, 4), luaL_checkint(L, 5)));
 			return 1;
 		}
 
@@ -557,16 +535,10 @@ namespace Horde3D
 		Returns:
 			 true in case of success otherwise false
 		*/
-		int lua_setResourceParamf( lua_State *L )
+		int lua_setResParamF( lua_State *L )
 		{
-			lua_pushboolean(
-				L, 
-				Horde3D::setResourceParamf(
-					luaL_checkint(L, 1), 
-					luaL_checkint(L, 2), 
-					static_cast<float>( luaL_checknumber(L, 3) ) ) 
-			);
-			return 1;
+			h3dSetResParamF( luaL_checkint(L, 1), luaL_checkint(L, 2), luaL_checkint(L, 3), luaL_checkint(L, 4), luaL_checkint(L, 5), static_cast<float>( luaL_checknumber(L, 6) ) );
+			return 0;
 		}
 
 		/* 	Function: getResourceParamf
@@ -582,9 +554,9 @@ namespace Horde3D
 		Returns:
 		value of the parameter
 		*/
-		int lua_getResourceParamstr( lua_State *L )
+		int lua_getResParamStr( lua_State *L )
 		{
-			lua_pushstring(L, Horde3D::getResourceParamstr(luaL_checkint(L, 1), luaL_checkint(L, 2)));
+			lua_pushstring(L, h3dGetResParamStr(luaL_checkint(L, 1), luaL_checkint(L, 2), luaL_checkint(L, 3), luaL_checkint(L, 4)));
 			return 1;
 		}
 
@@ -602,10 +574,10 @@ namespace Horde3D
 		Returns:
 			 true in case of success otherwise false
 		*/
-		int lua_setResourceParamstr( lua_State *L )
+		int lua_setResParamStr( lua_State *L )
 		{
-			lua_pushboolean(L, Horde3D::setResourceParamstr(luaL_checkint(L, 1), luaL_checkint(L, 2), luaL_checkstring(L, 3) ));
-			return 1;
+			h3dSetResParamStr( luaL_checkint(L, 1), luaL_checkint(L, 2), luaL_checkint(L, 3), luaL_checkint(L, 4), luaL_checkstring(L, 5) );
+			return 0;
 		}
 
 		/* 	Function: getResourceData
@@ -673,7 +645,7 @@ namespace Horde3D
 		*/
 		int  lua_queryUnloadedResource( lua_State *L )
 		{
-			lua_pushnumber(L, Horde3D::queryUnloadedResource( luaL_checkint(L, 1) ));
+			lua_pushnumber(L, h3dQueryUnloadedResource( luaL_checkint(L, 1) ));
 			return 1;
 		}
 
@@ -692,7 +664,7 @@ namespace Horde3D
 		*/
 		int  lua_releasedUnusedResources( lua_State* /*L*/ )
 		{			
-			Horde3D::releaseUnusedResources();
+			h3dReleaseUnusedResources();
 			return 0;
 		}
 
@@ -741,7 +713,7 @@ namespace Horde3D
 	*/
 	int lua_setShaderPreambles( lua_State *L )
 	{
-		Horde3D::setShaderPreambles( luaL_checkstring(L, 1), luaL_checkstring(L, 2) );
+		h3dSetShaderPreambles( luaL_checkstring(L, 1), luaL_checkstring(L, 2) );
 		return 0;
 	}
 
@@ -760,32 +732,14 @@ namespace Horde3D
 	*/
 	int lua_setMaterialUniform( lua_State *L )
 	{
-		lua_pushboolean( L, Horde3D::setMaterialUniform( luaL_checkint(L, 1), luaL_checkstring(L, 2), 
+		lua_pushboolean( L, h3dSetMaterialUniform( luaL_checkint(L, 1), luaL_checkstring(L, 2), 
 			float( luaL_checknumber(L, 3) ), 
 			float( luaL_checknumber(L, 4) ),
 			float( luaL_checknumber(L, 5) ),
 			float( luaL_checknumber(L, 6) ) ) );
 		return 1;
 	}
-
-	/* 	Function: setPipelineStageActivation
-			Sets the activation state of a pipeline stage.
-		
-		This function enables or disables a specified stage of the specified pipeline resource.
-		
-		Parameters:
-			pipelineRes	- handle to the Pipeline resource to be accessed
-			stageName	- name of the stage to be modified
-			enabled		- flag indicating whether the stage shall be enabled or disabled
-			
-		Returns:
-			true in case of success, otherwise false
-	*/
-	int lua_setPipelineStageActivation( lua_State *L )
-	{
-		lua_pushboolean(L, Horde3D::setPipelineStageActivation(luaL_checkint(L, 1), luaL_checkstring(L, 2), luaL_checkint(L, 3) != 0));
-		return 1;
-	}
+	
 
 		/* 	Function: getPipelineRenderTargetData
 				Reads the pixel data of a pipeline render target buffer.
@@ -831,8 +785,8 @@ namespace Horde3D
 		*/
 		int  lua_getNodeType( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L,1);			
-			lua_pushinteger(L,Horde3D::getNodeType(node)); 
+			H3DNode node = luaL_checkint(L,1);			
+			lua_pushinteger(L,h3dGetNodeType(node)); 
 			return 1;
 		}
 
@@ -849,10 +803,10 @@ namespace Horde3D
 			Returns:
 				 value of the property or empty string if no such property exists
 		*/
-		int  lua_getNodeParamstr( lua_State *L )
+		int  lua_getNodeParamStr( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L,1);			
-			lua_pushstring(L,Horde3D::getNodeParamstr(node, luaL_checkint(L, 2))); 
+			H3DNode node = luaL_checkint(L,1);			
+			lua_pushstring(L,h3dGetNodeParamStr(node, luaL_checkint(L, 2))); 
 			return 1;
 		}
 
@@ -871,13 +825,13 @@ namespace Horde3D
 		Returns:
 			 true in case of success otherwise false
 		*/
-		int  lua_setNodeParamstr( lua_State *L )
+		int  lua_setNodeParamStr( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L, 1);
+			H3DNode node = luaL_checkint(L, 1);
 			int param = luaL_checkint(L, 2);
 			const char* name = luaL_checkstring(L, 3);
-			lua_pushboolean(L, Horde3D::setNodeParamstr(node, param, name));
-			return 1;
+			h3dSetNodeParamStr(node, param, name);
+			return 0;
 		}
 
 	/* 	Function: getNodeParent
@@ -894,8 +848,8 @@ namespace Horde3D
 	*/
 		int  lua_getNodeParent( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L,1);			
-			lua_pushinteger(L,Horde3D::getNodeParent(node)); 
+			H3DNode node = luaL_checkint(L,1);			
+			lua_pushinteger(L,h3dGetNodeParent(node)); 
 			return 1;
 		}
 
@@ -904,7 +858,7 @@ namespace Horde3D
 		
 		This function relocates a scene node. It detaches the node from its current parent and attaches
 		it to the specified new parent node. If the attachment to the new parent is not possible, the
-		function returns false. Relocation is not possible for the RootNode.
+		function returns false. Relocation is not possible for the H3DRootNode.
 		
 		Parameters:
 			node	- handle to the scene node to be relocated
@@ -915,8 +869,8 @@ namespace Horde3D
 	*/
 		int  lua_setNodeParent( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L,1);			
-			lua_pushboolean(L, Horde3D::setNodeParent(node, luaL_checkint(L, 2) )); 
+			H3DNode node = luaL_checkint(L,1);			
+			lua_pushboolean(L, h3dSetNodeParent(node, luaL_checkint(L, 2) )); 
 			return 1;
 		}
 
@@ -936,9 +890,9 @@ namespace Horde3D
 		*/
 		int  lua_getNodeChild( lua_State *L )
 		{
-			NodeHandle parent = luaL_checkint(L,1);
+			H3DNode parent = luaL_checkint(L,1);
 			unsigned int index = luaL_checkint(L, 2);							
-			lua_pushinteger(L,Horde3D::getNodeChild(parent, index)); 
+			lua_pushinteger(L,h3dGetNodeChild(parent, index)); 
 			return 1;
 		}
 
@@ -959,9 +913,9 @@ namespace Horde3D
 		*/
 		int  lua_addNodes( lua_State *L )
 		{
-			NodeHandle parent = luaL_checkint(L,1);
-			ResHandle res  = luaL_checkint(L, 2);
-			lua_pushinteger(L,Horde3D::addNodes(parent, res)); 
+			H3DNode parent = luaL_checkint(L,1);
+			H3DRes res  = luaL_checkint(L, 2);
+			lua_pushinteger(L,h3dAddNodes(parent, res)); 
 			return 1;
 		}
 
@@ -978,9 +932,9 @@ namespace Horde3D
 		*/
 		int  lua_removeNode( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L, 1);
-			lua_pushboolean(L, Horde3D::removeNode(node));
-			return 1;
+			H3DNode node = luaL_checkint(L, 1);
+			h3dRemoveNode(node);
+			return 0;
 		}
 
 
@@ -999,10 +953,10 @@ namespace Horde3D
 		*/
 		int  lua_setNodeActivation( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L, 1);
+			H3DNode node = luaL_checkint(L, 1);
 			const bool active = luaL_checkint(L, 2) != 0;
-			lua_pushboolean(L, Horde3D::setNodeActivation(node, active));
-			return 1;
+			h3dSetNodeActivation(node, active);
+			return 0;
 		}
 
 		/* 	Function: checkNodeTransformFlag
@@ -1023,9 +977,9 @@ namespace Horde3D
 		*/
 		int  lua_checkNodeTransformFlag( lua_State *L )
 		{			
-			NodeHandle node = luaL_checkint(L, 1);
+			H3DNode node = luaL_checkint(L, 1);
 			const bool reset = luaL_checkint(L, 2) != 0;
-			lua_pushboolean(L, Horde3D::checkNodeTransformFlag(node, reset));
+			lua_pushboolean(L, h3dCheckNodeTransFlag(node, reset));
 			return 1;
 		}
 
@@ -1050,7 +1004,7 @@ namespace Horde3D
 		{
 			unsigned int id = luaL_checkint(L,1);
 			float x, y, z, rx, ry, rz, sx, sy, sz;
-			Horde3D::getNodeTransform(id, &x,&y,&z,&rx,&ry,&rz,&sx,&sy,&sz);
+			h3dGetNodeTransform(id, &x,&y,&z,&rx,&ry,&rz,&sx,&sy,&sz);
 			lua_pushnumber(L, x);
 			lua_pushnumber(L, y);
 			lua_pushnumber(L, z);
@@ -1081,14 +1035,14 @@ namespace Horde3D
 		int lua_setNodeTransform( lua_State *L )
 		{
 			unsigned int id = luaL_checkint(L, 1);
-			lua_pushboolean(L, Horde3D::setNodeTransform(id,
+			h3dSetNodeTransform(id,
 				// translation
 				static_cast<float>(luaL_checknumber(L, 2)), static_cast<float>(luaL_checknumber(L, 3)), static_cast<float>(luaL_checknumber(L, 4)),
 				// rotation
 				static_cast<float>(luaL_checknumber(L, 5)), static_cast<float>(luaL_checknumber(L, 6)), static_cast<float>(luaL_checknumber(L, 7)),
 				// scale
-				static_cast<float>(luaL_checknumber(L, 8)), static_cast<float>(luaL_checknumber(L, 9)), static_cast<float>(luaL_checknumber(L, 10))));
-			return 1;
+				static_cast<float>(luaL_checknumber(L, 8)), static_cast<float>(luaL_checknumber(L, 9)), static_cast<float>(luaL_checknumber(L, 10)));
+			return 0;
 		}	
 
 		/* 	Function: getNodeTransformMatrices
@@ -1111,21 +1065,28 @@ namespace Horde3D
 		int lua_getNodeTransformMatrices( lua_State *L )
 		{
 			int node = luaL_checkint( L, 1 );
-			const float *relMatrix = 0, *absMatrix;
-			bool result = Horde3D::getNodeTransformMatrices( node, &relMatrix, &absMatrix );
+			const float *relMatrix = 0, *absMatrix = 0;
+			h3dGetNodeTransMats( node, &relMatrix, &absMatrix );
 			
-			lua_pushboolean( L, result );
-			lua_pushnumber( L, relMatrix[0] ); lua_pushnumber( L, relMatrix[1] ); lua_pushnumber( L, relMatrix[2] ); lua_pushnumber( L, relMatrix[3] );
-			lua_pushnumber( L, relMatrix[4] ); lua_pushnumber( L, relMatrix[5] ); lua_pushnumber( L, relMatrix[6] ); lua_pushnumber( L, relMatrix[7] );
-			lua_pushnumber( L, relMatrix[8] ); lua_pushnumber( L, relMatrix[9] ); lua_pushnumber( L, relMatrix[10] ); lua_pushnumber( L, relMatrix[11] );
-			lua_pushnumber( L, relMatrix[12] ); lua_pushnumber( L, relMatrix[13] ); lua_pushnumber( L, relMatrix[14] ); lua_pushnumber( L, relMatrix[15] );
-
-			lua_pushnumber( L, absMatrix[0] ); lua_pushnumber( L, absMatrix[1] ); lua_pushnumber( L, absMatrix[2] ); lua_pushnumber( L, absMatrix[3] );
-			lua_pushnumber( L, absMatrix[4] ); lua_pushnumber( L, absMatrix[5] ); lua_pushnumber( L, absMatrix[6] ); lua_pushnumber( L, absMatrix[7] );
-			lua_pushnumber( L, absMatrix[8] ); lua_pushnumber( L, absMatrix[9] ); lua_pushnumber( L, absMatrix[10] ); lua_pushnumber( L, absMatrix[11] );
-			lua_pushnumber( L, absMatrix[12] ); lua_pushnumber( L, absMatrix[13] ); lua_pushnumber( L, absMatrix[14] ); lua_pushnumber( L, absMatrix[15] );
-						
-			return 33;			
+			int retVals = 0;					
+			if( relMatrix )
+			{
+				lua_pushnumber( L, relMatrix[0] ); lua_pushnumber( L, relMatrix[1] ); lua_pushnumber( L, relMatrix[2] ); lua_pushnumber( L, relMatrix[3] );
+				lua_pushnumber( L, relMatrix[4] ); lua_pushnumber( L, relMatrix[5] ); lua_pushnumber( L, relMatrix[6] ); lua_pushnumber( L, relMatrix[7] );
+				lua_pushnumber( L, relMatrix[8] ); lua_pushnumber( L, relMatrix[9] ); lua_pushnumber( L, relMatrix[10] ); lua_pushnumber( L, relMatrix[11] );
+				lua_pushnumber( L, relMatrix[12] ); lua_pushnumber( L, relMatrix[13] ); lua_pushnumber( L, relMatrix[14] ); lua_pushnumber( L, relMatrix[15] );
+				retVals += 16;
+			}
+			
+			if( absMatrix )
+			{
+				lua_pushnumber( L, absMatrix[0] ); lua_pushnumber( L, absMatrix[1] ); lua_pushnumber( L, absMatrix[2] ); lua_pushnumber( L, absMatrix[3] );
+				lua_pushnumber( L, absMatrix[4] ); lua_pushnumber( L, absMatrix[5] ); lua_pushnumber( L, absMatrix[6] ); lua_pushnumber( L, absMatrix[7] );
+				lua_pushnumber( L, absMatrix[8] ); lua_pushnumber( L, absMatrix[9] ); lua_pushnumber( L, absMatrix[10] ); lua_pushnumber( L, absMatrix[11] );
+				lua_pushnumber( L, absMatrix[12] ); lua_pushnumber( L, absMatrix[13] ); lua_pushnumber( L, absMatrix[14] ); lua_pushnumber( L, absMatrix[15] );
+				retVals += 16;
+			}			
+			return retVals;			
 		}
 
 		/* 	Function: setNodeTransformMatrix
@@ -1143,17 +1104,14 @@ namespace Horde3D
 		*/
 		int lua_setNodeTransformMatrix( lua_State *L )
 		{
-			NodeHandle node;
-			float matrix[16];
-			bool result;
-
 			if(lua_gettop(L)!=17)
 			{
-				luaL_error( L, "setNodeTransformMatrix requires a nodehandle and 16 float values! ");
+				luaL_error( L, "setNodeTransformMatrix requires a H3DNode and 16 float values! ");
 				return 0;
 			}
 
-			node=(int) lua_tointeger(L,1);
+			float matrix[16];
+			H3DNode node=(int) lua_tointeger(L,1);
 			matrix[0]=static_cast<float>( lua_tonumber(L,2) );
 			matrix[1]=static_cast<float>( lua_tonumber(L,3) );
 			matrix[2]=static_cast<float>( lua_tonumber(L,4) );
@@ -1172,10 +1130,9 @@ namespace Horde3D
 			matrix[15]=static_cast<float>( lua_tonumber(L,17) );
 			lua_pop(L, 17);
 
-			result=Horde3D::setNodeTransformMatrix(node, matrix);
-
-			lua_pushboolean(L, result);
-			return 1;
+			h3dSetNodeTransMat(node, matrix);
+			
+			return 0;
 		}
 
 			/* 	Function: getNodeParamf
@@ -1191,11 +1148,11 @@ namespace Horde3D
 		Returns:
 		value of the parameter
 		*/
-		int  lua_getNodeParamf( lua_State *L )
+		int  lua_getNodeParamF( lua_State *L )
 		{
-			NodeHandle  node = luaL_checkint(L,1);
-			CameraNodeParams::List param = (CameraNodeParams::List) luaL_checkint(L, 2);				
-			lua_pushnumber(L,Horde3D::getNodeParamf(node, param)); 
+			H3DNode  node = luaL_checkint(L,1);
+			H3DCamera::List param = (H3DCamera::List) luaL_checkint(L, 2);				
+			lua_pushnumber(L,h3dGetNodeParamF(node, param, luaL_checkint( L,3 ))); 
 			return 1;
 		}
 
@@ -1213,20 +1170,21 @@ namespace Horde3D
 		Returns:
 			 true in case of success otherwise false
 	*/
-		int lua_setNodeParamf( lua_State *L )
+		int lua_setNodeParamF( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L, 1);
+			H3DNode node = luaL_checkint(L, 1);
 			int param = luaL_checkint(L, 2);
-			float value = float( luaL_checknumber(L, 3) );			
-			lua_pushboolean(L, Horde3D::setNodeParamf(node, param, value));
-			return 1;
+			int compIdx = luaL_checkint(L, 3);
+			float value = float( luaL_checknumber(L, 4) );
+			h3dSetNodeParamF(node, param, compIdx, value);
+			return 0;
 		}
 
 		/* 	Function: getNodeParami
 		Gets a property of a scene node.
 
 		This function returns a specified property of the specified node.
-		The property must be of the type int or ResHandle.
+		The property must be of the type int or H3DRes.
 
 		Parameters:
 		node	- handle to the node to be accessed
@@ -1235,11 +1193,11 @@ namespace Horde3D
 		Returns:
 		value of the parameter
 		*/
-		int  lua_getNodeParami( lua_State *L )
+		int  lua_getNodeParamI( lua_State *L )
 		{
-			NodeHandle  node = luaL_checkint(L,1);
-			CameraNodeParams::List param = (CameraNodeParams::List) luaL_checkint(L, 2);				
-			lua_pushnumber(L,Horde3D::getNodeParamf(node, param)); 
+			H3DNode  node = luaL_checkint(L,1);
+			H3DCamera::List param = (H3DCamera::List) luaL_checkint(L, 2);							
+			lua_pushinteger(L,h3dGetNodeParamI(node, param)); 
 			return 1;
 		}
 
@@ -1247,7 +1205,7 @@ namespace Horde3D
 		Sets a property of a scene node.
 
 		This function sets a specified property of the specified node to a specified value.
-		The property must be of the type int or ResHandle.
+		The property must be of the type int or H3DRes.
 
 		Parameters:
 		node	- handle to the node to be modified
@@ -1257,13 +1215,13 @@ namespace Horde3D
 		Returns:
 		true in case of success otherwise false
 		*/
-		int lua_setNodeParami( lua_State *L )
+		int lua_setNodeParamI( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L, 1);
+			H3DNode node = luaL_checkint(L, 1);
 			int param = luaL_checkint(L, 2);
 			int value = luaL_checkint(L, 3);			
-			lua_pushboolean(L, Horde3D::setNodeParami(node, param, value));
-			return 1;
+			h3dSetNodeParamI(node, param, value);
+			return 0;
 		}
 
 		/* 	Function: getNodeAABB
@@ -1283,17 +1241,16 @@ namespace Horde3D
 		*/
 		int  lua_getNodeAABB( lua_State *L )
 		{
-			NodeHandle  node = luaL_checkint(L,1);
-			float minX, minY, minZ, maxX, maxY, maxZ;
-			bool retVal = Horde3D::getNodeAABB(node, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
-			lua_pushboolean(L, retVal);
+			H3DNode  node = luaL_checkint(L,1);
+			float minX = 0, minY = 0, minZ = 0, maxX = 0, maxY = 0, maxZ = 0;
+			h3dGetNodeAABB(node, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);			
 			lua_pushnumber(L, minX);
 			lua_pushnumber(L, minY);
 			lua_pushnumber(L, minZ);
 			lua_pushnumber(L, maxX);
 			lua_pushnumber(L, maxY);
 			lua_pushnumber(L, maxZ);			
-			return 7;
+			return 6;
 		}
 
 			
@@ -1307,17 +1264,17 @@ namespace Horde3D
 		Parameters:
 			startNode	- handle to the node where the search begins
 			name		- name of nodes to be searched (empty string for all nodes)
-			type		- type of nodes to be searched (SceneNodeTypes::Undefined for all types)
+			type		- type of nodes to be searched (H3DNodeTypes::Undefined for all types)
 			
 		Returns:
 			number of search results
 	*/
 		int  lua_findNodes( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L, 1);
+			H3DNode node = luaL_checkint(L, 1);
 			const char* name = luaL_checkstring(L, 2);
 			int type = luaL_checkint(L, 3);
-			lua_pushinteger(L, Horde3D::findNodes(node, name, type));
+			lua_pushinteger(L, h3dFindNodes(node, name, type));
 			return 1;
 		}
 
@@ -1337,7 +1294,7 @@ namespace Horde3D
 		*/
 		int  lua_getNodeFindResult( lua_State *L )
 		{
-			lua_pushinteger(L, Horde3D::getNodeFindResult(luaL_checkint(L, 1)));
+			lua_pushinteger(L, h3dGetNodeFindResult(luaL_checkint(L, 1)));
 			return 1;
 		}
 
@@ -1361,10 +1318,10 @@ namespace Horde3D
 		*/
 		int  lua_castRay( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L, 1);
+			H3DNode node = luaL_checkint(L, 1);
 			float ox = float( luaL_checknumber(L, 2) ), oy = float( luaL_checknumber(L, 3) ), oz = float( luaL_checknumber(L, 4) );
 			float dx = float( luaL_checknumber(L, 5) ), dy = float( luaL_checknumber(L, 6) ), dz = float( luaL_checknumber(L, 7) );
-			lua_pushinteger(L, Horde3D::castRay(node, ox, oy, oz, dx, dy, dz, luaL_checkint(L, 8)));
+			lua_pushinteger(L, h3dCastRay(node, ox, oy, oz, dx, dy, dz, luaL_checkint(L, 8)));
 			return 1;
 		}	
 
@@ -1386,10 +1343,10 @@ namespace Horde3D
 		int lua_getCastRayResult( lua_State *L )
 		{
 			int index = luaL_checkint( L, 1 );
-			NodeHandle node;
+			H3DNode node;
 			float distance;
 			float intersection[3];
-			bool retVal = Horde3D::getCastRayResult( index, &node, &distance, intersection );
+			bool retVal = h3dGetCastRayResult( index, &node, &distance, intersection );
 			lua_pushboolean( L, retVal );
 			lua_pushinteger( L, node );
 			lua_pushnumber( L, distance );
@@ -1420,11 +1377,11 @@ namespace Horde3D
 	*/
 	int lua_checkNodeVisibility( lua_State *L )
 	{
-		NodeHandle node = luaL_checkint( L, 1 );
-		NodeHandle cameraNode = luaL_checkint( L, 2 );
+		H3DNode node = luaL_checkint( L, 1 );
+		H3DNode cameraNode = luaL_checkint( L, 2 );
 		bool checkOcclusion = luaL_checkint( L, 3 ) != 0;
 		bool calcLod = luaL_checkint( L, 4 ) != 0;
-		lua_pushinteger( L, Horde3D::checkNodeVisibility( node, cameraNode, checkOcclusion, calcLod ) );
+		lua_pushinteger( L, h3dCheckNodeVisibility( node, cameraNode, checkOcclusion, calcLod ) );
 		return 1;
 	}
 
@@ -1444,9 +1401,9 @@ namespace Horde3D
 	*/
 		int  lua_addGroupNode( lua_State *L )
 		{
-			NodeHandle parent = luaL_checkint(L,1);
+			H3DNode parent = luaL_checkint(L,1);
 			const char* name  = luaL_checkstring(L, 2);			
-			lua_pushinteger(L,Horde3D::addGroupNode(parent, name)); 
+			lua_pushinteger(L,h3dAddGroupNode(parent, name)); 
 			return 1;
 		}
 
@@ -1466,10 +1423,10 @@ namespace Horde3D
 	*/
 		int  lua_addModelNode( lua_State *L )
 		{
-			NodeHandle parent = luaL_checkint(L,1);
+			H3DNode parent = luaL_checkint(L,1);
 			const char* name  = luaL_checkstring(L, 2);	
-			ResHandle geoRes = luaL_checkint(L, 3);
-			lua_pushinteger(L,Horde3D::addModelNode(parent, name, geoRes)); 
+			H3DRes geoRes = luaL_checkint(L, 3);
+			lua_pushinteger(L,h3dAddModelNode(parent, name, geoRes)); 
 			return 1;
 		}
 
@@ -1501,13 +1458,14 @@ namespace Horde3D
 	*/
 		int  lua_setupModelAnimStage( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L, 1);
+			H3DNode node = luaL_checkint(L, 1);
 			unsigned int stage = luaL_checkint(L, 2);
-			ResHandle res = luaL_checkint(L, 3);
-			const char* animMask = luaL_checkstring(L, 4);
-			bool additive = luaL_checkint(L, 5) != 0;
-			lua_pushboolean(L, Horde3D::setupModelAnimStage(node, stage, res, animMask, additive));
-			return 1;
+			H3DRes res = luaL_checkint(L, 3);
+			int layer = luaL_checkint(L, 4);
+			const char* startNode = luaL_checkstring(L, 5);
+			bool additive = luaL_checkint(L, 6) != 0;
+			h3dSetupModelAnimStage(node, stage, res, layer, startNode, additive);
+			return 0;
 		}
 
 		/* 	Function: setModelAnimParams
@@ -1531,12 +1489,12 @@ namespace Horde3D
 	*/
 		int  lua_setModelAnimParams( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L, 1);
+			H3DNode node = luaL_checkint(L, 1);
 			unsigned int stage = luaL_checkint(L, 2);
 			float time = static_cast<float>(luaL_checknumber(L, 3));
 			float weight = static_cast<float>(luaL_checknumber(L, 4));
-			lua_pushboolean(L, Horde3D::setModelAnimParams(node, stage, time, weight));
-			return 1;
+			h3dSetModelAnimParams(node, stage, time, weight);
+			return 0;
 		}
 
 		
@@ -1557,10 +1515,10 @@ namespace Horde3D
 	*/
 		int  lua_setModelMorpher( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L, 1);
+			H3DNode node = luaL_checkint(L, 1);
 			const char* target = luaL_checkstring(L, 2);
 			float weight = static_cast<float>(luaL_checknumber(L, 3));
-			lua_pushboolean(L, Horde3D::setModelMorpher(node, target, weight));
+			lua_pushboolean(L, h3dSetModelMorpher(node, target, weight));
 			return 1;
 		}
 
@@ -1585,14 +1543,14 @@ namespace Horde3D
 		*/
 		int  lua_addMeshNode( lua_State *L )
 		{
-			NodeHandle parent = luaL_checkint(L,1);
+			H3DNode parent = luaL_checkint(L,1);
 			const char* name  = luaL_checkstring(L, 2);	
-			ResHandle matRes  = luaL_checkint(L, 3);
+			H3DRes matRes  = luaL_checkint(L, 3);
 			unsigned int batchStart = luaL_checkint(L, 4);	
 			unsigned int batchCount = luaL_checkint(L, 5);	
 			unsigned int vertRStart = luaL_checkint(L, 6);	
 			unsigned int vertREnd = luaL_checkint(L, 7);	
-			lua_pushinteger(L,Horde3D::addMeshNode(parent, name, matRes, batchStart, batchCount, vertRStart, vertREnd)); 
+			lua_pushinteger(L,h3dAddMeshNode(parent, name, matRes, batchStart, batchCount, vertRStart, vertREnd)); 
 			return 1;
 		}
 
@@ -1612,10 +1570,10 @@ namespace Horde3D
 	*/
 		int  lua_addJointNode( lua_State *L )
 		{
-			NodeHandle parent = luaL_checkint(L,1);
+			H3DNode parent = luaL_checkint(L,1);
 			const char* name  = luaL_checkstring(L, 2);	
 			unsigned int jointIndex = luaL_checkint(L, 3);
-			lua_pushinteger(L,Horde3D::addJointNode(parent, name, jointIndex)); 
+			lua_pushinteger(L,h3dAddJointNode(parent, name, jointIndex)); 
 			return 1;
 		}
 
@@ -1643,35 +1601,14 @@ namespace Horde3D
 	*/
 		int  lua_addLightNode( lua_State *L )
 		{
-			NodeHandle parent = luaL_checkint(L,1);
+			H3DNode parent = luaL_checkint(L,1);
 			const char* name  = luaL_checkstring(L, 2);	
-			ResHandle materialRes  = luaL_checkint(L, 3);
+			H3DRes materialRes  = luaL_checkint(L, 3);
 			const char* lightingContext  = luaL_checkstring(L, 4);	
 			const char* shadowContext  = luaL_checkstring(L, 5);	
-			lua_pushinteger(L,Horde3D::addLightNode(parent, name, materialRes, lightingContext, shadowContext)); 
+			lua_pushinteger(L,h3dAddLightNode(parent, name, materialRes, lightingContext, shadowContext)); 
 			return 1;
 		}
-
-		/* 	Function: setLightContexts
-		Sets the shader contexts used by a light source.
-
-		This function sets the lighting and shadow shader contexts of the specified light source. The contexts
-		define which shader code is used when doing lighting calculations or rendering the shadow map.
-
-		Parameters:
-		lightNode		- handle to the Light node to be modified
-		lightingContext	- name of the shader context used for performing lighting calculations
-		shadowContext	- name of the shader context used for rendering shadow maps
-
-		Returns:
-		true in case of success otherwise false
-		*/
-		int  lua_setLightContexts( lua_State *L )
-		{
-			lua_pushboolean(L, Horde3D::setLightContexts(luaL_checkint(L, 1), luaL_checkstring(L, 2), luaL_checkstring(L, 2)));
-			return 1;
-		}
-
 
 	/* Group: Camera-specific scene graph functions */
 	/* 	Function: addCameraNode
@@ -1689,9 +1626,9 @@ namespace Horde3D
 	*/
 		int  lua_addCameraNode( lua_State *L )
 		{
-			NodeHandle parent = luaL_checkint(L,1);
+			H3DNode parent = luaL_checkint(L,1);
 			const char* name  = luaL_checkstring(L, 2);			
-			lua_pushinteger(L,Horde3D::addCameraNode(parent, name, luaL_checkint(L, 3))); 
+			lua_pushinteger(L,h3dAddCameraNode(parent, name, luaL_checkint(L, 3))); 
 			return 1;
 		}
 
@@ -1713,13 +1650,13 @@ namespace Horde3D
 	*/
 		int  lua_setupCameraView( lua_State *L )
 		{
-			NodeHandle node = luaL_checkint(L, 1);
+			H3DNode node = luaL_checkint(L, 1);
 			float fov = static_cast<float>(luaL_checknumber(L, 2));
 			float aspect = static_cast<float>(luaL_checknumber(L, 3));
 			float near = static_cast<float>(luaL_checknumber(L, 4));
 			float far = static_cast<float>(luaL_checknumber(L, 5));			
-			lua_pushboolean(L, Horde3D::setupCameraView(node, fov, aspect, near, far));
-			return 1;
+			h3dSetupCameraView(node, fov, aspect, near, far);
+			return 0;
 		}
 
 	/* 	Function: getCameraProjectionMatrix
@@ -1739,13 +1676,12 @@ namespace Horde3D
 		{
 			if(lua_gettop(L)!=1) return 0;
 
-			NodeHandle camera=(NodeHandle) lua_tointeger(L, 1);
+			H3DNode camera=(H3DNode) lua_tointeger(L, 1);
 			lua_pop(L, 1);
 
-			float matrix[16];
-			if( !Horde3D::getCameraProjectionMatrix(camera, matrix) ) return 0;
-
-			lua_pushboolean( L, 1 );
+			float matrix[16] = {0};
+			h3dGetCameraProjMat(camera, matrix);
+			
 			lua_pushnumber( L,matrix[0] );
 			lua_pushnumber( L,matrix[1] );
 			lua_pushnumber( L,matrix[2] );
@@ -1763,7 +1699,7 @@ namespace Horde3D
 			lua_pushnumber( L,matrix[14] );
 			lua_pushnumber( L,matrix[15] );
 
-			return 17;
+			return 16;
 		}
 
 		/* Group: Emitter-specific scene graph functions */
@@ -1786,13 +1722,13 @@ namespace Horde3D
 	*/
 		int  lua_addEmitterNode( lua_State *L )
 		{
-			NodeHandle parent = luaL_checkint(L,1);
+			H3DNode parent = luaL_checkint(L,1);
 			const char* name  = luaL_checkstring(L, 2);			
-			ResHandle matRes  = luaL_checkint(L, 3);
-			ResHandle effectRes = luaL_checkint(L, 4);
+			H3DRes matRes  = luaL_checkint(L, 3);
+			H3DRes effectRes = luaL_checkint(L, 4);
 			unsigned int maxParticleCount = luaL_checkint(L, 5);
 			unsigned int respawnCount = luaL_checkint(L, 6);
-			lua_pushinteger(L,Horde3D::addEmitterNode(parent, name, matRes, effectRes, maxParticleCount, respawnCount)); 
+			lua_pushinteger(L,h3dAddEmitterNode(parent, name, matRes, effectRes, maxParticleCount, respawnCount)); 
 			return 1;
 		}
 
@@ -1808,10 +1744,10 @@ namespace Horde3D
 		//    true in case of success, otherwise false 
 		int  lua_advanceEmitterTime( lua_State *L )
 		{
-			NodeHandle  node  = luaL_checkint(L,1);
+			H3DNode  node  = luaL_checkint(L,1);
 			float timeDelta = static_cast<float>(luaL_checknumber(L, 2));	
-			lua_pushboolean(L,Horde3D::advanceEmitterTime(node, timeDelta)); 
-			return 1;
+			h3dAdvanceEmitterTime(node, timeDelta); 
+			return 0;
 		}
 
 			//Gets the search path of a resource type.
@@ -1827,8 +1763,8 @@ namespace Horde3D
 
 		int  lua_getResourcePath( lua_State *L )
 		{
-			ResourceTypes::List type = (ResourceTypes::List) luaL_checkint(L, 1);			
-			lua_pushstring(L, Horde3DUtils::getResourcePath(type));
+			H3DResTypes::List type = (H3DResTypes::List) luaL_checkint(L, 1);			
+			lua_pushstring(L, h3dutGetResourcePath(type));
 			return 1;
 		}
 		
@@ -1845,9 +1781,9 @@ namespace Horde3D
 		//
 		int  lua_setResourcePath( lua_State *L )
 		{
-			ResourceTypes::List type = (ResourceTypes::List) luaL_checkint(L, 1);
+			H3DResTypes::List type = (H3DResTypes::List) luaL_checkint(L, 1);
 			const char* path = luaL_checkstring(L, 2);
-			Horde3DUtils::setResourcePath(type, path);
+			h3dutSetResourcePath(type, path);
 			return 0;
 		}
 
@@ -1874,20 +1810,19 @@ namespace Horde3D
 			{"setOption", lua_setOption},
 			{"showOverlay", lua_showOverlay},			
 			{"clearOverlays", lua_clearOverlays},
-			{"getResourceType", lua_getResourceType},
-			{"getResourceName", lua_getResourceName},
+			{"getResType", lua_getResType},			
 			{"findResource", lua_findResource},
 			{"addResource", lua_addResource},
 			{"cloneResource", lua_cloneResource},
 			{"removeResource", lua_removeResource},
 			{"loadResource", lua_loadResource},
 			{"unloadResource", lua_unloadResource},
-			{"getResourceParami", lua_getResourceParami},
-			{"setResourceParami", lua_setResourceParami},
-			{"getResourceParamf", lua_getResourceParamf},
-			{"setResourceParamf", lua_setResourceParamf},
-			{"getResourceParamstr", lua_getResourceParamstr},
-			{"setResourceParamstr", lua_setResourceParamstr},
+			{"getResParamI", lua_getResParamI},
+			{"setResParamI", lua_setResParamI},
+			{"getResParamF", lua_getResParamF},
+			{"setResParamF", lua_setResParamF},
+			{"getResParamStr", lua_getResParamStr},
+			{"setResParamStr", lua_setResParamStr},
 			{"getResourceData", lua_getResourceData},
 			{"updateResourceData", lua_updateResourceData},
 			{"queryUnloadedResource", lua_queryUnloadedResource},
@@ -1895,11 +1830,10 @@ namespace Horde3D
 			{"createTexture2D", lua_createTexture2D},
 			{"setShaderPreambles", lua_setShaderPreambles},
 			{"setMaterialUniform", lua_setMaterialUniform},
-			{"setPipelineStageActivation", lua_setPipelineStageActivation},
 			{"getPipelineRenderTargetData", lua_getPipelineRenderTargetData},
 			{"getNodeType", lua_getNodeType},
-			{"getNodeParamstr", lua_getNodeParamstr},
-			{"setNodeParamstr", lua_setNodeParamstr},
+			{"getNodeParamstr", lua_getNodeParamStr},
+			{"setNodeParamstr", lua_setNodeParamStr},
 			{"getNodeParent", lua_getNodeParent},
 			{"setNodeParent", lua_setNodeParent},
 			{"getNodeChild", lua_getNodeChild},
@@ -1911,10 +1845,10 @@ namespace Horde3D
 			{"setNodeTransform", lua_setNodeTransform},
 			{"getNodeTransformMatrices", lua_getNodeTransformMatrices},
 			{"setNodeTransformMatrix", lua_setNodeTransformMatrix},
-			{"getNodeParamf", lua_getNodeParamf},
-			{"setNodeParamf", lua_setNodeParamf},
-			{"getNodeParami", lua_getNodeParami},
-			{"setNodeParami", lua_setNodeParami},
+			{"getNodeParamf", lua_getNodeParamF},
+			{"setNodeParamf", lua_setNodeParamF},
+			{"getNodeParami", lua_getNodeParamI},
+			{"setNodeParami", lua_setNodeParamI},
 			{"getNodeAABB", lua_getNodeAABB},
 			{"findNodes", lua_findNodes},
 			{"getNodeFindResult", lua_getNodeFindResult},
@@ -1928,8 +1862,7 @@ namespace Horde3D
 			{"setModelMorpher", lua_setModelMorpher},
 			{"addMeshNode", lua_addMeshNode},
 			{"addJointNode", lua_addJointNode},
-			{"addLightNode", lua_addLightNode},
-			{"setLightContexts", lua_setLightContexts},
+			{"addLightNode", lua_addLightNode},			
 			{"addCameraNode", lua_addCameraNode},
 			{"setupCameraView", lua_setupCameraView},
 			{"getCameraProjectionMatrix", lua_getCameraProjectionMatrix},

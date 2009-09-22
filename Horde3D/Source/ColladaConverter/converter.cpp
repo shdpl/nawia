@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -38,8 +26,10 @@
 using namespace std;
 
 
-Converter::Converter( float *lodDists )
+Converter::Converter( const string &outPath, float *lodDists )
 {
+	_outPath = outPath;
+	
 	_lodDist1 = lodDists[0];
 	_lodDist2 = lodDists[1];
 	_lodDist3 = lodDists[2];
@@ -47,6 +37,7 @@ Converter::Converter( float *lodDists )
 	
 	_frameCount = 0;
 	_maxLodLevel = 0;
+	_animNotSampled = false;
 }
 
 
@@ -71,7 +62,7 @@ Matrix4f Converter::getNodeTransform( ColladaDocument &doc, DaeNode &node, unsig
 			if( compIndex >= 0 )	// Handle animation of single components like X or ANGLE
 			{
 				if( sampler->output->floatArray.size() != _frameCount )
-					log( "Warning: Use animation sampling for export!" );
+					_animNotSampled = true;
 				else
 					node.transStack[i].animValues[compIndex] = sampler->output->floatArray[frame];	
 			}
@@ -93,7 +84,7 @@ Matrix4f Converter::getNodeTransform( ColladaDocument &doc, DaeNode &node, unsig
 					break;
 				}					
 				if( sampler->output->floatArray.size() != _frameCount * size )
-					log( "Warning: Use animation sampling for export!" );	
+					_animNotSampled = true;
 				else
 					memcpy( node.transStack[i].animValues, &sampler->output->floatArray[frame * size], size * sizeof( float ) );
 			}
@@ -158,8 +149,34 @@ void Converter::checkNodeName( SceneNode *node )
 }
 
 
+bool Converter::validateInstance( ColladaDocument &doc, const std::string &instanceId )
+{
+	string id = instanceId;
+	
+	DaeSkin *skin = doc.libControllers.findSkin( id );
+	DaeMorph *morpher = doc.libControllers.findMorph( id );
+	
+	// Resolve controller stack
+	if( skin != 0x0 )
+	{	
+		id = skin->ownerId;
+		morpher = doc.libControllers.findMorph( id );
+		if( morpher != 0x0 ) id = morpher->ownerId;
+	}
+	else if( morpher != 0x0 )
+	{
+		id = morpher->ownerId;
+		skin = doc.libControllers.findSkin( id );
+		if( skin != 0x0 ) id = skin->ownerId;
+	}
+	
+	DaeGeometry *geo = doc.libGeometries.findGeometry( id );
+	return geo != 0x0 && !geo->triGroups.empty();
+}
+
+
 SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNode *parentNode,
-								   Matrix4f transAccum, vector< Matrix4f > animTransAccum )
+                                   Matrix4f transAccum, vector< Matrix4f > animTransAccum )
 {
 	// Note: animTransAccum is used for pure transformation nodes of Collada that are no joints or meshes
 	
@@ -184,6 +201,14 @@ SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNod
 	
 	SceneNode *oNode = 0x0;
 	
+	// Find valid instances
+	std::vector< int > validInsts;
+	for( unsigned int i = 0; i < node.instances.size(); ++i )
+	{
+		if( validateInstance( doc, node.instances[i].url ) )
+			validInsts.push_back( i );
+	}
+	
 	// Create node
 	if( node.joint )
 	{
@@ -192,11 +217,11 @@ SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNod
 	}
 	else
 	{
-		if( !node.instances.empty() )
+		if( !validInsts.empty() )
 		{
 			oNode = new Mesh();
 			_meshes.push_back( (Mesh *)oNode );
-			oNode->daeInstance = &node.instances[0];
+			oNode->daeInstance = &node.instances[validInsts[0]];
 		}
 	}
 	
@@ -226,7 +251,7 @@ SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNod
 	// Create sub-nodes if necessary
 	if( oNode != 0x0 )
 	{
-		if( node.joint && !node.instances.empty() )
+		if( node.joint && !validInsts.empty() )
 		{
 			SceneNode *oNode2 = new Mesh();
 			_meshes.push_back( (Mesh *)oNode2 );
@@ -235,28 +260,28 @@ SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNod
 			*oNode2 = *oNode;
 			oNode2->typeJoint = false;
 			oNode2->matRel = Matrix4f();
-			oNode2->daeInstance = &node.instances[0];
+			oNode2->daeInstance = &node.instances[validInsts[0]];
 			oNode2->parent = oNode;
 			oNode2->children.clear();
 			for( unsigned int i = 0; i < oNode2->frames.size(); ++i )
 				oNode2->frames[i] = Matrix4f();
 
 			// Create submeshes if there are several instances
-			for( unsigned int i = 1; i < node.instances.size(); ++i )
+			for( unsigned int i = 1; i < validInsts.size(); ++i )
 			{
 				SceneNode *oNode3 = new Mesh();
 				_meshes.push_back( (Mesh *)oNode3 );
 				oNode2->children.push_back( _meshes.back() );
 
 				*oNode3 = *oNode2;
-				oNode3->daeInstance = &node.instances[i];
+				oNode3->daeInstance = &node.instances[validInsts[i]];
 				oNode3->parent = oNode2;
 			}
 		}
-		else if( !node.joint && node.instances.size() > 1 )
+		else if( !node.joint && validInsts.size() > 1 )
 		{
 			// Create submeshes
-			for( unsigned int i = 1; i < node.instances.size(); ++i )
+			for( unsigned int i = 1; i < validInsts.size(); ++i )
 			{
 				SceneNode *oNode2 = new Mesh();
 				_meshes.push_back( (Mesh *)oNode2 );
@@ -264,7 +289,7 @@ SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNod
 
 				*oNode2 = *oNode;
 				oNode2->matRel = Matrix4f();
-				oNode2->daeInstance = &node.instances[i];
+				oNode2->daeInstance = &node.instances[validInsts[i]];
 				oNode2->parent = oNode;
 				oNode2->children.clear();
 				for( unsigned int i = 0; i < oNode2->frames.size(); ++i )
@@ -311,7 +336,7 @@ void Converter::calcTangentSpaceBasis( vector<Vertex> &verts )
 		verts[i].bitangent = Vec3f( 0, 0, 0 );
 	}
 	
-	// Algorithm: Eric Lengyel, Mathematics for 3D Game Programming & Computer Graphics
+	// Basic algorithm: Eric Lengyel, Mathematics for 3D Game Programming & Computer Graphics
 	for( unsigned int i = 0; i < _meshes.size(); ++i )
 	{
 		for( unsigned int j = 0; j < _meshes[i]->triGroups.size(); ++j )
@@ -320,53 +345,35 @@ void Converter::calcTangentSpaceBasis( vector<Vertex> &verts )
 			
 			for( unsigned int k = triGroup.first; k < triGroup.first + triGroup.count; k += 3 )
 			{
-				Vec3f &v0 = verts[_indices[k + 0]].pos;
-				Vec3f &v1 = verts[_indices[k + 1]].pos;
-				Vec3f &v2 = verts[_indices[k + 2]].pos;
+				// Compute basis vectors for triangle
+				Vec3f edge1uv = verts[_indices[k + 1]].texCoords[0] - verts[_indices[k]].texCoords[0];
+				Vec3f edge2uv = verts[_indices[k + 2]].texCoords[0] - verts[_indices[k]].texCoords[0];
+				Vec3f edge1 = verts[_indices[k + 1]].pos - verts[_indices[k]].pos;
+				Vec3f edge2 = verts[_indices[k + 2]].pos - verts[_indices[k]].pos;
+				Vec3f normal = edge1.cross( edge2 );  // Normal weighted by triangle size (hence unnormalized)
 
-				Vec3f &v0_str = verts[_indices[k + 0]].texCoords[0];
-				Vec3f &v1_str = verts[_indices[k + 1]].texCoords[0];
-				Vec3f &v2_str = verts[_indices[k + 2]].texCoords[0];
+				float r = 1.0f / (edge1uv.x * edge2uv.y - edge2uv.x * edge1uv.y); // UV area normalization
+				Vec3f uDir = (edge1 * edge2uv.y - edge2 * edge1uv.y) * r;
+				Vec3f vDir = (edge2 * edge1uv.x - edge1 * edge2uv.x) * r;
 
-				Plane plane( v0, v1, v2 );
-				Vec3f xyz0 = v1 - v0;
-				Vec3f xyz1 = v2 - v0;
-				Vec3f st0 = v1_str - v0_str;
-				Vec3f st1 = v2_str - v0_str;
-
-				float r = 0.0f;
-				if( st0.x * st1.y - st1.x * st0.y != 0 )
-					r = 1.0f / (st0.x * st1.y - st1.x * st0.y);
-				Vec3f sdir( (st1.y * xyz0.x - st0.y * xyz1.x) * r,
-				            (st1.y * xyz0.y - st0.y * xyz1.y) * r, (st1.y * xyz0.z - st0.y * xyz1.z) * r );
-				Vec3f tdir( (st0.x * xyz1.x - st1.x * xyz0.x) * r,
-				            (st0.x * xyz1.y - st1.x * xyz0.y) * r, (st0.x * xyz1.z - st1.x * xyz0.z) * r );
-
-				verts[_indices[k + 0]].normal += plane.normal;
-				verts[_indices[k + 1]].normal += plane.normal;
-				verts[_indices[k + 2]].normal += plane.normal;
-				verts[_indices[k + 0]].tangent += sdir;
-				verts[_indices[k + 1]].tangent += sdir;
-				verts[_indices[k + 2]].tangent += sdir;
-				verts[_indices[k + 0]].bitangent += tdir;
-				verts[_indices[k + 1]].bitangent += tdir;
-				verts[_indices[k + 2]].bitangent += tdir;
-
-				// Handle texture seams where vertices were split
+				// Accumulate basis for vertices
 				for( unsigned int l = 0; l < 3; ++l )
 				{
+					verts[_indices[k + l]].normal += normal;
+					verts[_indices[k + l]].tangent += uDir;
+					verts[_indices[k + l]].bitangent += vDir;
+
+					// Handle texture seams where vertices were split
 					vector< unsigned int > &vertList =
 						triGroup.posIndexToVertices[verts[_indices[k + l]].daePosIndex];
-					
 					for( unsigned int m = 0; m < vertList.size(); ++m )
 					{
-						if( _indices[k + l] == vertList[m] ) continue;
-						
-						if( verts[vertList[m]].storedNormal == verts[_indices[k + l]].storedNormal )
+						if( vertList[m] != _indices[k + l] &&
+						    verts[vertList[m]].storedNormal == verts[_indices[k + l]].storedNormal )
 						{
-							verts[vertList[m]].normal += plane.normal;
-							verts[vertList[m]].tangent += sdir;
-							verts[vertList[m]].bitangent += tdir;
+							verts[vertList[m]].normal += normal;
+							verts[vertList[m]].tangent += uDir;
+							verts[vertList[m]].bitangent += vDir;
 						}
 					}
 				}
@@ -378,22 +385,19 @@ void Converter::calcTangentSpaceBasis( vector<Vertex> &verts )
 	unsigned int numInvalidBasis = 0;
 	for( unsigned int i = 0; i < verts.size(); ++i )
 	{
-		// Check if tangent space basis is valid
+		// Check if tangent space basis is invalid
 		if( verts[i].normal.length() == 0 || verts[i].tangent.length() == 0 || verts[i].bitangent.length() == 0 )
-		{
 			++numInvalidBasis;
-		}
 		
-		// Normalize
-		const Vec3f &n = verts[i].normal.normalized();
-		const Vec3f &t = verts[i].tangent;
+		// Gram–Schmidt orthogonalization
+		verts[i].normal.normalize();
+		Vec3f &n = verts[i].normal;
+		Vec3f &t = verts[i].tangent;
 		verts[i].tangent = (t - n * n.dot( t )).normalized();
-		verts[i].normal = n;
-				
-		if( n.cross( t ).dot( verts[i].bitangent ) < 0.0f )
-			verts[i].bitangent = (n * -1).cross( t );
-		else
-			verts[i].bitangent = n.cross( t );
+		
+		// Calculate handedness (required to support mirroring) and final bitangent
+		float handedness = n.cross( t ).dot( verts[i].bitangent ) < 0 ? -1.0f : 1.0f;
+		verts[i].bitangent = n.cross( t ) * handedness;
 	}
 
 	if( numInvalidBasis > 0 )
@@ -434,7 +438,7 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 		if( _meshes[i]->lodLevel > 0 )
 		{
 			if( _meshes[i]->lodLevel > _maxLodLevel ) _maxLodLevel = _meshes[i]->lodLevel;
-			_meshes[i]->name[strlen( _meshes[i]->name ) - 5] ='\0';  // Cut off lod postfix from name
+			_meshes[i]->name[strlen( _meshes[i]->name ) - 5] = '\0';  // Cut off lod postfix from name
 		}
 		
 		// Find geometry/controller for node
@@ -468,11 +472,7 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 		}
 		
 		DaeGeometry *geo = doc.libGeometries.findGeometry( id );
-		if( geo == 0x0 )
-		{
-			log( "Warning: Geometry or controller " + id + " referenced by scene node not found" );
-			continue;
-		}
+		ASSERT( geo != 0x0 );
 		
 		vector< Joint * > jointLookup;
 		if( skin != 0x0 )
@@ -788,32 +788,51 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 	}
 
 	// Optimization and clean up
-	float effBefore = 0, effAfter = 0;
-	unsigned int numCalls = 0;
+	float optEffBefore = 0, optEffAfter = 0;
+	unsigned int optNumCalls = 0;
 	for( unsigned int i = 0; i < _meshes.size(); ++i )
 	{
 		for( unsigned int j = 0; j < _meshes[i]->triGroups.size(); ++j )
 		{
-			// Optimize order of indices for best vertex cache usage
+			// Optimize order of indices for best vertex cache usage and remap vertices
 			if( optimize )
 			{
-				++numCalls;
-				effBefore += MeshOptimizer::calcCacheEfficiency( _meshes[i]->triGroups[j], _indices );
-				MeshOptimizer::optimizeIndexOrder( _meshes[i]->triGroups[j], _vertices, _indices );
-				effAfter += MeshOptimizer::calcCacheEfficiency( _meshes[i]->triGroups[j], _indices );
+				map< unsigned int, unsigned int > vertMap;
+				
+				++optNumCalls;
+				optEffBefore += MeshOptimizer::calcCacheEfficiency( _meshes[i]->triGroups[j], _indices );
+				MeshOptimizer::optimizeIndexOrder( _meshes[i]->triGroups[j], _vertices, _indices, vertMap );
+				optEffAfter += MeshOptimizer::calcCacheEfficiency( _meshes[i]->triGroups[j], _indices );
+
+				// Update morph target vertex indices according to vertex remapping
+				for( unsigned int k = 0; k < _morphTargets.size(); ++k )
+				{
+					for( unsigned int l = 0; l < _morphTargets[k].diffs.size(); ++l )
+					{
+						map< unsigned int, unsigned int >::iterator itr1 =
+							vertMap.find( _morphTargets[k].diffs[l].vertIndex );
+
+						if( itr1 != vertMap.end() )
+						{
+							_morphTargets[k].diffs[l].vertIndex = itr1->second;
+						}
+					}
+				}
 			}
 			
+			// Clean up
 			delete[] _meshes[i]->triGroups[j].posIndexToVertices;
 			_meshes[i]->triGroups[j].posIndexToVertices = 0x0;
 		}
 	}
 
-	if( numCalls > 0 )
+	// Output info about optimization
+	if( optNumCalls > 0 )
 	{
 		stringstream ss;
 		ss << fixed << setprecision( 3 );
-		ss << "Optimized geometry for vertex cache: from ATVR " << effBefore / numCalls;
-		ss << " to ATVR " << effAfter / numCalls;
+		ss << "Optimized geometry for vertex cache: from ATVR " << optEffBefore / optNumCalls;
+		ss << " to ATVR " << optEffAfter / optNumCalls;
 		log( ss.str() );
 	}
 }
@@ -837,6 +856,9 @@ bool Converter::convertModel( ColladaDocument &doc, bool optimize )
 		processNode( doc, *doc.scene->nodes[i], 0x0, Matrix4f(), animTransAccum );
 	}
 
+	if( _animNotSampled )
+		log( "Warning: Animation is not sampled and will probably be wrong" );
+
 	// Process joints and meshes
 	processJoints();
 	processMeshes( doc, optimize );
@@ -847,7 +869,7 @@ bool Converter::convertModel( ColladaDocument &doc, bool optimize )
 
 bool Converter::writeGeometry( const string &name )
 {
-	FILE *f = fopen( (string() + "models/" + name + "/" + name + ".geo").c_str(), "wb" );
+	FILE *f = fopen( (_outPath + "/models/" + name + "/" + name + ".geo").c_str(), "wb" );
 
 	// Write header
 	unsigned int version = 5;
@@ -1129,21 +1151,11 @@ void Converter::writeSGNode( const string &modelName, SceneNode *node, unsigned 
 
 	if( node->children.size() == 0 )
 	{
-		if( !node->typeJoint )
+		if( !node->typeJoint && ((Mesh *)node)->triGroups.size() > 1 )
 		{
-			switch( ((Mesh *)node)->triGroups.size() ) 
-			{
-			case 0: 
-				break; // Don't close node because there was no open tag when no trigroup exists
-			case 1:
-				outf << " />\n";
-				break;
-			default:
-				for( unsigned int j = 0; j < depth + 1; ++j ) outf << "\t";
-				outf << "</Mesh>\n";	
-				break;
-			}
-		}					 
+			for( unsigned int j = 0; j < depth + 1; ++j ) outf << "\t";
+			outf << "</Mesh>\n";
+		}
 		else
 		{
 			outf << " />\n";
@@ -1166,7 +1178,7 @@ void Converter::writeSGNode( const string &modelName, SceneNode *node, unsigned 
 bool Converter::writeSceneGraph( const string &name )
 {
 	ofstream outf;
-	outf.open( (string() + "models/" + name + "/" + name + ".scene.xml").c_str(), ios::out );
+	outf.open( (_outPath + "/models/" + name + "/" + name + ".scene.xml").c_str(), ios::out );
 	
 	outf << "<Model name=\"" << name << "\" geometry=\"models/" << name << "/" << name << ".geo\"";
 	if( _maxLodLevel >= 1 ) outf << " lodDist1=\"" << _lodDist1 << "\"";
@@ -1217,7 +1229,7 @@ bool Converter::saveModel( const string &name )
 }
 
 
-bool Converter::writeMaterials( ColladaDocument &doc, const string &name )
+bool Converter::writeMaterials( ColladaDocument &doc, const string &name, bool replace )
 {
 	for( unsigned int i = 0; i < doc.libMaterials.materials.size(); ++i )
 	{
@@ -1225,8 +1237,20 @@ bool Converter::writeMaterials( ColladaDocument &doc, const string &name )
 		
 		if( !material.used ) continue;
 		
+		string fileName = _outPath + "/models/" + name + "/" + material.id + ".material.xml";
+		
+		if( !replace )
+		{
+			// Skip writing material file it it already exists
+			ifstream inf( fileName.c_str() );
+			if( inf.good() )
+			{	
+				log( "Skipping material " + material.id + ".material.xml" );
+				continue;
+			}
+		}
+
 		ofstream outf;
-		string fileName = "models/" + name + "/" + material.id + ".material.xml";
 		outf.open( fileName.c_str(), ios::out );
 
 		outf << "<Material>\n";
@@ -1306,7 +1330,7 @@ void Converter::writeAnimFrames( SceneNode &node, FILE *f )
 
 bool Converter::writeAnimation( const string &name )
 {
-	FILE *f = fopen( (string() + "animations/" + name + ".anim").c_str(), "wb" );
+	FILE *f = fopen( (_outPath + "/animations/" + name + ".anim").c_str(), "wb" );
 
 	// Write header
 	unsigned int version = 3;

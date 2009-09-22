@@ -52,18 +52,18 @@ QEmitterNode::QEmitterNode(const QDomElement& xmlNode, int row, SceneTreeModel* 
 QEmitterNode::~QEmitterNode()
 {
 	if (m_matResource != 0)
-		Horde3D::removeResource(m_matResource);
+		h3dRemoveResource(m_matResource);
 	if (m_effectResource != 0)
-		Horde3D::removeResource(m_effectResource);
+		h3dRemoveResource(m_effectResource);
 }
 
 
 void QEmitterNode::addRepresentation()
 {	
-	m_matResource = Horde3D::addResource(ResourceTypes::Material, qPrintable(m_xmlNode.attribute("material")), 0);
+	m_matResource = h3dAddResource(H3DResTypes::Material, qPrintable(m_xmlNode.attribute("material")), 0);
 
 	// Load resource immediately since a later call to loadResourceFromDisk results in a bad behaviour of the Horde3D engine
-	QString resourceName = Horde3DUtils::getResourcePath(ResourceTypes::Material);
+	QString resourceName = h3dutGetResourcePath(H3DResTypes::Material);
 	if( !resourceName.isEmpty() && !resourceName.endsWith('/') && !resourceName.endsWith('\\') )
 		resourceName += '/';
 	resourceName += m_xmlNode.attribute("material");
@@ -76,13 +76,13 @@ void QEmitterNode::addRepresentation()
 
 
 
-	Horde3D::loadResource(m_matResource, matFile.readAll().append('\0').constData(), matFile.size() + 1);
+	h3dLoadResource(m_matResource, matFile.readAll().append('\0').constData(), matFile.size() + 1);
 	matFile.close();
 
-	m_effectResource = Horde3D::addResource(ResourceTypes::ParticleEffect, qPrintable(m_xmlNode.attribute("effect")), 0);
+	m_effectResource = h3dAddResource(H3DResTypes::ParticleEffect, qPrintable(m_xmlNode.attribute("effect")), 0);
 
 	// Load resource immediately since a later call to loadResourceFromDisk results in a bad behaviour of the Horde3D engine
-	resourceName = Horde3DUtils::getResourcePath(ResourceTypes::ParticleEffect);
+	resourceName = h3dutGetResourcePath(H3DResTypes::ParticleEffect);
 	if (!resourceName.isEmpty() && !resourceName.endsWith('/') && !resourceName.endsWith('\\'))
 		resourceName += '/';
 	resourceName += m_xmlNode.attribute("effect");
@@ -92,13 +92,13 @@ void QEmitterNode::addRepresentation()
 		qWarning("Error opening resource %s", qPrintable(m_xmlNode.attribute("effect")));
 
 	// Stupid return value, if false it can also be the case that the resource was loaded before instead of that their was an error
-	Horde3D::loadResource(m_effectResource, effectFile.readAll().append('\0').constData(), effectFile.size()+1);
+	h3dLoadResource(m_effectResource, effectFile.readAll().append('\0').constData(), effectFile.size()+1);
 	effectFile.close();
 
 	QSceneNode* parentNode = static_cast<QSceneNode*>(parent());
-	unsigned int rootID = parentNode ? parentNode->hordeId() : RootNode;
+	unsigned int rootID = parentNode ? parentNode->hordeId() : H3DRootNode;
 
-	m_hordeID = Horde3D::addEmitterNode(
+	m_hordeID = h3dAddEmitterNode(
 		rootID, 
 		qPrintable(m_xmlNode.attribute("name", "ATTENTION No Node Name")), 
 		m_matResource, 
@@ -107,18 +107,18 @@ void QEmitterNode::addRepresentation()
 		m_xmlNode.attribute("respawnCount").toInt()
 	);
 
-	Horde3D::setNodeParamf(m_hordeID, EmitterNodeParams::ForceX, m_xmlNode.attribute("forceX", "0.0").toFloat());
-	Horde3D::setNodeParamf(m_hordeID, EmitterNodeParams::ForceY, m_xmlNode.attribute("forceY", "0.0").toFloat());
-	Horde3D::setNodeParamf(m_hordeID, EmitterNodeParams::ForceZ, m_xmlNode.attribute("forceZ", "0.0").toFloat());
-	Horde3D::setNodeParamf(m_hordeID, EmitterNodeParams::Delay, m_xmlNode.attribute("delay", "0.0").toFloat());
-	Horde3D::setNodeParamf(m_hordeID, EmitterNodeParams::SpreadAngle, m_xmlNode.attribute("spreadAngle", "0.0").toFloat());
-	Horde3D::setNodeParamf(m_hordeID, EmitterNodeParams::EmissionRate, m_xmlNode.attribute("emissionRate", "0.0").toFloat());
+	h3dSetNodeParamF(m_hordeID, H3DEmitter::ForceF3, 0, m_xmlNode.attribute("forceX", "0.0").toFloat());
+	h3dSetNodeParamF(m_hordeID, H3DEmitter::ForceF3, 1, m_xmlNode.attribute("forceY", "0.0").toFloat());
+	h3dSetNodeParamF(m_hordeID, H3DEmitter::ForceF3, 2, m_xmlNode.attribute("forceZ", "0.0").toFloat());
+	h3dSetNodeParamF(m_hordeID, H3DEmitter::DelayF, 0, m_xmlNode.attribute("delay", "0.0").toFloat());
+	h3dSetNodeParamF(m_hordeID, H3DEmitter::SpreadAngleF, 0, m_xmlNode.attribute("spreadAngle", "0.0").toFloat());
+	h3dSetNodeParamF(m_hordeID, H3DEmitter::EmissionRateF, 0, m_xmlNode.attribute("emissionRate", "0.0").toFloat());
 
 	// load transformation from file...
 	float x, y, z, rx, ry, rz, sx, sy, sz;
 	getTransformation(x,y,z,rx,ry,rz,sx,sy,sz);
 	// ...and update scene representation
-	Horde3D::setNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
+	h3dSetNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
 	
 	// Attachment
 	QDomElement attachment = m_xmlNode.firstChildElement("Attachment");	
@@ -142,10 +142,10 @@ void QEmitterNode::setMaterial(const Material& material)
 	{
 		m_xmlNode.setAttribute("material", material.FileName);
 		if (m_matResource != 0)
-			Horde3D::removeResource(m_matResource);
-		m_matResource = Horde3D::addResource( ResourceTypes::Material, qPrintable(material.FileName), 0 );
-		Horde3DUtils::loadResourcesFromDisk(".");
-		Horde3D::setNodeParami(m_hordeID, EmitterNodeParams::MaterialRes, m_matResource);
+			h3dRemoveResource(m_matResource);
+		m_matResource = h3dAddResource( H3DResTypes::Material, qPrintable(material.FileName), 0 );
+		h3dutLoadResourcesFromDisk(".");
+		h3dSetNodeParamI(m_hordeID, H3DEmitter::MatResI, m_matResource);
 	}
 	else if (material != QEmitterNode::material())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Material", this, "Material", QVariant::fromValue(material), EmitterMaterialID));
@@ -162,10 +162,10 @@ void QEmitterNode::setEffect(const Effect& effect)
 	{
 		m_xmlNode.setAttribute("effect", effect.FileName);
 		if (m_effectResource != 0)
-			Horde3D::removeResource(m_effectResource);
-		m_effectResource = Horde3D::addResource( ResourceTypes::ParticleEffect, qPrintable(effect.FileName), 0 );
-		Horde3DUtils::loadResourcesFromDisk(".");
-		Horde3D::setNodeParami(m_hordeID, EmitterNodeParams::ParticleEffectRes, m_effectResource);
+			h3dRemoveResource(m_effectResource);
+		m_effectResource = h3dAddResource( H3DResTypes::ParticleEffect, qPrintable(effect.FileName), 0 );
+		h3dutLoadResourcesFromDisk(".");
+		h3dSetNodeParamI(m_hordeID, H3DEmitter::PartEffResI, m_effectResource);
 	}
 	else if (effect != QEmitterNode::effect())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Effect", this, "Effect", QVariant::fromValue(effect), EmitterMaterialID));
@@ -181,7 +181,7 @@ void QEmitterNode::setMaxCount(unsigned int value)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("maxCount", value);
-		Horde3D::setNodeParami(m_hordeID, EmitterNodeParams::MaxCount, value);
+		h3dSetNodeParamI(m_hordeID, H3DEmitter::MaxCountI, value);
 	}
 	else if (value != QEmitterNode::maxCount())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Max Count"), this, "Max_Count", value, EmitterMaxCountID));
@@ -199,7 +199,7 @@ void QEmitterNode::setRespawnCount(int value)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("respawnCount", value);
-		Horde3D::setNodeParami(m_hordeID, EmitterNodeParams::RespawnCount, value);
+		h3dSetNodeParamI(m_hordeID, H3DEmitter::RespawnCountI, value);
 	}
 	else if (value != QEmitterNode::respawnCount())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Respawn Count"), this, "Respawn_Count", value, EmitterRespawnCountID));
@@ -219,9 +219,9 @@ void QEmitterNode::setForce(const QVec3f &value)
 		m_xmlNode.setAttribute("forceX", value.X);
 		m_xmlNode.setAttribute("forceY", value.Y);
 		m_xmlNode.setAttribute("forceZ", value.Z);
-		Horde3D::setNodeParamf(m_hordeID, EmitterNodeParams::ForceX, value.X);
-		Horde3D::setNodeParamf(m_hordeID, EmitterNodeParams::ForceY, value.Y);
-		Horde3D::setNodeParamf(m_hordeID, EmitterNodeParams::ForceZ, value.Z);
+		h3dSetNodeParamF(m_hordeID, H3DEmitter::ForceF3, 0, value.X);
+		h3dSetNodeParamF(m_hordeID, H3DEmitter::ForceF3, 1, value.Y);
+		h3dSetNodeParamF(m_hordeID, H3DEmitter::ForceF3, 2, value.Z);
 	}
 	else if (value != QEmitterNode::force())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Force"), this, "Force", QVariant::fromValue(value), EmitterForceID));
@@ -237,7 +237,7 @@ void QEmitterNode::setEmissionRate(int value)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("emissionRate", value);
-		Horde3D::setNodeParamf(m_hordeID, EmitterNodeParams::EmissionRate, value);
+		h3dSetNodeParamF(m_hordeID, H3DEmitter::EmissionRateF, 0, value);
 	}
 	else if (value != QEmitterNode::emissionRate())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Emission Rate"), this, "Emission_Rate", value, EmitterEmissionRateID));
@@ -253,7 +253,7 @@ void QEmitterNode::setSpreadAngle(float value)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("spreadAngle", value);
-		Horde3D::setNodeParamf(m_hordeID, EmitterNodeParams::SpreadAngle, value);
+		h3dSetNodeParamF(m_hordeID, H3DEmitter::SpreadAngleF, 0, value);
 	}
 	else if (value != QEmitterNode::spreadAngle())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Spread Angle"), this, "Spread_Angle", value, EmitterSpreadAngleID));
@@ -269,7 +269,7 @@ void QEmitterNode::setDelay(float value)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("delay", value);
-		Horde3D::setNodeParamf(m_hordeID, EmitterNodeParams::Delay, value);
+		h3dSetNodeParamF(m_hordeID, H3DEmitter::DelayF, 0, value);
 	}
 	else if (value != QEmitterNode::delay())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand(tr("Set Delay"), this, "Delay", value, EmitterDelayID));
@@ -278,5 +278,5 @@ void QEmitterNode::setDelay(float value)
 void QEmitterNode::timerEvent(QTimerEvent* /*event*/)
 {
 	if (m_hordeID != 0)
-		Horde3D::advanceEmitterTime(m_hordeID, 0.1f);
+		h3dAdvanceEmitterTime(m_hordeID, 0.1f);
 }

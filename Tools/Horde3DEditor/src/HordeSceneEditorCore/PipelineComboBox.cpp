@@ -52,8 +52,8 @@ void PipelineComboBox::init( const QString& resourcePath )
 Pipeline PipelineComboBox::pipeline() const
 {
 	Pipeline pipeline(currentText());
-	pipeline.ResourceID = Horde3D::addResource(ResourceTypes::Pipeline, qPrintable(currentText()), 0);
-	Horde3DUtils::loadResourcesFromDisk(".");
+	pipeline.ResourceID = h3dAddResource(H3DResTypes::Pipeline, qPrintable(currentText()), 0);
+	h3dutLoadResourcesFromDisk(".");
 	return pipeline;
 }
 
@@ -69,7 +69,7 @@ void PipelineComboBox::currentChanged(int index)
 {
 	if (itemData(index).isValid() && itemData(index) == QVariant((int)QVariant::UserType))
 	{		
-		QString newPipeline = HordeFileDialog::getResourceFile( ResourceTypes::Pipeline, m_resourcePath, this, tr("Select pipeline to import"));
+		QString newPipeline = HordeFileDialog::getResourceFile( H3DResTypes::Pipeline, m_resourcePath, this, tr("Select pipeline to import"));
 		if (!newPipeline.isEmpty())
 		{
 			if (findText(newPipeline) == -1)

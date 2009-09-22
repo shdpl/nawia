@@ -30,16 +30,16 @@ private:
 	float					_lightTimer;
 	float					_soundVolume, _soundPitch;
 	bool					_soundLoop;
-	DistanceModels::List	_distanceModel;
+	H3DDistanceModels::List	_distanceModel;
 
 	int						_statMode;
 	bool					_debugViewMode, _wireframeMode;
 
 	// Engine objects
-	ResHandle				_fontMatRes, _panelMatRes, _logoMatRes;
-	ResHandle				_pipeRes, _hdrPipeRes, _forwardPipeRes;
-	ResHandle				_soundRes;
-	NodeHandle				_cam, _sound1, _sound2, _light;
+	H3DRes				_fontMatRes, _panelMatRes, _logoMatRes;
+	H3DRes				_pipeRes, _hdrPipeRes, _forwardPipeRes;
+	H3DRes				_soundRes;
+	H3DNode				_cam, _sound1, _sound2, _light;
 
 	std::string				_contentDir;
 

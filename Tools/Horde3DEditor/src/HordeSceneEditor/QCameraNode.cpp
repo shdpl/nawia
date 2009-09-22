@@ -55,7 +55,7 @@ QCameraNode::~QCameraNode()
 {
 	if (m_pipelineID != 0)
 	{
-		Horde3D::removeResource(m_pipelineID );
+		h3dRemoveResource(m_pipelineID );
 		m_pipelineID = 0;
 	}	
 	HordeSceneEditor::instance()->removeCamera(this);
@@ -64,20 +64,20 @@ QCameraNode::~QCameraNode()
 void QCameraNode::addRepresentation()
 {	
 	QSceneNode* parentNode = static_cast<QSceneNode*>(parent());
-	unsigned int rootID = parentNode ? parentNode->hordeId() : RootNode;
-	m_pipelineID = Horde3D::addResource(ResourceTypes::Pipeline, qPrintable(m_xmlNode.attribute("pipeline")), 0);
+	unsigned int rootID = parentNode ? parentNode->hordeId() : H3DRootNode;
+	m_pipelineID = h3dAddResource(H3DResTypes::Pipeline, qPrintable(m_xmlNode.attribute("pipeline")), 0);
 
-	m_hordeID = Horde3D::addCameraNode( rootID, qPrintable(m_xmlNode.attribute("name", tr("ATTENTION no node name"))), m_pipelineID );	
+	m_hordeID = h3dAddCameraNode( rootID, qPrintable(m_xmlNode.attribute("name", tr("ATTENTION no node name"))), m_pipelineID );	
 	float x, y, z, rx, ry, rz, sx, sy, sz;
 	getTransformation(x,y,z,rx,ry,rz,sx,sy,sz);
-	Horde3D::setNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
+	h3dSetNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
 	Frustum f(frustum());
-	Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::LeftPlane, f.Left);
-	Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::RightPlane, f.Right);
-	Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::TopPlane, f.Top);
-	Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::BottomPlane, f.Bottom);
-	Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::NearPlane, f.Near);
-	Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::FarPlane, f.Far);
+	h3dSetNodeParamF(m_hordeID, H3DCamera::LeftPlaneF, 0, f.Left);
+	h3dSetNodeParamF(m_hordeID, H3DCamera::RightPlaneF, 0, f.Right);
+	h3dSetNodeParamF(m_hordeID, H3DCamera::TopPlaneF, 0, f.Top);
+	h3dSetNodeParamF(m_hordeID, H3DCamera::BottomPlaneF, 0, f.Bottom);
+	h3dSetNodeParamF(m_hordeID, H3DCamera::NearPlaneF, 0, f.Near);
+	h3dSetNodeParamF(m_hordeID, H3DCamera::FarPlaneF, 0, f.Far);
 	
 	// Attachment
 	QDomElement attachment = m_xmlNode.firstChildElement("Attachment");	
@@ -91,7 +91,7 @@ void QCameraNode::addRepresentation()
 //void QCameraNode::addDebugRepresentation()
 //{
 //	// Add Camera Geometry
-//	//NodeHandle geometry = Horde3D::addResource(ResourceTypes::Geometry, "QCameraNode.geo", 0);
+//	//H3DNode geometry = h3dAddResource(H3DResTypes::Geometry, "QCameraNode.geo", 0);
 //	//QFile cameraDebugGeometry(":/Models/Resources/QCameraNode.geo");	
 //	//if (!cameraDebugGeometry.open(QIODevice::ReadOnly))
 //	//{
@@ -99,12 +99,12 @@ void QCameraNode::addRepresentation()
 //	//	return;
 //	//}
 //	//QByteArray data(cameraDebugGeometry.readAll());
-//	//QString path(Horde3DUtils::getResourcePath(ResourceTypes::Geometry));
+//	//QString path(h3dutGetResourcePath(H3DResTypes::Geometry));
 //	//path += "QCameraNode.geo";
-//	//if (!Horde3D::loadResource(qPrintable(path), data.constData(), data.size()))
+//	//if (!h3dLoadResource(qPrintable(path), data.constData(), data.size()))
 //	//	return;
 //	//// Add Camera Material
-//	//NodeHandle material = Horde3D::addResource(ResourceTypes::Material, "QCameraNode.material.xml", 0);
+//	//H3DNode material = h3dAddResource(H3DResTypes::Material, "QCameraNode.material.xml", 0);
 //	//QFile cameraDebugMaterial(":/Models/Resources/QCameraNode.material.xml");	
 //	//if (!cameraDebugMaterial.open(QIODevice::ReadOnly))
 //	//{
@@ -112,12 +112,12 @@ void QCameraNode::addRepresentation()
 //	//	return;
 //	//}
 //	//data = cameraDebugMaterial.readAll();
-//	//path = Horde3DUtils::getResourcePath(ResourceTypes::Material);
+//	//path = h3dutGetResourcePath(H3DResTypes::Material);
 //	//path += "QCameraNode.material.xml";
-//	//if (!Horde3D::loadResource(qPrintable(path), data.constData(), data.size()))
+//	//if (!h3dLoadResource(qPrintable(path), data.constData(), data.size()))
 //	//	return;
 //	//// Add Camera Model 
-//	//m_debugID = Horde3D::addResource(ResourceTypes::SceneGraph, "QCameraNode.scene.xml", 0);
+//	//m_debugID = h3dAddResource(H3DResTypes::SceneGraph, "QCameraNode.scene.xml", 0);
 //	//QFile cameraDebugModel(":/Models/Resources/QCameraNode.scene.xml");	
 //	//if (!cameraDebugModel.open(QIODevice::ReadOnly))
 //	//{
@@ -125,11 +125,11 @@ void QCameraNode::addRepresentation()
 //	//	return;
 //	//}
 //	//data = cameraDebugModel.readAll();
-//	//path = Horde3DUtils::getResourcePath(ResourceTypes::SceneGraph);
+//	//path = h3dutGetResourcePath(H3DResTypes::SceneGraph);
 //	//path += "QCameraNode.scene.xml";
-//	//if (!Horde3D::loadResource(qPrintable(path), data.constData(), data.size()))
+//	//if (!h3dLoadResource(qPrintable(path), data.constData(), data.size()))
 //	//	return;
-//	//Horde3D::addNodes(m_hordeID, m_debugID);
+//	//h3dAddNodes(m_hordeID, m_debugID);
 //}
 
 
@@ -152,22 +152,22 @@ void QCameraNode::setFrustum(const Frustum& frustum)
 		if ( keepAspect() )
 		{
 			double factor = ( m_viewportWidth * (frustum.Top - frustum.Bottom) ) / ( m_viewportHeight * (frustum.Right - frustum.Left) );
-			Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::LeftPlane, frustum.Left * factor );
-			Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::RightPlane, frustum.Right * factor);
+			h3dSetNodeParamF(m_hordeID, H3DCamera::LeftPlaneF, 0, frustum.Left * factor );
+			h3dSetNodeParamF(m_hordeID, H3DCamera::RightPlaneF, 0, frustum.Right * factor);
 		}
 		else
 		{
-			Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::LeftPlane, frustum.Left);
-			Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::RightPlane, frustum.Right);
+			h3dSetNodeParamF(m_hordeID, H3DCamera::LeftPlaneF, 0, frustum.Left);
+			h3dSetNodeParamF(m_hordeID, H3DCamera::RightPlaneF, 0, frustum.Right);
 		}
 		m_xmlNode.setAttribute("topPlane", frustum.Top);	
-		Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::TopPlane, frustum.Top);
+		h3dSetNodeParamF(m_hordeID, H3DCamera::TopPlaneF, 0, frustum.Top);
 		m_xmlNode.setAttribute("bottomPlane", frustum.Bottom);
-		Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::BottomPlane, frustum.Bottom);
+		h3dSetNodeParamF(m_hordeID, H3DCamera::BottomPlaneF, 0, frustum.Bottom);
 		m_xmlNode.setAttribute("nearPlane", frustum.Near);
-		Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::NearPlane, frustum.Near);
+		h3dSetNodeParamF(m_hordeID, H3DCamera::NearPlaneF, 0, frustum.Near);
 		m_xmlNode.setAttribute("farPlane", frustum.Far);
-		Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::FarPlane, frustum.Far);
+		h3dSetNodeParamF(m_hordeID, H3DCamera::FarPlaneF, 0, frustum.Far);
 	}
 	else if (frustum != QCameraNode::frustum())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Frustum", this, "Frustum", QVariant::fromValue(frustum), FrustumID));
@@ -185,8 +185,8 @@ void QCameraNode::setPipeline(const Pipeline &pipeline)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("pipeline", pipeline.FileName);					
-		Horde3D::setNodeParami(m_hordeID, CameraNodeParams::PipelineRes, pipeline.ResourceID);
-		Horde3D::removeResource(m_pipelineID);
+		h3dSetNodeParamI(m_hordeID, H3DCamera::PipeResI, pipeline.ResourceID);
+		h3dRemoveResource(m_pipelineID);
 		m_pipelineID = pipeline.ResourceID;		
 		blockSignals(false); // We have to unblock signals here, otherwise the pipeline tree view won't get notified about the change
 		emit pipelineChanged(this);
@@ -230,7 +230,7 @@ void QCameraNode::setOrtho(bool ortho)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("orthographic", ortho);
-		Horde3D::setNodeParami(m_hordeID, CameraNodeParams::Orthographic, ortho ? 1 : 0);
+		h3dSetNodeParamI(m_hordeID, H3DCamera::OrthoI, ortho ? 1 : 0);
 	}
 	else if (ortho != QCameraNode::ortho())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Ortho Projection", this, "Ortho", QVariant(ortho), OrthoProjectionID));
@@ -247,7 +247,7 @@ void QCameraNode::setOcclusionCulling(bool culling)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("occlusionCulling", culling);
-		Horde3D::setNodeParami(m_hordeID, CameraNodeParams::OcclusionCulling, culling ? 1 : 0);
+		h3dSetNodeParamI(m_hordeID, H3DCamera::OccCullingI, culling ? 1 : 0);
 	}
 	else if (culling != QCameraNode::occlusionCulling())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Occlusion Culling", this, "Occlusion_Culling", QVariant(culling), OcclusionCullingID));
@@ -257,7 +257,7 @@ void QCameraNode::setOcclusionCulling(bool culling)
 void QCameraNode::activate()
 {
 	QVec3f t = position(), r = rotation(), s = scale();
-	Horde3D::setNodeTransform(m_hordeID, t.X, t.Y, t.Z, r.X, r.Y, r.Z, s.X, s.Y, s.Z);
+	h3dSetNodeTransform(m_hordeID, t.X, t.Y, t.Z, r.X, r.Y, r.Z, s.X, s.Y, s.Z);
 	HordeSceneEditor::instance()->setCamera(this);
 }
 
@@ -273,8 +273,8 @@ void QCameraNode::viewportResized(int width, int height)
 	//	float top = m_xmlNode.attribute("topPlane", "0.041421354").toFloat();
 	//	float bottom =  m_xmlNode.attribute("bottomPlane", "-0.041421354").toFloat();
 	//	double factor = ( width * (top - bottom) ) / ( height * (right - left) );
-	//	Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::LeftPlane, left * factor);
-	//	Horde3D::setNodeParamf(m_hordeID, CameraNodeParams::RightPlane, right * factor );
+	//	h3dSetNodeParamF(m_hordeID, H3DCamera::LeftPlane, left * factor);
+	//	h3dSetNodeParamF(m_hordeID, H3DCamera::RightPlane, right * factor );
 	//}
 }
 

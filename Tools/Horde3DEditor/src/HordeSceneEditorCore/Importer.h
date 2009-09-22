@@ -62,8 +62,8 @@ public:
 	const QDir& targetPath()  {return m_targetResourcePath;}
 	void setTargetPath(const QDir& path );
 
-	const QDir& sourcePath(ResourceTypes::List type) {return m_sourceResourcePath;}
-	void setSourcePath(ResourceTypes::List type, const QDir& path );
+	const QDir& sourcePath(H3DResTypes::List type) {return m_sourceResourcePath;}
+	void setSourcePath(H3DResTypes::List type, const QDir& path );
 
 	void importScene(const QFileInfo& file, const QString& targetFileName);
 	

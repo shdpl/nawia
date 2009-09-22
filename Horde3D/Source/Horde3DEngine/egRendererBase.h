@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -27,14 +15,132 @@
 
 #include "egPrerequisites.h"
 #include "utMath.h"
+#include "utOpenGL.h"
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <vector>
+#include <map>
 
 
 // =================================================================================================
 // Base Renderer
 // =================================================================================================
+
+// General
+// =========================================================
+
+template< class T > class RBObjects
+{
+private:
+	std::vector< T >       _objects;
+	std::vector< uint32 >  _freeList;
+
+public:
+
+	uint32 add( T &obj )
+	{
+		if( !_freeList.empty() )
+		{
+			uint32 index = _freeList.back();
+			_freeList.pop_back();
+			_objects[index] = obj;
+			return index + 1;
+		}
+		else
+		{
+			_objects.push_back( obj );
+			return (uint32)_objects.size();
+		}
+	}
+
+	void remove( uint32 handle )
+	{
+		ASSERT( handle > 0 && handle <= _objects.size() );
+		
+		_objects[handle - 1] = T();  // Destruct and replace with default object
+		_freeList.push_back( handle - 1 );
+	}
+
+	T &getRef( uint32 handle )
+	{
+		ASSERT( handle > 0 && handle <= _objects.size() );
+		
+		return _objects[handle - 1];
+	}
+
+	friend class RendererBase;
+};
+
+
+struct RenderCaps
+{
+	static const int ListSize = 3;
+	enum List
+	{
+		Tex_Float,
+		Tex_NPOT,
+		RT_Multisampling
+	};
+};
+
+
+// Buffers
+// =========================================================
+
+struct RBBuffer
+{
+	uint32  type;
+	uint32  glObj;
+	uint32  size;
+};
+
+struct RBVertBufSlot
+{
+	uint32  vbObj;
+	uint32  offset;
+	uint32  stride;
+};
+
+
+// Textures
+// =========================================================
+
+struct TextureTypes
+{
+	enum List
+	{
+		Tex2D = GL_TEXTURE_2D,
+		TexCube = GL_TEXTURE_CUBE_MAP
+	};
+};
+
+struct TextureFormats
+{
+	enum List
+	{
+		Unknown,
+		BGRA8,
+		DXT1,
+		DXT3,
+		DXT5,
+		RGBA16F,
+		RGBA32F,
+		DEPTH
+	};
+};
+
+struct RBTexture
+{
+	uint32                glObj;
+	int                   type;
+	TextureFormats::List  format;
+	int                   memSize;
+};
+
+
+// Render buffers
+// =========================================================
 
 struct RenderBufferFormats
 {
@@ -46,53 +152,46 @@ struct RenderBufferFormats
 	};
 };
 
-struct RenderBuffer
+struct RBRenderBuffer
 {
 	static const uint32 MaxColorAttachmentCount = 4;
 
-	uint32  fbo;
+	uint32  fbo, fboMS;  // fboMS: Multisampled FBO used when samples > 0
 	uint32  width, height;
 	uint32  samples;
 
-	// If samples == 0 buffers are texture objects, otherwise multisampled renderbuffers
-	uint32  depthBuf;
-	uint32  colBufs[MaxColorAttachmentCount];
+	uint32  depthTex, colTexs[MaxColorAttachmentCount];
+	uint32  depthBuf, colBufs[MaxColorAttachmentCount];  // Used for multisampling
 
-	RenderBuffer()
+	RBRenderBuffer() : fbo( 0 ), fboMS( 0 ), width( 0 ), height( 0 ), depthTex( 0 ), depthBuf( 0 )
 	{
-		fbo = 0;
-		width = 0; height = 0;
-		depthBuf = 0;
-		for( uint32 i = 0; i < MaxColorAttachmentCount; ++i ) colBufs[i] = 0;
+		for( uint32 i = 0; i < MaxColorAttachmentCount; ++i ) colTexs[i] = colBufs[i] = 0;
 	}
 };
 
-struct TextureFormats
+
+// Vertex layout
+// =========================================================
+
+struct RBVertLayoutElem
 {
-	enum List
-	{
-		RGB8,
-		BGR8,
-		RGBX8,
-		BGRX8,
-		RGBA8,
-		BGRA8,
-		DXT1,
-		DXT3,
-		DXT5,
-		RGBA16F,
-		RGBA32F
-	};
+	std::string  semanticName;
+	uint32       vbSlot;
+	uint32       size;
+	uint32       offset;
 };
 
-struct TextureTypes
+struct RBVertexLayout
 {
-	enum List
+	struct ShaderData
 	{
-		Tex2D,
-		TexCube
+		std::vector< char >  elemAttribIndices;
 	};
+	
+	std::vector< RBVertLayoutElem >  elems;
+	std::map< uint32, ShaderData >   shaderData;
 };
+
 
 // =================================================================================================
 
@@ -100,17 +199,24 @@ class RendererBase
 {
 protected:
 
+	int           _caps[RenderCaps::ListSize];
 	int           _vpX, _vpY, _vpWidth, _vpHeight;
 	int           _fbWidth, _fbHeight;
+	uint32        _curShaderObj;
 	std::string   _shaderLog;
-	RenderBuffer  *_curRendBuf;
+	uint32        _curRendBuf;
 	int           _outputBufferIndex;  // Left and right eye for stereo rendering
+	uint32        _textureMem, _bufferMem;
 
-
-	void myPerspective( float fovy, float aspect, float zNear, float zFar );
+	RBVertBufSlot                _vertBufSlots[16];
+	RBObjects< RBBuffer >        _buffers;
+	RBObjects< RBTexture >       _textures;
+	RBObjects< RBRenderBuffer >  _rendBufs;
+	RBObjects< RBVertexLayout >  _vertexLayouts;
 	
 	uint32 loadShader( const char *vertexShader, const char *fragmentShader );
 	bool linkShader( uint32 shaderId );
+	void resolveRenderBuffer( uint32 rbObj );
 
 public:
 	
@@ -118,47 +224,62 @@ public:
 	virtual ~RendererBase();
 	
 	// Rendering functions
+	void initStates();
 	virtual bool init();
 	virtual void resize( int x, int y, int width, int height );
 	
-	// Vertex buffer functions
-	uint32 uploadVertices( void *data, uint32 size, uint32 bufId = 0 );
-	void updateVertices( void *data, uint32 offset, uint32 size, uint32 bufId );
-	uint32 uploadIndices( void *indices, uint32 size, uint32 bufId = 0 );
-	void unloadBuffers( uint32 vertBufId, uint32 idxBufId );
-	uint32 cloneVertexBuffer( uint32 vertBufId );
-	uint32 cloneIndexBuffer( uint32 idxBufId );
+	// Buffers
+	uint32 createVertexBuffer( uint32 size, void *data );
+	uint32 createIndexBuffer( uint32 size, void *data );
+	void releaseBuffer( uint32 bufObj );
+	void updateBufferData( uint32 bufObj, uint32 offset, uint32 size, void *data );
+	uint32 cloneBuffer( uint32 bufObj );
+	void bindVertexBuffer( uint32 slot, uint32 vbObj, uint32 offset, uint32 stride );
+	void bindIndexBuffer( uint32 bufObj );
+	uint32 getBufferMem() { return _bufferMem; }
 
-	// Texture map functions
-	uint32 calcTexSize( TextureFormats::List format, int width, int height );
-	uint32 uploadTexture( TextureTypes::List type, void *pixels, int width, int height, TextureFormats::List format,
-	                      int slice, int mipLevel, bool genMips, bool compress, uint32 texId = 0 );
-	void updateTexture2D( unsigned char *pixels, int width, int height, int comps, uint32 texId );
-	void unloadTexture( uint32 texId, TextureTypes::List type );
-	float *downloadTexture2DData( uint32 texId, int *width, int *height );
+	// Textures
+	uint32 calcTextureSize( TextureFormats::List format, int width, int height );
+	uint32 createTexture( TextureTypes::List type, int width, int height, TextureFormats::List format,
+	                      bool hasMips, bool genMips, bool compress );
+	void uploadTextureData( uint32 texObj, int width, int height, TextureFormats::List format,
+                            int slice, int mipLevel, const void *pixels );
+	void releaseTexture( uint32 texObj );
+	void updateTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels, int width, int height ); 
+	bool getTextureData( uint32 texObj, int slice, int mipLevel, void *buffer );
+	void bindTexture( uint32 unit, uint32 texObj );
+	uint32 getTextureMem() { return _textureMem; }
 
-	// Shader functions
-	virtual uint32 uploadShader( const char *vertexShader, const char *fragmentShader );
-	void unloadShader( uint32 shaderId );
-	int getShaderVar( uint32 shaderId, const char *var );
-	bool setShaderVar1i( uint32 shaderId, const char *var, int value );
+	// Shaders
+	uint32 createShader( const char *vertexShader, const char *fragmentShader );
+	void releaseShader( uint32 shdObj );
+	void bindShader( uint32 shdObj );
+	int getShaderVar( uint32 shdObj, const char *var );
+	bool setShaderVar1i( uint32 shdObj, const char *var, int value );
 	std::string &getShaderLog() { return _shaderLog; }
 
-	// Render buffer functions
-	RenderBuffer createRenderBuffer( uint32 width, uint32 height, RenderBufferFormats::List format,
-	                                 bool depth, uint32 numColBufs, uint32 samples );
-	void destroyRenderBuffer( RenderBuffer &rb );
-	void setRenderBuffer( RenderBuffer *rb );
-	bool getBufferData( RenderBuffer *rb, int bufIndex, int *width, int *height,
-	                    int *compCount, float *dataBuffer, int bufferSize );
-	void blitRenderBuffer( RenderBuffer &sourceBuf, RenderBuffer &destBuf );
+	// Renderbuffers
+	uint32 createRenderBuffer( uint32 width, uint32 height, RenderBufferFormats::List format,
+	                           bool depth, uint32 numColBufs, uint32 samples );
+	void releaseRenderBuffer( uint32 rbObj );
+	uint32 getRenderBufferTex( uint32 rbObj, uint32 bufIndex );
+	void setRenderBuffer( uint32 rbObj );
+	bool getRenderBufferData( uint32 rbObj, int bufIndex, int *width, int *height,
+	                          int *compCount, float *dataBuffer, int bufferSize );
 
-	// Occlusion queries
-	uint32 createOccQuery();
-	void destroyOccQuery( uint32 queryId );
-	void beginOccQuery( uint32 queryId );
-	void endOccQuery( uint32 queryId );
-	uint32 getOccQueryResult( uint32 queryId );
+	// Queries
+	uint32 createOcclusionQuery();
+	void releaseQuery( uint32 queryObj );
+	void beginQuery( uint32 queryObj );
+	void endQuery( uint32 queryObj );
+	uint32 getQueryResult( uint32 queryObj );
+
+	// Vertex declarations
+	uint32 createVertexLayout( uint32 elemCount );
+	void setVertexLayoutElem( uint32 vlObj, uint32 slot, const char *semanticName,
+	                          uint32 vbSlot, uint32 size, uint32 offset );
+	void releaseVertexLayout( uint32 vlObj );
+	void applyVertexLayout( uint32 vlObj );
 };
 
 #endif // _egRendererBase_H_

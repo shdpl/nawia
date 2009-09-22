@@ -55,7 +55,7 @@ QMeshNode::~QMeshNode()
 {
 	if (m_resourceID != 0)
 	{
-		Horde3D::removeResource(m_resourceID);
+		h3dRemoveResource(m_resourceID);
 		m_resourceID = 0;
 	}
 }
@@ -63,12 +63,12 @@ QMeshNode::~QMeshNode()
 
 void QMeshNode::addRepresentation()
 {
-	m_resourceID = Horde3D::addResource(ResourceTypes::Material, qPrintable(m_xmlNode.attribute("material")), 0);
+	m_resourceID = h3dAddResource(H3DResTypes::Material, qPrintable(m_xmlNode.attribute("material")), 0);
 
 	QSceneNode* parentNode = static_cast<QSceneNode*>(parent());
-	unsigned int rootID = parentNode ? parentNode->hordeId() : RootNode;
+	unsigned int rootID = parentNode ? parentNode->hordeId() : H3DRootNode;
 
-	m_hordeID = Horde3D::addMeshNode(
+	m_hordeID = h3dAddMeshNode(
 		rootID, 
 		qPrintable(m_xmlNode.attribute("name")), 
 		m_resourceID, 
@@ -81,8 +81,8 @@ void QMeshNode::addRepresentation()
 	float x, y, z, rx, ry, rz, sx, sy, sz;
 	getTransformation(x,y,z,rx,ry,rz,sx,sy,sz);
 	// ...and update scene representation
-	Horde3D::setNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
-	Horde3D::setNodeParami( m_hordeID, MeshNodeParams::LodLevel, lodLevel() );
+	h3dSetNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
+	h3dSetNodeParamI( m_hordeID, H3DMesh::LodLevelI, lodLevel() );
 	// Attachment
 	QDomElement attachment = m_xmlNode.firstChildElement("Attachment");	
 	SceneTreeModel* model = static_cast<SceneTreeModel*>(m_model);
@@ -102,12 +102,12 @@ void QMeshNode::setMaterial(const Material &material)
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute("material", material.FileName);
-		ResHandle resourceID = Horde3D::findResource(ResourceTypes::Material, qPrintable(QMeshNode::material().FileName));
+		H3DRes resourceID = h3dFindResource(H3DResTypes::Material, qPrintable(QMeshNode::material().FileName));
 		if (resourceID != 0)
-			Horde3D::removeResource(resourceID);
-		resourceID = Horde3D::addResource( ResourceTypes::Material, qPrintable(material.FileName), 0 );		
-		Horde3D::setNodeParami(m_hordeID, MeshNodeParams::MaterialRes, resourceID);
-		Horde3DUtils::loadResourcesFromDisk(".");
+			h3dRemoveResource(resourceID);
+		resourceID = h3dAddResource( H3DResTypes::Material, qPrintable(material.FileName), 0 );		
+		h3dSetNodeParamI(m_hordeID, H3DMesh::MatResI, resourceID);
+		h3dutLoadResourcesFromDisk(".");
 	}
 	else if (material != QMeshNode::material())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Material", this, "Material", QVariant::fromValue(material), MeshMaterialID));
@@ -144,7 +144,7 @@ void QMeshNode::setLodLevel( int lodLevel )
 	if (signalsBlocked())
 	{
 		m_xmlNode.setAttribute( "lodLevel", lodLevel );
-		Horde3D::setNodeParami( m_hordeID, MeshNodeParams::LodLevel, lodLevel );
+		h3dSetNodeParamI( m_hordeID, H3DMesh::LodLevelI, lodLevel );
 	}
 	else if (lodLevel != QMeshNode::lodLevel())
 		m_model->undoStack()->push(new QXmlNodePropertyCommand("Set Lod Level", this, "Lod_Level", QVariant::fromValue(lodLevel), LodLevelID ));
@@ -154,18 +154,19 @@ void QMeshNode::setLodLevel( int lodLevel )
 void QMeshNode::activate()
 {
 	float minX, minY, minZ, maxX, maxY, maxZ;
-	Horde3D::getNodeAABB(m_hordeID, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
+	h3dGetNodeAABB(m_hordeID, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
 
 	unsigned int cameraID = HordeSceneEditor::instance()->glContext()->activeCam();
-	float leftPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::LeftPlane);
-	float rightPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::RightPlane);
-	float bottomPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::BottomPlane);
-	float topPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::TopPlane);
-	float nearPlane = Horde3D::getNodeParamf(cameraID, CameraNodeParams::NearPlane);
+	float leftPlane = h3dGetNodeParamF(cameraID, H3DCamera::LeftPlaneF, 0);
+	float rightPlane = h3dGetNodeParamF(cameraID, H3DCamera::RightPlaneF, 0);
+	float bottomPlane = h3dGetNodeParamF(cameraID, H3DCamera::BottomPlaneF, 0);
+	float topPlane = h3dGetNodeParamF(cameraID, H3DCamera::TopPlaneF, 0);
+	float nearPlane = h3dGetNodeParamF(cameraID, H3DCamera::NearPlaneF, 0);
 
 	const float* camera = 0;
-	NodeHandle parentNode = Horde3D::getNodeParent(cameraID);
-	if ( !Horde3D::getNodeTransformMatrices(parentNode, 0, &camera) ) return;
+	H3DNode parentNode = h3dGetNodeParent(cameraID);
+	h3dGetNodeTransMats(parentNode, 0, &camera); 
+	if ( !camera) return;
 	
 	/** 
 	 * (maxX - minX)                           =   width of the bounding box 
@@ -175,5 +176,5 @@ void QMeshNode::activate()
 	float offsetY = (maxY - minY) * topPlane / (topPlane - bottomPlane);
 	QMatrix4f newCamTrans = QMatrix4f::TransMat(maxX - offsetX, maxY - offsetY, maxZ);
 	newCamTrans.translate(0, 0, qMax(nearPlane * offsetX / rightPlane, nearPlane * offsetY / topPlane));		
-	Horde3D::setNodeTransformMatrix(cameraID, (QMatrix4f(camera).inverted() * newCamTrans).x);	
+	h3dSetNodeTransMat(cameraID, (QMatrix4f(camera).inverted() * newCamTrans).x);	
 }

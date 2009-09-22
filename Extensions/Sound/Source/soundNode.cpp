@@ -28,8 +28,6 @@
 #include "soundNode.h"
 #include "manager.h"
 
-namespace Horde3DSound
-{
 	SoundNode::SoundNode( const SoundNodeTpl &soundTpl ) :
 		SceneNode( soundTpl ),
 		_soundRes( soundTpl.soundRes )
@@ -189,7 +187,7 @@ namespace Horde3DSound
 		return new SoundNode( *(SoundNodeTpl *)&nodeTpl );
 	}
 
-	float SoundNode::getParamf( int param )
+	float SoundNode::getParamF( int param, int compIdx )
 	{
 		float value = 0.0f;
 
@@ -220,11 +218,11 @@ namespace Horde3DSound
 			alGetSourcef( _source, AL_MAX_GAIN, &value );
 			return value;
 		default:
-			return SceneNode::getParamf( param );
+			return SceneNode::getParamF( param, compIdx );
 		}
 	}
 
-	bool SoundNode::setParamf( int param, float value )
+	void SoundNode::setParamF( int param, int compIdx, float value )
 	{
 		bool wasPlaying = false;
 
@@ -236,7 +234,7 @@ namespace Horde3DSound
 			else
 				alSourcef( _source, AL_GAIN, value );
 
-			return true;
+			return;
 		case SoundNodeParams::Pitch:
 			if( value < 0.5f )
 				alSourcef( _source, AL_PITCH, 0.5f );
@@ -245,7 +243,7 @@ namespace Horde3DSound
 			else
 				alSourcef( _source, AL_PITCH, value );
 
-			return true;
+			return;
 		case SoundNodeParams::Offset:
 			//pause the sound before setting the offset so we don't get any sound artifacts
 			wasPlaying = isPlaying();
@@ -259,48 +257,48 @@ namespace Horde3DSound
 			if( wasPlaying )
 				play();
 
-			return true;
+			return;
 		case SoundNodeParams::MaxDistance:
 			if( value < 0.0f )
 				alSourcef( _source, AL_MAX_DISTANCE, 0.0f );
 			else
 				alSourcef( _source, AL_MAX_DISTANCE, value );
 
-			return true;
+			return;
 		case SoundNodeParams::RolloffFactor:
 			if( value < 0.0f )
 				alSourcef( _source, AL_ROLLOFF_FACTOR, 0.0f );
 			else
 				alSourcef( _source, AL_ROLLOFF_FACTOR, value );
 
-			return true;
+			return;
 		case SoundNodeParams::ReferenceDistance:
 			if( value < 0.0f )
 				alSourcef( _source, AL_REFERENCE_DISTANCE, 0.0f );
 			else
 				alSourcef( _source, AL_REFERENCE_DISTANCE, value );
 
-			return true;
+			return;
 		case SoundNodeParams::MinGain:
 			if( value < 0.0f )
 				alSourcef( _source, AL_MIN_GAIN, 0.0f );
 			else
 				alSourcef( _source, AL_MIN_GAIN, value );
 
-			return true;
+			return;
 		case SoundNodeParams::MaxGain:
 			if( value < 0.0f )
 				alSourcef( _source, AL_MAX_GAIN, 0.0f );
 			else
 				alSourcef( _source, AL_MAX_GAIN, value );
 
-			return true;
+			return;
 		default:
-			return SceneNode::setParamf( param, value );
+			SceneNode::setParamF( param, compIdx, value );
 		}
 	}
 
-	int SoundNode::getParami( int param )
+	int SoundNode::getParamI( int param )
 	{
 		int value;
 
@@ -312,11 +310,11 @@ namespace Horde3DSound
 			alGetSourcei( _source, AL_LOOPING, &value );
 			return value;
 		default:
-			return SceneNode::getParami( param );
+			return SceneNode::getParamI( param );
 		}
 	}
 
-	bool SoundNode::setParami( int param, int value )
+	void SoundNode::setParamI( int param, int value )
 	{
 		Resource *res;
 		bool wasPlaying;
@@ -329,7 +327,7 @@ namespace Horde3DSound
 			if( res == 0x0 || res->getType() != RST_SoundResource )
 			{
 				Modules::log().writeDebugInfo( "Invalid Sound resource for Sound node %i", _handle );
-				return false;
+				return;
 			}
 
 			//pause the sound before changing buffers so we don't get any sound artifacts
@@ -343,12 +341,12 @@ namespace Horde3DSound
 			if( wasPlaying )
 				play();
 
-			return true;
+			return;
 		case SoundNodeParams::Loop:
 			alSourcei( _source, AL_LOOPING, value? AL_TRUE : AL_FALSE );
-			return true;
+			return;
 		default:
-			return SceneNode::setParami( param, value );
+			return SceneNode::setParamI( param, value );
 		}
 	}
 
@@ -388,4 +386,3 @@ namespace Horde3DSound
 	{
 		alSourceRewind( _source );
 	}
-}

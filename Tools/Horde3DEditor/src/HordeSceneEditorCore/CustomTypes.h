@@ -88,12 +88,11 @@ Q_DECLARE_METATYPE(Shader)
 struct Texture
 {
 	Texture() {}
-	Texture(const QString& fileName, int type) : FileName(fileName), Type(type) {}
+	Texture( const QString& fileName ) : FileName(fileName) {}
 	QString FileName;
-	int Type;
 
-	bool operator == (const Texture& other) const {return FileName == other.FileName && Type == other.Type;} 
-	bool operator != (const Texture& other) const {return FileName != other.FileName || Type != other.Type;} 
+	bool operator == (const Texture& other) const {return FileName == other.FileName; } 
+	bool operator != (const Texture& other) const {return FileName != other.FileName; } 
 };
 Q_DECLARE_METATYPE(Texture)
 

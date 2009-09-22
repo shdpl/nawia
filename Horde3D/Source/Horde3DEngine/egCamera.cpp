@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -122,115 +110,55 @@ SceneNode *CameraNode::factoryFunc( const SceneNodeTpl &nodeTpl )
 }
 
 
-float CameraNode::getParamf( int param )
+int CameraNode::getParamI( int param )
 {
 	switch( param )
 	{
-	case CameraNodeParams::LeftPlane:
-		return _frustLeft;
-	case CameraNodeParams::RightPlane:
-		return _frustRight;
-	case CameraNodeParams::BottomPlane:
-		return _frustBottom;
-	case CameraNodeParams::TopPlane:
-		return _frustTop;
-	case CameraNodeParams::NearPlane:
-		return _frustNear;
-	case CameraNodeParams::FarPlane:
-		return _frustFar;
-	default:
-		return SceneNode::getParamf( param );
-	}
-}
-
-
-bool CameraNode::setParamf( int param, float value )
-{
-	switch( param )
-	{
-	case CameraNodeParams::LeftPlane:
-		_frustLeft = value;
-		markDirty();
-		return true;
-	case CameraNodeParams::RightPlane:
-		_frustRight = value;
-		markDirty();
-		return true;
-	case CameraNodeParams::BottomPlane:
-		_frustBottom = value;
-		markDirty();
-		return true;
-	case CameraNodeParams::TopPlane:
-		_frustTop = value;
-		markDirty();
-		return true;
-	case CameraNodeParams::NearPlane:
-		_frustNear = value;
-		markDirty();
-		return true;
-	case CameraNodeParams::FarPlane:
-		_frustFar = value;
-		markDirty();
-		return true;
-	default:
-		return SceneNode::setParamf( param, value );
-	}
-}
-
-
-int CameraNode::getParami( int param )
-{
-	switch( param )
-	{
-	case CameraNodeParams::PipelineRes:
+	case H3DCamera::PipeResI:
 		return _pipelineRes != 0x0 ? _pipelineRes->getHandle() : 0;
-	case CameraNodeParams::OutputTex:
+	case H3DCamera::OutTexResI:
 		return _outputTex != 0x0 ? _outputTex->getHandle() : 0;
-	case CameraNodeParams::OutputBufferIndex:
+	case H3DCamera::OutBufIndexI:
 		return _outputBufferIndex;
-	case CameraNodeParams::Orthographic:
+	case H3DCamera::OrthoI:
 		return _orthographic ? 1 : 0;
-	case CameraNodeParams::OcclusionCulling:
+	case H3DCamera::OccCullingI:
 		return _occSet >= 0 ? 1 : 0;
-	default:
-		return SceneNode::getParami( param );
 	}
+
+	return SceneNode::getParamI( param );
 }
 
 
-bool CameraNode::setParami( int param, int value )
+void CameraNode::setParamI( int param, int value )
 {
 	Resource *res;
 	
 	switch( param )
 	{
-	case CameraNodeParams::PipelineRes:
+	case H3DCamera::PipeResI:
 		res = Modules::resMan().resolveResHandle( value );
-		if( res == 0x0 || res->getType() != ResourceTypes::Pipeline )
-		{	
-			Modules::log().writeDebugInfo( "Invalid Pipeline resource for Camera node %i", _handle );
-			return false;
-		}
-		_pipelineRes = (PipelineResource *)res;
-		return true;
-	case CameraNodeParams::OutputTex:
+		if( res != 0x0 && res->getType() == ResourceTypes::Pipeline )
+			_pipelineRes = (PipelineResource *)res;
+		else
+			Modules::setError( "Invalid handle in h3dSetNodeParamI for H3DCamera::PipeResI" );
+		return;
+	case H3DCamera::OutTexResI:
 		res = Modules::resMan().resolveResHandle( value );
-		if( res != 0x0 && (res->getType() != ResourceTypes::Texture ||
-			((TextureResource *)res)->getTexType() != TextureTypes::Tex2D) )
-		{	
-			Modules::log().writeDebugInfo( "Invalid Texture resource for Camera node %i", _handle );
-			return false;
-		}
-		_outputTex = (TextureResource *)res;
-		return true;
-	case CameraNodeParams::OutputBufferIndex:
+		if( res == 0x0 || (res->getType() == ResourceTypes::Texture &&
+		    ((TextureResource *)res)->getTexType() == TextureTypes::Tex2D) )
+			_outputTex = (TextureResource *)res;
+		else
+			Modules::setError( "Invalid 2D texture resource in h3dSetNodeParamI for H3DCamera::OutTexResI" );
+		return;
+	case H3DCamera::OutBufIndexI:
 		_outputBufferIndex = value;
-		return true;
-	case CameraNodeParams::Orthographic:
+		return;
+	case H3DCamera::OrthoI:
 		_orthographic = (value == 1);
 		markDirty();
-		return true;
-	case CameraNodeParams::OcclusionCulling:
+		return;
+	case H3DCamera::OccCullingI:
 		if( _occSet < 0 && value != 0 )
 		{		
 			_occSet = Modules::renderer().registerOccSet();
@@ -240,10 +168,66 @@ bool CameraNode::setParami( int param, int value )
 			Modules::renderer().unregisterOccSet( _occSet );
 			_occSet = -1;
 		}
-		return true;
-	default:	
-		return SceneNode::setParami( param, value );
+		return;
 	}
+
+	SceneNode::setParamI( param, value );
+}
+
+
+float CameraNode::getParamF( int param, int compIdx )
+{
+	switch( param )
+	{
+	case H3DCamera::LeftPlaneF:
+		return _frustLeft;
+	case H3DCamera::RightPlaneF:
+		return _frustRight;
+	case H3DCamera::BottomPlaneF:
+		return _frustBottom;
+	case H3DCamera::TopPlaneF:
+		return _frustTop;
+	case H3DCamera::NearPlaneF:
+		return _frustNear;
+	case H3DCamera::FarPlaneF:
+		return _frustFar;
+	}
+
+	return SceneNode::getParamF( param, compIdx );
+}
+
+
+void CameraNode::setParamF( int param, int compIdx, float value )
+{
+	switch( param )
+	{
+	case H3DCamera::LeftPlaneF:
+		_frustLeft = value;
+		markDirty();
+		return;
+	case H3DCamera::RightPlaneF:
+		_frustRight = value;
+		markDirty();
+		return;
+	case H3DCamera::BottomPlaneF:
+		_frustBottom = value;
+		markDirty();
+		return;
+	case H3DCamera::TopPlaneF:
+		_frustTop = value;
+		markDirty();
+		return;
+	case H3DCamera::NearPlaneF:
+		_frustNear = value;
+		markDirty();
+		return;
+	case H3DCamera::FarPlaneF:
+		_frustFar = value;
+		markDirty();
+		return;
+	}
+
+	SceneNode::setParamF( param, compIdx, value );
 }
 
 
@@ -272,27 +256,10 @@ void CameraNode::onPostUpdate()
 	_viewMat = _absTrans.inverted();
 	
 	// Calculate projection matrix
-	_projMat = Matrix4f();
-	if( !_orthographic )  // Perspective frustum
-	{
-		_projMat.x[0] = 2 * _frustNear / (_frustRight - _frustLeft);
-		_projMat.x[5] = 2 * _frustNear / (_frustTop - _frustBottom);
-		_projMat.x[8] = (_frustRight + _frustLeft) / (_frustRight - _frustLeft);
-		_projMat.x[9] = (_frustTop + _frustBottom) / (_frustTop - _frustBottom);
-		_projMat.x[10] = -(_frustFar + _frustNear) / (_frustFar - _frustNear);
-		_projMat.x[11] = -1;
-		_projMat.x[14] = -2 * _frustFar * _frustNear / (_frustFar - _frustNear);
-		_projMat.x[15] = 0;
-	}
-	else  // Orthographic frustum
-	{
-		_projMat.x[0] = 2 / (_frustRight - _frustLeft);
-		_projMat.x[5] = 2 / (_frustTop - _frustBottom);
-		_projMat.x[10] = -2 / (_frustFar - _frustNear);
-		_projMat.x[12] = -(_frustRight + _frustLeft) / (_frustRight - _frustLeft);
-		_projMat.x[13] = -(_frustTop + _frustBottom) / (_frustTop - _frustBottom);
-		_projMat.x[14] = -(_frustFar + _frustNear) / (_frustFar - _frustNear);
-	}
+	if( !_orthographic )
+		_projMat = Matrix4f::PerspectiveMat( _frustLeft, _frustRight, _frustBottom, _frustTop, _frustNear, _frustFar );
+	else
+		_projMat = Matrix4f::OrthoMat( _frustLeft, _frustRight, _frustBottom, _frustTop, _frustNear, _frustFar );
 
 	// Update frustum
 	_frustum.buildViewFrustum( _viewMat, _projMat );

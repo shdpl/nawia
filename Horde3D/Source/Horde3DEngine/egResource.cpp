@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -26,7 +14,7 @@
 #include "egModules.h"
 #include "egGeometry.h"
 #include "egSceneGraphRes.h"
-#include "egTextures.h"
+#include "egTexture.h"
 #include "egMaterial.h"
 #include "egAnimation.h"
 #include "egShader.h"
@@ -106,51 +94,66 @@ void Resource::unload()
 }
 
 
-int Resource::getParami( int /*param*/ )
+int Resource::findElem( int elem, int param, const char *value )
 {
+	for( int i = 0, s = getElemCount( elem ); i < s; ++i )
+	{
+		if( strcmp( getElemParamStr( elem, i, param ), value ) == 0 )
+			return i;
+	}
+
+	return -1;
+}
+
+
+int Resource::getElemCount( int elem )
+{
+	Modules::setError( "Invalid elem in h3dGetResElemCount" );
 	return 0;
 }
 
-
-bool Resource::setParami( int /*param*/, int /*value*/ )
+int Resource::getElemParamI( int elem, int elemIdx, int param )
 {
-	return false;
+	Modules::setError( "Invalid elem or param in h3dGetResParamI" );
+	return Math::MinInt32;
 }
 
-
-float Resource::getParamf( int /*param*/ )
+void Resource::setElemParamI( int elem, int elemIdx, int param, int value )
 {
-	return 0.0f;
+	Modules::setError( "Invalid elem or param in h3dSetResParamI" );
 }
 
-
-bool Resource::setParamf( int /*param*/, float /*value*/ )
+float Resource::getElemParamF( int elem, int elemIdx, int param, int compIdx )
 {
-	return false;
+	Modules::setError( "Invalid elem, param or component in h3dGetResParamF" );
+	return Math::NaN;
 }
 
-
-const char *Resource::getParamstr( int param )
+void Resource::setElemParamF( int elem, int elemIdx, int param, int compIdx, float value )
 {
+	Modules::setError( "Invalid elem, param or component in h3dSetResParamF" );
+}
+
+const char *Resource::getElemParamStr( int elem, int elemIdx, int param )
+{
+	Modules::setError( "Invalid elem or param in h3dGetResParamStr" );
 	return "";
 }
 
-
-bool Resource::setParamstr( int param, const char *value )
+void Resource::setElemParamStr( int elem, int elemIdx, int param, const char *value )
 {
-	return false;
+	Modules::setError( "Invalid elem or param in h3dSetResParamStr" );
 }
 
-
-const void *Resource::getData( int /*param*/ )
+void *Resource::mapStream( int elem, int elemIdx, int stream, bool read, bool write )
 {
+	Modules::setError( "Invalid operation in h3dMapResStream" );
 	return 0x0;
 }
 
-
-bool Resource::updateData( int /*param*/, const void * /*data*/, int /*size*/ )
+void Resource::unmapStream()
 {
-	return false;
+	Modules::setError( "Invalid operation by h3dUnmapResStream" );
 }
 
 
@@ -244,8 +247,7 @@ ResHandle ResourceManager::addResource( Resource &resource )
 }
 
 
-ResHandle ResourceManager::addResource( int type, const string &name,
-										int flags, bool userCall )
+ResHandle ResourceManager::addResource( int type, const string &name, int flags, bool userCall )
 {
 	if( name == "" || (userCall && name.find( ":" ) != string::npos) )
 	{	
@@ -272,7 +274,7 @@ ResHandle ResourceManager::addResource( int type, const string &name,
 	if( itr != _registry.end() ) resource = (*itr->second.factoryFunc)( name, flags );
 	if( resource == 0x0 ) return 0;
 
-	Modules::log().writeInfo( "Adding %s resource '%s'", itr->second.typeString.c_str(), name.c_str() );
+	//Modules::log().writeInfo( "Adding %s resource '%s'", itr->second.typeString.c_str(), name.c_str() );
 	
 	if( userCall ) resource->_userRefCount = 1;
 	
@@ -295,11 +297,8 @@ ResHandle ResourceManager::addNonExistingResource( Resource &resource, bool user
 }
 
 
-ResHandle ResourceManager::cloneResource( ResHandle sourceRes, const string &name )
+ResHandle ResourceManager::cloneResource( Resource &sourceRes, const string &name )
 {
-	Resource *res = resolveResHandle( sourceRes );
-	if( res == 0x0 ) return 0;
-	
 	// Check that name does not yet exist
 	if( name != "" )
 	{
@@ -307,13 +306,13 @@ ResHandle ResourceManager::cloneResource( ResHandle sourceRes, const string &nam
 		{
 			if( _resources[i] != 0x0 && _resources[i]->_name == name )
 			{	
-				Modules::log().writeDebugInfo( "Name '%s' used for cloneResource already exists", name.c_str() );
+				Modules::log().writeDebugInfo( "Name '%s' used for h3dCloneResource already exists", name.c_str() );
 				return 0;
 			}
 		}
 	}
 
-	Resource *newRes = res->clone();
+	Resource *newRes = sourceRes.clone();
 	if( newRes == 0x0 ) return 0;
 
 	newRes->_name = name != "" ? name : "|tmp|";
@@ -323,7 +322,7 @@ ResHandle ResourceManager::cloneResource( ResHandle sourceRes, const string &nam
 	if( name == "" )
 	{
 		stringstream ss;
-		ss << res->_name << "|" << handle;
+		ss << sourceRes._name << "|" << handle;
 		newRes->_name = ss.str();
 	}
 
@@ -331,20 +330,12 @@ ResHandle ResourceManager::cloneResource( ResHandle sourceRes, const string &nam
 }
 
 
-int ResourceManager::removeResource( ResHandle handle, bool userCall )
+int ResourceManager::removeResource( Resource &resource, bool userCall )
 {
-	Resource *res = resolveResHandle( handle );
-
-	if( res == 0x0 )
-	{	
-		Modules::log().writeDebugInfo( "Invalid resource handle %i in removeResource", handle );
-		return -1;
-	}
-
 	// Decrease reference count
-	if( userCall && res->_userRefCount > 0 ) --res->_userRefCount;
+	if( userCall && resource._userRefCount > 0 ) --resource._userRefCount;
 
-	return (signed)res->_userRefCount;
+	return (signed)resource._userRefCount;
 }
 
 
@@ -388,7 +379,7 @@ void ResourceManager::releaseUnusedResources()
 {
 	vector< uint32 > killList;
 	
-	// Find unesed resources and release dependencies
+	// Find unused resources and release dependencies
 	for( uint32 i = 0; i < _resources.size(); ++i )
 	{
 		if( _resources[i] != 0x0 && _resources[i]->_userRefCount == 0 && _resources[i]->_refCount == 0 )

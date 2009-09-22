@@ -64,7 +64,7 @@ void ShaderComboBox::currentChanged(int index)
 {
 	if (itemData(index).isValid() && itemData(index) == QVariant((int)QVariant::UserType))
 	{		
-		QString newShader = HordeFileDialog::getResourceFile( ResourceTypes::Shader, m_resourcePath, this, tr("Select shader to import"));
+		QString newShader = HordeFileDialog::getResourceFile( H3DResTypes::Shader, m_resourcePath, this, tr("Select shader to import"));
 		if (!newShader.isEmpty())
 		{
 			if (findText(newShader) == -1)

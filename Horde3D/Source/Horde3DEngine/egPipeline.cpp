@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -53,7 +41,7 @@ void PipelineResource::initDefault()
 
 void PipelineResource::release()
 {
-	destroyRenderTargets();
+	releaseRenderTargets();
 
 	for( uint32 i = 0; i < _stages.size(); ++i )
 	{
@@ -66,7 +54,8 @@ void PipelineResource::release()
 
 			for( uint32 k = 0; k < _stages[i].commands[j].resParams.size(); ++k )
 			{
-				Modules::resMan().removeResource( _stages[i].commands[j].resParams[k], false );
+				if( _stages[i].commands[j].resParams[k] != 0x0 )
+					Modules::resMan().removeResource( *_stages[i].commands[j].resParams[k], false );
 			}
 		}
 	}
@@ -261,8 +250,6 @@ void PipelineResource::addRenderTarget( const string &id, bool depthBuf, uint32 
 										RenderBufferFormats::List format, uint32 samples,
 										uint32 width, uint32 height, float scale )
 {
-	if( numColBufs > RenderBuffer::MaxColorAttachmentCount ) return;
-	
 	RenderTarget rt;
 	
 	rt.id = id;
@@ -305,29 +292,21 @@ bool PipelineResource::createRenderTargets()
 		if( height == 0 ) height = ftoi_r( Modules::renderer().getVPHeight() * rt.scale );
 		
 		rt.rendBuf = Modules::renderer().createRenderBuffer(
-			width, height, rt.format, rt.hasDepthBuf, rt.numColBufs, 0 );
-		if( rt.rendBuf.fbo == 0 ) return false;
-
-		if( rt.samples > 0 )
-		{
-			// Also create a multisampled renderbuffer
-			rt.rendBufMultisample = Modules::renderer().createRenderBuffer(
-				width, height, rt.format, rt.hasDepthBuf, rt.numColBufs, rt.samples );
-			if( rt.rendBufMultisample.fbo == 0 ) return false;
-		}
+			width, height, rt.format, rt.hasDepthBuf, rt.numColBufs, rt.samples );
+		if( rt.rendBuf == 0 ) return false;
 	}
 	
 	return true;
 }
 
 
-void PipelineResource::destroyRenderTargets()
+void PipelineResource::releaseRenderTargets()
 {
 	for( uint32 i = 0; i < _renderTargets.size(); ++i )
 	{
 		RenderTarget &rt = _renderTargets[i];
 		
-		Modules::renderer().destroyRenderBuffer( rt.rendBuf );
+		Modules::renderer().releaseRenderBuffer( rt.rendBuf );
 	}
 }
 
@@ -420,37 +399,95 @@ bool PipelineResource::load( const char *data, int size )
 void PipelineResource::resize()
 {
 	// Recreate render targets
-	destroyRenderTargets();
+	releaseRenderTargets();
 	createRenderTargets();
 }
 
 
-bool PipelineResource::setStageActivation( const string &stageName, bool enabled )
+int PipelineResource::getElemCount( int elem )
 {
-	for( uint32 i = 0; i < _stages.size(); ++i )
+	switch( elem )
 	{
-		if( _stages[i].id == stageName )
-		{
-			_stages[i].enabled = enabled;
-			return true;
-		}
+	case PipelineResData::StageElem:
+		return (int)_stages.size();
+	default:
+		return Resource::getElemCount( elem );
 	}
-	
-	return false;
+}
+
+
+int PipelineResource::getElemParamI( int elem, int elemIdx, int param )
+{
+	switch( elem )
+	{
+	case PipelineResData::StageElem:
+		if( (unsigned)elemIdx < _stages.size() )
+		{
+			switch( param )
+			{
+			case PipelineResData::StageActivationI:
+				return _stages[elemIdx].enabled ? 1 : 0;
+			}
+		}
+		break;
+	}
+
+	return Resource::getElemParamI( elem, elemIdx, param );
+}
+
+
+void PipelineResource::setElemParamI( int elem, int elemIdx, int param, int value )
+{
+	switch( elem )
+	{
+	case PipelineResData::StageElem:
+		if( (unsigned)elemIdx < _stages.size() )
+		{
+			switch( param )
+			{
+			case PipelineResData::StageActivationI:
+				_stages[elemIdx].enabled = (value == 0) ? 0 : 1;
+				return;
+			}
+		}
+		break;
+	}
+
+	Resource::setElemParamI( elem, elemIdx, param, value );
+}
+
+
+const char *PipelineResource::getElemParamStr( int elem, int elemIdx, int param )
+{
+	switch( elem )
+	{
+	case PipelineResData::StageElem:
+		if( (unsigned)elemIdx < _stages.size() )
+		{
+			switch( param )
+			{
+			case PipelineResData::StageNameStr:
+				return _stages[elemIdx].id.c_str();
+			}
+		}
+		break;
+	}
+
+	return Resource::getElemParamStr( elem, elemIdx, param );
 }
 
 
 bool PipelineResource::getRenderTargetData( const string &target, int bufIndex, int *width, int *height,
-											int *compCount, float *dataBuffer, int bufferSize )
+                                            int *compCount, float *dataBuffer, int bufferSize )
 {
-	RenderBuffer *rb = 0x0;
+	uint32 rbObj = 0;
 	if( target != "" )
 	{	
 		RenderTarget *rt = findRenderTarget( target );
 		if( rt == 0x0 ) return false;
-		else rb = &rt->rendBuf;
+		else rbObj = rt->rendBuf;
 	}
 	
-	return Modules::renderer().getBufferData(
-		rb, bufIndex, width, height, compCount, dataBuffer, bufferSize );
+	return Modules::renderer().getRenderBufferData(
+		rbObj, bufIndex, width, height, compCount, dataBuffer, bufferSize );
 }

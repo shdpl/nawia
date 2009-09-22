@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -27,6 +15,7 @@
 
 #include <vector>
 #include <set>
+#include <map>
 
 
 struct TriGroup;
@@ -61,7 +50,8 @@ public:
 	static float calcCacheEfficiency( TriGroup &triGroup, std::vector< unsigned int > &indices,
                                       const unsigned int cacheSize = maxCacheSize );
 	static void optimizeIndexOrder( TriGroup &triGroup, std::vector< Vertex > &vertices,
-	                                std::vector< unsigned int > &indices );
+	                                std::vector< unsigned int > &indices,
+									std::map< unsigned int, unsigned int > &vertMap );
 };
 
 #endif	// _optimizer_H_

@@ -8,8 +8,9 @@
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
-// This sample source file is not covered by the LGPL as the rest of the SDK
-// and may be used without any restrictions
+// This sample source file is not covered by the EPL as the rest of the SDK
+// and may be used without any restrictions. However, the EPL's disclaimer of
+// warranty and liability shall be in effect for this file.
 //
 // *************************************************************************************************
 
@@ -33,8 +34,8 @@ private:
 	bool         _freeze, _debugViewMode, _wireframeMode;
 	
 	// Engine objects
-	ResHandle    _fontMatRes, _panelMatRes, _logoMatRes;
-	NodeHandle   _cam;
+	H3DRes       _fontMatRes, _panelMatRes, _logoMatRes;
+	H3DNode      _cam;
 
 	std::string  _contentDir;
 

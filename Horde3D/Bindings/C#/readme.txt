@@ -18,7 +18,7 @@ You should have a look at the included samples Chicago .NET and Knight.NET for s
 
 Package
 -------
-Includes Horde3D SDK C# bindings Version 1.0.0Beta3 - http://www.horde3d.org - Copyright (C) 2006-2007 Nicolas Schulz
+Includes Horde3D SDK C# bindings Version 1.0.0Beta4 - http://www.horde3d.org - Copyright (C) 2006-2007 Nicolas Schulz
 
 
 Requirements
@@ -30,14 +30,7 @@ You also need Microsoft Windows 2000/XP/Vista and Microsoft .NET Framework versi
 
 License
 =======
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+The C# .Net Bindings are licensed under the terms of the Eclipse Public License (EPL).
 
 
 Copyright notice

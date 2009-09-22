@@ -108,13 +108,13 @@ void ExtraTreeView::addNode()
 	QXmlTreeModel* treeModel = static_cast<QXmlTreeModel*>(model());
 	if( treeModel == 0)	return;	
 
-	QXmlTreeNode* rootNode = treeModel->rootNode();
+	QXmlTreeNode* H3DRootNode = treeModel->rootNode();
 	// select the currently selected node as root
 	if( currentIndex().isValid() )
-		rootNode = static_cast<QXmlTreeNode*>(currentIndex().internalPointer());	
+		H3DRootNode = static_cast<QXmlTreeNode*>(currentIndex().internalPointer());	
 	QDomElement newNode = HordeSceneEditor::instance()->pluginManager()->createNode( source->data().toString(), this );
 	if( !newNode.isNull() )
-		treeModel->undoStack()->push(createAddUndoCommand(newNode, rootNode->xmlNode(), treeModel, source->text()));		
+		treeModel->undoStack()->push(createAddUndoCommand(newNode, H3DRootNode->xmlNode(), treeModel, source->text()));		
 }
 
 void ExtraTreeView::currentNodeChanged(const QModelIndex& current, const QModelIndex& previous)
@@ -143,16 +143,16 @@ bool ExtraTreeView::eventFilter(QObject *obj, QEvent *event)
 	return QXmlTreeView::eventFilter(obj, event);
 }
 
-bool ExtraTreeView::selectNode( int nodeHandle )
+bool ExtraTreeView::selectNode( int H3DNode )
 {
 	if( model() == 0 ) return false;
-	else if (nodeHandle == 0)
+	else if (H3DNode == 0)
 	{
 		setCurrentIndex(QModelIndex());
 		return false;
 	}
 
-	QModelIndexList items(model()->match(model()->index(0,2), Qt::DisplayRole, nodeHandle, 1, Qt::MatchExactly | Qt::MatchCaseSensitive | Qt::MatchRecursive));
+	QModelIndexList items(model()->match(model()->index(0,2), Qt::DisplayRole, H3DNode, 1, Qt::MatchExactly | Qt::MatchCaseSensitive | Qt::MatchRecursive));
 	if (!items.isEmpty())
 	{
 		setCurrentIndex(items.first());

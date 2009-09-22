@@ -39,17 +39,25 @@ TextureComboBox::~TextureComboBox()
 void TextureComboBox::init(const QString& resourcePath)
 {
 	clear();
+	addItem(tr("No Texture"), QVariant((int) -1));
+
 	m_resourcePath = resourcePath;
-
-	addTextures(resourcePath, resourcePath);
-	addItem(tr("Import Texture2D from Repository"), QVariant((int) ResourceTypes::Texture));
-
+	blockSignals(true);
+	if (!resourcePath.isEmpty())
+		addTextures(resourcePath, resourcePath);
+	addItem(tr("Import Texture From Repository"), QVariant((int) H3DResTypes::Texture));
+	if (count() == 1)
+		setCurrentIndex(-1);
+	blockSignals(false);
 }
 
 
 Texture TextureComboBox::texture() const
 {
-	return Texture(currentText(), itemData(currentIndex()).toInt());
+	if (currentIndex() == -1 || itemData(currentIndex(), Qt::UserRole).toInt() == -1)
+		return Texture();
+	else
+		return Texture( currentText() );
 }
 
 void TextureComboBox::setTexture(Texture texture)
@@ -60,9 +68,9 @@ void TextureComboBox::setTexture(Texture texture)
 
 void TextureComboBox::currentChanged(int index)
 {
-	if ( itemData(index).isValid() && itemData(index) == QVariant((int) ResourceTypes::Texture) )
+	if ( itemData(index).isValid() && itemData(index) == QVariant((int) H3DResTypes::Texture) )
 	{		
-		QString newTexture = HordeFileDialog::getResourceFile( ResourceTypes::Texture, m_resourcePath, this, tr("Select texture to import") );
+		QString newTexture = HordeFileDialog::getResourceFile( H3DResTypes::Texture, m_resourcePath, this, tr("Select texture to import") );
 		if (!newTexture.isEmpty())
 		{
 			if (findText(newTexture) == -1)

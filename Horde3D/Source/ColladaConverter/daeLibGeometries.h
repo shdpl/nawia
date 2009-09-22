@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -101,12 +89,14 @@ struct DaeTriGroup
 
 	bool parse( const XMLNode &primitiveNode )
 	{	
-		enum { tTriangles, tPolygons };
+		enum { tTriangles, tPolygons, tPolylist };
 		int primType = -1;
 		
 		if( strcmp( primitiveNode.getName(), "triangles" ) == 0 ) primType = tTriangles;
 		else if( strcmp( primitiveNode.getName(), "polygons" ) == 0 ) primType = tPolygons;
-		else log( "Warning: Ignoring unsupported geometry primitive" );
+		else if( strcmp( primitiveNode.getName(), "polylist" ) == 0 ) primType = tPolylist;
+		else log( "Warning: Ignoring unsupported geometry primitive '" +
+		          std::string( primitiveNode.getName() ) + "'" );
 		if( primType < 0 ) return false;
 		
 		int vertexOffset = 0, normOffset = -1, texCoordOffset[4] = { -1, -1, -1, -1 };
@@ -176,6 +166,15 @@ struct DaeTriGroup
 
 		matId = primitiveNode.getAttribute( "material", "" );
 		
+		// Get vertex counts for polylists
+		char *vcount = 0x0;
+		unsigned int vcpos = 0, numVerts = 0;
+		if( primType == tPolylist )
+		{	
+			if( primitiveNode.getChildNode( "vcount" ).isEmpty() ) return false;
+			vcount = (char *)primitiveNode.getChildNode( "vcount" ).getText();
+		}
+
 		// Parse actual primitive data
 		nodeItr1 = 0;
 		node1 = primitiveNode.getChildNode( "p", nodeItr1 );
@@ -207,7 +206,13 @@ struct DaeTriGroup
 
 				if( ++inputCnt == numInputs )
 				{
-					if( primType == tPolygons )
+					if( primType == tPolylist && vertCnt == numVerts )
+					{
+						vertCnt = 0;
+						parseUInt( vcount, vcpos, numVerts );
+					}
+					
+					if( primType == tPolygons || primType == tPolylist )
 					{
 						// Do simple triangulation (assumes convex polygons)
 						if( vertCnt == 0 )
@@ -326,7 +331,12 @@ struct DaeGeometry
 	bool parse( const XMLNode &geometryNode )
 	{
 		XMLNode node1 = geometryNode.getChildNode( "mesh" );
-		if( node1.isEmpty() ) return false;
+		if( node1.isEmpty() )
+		{	
+			log( "Warning: Ignoring unsupported geometry '" +
+			     std::string( geometryNode.getAttribute( "id", "" ) ) + "'" );
+			return false;
+		}
 
 		id = geometryNode.getAttribute( "id", "" );
 		if( id == "" ) return false;

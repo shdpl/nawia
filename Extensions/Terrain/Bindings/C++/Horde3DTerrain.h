@@ -1,24 +1,11 @@
 // *************************************************************************************************
 //
-// Horde3D
-//   Next-Generation Graphics Engine
-// --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Horde3D Terrain Extension
+// --------------------------------------------------------
+// Copyright (C) 2006-2009 Nicolas Schulz and Volker Wiendl
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -32,7 +19,11 @@
 #	if defined( WIN32 ) || defined( _WINDOWS )
 #		define DLL extern "C" __declspec( dllimport )
 #	else
-#		define DLL extern "C"
+#		if defined( __GNUC__ ) && __GNUC__ >= 4
+#		  define DLLEXP extern "C" __attribute__ ((visibility("default")))
+#   	else
+#		  define DLLEXP extern "C"
+#   	endif
 #	endif
 #endif
 
@@ -73,67 +64,66 @@
 
 /*
 	Constants: Predefined constants
-	SNT_TerrainNode  - Type identifier of Terrain scene node
+	H3DEXT_NodeType_Terrain  - Type identifier of Terrain scene node
 */
-const int SNT_TerrainNode = 100;
+const int H3DEXT_NodeType_Terrain = 100;
 
 
-struct TerrainNodeParams
+struct H3DEXTTerrain
 {
-	/*	Enum: TerrainNodeParams
+	/*	Enum: H3DEXTTerrain
 			The available Terrain node parameters.
 		
-		HeightMapRes  - Height map texture; must be square and a power of two [type: ResHandle, write-only]
-		MaterialRes   - Material resource used for rendering the terrain [type: ResHandle]
-		MeshQuality   - Constant controlling the overall resolution of the terrain mesh (default: 50.0) [type: float]
-		SkirtHeight   - Height of the skirts used to hide cracks (default: 0.1) [type: float]
-		BlockSize     - Size of a terrain block that is drawn in a single render call; must be 2^n+1 (default: 17) [type: int]
+		HeightTexResI  - Height map texture; must be square and a power of two [write-only]
+		MatResI        - Material resource used for rendering the terrain
+		MeshQualityF   - Constant controlling the overall resolution of the terrain mesh (default: 50.0)
+		SkirtHeightF   - Height of the skirts used to hide cracks (default: 0.1)
+		BlockSizeI     - Size of a terrain block that is drawn in a single render call; must be 2^n+1 (default: 17)
 	*/
 	enum List
 	{
-		HeightMapRes = 10000,
-		MaterialRes,
-		MeshQuality,
-		SkirtHeight,
-		BlockSize
+		HeightTexResI = 10000,
+		MatResI,
+		MeshQualityF,
+		SkirtHeightF,
+		BlockSizeI
 	};
 };
 
 
-namespace Horde3DTerrain
-{
-	/* 	Function: addTerrainNode
-			Adds a Terrain node to the scene.
-		
-		This function creates a new Terrain node and attaches it to the specified parent node.
-		
-		Parameters:
-			parent        - handle to parent node to which the new node will be attached
-			name          - name of the node
-			heightMapRes  - handle to a 2D Texture resource that contains the terrain height information (must be square and POT) 
-			materialRes   - handle to the Material resource used for rendering the terrain
-
-		Returns:
-			 handle to the created node or 0 in case of failure
-	*/
-	DLL NodeHandle addTerrainNode( NodeHandle parent, const char *name, ResHandle heightMapRes, ResHandle materialRes );
+/* Function: h3dextAddTerrainNode
+		Adds a Terrain node to the scene.
 	
+	Details:
+		This function creates a new Terrain node and attaches it to the specified parent node.
+	
+	Parameters:
+		parent        - handle to parent node to which the new node will be attached
+		name          - name of the node
+		heightMapRes  - handle to a 2D Texture resource that contains the terrain height information (must be square and POT) 
+		materialRes   - handle to the Material resource used for rendering the terrain
 
-	/* 	Function: createGeometryResource
-			Creates a Geometry resource from a specified Terrain node.
-				
+	Returns:
+		 handle to the created node or 0 in case of failure
+*/
+DLL H3DNode h3dextAddTerrainNode( H3DNode parent, const char *name, H3DRes heightMapRes, H3DRes materialRes );
+
+
+/* Function: h3dextCreateTerrainGeoRes
+		Creates a Geometry resource from a specified Terrain node.
+			
+	Details:
 		This function creates a new Geometry resource that contains the vertex data of the specified Terrain node.
 		To reduce the amount of data, it is possible to specify a quality value which controls the overall resolution
 		of the terrain mesh. The algorithm will automatically create a higher resoultion in regions where the
 		geometrical complexity is higher and optimize the vertex count for flat regions.
+	
+	Parameters:
+		node         - handle to terrain node that will be accessed
+		resName      - name of the Geometry resource that shall be created
+		meshQuality  - constant controlling the overall mesh resolution
 		
-		Parameters:
-			node         - handle to terrain node that will be accessed
-			resName      - name of the Geometry resource that shall be created
-			meshQuality  - constant controlling the overall mesh resolution
-			
-		Returns:
-			 handle to the created Geometry resource or 0 in case of failure
-	*/
-	DLL ResHandle createGeometryResource( NodeHandle node, const char *resName, float meshQuality );
-};
+	Returns:
+		 handle to the created Geometry resource or 0 in case of failure
+*/
+DLL H3DRes h3dextCreateTerrainGeoRes( H3DNode node, const char *resName, float meshQuality );

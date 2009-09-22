@@ -48,7 +48,7 @@ void Importer::setTargetPath( const QDir& path )
 }
 
 
-void Importer::setSourcePath(ResourceTypes::List type, const QDir& path)
+void Importer::setSourcePath(H3DResTypes::List type, const QDir& path)
 {
 	m_sourceResourcePath = path;
 	if( !m_sourceResourcePath.exists() )

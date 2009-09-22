@@ -5,20 +5,8 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
@@ -78,6 +66,22 @@ public:
 // Shader Resource
 // =================================================================================================
 
+struct ShaderResData
+{
+	enum List
+	{
+		ContextElem = 600,
+		SamplerElem,
+		UniformElem,
+		ContNameStr,
+		SampNameStr,
+		UnifNameStr,
+		UnifDefValueF4
+	};
+};
+
+// =================================================================================================
+
 struct BlendModes
 {
 	enum List
@@ -125,33 +129,30 @@ struct TexAddressModes
 
 struct ShaderCombination
 {
-	uint32                          combMask;
+	uint32              combMask;
 	
-	uint32                          shaderObject;
-	uint32                          lastUpdateStamp;
+	uint32              shaderObj;
+	uint32              lastUpdateStamp;
 
-	// Engine uniform and attribute locations
-	int                             uni_frameBufSize;
-	int                             uni_texs[12];
-	int                             uni_worldMat, uni_worldNormalMat;
-	int                             uni_viewer;
-	int                             uni_lightPos, uni_lightDir, uni_lightColor, uni_lightCosCutoff;
-	int                             uni_shadowSplitDists, uni_shadowMats;
-	int                             uni_shadowMapSize, uni_shadowBias;
-	int                             uni_skinMatRows;
-	int                             uni_parCorners;
-	int                             uni_parPosArray, uni_parSizeAndRotArray, uni_parColorArray;
-	int                             uni_olayColor;
-	int                             attrib_normal, attrib_tangent, attrib_bitangent;
-	int                             attrib_joints, attrib_weights;
-	int                             attrib_texCoords0, attrib_texCoords1;
+	// Engine uniforms
+	int                 uni_frameBufSize;
+	int                 uni_texs[12];
+	int                 uni_worldMat, uni_worldNormalMat;
+	int                 uni_viewer;
+	int                 uni_lightPos, uni_lightDir, uni_lightColor, uni_lightCosCutoff;
+	int                 uni_shadowSplitDists, uni_shadowMats;
+	int                 uni_shadowMapSize, uni_shadowBias;
+	int                 uni_skinMatRows;
+	int                 uni_parCorners;
+	int                 uni_parPosArray, uni_parSizeAndRotArray, uni_parColorArray;
+	int                 uni_olayColor;
 
-	std::vector< int >              customSamplers;
-	std::vector< int >              customUniforms;
+	std::vector< int >  customSamplers;
+	std::vector< int >  customUniforms;
 
 
 	ShaderCombination() :
-		combMask( 0 ), shaderObject( 0 ), lastUpdateStamp( 0 )
+		combMask( 0 ), shaderObj( 0 ), lastUpdateStamp( 0 )
 	{
 	}
 };
@@ -165,8 +166,6 @@ struct ShaderContext
 	// RenderConfig
 	BlendModes::List                  blendMode;
 	TestModes::List                   depthTest;
-	TestModes::List                   alphaTest;
-	float                             alphaRef;
 	bool                              writeDepth;
 	bool                              alphaToCoverage;
 	
@@ -178,8 +177,8 @@ struct ShaderContext
 
 	ShaderContext() :
 		compiled( false ), writeDepth( true ), blendMode( BlendModes::Replace ),
-		depthTest( TestModes::LessEqual ), alphaTest( TestModes::Always ),
-		alphaRef( 0.0f ), alphaToCoverage( false ), vertCodeIdx( -1 ), fragCodeIdx( -1 )
+		depthTest( TestModes::LessEqual ), alphaToCoverage( false ),
+		vertCodeIdx( -1 ), fragCodeIdx( -1 )
 	{
 	}
 };
@@ -196,7 +195,8 @@ struct ShaderSampler
 
 
 	ShaderSampler() :
-		addressMode( TexAddressModes::Wrap ), filterMode( TexFilterModes::Trilinear ), maxAnisotropy( 8 )
+		texUnit( -1 ), addressMode( TexAddressModes::Wrap ), filterMode( TexFilterModes::Trilinear ),
+		maxAnisotropy( 8 )
 	{
 	}
 };
@@ -222,7 +222,6 @@ private:
 	std::set< uint32 >            _preLoadList;
 
 	bool raiseError( const std::string &msg, int line = -1 );
-	bool parseXMLCode( XMLNode &node, std::string &code );
 	bool parseFXSection( const char *data );
 	void compileCombination( ShaderContext &context, ShaderCombination &sc );
 
@@ -245,6 +244,11 @@ public:
 	void preLoadCombination( uint32 combMask );
 	void compileContexts();
 	ShaderCombination *getCombination( ShaderContext &context, uint32 combMask );
+
+	int getElemCount( int elem );
+	float getElemParamF( int elem, int elemIdx, int param, int compIdx );
+	void setElemParamF( int elem, int elemIdx, int param, int compIdx, float value );
+	const char *getElemParamStr( int elem, int elemIdx, int param );
 
 	ShaderContext *findContext( const std::string &name )
 	{

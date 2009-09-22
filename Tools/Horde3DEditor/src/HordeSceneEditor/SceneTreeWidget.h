@@ -73,7 +73,7 @@ public slots:
 
 	/**
 	 */
-	void selectNode( int nodeHandle );
+	void selectNode( int H3DNode );
 
 signals:
 	void undoStackActivated(QUndoStack* stack);

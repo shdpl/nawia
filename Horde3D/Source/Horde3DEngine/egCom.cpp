@@ -5,27 +5,15 @@
 // --------------------------------------
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
 #include "egCom.h"
 #include "egModules.h"
 #include <stdarg.h>
-
+#include <stdio.h>
 #include "utDebug.h"
 
 
@@ -41,12 +29,12 @@ EngineConfig::EngineConfig()
 	texCompression = false;
 	loadTextures = true;
 	fastAnimation = true;
-	occlusionCulling = true;
 	shadowMapSize = 1024;
 	sampleCount = 0;
 	wireframeMode = false;
 	debugViewMode = false;
 	dumpFailedShaders = false;
+	gatherTimeStats = true;
 }
 
 
@@ -78,7 +66,10 @@ float EngineConfig::getOption( EngineOptions::List param )
 		return debugViewMode ? 1.0f : 0.0f;
 	case EngineOptions::DumpFailedShaders:
 		return dumpFailedShaders ? 1.0f : 0.0f;
+	case EngineOptions::GatherTimeStats:
+		return gatherTimeStats ? 1.0f : 0.0f;
 	default:
+		Modules::setError( "Invalid param for h3dGetOption" );
 		return Math::NaN;
 	}
 }
@@ -118,13 +109,13 @@ bool EngineConfig::setOption( EngineOptions::List param, float value )
 		if( size != 128 && size != 256 && size != 512 && size != 1024 && size != 2048 ) return false;
 
 		// Update shadow map
-		Modules::renderer().destroyShadowBuffer();
+		Modules::renderer().releaseShadowRB();
 		
-		if( !Modules::renderer().createShadowBuffer( size, size ) )
+		if( !Modules::renderer().createShadowRB( size, size ) )
 		{
 			Modules::log().writeWarning( "Failed to create shadow map" );
 			// Restore old buffer
-			Modules::renderer().createShadowBuffer( shadowMapSize, shadowMapSize );
+			Modules::renderer().createShadowRB( shadowMapSize, shadowMapSize );
 			return false;
 		}
 		else
@@ -144,7 +135,11 @@ bool EngineConfig::setOption( EngineOptions::List param, float value )
 	case EngineOptions::DumpFailedShaders:
 		dumpFailedShaders = (value != 0);
 		return true;
+	case EngineOptions::GatherTimeStats:
+		gatherTimeStats = (value != 0);
+		return true;
 	default:
+		Modules::setError( "Invalid param for h3dSetOption" );
 		return false;
 	}
 }
@@ -274,12 +269,21 @@ float StatManager::getStat( int param, bool reset )
 		value = _frameTime;
 		if( reset ) _frameTime = 0;
 		return value;
+	case EngineStats::AnimationTime:
+		value = _animTimer.getElapsedTimeMS();
+		if( reset ) _animTimer.reset();
+		return value;
 	case EngineStats::CustomTime:
 		value = _customTimer.getElapsedTimeMS();
 		if( reset ) _customTimer.reset();
 		return value;
+	case EngineStats::TextureVMem:
+		return (Modules::renderer().getTextureMem() / 1024) / 1024.0f;
+	case EngineStats::GeometryVMem:
+		return (Modules::renderer().getBufferMem() / 1024) / 1024.0f;
 	default:
-		return 0;
+		Modules::setError( "Invalid param for h3dGetStat" );
+		return Math::NaN;
 	}
 }
 
@@ -310,6 +314,8 @@ Timer *StatManager::getTimer( int param )
 	{
 	case EngineStats::FrameTime:
 		return &_frameTimer;
+	case EngineStats::AnimationTime:
+		return &_animTimer;
 	case EngineStats::CustomTime:
 		return &_customTimer;
 	default:

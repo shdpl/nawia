@@ -26,6 +26,8 @@
 #include <Horde3D.h>
 #include <Horde3DUtils.h>
 
+#include <QtCore/QDir>
+
 TextureProperty::TextureProperty(const QString& name /*= QString()*/, QObject* propertyObject /*= 0*/, QObject* parent /*= 0*/) : Property(name, propertyObject, parent)
 {	
 }
@@ -46,7 +48,7 @@ QVariant TextureProperty::value(int role) const
 QWidget* TextureProperty::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/)
 {
 	TextureComboBox* editor = new TextureComboBox(parent);
-	editor->init(Horde3DUtils::getResourcePath(ResourceTypes::Texture));
+	editor->init( QDir::currentPath() );
 	return editor;
 }
 

@@ -99,17 +99,17 @@ void CameraToolBar::viewportResized(int width, int height)
 	{
 		Frustum f = camera->frustum();
 		double factor = ( width * (f.Top - f.Bottom) ) / ( height * (f.Right - f.Left) );
-		Horde3D::setNodeParamf( camera->hordeId(), CameraNodeParams::LeftPlane, f.Left * factor );
-		Horde3D::setNodeParamf( camera->hordeId(), CameraNodeParams::RightPlane, f.Right * factor );
-		Horde3D::setNodeParamf( camera->hordeId(), CameraNodeParams::TopPlane, f.Top );
-		Horde3D::setNodeParamf( camera->hordeId(), CameraNodeParams::BottomPlane, f.Bottom );
+		h3dSetNodeParamF( camera->hordeId(), H3DCamera::LeftPlaneF, 0, f.Left * factor );
+		h3dSetNodeParamF( camera->hordeId(), H3DCamera::RightPlaneF, 0, f.Right * factor );
+		h3dSetNodeParamF( camera->hordeId(), H3DCamera::TopPlaneF, 0, f.Top );
+		h3dSetNodeParamF( camera->hordeId(), H3DCamera::BottomPlaneF, 0, f.Bottom );
 	}
 	else
 	{
-		Horde3D::setNodeParamf( camera->hordeId(), CameraNodeParams::LeftPlane, -1 );
-		Horde3D::setNodeParamf( camera->hordeId(), CameraNodeParams::RightPlane, 1 );
-		Horde3D::setNodeParamf( camera->hordeId(), CameraNodeParams::TopPlane, 1 );
-		Horde3D::setNodeParamf( camera->hordeId(), CameraNodeParams::BottomPlane, -1 );
+		h3dSetNodeParamF( camera->hordeId(), H3DCamera::LeftPlaneF, 0, -1 );
+		h3dSetNodeParamF( camera->hordeId(), H3DCamera::RightPlaneF, 0, 1 );
+		h3dSetNodeParamF( camera->hordeId(), H3DCamera::TopPlaneF, 0, 1 );
+		h3dSetNodeParamF( camera->hordeId(), H3DCamera::BottomPlaneF, 0, -1 );
 	}
 }
 
@@ -139,14 +139,14 @@ void CameraToolBar::currentCamChanged(int index)
 		m_sceneScale = camera->scale().X;
 		if ( m_sceneToolButton->isChecked() )
 		{
-			Horde3D::setNodeParami(camera->hordeId(), CameraNodeParams::Orthographic, camera->ortho());
-			Horde3D::setNodeTransform(camera->hordeId(), m_sceneX, m_sceneY, m_sceneZ, m_sceneRX, m_sceneRY, m_sceneRZ, m_sceneScale, m_sceneScale, m_sceneScale);
+			h3dSetNodeParamI(camera->hordeId(), H3DCamera::OrthoI, camera->ortho());
+			h3dSetNodeTransform(camera->hordeId(), m_sceneX, m_sceneY, m_sceneZ, m_sceneRX, m_sceneRY, m_sceneRZ, m_sceneScale, m_sceneScale, m_sceneScale);
 			viewportResized(m_viewportWidth, m_viewportHeight);
 		}
 		else
 			m_sceneToolButton->setChecked(true);
 		// Set after scene button has been enabled
-		float farPlane = Horde3D::getNodeParamf(camera->hordeId(), CameraNodeParams::FarPlane);
+		float farPlane = h3dGetNodeParamF(camera->hordeId(), H3DCamera::FarPlaneF, 0);
 		m_rightX = pos.X - farPlane * 0.25f;	m_topY = pos.Y + farPlane * 0.25f;	m_frontZ = pos.Z + farPlane * 0.25f;
 	}
 }
@@ -158,50 +158,50 @@ void CameraToolBar::activateSpecialCam(bool checked)
 	if (sender() == m_sceneToolButton)
 	{
 		if (!checked)
-			Horde3D::getNodeTransform(camera->hordeId(), &m_sceneX, &m_sceneY, &m_sceneZ, &m_sceneRX, &m_sceneRY, &m_sceneRZ, &m_sceneScale, 0, 0);
+			h3dGetNodeTransform(camera->hordeId(), &m_sceneX, &m_sceneY, &m_sceneZ, &m_sceneRX, &m_sceneRY, &m_sceneRZ, &m_sceneScale, 0, 0);
 		else
 		{
-			Horde3D::setNodeParami(camera->hordeId(), CameraNodeParams::Orthographic, camera->ortho());
-			Horde3D::setNodeTransform(camera->hordeId(), m_sceneX, m_sceneY, m_sceneZ, m_sceneRX, m_sceneRY, m_sceneRZ, m_sceneScale, m_sceneScale, m_sceneScale);
+			h3dSetNodeParamI(camera->hordeId(), H3DCamera::OrthoI, camera->ortho());
+			h3dSetNodeTransform(camera->hordeId(), m_sceneX, m_sceneY, m_sceneZ, m_sceneRX, m_sceneRY, m_sceneRZ, m_sceneScale, m_sceneScale, m_sceneScale);
 			viewportResized(m_viewportWidth, m_viewportHeight);
 		}
 	}
 	else if (sender() == m_topToolButton)
 	{		
-		if (!checked && Horde3D::getNodeParami(camera->hordeId(), CameraNodeParams::Orthographic) == 1)
+		if (!checked && h3dGetNodeParamI(camera->hordeId(), H3DCamera::OrthoI) == 1)
 		{
-			Horde3D::getNodeTransform(camera->hordeId(), &m_orthoX, &m_topY, &m_orthoZ, 0, 0, 0, &m_orthoScale, 0, 0);
+			h3dGetNodeTransform(camera->hordeId(), &m_orthoX, &m_topY, &m_orthoZ, 0, 0, 0, &m_orthoScale, 0, 0);
 		}
 		else if( checked )
 		{
-			Horde3D::setNodeParami(camera->hordeId(), CameraNodeParams::Orthographic, true);
-			Horde3D::setNodeTransform(camera->hordeId(), m_orthoX, m_topY, m_orthoZ, -90, 0, 0, m_orthoScale, m_orthoScale, m_orthoScale);
+			h3dSetNodeParamI(camera->hordeId(), H3DCamera::OrthoI, true);
+			h3dSetNodeTransform(camera->hordeId(), m_orthoX, m_topY, m_orthoZ, -90, 0, 0, m_orthoScale, m_orthoScale, m_orthoScale);
 			viewportResized(m_viewportWidth, m_viewportHeight);
 		}
 	}
 	else if (sender() == m_rightToolButton)
 	{
-		if (!checked && Horde3D::getNodeParami(camera->hordeId(), CameraNodeParams::Orthographic) == 1)
+		if (!checked && h3dGetNodeParamI(camera->hordeId(), H3DCamera::OrthoI) == 1)
 		{
-			Horde3D::getNodeTransform(camera->hordeId(), &m_rightX, &m_orthoY, &m_orthoZ, 0, 0, 0, &m_orthoScale, 0, 0);
+			h3dGetNodeTransform(camera->hordeId(), &m_rightX, &m_orthoY, &m_orthoZ, 0, 0, 0, &m_orthoScale, 0, 0);
 		}
 		else if( checked )
 		{
-			Horde3D::setNodeParami(camera->hordeId(), CameraNodeParams::Orthographic, true);
-			Horde3D::setNodeTransform(camera->hordeId(), m_rightX, m_orthoY, m_orthoZ, 0, -90, 0, m_orthoScale, m_orthoScale, m_orthoScale);
+			h3dSetNodeParamI(camera->hordeId(), H3DCamera::OrthoI, true);
+			h3dSetNodeTransform(camera->hordeId(), m_rightX, m_orthoY, m_orthoZ, 0, -90, 0, m_orthoScale, m_orthoScale, m_orthoScale);
 			viewportResized(m_viewportWidth, m_viewportHeight);
 		}
 	}
 	else if (sender() == m_frontToolButton)
 	{
-		if (!checked && Horde3D::getNodeParami(camera->hordeId(), CameraNodeParams::Orthographic) == 1)
+		if (!checked && h3dGetNodeParamI(camera->hordeId(), H3DCamera::OrthoI) == 1)
 		{
-			Horde3D::getNodeTransform(camera->hordeId(), &m_orthoX, &m_orthoY, &m_frontZ, 0, 0, 0, &m_orthoScale, 0, 0);
+			h3dGetNodeTransform(camera->hordeId(), &m_orthoX, &m_orthoY, &m_frontZ, 0, 0, 0, &m_orthoScale, 0, 0);
 		}
 		else if( checked )
 		{
-			Horde3D::setNodeParami(camera->hordeId(), CameraNodeParams::Orthographic, true);
-			Horde3D::setNodeTransform(camera->hordeId(), m_orthoX, m_orthoY, m_frontZ , 0, 0, 0, m_orthoScale, m_orthoScale, m_orthoScale);
+			h3dSetNodeParamI(camera->hordeId(), H3DCamera::OrthoI, true);
+			h3dSetNodeTransform(camera->hordeId(), m_orthoX, m_orthoY, m_frontZ , 0, 0, 0, m_orthoScale, m_orthoScale, m_orthoScale);
 			viewportResized(m_viewportWidth, m_viewportHeight);
 		}
 	}

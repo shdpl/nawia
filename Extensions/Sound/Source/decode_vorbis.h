@@ -29,8 +29,7 @@
 
 #include "decode.h"
 
-namespace Horde3DSound
-{
+
 	struct VorbisMemoryFile
 	{
 		char *data;
@@ -61,6 +60,5 @@ namespace Horde3DSound
 
 		OggVorbis_File _vorbisFile;
 	};
-}
 
 #endif // _Horde3DSound_decode_vorbis_H_

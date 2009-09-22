@@ -89,10 +89,10 @@ void NodeWidget::moveObject(const float x, const float y, const float z)
 	{
 		const float* mat = 0;					
 		float transX = x, transY = y, transZ = z;		
-		NodeHandle parent = 0;
-		if (hordeID != 0 && ( parent = Horde3D::getNodeParent( hordeID ) ) != 0 )
+		H3DNode parent = 0;
+		if (hordeID != 0 && ( parent = h3dGetNodeParent( hordeID ) ) != 0 )
 		{
-			Horde3D::getNodeTransformMatrices(parent, 0, &mat);
+			h3dGetNodeTransMats(parent, 0, &mat);
 			QMatrix4f parentMat(mat);
 			QVec3f scale = parentMat.getScale();
 			// Transform translation from world to local coordinate system ignoring scale from parent matrix

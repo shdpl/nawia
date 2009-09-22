@@ -8,8 +8,9 @@
 // Copyright (C) 2006-2009 Nicolas Schulz
 //
 //
-// This sample source file is not covered by the LGPL as the rest of the SDK
-// and may be used without any restrictions
+// This sample source file is not covered by the EPL as the rest of the SDK
+// and may be used without any restrictions. However, the EPL's disclaimer of
+// warranty and liability shall be in effect for this file.
 //
 // *************************************************************************************************
 
@@ -35,9 +36,9 @@ private:
 	CrowdSim     *_crowdSim;
 	
 	// Engine objects
-	ResHandle    _fontMatRes, _panelMatRes;
-	ResHandle    _logoMatRes, _forwardPipeRes, _deferredPipeRes;
-	NodeHandle   _cam;
+	H3DRes       _fontMatRes, _panelMatRes;
+	H3DRes       _logoMatRes, _forwardPipeRes, _deferredPipeRes;
+	H3DNode      _cam;
 
 	std::string  _contentDir;
 

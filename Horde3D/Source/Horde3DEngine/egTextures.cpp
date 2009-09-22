@@ -83,35 +83,35 @@ uint32 TextureResource::defTexCubeObject = 0;
 
 void TextureResource::initializationFunc()
 {
-	unsigned char defaultTexture[] = 
+	unsigned char texData[] = 
 		{	255,192,128, 255,192,128, 255,192,128, 255,192,128,
 			255,192,128, 255,192,128, 255,192,128, 255,192,128,
 			255,192,128, 255,192,128, 255,192,128, 255,192,128,
 			255,192,128, 255,192,128, 255,192,128, 255,192,128	};
 
 	// Upload default textures
-	defTex2DObject = Modules::renderer().uploadTexture( TextureTypes::Tex2D, defaultTexture, 4, 4,
-		TextureFormats::RGB8, 0, 0, true, false );
-
-	defTexCubeObject = Modules::renderer().uploadTexture( TextureTypes::TexCube, defaultTexture, 4, 4,
-		TextureFormats::RGB8, 0, 0, true, false );
-	for( uint32 i = 1; i < 6; ++i ) 
+	defTex2DObject = Modules::renderer().createTexture( TextureTypes::Tex2D, 4, 4,
+	                                                    TextureFormats::RGB8, true, true, false );
+	Modules::renderer().uploadTextureData( defTex2DObject, 4, 4, TextureFormats::RGB8, 0, 0, texData );
+	
+	defTexCubeObject = Modules::renderer().createTexture( TextureTypes::TexCube, 4, 4,
+	                                                      TextureFormats::RGB8, true, true, false );
+	for( uint32 i = 0; i < 6; ++i ) 
 	{
-		Modules::renderer().uploadTexture( TextureTypes::TexCube, defaultTexture, 4, 4,
-			TextureFormats::RGB8, i, 0, true, false, defTexCubeObject );
+		Modules::renderer().uploadTextureData( defTexCubeObject, 4, 4, TextureFormats::RGB8, i, 0, texData );
 	}
 }
 
 
 void TextureResource::releaseFunc()
 {
-	Modules::renderer().unloadTexture( defTex2DObject, TextureTypes::Tex2D );
-	Modules::renderer().unloadTexture( defTexCubeObject, TextureTypes::TexCube );
+	Modules::renderer().releaseTexture( defTex2DObject );
+	Modules::renderer().releaseTexture( defTexCubeObject );
 }
 
 
 TextureResource::TextureResource( const string &name, int flags ) :
-	Resource( ResourceTypes::Texture, name, flags )
+	Resource( H3DResTypes::Texture, name, flags )
 {
 	_texType = TextureTypes::Tex2D;
 	initDefault();
@@ -120,17 +120,22 @@ TextureResource::TextureResource( const string &name, int flags ) :
 
 TextureResource::TextureResource( const string &name, int flags,
                                   uint32 width, uint32 height, bool renderable ) :
-	Resource( ResourceTypes::Texture, name, flags ), _rendBuf( 0x0 ), _texType( TextureTypes::Tex2D ),
+	Resource( H3DResTypes::Texture, name, flags ), _rendBuf( 0x0 ), _texType( TextureTypes::Tex2D ),
 	_texFormat( TextureFormats::RGBA8 ), _width( width ), _height( height )
 {	
 	_loaded = true;
 	
 	if( !renderable )
 	{
-		_hasMipMaps = !(_flags & ResourceFlags::NoTexMipmaps);
-		_texObject = Modules::renderer().uploadTexture( _texType, 0x0, _width, _height, _texFormat, 0, 0,
-			_hasMipMaps, !(_flags & ResourceFlags::NoTexCompression) );
+		unsigned char *pixels = new unsigned char[_width * _height * 4];
+		memset( pixels, 0, _width * _height * 4 );
 		
+		_hasMipMaps = !(_flags & ResourceFlags::NoTexMipmaps);
+		_texObject = Modules::renderer().createTexture( _texType, _width, _height, _texFormat, _hasMipMaps,
+			_hasMipMaps, !(_flags & ResourceFlags::NoTexCompression) );
+		Modules::renderer().uploadTextureData( _texObject, _width, _height, _texFormat, 0, 0, pixels );
+		
+		delete[] pixels;
 		if( _texObject == 0 ) initDefault();
 	}
 	else
@@ -167,12 +172,12 @@ void TextureResource::release()
 	if( _rendBuf != 0x0 )
 	{
 		// In this case _texObject is just points to the render buffer
-		Modules::renderer().destroyRenderBuffer( *_rendBuf );
+		Modules::renderer().releaseRenderBuffer( *_rendBuf );
 		delete _rendBuf; _rendBuf = 0x0;
 	}
 	else if( _texObject != 0 && _texObject != defTex2DObject && _texObject != defTexCubeObject )
 	{
-		Modules::renderer().unloadTexture( _texObject, _texType );
+		Modules::renderer().releaseTexture( _texObject );
 	}
 
 	_texObject = 0;
@@ -294,6 +299,10 @@ bool TextureResource::load( const char *data, int size )
 
 		if( (int)_texFormat < 0 ) return raiseError( "Unsupported DDS pixel format" );
 
+		// Create texture
+		_texObject = Modules::renderer().createTexture(
+			_texType, _width, _height, _texFormat, mipCount > 1, false, false );
+		
 		// Upload texture subresources
 		int numSlices = _texType == TextureTypes::TexCube ? 6 : 1;
 		char *pixels = (char *)(data + 128);
@@ -304,12 +313,11 @@ bool TextureResource::load( const char *data, int size )
 
 			for( int j = 0; j < mipCount; ++j )
 			{
-				size_t mipSize =  Modules::renderer().calcTexSize( _texFormat, width, height );
+				size_t mipSize =  Modules::renderer().calcTextureSize( _texFormat, width, height );
 				if( pixels + mipSize > (char*)data + size )
 					return raiseError( "Corrupt DDS" );
 				
-				_texObject = Modules::renderer().uploadTexture( _texType, pixels, width, height,
-					_texFormat, i, j, false, false, _texObject );
+				Modules::renderer().uploadTextureData( _texObject, width, height, _texFormat, i, j, pixels );
 
 				pixels += mipSize;
 				width >>= 1;
@@ -339,9 +347,10 @@ bool TextureResource::load( const char *data, int size )
 		_texFormat = hdr ? TextureFormats::RGBA16F : TextureFormats::RGBA8;
 		_hasMipMaps = !(_flags & ResourceFlags::NoTexMipmaps);
 		
-		// Upload texture
-		_texObject = Modules::renderer().uploadTexture( _texType, pixels, _width, _height, _texFormat, 0, 0,
-			_hasMipMaps, !(_flags & ResourceFlags::NoTexCompression) );
+		// Create and upload texture
+		_texObject = Modules::renderer().createTexture( _texType, _width, _height, _texFormat,
+			_hasMipMaps, _hasMipMaps, !(_flags & ResourceFlags::NoTexCompression) );
+		Modules::renderer().uploadTextureData( _texObject, _width, _height, _texFormat, 0, 0, pixels );
 
 		stbi_image_free( pixels );
 	}
@@ -362,7 +371,7 @@ bool TextureResource::updateData( int param, const void *data, int size )
 		if( _texObject == 0 ) return false;
 		if( size != _width * _height * 4 ) return false;
 
-		Modules::renderer().updateTexture2D( (unsigned char *)data, _width, _height, 4, _texObject );
+		Modules::renderer().updateTextureData( _texObject, 0, 0, data, _width, _height, 4 );
 
 		return true;
 	}
@@ -376,7 +385,7 @@ float *TextureResource::downloadImageData()
 	if( _texType != TextureTypes::Tex2D ) return 0x0;
 
 	int width, height;
-	return Modules::renderer().downloadTexture2DData( _texObject, &width, &height );
+	return Modules::renderer().getTextureData( _texObject, 0, 0, &width, &height );
 }
 
 

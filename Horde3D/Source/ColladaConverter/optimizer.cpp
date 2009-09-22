@@ -1,3 +1,15 @@
+// *************************************************************************************************
+//
+// Horde3D
+//   Next-Generation Graphics Engine
+// --------------------------------------
+// Copyright (C) 2006-2009 Nicolas Schulz
+//
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
+//
+// *************************************************************************************************
+
 #include "optimizer.h"
 #include "converter.h"
 #include <list>
@@ -51,7 +63,8 @@ unsigned int MeshOptimizer::removeDegeneratedTriangles( TriGroup &triGroup, vect
 
 
 void MeshOptimizer::optimizeIndexOrder( TriGroup &triGroup, vector< Vertex > &vertices,
-                                        vector< unsigned int > &indices )
+                                        vector< unsigned int > &indices,
+										map< unsigned int, unsigned int > &vertMap )
 {
 	// Implementation of Linear-Speed Vertex Cache Optimisation by Tom Forsyth
 	// (see http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html)
@@ -158,16 +171,16 @@ void MeshOptimizer::optimizeIndexOrder( TriGroup &triGroup, vector< Vertex > &ve
 	// Remap vertices to make access to them as linear as possible
 	vector< Vertex > oldVertices( vertices.begin() + triGroup.vertRStart,
 	                              vertices.begin() + triGroup.vertREnd + 1 );
-	map< unsigned int, unsigned int > mapping;
+	vertMap.clear();
 	unsigned int curVertex = triGroup.vertRStart;
 	
 	for( unsigned int i = triGroup.first; i < triGroup.first + triGroup.count; ++i )
 	{
-		map< unsigned int, unsigned int >::iterator itr1 = mapping.find( indices[i] );
+		map< unsigned int, unsigned int >::iterator itr1 = vertMap.find( indices[i] );
 		
-		if( itr1 == mapping.end() )
+		if( itr1 == vertMap.end() )
 		{
-			mapping[indices[i]] = curVertex;
+			vertMap[indices[i]] = curVertex;
 			indices[i] = curVertex++;
 		}
 		else
@@ -176,8 +189,8 @@ void MeshOptimizer::optimizeIndexOrder( TriGroup &triGroup, vector< Vertex > &ve
 		}
 	}
 
-	for( map< unsigned int, unsigned int >::iterator itr1 = mapping.begin();
-	     itr1 != mapping.end(); ++itr1 )
+	for( map< unsigned int, unsigned int >::iterator itr1 = vertMap.begin();
+	     itr1 != vertMap.end(); ++itr1 )
 	{
 		vertices[itr1->second] = oldVertices[itr1->first - triGroup.vertRStart];
 	}
