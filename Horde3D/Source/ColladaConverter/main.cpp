@@ -144,13 +144,12 @@ int main( int argc, char **argv )
 	Converter *converter = new Converter( outPath, lodDists );
 	converter->convertModel( *colladaFile, optimize );
 	log( "Done." );
-
-	_mkdir( (outPath + "/animations").c_str() );
-	_mkdir( (outPath + "/models").c_str() );
-	_mkdir( (outPath + "/models/" + outName).c_str() );
 	
 	if( !animsOnly )
 	{
+		_mkdir( (outPath + "/models").c_str() );
+		_mkdir( (outPath + "/models/" + outName).c_str() );
+		
 		log( "Writing geometry..." );
 		converter->saveModel( outName );
 		log( "Done." );
@@ -162,6 +161,7 @@ int main( int argc, char **argv )
 
 	if( converter->hasAnimation() )
 	{
+		_mkdir( (outPath + "/animations").c_str() );
 		log( "Writing animation..." );
 		converter->writeAnimation( outName );
 		log( "Done." );
