@@ -866,7 +866,6 @@ void GLWidget::applyChanges(bool save)
 
 void GLWidget::renderEditorInfo()
 {
-	return;
 	const float* camera = 0; 
 	// Retrieve camera position		
 	h3dGetNodeTransMats(m_activeCameraID, 0, &camera);
@@ -969,7 +968,6 @@ void GLWidget::renderEditorInfo()
 
 void GLWidget::drawAxis(const QVec3f& start, const QVec3f& dir, const QVec3f& color, const float* modelView /*= 0*/)
 {
-	return;
 	glMatrixMode(GL_MODELVIEW);
 	if( modelView )
 	{
@@ -990,7 +988,6 @@ void GLWidget::drawAxis(const QVec3f& start, const QVec3f& dir, const QVec3f& co
 
 void GLWidget::drawBoundingBox(unsigned int hordeID)
 {
-	return;
 	if( hordeID != 0 )
 	{
 		// Draw AABB of selected object
@@ -1022,7 +1019,6 @@ void GLWidget::drawBoundingBox(unsigned int hordeID)
 
 void GLWidget::drawViewportLine(const QPoint& start, const QPoint& end)
 {
-	return;
 	// Save current projection matrix
 	GLdouble projection[16];							// Where The 16 Doubles Of The Projection Matrix Are To Be Stored
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);	// Retrieve The Projection Matrix		
@@ -1054,7 +1050,6 @@ void GLWidget::drawViewportLine(const QPoint& start, const QPoint& end)
 
 void GLWidget::drawViewportCircle(float x, float y, float radius)
 {
-	return;
 	// Save current projection matrix
 	GLdouble projection[16];							// Where The 16 Doubles Of The Projection Matrix Are To Be Stored
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);	// Retrieve The Projection Matrix		
@@ -1086,8 +1081,7 @@ void GLWidget::drawViewportCircle(float x, float y, float radius)
 }
 
 void GLWidget::glGizmo()
-{
-	return;
+{	
 	glShadeModel(GL_SMOOTH);
 	// x-axis
 	glColor3f( 1, 0, 0);
@@ -1146,7 +1140,6 @@ void GLWidget::glGizmo()
 
 void GLWidget::drawGizmo(const float* nodeTransform, const float* cam)
 {
-	return;
 	// Save current projection matrix
 	GLdouble projection[16];							// Where The 16 Doubles Of The Projection Matrix Are To Be Stored
 	glGetDoublev(GL_PROJECTION_MATRIX, projection);	// Retrieve The Projection Matrix		
@@ -1230,7 +1223,6 @@ void GLWidget::drawGizmo(const float* nodeTransform, const float* cam)
 
 void GLWidget::drawBaseGrid(const float camX, const float camY, const float camZ)
 {
-	return;
 	float farPlane = h3dGetNodeParamF(m_activeCameraID, H3DCamera::FarPlaneF, 0);
 	if (abs(camY) > farPlane)
 		return;
@@ -1324,7 +1316,6 @@ bool GLWidget::inSync()
 
 void GLWidget::getViewportProjection(const double px, const double py, const double pz, double &vx, double& vy, double& vz, const float* mat /*=0*/)
 {
-	return;
 	if( mat )
 	{
 		glMatrixMode(GL_MODELVIEW);

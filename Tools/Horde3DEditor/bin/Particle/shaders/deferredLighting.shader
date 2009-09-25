@@ -1,39 +1,57 @@
 [[FX]]
 
-<Sampler id="depthBuf">
-	<StageConfig addressMode="CLAMP" />
-</Sampler>
+// Samplers
+sampler depthBuf = sampler_state
+{
+	Address = Clamp;
+};
 
-<Sampler id="buf0">
-	<StageConfig addressMode="CLAMP" />
-</Sampler>
+sampler buf0 = sampler_state
+{
+	Address = Clamp;
+};
 
-<Sampler id="buf1">
-	<StageConfig addressMode="CLAMP" />
-</Sampler>
+sampler buf1 = sampler_state
+{
+	Address = Clamp;
+};
 
-<Sampler id="buf2">
-	<StageConfig addressMode="CLAMP" />
-</Sampler>
+sampler buf2 = sampler_state
+{
+	Address = Clamp;
+};
 
-<Sampler id="ambientMap">
-	<StageConfig addressMode="CLAMP" filtering="BILINEAR" maxAnisotropy="1" />
-</Sampler>
+sampler ambientMap = sampler_state
+{
+	Address = Clamp;
+	Filter = Bilinear;
+	MaxAnisotropy = 1;
+};
 
+// Contexts
+context AMBIENT
+{
+	VertexShader = compile GLSL VS_QUAD;
+	PixelShader = compile GLSL FS_AMBIENT;
+	
+	ZWriteEnable = false;
+	BlendMode = Replace;
+}
 
-<Context id="AMBIENT">
-	<Shaders vertex="VS_QUAD" fragment="FS_AMBIENT" />
-	<RenderConfig writeDepth="false" blendMode="REPLACE" />
-</Context>
+context LIGHTING
+{
+	VertexShader = compile GLSL VS_QUAD;
+	PixelShader = compile GLSL FS_LIGHTING;
+	
+	ZWriteEnable = false;
+	BlendMode = Add;
+}
 
-<Context id="LIGHTING">
-	<Shaders vertex="VS_QUAD" fragment="FS_LIGHTING" />
-	<RenderConfig writeDepth="false" blendMode="ADD" />
-</Context>
-
-<Context id="COPY_DEPTH">
-	<Shaders vertex="VS_QUAD" fragment="FS_COPY_DEPTH" />
-</Context>
+context COPY_DEPTH
+{
+	VertexShader = compile GLSL VS_QUAD;
+	PixelShader = compile GLSL FS_COPY_DEPTH;
+}
 
 
 [[VS_QUAD]]

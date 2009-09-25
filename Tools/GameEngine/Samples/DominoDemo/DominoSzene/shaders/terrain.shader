@@ -1,26 +1,39 @@
 [[FX]]
 
-<Sampler id="heightNormMap" />
-<Sampler id="detailMap" />
+// Samplers
+sampler heightNormMap;
+sampler detailMap;
 
-<Uniform id="sunDir" a="1.0" b="-1.0" c="0.0" />
+// Uniforms
+float4 sunDir = {1.0, -1.0, 0, 0};
 
-<Context id="ATTRIBPASS">
-	<Shaders vertex="VS_GENERAL" fragment="FS_ATTRIBPASS" />
-</Context>
+// Contexts
+context ATTRIBPASS
+{
+	VertexShader = compile GLSL VS_GENERAL;
+	PixelShader = compile GLSL FS_ATTRIBPASS;
+}
 
-<Context id="SHADOWMAP">
-	<Shaders vertex="VS_SHADOWMAP" fragment="FS_SHADOWMAP" />
-</Context>
+context SHADOWMAP
+{
+	VertexShader = compile GLSL VS_SHADOWMAP;
+	PixelShader = compile GLSL FS_SHADOWMAP;
+}
 
-<Context id="LIGHTING">
-	<Shaders vertex="VS_GENERAL" fragment="FS_LIGHTING" />
-	<RenderConfig writeDepth="false" blendMode="ADD" />
-</Context>
+context LIGHTING
+{
+	VertexShader = compile GLSL VS_GENERAL;
+	PixelShader = compile GLSL FS_LIGHTING;
+	
+	ZWriteEnable = false;
+	BlendMode = Add;
+}
 
-<Context id="AMBIENT">
-	<Shaders vertex="VS_GENERAL" fragment="FS_AMBIENT" />
-</Context>
+context AMBIENT
+{
+	VertexShader = compile GLSL VS_GENERAL;
+	PixelShader = compile GLSL FS_AMBIENT;
+}
 
 
 [[VS_GENERAL]]

@@ -1,16 +1,23 @@
 [[FX]]
 
-<Sampler id="albedoMap">
-	<StageConfig addressMode="CLAMP" />
-</Sampler>
+// Samplers
+sampler albedoMap = sampler_state
+{
+	Address = Clamp;
+};
 
-<Context id="ATTRIBPASS">
-	<Shaders vertex="VS_GENERAL" fragment="FS_ATTRIBPASS" />
-</Context>
+// Contexts
+context ATTRIBPASS
+{
+	VertexShader = compile GLSL VS_GENERAL;
+	PixelShader = compile GLSL FS_ATTRIBPASS;
+}
 
-<Context id="AMBIENT">
-	<Shaders vertex="VS_GENERAL" fragment="FS_AMBIENT" />
-</Context>
+context AMBIENT
+{
+	VertexShader = compile GLSL VS_GENERAL;
+	PixelShader = compile GLSL FS_AMBIENT;
+}
 
 
 [[VS_GENERAL]]

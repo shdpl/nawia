@@ -1,52 +1,65 @@
 [[FX]]
-<!--
-// =================================================================================================
-	Model Shader
+
+// Supported Flags
+/* ---------------
+	_F01_Skinning
+	_F02_NormalMapping
+	_F03_ParallaxMapping
+	_F04_EnvMapping
+*/
+
+
+// Samplers
+sampler albedoMap;
+sampler normalMap;
+
+sampler ambientMap = sampler_state
+{
+	Address = Clamp;
+	Filter = Bilinear;
+	MaxAnisotropy = 1;
+};
+
+sampler envMap = sampler_state
+{
+	Address = Clamp;
+	Filter = Bilinear;
+	MaxAnisotropy = 1;
+};
+
+// Uniforms
+float4 specParams <
+	string desc_a = "a: specular mask";
+	string desc_b = "b: specular exponent";
+> = {0.1, 16.0, 0, 0};
+
+// Contexts
+context ATTRIBPASS
+{
+	VertexShader = compile GLSL VS_GENERAL;
+	PixelShader = compile GLSL FS_ATTRIBPASS;
+}
+
+context SHADOWMAP
+{
+	VertexShader = compile GLSL VS_SHADOWMAP;
+	PixelShader = compile GLSL FS_SHADOWMAP;
+}
+
+context LIGHTING
+{
+	VertexShader = compile GLSL VS_GENERAL;
+	PixelShader = compile GLSL FS_LIGHTING;
 	
-	Supported Flags:
-		_F01_Skinning
-		_F02_NormalMapping
-		_F03_ParallaxMapping
-		_F04_EnvMapping
-// =================================================================================================
--->
+	ZWriteEnable = false;
+	BlendMode = Add;
+}
 
-<Sampler id="albedoMap" />
-
-<Sampler id="normalMap" />
-
-<Sampler id="ambientMap">
-	<StageConfig addressMode="CLAMP" filtering="BILINEAR" maxAnisotropy="1" />
-</Sampler>
-
-<Sampler id="envMap">
-	<StageConfig addressMode="CLAMP" filtering="BILINEAR" maxAnisotropy="1" />
-</Sampler>
-
-<Uniform id="specParams" a="0.1" b="16.0">
-	<!-- Description
-		a - Specular mask
-		b - Specular exponent
-	-->
-</Uniform>
-
-
-<Context id="ATTRIBPASS">
-	<Shaders vertex="VS_GENERAL" fragment="FS_ATTRIBPASS" />
-</Context>
-
-<Context id="SHADOWMAP">
-	<Shaders vertex="VS_SHADOWMAP" fragment="FS_SHADOWMAP" />
-</Context>
-
-<Context id="LIGHTING">
-	<Shaders vertex="VS_GENERAL" fragment="FS_LIGHTING" />
-	<RenderConfig writeDepth="false" blendMode="ADD" />
-</Context>
-
-<Context id="AMBIENT">
-	<Shaders vertex="VS_GENERAL" fragment="FS_AMBIENT" />
-</Context>
+context AMBIENT
+{
+	VertexShader = compile GLSL VS_GENERAL;
+	PixelShader = compile GLSL FS_AMBIENT;
+}
 
 
 [[VS_GENERAL]]
@@ -139,7 +152,7 @@ void main( void )
 	#define _F02_NormalMapping
 #endif
 
-#include "shaders/utilityLib/fragDeferredWrite.glsl" />
+#include "shaders/utilityLib/fragDeferredWrite.glsl" 
 
 uniform vec4 specParams;
 uniform sampler2D albedoMap;
@@ -215,9 +228,13 @@ varying float dist;
 
 void main( void )
 {
+#ifdef _F01_Skinning	
 	vec4 pos = calcWorldPos( skinPos( gl_Vertex ) );
+#else
+	vec4 pos = calcWorldPos( gl_Vertex );
+#endif
+
 	dist = length( lightPos.xyz - pos.xyz ) / lightPos.w;
-	
 	gl_Position = gl_ModelViewProjectionMatrix * pos;
 }
 	
@@ -244,7 +261,7 @@ void main( void )
 	#define _F02_NormalMapping
 #endif
 
-#include "shaders/utilityLib/fragLighting.glsl" />
+#include "shaders/utilityLib/fragLighting.glsl" 
 
 uniform vec4 specParams;
 uniform sampler2D albedoMap;
@@ -313,7 +330,7 @@ void main( void )
 	#define _F02_NormalMapping
 #endif
 
-#include "shaders/utilityLib/fragLighting.glsl" />
+#include "shaders/utilityLib/fragLighting.glsl" 
 
 uniform sampler2D albedoMap;
 uniform samplerCube ambientMap;

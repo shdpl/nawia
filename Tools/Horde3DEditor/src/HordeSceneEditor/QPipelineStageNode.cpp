@@ -46,8 +46,7 @@ bool QPipelineStageNode::enabled() const
 void QPipelineStageNode::setEnabled(bool enabled)
 {
 	m_active = enabled;
-	QPipelineNode* root = qobject_cast<QPipelineNode*>(m_model->rootNode());
-	H3DRes handle = h3dFindResource( H3DResTypes::Pipeline, qPrintable( m_xmlNode.attribute("id") ) );
-	h3dSetResParamI(root->hordeId(), handle, 0, H3DPipeRes::StageActivationI, enabled);
+	QPipelineNode* root = qobject_cast<QPipelineNode*>(m_model->rootNode());	
+	h3dSetResParamI(root->hordeId(), H3DPipeRes::StageElem, m_row, H3DPipeRes::StageActivationI, enabled ? 1 : 0);
 }
 

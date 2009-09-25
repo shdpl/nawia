@@ -1,19 +1,27 @@
 [[FX]]
 
-<Sampler id="albedoMap">
-	<StageConfig filtering="BILINEAR" maxAnisotropy="1" />
-</Sampler>
+// Samplers
+sampler albedoMap = sampler_state
+{
+	Filter = Bilinear;
+	MaxAnisotropy = 1;
+};
 
-<!--
-<Context id="SHADOWMAP">
-	<Shaders vertex="VS_SHADOWMAP" fragment="FS_SHADOWMAP" />
-</Context>
--->
+// Contexts
+/*context SHADOWMAP
+{
+	VertexShader = compile GLSL VS_SHADOWMAP;
+	PixelShader = compile GLSL FS_SHADOWMAP;
+}*/
 
-<Context id="TRANSLUCENT">
-	<Shaders vertex="VS_TRANSLUCENT" fragment="FS_TRANSLUCENT" />
-	<RenderConfig writeDepth="false" blendMode="ADD_BLENDED" />
-</Context>
+context TRANSLUCENT
+{
+	VertexShader = compile GLSL VS_TRANSLUCENT;
+	PixelShader = compile GLSL FS_TRANSLUCENT;
+	
+	ZWriteEnable = false;
+	BlendMode = AddBlended;
+}
 
 
 [[VS_SHADOWMAP]]
