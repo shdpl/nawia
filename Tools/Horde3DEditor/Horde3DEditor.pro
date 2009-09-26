@@ -3,7 +3,7 @@ TEMPLATE = subdirs
 CONFIG += debug_and_release \
           ordered
 
-SUBDIRS = \    
+SUBDIRS = \
         ../Dependencies/Lua \
         ./src/tgaPlugIn \
         ./src/psdPlugIn \
