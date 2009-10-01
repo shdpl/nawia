@@ -29,7 +29,7 @@ which is rendered and determine e.g. the position and texture coordinates of the
 are used for calculating the pixel colors in the rasterization process. Shader code in Horde is specified in the
 OpenGL Shading Language (GLSL). The engine has a XML based shader format which makes it possible to define different
 contexts. A context of a Horde shader is defined for a situation in the rendering process where the shader is executed.
-For example a shader usally has a shadowmap context which is used when shadows are generated and a lighting context
+For example, a shader usually has a shadowmap context which is used when shadows are generated and a lighting context
 which is responsible for interactions of an object with light sources. For the rendering process shaders usually
 require some input data. This consists on the one hand of the geometric data of a model like the vertex positions,
 normals and texture coordinates. On the other hand there are textures used for rendering and arbitrary variables,
@@ -94,46 +94,6 @@ The following XML elements and attributes are supported.
         <td><b>Pipeline</b></td>
         <td>
             root element of the document {1}
-        </td>
-    </tr>
-    <tr>
-        <td><b>EngineConfig</b></td>
-        <td>
-            configuration of engine options {1}
-            <table>
-                <tr>
-                    <td><b>trilinearFiltering</b></td>
-                    <td>see <a href="_api.html#EngineOptions">EngineOptions</a> {optional}; additional values: <i>false, true</i></td>
-                </tr>
-                <tr>
-                    <td><b>anisotropyFactor</b></td>
-                    <td>see <a href="_api.html#EngineOptions">EngineOptions</a> {optional}</td>
-                </tr>
-                <tr>
-                    <td><b>texCompression</b></td>
-                    <td>see <a href="_api.html#EngineOptions">EngineOptions</a> {optional}; additional values: <i>false, true</i></td>
-                </tr>
-                <tr>
-                    <td><b>loadTextures</b></td>
-                    <td>see <a href="_api.html#EngineOptions">EngineOptions</a> {optional}; additional values: <i>false, true</i></td>
-                </tr>
-                <tr>
-                    <td><b>fastAnimation</b></td>
-                    <td>see <a href="_api.html#EngineOptions">EngineOptions</a> {optional}; additional values: <i>false, true</i></td>
-                </tr>
-                <tr>
-                    <td><b>occlusionCulling</b></td>
-                    <td>see <a href="_api.html#EngineOptions">EngineOptions</a> {optional}; additional values: <i>false, true</i></td>
-                </tr>
-                <tr>
-                    <td><b>shadowMapSize</b></td>
-                    <td>see <a href="_api.html#EngineOptions">EngineOptions</a> {optional}</td>
-                </tr>
-                <tr>
-                    <td><b>debugViewMode</b></td>
-                    <td>see <a href="_api.html#EngineOptions">EngineOptions</a> {optional}; additional values: <i>false, true</i></td>
-                </tr>
-            </table>
         </td>
     </tr>
     <tr>
@@ -461,145 +421,94 @@ sections: one FX section and an arbitrary number of named code sections. A secti
 <b>FX</b> which introduces an FX section.
 <br /><br />
 Horde3D supports übershaders using static branching (compiler defines) and can automatically compile different
-shader combinations based on a set of given shader flags. This approach helps to solve a common problem: for
-example you have one shader that does skinning and one that does parallax mapping. Now you want a shader that does
-both. Usually you would have to create an new shader file which combines the code of the two other shaders. It
+shader combinations based on a set of given shader flags. This approach helps to solve a common problem:
+imagine you have one shader that does skinning and one that does parallax mapping. Now you want a shader that does
+both. Usually you would have to create a new shader file which combines the code of the two other shaders. It
 is quite obvious that you can quickly get many permutations of features and that writing different shader
 files for them can become very tedious or even unmanagable. With the help of übershaders, the shader creation workflow can
 be greatly simplified. You just need one shader file where the features are exposed with compiler defines. A feature
 is enabled by setting the corresponding flag (e.g. in a material file). Horde3D can check automatically if a
 desired combination is not yet existing and will compile it on the fly. Please note, even though übershaders are
-a powerful feature, they need to be used carefully since it is easy to generate a huge number of combinations which
+a powerful feature, they need to be used with care since it is easy to generate a huge number of combinations which
 would take a long time to load.
 </p>
 
 <h3>FX section</h3>
 <p>
-The FX section defines the shader contexts. It also declares and configures texture samplers and custom (user-defined)
-uniforms used in the hardware shaders. Please note that it is strictly required to declare all custom samplers and
-uniforms in order to use them with the Horde3D material system.
+The FX section defines and configures the shader contexts, custom texture samplers and custom (user-defined)
+uniforms used in hardware shaders. Please note that it is strictly required that all custom samplers and
+uniforms referenced in hardware shaders are declared in the FX section so that they can be used with the
+Horde3D material system.
 <br />
-FX sections are defined in XML. The XML does not require a root element since the root is
-implicitely given by the section.
+The Horde3D FX syntax is similar to that of CgFX. Standard C++ block and single line comments are supported.
+All keywords and enums are case insensitive. However, identifiers like the name of a context are not case
+insensitive. Identifiers may only use alphanumeric characters and the underscore. Floating point numbers
+may not contain any whitespace.
+<br />
+Elements can optionally store meta information as annotations. This is useful for better tool support.
+For example, a uniform could store a minimum and maximum value range. It is suggested that annotations have
+the form required by CgFX, hence <i>datatype identifier = value;</i> However, this is not a requirement since
+annotations are just skipped by Horde's parser.
 <br /><br />
 
-The following XML node elements with the described attributes are supported for the FX section:
+The following syntax is supported. Optional elements are put in square brackets and default values are
+highlighted as bold. Alternative values are separated by a slash.
 </p>
 <div class="syntaxbox">
 <table>
-    <tr>
-        <td><b>Sampler</b></td>
-        <td>
-			declaration of a texture sampler {*}
-			<table>
-                <tr>
-                    <td><b>id</b></td>
-                    <td>name of the sampler as used in the GLSL code {required}</td>
-                </tr>
-				<tr>
-                    <td><b>texUnit</b></td>
-                    <td>texture unit assigned to the sampler; can be -1 for automatic assignment (Values: -1 or 0-11) (Default: -1) {optional}</td>
-                </tr>
-            </table>
-		</td>
-    </tr>
-	
-	<tr>
-        <td><b>Uniform</b></td>
-        <td>
-			declaration of a vector uniform {*}
-			<table>
-                <tr>
-                    <td><b>id</b></td>
-                    <td>name of the uniform as used in the GLSL code {required}</td>
-                </tr>
-				<tr>
-                    <td><b>a, b, c, d</b></td>
-                    <td>default values used when the uniform is not defined in a material (Default: 0) {optional}</td>
-                </tr>
-            </table>
-		</td>
-    </tr>
-	
-	<tr>
-        <td><b>Context</b></td>
-        <td>
-            definition of a shader context
-            <table>
-                <tr>
-                    <td><b>id</b></td>
-                    <td>name of the context {required}</td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-	
-	<tr>
-        <td><b>Shaders</b></td>
-        <td>
-			shader configuration used by the parent context; child of <b>Context</b> element {1}
-			<table>
-                <tr>
-                    <td><b>vertex</b></td>
-                    <td>name of the code section to be used as vertex shader {required}</td>
-                </tr>
-				<tr>
-                    <td><b>fragment</b></td>
-                    <td>name of the code section to be used as fragment shader {required}</td>
-                </tr>
-            </table>
-		</td>
-    </tr>
-   
-    <tr>
-        <td><b>StageConfig</b></td>
-        <td>
-			configuration of texture unit (stage) parameters; child of <b>Sampler</b> element {1}
-            <table>
-                <tr>
-                    <td><b>addressMode</b></td>
-                    <td>address mode used when texture coordinates are outside [0.0, 1.0] range (Values: CLAMP, WRAP) (Default: WRAP)  {optional}</td>
-                </tr>
-				<tr>
-                    <td><b>filtering</b></td>
-                    <td>texture filtering mode (Values: NONE, BILINEAR, TRILINEAR) (Default: TRILINEAR)  {optional}</td>
-                </tr>
-				<tr>
-                    <td><b>maxAnisotropy</b></td>
-                    <td>maximum quality level of anisotropic filtering used for the texture (Default: 8)  {optional}</td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-	
-	<tr>
-        <td><b>RenderConfig</b></td>
-        <td>
-			configuration of rendering parameters; child of <b>Context</b> element {1}
-            <table>
-                <tr>
-                    <td><b>writeDepth</b></td>
-                    <td>enables writing to depth buffer (Values: false, true) (Default: true)  {optional}</td>
-                </tr>
-                <tr>
-                    <td><b>blendMode</b></td>
-                    <td>blend mode (Values: REPLACE, BLEND, ADD, ADD_BLENDED, MULT) (Default: REPLACE)  {optional}</td>
-                </tr>
-				<tr>
-                    <td><b>depthTest</b></td>
-                    <td>depth test function; use ALWAYS to disable depth test
-					    (Values: ALWAYS, EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL) (Default: LESS_EQUAL)  {optional}</td>
-                </tr>
-				<tr>
-                    <td><b>alphaToCoverage</b></td>
-                    <td>enables alpha-to-coverage (Values: false, true) (Default: false)  {optional}</td>
-                </tr>
-            </table>
-        </td>
-    </tr>
+	<tr><td><b>sampler</b> [< annotation(s) >] <b>id</b></td></tr>
+	<tr><td>[ <b>=</b> sampler_state {</td></tr>
+	<tr><td>[ TexUnit <b>=</b> <b>-1</b> / 0 / 1 / 2 / 3 / 4 / 5 / 6 / 7 / 8 / 9 / 10 / 11 <b>;</b> ]</td></tr>
+	<tr><td>[ Address <b>=</b> <b>Wrap</b> / Clamp <b>;</b> ]</td></tr>
+	<tr><td>[ Filter <b>=</b> None / Bilinear / <b>Trilinear</b> <b>;</b> ]</td></tr>
+	<tr><td>[ MaxAnisotropy <b>=</b> 1 / 2 / 4 / <b>8</b> / 16 <b>;</b> ]</td></tr>
+	<tr><td>} ] <b>;</b></td></tr>
 </table>
 </div>
 <br />
+<b>Remarks:</b><br />
+<ul>
+<li>TexUnit defines the texture unit used by the sampler; use -1 for automatic assignment</li>
+<li>Aliasing for texture units is possible, meaning samplers can share the same texture unit if
+    they are not used in the same shader context</li>
+</ul>
+<br />
+
+<div class="syntaxbox">
+<table>
+	<tr><td><b>float4</b> [< annotation(s) >] <b>id</b> [ <b>=</b> { <i>a</i>, <i>b</i>, <i>c</i>, <i>d</i> } ] <b>;</b></td></tr>
+</table>
+</div>
+<br />
+<b>Remarks:</b><br />
+<ul>
+<li>Declares and optionally initializes a uniform</li>
+<li>The default value for each component is 0.0</li>
+</ul>
+<br />
+
+<div class="syntaxbox">
+<table>
+	<tr><td><b>context</b> [< annotation(s) >] <b>id</b></td></tr>
+	<tr><td>{</td></tr>
+	<tr><td>VertexShader <b>= compile GLSL</b> <i>codesection</i> <b>;</b></td></tr>
+	<tr><td>PixelShader <b>= compile GLSL</b> <i>codesection</i> <b>;</b></td></tr>
+	<tr><td>[ ZWriteEnable <b>=</b> false / <b>true</b> <b>;</b> ]</td></tr>
+	<tr><td>[ ZFunc <b>=</b> Always / Equal / Less / <b>LessEqual</b> / Greater / GreaterEqual <b>;</b> ]</td></tr>
+	<tr><td>[ BlendMode <b>=</b> <b>Replace</b> / Blend / Add / AddBlended / Mult <b>;</b> ]</td></tr>
+	<tr><td>[ AlphaToCoverage <b>=</b> <b>false</b> / true <b>;</b> ]</td></tr>
+	<tr><td>}</td></tr>
+	</td>
+</table>
+</div>
+<br />
+<b>Remarks:</b><br />
+<ul>
+<li>Shaders reference a code section that must be defined in the same fx file</li>
+<li>The depth test can de disabled by setting ZFunc to Always</li>
+</ul>
+<br />
+
 
 <h3>Code section</h3>
 <p>
@@ -620,15 +529,18 @@ convenience reasons in order to improve the code readability.
 <pre>
 <b>[[FX]]</b>
 
-&lt;Sampler id="albedoMap"&gt;
-	&lt;StageConfig filtering="BILINEAR" /&gt;
-&lt;Sampler/&gt;
+sampler albedoMap = sampler_state
+{
+    Filter = Bilinear;
+};
 
-&lt;Uniform id="brightness" a="0.5" /&gt;
+float4 brightness = {0.5, 0, 0, 0};
 
-&lt;Context id="OVERLAY"&gt;
-	&lt;Shaders vertex="VS_OVERLAY" fragment="FS_OVERLAY" /&gt;
-&lt;/Context&gt;  
+context OVERLAY
+{
+    VertexShader = compile GLSL VS_OVERLAY;
+    PixelShader = compile GLSL FS_OVERLAY;
+}  
 
 
 <b>[[VS_OVERLAY]]</b>
@@ -636,8 +548,8 @@ convenience reasons in order to improve the code readability.
 
 void main( void )
 {
-	gl_TexCoord[0] = gl_MultiTexCoord0;
-	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;    
+    gl_TexCoord[0] = gl_MultiTexCoord0;
+    gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;    
 }
 
 
@@ -649,13 +561,13 @@ uniform sampler2D albedoMap;
 
 void main( void )
 {
-	vec4 albedo = texture2D( albedoMap, gl_TexCoord[0].st );
+    vec4 albedo = texture2D( albedoMap, gl_TexCoord[0].st );
 	
 <b>#ifdef _F07_BrightMult</b>
-	albedo *= brightness.a;
+    albedo *= brightness.a;
 <b>#endif</b>
 	
-	gl_FragColor = albedo;
+    gl_FragColor = albedo;
 }
 </pre>
 </div>
@@ -842,7 +754,7 @@ quad (e.g. for post-processing effects).All overlays have their texture coordina
 </div>
 
 <div id="logo">
-    <a href="http://www.nextgen-engine.net" ><img src="images/doclogo.gif" alt="Horde3D" /></a>
+    <img src="images/doclogo.gif" />
 </div>
 
 </body>

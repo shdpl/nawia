@@ -67,6 +67,8 @@ struct DaeAnimation
 	
 	DaeSampler *findAnimForTarget( const std::string &nodeId, const std::string &transSid, int *transValuesIndex )
 	{
+		if( nodeId == "" || transSid == "" ) return 0x0;
+		
 		for( unsigned int i = 0; i < channels.size(); ++i )
 		{
 			if( channels[i].nodeId == nodeId && channels[i].transSid == transSid )

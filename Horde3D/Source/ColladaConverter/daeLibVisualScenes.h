@@ -53,7 +53,6 @@ struct DaeNode
 	{
 		reference = false;	
 		id = nodeNode.getAttribute( "id", "" );
-		if( id == "" ) return false;
 		name = nodeNode.getAttribute( "name", "" );
 		sid = nodeNode.getAttribute( "sid", id.c_str() );
 		
