@@ -63,6 +63,7 @@ textureButton = Create('')
 materialButton = Create('')
 animationButton = Create('')
 texPathButton = Create('')
+animOnlyButton = Create(0)
 hordeReg = Blender.Registry.GetKey('horde',True)
 
 
@@ -71,7 +72,7 @@ hordeReg = Blender.Registry.GetKey('horde',True)
 ######################################################
 def draw():
 	if not _ERROR:
-		global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
+		global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton, animOnlyButton
 		global hordeReg
 		global EVENT_NOEVENT, EVENT_EXPORT, EVENT_EXIT, EVENT_BROWSE, EVENT_BUTTONCHANGE
 
@@ -142,7 +143,7 @@ def draw():
 		texPathButton = String('', EVENT_BUTTONCHANGE, 210, size[1]/2-100, 200, 20, texPath, 255, 'Texture Path')
 		Label('(If you want to copy textures)', 10, size[1]/2-115, 200,20)
 
-
+		animOnlyButton = Toggle('Animations only', EVENT_NOEVENT, 10, 64, 120, 20, animOnlyButton.val, "With this checked only animation will be exported.")
 
 		# Export- und Exitbuttons
 		Button('Export',EVENT_EXPORT, 10, 10, 80, 18)
@@ -155,7 +156,7 @@ def event(evt, val):
 	if (evt == QKEY and not val):
 			Exit()
 def bevent(evt):
-	global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
+	global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton, animOnlyButton
 	global hordeReg
 	global EVENT_NOEVENT, EVENT_EXPORT, EVENT_EXIT, EVENT_BROWSE, EVENT_BUTTONCHANGE
 
@@ -206,7 +207,7 @@ def bevent(evt):
 		Blender.Registry.SetKey('horde', d, True)
 
 		startTime = Blender.sys.time()
-		success = Export(file, shader, texSub, texPath, matPath, animPath)
+		success = Export(file, shader, texSub, texPath, matPath, animPath, animOnlyButton.val)
 		endTime = Blender.sys.time()
 		exportTime = endTime - startTime
 
@@ -232,7 +233,7 @@ def FileSelected(file):
 ######################################################
 # Export Main
 ######################################################
-def Export(path, defShader, texturesub, texPath, matPath, animPath):
+def Export(path, defShader, texturesub, texPath, matPath, animPath, animOnly):
 
 	# Show the wait cursor in blender and stop editing mode
 	Blender.Window.WaitCursor(1)
@@ -278,31 +279,36 @@ def Export(path, defShader, texturesub, texPath, matPath, animPath):
 
 	converter = Converter(path, texSubPath, texPath, matPath, animPath)
 
-	print "Converting Model..."
-	if converter.convertModel( scn ) == False:
-		return False
-	print "Done."
+	if (animOnly == False):
+		print "Converting Model..."
+		if converter.convertModel( scn ) == False:
+			return False
+		print "Done."
 
-	print "Writing geometry..."
-	if converter.saveModel( fileName ) == False:
-		return False
-	print "Done."
+	if (animOnly == False):
+		print "Writing geometry..."
+		if converter.saveModel( fileName ) == False:
+			return False
+		print "Done."
 
-	print "Writing materials..."
-	if converter.writeMaterials( fileName, defShader ) == False:
-		return False
-	print "Done."
+	if (animOnly == False):
+		print "Writing materials..."
+		if converter.writeMaterials( fileName, defShader ) == False:
+			return False
+		print "Done."
 
 	print "Writing animation..."
 	if converter.writeAnimation( fileName ) == False:
 		return False
 	print "Done."
 
-	if texPath != '':
-		print "Copying textures..."
-		if converter.copyTextures() == False:
-			return False
-		print "Done."
+	if (animOnly == False):
+		if texPath != '':
+			print "Copying textures..."
+			if converter.copyTextures() == False:
+				return False
+			print "Done."
+
 
 	# Hide the wait cursor in blender
 	Blender.Window.WaitCursor(0)
@@ -1419,6 +1425,7 @@ class Converter():
 				k += 3
 
 		# Normalize tangent space basis
+		no_tangent_data = False
 		for dat in dicL2Dat:
 			n = dat.nors.normalize()
 			t = dat.tans
@@ -1432,9 +1439,14 @@ class Converter():
 			# Protection for NaN values, which happen when the model does not have
 			# UV coordinates : we use [0, 0, 0] vectors for the tangents and the bitangents.
 			if math.isnan(dat.tans[0]):
+				no_tangent_data = True
 				dat.tans = Vector(0.0, 0.0, 0.0)
 			if math.isnan(dat.bitans[0]):
+				no_tangent_data = True
 				dat.bitans = Vector(0.0, 0.0, 0.0)
+
+		if no_tangent_data:
+			print 'Warning ! There are faces which do not have UV coordinates.'
 
 	def copyTextures(self):
 		try:
