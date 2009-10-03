@@ -240,30 +240,23 @@ void PhysicsComponent::loadFromXml(const XMLNode* description)
 		// get mesh data from graphics engine
 		m_owner->executeEvent(&meshEvent);
 		
-		if(	meshData.VertexBase && meshData.TriangleBase)
+		if(	meshData.VertexBase && (meshData.TriangleBase32 || meshData.TriangleBase16))
 		{
 			// Create new mesh in physics engine
 			m_btTriangleMesh = new btTriangleMesh();
 			int offset = 3;
 			if (meshData.TriangleMode == 5) // Triangle Strip
 				offset = 1;
-			
-			//m_btTriangleMesh = new btTriangleIndexVertexArray();
-			//btIndexedMesh bMesh;
-			//bMesh.m_numTriangles = meshData.NumTriangleIndices / offset;
-			//bMesh.m_triangleIndexBase = (const unsigned char*) meshData.TriangleBase;
-			//bMesh.m_triangleIndexStride = offset * sizeof(unsigned int);
-			//bMesh.m_vertexBase = (const unsigned char*) meshData.VertexBase;
-			//bMesh.m_vertexStride = offset * sizeof( float );
-			//bMesh.m_numVertices = meshData.NumVertices;
-			//m_btTriangleMesh->addIndexedMesh( bMesh );
 
 			// copy mesh from graphics to physics
+			bool index16 = false;
+			if (meshData.TriangleBase16)
+				index16 = true;
 			for (unsigned int i = 0; i < meshData.NumTriangleIndices - 2; i+=offset)
 			{
-				unsigned int index1 = (meshData.TriangleBase[i]   - meshData.VertRStart) * 3;
-				unsigned int index2 = (meshData.TriangleBase[i+1] - meshData.VertRStart) * 3;
-				unsigned int index3 = (meshData.TriangleBase[i+2] - meshData.VertRStart) * 3;
+				unsigned int index1 = index16 ? (meshData.TriangleBase16[i]   - meshData.VertRStart) * 3 : (meshData.TriangleBase32[i]   - meshData.VertRStart) * 3;
+				unsigned int index2 = index16 ? (meshData.TriangleBase16[i+1] - meshData.VertRStart) * 3 : (meshData.TriangleBase32[i+1] - meshData.VertRStart) * 3;
+				unsigned int index3 = index16 ? (meshData.TriangleBase16[i+2] - meshData.VertRStart) * 3 : (meshData.TriangleBase32[i+2] - meshData.VertRStart) * 3;
 				m_btTriangleMesh->addTriangle(
 					btVector3(meshData.VertexBase[index1], meshData.VertexBase[index1+1], meshData.VertexBase[index1+2] ),
 					btVector3(meshData.VertexBase[index2], meshData.VertexBase[index2+1], meshData.VertexBase[index2+2] ),

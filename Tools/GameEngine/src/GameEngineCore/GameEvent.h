@@ -395,7 +395,7 @@ class MeshData : public GameEventData
 {
 public:
 
-	MeshData() : GameEventData(CUSTOM), NumVertices(0), NumTriangleIndices(0), VertexBase(0), VertRStart(0), TriangleBase(0), TriangleMode(4) 
+	MeshData() : GameEventData(CUSTOM), NumVertices(0), NumTriangleIndices(0), VertexBase(0), VertRStart(0), TriangleBase16(0), TriangleBase32(0), TriangleMode(4) 
 	{		
 		m_data.ptr = this;
 	}
@@ -405,17 +405,21 @@ public:
 		if (m_owner)
 		{
 			delete[] VertexBase;
-			delete[] TriangleBase;
+			if (TriangleBase16)
+				delete[] TriangleBase16;
+			if (TriangleBase32)
+				delete[] TriangleBase16;
 		}
 	}
 
 	unsigned int NumVertices, NumTriangleIndices;
 
-	const float* VertexBase;
+	float* VertexBase;
 
 	unsigned int VertRStart;
 
-	const unsigned int* TriangleBase;
+	unsigned int* TriangleBase32;
+	unsigned short* TriangleBase16;
 
 	unsigned int TriangleMode;
 
@@ -425,8 +429,15 @@ public:
 		clonedData->m_owner = true;
 		clonedData->VertexBase = new float[NumVertices];
 		memcpy( (void*) clonedData->VertexBase, VertexBase, sizeof(float) * NumVertices);
-		clonedData->TriangleBase = new unsigned int[NumTriangleIndices];
-		memcpy( (void*) clonedData->TriangleBase, TriangleBase, sizeof(unsigned int) * NumVertices);
+		
+		if (TriangleBase32) {
+			clonedData->TriangleBase32 = new unsigned int[NumTriangleIndices];
+			memcpy( (void*) clonedData->TriangleBase32, TriangleBase32, sizeof(unsigned int) * NumVertices);
+		} else {
+			clonedData->TriangleBase16 = new unsigned short[NumTriangleIndices];
+			memcpy( (void*) clonedData->TriangleBase16, TriangleBase16, sizeof(unsigned short) * NumVertices);
+		}
+		
 		clonedData->NumTriangleIndices = NumTriangleIndices;
 		clonedData->NumVertices = NumVertices;
 		clonedData->VertRStart = VertRStart;

@@ -81,20 +81,20 @@ m_terrainGeoRes(0)
 SceneGraphComponent::~SceneGraphComponent()
 {
 	delete[] m_transformation;
-	if (m_hordeID != 0 && Horde3D::getNodeType(m_hordeID) != SceneNodeTypes::Undefined)
-		Horde3D::removeNode(m_hordeID);	
+	if (m_hordeID != 0 && h3dGetNodeType(m_hordeID) != H3DNodeTypes::Undefined)
+		h3dRemoveNode(m_hordeID);	
 	SceneGraphManager::instance()->removeComponent(this);
 	unloadTerrainGeoRes();
 }
 
-void SceneGraphComponent::setHordeID( NodeHandle id )
+void SceneGraphComponent::setHordeID( H3DNode id )
 {
 	m_hordeID = id;
 
 	if( id != 0 )
 	{
 		const float* t = 0x0;
-		Horde3D::getNodeTransformMatrices(id, 0, &t);
+		h3dGetNodeTransMats(id, 0, &t);
 		// Copy absolute transformation of scene graph resource to the member variable
 		if( t != 0x0 )
 			memcpy(m_transformation, t, sizeof(m_transformation) * 16);
@@ -147,22 +147,22 @@ void SceneGraphComponent::executeEvent(GameEvent *event)
 		setParentNode(static_cast<Attach*>(event->data()));
 		break;
 	case GameEvent::E_MORPH_TARGET:
-		Horde3D::setModelMorpher(m_hordeID, static_cast<MorphTarget*>(event->data())->Name, static_cast<MorphTarget*>(event->data())->Value);
+		h3dSetModelMorpher(m_hordeID, static_cast<MorphTarget*>(event->data())->Name, static_cast<MorphTarget*>(event->data())->Value);
 		break;
 	case GameEvent::E_ACTIVATE_CAM:
-		if (Horde3D::getNodeType(m_hordeID) == SceneNodeTypes::Camera)
+		if (h3dGetNodeType(m_hordeID) == H3DNodeTypes::Camera)
 			SceneGraphManager::instance()->setActiveCam( m_hordeID );
 		break;
 	case GameEvent::E_SETUP_ANIM:
 		{
 			SetupAnim* data = static_cast<SetupAnim*>(event->data());
-			Horde3D::setupModelAnimStage(m_hordeID, data->Stage, data->ResourceID, data->Mask, data->Additive);
+			h3dSetupModelAnimStage(m_hordeID, data->Stage, data->ResourceID, 0, data->Mask, data->Additive);
 		}
 		break;
 	case GameEvent::E_SET_ANIM_FRAME:
 		{
 			const SetAnimFrame* const data = static_cast<SetAnimFrame*>(event->data());			
-			Horde3D::setModelAnimParams(m_hordeID, data->Stage, data->Time, data->Weight);			
+			h3dSetModelAnimParams(m_hordeID, data->Stage, data->Time, data->Weight);			
 		}
 		break;
 	case GameEvent::E_SET_ENABLED:
@@ -174,11 +174,11 @@ void SceneGraphComponent::executeEvent(GameEvent *event)
 void SceneGraphComponent::update()
 {
 	// Check if transformation has been changed (e.g. by a transformation change of a parent node)
-	if ( Horde3D::checkNodeTransformFlag( m_hordeID, true ) )
+	if ( h3dCheckNodeTransFlag( m_hordeID, true ) )
 	{
 		// Update the locally stored global transformation 
 		const float* absTrans = 0;
-		Horde3D::getNodeTransformMatrices(m_hordeID, 0, &absTrans);
+		h3dGetNodeTransMats(m_hordeID, 0, &absTrans);
 		memcpy(m_transformation, absTrans, sizeof(m_transformation) * 16);
 
 		GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(m_transformation, 16), this);
@@ -209,7 +209,7 @@ void SceneGraphComponent::loadFromXml( const XMLNode* description )
 	{
 		m_hordeID = newID;
 		const float* trans = 0;
-		Horde3D::getNodeTransformMatrices(m_hordeID, 0, &trans);
+		h3dGetNodeTransMats(m_hordeID, 0, &trans);
 		if( trans )
 		{
 			SceneGraphManager::instance()->addComponent(this);
@@ -230,52 +230,64 @@ void SceneGraphComponent::setTransformation(const float *transformation)
 	memcpy(m_transformation, transformation, sizeof(m_transformation) * 16);
 	const float* parentMat = 0;
 	// since the event transformation is absolute we have to create a relative transformation matrix for Horde3D
-	Horde3D::getNodeTransformMatrices(Horde3D::getNodeParent(m_hordeID), 0, &parentMat);		
-	if (parentMat) Horde3D::setNodeTransformMatrix(m_hordeID, (Matrix4f(parentMat).inverted() * Matrix4f(transformation)).x);
+	h3dGetNodeTransMats(h3dGetNodeParent(m_hordeID), 0, &parentMat);		
+	if (parentMat) h3dSetNodeTransMat(m_hordeID, (Matrix4f(parentMat).inverted() * Matrix4f(transformation)).x);
 	// ensure reset of Horde3D transformation flag since we have updated it from the GameEngine and such don't need to be informed 
 	// when calling SceneGraphComponent::update() (note that the node transformed flag will be set again if someone else will update
 	// the transformation from outside, so this way of avoiding unnecessary updates should be safe)
-	Horde3D::checkNodeTransformFlag( m_hordeID, true );
+	h3dCheckNodeTransFlag( m_hordeID, true );
 	//printf("SceneGraphComponent::setTransformation\n\t %.3f, %.3f, %.3f\n", transformation[12], transformation[13], transformation[14]);	
 
 }
 
 void SceneGraphComponent::getMeshData(MeshData* data)
 {
-	ResHandle geoResource = 0;
+	H3DRes geoResource = 0;
 	int vertexOffset = 0;
 	int indexOffset = 0;
-	switch(Horde3D::getNodeType(m_hordeID))
+	switch(h3dGetNodeType(m_hordeID))
 	{
-	case SceneNodeTypes::Mesh:
-		geoResource = Horde3D::getNodeParami(Horde3D::getNodeParent(m_hordeID), ModelNodeParams::GeometryRes);
-		data->NumVertices = Horde3D::getNodeParami(m_hordeID, MeshNodeParams::VertREnd) - Horde3D::getNodeParami(m_hordeID, MeshNodeParams::VertRStart) + 1;
-		data->NumTriangleIndices = Horde3D::getNodeParami(m_hordeID, MeshNodeParams::BatchCount);		
-		data->VertRStart = Horde3D::getNodeParami(m_hordeID, MeshNodeParams::VertRStart);
-		vertexOffset = Horde3D::getNodeParami(m_hordeID, MeshNodeParams::VertRStart) * 3;
-		indexOffset = Horde3D::getNodeParami(m_hordeID, MeshNodeParams::BatchStart);
+	case H3DNodeTypes::Mesh:
+		geoResource = h3dGetNodeParamI(h3dGetNodeParent(m_hordeID), H3DModel::GeoResI);
+		data->NumVertices = h3dGetNodeParamI(m_hordeID, H3DMesh::VertREndI) - h3dGetNodeParamI(m_hordeID, H3DMesh::VertRStartI) + 1;
+		data->NumTriangleIndices = h3dGetNodeParamI(m_hordeID, H3DMesh::BatchCountI);		
+		data->VertRStart = h3dGetNodeParamI(m_hordeID, H3DMesh::VertRStartI);
+		vertexOffset = h3dGetNodeParamI(m_hordeID, H3DMesh::VertRStartI) * 3;
+		indexOffset = h3dGetNodeParamI(m_hordeID, H3DMesh::BatchStartI);
 		break;
-	case SceneNodeTypes::Model:
-		geoResource = Horde3D::getNodeParami(m_hordeID, ModelNodeParams::GeometryRes);
-		data->NumVertices = Horde3D::getResourceParami(geoResource, GeometryResParams::VertexCount);
-		data->NumTriangleIndices = Horde3D::getResourceParami(geoResource, GeometryResParams::IndexCount);		
+	case H3DNodeTypes::Model:
+		geoResource = h3dGetNodeParamI(m_hordeID, H3DModel::GeoResI);
+		data->NumVertices = h3dGetResParamI(geoResource, H3DGeoRes::GeometryElem, 0, H3DGeoRes::GeoVertexCountI);
+		data->NumTriangleIndices = h3dGetResParamI(geoResource, H3DGeoRes::GeometryElem, 0, H3DGeoRes::GeoIndexCountI);		
 		break;
-	case SNT_TerrainNode:
+	case H3DEXT_NodeType_Terrain:
 		unloadTerrainGeoRes();
-		geoResource = Horde3DTerrain::createGeometryResource( 
+		geoResource = h3dextCreateTerrainGeoRes( 
 			m_hordeID, 
-			Horde3D::getNodeParamstr( m_hordeID, SceneNodeParams::Name ), 
-			Horde3D::getNodeParamf( m_hordeID, TerrainNodeParams::MeshQuality ) );		
-		data->NumVertices = Horde3D::getResourceParami(geoResource, GeometryResParams::VertexCount);
-		data->NumTriangleIndices = Horde3D::getResourceParami(geoResource, GeometryResParams::IndexCount);		
+			h3dGetNodeParamStr( m_hordeID, H3DNodeParams::NameStr ), 
+			h3dGetNodeParamF( m_hordeID, H3DEXTTerrain::MeshQualityF, 0) );		
+		data->NumVertices = h3dGetResParamI(geoResource, H3DGeoRes::GeometryElem, 0, H3DGeoRes::GeoVertexCountI);
+		data->NumTriangleIndices = h3dGetResParamI(geoResource, H3DGeoRes::GeometryElem, 0, H3DGeoRes::GeoIndexCountI);		
 		m_terrainGeoRes = geoResource;
 		break;
 	}
-	data->VertexBase = (const float*) Horde3D::getResourceData(geoResource, GeometryResParams::VertexData);
-	if( data->VertexBase ) data->VertexBase += vertexOffset;
-	data->TriangleBase = (unsigned int*) Horde3D::getResourceData(geoResource, GeometryResParams::IndexData);
-	if( data->TriangleBase ) data->TriangleBase += indexOffset;
+	float* vb = (float*)h3dMapResStream(geoResource, H3DGeoRes::GeometryElem, 0, H3DGeoRes::GeoVertPosStream, true, false);
+	data->VertexBase = new float[(data->NumVertices*3)];
+	memcpy(data->VertexBase, vb+vertexOffset, sizeof(float)*data->NumVertices*3);
+	h3dUnmapResStream(geoResource);
 
+	//Triangle indices, must cope with 16 bit and 32 bit
+	if (h3dGetResParamI(geoResource, H3DGeoRes::GeometryElem, 0, H3DGeoRes::GeoIndices16I)) {
+		unsigned short* tb = (unsigned short*)h3dMapResStream(geoResource, H3DGeoRes::GeometryElem, 0, H3DGeoRes::GeoIndexStream, true, false);
+		data->TriangleBase16 = new unsigned short[data->NumTriangleIndices];
+		memcpy(data->TriangleBase16, tb+indexOffset, sizeof(unsigned short)*data->NumTriangleIndices);
+		h3dUnmapResStream(geoResource);
+	} else {
+		unsigned int* tb = (unsigned int*)h3dMapResStream(geoResource, H3DGeoRes::GeometryElem, 0, H3DGeoRes::GeoIndexStream, true, false);
+		data->TriangleBase32 = new unsigned int[data->NumTriangleIndices];
+		memcpy(data->TriangleBase32, tb+indexOffset, sizeof(unsigned int)*data->NumTriangleIndices);
+		h3dUnmapResStream(geoResource);
+	}
 	//data->TriangleMode = Horde3D::getResourceParami(geoResource, GeometryResParams::TriangleMode);
 }
 
@@ -355,33 +367,33 @@ void SceneGraphComponent::setRotation(const Vec3f* rotation)
 }
 void SceneGraphComponent::setParentNode(const Attach* data)
 {
-	NodeHandle otherNode;
+	H3DNode otherNode;
 	int nodes;
 	
 	if(strcmp(data->EntityID,"Root") == 0 )
 	{
-		otherNode = RootNode;
+		otherNode = H3DRootNode;
 	}
 	else
 	{
-		nodes = Horde3D::findNodes( RootNode, data->EntityID, SceneNodeTypes::Model );
-		otherNode = Horde3D::getNodeFindResult(0);
+		nodes = h3dFindNodes( H3DRootNode, data->EntityID, H3DNodeTypes::Model );
+		otherNode = h3dGetNodeFindResult(0);
 	}
 	
 	
 	if(strcmp(data->Child,"") !=0 )
 	{
-		nodes = Horde3D::findNodes( otherNode, data->Child, SceneNodeTypes::Undefined );
-		NodeHandle child = Horde3D::getNodeFindResult(0);
+		nodes = h3dFindNodes( otherNode, data->Child, H3DNodeTypes::Undefined );
+		H3DNode child = h3dGetNodeFindResult(0);
 	
-		Horde3D::setNodeParent(m_hordeID, child);
+		h3dSetNodeParent(m_hordeID, child);
 	}
 	else
 	{
-		Horde3D::setNodeParent(m_hordeID, otherNode);
+		h3dSetNodeParent(m_hordeID, otherNode);
 	}
 
-	Horde3D::setNodeTransform(m_hordeID,data->Tx,data->Ty, data->Tz,
+	h3dSetNodeTransform(m_hordeID,data->Tx,data->Ty, data->Tz,
 		data->Rx, data->Ry, data->Rz,
 		data->Sx, data->Sy, data->Sz);
 
@@ -391,31 +403,31 @@ void SceneGraphComponent::setParentNode(const Attach* data)
 void SceneGraphComponent::attach(const Attach* data)
 {
 	//Assuming the entity has the same name as the node it is attached to
-	int nodes = Horde3D::findNodes( RootNode, data->EntityID, SceneNodeTypes::Model );
-	NodeHandle otherNode = Horde3D::getNodeFindResult(0);
+	int nodes = h3dFindNodes(H3DRootNode, data->EntityID, H3DNodeTypes::Model );
+	H3DNode otherNode = h3dGetNodeFindResult(0);
 
-	nodes = Horde3D::findNodes( m_hordeID, data->Child, SceneNodeTypes::Undefined );
-	NodeHandle child = Horde3D::getNodeFindResult(0);
+	nodes = h3dFindNodes( m_hordeID, data->Child, H3DNodeTypes::Undefined );
+	H3DNode child = h3dGetNodeFindResult(0);
 
 	// Proposal: create a SET_NODE_PARENT event, send this event to the data->EntityID using GameEngine::sendEvent
-	Horde3D::setNodeParent(otherNode, child);
+	h3dSetNodeParent(otherNode, child);
 	
-	Horde3D::setNodeTransform(otherNode,data->Tx,data->Ty, data->Tz,
+	h3dSetNodeTransform(otherNode,data->Tx,data->Ty, data->Tz,
 		data->Rx, data->Ry, data->Rz,
 		data->Sx, data->Sy, data->Sz);
 }
 
 void SceneGraphComponent::setVisible(bool visible)
 {
-	Horde3D::setNodeActivation(m_hordeID, visible);
+	h3dSetNodeActivation(m_hordeID, visible);
 }
 
 void SceneGraphComponent::unloadTerrainGeoRes()
 {
 	if( m_terrainGeoRes != 0 )
 	{
-		Horde3D::removeResource( m_terrainGeoRes );
-		Horde3D::releaseUnusedResources();
+		h3dRemoveResource( m_terrainGeoRes );
+		h3dReleaseUnusedResources();
 		m_terrainGeoRes = 0;
 	}
 }

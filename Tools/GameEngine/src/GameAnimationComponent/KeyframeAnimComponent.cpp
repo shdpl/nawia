@@ -61,14 +61,14 @@ namespace AnimationControl
 
 	struct Animation
 	{
-		Animation(GameEntity* entity, ResHandle animResourceID, int frames, float speed) : 
+		Animation(GameEntity* entity, H3DRes animResourceID, int frames, float speed) : 
 	Entity(entity), AnimResourceID(animResourceID), Speed(speed), Frames((float) frames)
 	{
 	}
 
 	~Animation()
 	{
-		Horde3D::removeResource(AnimResourceID);
+		h3dRemoveResource(AnimResourceID);
 	}
 
 	void activate(bool enable, int stage, bool additive) const
@@ -96,7 +96,7 @@ namespace AnimationControl
 	}
 
 	GameEntity* const			Entity;
-	const ResHandle				AnimResourceID;
+	const H3DRes				AnimResourceID;
 	const float					Speed;
 	const float					Frames;
 	};
@@ -404,7 +404,7 @@ void KeyframeAnimComponent::release()
 		++iter;
 	}	
 	m_animations.clear();
-	Horde3D::releaseUnusedResources();
+	h3dReleaseUnusedResources();
 }
 
 void KeyframeAnimComponent::executeEvent(GameEvent *event)
@@ -434,7 +434,7 @@ void KeyframeAnimComponent::loadFromXml(const XMLNode* description)
 			GameLog::errorMessage("Another animation with the name '%s' has been already loaded!", name);
 			return;
 		}
-		std::string path = Horde3DUtils::getResourcePath(ResourceTypes::Animation);		
+		std::string path = h3dutGetResourcePath(H3DResTypes::Animation);		
 		if ( path[path.size()] != '\\' && path[path.size()] != '/' )
 			path += '/';
 		// Open resource file
@@ -452,11 +452,11 @@ void KeyframeAnimComponent::loadFromXml(const XMLNode* description)
 			// Null-terminate buffer - this is important for XML parsers 
 			data[size] = '\0';
 			// Add animation resources to horde resource manager			
-			const int resourceID = Horde3D::addResource( ResourceTypes::Animation, file, 0 );	
+			const int resourceID = h3dAddResource( H3DResTypes::Animation, file, 0 );	
 			// Send resource data to engine
-			Horde3D::loadResource( resourceID, data, size );
+			h3dLoadResource( resourceID, data, size );
 			delete[] data;
-			int frames = Horde3D::getResourceParami(resourceID, AnimationResParams::FrameCount);
+			int frames = h3dGetResParamI(resourceID, H3DAnimRes::EntityElem, 0, H3DAnimRes::EntFrameCountI);
 			AnimationControl::Animation* anim = new AnimationControl::Animation( owner(), resourceID, frames, static_cast<float>(atof(animation.getAttribute("fps","30.0"))) ); 				
 			m_animations.insert(std::make_pair<std::string, AnimationControl::Animation*>(name, anim));
 		}

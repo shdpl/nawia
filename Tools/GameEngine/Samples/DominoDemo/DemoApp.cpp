@@ -38,7 +38,7 @@ void DemoApp::keyHandler()
 	unsigned int ball = GameEngine::entityWorldID("Ball");
 	if( m_keys[118] )  // F7
 	{
-		Horde3D::setOption( EngineOptions::DebugViewMode, Horde3D::getOption(EngineOptions::DebugViewMode) != 0 ? 0 : 1 );	
+		h3dSetOption( H3DOptions::DebugViewMode, h3dGetOption(H3DOptions::DebugViewMode) != 0 ? 0 : 1 );	
 		m_keys[118] = 0;
 	}
 	if( m_keys['W'] ) 
@@ -72,7 +72,7 @@ void DemoApp::render()
 {
 	keyHandler();
 	GameEngine::update();
-	Horde3DUtils::dumpMessages();
+	h3dutDumpMessages();
 }
 
 void DemoApp::keyboardCb(unsigned int param, bool pressed, void *userData)
@@ -100,5 +100,5 @@ void DemoApp::renderCb(void *userData)
 
 void DemoApp::resizeCb(int width, int height)
 {	
-	Horde3D::setupViewport(0, 0, width, height, true);
+	h3dSetupViewport(0, 0, width, height, true);
 }

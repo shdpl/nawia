@@ -90,7 +90,7 @@ public:
 	 * set the components horde ID to zero before deleting it.
 	 * @param id the ID of the node within Horde3D's scenegraph
 	 */ 
-	void setHordeID( NodeHandle id );
+	void setHordeID( H3DNode id );
 
 	//void init();
 
@@ -177,7 +177,7 @@ private:
 	void unloadTerrainGeoRes();
 
 	float*				m_transformation;
-	NodeHandle			m_hordeID;
+	H3DNode			m_hordeID;
 	std::vector<int>	m_currentCollisions;
 
 	int					m_terrainGeoRes;

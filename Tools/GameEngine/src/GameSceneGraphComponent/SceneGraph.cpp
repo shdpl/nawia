@@ -92,8 +92,8 @@ void SceneGraphManager::removeComponent(SceneGraphComponent* node)
 
 void SceneGraphManager::run()
 {
-	Horde3D::render(m_activeCam);				
-	Horde3D::finalizeFrame();
+	h3dRender(m_activeCam);				
+	h3dFinalizeFrame();
 }
 
 void SceneGraphManager::update()
@@ -105,15 +105,15 @@ void SceneGraphManager::update()
 		int attachments = 0;
 		while( !m_newSceneNodes.empty() )
 		{
-			int nodes = Horde3D::findNodes( m_newSceneNodes.top(), "", SceneNodeTypes::Undefined );
+			int nodes = h3dFindNodes( m_newSceneNodes.top(), "", H3DNodeTypes::Undefined );
 			//Save the find results locally  because Horde3D::getNodeFindResult() is not safe
 			int *findResult = static_cast<int *>(alloca(nodes * sizeof(int)));
 			for (int i = 0; i < nodes; ++i)
-				findResult[i] = Horde3D::getNodeFindResult(i);
+				findResult[i] = h3dGetNodeFindResult(i);
 
 			for (int i = 0; i < nodes; ++i)
 			{				
-				const char* xmlText = Horde3D::getNodeParamstr( findResult[i], SceneNodeParams::AttachmentString );
+				const char* xmlText = h3dGetNodeParamStr( findResult[i], H3DNodeParams::AttachmentStr );
 				if (xmlText && strlen(xmlText) > 0) 
 				{
 					// Create a new GameEntity based on the attachment settings
@@ -128,13 +128,13 @@ void SceneGraphManager::update()
 	// If we don't have an active camera yet, get the first available
 	if( m_activeCam == 0 )
 	{
-		int cams = Horde3D::findNodes( RootNode, "", SceneNodeTypes::Camera );
-		if( cams > 0 )	m_activeCam = Horde3D::getNodeFindResult(0); 		
+		int cams = h3dFindNodes( H3DRootNode, "", H3DNodeTypes::Camera );
+		if( cams > 0 )	m_activeCam = h3dGetNodeFindResult(0); 		
 	}
 
 	// Force Update in Horde3D to make sure the transform flags of the scene nodes are up-to-date
 	float minX, minY, minZ, maxX, maxY, maxZ;
-	Horde3D::getNodeAABB(RootNode, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
+	h3dGetNodeAABB(H3DRootNode, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);
 	// Update the gameengine transformations of the scene node components
 	for_each(m_sceneGraphComponents.begin(), m_sceneGraphComponents.end(), UpdateNode());
 }
@@ -149,7 +149,7 @@ unsigned int SceneGraphManager::createGameEntity( const char *xmlText, int horde
 		const char* entityName = attachment.getAttribute("name");
 		if (entityName == 0)
 		{
-			GameLog::errorMessage("The Attachment for the node '%s' contains no name attribute!", Horde3D::getNodeParamstr(hordeID, SceneNodeParams::Name ) );
+			GameLog::errorMessage("The Attachment for the node '%s' contains no name attribute!", h3dGetNodeParamStr(hordeID, H3DNodeParams::NameStr ) );
 			return 0;
 		}
 		EntityID entityID = entityName;

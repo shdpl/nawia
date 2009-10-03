@@ -177,12 +177,12 @@ namespace GameEngine
 
 	SCENEGRAPHPLUGINEXP const char* pickNodeWithIntersectionCoords(float nwx, float nwy, float* coords)
 	{
-		NodeHandle node = Horde3DUtils::pickNode(SceneGraphManager::instance()->getActiveCam(), nwx, nwy);
+		H3DNode node = h3dutPickNode(SceneGraphManager::instance()->getActiveCam(), nwx, nwy);
 		
-		if (coords) Horde3D::getCastRayResult(0, 0, 0, coords);
+		if (coords) h3dGetCastRayResult(0, 0, 0, coords);
 		
-		node = Horde3D::getNodeParent( node );
-		return Horde3D::getNodeParamstr( node, SceneNodeParams::Name );
+		node = h3dGetNodeParent( node );
+		return h3dGetNodeParamStr( node, H3DNodeParams::NameStr );
 	}
 
 }

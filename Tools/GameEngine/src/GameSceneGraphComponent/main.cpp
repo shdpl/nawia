@@ -54,7 +54,7 @@ SCENEGRAPHPLUGINEXP void dllLoadGamePlugin(void)
 {
 	GameModules::componentRegistry()->registerComponent( "Horde3D", SceneGraphComponent::createComponent );	
 	GameModules::componentRegistry()->registerManager( SceneGraphManager::instance() );	
-	if ( !Horde3D::init() )
+	if ( !h3dInit() )
 		GameLog::errorMessage(" Initialization of Horde3D failed! ");
 }
 
@@ -63,7 +63,7 @@ SCENEGRAPHPLUGINEXP void dllUnloadGamePlugin(void)
 	GameModules::componentRegistry()->registerComponent( "Horde3D", 0 );	
 	GameModules::componentRegistry()->unregisterManager( SceneGraphManager::instance() );
 	SceneGraphManager::release();
-	Horde3D::release();
+	h3dRelease();
 }
 
 SCENEGRAPHPLUGINEXP void dllRegisterLuaStack( lua_State* L )
@@ -84,20 +84,20 @@ SCENEGRAPHPLUGINEXP void dllLoadScene( const char* sceneFile )
 			_stricmp(engineSettings.getAttribute("loadTextures", "true"), "true") == 0 ||
 			_stricmp(engineSettings.getAttribute("loadTextures", "1"), "1") == 0;
 		GameLog::logMessage("LoadTextures: %s", loadTextures ? "enabled" : "disabled");
-		Horde3D::setOption( EngineOptions::LoadTextures, loadTextures ? 1.0f : 0.0f );
+		h3dSetOption( H3DOptions::LoadTextures, loadTextures ? 1.0f : 0.0f );
 		int shadowMapSize = atoi(engineSettings.getAttribute("shadowMapSize", "1024"));					
 		GameLog::logMessage("ShadowMapSize: %d", shadowMapSize);
-		Horde3D::setOption( EngineOptions::ShadowMapSize, float( shadowMapSize) );
+		h3dSetOption( H3DOptions::ShadowMapSize, float( shadowMapSize) );
 		int anisotropyFactor = atoi(engineSettings.getAttribute("anisotropyFactor", "1"));
 		GameLog::logMessage("Anisotropy: %d", anisotropyFactor);
-		Horde3D::setOption( EngineOptions::MaxAnisotropy, float( anisotropyFactor ) );
+		h3dSetOption( H3DOptions::MaxAnisotropy, float( anisotropyFactor ) );
 		bool texCompression = 
 			_stricmp(engineSettings.getAttribute("texCompression", "true"), "true") == 0 ||
 			_stricmp(engineSettings.getAttribute("texCompression", "1"), "1") == 0;
 		GameLog::logMessage("TexCompression: %s", texCompression ? "enabled" : "disabled");
-		Horde3D::setOption( EngineOptions::TexCompression, texCompression );
+		h3dSetOption( H3DOptions::TexCompression, texCompression );
 		int maxNumMessages = atoi(engineSettings.getAttribute("maxNumMessages", "1024"));
-		Horde3D::setOption( EngineOptions::MaxNumMessages, float( maxNumMessages ) );
+		h3dSetOption( H3DOptions::MaxNumMessages, float( maxNumMessages ) );
 	}
 
 	// Loading scene graph
@@ -107,17 +107,17 @@ SCENEGRAPHPLUGINEXP void dllLoadScene( const char* sceneFile )
 	{
 		GameLog::logMessage("Loading SceneGraph %s", sceneGraph.getAttribute("path"));
 		// Environment
-		ResHandle sceneGraphID = Horde3D::addResource( ResourceTypes::SceneGraph, sceneGraph.getAttribute("path"), 0 );
+		H3DRes sceneGraphID = h3dAddResource( H3DResTypes::SceneGraph, sceneGraph.getAttribute("path"), 0 );
 		GameLog::logMessage("Loading Resources...");
 		// Load resources
-		Horde3DUtils::loadResourcesFromDisk( "." );
+		h3dutLoadResourcesFromDisk( "." );
 		GameLog::logMessage("Adding scene graph to root node");
 		// Add scene nodes	
-		NodeHandle newSceneID = Horde3D::addNodes( RootNode, sceneGraphID);
+		H3DNode newSceneID = h3dAddNodes( H3DRootNode, sceneGraphID);
 		SceneGraphManager::instance()->addNewHordeNode( newSceneID );
 	}
 	// Use the specified render cam
-	if (scene.getChildNode("ActiveCamera").getAttribute("name") && Horde3D::findNodes( RootNode, scene.getChildNode("ActiveCamera").getAttribute("name"), SceneNodeTypes::Camera ) > 0)
-		SceneGraphManager::instance()->setActiveCam( Horde3D::getNodeFindResult(0) );
+	if (scene.getChildNode("ActiveCamera").getAttribute("name") && h3dFindNodes( H3DRootNode, scene.getChildNode("ActiveCamera").getAttribute("name"), H3DNodeTypes::Camera ) > 0)
+		SceneGraphManager::instance()->setActiveCam( h3dGetNodeFindResult(0) );
 
 }

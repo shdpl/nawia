@@ -34,9 +34,9 @@ bool DemoApp::init(const char *fileName)
 	{			
 		m_camID = GameEngine::entityWorldID("camera"); 		
 		GameEngine::entitySceneGraphID( m_camID );
-		Horde3D::getNodeTransform(m_camID, 0,0,0, &m_camRX, &m_camRY, 0, 0, 0, 0);
-		m_selectMaterial = Horde3D::addResource(ResourceTypes::Material, "selectMaterial.material.xml", 0);
-		Horde3DUtils::loadResourcesFromDisk("");
+		h3dGetNodeTransform(m_camID, 0,0,0, &m_camRX, &m_camRY, 0, 0, 0, 0);
+		m_selectMaterial = h3dAddResource(ResourceTypes::Material, "selectMaterial.material.xml", 0);
+		h3dutLoadResourcesFromDisk("");
 		return true;
 	}
 	else
@@ -52,7 +52,7 @@ void DemoApp::keyHandler()
 {		
 	if( m_keys[118] )  // F7
 	{
-		Horde3D::setOption( EngineOptions::DebugViewMode, Horde3D::getOption(EngineOptions::DebugViewMode) != 0.0f ? 0.0f : 1.0f );	
+		h3dSetOption( EngineOptions::DebugViewMode, h3dGetOption(EngineOptions::DebugViewMode) != 0.0f ? 0.0f : 1.0f );	
 		m_keys[118] = 0;
 	}
 	if( m_keys['W'] ) 
@@ -94,7 +94,7 @@ void DemoApp::render()
 {
 	keyHandler();
 	GameEngine::update();
-	Horde3DUtils::dumpMessages();
+	h3dutDumpMessages();
 	const char* data = 0;
 	//int size = GameEngine::getSocketData( m_camID, &data);
 	//parseSocketData( size, data );
@@ -124,8 +124,8 @@ void DemoApp::parseSocketData( int size, const char* data )
 
 void DemoApp::pickNode( int x, int y )
 {
-	NodeHandle newHordeID = Horde3DUtils::pickNode( GameEngine::entitySceneGraphID( m_camID ), x / float( m_width ), ( m_height - y ) / float( m_height ) );
-	if( newHordeID != 0 && Horde3D::getNodeType(newHordeID) == SceneNodeTypes::Mesh )
+	H3DNode newHordeID = h3dutPickNode( GameEngine::entitySceneGraphID( m_camID ), x / float( m_width ), ( m_height - y ) / float( m_height ) );
+	if( newHordeID != 0 && h3dGetNodeType(newHordeID) == SceneNodeTypes::Mesh )
 	{
 		//if( m_selectedEntity != 0 )
 		//{
@@ -154,7 +154,7 @@ void DemoApp::keyPress(unsigned int param, bool pressed)
 
 void DemoApp::resize(int width, int height)
 {	
-	Horde3D::setupViewport(0, 0, width, height, true);
+	h3dSetupViewport(0, 0, width, height, true);
 	m_width = width;
 	m_height = height;
 }

@@ -63,7 +63,7 @@ ANIMATIONSPLUGINEXP void dllLoadGamePlugin(void)
 	GameModules::componentRegistry()->registerManager( KeyframeAnimManager::instance() );	
 	GameModules::componentRegistry()->registerManager( MorphtargetAnimManager::instance() );
 
-	Horde3D::init();
+	h3dInit();
 }
 
 ANIMATIONSPLUGINEXP void dllUnloadGamePlugin(void)
@@ -80,7 +80,7 @@ ANIMATIONSPLUGINEXP void dllUnloadGamePlugin(void)
 	KeyframeAnimManager::release();
 	MorphtargetAnimManager::release();
 
-	Horde3D::release();
+	h3dRelease();
 }
 
 
@@ -93,7 +93,7 @@ ANIMATIONSPLUGINEXP void dllLoadScene( const char* sceneFile )
 	if (!pathes.isEmpty())
 	{
 		GameLog::logMessage("-  AnimationPath = %s", pathes.getAttribute("AnimationPath", "models"));
-		Horde3DUtils::setResourcePath(ResourceTypes::Animation, pathes.getAttribute("animationpath", "animations"));
+		h3dutSetResourcePath(H3DResTypes::Animation, pathes.getAttribute("animationpath", "animations"));
 	}
 
 	XMLNode& engineSettings(scene.getChildNode("EngineConfig"));
@@ -103,7 +103,7 @@ ANIMATIONSPLUGINEXP void dllLoadScene( const char* sceneFile )
 			_stricmp(engineSettings.getAttribute("fastAnimation", "false"), "true") == 0 ||
 			_stricmp(engineSettings.getAttribute("fastAnimation", "0"), "1") == 0;
 		GameLog::logMessage("FastAnimation: %s", fastAnim ? "enabled" : "disabled");
-		Horde3D::setOption( EngineOptions::FastAnimation, fastAnim ? 1.0f : 0.0f );
+		h3dSetOption( H3DOptions::FastAnimation, fastAnim ? 1.0f : 0.0f );
 	}
 
 }
