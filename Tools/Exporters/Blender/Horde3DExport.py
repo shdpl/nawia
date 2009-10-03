@@ -37,6 +37,12 @@ except:
 	print "\nError! Could not find IO modules!"
 	_ERROR = True
 
+try:
+	import math
+except:
+	print '\nError ! Could not find the \'math\' module!'
+	_ERROR = True
+
 if _ERROR:
 	print """Could not load all modules! Please install Python from http://www.python.org
 		and the newest blender version from http://www.blender.org!"""
@@ -1355,6 +1361,7 @@ class Converter():
 
 	def calcTangentSpaceBasis( self, mesh, bmesh, dicG2L, dicL2Dat ):
 		# based on Algorithm: Eric Lengyel, Mathematics for 3D Game Programming & Computer Graphics
+		# NB : the article can also be found here : http://www.terathon.com/code/tangent.html
 
 		for tri in mesh.triGroups:
 			k = tri.first
@@ -1415,12 +1422,19 @@ class Converter():
 		for dat in dicL2Dat:
 			n = dat.nors.normalize()
 			t = dat.tans
-			print dat.tans
 			dat.tans = (t - n * (n * t)).normalize()
+
 			if CrossVecs( n, t ) * dat.bitans < 0.0:
 				dat.bitans = CrossVecs( (n * -1), t ).normalize()
 			else:
 				dat.bitans = CrossVecs( n, t ).normalize()
+
+			# Protection for NaN values, which happen when the model does not have
+			# UV coordinates : we use [0, 0, 0] vectors for the tangents and the bitangents.
+			if math.isnan(dat.tans[0]):
+				dat.tans = Vector(0.0, 0.0, 0.0)
+			if math.isnan(dat.bitans[0]):
+				dat.bitans = Vector(0.0, 0.0, 0.0)
 
 	def copyTextures(self):
 		try:
