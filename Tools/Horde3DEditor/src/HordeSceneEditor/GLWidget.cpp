@@ -867,15 +867,25 @@ void GLWidget::applyChanges(bool save)
 void GLWidget::renderEditorInfo()
 {
 	const float* camera = 0; 
-	// Retrieve camera position		
-	h3dGetNodeTransMats(m_activeCameraID, 0, &camera);
+	// Retrieve camera position...		
+	h3dGetNodeTransMats(m_activeCameraID, 0, &camera);	
+
 	// In case of an invalid camera (e.g. pipeline not set) return	
 	if ( !camera ) return;	
+
+	// ... and projection matrix
+	float projMat[16];
+	h3dGetCameraProjMat( m_activeCameraID, projMat );
 
 	// Save OpenGL States
 	glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT | GL_HINT_BIT | GL_LIGHTING_BIT);
 	glDisable(GL_LIGHTING);		
 	glDisable(GL_BLEND);
+	glMatrixMode( GL_PROJECTION );
+	glLoadMatrixf( projMat );
+	glMatrixMode( GL_MODELVIEW );
+	QMatrix4f transMat( camera );
+	glLoadMatrixf( transMat.inverted().x );
 
 	glEnable(GL_DEPTH_TEST); 		
 	if (m_debugInfo & DRAW_GRID)
