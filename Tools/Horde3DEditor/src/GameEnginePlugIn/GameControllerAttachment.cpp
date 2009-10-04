@@ -218,12 +218,12 @@ QFileInfoList GameControllerAttachment::findReferences(const QDomElement &node) 
 	QFileInfoList references;	
 	if (node.tagName() == "Sound3D" && node.hasAttribute("file"))
 	{
-		QFileInfo file(QDir(GameEngine::soundResourceDirectory()), node.attribute("file"));
+		QFileInfo file(node.attribute("file"));
 		references.append(file);
 	}
 	if( node.tagName() == "StaticAnimation" && node.hasAttribute("file"))
 	{
-		QFileInfo file(QDir(Horde3DUtils::getResourcePath( ResourceTypes::Animation )), node.attribute("file"));
+		QFileInfo file(node.attribute("file"));
 		references.append(file);
 	}
 	QDomNodeList children = node.childNodes();

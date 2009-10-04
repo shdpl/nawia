@@ -229,21 +229,21 @@ void GameControllerWidget::updateActions()
 		tr("There is already another Sound3D component in this entity"));
 
 	int nodeID = m_currentSceneNode->property("ID").toInt();
-	if( nodeID == 0 || Horde3D::getNodeType( nodeID ) != SceneNodeTypes::Model)
+	if( nodeID == 0 || h3dGetNodeType( nodeID ) != H3DNodeTypes::Model)
 		m_actionAddKeyframeAnimComponent->setStatusTip("Disabled because the entity contains no ModelNode scengraph component ");	
 	else if( !m_currentNode->xmlNode().firstChildElement("KeyframeAnimation").isNull() )
 		m_actionAddKeyframeAnimComponent->setStatusTip("There is already another KeyframeAnim component");	
 	else
 		m_actionAddKeyframeAnimComponent->setStatusTip("Adds a component to control keyframe animations");	
 
-	if( nodeID != 0 && Horde3D::getNodeType(nodeID) == SceneNodeTypes::Model )
+	if( nodeID != 0 && h3dGetNodeType(nodeID) == H3DNodeTypes::Model )
 		m_actionAddKeyframeAnimComponent->setEnabled( m_currentNode->xmlNode().firstChildElement("KeyframeAnimation").isNull() );
 	else
 		m_actionAddKeyframeAnimComponent->setEnabled( false );
 	
 
 	// Dynamid Components can be added only to Mesh Nodes
-	if( nodeID != 0 && Horde3D::getNodeType(m_currentSceneNode->property("ID").toInt()) == SceneNodeTypes::Mesh )
+	if( nodeID != 0 && h3dGetNodeType(m_currentSceneNode->property("ID").toInt()) == H3DNodeTypes::Mesh )
 		m_actionAddDynamidComponent->setEnabled( m_currentNode->xmlNode().firstChildElement("Dynamid").isNull() );
 	else
 		m_actionAddDynamidComponent->setEnabled( false );

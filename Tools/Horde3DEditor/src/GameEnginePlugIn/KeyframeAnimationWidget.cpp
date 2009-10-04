@@ -89,11 +89,11 @@ void KeyframeAnimationWidget::addAnimation()
 	QStringList animations = QFileDialog::getOpenFileNames(
 		this, 
 		tr("Select animation(s)"), 
-		Horde3DUtils::getResourcePath(ResourceTypes::Animation), 
+		QDir::currentPath(), 
 		tr("Animation files (*.anim);;All files (*.*)"));	
 
 	QStringList errorList;
-	QDir baseDir( Horde3DUtils::getResourcePath(ResourceTypes::Animation) );
+	QDir baseDir = QDir::current();
 	for( int i = 0; i < animations.size(); ++i )
 	{
 		if( !animations[i].contains( baseDir.absolutePath() ) )
