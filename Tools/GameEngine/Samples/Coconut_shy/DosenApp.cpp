@@ -35,7 +35,7 @@ bool DemoApp::init(const char *fileName)
 		m_camID = GameEngine::entityWorldID("camera"); 		
 		GameEngine::entitySceneGraphID( m_camID );
 		h3dGetNodeTransform(m_camID, 0,0,0, &m_camRX, &m_camRY, 0, 0, 0, 0);
-		m_selectMaterial = h3dAddResource(ResourceTypes::Material, "selectMaterial.material.xml", 0);
+		m_selectMaterial = h3dAddResource(H3DResTypes::Material, "selectMaterial.material.xml", 0);
 		h3dutLoadResourcesFromDisk("");
 		return true;
 	}
@@ -52,7 +52,7 @@ void DemoApp::keyHandler()
 {		
 	if( m_keys[118] )  // F7
 	{
-		h3dSetOption( EngineOptions::DebugViewMode, h3dGetOption(EngineOptions::DebugViewMode) != 0.0f ? 0.0f : 1.0f );	
+		h3dSetOption( H3DOptions::DebugViewMode, h3dGetOption(H3DOptions::DebugViewMode) != 0.0f ? 0.0f : 1.0f );	
 		m_keys[118] = 0;
 	}
 	if( m_keys['W'] ) 
@@ -125,7 +125,7 @@ void DemoApp::parseSocketData( int size, const char* data )
 void DemoApp::pickNode( int x, int y )
 {
 	H3DNode newHordeID = h3dutPickNode( GameEngine::entitySceneGraphID( m_camID ), x / float( m_width ), ( m_height - y ) / float( m_height ) );
-	if( newHordeID != 0 && h3dGetNodeType(newHordeID) == SceneNodeTypes::Mesh )
+	if( newHordeID != 0 && h3dGetNodeType(newHordeID) == H3DNodeTypes::Mesh )
 	{
 		//if( m_selectedEntity != 0 )
 		//{
