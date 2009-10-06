@@ -1,11 +1,17 @@
 [[FX]]
 
-<Sampler id="albedoMap" />
+// Samplers
+sampler albedoMap;
 
-<Context id="OVERLAY">
-	<Shaders vertex="VS_OVERLAY" fragment="FS_OVERLAY" />
-	<RenderConfig writeDepth="false" blendMode="BLEND" />
-</Context>
+// Contexts
+context OVERLAY
+{
+	VertexShader = compile GLSL VS_OVERLAY;
+	PixelShader = compile GLSL FS_OVERLAY;
+	
+	ZWriteEnable = false;
+	BlendMode = Blend;
+}
 
 [[VS_OVERLAY]]
 

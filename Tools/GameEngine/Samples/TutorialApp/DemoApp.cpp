@@ -35,12 +35,12 @@ void DemoApp::mouseMoved(float x, float y)
 
 void DemoApp::render()
 {
-	Horde3D::clearOverlays();
+	h3dClearOverlays();
 	keyHandler();
 	
 	GameEngine::update();
 	
-	Horde3DUtils::dumpMessages();
+	h3dutDumpMessages();
 }
 
 void DemoApp::keyboardCb(unsigned int param, bool pressed, void *userData)
@@ -66,5 +66,5 @@ void DemoApp::renderCb(void *userData)
 
 void DemoApp::resizeCb(int width, int height)
 {	
-	Horde3D::setupViewport( 0, 0, width, height, true );
+	h3dSetupViewport( 0, 0, width, height, true );
 }
