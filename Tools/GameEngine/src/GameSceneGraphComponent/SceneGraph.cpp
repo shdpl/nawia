@@ -106,7 +106,7 @@ void SceneGraphManager::update()
 		while( !m_newSceneNodes.empty() )
 		{
 			int nodes = h3dFindNodes( m_newSceneNodes.top(), "", H3DNodeTypes::Undefined );
-			//Save the find results locally  because Horde3D::getNodeFindResult() is not safe
+			//Save the find results locally  because h3dGetNodeFindResult() is not safe
 			int *findResult = static_cast<int *>(alloca(nodes * sizeof(int)));
 			for (int i = 0; i < nodes; ++i)
 				findResult[i] = h3dGetNodeFindResult(i);
