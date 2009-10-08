@@ -335,7 +335,7 @@ bool SoundComponent::setSoundFile(const char* fileName)
 
 		m_gain= m_initialGain;
 		
-		// Old stream already removed
+		//Old stream already removed
 		if (!oldStream)
 		{
 			// Sound will be played another time
