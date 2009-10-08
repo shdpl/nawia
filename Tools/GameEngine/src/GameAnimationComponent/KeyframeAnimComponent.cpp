@@ -487,7 +487,7 @@ void KeyframeAnimComponent::update(const float timestamp)
 
 bool KeyframeAnimComponent::isPlaying(const char *animation)
 {
-	//ResHandle res = Horde3D::findResource(ResourceTypes::Animation, animation);
+	//H3DRes res = Horde3D::findResource(H3DResTypes::Animation, animation);
 	//if(res == 0) return false;
 
 	std::map<std::string, AnimationControl::Animation*>::iterator iter = m_animations.find(animation);
