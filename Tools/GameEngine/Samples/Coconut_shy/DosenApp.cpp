@@ -130,14 +130,14 @@ void DemoApp::pickNode( int x, int y )
 		//if( m_selectedEntity != 0 )
 		//{
 		//	int oldHordeID = GameEngine::entitySceneGraphID( m_selectedEntity );
-		//	Horde3D::setNodeParami( oldHordeID, MeshNodeParams::MaterialRes, m_savedMaterial );
+		//	h3dSetNodeParamI( oldHordeID, MeshNodeParams::MaterialRes, m_savedMaterial );
 		//}
-		//printf(" X: %d Y: %d Mesh Selected %s\n", x, y, Horde3D::getNodeParamstr( newHordeID, SceneNodeParams::Name ) );
+		//printf(" X: %d Y: %d Mesh Selected %s\n", x, y, h3dGetNodeParamStr( newHordeID, SceneNodeParams::Name ) );
 		//m_selectedEntity = GameEngine::sceneGraphEntityID( newHordeID );
 		//if( m_selectedEntity != 0 )
 		//{
-		//	m_savedMaterial = Horde3D::getNodeParami( newHordeID, MeshNodeParams::MaterialRes );
-		//	Horde3D::setNodeParami(newHordeID, MeshNodeParams::MaterialRes, m_selectMaterial );
+		//	m_savedMaterial = h3dGetNodeParamI( newHordeID, MeshNodeParams::MaterialRes );
+		//	h3dSetNodeParamI(newHordeID, MeshNodeParams::MaterialRes, m_selectMaterial );
 		//}
 	}
 }
