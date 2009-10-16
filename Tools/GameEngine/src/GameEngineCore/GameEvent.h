@@ -976,5 +976,61 @@ private:
 	Vec3f	m_vector;
 };
 
+class Interaction : public GameEventData
+{
+
+public:
+	Interaction(const char* targetID, const char* interactionName) : GameEventData(CUSTOM), TargetID(targetID), InteractionName(interactionName)
+	{
+		m_data.ptr = this;
+	}
+
+	Interaction(const char* targetID) : GameEventData(CUSTOM), TargetID(targetID), InteractionName(0)
+	{
+		m_data.ptr = this;
+	}
+
+	Interaction(const Interaction& copy) : GameEventData(CUSTOM)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+		
+		const size_t lenInteractionName = copy.InteractionName ? strlen(copy.InteractionName) : 0;
+		InteractionName = new char[lenInteractionName + 1];
+		memcpy( (char*) InteractionName, copy.InteractionName, lenInteractionName );
+		const_cast<char*>(InteractionName)[lenInteractionName] = '\0';
+		
+		const size_t lenTarget = copy.TargetID ? strlen(copy.TargetID) : 0;
+		TargetID = new char[lenTarget + 1];
+		memcpy( (char*) TargetID, copy.TargetID, lenTarget );
+		const_cast<char*>(TargetID)[lenTarget] = '\0';
+	}
+
+	void setInteractionName(const char* name)
+	{
+		const size_t lenInteractionName = strlen(name);
+		InteractionName = new char[lenInteractionName + 1];
+		memcpy( (char*) InteractionName, name, lenInteractionName );
+		const_cast<char*>(InteractionName)[lenInteractionName] = '\0';
+	}
+	
+	~Interaction()
+	{
+		if( m_owner )
+		{
+			delete[] TargetID;
+			delete[] InteractionName;
+		}
+	}
+
+	const char* TargetID;
+	const char* InteractionName;
+
+	GameEventData* clone() const
+	{
+		return new Interaction(*this);
+	}
+};
+
 /*! @}*/
 #endif
