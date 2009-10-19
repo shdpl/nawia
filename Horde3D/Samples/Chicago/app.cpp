@@ -81,7 +81,7 @@ bool Application::init()
 	// Add scene nodes
 	// Add camera
 	_cam = h3dAddCameraNode( H3DRootNode, "Camera", _forwardPipeRes );
-	//h3dSetNodeParami( _cam, H3DCamera::OccCullingI, 1 );
+	//h3dSetNodeParamI( _cam, H3DCamera::OccCullingI, 1 );
 	// Add environment
 	H3DNode env = h3dAddNodes( H3DRootNode, envRes );
 	h3dSetNodeTransform( env, 0, 0, 0, 0, 0, 0, 0.23f, 0.23f, 0.23f );

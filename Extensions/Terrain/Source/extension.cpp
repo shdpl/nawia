@@ -31,7 +31,7 @@ namespace Horde3DTerrain
 
 		// Create vertex layout
 		TerrainNode::vlTerrain = Modules::renderer().createVertexLayout( 2 );
-		Modules::renderer().setVertexLayoutElem( TerrainNode::vlTerrain, 0, "gl_Vertex", 0, 3, 0 );
+		Modules::renderer().setVertexLayoutElem( TerrainNode::vlTerrain, 0, "vertPos", 0, 3, 0 );
 		Modules::renderer().setVertexLayoutElem( TerrainNode::vlTerrain, 1, "terHeight", 1, 1, 0 );
 
 		// Upload default shader used for debug view

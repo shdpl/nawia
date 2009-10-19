@@ -23,7 +23,7 @@
 // Camera Node
 // =================================================================================================
 
-struct H3DCamera
+struct CameraNodeParams
 {
 	enum List
 	{

@@ -44,13 +44,6 @@ protected:
 	#ifdef PLATFORM_WIN
 		// Make sure that time is read from the same CPU
 		DWORD_PTR threadAffMask = SetThreadAffinityMask( GetCurrentThread(), _affMask );
-
-		// Avoid the reordering of instructions by emitting a serialization instruction
-		#ifdef _MSC_VER
-		   _asm { CPUID };
-		#else
-		   asm volatile("cpuid");
-		#endif
 		
 		// Read high performance counter
 		LARGE_INTEGER curTick;
@@ -72,14 +65,16 @@ public:
 	Timer() : _elapsedTime( 0 ), _enabled( false )
 	{
 	#ifdef PLATFORM_WIN
-		// Get timer frequency
-		QueryPerformanceFrequency( &_timerFreq );
-		
 		// Find first available CPU
 		DWORD procMask, sysMask;
 		GetProcessAffinityMask( GetCurrentProcess(), &procMask, &sysMask );
 		_affMask = 1;
 		while( (_affMask & procMask) == 0 ) _affMask <<= 1;
+		
+		// Get timer frequency
+		DWORD_PTR threadAffMask = SetThreadAffinityMask( GetCurrentThread(), _affMask );
+		QueryPerformanceFrequency( &_timerFreq );
+		SetThreadAffinityMask( GetCurrentThread(), threadAffMask );
 	#endif
 	}
 	

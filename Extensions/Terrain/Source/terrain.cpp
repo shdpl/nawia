@@ -21,11 +21,12 @@ namespace Horde3DTerrain
 	const char *vsTerrainDebugView =
 		"uniform mat4 worldMat;\n"
 		"uniform vec4 terBlockParams;\n"
+		"attribute vec3 vertPos;\n"
 		"attribute float terHeight;\n"
 		"void main() {\n"
 		"	gl_Position = gl_ModelViewProjectionMatrix * worldMat *"
-		"		vec4( gl_Vertex.x * terBlockParams.z + terBlockParams.x, terHeight, "
-		"			  gl_Vertex.z * terBlockParams.z + terBlockParams.y, gl_Vertex.w );\n"
+		"		vec4( vertPos.x * terBlockParams.z + terBlockParams.x, terHeight, "
+		"			  vertPos.z * terBlockParams.z + terBlockParams.y, 1.0 );\n"
 		"}";
 
 	const char *fsTerrainDebugView =
@@ -263,7 +264,7 @@ namespace Horde3DTerrain
 			Modules::renderer().bindIndexBuffer( terrain->_indexBuffer );
 			Modules::renderer().bindVertexBuffer( 0, terrain->_vertexBuffer, 0, 12 );
 			Modules::renderer().bindVertexBuffer( 1, terrain->_vertexBuffer, terrain->getVertexCount() * 12, 4 );
-			Modules::renderer().applyVertexLayout( vlTerrain );
+			if( !Modules::renderer().applyVertexLayout( vlTerrain ) ) continue;
 		
 			// World transformation
 			ShaderCombination *curShader = Modules::renderer().getCurShader();
@@ -601,6 +602,8 @@ namespace Horde3DTerrain
 	
 	bool TerrainNode::checkIntersection( const Vec3f &rayOrig, const Vec3f &rayDir, Vec3f &intsPos ) const
 	{
+		if( !rayAABBIntersection( rayOrig, rayDir, _bBox.min, _bBox.max ) ) return false;
+		
 		// Transform ray to local space
 		Matrix4f m = _absTrans.inverted();
 		Vec3f orig = m * rayOrig;

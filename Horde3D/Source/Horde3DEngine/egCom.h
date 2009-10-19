@@ -15,7 +15,6 @@
 
 #include "egPrerequisites.h"
 #include <stdarg.h>
-#include <time.h>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -101,7 +100,7 @@ class EngineLog
 {
 protected:
 	
-	unsigned long             _firstTick;
+	Timer                     _timer;
 	char                      _textBuf[2048];
 	uint32                    _maxNumMessages;
 	std::queue< LogMessage >  _messages;

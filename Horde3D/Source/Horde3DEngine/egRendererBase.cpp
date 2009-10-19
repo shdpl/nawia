@@ -536,10 +536,7 @@ uint32 RendererBase::createShader( const char *vertexShader, const char *fragmen
 			{
 				if( vl.elems[k].semanticName == name )
 				{	
-					if( vl.elems[k].semanticName == "gl_Vertex" )
-						shdData.elemAttribIndices[k] = 0;
-					else
-						shdData.elemAttribIndices[k] = glGetAttribLocation( shdObj, name );
+					shdData.elemAttribIndices[k] = glGetAttribLocation( shdObj, name );
 					found = true;
 					break;
 				}
@@ -961,7 +958,7 @@ void RendererBase::releaseVertexLayout( uint32 vlObj )
 	_vertexLayouts.remove( vlObj );
 }
 
-void RendererBase::applyVertexLayout( uint32 vlObj )
+bool RendererBase::applyVertexLayout( uint32 vlObj )
 {
 	// Notes:
 	// Vertex layouts contain shader-specific data.
@@ -976,15 +973,14 @@ void RendererBase::applyVertexLayout( uint32 vlObj )
 	for( int i = 0; i < maxVertexAttribs; ++i )
 		glDisableVertexAttribArray( i );
 	
-	if( vlObj == 0 ) return;
+	if( vlObj == 0 ) return false;
 
 	RBVertexLayout &vl = _vertexLayouts.getRef( vlObj );
 
 	// Find data for the currently bound shader
 	ASSERT( _curShaderObj != 0 );
 	std::map< uint32, RBVertexLayout::ShaderData >::iterator itr = vl.shaderData.find( _curShaderObj );
-	ASSERT( itr != vl.shaderData.end() );
-	if( itr == vl.shaderData.end() ) return;
+	if( itr == vl.shaderData.end() ) return false;
 
 	// Set vertex attrib pointers
 	for( uint32 i = 0; i < vl.elems.size(); ++i )
@@ -1004,4 +1000,6 @@ void RendererBase::applyVertexLayout( uint32 vlObj )
 			glEnableVertexAttribArray( attribIndex );
 		}
 	}
+
+	return true;
 }

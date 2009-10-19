@@ -151,14 +151,14 @@ bool EngineConfig::setOption( EngineOptions::List param, float value )
 
 EngineLog::EngineLog()
 {
-	_firstTick = clock();
+	_timer.setEnabled( true );
 	_maxNumMessages = 512;
 }
 
 
 void EngineLog::pushMessage( int level, const char *msg, va_list args )
 {
-	float time = (clock() - _firstTick) / (float)CLOCKS_PER_SEC;
+	float time = _timer.getElapsedTimeMS() / 1000.0f;
 	
 	if( _messages.size() < _maxNumMessages - 1 )
 	{

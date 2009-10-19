@@ -107,6 +107,16 @@ struct TestModes
 	};
 };
 
+struct CullModes
+{
+	enum List
+	{
+		Back,
+		Front,
+		None
+	};
+};
+
 struct TexFilterModes
 {
 	enum List
@@ -166,6 +176,7 @@ struct ShaderContext
 	// RenderConfig
 	BlendModes::List                  blendMode;
 	TestModes::List                   depthTest;
+	CullModes::List                   cullMode;
 	bool                              writeDepth;
 	bool                              alphaToCoverage;
 	
@@ -177,7 +188,7 @@ struct ShaderContext
 
 	ShaderContext() :
 		compiled( false ), writeDepth( true ), blendMode( BlendModes::Replace ),
-		depthTest( TestModes::LessEqual ), alphaToCoverage( false ),
+		depthTest( TestModes::LessEqual ), cullMode( CullModes::Back ), alphaToCoverage( false ),
 		vertCodeIdx( -1 ), fragCodeIdx( -1 )
 	{
 	}

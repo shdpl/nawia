@@ -279,7 +279,7 @@ public:
 	void setVertexLayoutElem( uint32 vlObj, uint32 slot, const char *semanticName,
 	                          uint32 vbSlot, uint32 size, uint32 offset );
 	void releaseVertexLayout( uint32 vlObj );
-	void applyVertexLayout( uint32 vlObj );
+	bool applyVertexLayout( uint32 vlObj );
 };
 
 #endif // _egRendererBase_H_

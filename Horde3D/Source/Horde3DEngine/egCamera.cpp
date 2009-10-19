@@ -114,15 +114,15 @@ int CameraNode::getParamI( int param )
 {
 	switch( param )
 	{
-	case H3DCamera::PipeResI:
+	case CameraNodeParams::PipeResI:
 		return _pipelineRes != 0x0 ? _pipelineRes->getHandle() : 0;
-	case H3DCamera::OutTexResI:
+	case CameraNodeParams::OutTexResI:
 		return _outputTex != 0x0 ? _outputTex->getHandle() : 0;
-	case H3DCamera::OutBufIndexI:
+	case CameraNodeParams::OutBufIndexI:
 		return _outputBufferIndex;
-	case H3DCamera::OrthoI:
+	case CameraNodeParams::OrthoI:
 		return _orthographic ? 1 : 0;
-	case H3DCamera::OccCullingI:
+	case CameraNodeParams::OccCullingI:
 		return _occSet >= 0 ? 1 : 0;
 	}
 
@@ -136,14 +136,14 @@ void CameraNode::setParamI( int param, int value )
 	
 	switch( param )
 	{
-	case H3DCamera::PipeResI:
+	case CameraNodeParams::PipeResI:
 		res = Modules::resMan().resolveResHandle( value );
 		if( res != 0x0 && res->getType() == ResourceTypes::Pipeline )
 			_pipelineRes = (PipelineResource *)res;
 		else
 			Modules::setError( "Invalid handle in h3dSetNodeParamI for H3DCamera::PipeResI" );
 		return;
-	case H3DCamera::OutTexResI:
+	case CameraNodeParams::OutTexResI:
 		res = Modules::resMan().resolveResHandle( value );
 		if( res == 0x0 || (res->getType() == ResourceTypes::Texture &&
 		    ((TextureResource *)res)->getTexType() == TextureTypes::Tex2D) )
@@ -151,14 +151,14 @@ void CameraNode::setParamI( int param, int value )
 		else
 			Modules::setError( "Invalid 2D texture resource in h3dSetNodeParamI for H3DCamera::OutTexResI" );
 		return;
-	case H3DCamera::OutBufIndexI:
+	case CameraNodeParams::OutBufIndexI:
 		_outputBufferIndex = value;
 		return;
-	case H3DCamera::OrthoI:
+	case CameraNodeParams::OrthoI:
 		_orthographic = (value == 1);
 		markDirty();
 		return;
-	case H3DCamera::OccCullingI:
+	case CameraNodeParams::OccCullingI:
 		if( _occSet < 0 && value != 0 )
 		{		
 			_occSet = Modules::renderer().registerOccSet();
@@ -179,17 +179,17 @@ float CameraNode::getParamF( int param, int compIdx )
 {
 	switch( param )
 	{
-	case H3DCamera::LeftPlaneF:
+	case CameraNodeParams::LeftPlaneF:
 		return _frustLeft;
-	case H3DCamera::RightPlaneF:
+	case CameraNodeParams::RightPlaneF:
 		return _frustRight;
-	case H3DCamera::BottomPlaneF:
+	case CameraNodeParams::BottomPlaneF:
 		return _frustBottom;
-	case H3DCamera::TopPlaneF:
+	case CameraNodeParams::TopPlaneF:
 		return _frustTop;
-	case H3DCamera::NearPlaneF:
+	case CameraNodeParams::NearPlaneF:
 		return _frustNear;
-	case H3DCamera::FarPlaneF:
+	case CameraNodeParams::FarPlaneF:
 		return _frustFar;
 	}
 
@@ -201,27 +201,27 @@ void CameraNode::setParamF( int param, int compIdx, float value )
 {
 	switch( param )
 	{
-	case H3DCamera::LeftPlaneF:
+	case CameraNodeParams::LeftPlaneF:
 		_frustLeft = value;
 		markDirty();
 		return;
-	case H3DCamera::RightPlaneF:
+	case CameraNodeParams::RightPlaneF:
 		_frustRight = value;
 		markDirty();
 		return;
-	case H3DCamera::BottomPlaneF:
+	case CameraNodeParams::BottomPlaneF:
 		_frustBottom = value;
 		markDirty();
 		return;
-	case H3DCamera::TopPlaneF:
+	case CameraNodeParams::TopPlaneF:
 		_frustTop = value;
 		markDirty();
 		return;
-	case H3DCamera::NearPlaneF:
+	case CameraNodeParams::NearPlaneF:
 		_frustNear = value;
 		markDirty();
 		return;
-	case H3DCamera::FarPlaneF:
+	case CameraNodeParams::FarPlaneF:
 		_frustFar = value;
 		markDirty();
 		return;

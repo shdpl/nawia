@@ -262,7 +262,7 @@ class Tokenizer
 {
 protected:	
 	
-	static const int tokenSize = 128;
+	static const ptrdiff_t tokenSize = 128;
 	
 	char        _token[tokenSize], _prevToken[tokenSize];
 	const char  *_p;
@@ -335,8 +335,8 @@ protected:
 		const char *p0 = _p;
 		seekChar( " \t\n\r{}()<>=,;" );  // Advanve until whitespace or special char found
 		if( _p == p0 && *_p != '\0' ) ++_p;  // Handle special char
-		memcpy( _token, p0, std::min( _p - p0, tokenSize-1 ) );
-		_token[std::min( _p - p0, tokenSize-1 )] = '\0';
+		memcpy( _token, p0, std::min( (ptrdiff_t)(_p - p0), tokenSize-1 ) );
+		_token[std::min( (ptrdiff_t)(_p - p0), tokenSize-1 )] = '\0';
 	}
 
 public:
@@ -580,6 +580,14 @@ bool ShaderResource::parseFXSection( const char *data )
 					else if( tok.checkToken( "Add" ) ) context.blendMode = BlendModes::Add;
 					else if( tok.checkToken( "AddBlended" ) ) context.blendMode = BlendModes::AddBlended;
 					else if( tok.checkToken( "Mult" ) ) context.blendMode = BlendModes::Mult;
+					else return raiseError( "FX: invalid enum value", tok.getLine() );
+				}
+				else if( tok.checkToken( "CullMode" ) )
+				{
+					if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
+					if( tok.checkToken( "Back" ) ) context.cullMode = CullModes::Back;
+					else if( tok.checkToken( "Front" ) ) context.cullMode = CullModes::Front;
+					else if( tok.checkToken( "None" ) ) context.cullMode = CullModes::None;
 					else return raiseError( "FX: invalid enum value", tok.getLine() );
 				}
 				else if( tok.checkToken( "AlphaToCoverage" ) )

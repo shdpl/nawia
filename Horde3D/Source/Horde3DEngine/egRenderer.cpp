@@ -27,8 +27,9 @@ using namespace std;
 
 const char *vsDefColor =
 	"uniform mat4 worldMat;\n"
+	"attribute vec3 vertPos;\n"
 	"void main() {\n"
-	"	gl_Position = gl_ModelViewProjectionMatrix * worldMat * gl_Vertex;\n"
+	"	gl_Position = gl_ModelViewProjectionMatrix * worldMat * vec4( vertPos, 1.0 );\n"
 	"}\n";
 
 const char *fsDefColor =
@@ -91,7 +92,7 @@ unsigned char *Renderer::useScratchBuf( uint32 minSize )
 		_scratchBufSize = minSize;
 	}
 
-	return _scratchBuf + (uintptr_t)_scratchBuf % 16;  // 16 byte aligned
+	return _scratchBuf + (size_t)_scratchBuf % 16;  // 16 byte aligned
 }
 
 
@@ -110,7 +111,7 @@ bool Renderer::init()
 	
 	// Create vertex layouts
 	_vlModel = createVertexLayout( 8 );
-	setVertexLayoutElem( _vlModel, 0, "gl_Vertex", 0, 3, 0 );
+	setVertexLayoutElem( _vlModel, 0, "vertPos", 0, 3, 0 );
 	setVertexLayoutElem( _vlModel, 1, "tangent", 1, 3, 0 );
 	setVertexLayoutElem( _vlModel, 2, "bitangent", 2, 3, 0 );
 	setVertexLayoutElem( _vlModel, 3, "normal", 3, 3, 0 );
@@ -120,15 +121,19 @@ bool Renderer::init()
 	setVertexLayoutElem( _vlModel, 7, "texCoords1", 4, 2, 40 );
 
 	_vlParticle = createVertexLayout( 4 );
-	setVertexLayoutElem( _vlParticle, 0, "gl_Vertex", 0, 3, 0 );
+	setVertexLayoutElem( _vlParticle, 0, "vertPos", 0, 3, 0 );
 	setVertexLayoutElem( _vlParticle, 1, "parIdx", 0, 1, 24 );
 	setVertexLayoutElem( _vlParticle, 2, "parCornerIdx", 0, 1, 20 );
 	setVertexLayoutElem( _vlParticle, 3, "texCoords0", 0, 2, 12 );
 
 	
 	// Upload default shaders
-	createShaderComb( vsDefColor, fsDefColor, _defColorShader );
-	createShaderComb( vsOccBox, fsOccBox, _occShader );
+	if( !createShaderComb( vsDefColor, fsDefColor, _defColorShader ) ||
+	    !createShaderComb( vsOccBox, fsOccBox, _occShader ) )
+	{
+		Modules::log().writeError( "Failed to compile default shaders" );
+		return false;
+	}
 
 	// Cache common uniforms
 	_defColShader_color = glGetUniformLocation( _defColorShader.shaderObj, "color" );
@@ -305,6 +310,25 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		if( context->writeDepth ) glDepthMask( GL_TRUE );
 		else glDepthMask( GL_FALSE );
 
+		// Configure cull mode
+		if( !Modules::config().wireframeMode )
+		{
+			switch( context->cullMode )
+			{
+			case CullModes::Back:
+				glEnable( GL_CULL_FACE );
+				glCullFace( GL_BACK );
+				break;
+			case CullModes::Front:
+				glEnable( GL_CULL_FACE );
+				glCullFace( GL_FRONT );
+				break;
+			case CullModes::None:
+				glDisable( GL_CULL_FACE );
+				break;
+			}
+		}
+		
 		// Configure blending
 		switch( context->blendMode )
 		{
@@ -1537,7 +1561,13 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 
 			// Apply vertex layout
 			if( curShader != prevShader )
-				Modules::renderer().applyVertexLayout( Modules::renderer()._vlModel );
+			{
+				if( !Modules::renderer().applyVertexLayout( Modules::renderer()._vlModel ) )
+				{
+					Modules::renderer().setShaderComb( 0x0 );
+					continue;
+				}
+			}
 
 			// Render
 			glDrawRangeElements( GL_TRIANGLES, meshNode->getVertRStart(), meshNode->getVertREnd(),
@@ -1638,7 +1668,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 		if( !Modules::renderer().setMaterial( emitter->_materialRes, shaderContext ) ) continue;
 
 		// Set vertex layout
-		Modules::renderer().applyVertexLayout( Modules::renderer()._vlParticle );
+		if( !Modules::renderer().applyVertexLayout( Modules::renderer()._vlParticle ) ) continue;
 		
 		if( occQuery )
 			Modules::renderer().beginQuery( emitter->_occQueries[occSet] );
