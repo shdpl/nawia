@@ -287,6 +287,7 @@ public:
 		E_SET_SOUND_FILE,		/// Sets a sound file
 		E_SET_PHONEMES_FILE,	/// Sets a phonemes file
 		E_SET_ENABLED,			/// Enables components (wether the component should be rendered/updated or not)	
+		E_PICKUP,				/// Attaches a SceneNode to an entity
 		IK_COMPUTE,				/// Computes the IK with the given data and applies it to the chain
 		IK_GAZE,				/// Computes and applies a gaze action
 		IK_INIT_ANIM,			/// Initializes an IK animation
@@ -343,6 +344,7 @@ public:
 		if(in.find("E_SET_SOUND_FILE") != std::string::npos) return GameEvent::E_SET_SOUND_FILE;
 		if(in.find("E_SET_PHONEMES_FILE") != std::string::npos) return GameEvent::E_SET_PHONEMES_FILE;
 		if(in.find("E_SET_ENABLED") != std::string::npos) return GameEvent::E_SET_ENABLED;
+		if(in.find("E_PICKUP") != std::string::npos) return GameEvent::E_PICKUP;
 		return GameEvent::EVENT_COUNT;
 
 	}
