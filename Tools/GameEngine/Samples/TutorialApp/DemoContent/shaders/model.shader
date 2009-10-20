@@ -6,6 +6,7 @@
 	_F02_NormalMapping
 	_F03_ParallaxMapping
 	_F04_EnvMapping
+	_F05_AlphaTest
 */
 
 
@@ -76,6 +77,7 @@ context AMBIENT
 #endif
 
 uniform vec3 viewer;
+attribute vec3 vertPos;
 attribute vec2 texCoords0;
 attribute vec3 normal;
 
@@ -127,9 +129,9 @@ void main( void )
 
 	// Calculate world space position
 #ifdef _F01_Skinning	
-	pos = calcWorldPos( skinPos( gl_Vertex, skinningMat ) );
+	pos = calcWorldPos( skinPos( vec4( vertPos, 1.0 ), skinningMat ) );
 #else
-	pos = calcWorldPos( gl_Vertex );
+	pos = calcWorldPos( vec4( vertPos, 1.0 ) );
 #endif
 
 	vsPos = calcViewPos( pos );
@@ -194,7 +196,11 @@ void main( void )
 	// Flip texture vertically to match the GL coordinate system
 	newCoords.t *= -1.0;
 
-	vec3 albedo = texture2D( albedoMap, newCoords.st ).rgb;
+	vec4 albedo = texture2D( albedoMap, newCoords.st );
+	
+#ifdef _F05_AlphaTest
+	if( albedo.a < 0.01 ) discard;
+#endif
 	
 #ifdef _F02_NormalMapping
 	vec3 normalMap = texture2D( normalMap, newCoords.st ).rgb * 2.0 - 1.0;
@@ -212,7 +218,7 @@ void main( void )
 	setMatID( 1.0 );
 	setPos( newPos );
 	setNormal( normalize( normal ) );
-	setAlbedo( albedo );
+	setAlbedo( albedo.rgb );
 	setSpecMask( specParams.x );
 }
 
@@ -224,14 +230,24 @@ void main( void )
 #include "shaders/utilityLib/vertSkinning.glsl"
 
 uniform vec4 lightPos;
+attribute vec3 vertPos;
 varying float dist;
+
+#ifdef _F05_AlphaTest
+	attribute vec2 texCoords0;
+	varying vec2 texCoords;
+#endif
 
 void main( void )
 {
 #ifdef _F01_Skinning	
-	vec4 pos = calcWorldPos( skinPos( gl_Vertex ) );
+	vec4 pos = calcWorldPos( skinPos( vec4( vertPos, 1.0 ) ) );
 #else
-	vec4 pos = calcWorldPos( gl_Vertex );
+	vec4 pos = calcWorldPos( vec4( vertPos, 1.0 ) );
+#endif
+
+#ifdef _F05_AlphaTest
+	texCoords = texCoords0;
 #endif
 
 	dist = length( lightPos.xyz - pos.xyz ) / lightPos.w;
@@ -245,8 +261,18 @@ void main( void )
 uniform float shadowBias;
 varying float dist;
 
+#ifdef _F05_AlphaTest
+	uniform sampler2D albedoMap;
+	varying vec2 texCoords;
+#endif
+
 void main( void )
 {
+#ifdef _F05_AlphaTest
+	vec4 albedo = texture2D( albedoMap, texCoords * vec2( 1, -1 ) );
+	if( albedo.a < 0.01 ) discard;
+#endif
+	
 	gl_FragDepth = dist + shadowBias;
 	
 	// Clearly better bias but requires SM 3.0
@@ -303,7 +329,11 @@ void main( void )
 	// Flip texture vertically to match the GL coordinate system
 	newCoords.t *= -1.0;
 
-	vec3 albedo = texture2D( albedoMap, newCoords.st ).rgb;
+	vec4 albedo = texture2D( albedoMap, newCoords.st );
+	
+#ifdef _F05_AlphaTest
+	if( albedo.a < 0.01 ) discard;
+#endif
 	
 #ifdef _F02_NormalMapping
 	vec3 normalMap = texture2D( normalMap, newCoords.st ).rgb * 2.0 - 1.0;
@@ -319,7 +349,7 @@ void main( void )
 #endif
 	
 	gl_FragColor.rgb =
-		calcPhongSpotLight( newPos, normalize( normal ), albedo, specParams.x, specParams.y, -vsPos.z, 0.3 );
+		calcPhongSpotLight( newPos, normalize( normal ), albedo.rgb, specParams.x, specParams.y, -vsPos.z, 0.3 );
 }
 
 
@@ -376,7 +406,11 @@ void main( void )
 	// Flip texture vertically to match the GL coordinate system
 	newCoords.t *= -1.0;
 
-	vec3 albedo = texture2D( albedoMap, newCoords.st ).rgb;
+	vec4 albedo = texture2D( albedoMap, newCoords.st );
+	
+#ifdef _F05_AlphaTest
+	if( albedo.a < 0.01 ) discard;
+#endif
 	
 #ifdef _F02_NormalMapping
 	vec3 normalMap = texture2D( normalMap, newCoords.st ).rgb * 2.0 - 1.0;
@@ -385,7 +419,7 @@ void main( void )
 	vec3 normal = tsbNormal;
 #endif
 	
-	gl_FragColor.rgb = albedo * textureCube( ambientMap, normal ).rgb;
+	gl_FragColor.rgb = albedo.rgb * textureCube( ambientMap, normal ).rgb;
 	
 #ifdef _F04_EnvMapping
 	vec3 refl = textureCube( envMap, reflect( pos.xyz - viewer, normalize( normal ) ) ).rgb;

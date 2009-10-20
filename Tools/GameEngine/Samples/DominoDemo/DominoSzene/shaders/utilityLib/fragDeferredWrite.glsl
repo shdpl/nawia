@@ -9,8 +9,6 @@
 //
 // *************************************************************************************************
 
-#extension GL_ARB_draw_buffers : enable
-
 void setMatID( const float id ) { gl_FragData[0].a = id; }
 void setPos( const vec3 pos ) { gl_FragData[0].rgb = pos; }
 void setNormal( const vec3 normal ) { gl_FragData[1].rgb = normal; }
