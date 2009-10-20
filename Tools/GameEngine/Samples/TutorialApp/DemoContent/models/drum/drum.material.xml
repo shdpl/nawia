@@ -2,5 +2,5 @@
     <Shader source="shaders/model.shader" />
     <ShaderFlag name="_F01_Skinning" />
 
-    <Sampler name="albedoMap" map="models/male/drum001a.png" />
+    <Sampler name="albedoMap" map="models/drum/drum001a.png" />
 </Material>
