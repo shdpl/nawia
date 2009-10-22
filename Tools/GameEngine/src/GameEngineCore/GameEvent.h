@@ -282,6 +282,7 @@ public:
 		E_GET_PROPERTY,			/// Gets a property
 		E_INTERACT,				/// Interact with another Entity
 		E_INTERACTED_WITH,		/// Informs an Entity that it's interacted with by another Entity
+		E_INTERACT_POSITION,	/// Gets the position where to interact with a SmartObject
 		E_SET_SOUND_GAIN,		/// Sets the sound gain
 		E_SET_SOUND_LOOP,		/// Sets the sound to loop
 		E_SET_SOUND_FILE,		/// Sets a sound file
@@ -339,6 +340,7 @@ public:
 		if(in.find("E_GET_PROPERTY") != std::string::npos) return GameEvent::E_GET_PROPERTY;
 		if(in.find("E_INTERACT") != std::string::npos) return GameEvent::E_INTERACT;
 		if(in.find("E_INTERACTED_WITH") != std::string::npos) return GameEvent::E_INTERACTED_WITH;
+		if(in.find("E_INTERACT_POSITION") != std::string::npos) return GameEvent::E_INTERACT_POSITION;
 		if(in.find("E_SET_SOUND_GAIN") != std::string::npos) return GameEvent::E_SET_SOUND_GAIN;
 		if(in.find("E_SET_SOUND_LOOP") != std::string::npos) return GameEvent::E_SET_SOUND_LOOP;
 		if(in.find("E_SET_SOUND_FILE") != std::string::npos) return GameEvent::E_SET_SOUND_FILE;
