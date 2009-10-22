@@ -64,7 +64,12 @@ public:
 	/**
 	 * 
 	 */
-	void run();
+	void run() {}
+
+	/**
+	 * Renders the scene through Horde3D
+	 */
+	void render();
 
 	/**
 	 * Checks for transformation changes on scene graph nodes

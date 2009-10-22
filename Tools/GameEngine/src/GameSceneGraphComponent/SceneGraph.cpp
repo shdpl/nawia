@@ -90,7 +90,7 @@ void SceneGraphManager::removeComponent(SceneGraphComponent* node)
 		m_sceneGraphComponents.erase(iter);
 }
 
-void SceneGraphManager::run()
+void SceneGraphManager::render()
 {
 	h3dRender(m_activeCam);				
 	h3dFinalizeFrame();
