@@ -50,6 +50,9 @@
 
 #include <XMLParser/utXMLParser.h>
 
+// Uncomment the next line, if you want to see debuging infos about the animations in the console
+//#define PRINT_ANIMATION_INFO 1
+
 namespace AnimationControl
 {
 	struct TimelineWeight
@@ -163,7 +166,7 @@ namespace AnimationControl
 
 		~AnimationJob()
 		{
-#ifdef _DEBUG
+#ifdef PRINT_ANIMATION_INFO
 			//printf("Removing animation job\n");
 #endif
 			// Disable animation
@@ -175,7 +178,7 @@ namespace AnimationControl
 
 		bool past(const float timestamp) const
 		{
-#ifdef _DEBUG
+#ifdef PRINT_ANIMATION_INFO
 			if (m_timeline.back().Timestamp < timestamp)
 				printf("Animation has passed at time %.3f! last timestamp: %.3f \n", timestamp, m_timeline.back().Timestamp);
 #endif
@@ -199,7 +202,7 @@ namespace AnimationControl
 				//  otherwise we have to activate it
 				else m_animation->activate(true, m_stageID, m_timeline.front().Weight < 0);
 				m_currentTimeWeight = 0;
-#ifdef _DEBUG
+#ifdef PRINT_ANIMATION_INFO
 				//printf("Starting animation at animTime %.3f\n", animTime);
 #endif
 			}
@@ -226,7 +229,7 @@ namespace AnimationControl
 					break;
 				}
 				++m_currentTimeWeight;
-#ifdef _DEBUG
+#ifdef PRINT_ANIMATION_INFO
 				printf("Animation %d now at %d of %d: Timestamp %.3f Timeline %.3f\n", m_jobID, m_currentTimeWeight, timeweights, timestamp, tw2.Timestamp);
 #endif
 			}
@@ -248,7 +251,7 @@ namespace AnimationControl
 				else if (iter->Timestamp > timestamp)
 				{
 				
-#ifdef _DEBUG
+#ifdef PRINT_ANIMATION_INFO
 					printf("Inserting timeline point %.3f with weight %.3f\n", timestamp, weight);
 #endif
 					iter = m_timeline.insert(iter, TimelineWeight(timestamp, weight));
@@ -260,7 +263,7 @@ namespace AnimationControl
 			// since otherwise the weights of the future timestamps may change the animation in an unexpected way back to the original weight
 			while( iter != m_timeline.end() )
 			{
-#ifdef _DEBUG
+#ifdef PRINT_ANIMATION_INFO
 				printf("Adjusting timeline at %.3f to weight %.3f\n", iter->Timestamp, weight);
 #endif
 				iter->Weight = weight;
