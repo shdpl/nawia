@@ -108,7 +108,7 @@ void GameComponentRegistry::updateComponentManagers()
 {
 	const int size = (int) m_privateRegistry->ManagerRegistry.size();
 	
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic)
 	for( int i = 0; i < size; ++i )
 	{
 		m_privateRegistry->ManagerRegistry[i]->run();

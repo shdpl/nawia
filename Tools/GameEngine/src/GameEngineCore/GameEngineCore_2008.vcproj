@@ -214,7 +214,7 @@
 				FavorSizeOrSpeed="2"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)..\..\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;GAMEENGINE_EXPORTS;_CRT_SECURE_NO_WARNINGS"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				OpenMP="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -403,7 +403,15 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
-		<File			RelativePath="..\..\bin\plugin.cfg"			>		</File>		<File			RelativePath="..\..\bin\plugin_debug.cfg"			>		</File>	</Files>
+		<File
+			RelativePath="..\..\bin\plugin.cfg"
+			>
+		</File>
+		<File
+			RelativePath="..\..\bin\plugin_debug.cfg"
+			>
+		</File>
+	</Files>
 	<Globals>
 	</Globals>
 </VisualStudioProject>
