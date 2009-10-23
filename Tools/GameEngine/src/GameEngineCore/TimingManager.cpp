@@ -59,13 +59,13 @@ namespace TimingManager
 	{		
 		m_currentTime = m_timer.elapsedTime();	
 		// Calculate Frames per second
-		static float fps = 0;		
-		++fps;
+		static float frames = 0;		
+		++frames;
 		if ( (m_currentTime - m_lastTime) >= 0.1f )
 		{
-			Fps = fps / (m_currentTime - m_lastTime);
+			Fps = frames / (m_currentTime - m_lastTime);
 			m_lastTime = m_currentTime;
-			fps = 1.0f;
+			frames = 0.0f;
 		}		
 	}
 
