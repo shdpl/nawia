@@ -144,8 +144,14 @@ void ColladaImporter::importFiles()
 		arguments << tempColladaFile.absoluteFilePath(); 
 		arguments << "-o";
 		arguments << tempColladaFile.baseName();
-		arguments << "-s";
-		arguments << m_defaultShader->currentText();
+		// Not supported by new collada converter version 
+		/*arguments << "-s";
+		arguments << m_defaultShader->currentText();*/
+		// TODO: use new lod arguments:
+		//-lodDist1 dist	distance for LOD1 (optional, default: 10)
+		//-lodDist2 dist	distance for LOD2 (optional, default: 20)
+		//-lodDist3 dist	distance for LOD3 (optional, default: 40)
+		//-lodDist4 dist	distance for LOD4 (optional, default: 80)
 		if (m_noOptimizeGeometry->isChecked())
 			arguments << "-noopt";
 	
@@ -176,7 +182,7 @@ void ColladaImporter::importFiles()
 		// Remove the copied collada file
 		QFile::remove(tempColladaFile.absoluteFilePath());
 	
-		
+		// TODO: search temp file under new created directories (models/baseName, animations)
 		QList<CopyJob> filesToOverwrite;
 		QList<CopyJob> alreadyCopied;
 		QStringList createdFiles;
