@@ -394,10 +394,6 @@
 				RelativePath=".\TimingManager.h"
 				>
 			</File>
-			<File
-				RelativePath=".\utmath.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
