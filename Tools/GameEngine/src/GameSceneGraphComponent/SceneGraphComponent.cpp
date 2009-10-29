@@ -109,7 +109,7 @@ void SceneGraphComponent::executeEvent(GameEvent *event)
 			m_transformation[12] = translation->x;
 			m_transformation[13] = translation->y;
 			m_transformation[14] = translation->z;
-			setTransformation( m_transformation );
+			sendTransformation();
 		}
 		break;
 	case GameEvent::E_SET_SCALE:
@@ -218,16 +218,20 @@ void SceneGraphComponent::loadFromXml( const XMLNode* description )
 void SceneGraphComponent::setTransformation(const float *transformation)
 {
 	memcpy(m_transformation, transformation, sizeof(m_transformation) * 16);
+	sendTransformation();
+}
+
+void SceneGraphComponent::sendTransformation()
+{
 	const float* parentMat = 0;
 	// since the event transformation is absolute we have to create a relative transformation matrix for Horde3D
 	h3dGetNodeTransMats(h3dGetNodeParent(m_hordeID), 0, &parentMat);		
-	if (parentMat) h3dSetNodeTransMat(m_hordeID, (Matrix4f(parentMat).inverted() * Matrix4f(transformation)).x);
+	if (parentMat) h3dSetNodeTransMat(m_hordeID, (Matrix4f(parentMat).inverted() * Matrix4f(m_transformation)).x);
 	// ensure reset of Horde3D transformation flag since we have updated it from the GameEngine and such don't need to be informed 
 	// when calling SceneGraphComponent::update() (note that the node transformed flag will be set again if someone else will update
 	// the transformation from outside, so this way of avoiding unnecessary updates should be safe)
 	h3dCheckNodeTransFlag( m_hordeID, true );
 	//printf("SceneGraphComponent::setTransformation\n\t %.3f, %.3f, %.3f\n", transformation[12], transformation[13], transformation[14]);	
-
 }
 
 void SceneGraphComponent::getMeshData(MeshData* data)

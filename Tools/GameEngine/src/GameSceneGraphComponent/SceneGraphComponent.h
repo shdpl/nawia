@@ -133,6 +133,12 @@ public:
 	void setTransformation(const float* transformation);
 
 	/**
+	 * \brief Sends the current transformation to Horde3D
+	 * 
+	 */ 
+	void sendTransformation();
+
+	/**
 	 * \brief Get the component's transformation
 	 * 	 
 	 * @return the absolute world matrix of the component
@@ -167,7 +173,7 @@ private:
 	void unloadTerrainGeoRes();
 
 	float*				m_transformation;
-	H3DNode			m_hordeID;
+	H3DNode				m_hordeID;
 	std::vector<int>	m_currentCollisions;
 
 	int					m_terrainGeoRes;
