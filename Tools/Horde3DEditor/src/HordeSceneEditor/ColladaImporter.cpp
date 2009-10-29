@@ -181,17 +181,33 @@ void ColladaImporter::importFiles()
 		m_logWidget->append(m_convertProcess->readAllStandardOutput());
 		// Remove the copied collada file
 		QFile::remove(tempColladaFile.absoluteFilePath());
+
+		// Create ouput directories
+		QDir outDir = m_resourceDir;
+		if (!outDir.exists("models"))
+			outDir.mkdir("models");
+		outDir.cd("models");
+		if (!outDir.exists(tempColladaFile.baseName()))
+			outDir.mkdir(tempColladaFile.baseName());
+		outDir.cd(tempColladaFile.baseName());
+		QDir animOutDir = m_resourceDir;
+		if (!animOutDir.exists("animations"))
+			animOutDir.mkdir("animations");
+		animOutDir.cd("animations");
 	
-		// TODO: search temp file under new created directories (models/baseName, animations)
+		// Search created files and copy them to ouput directory
 		QList<CopyJob> filesToOverwrite;
 		QList<CopyJob> alreadyCopied;
 		QStringList createdFiles;
-		QStringList sceneGraphFiles = tempColladaFile.absoluteDir().entryList(QStringList("*.scene.xml"), QDir::Files | QDir::Readable);
+		QDir searchDir = tempColladaFile.absoluteDir();
+		searchDir.cd("models");
+		searchDir.cd(tempColladaFile.baseName());
+		QStringList sceneGraphFiles = searchDir.entryList(QStringList("*.scene.xml"), QDir::Files | QDir::Readable);
 		for (int i=0; i<sceneGraphFiles.size(); ++i)
 		{
-			QString input(tempColladaFile.absoluteDir().absoluteFilePath(sceneGraphFiles[i]));
+			QString input(searchDir.absoluteFilePath(sceneGraphFiles[i]));
 			createdFiles.append(input);
-			QString output(QFileInfo(m_resourceDir, sceneGraphFiles[i]).absoluteFilePath());
+			QString output(QFileInfo(outDir, sceneGraphFiles[i]).absoluteFilePath());
 			CopyJob job(input, output);
 			if (!job.exec() && !filesToOverwrite.contains(job) && !alreadyCopied.contains(job))
 				filesToOverwrite.push_back(job);
@@ -202,12 +218,12 @@ void ColladaImporter::importFiles()
 			}
 		}	
 
-		QStringList geoFiles = tempColladaFile.absoluteDir().entryList(QStringList("*.geo"), QDir::Files | QDir::Readable);
+		QStringList geoFiles = searchDir.entryList(QStringList("*.geo"), QDir::Files | QDir::Readable);
 		for (int i=0; i<geoFiles.size(); ++i)
 		{
-			QString input(tempColladaFile.absoluteDir().absoluteFilePath(geoFiles[i]));
+			QString input(searchDir.absoluteFilePath(geoFiles[i]));
 			createdFiles.append(input);
-			QString output(QFileInfo(m_resourceDir, geoFiles[i]).absoluteFilePath());
+			QString output(QFileInfo(outDir, geoFiles[i]).absoluteFilePath());
 			CopyJob job(input, output);
 			if (!job.exec() && !filesToOverwrite.contains(job) && !alreadyCopied.contains(job))
 				filesToOverwrite.push_back(job);
@@ -218,12 +234,14 @@ void ColladaImporter::importFiles()
 			}
 		}
 
-		QStringList animationFiles = tempColladaFile.absoluteDir().entryList(QStringList("*.anim"), QDir::Files | QDir::Readable);
+		QDir animDir = tempColladaFile.absoluteDir();
+		animDir.cd("animations");
+		QStringList animationFiles = animDir.entryList(QStringList("*.anim"), QDir::Files | QDir::Readable);
 		for (int i=0; i<animationFiles.size(); ++i)
 		{
-			QString input(tempColladaFile.absoluteDir().absoluteFilePath(animationFiles[i]));
+			QString input(animDir.absoluteFilePath(animationFiles[i]));
 			createdFiles.append(input);
-			QString output(QFileInfo(m_resourceDir, animationFiles[i]).absoluteFilePath());
+			QString output(QFileInfo(animOutDir, animationFiles[i]).absoluteFilePath());
 			CopyJob job(input, output);
 			if (!job.exec() && !filesToOverwrite.contains(job) && !alreadyCopied.contains(job))
 				filesToOverwrite.push_back(job);
@@ -236,17 +254,12 @@ void ColladaImporter::importFiles()
 
 		// Store texture filenames used by the materials
 		QStringList textureFiles;
-		// the input directory containing the material files
-		QDir materialDir(tempColladaFile.absolutePath()+QDir::separator()+"materials"+QDir::separator() + tempColladaFile.baseName());
 		// Search for materials
-		QStringList materialFiles = m_resourceDir.entryList(QStringList("*.material.xml"), QDir::Files | QDir::Readable);	
-		// if we have new materials, create a corresponding directory in the repository
-		if (!materialFiles.isEmpty())
-			m_resourceDir.mkpath(tempColladaFile.baseName());
+		QStringList materialFiles = searchDir.entryList(QStringList("*.material.xml"), QDir::Files | QDir::Readable);	
 		// now parse the materials for textures and copy them to the repository
 		for (int i=0; i<materialFiles.size(); ++i)
 		{			
-			QString input(m_resourceDir.absoluteFilePath(materialFiles[i]));
+			QString input(searchDir.absoluteFilePath(materialFiles[i]));
 			createdFiles.append(input);
 			QFile material(input);
 			QDomDocument materialXml;
@@ -254,11 +267,11 @@ void ColladaImporter::importFiles()
 				QMessageBox::warning(this, tr("Error"), tr("Couldn't open material file to extract texture information!"));		
 			else
 			{
-				QDomNodeList textures = materialXml.elementsByTagName("TexUnit");
+				QDomNodeList textures = materialXml.elementsByTagName("Sampler");
 				for (int j=0; j<textures.size(); ++j)
 					textureFiles << textures.at(j).toElement().attribute("map");
 			}
-			QString output(QFileInfo(QDir(m_resourceDir.absoluteFilePath(tempColladaFile.baseName())), materialFiles[i]).absoluteFilePath());
+			QString output(QFileInfo(outDir, materialFiles[i]).absoluteFilePath());
 			CopyJob job(input, output);
 			if (!job.exec() && !filesToOverwrite.contains(job) && !alreadyCopied.contains(job))
 				filesToOverwrite.push_back(job);
@@ -275,11 +288,12 @@ void ColladaImporter::importFiles()
 			QString input(QFileInfo(m_resourceDir, textureFiles[i]).absoluteFilePath());
 			if (!QFile::exists(input))
 			{
+				QFileInfo textureFile(m_resourceDir, textureFiles[i]);				
 				input = QFileDialog::getOpenFileName(
 					this, 
 					tr("Where is the texture file %1").arg(textureFiles[i]), 
-					textureDir.absoluteFilePath(textureFiles[i]), 
-					tr("Texture (%1)").arg(textureFiles[i]));
+					textureDir.absolutePath(), 
+					tr("Texture (%1)").arg(textureFile.fileName()));
 			}
 			if (!input.isEmpty())
 			{
@@ -301,7 +315,7 @@ void ColladaImporter::importFiles()
 		// Remove temporary files and dirs
 		for (int i=0; i<createdFiles.size(); ++i)
 			QFile::remove(createdFiles[i]);
-		QDir(m_outputDir.absolutePath() + QDir::separator()+"materials").rmdir(tempColladaFile.baseName());
+		QDir(m_outputDir.absolutePath() + QDir::separator()+"models").rmdir(tempColladaFile.baseName());
 	}
 	cleanUp();
 	m_logWidget->append("\nImport finished!");
@@ -309,16 +323,27 @@ void ColladaImporter::importFiles()
 
 void ColladaImporter::cleanUp()
 {
-	QStringList matDirs = QDir(m_outputDir.absoluteFilePath("materials")).entryList( QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks );
-	for( int i = 0; i < matDirs.size(); ++i )
+	QStringList modelDirs = QDir(m_outputDir.absoluteFilePath("models")).entryList( QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks );
+	for( int i = 0; i < modelDirs.size(); ++i )
 	{
-		QFileInfoList files = QDir(matDirs[i]).entryInfoList( QDir::Files | QDir::NoSymLinks );
+		QFileInfoList files = QDir(modelDirs[i]).entryInfoList( QDir::Files | QDir::NoSymLinks );
 		foreach( QFileInfo file, files )
 			QFile::remove( file.absoluteFilePath() );
-		QDir(m_outputDir.absoluteFilePath("materials")).rmdir(matDirs[i]);
+		QDir(m_outputDir.absoluteFilePath("models")).rmdir(modelDirs[i]);
 	}
 
-	m_outputDir.rmdir("materials");
+	m_outputDir.rmdir("models");
+
+	QStringList animDirs = QDir(m_outputDir.absoluteFilePath("animations")).entryList( QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks );
+	for( int i = 0; i < animDirs.size(); ++i )
+	{
+		QFileInfoList files = QDir(animDirs[i]).entryInfoList( QDir::Files | QDir::NoSymLinks );
+		foreach( QFileInfo file, files )
+			QFile::remove( file.absoluteFilePath() );
+		QDir(m_outputDir.absoluteFilePath("animations")).rmdir(animDirs[i]);
+	}
+
+	m_outputDir.rmdir("animations");
 
 	QStringList files = m_outputDir.entryList( QDir::Files | QDir::NoSymLinks );
 	foreach( QString file, files )
