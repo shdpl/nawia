@@ -23,6 +23,8 @@
 // ****************************************************************************************
 #include "GameComponentRegistry.h"
 #include "GameComponentManager.h"
+// TODO: remove this include again
+#include "TimingManager.h"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -97,20 +99,69 @@ void GameComponentRegistry::updateComponentManagers()
 {
 	const int size = (int) m_privateRegistry->ManagerRegistry.size();
 	
-#pragma omp parallel for schedule(dynamic)
+
+	float updateTime, runTime;
+	static float runSum[25];
+	static int runCount = 20;
+	static float updateSum[25];
+	static float renderSum = 0;
+
+	runTime = TimingManager::currentTimeStamp();
+#pragma omp parallel for schedule(dynamic), private(updateTime)
 	for( int i = 0; i < size; ++i )
 	{
+		updateTime = TimingManager::currentTimeStamp();
 		m_privateRegistry->ManagerRegistry[i]->run();
+		runSum[i+1] += TimingManager::currentTimeStamp() - updateTime;
 	}
+	runSum[0] +=  TimingManager::currentTimeStamp() - runTime;
 
 	for( int i = 0; i < size; ++i )
 	{
+		updateTime = TimingManager::currentTimeStamp();
 		m_privateRegistry->ManagerRegistry[i]->update();
+		updateSum[i] += TimingManager::currentTimeStamp() - updateTime;	
 	}
 
+	updateTime = TimingManager::currentTimeStamp();
 	for( int i = 0; i < size; ++i )
 	{
 		m_privateRegistry->ManagerRegistry[i]->render();
+	}
+	renderSum += TimingManager::currentTimeStamp() - updateTime;
+
+
+	if (runCount < 39)
+	{
+		++runCount;
+	}
+	else
+	{
+#ifdef _OPENMP
+		printf("Using OpenMP!\n");
+#else
+		printf("NOT using OpenMP!\n");
+#endif
+		printf("Update:\n");
+		for (int i = 0; i < size; ++i)
+		{
+			printf("Manager %d: %.4f\n", i, updateSum[i] / 0.04f);
+			updateSum[i] = 0.0f;
+		}
+		printf("\n");
+		printf("Run: %.4f\n", runSum[0] / 0.04f);
+		for (int i = 0; i < size; ++i)
+		{
+			printf("Manager %d: %.4f\n", i, runSum[i+1] / 0.04f);
+			runSum[i+1] = 0.0f;
+		}
+		runSum[0] = 0;
+		printf("\n");
+		printf("Render: %.4f\n", renderSum / 0.04f);
+		renderSum = 0.0f;
+		printf("\n");
+
+		runCount = 0;
 	}
 }
 

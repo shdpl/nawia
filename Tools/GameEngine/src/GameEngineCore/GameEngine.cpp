@@ -87,20 +87,6 @@ namespace GameEngine
 		 *   Update Component managers
 		 ***/
 		GameModules::componentRegistry()->updateComponentManagers();
-		
-		/**
-		 * Reset all collision states before collision events will be sent by the Physics
-		 */
-		//CollisionManager::update();
-
-		//DynamidManager::update();
-
-		//// Update Keyboard State
-		//Keyboard::update();
-
-		////Update Sound
-		//Sound::update();
-
 	}
 
 	GAMEENGINE_API size_t componentNames(char* names, size_t size)
