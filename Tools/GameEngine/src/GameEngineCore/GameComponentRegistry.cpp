@@ -33,20 +33,28 @@
 #include <string>
 #include <algorithm>
 
+// Uncomment this line to active printing of benchmark info
+//#define COMPONENT_BENCHMARK
+
+
+#ifdef COMPONENT_BENCHMARK
+#include "TimingManager.h"
+#endif
+
 using namespace std;
 
 
 struct ComponentRegistryPrivate
 {
 	/**
-	 * Stores all creation functions for components
-	 */
+	* Stores all creation functions for components
+	*/
 	map<string, GameComponentRegistry::CREATE_COMPONENT> ComponentRegistry;
 
 
 	/**
-	 * Stores all component managers of plugins
-	 */
+	* Stores all component managers of plugins
+	*/
 	vector<GameComponentManager*>						 ManagerRegistry;
 };
 
@@ -96,22 +104,110 @@ void GameComponentRegistry::unregisterManager(GameComponentManager *manager)
 void GameComponentRegistry::updateComponentManagers()
 {
 	const int size = (int) m_privateRegistry->ManagerRegistry.size();
+
+#ifdef COMPONENT_BENCHMARK
+	float runTime;
+	static float runSum[25];
+	static int runThread[25];
+	static int runCount = 20;
+	static float updateSum[25];
+	static float renderSum = 0;
+
+	runTime = TimingManager::currentTimeStamp();
+#endif
+
 	
-#pragma omp parallel for schedule(dynamic)
-	for( int i = 0; i < size; ++i )
+#pragma omp parallel
 	{
-		m_privateRegistry->ManagerRegistry[i]->run();
+#pragma omp master
+		{
+			if (size > 0)
+				m_privateRegistry->ManagerRegistry[0]->render();
+		}
+#pragma omp for schedule(dynamic)
+		for( int i = 0; i < size; ++i )
+		{
+			#ifdef COMPONENT_BENCHMARK
+				float updateTime = TimingManager::currentTimeStamp();
+				#ifdef _OPENMP
+					runThread[i] = omp_get_thread_num();
+				#else
+					runThread[i] = 0;
+				#endif
+			#endif
+
+			m_privateRegistry->ManagerRegistry[i]->run();
+			
+			#ifdef COMPONENT_BENCHMARK
+				runSum[i+1] += TimingManager::currentTimeStamp() - updateTime;
+			#endif
+		}
 	}
+
+	#ifdef COMPONENT_BENCHMARK
+		runSum[0] +=  TimingManager::currentTimeStamp() - runTime;
+	#endif
 
 	for( int i = 0; i < size; ++i )
 	{
+		#ifdef COMPONENT_BENCHMARK
+			float updateTime = TimingManager::currentTimeStamp();
+		#endif
+
 		m_privateRegistry->ManagerRegistry[i]->update();
+		
+		#ifdef COMPONENT_BENCHMARK
+			updateSum[i] += TimingManager::currentTimeStamp() - updateTime;
+		#endif
 	}
 
-	for( int i = 0; i < size; ++i )
+	#ifdef COMPONENT_BENCHMARK
+		float updateTime = TimingManager::currentTimeStamp();
+	#endif
+
+	for( int i = 1; i < size; ++i )
 	{
 		m_privateRegistry->ManagerRegistry[i]->render();
 	}
+
+	#ifdef COMPONENT_BENCHMARK
+		renderSum += TimingManager::currentTimeStamp() - updateTime;
+	#endif
+
+#ifdef COMPONENT_BENCHMARK
+	if (runCount < 39)
+	{
+		++runCount;
+	}
+	else
+	{
+#ifdef _OPENMP
+		printf("Using OpenMP!\n");
+#else
+		printf("NOT using OpenMP!\n");
+#endif
+		printf("Update:\n");
+		for (int i = 0; i < size; ++i)
+		{
+			printf("Manager %d: %.4f\n", i, updateSum[i] / 0.04f);
+			updateSum[i] = 0.0f;
+		}
+		printf("\n");
+		printf("Run: %.4f\n", runSum[0] / 0.04f);
+		for (int i = 0; i < size; ++i)
+		{
+			printf("Thread %d, Manager %d: %.4f\n", runThread[i], i, runSum[i+1] / 0.04f);
+			runSum[i+1] = 0.0f;
+		}
+		runSum[0] = 0;
+		printf("\n");
+		printf("Render: %.4f\n", renderSum / 0.04f);
+		renderSum = 0.0f;
+		printf("\n");
+
+		runCount = 0;
+	}
+#endif
 }
 
 size_t GameComponentRegistry::componentNames(char* names, size_t size)
@@ -131,4 +227,3 @@ size_t GameComponentRegistry::componentNames(char* names, size_t size)
 	}
 	return componentNames.length() + 1; // add one for the null termination character
 }
-
