@@ -43,6 +43,16 @@ except:
 	print '\nError ! Could not find the \'math\' module!'
 	_ERROR = True
 
+try:
+	import inspect
+	def lineno():
+		"""Returns the current line number in our program."""
+		return inspect.currentframe().f_back.f_lineno
+
+except:
+	print '\nError ! Could not find the \'inspect\' module!'
+	_ERROR = True
+
 if _ERROR:
 	print """Could not load all modules! Please install Python from http://www.python.org
 		and the newest blender version from http://www.blender.org!"""
@@ -1050,9 +1060,15 @@ class Converter():
 				geoFile.write( struct.pack('i', streamElemSize) )
 				for v in self.__vertices:
 					normal = roundVec(v.normal)
-					geoFile.write( struct.pack('h', normal.x*32767) )
-					geoFile.write( struct.pack('h', normal.y*32767) )
-					geoFile.write( struct.pack('h', normal.z*32767) )
+					if math.isnan(normal.x):
+						print 'FIXME : normal detected as NaN, on line ', lineno(), ' : wrote 0-length vector instead !!'
+						geoFile.write( struct.pack('h', 0) )
+						geoFile.write( struct.pack('h', 0) )
+						geoFile.write( struct.pack('h', 0) )
+					else:
+						geoFile.write( struct.pack('h', normal.x*32767) )
+						geoFile.write( struct.pack('h', normal.y*32767) )
+						geoFile.write( struct.pack('h', normal.z*32767) )
 			# Tangent
 			elif i == 2:
 				geoFile.write( struct.pack('i', i ))
