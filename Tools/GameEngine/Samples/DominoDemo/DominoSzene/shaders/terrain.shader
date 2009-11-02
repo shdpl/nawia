@@ -42,14 +42,15 @@ context AMBIENT
 #include "shaders/utilityLib/vertCommon.glsl"
 
 uniform vec4 terBlockParams;
+attribute vec3 vertPos;
 attribute float terHeight;
 varying vec4 pos, vsPos;
 varying vec2 texCoords;
 
 void main( void )
 {
-	vec4 newPos = vec4( gl_Vertex.x * terBlockParams.z + terBlockParams.x, terHeight,
-						gl_Vertex.z * terBlockParams.z + terBlockParams.y, gl_Vertex.w );
+	vec4 newPos = vec4( vertPos.x * terBlockParams.z + terBlockParams.x, terHeight,
+						vertPos.z * terBlockParams.z + terBlockParams.y, 1.0 );
 						
 	pos = calcWorldPos( newPos );
 	vsPos = calcViewPos( pos );
@@ -93,13 +94,14 @@ void main( void )
 
 uniform vec4 lightPos;
 uniform vec4 terBlockParams;
+attribute vec3 vertPos;
 attribute float terHeight;
 varying float dist;
 
 void main( void )
 {
-	vec4 newPos = vec4( gl_Vertex.x * terBlockParams.z + terBlockParams.x, terHeight,
-						gl_Vertex.z * terBlockParams.z + terBlockParams.y, gl_Vertex.w );
+	vec4 newPos = vec4( vertPos.x * terBlockParams.z + terBlockParams.x, terHeight,
+						vertPos.z * terBlockParams.z + terBlockParams.y, 1.0 );
 						
 	vec4 pos = calcWorldPos( newPos );
 	dist = length( lightPos.xyz - pos.xyz ) / lightPos.w;
