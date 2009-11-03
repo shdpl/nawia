@@ -1301,7 +1301,7 @@ class Converter():
 			matFile.write('<Material>\n')
 			matFile.write('\t<Shader source="%s" />\n\n' % defShader)
 			for tex in self.__materials[mat]['textures']:
-				matFile.write('\t<Sampler name="albedoMap" map="%s" />\n' % tex)
+				matFile.write('\t<Sampler name="albedoMap" map="%s" />\n' % tex[1])
 			if self.__materials[mat]['uniform'] != None:
 				color = tuple(self.__materials[mat]['uniform'])
 				name = [self.__materials[mat]['name']+'col']
