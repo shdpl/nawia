@@ -168,15 +168,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\extension.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\listener.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\manager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\sound_extension.cpp"
 				>
 			</File>
 			<File
@@ -206,15 +206,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\extension.h"
-				>
-			</File>
-			<File
 				RelativePath=".\listener.h"
 				>
 			</File>
 			<File
 				RelativePath=".\manager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\sound_extension.h"
 				>
 			</File>
 			<File
