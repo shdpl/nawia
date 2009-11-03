@@ -14,7 +14,6 @@ SOURCES = AboutDialog.cpp \
 	MaterialWidget.cpp \
 	MiscToolBar.cpp \
 	NodeWidget.cpp \
-	PathPage.cpp \
 	PipelineTreeModel.cpp \
 	PipelineTreeView.cpp \
 	PlugInPage.cpp \
@@ -39,7 +38,7 @@ SOURCES = AboutDialog.cpp \
 	QReferenceNodePage.cpp \
 	QStdOutListener.cpp \
 	QTexUnit.cpp \
-	QUniform.cpp \
+	CheckBoxList.cpp \
 	RenderTargetView.cpp \
 	SceneFilePage.cpp \
 	SceneTreeView.cpp \
@@ -62,7 +61,6 @@ HEADERS= AboutDialog.h \
 	MaterialWidget.h \
 	MiscToolBar.h \
 	NodeWidget.h \
-	PathPage.h \
 	PipelineTreeModel.h \
 	PipelineTreeView.h \
 	PlugInPage.h \
@@ -82,12 +80,12 @@ HEADERS= AboutDialog.h \
 	QPipelineNode.h \
 	QPipelineRenderTargetNode.h \
 	QPipelineSetupNode.h \
+	CheckBoxList.h \
 	QPipelineStageNode.h \
 	QReferenceNode.h \
 	QReferenceNodePage.h \
 	QStdOutListener.h \
 	QTexUnit.h \
-	QUniform.h \
 	RenderTargetView.h \
 	SceneFilePage.h \
 	SceneTreeView.h \
@@ -106,7 +104,6 @@ FORMS=AboutDialog.ui \
 	LuaController.ui \
 	MaterialWidget.ui \
 	MiscToolBar.ui \
-	PathPage.ui \
 	PlugInPage.ui \
 	QCameraNodePage.ui \
 	QEmitterNodePage.ui \

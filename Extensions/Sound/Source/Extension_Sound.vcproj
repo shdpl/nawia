@@ -167,7 +167,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\extension.cpp"
+				RelativePath=".\sound_extension.cpp"
 				>
 			</File>
 			<File
@@ -205,7 +205,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\extension.h"
+				RelativePath=".\sound_extension.h"
 				>
 			</File>
 			<File

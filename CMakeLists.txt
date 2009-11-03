@@ -44,7 +44,7 @@ if(HORDE3D_BUILD_SOUND)
 		${HORDE3D_EXTENSION_SOURCES}
 		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/decode_vorbis.cpp
 		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/decode_wave.cpp
-		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/extension.cpp
+		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/sound_extension.cpp
 		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/listener.cpp
 		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/manager.cpp
 		${Horde3D_SOURCE_DIR}/Extensions/Sound/Source/soundNode.cpp
@@ -56,7 +56,7 @@ if(HORDE3D_BUILD_SOUND)
 		)
 	set(HORDE3D_EXTENSION_INCLUDES
 		${HORDE3D_EXTENSION_INCLUDES}
-		"\n#include \"Extensions/Sound/Source/extension.h\"\n"
+		"\n#include \"Extensions/Sound/Source/sound_extension.h\"\n"
 		)
 	# FIXME must be cross platform
 	set(HORDE3D_EXTENSION_INCLUDE_DIRS

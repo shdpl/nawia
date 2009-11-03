@@ -19,6 +19,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include <cstdio>
 #include "glfw.h"
 #include "app.h"
 

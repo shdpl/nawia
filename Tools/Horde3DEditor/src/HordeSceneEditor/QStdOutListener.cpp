@@ -77,9 +77,9 @@ void QStdOutListener::timerEvent(QTimerEvent* /*event*/)
 	char buf[256];
 	unsigned long bytesRead = 0;		
 	do {
-		fflush(stdout); // necessary, or you could wait long before seeing lines
-		bytesRead = 0;		
 #ifdef _WIN32
+                fflush(stdout); // necessary, or you could wait long before seeing lines
+		bytesRead = 0;		
 		// look first in the pipe to prevent ReadFile from blocking
 		if (PeekNamedPipe(m_pipe, buf, sizeof(buf)-1, &bytesRead, NULL, NULL) && bytesRead) 
 		{

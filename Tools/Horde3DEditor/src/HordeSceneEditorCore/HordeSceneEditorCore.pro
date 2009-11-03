@@ -23,7 +23,9 @@ HEADERS =	AttachmentPlugIn.h \
 			ShaderComboBox.h \
 			TextureComboBox.h \
 			TextureProperty.h \
+			ShaderData.h \
 			ToolPlugIn.h \
+			QUniform.h \
 			Vec3fProperty.h
 
 SOURCES = 	CustomTypes.cpp \
@@ -45,6 +47,8 @@ SOURCES = 	CustomTypes.cpp \
 			ShaderComboBox.cpp \
 			TextureComboBox.cpp \
 			TextureProperty.cpp \
+			ShaderData.cpp \
+			QUniform.cpp \
 			Vec3fProperty.cpp 
 
 FORMS = HordeFileDialog.ui \

@@ -142,7 +142,7 @@
   <customwidget>
    <class>MaterialComboBox</class>
    <extends>QComboBox</extends>
-   <header>MaterialCombobox.h</header>
+   <header>MaterialComboBox.h</header>
   </customwidget>
   <customwidget>
    <class>CheckBoxList</class>

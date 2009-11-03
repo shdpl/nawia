@@ -5,6 +5,7 @@ CONFIG += dll
 CONFIG += debug_and_release
 CONFIG += qt
 CONFIG += terrain
+# CONFIG += sound
 
 QT -= gui core
 
@@ -32,7 +33,7 @@ HEADERS += ../../../../Horde3D/Source/Horde3DEngine/egAnimatables.h \
            ../../../../Horde3D/Source/Horde3DEngine/egSceneGraphRes.h \
            ../../../../Horde3D/Source/Horde3DEngine/egScene.h \
            ../../../../Horde3D/Source/Horde3DEngine/egShader.h \
-           ../../../../Horde3D/Source/Horde3DEngine/egTextures.h \
+           ../../../../Horde3D/Source/Horde3DEngine/egTexture.h \
            ../../../../Horde3D/Source/Horde3DEngine/utImage.h \
            ../../../../Horde3D/Source/Horde3DEngine/utOpenGL.h \
            ../../../../Horde3D/Source/Shared/utXMLParser.h \
@@ -61,7 +62,7 @@ SOURCES += ../../../../Horde3D/Source/Horde3DEngine/egAnimatables.cpp \
            ../../../../Horde3D/Source/Horde3DEngine/egScene.cpp \
            ../../../../Horde3D/Source/Horde3DEngine/egSceneGraphRes.cpp \
            ../../../../Horde3D/Source/Horde3DEngine/egShader.cpp \
-           ../../../../Horde3D/Source/Horde3DEngine/egTextures.cpp \
+           ../../../../Horde3D/Source/Horde3DEngine/egTexture.cpp \
            ../../../../Horde3D/Source/Horde3DEngine/utImage.cpp \
            ../../../../Horde3D/Source/Horde3DEngine/utOpenGL.cpp \
            ../../../../Horde3D/Source/Shared/utXMLParser.cpp
@@ -74,6 +75,54 @@ terrain {
     SOURCES += ../../../../Extensions/Terrain/Source/extension.cpp \
                ../../../../Extensions/Terrain/Source/terrain.cpp
 }
+
+sound {
+	DEFINES += QMAKE
+    INCLUDEPATH += ../../../../Extensions/ \
+                   ../../../../Extensions/Sound/Dependencies/Include \
+                   ../../../../Extensions/Sound/Dependencies/Source/vorbis
+    unix:LIBS += -lopenal
+
+    HEADERS += ../../../../Extensions/Sound/Source/sound_extension.h \
+               ../../../../Extensions/Sound/Source/decode_wave.h \
+               ../../../../Extensions/Sound/Source/decode_vorbis.h \
+               ../../../../Extensions/Sound/Source/manager.h \
+               ../../../../Extensions/Sound/Source/listener.h \
+               ../../../../Extensions/Sound/Source/soundResource.h \
+               ../../../../Extensions/Sound/Source/soundNode.h
+    SOURCES += ../../../../Extensions/Sound/Source/sound_extension.cpp \
+               ../../../../Extensions/Sound/Source/decode_wave.cpp \
+               ../../../../Extensions/Sound/Source/decode_vorbis.cpp \
+               ../../../../Extensions/Sound/Source/listener.cpp \
+               ../../../../Extensions/Sound/Source/manager.cpp \
+               ../../../../Extensions/Sound/Source/soundResource.cpp \
+               ../../../../Extensions/Sound/Source/soundNode.cpp \
+               ../../../../Extensions/Sound/Dependencies/Source/ogg/framing.c \
+               ../../../../Extensions/Sound/Dependencies/Source/ogg/bitwise.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbisfile/vorbisfile.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/analysis.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/bitrate.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/block.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/codebook.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/envelope.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/floor0.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/floor1.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/info.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/lookup.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/lpc.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/lsp.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/mapping0.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/mdct.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/psy.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/registry.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/res0.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/sharedbook.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/smallft.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/synthesis.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/vorbisenc.c \
+               ../../../../Extensions/Sound/Dependencies/Source/vorbis/window.c 
+}
+
 
 CONFIG(debug, debug|release) {
         unix {

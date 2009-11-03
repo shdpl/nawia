@@ -1,6 +1,6 @@
 #include "ShaderData.h"
 
-#include <QtXml\QDomDocument>
+#include <QtXml/QDomDocument>
 
 typedef unsigned int uint32;
 

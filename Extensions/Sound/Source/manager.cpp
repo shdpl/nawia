@@ -25,6 +25,11 @@
 
 #include "egModules.h"
 
+#ifndef WIN32
+#include <stdarg.h>
+#include <stdio.h>
+#endif
+
 #include "manager.h"
 
 	SoundManager SoundManager::_instance;
