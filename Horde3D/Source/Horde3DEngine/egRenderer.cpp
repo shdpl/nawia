@@ -1516,13 +1516,13 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 				
 				Vec4f color;
 				if( curLod == 0 ) color = Vec4f( 0.5f, 0.75f, 1, 1 );
-				else if( curLod == 1 ) color = Vec4f( 0.25f, 0.75, 0.75f, 1 );
-				else if( curLod == 2 ) color = Vec4f( 0.25f, 0.75, 0.5f, 1 );
-				else if( curLod == 3 ) color = Vec4f( 0.5f, 0.5f, 0.25f, 1 );
-				else color = Vec4f( 0.75f, 0.5, 0.25f, 1 );
+				else if( curLod == 1 ) color = Vec4f( 0.75f, 0.25, 0.75f, 1 );
+				else if( curLod == 2 ) color = Vec4f( 0.25f, 0.75, 0.25f, 1 );
+				else if( curLod == 3 ) color = Vec4f( 1.0f, 0.75f, 0.0f, 1 );
+				else color = Vec4f( 1.0f, 0.25, 0.25f, 1 );
 
 				// Darken models with skeleton so that bones are more noticable
-				if( !modelNode->_jointList.empty() ) color = color * 0.3f;
+				if( !modelNode->_jointList.empty() ) color = color * 0.5f;
 
 				glUniform4fv( Modules::renderer()._defColShader_color, 1, &color.x );
 			}
