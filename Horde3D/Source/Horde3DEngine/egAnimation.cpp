@@ -316,6 +316,7 @@ bool AnimationController::setupAnimStage( int stage, AnimationResource *anim, in
 		}
 		
 		_dirty = true;
+	    updateActiveList();
 		return true;
 	}
 	else if( curStage != 0x0 )
@@ -388,11 +389,11 @@ bool AnimationController::animate()
 		}
 		
 		// Fast path
-		if( Modules::config().fastAnimation && _activeStages.size() == 1)
+		if( Modules::config().fastAnimation && _activeStages.size() == 1 )
 		{
 			uint32 firstStage = _activeStages[0];
 			AnimResEntity *animEnt = _nodeList[i].animEntities[firstStage];
-			if( animEnt != 0x0 && !animEnt->frames.empty() && _animStages[firstStage] != 0x0 )
+			if( animEnt != 0x0 && !animEnt->frames.empty() )
 			{
 				uint32 frame = (uint32)ftoi_t( _animStages[firstStage]->animTime ) % animEnt->frames.size();
 				if( animEnt->frames.size() == 1 ) frame = 0;  // Animation compression
