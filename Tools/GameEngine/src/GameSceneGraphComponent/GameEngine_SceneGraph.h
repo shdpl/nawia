@@ -150,6 +150,11 @@ namespace GameEngine
 	 */
 	SCENEGRAPHPLUGINEXP const char* pickNodeWithIntersectionCoords(float nwx, float nwy, float* coords);
 
+	/**
+	 * returns whether the entity given by the entityID is currently visible through the active cam
+	 */ 
+	SCENEGRAPHPLUGINEXP bool getEntityVisiblitiy(unsigned int entityID);
+
 	/*! @}*/
 
 }

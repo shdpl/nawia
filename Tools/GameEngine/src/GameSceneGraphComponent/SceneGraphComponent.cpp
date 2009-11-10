@@ -41,8 +41,8 @@ GameComponent* SceneGraphComponent::createComponent( GameEntity* owner )
 	return new SceneGraphComponent( owner );
 }
 
-SceneGraphComponent::SceneGraphComponent( GameEntity* owner) : GameComponent(owner, "Horde3D"), m_hordeID(0),
-m_terrainGeoRes(0)
+SceneGraphComponent::SceneGraphComponent( GameEntity* owner) : GameComponent(owner, "Horde3D"), 
+	m_hordeID(0), m_visibilityFlag(0), m_terrainGeoRes(0)
 {
 	// Initialize Memory for transformation
 	m_transformation = new float[16];
@@ -64,6 +64,8 @@ m_terrainGeoRes(0)
 	owner->addListener(GameEvent::E_ATTACH, this);
 	owner->addListener(GameEvent::E_COLLISION, this);
 	owner->addListener(GameEvent::E_SET_ENABLED, this);
+	owner->addListener(GameEvent::E_GET_ACTIVE_CAM, this);
+	owner->addListener(GameEvent::E_VISIBILITY, this);
 	//printf("ID added %d\n", hordeID);
 	SceneGraphManager::instance()->addComponent( this );
 }
@@ -156,7 +158,22 @@ void SceneGraphComponent::executeEvent(GameEvent *event)
 		}
 		break;
 	case GameEvent::E_SET_ENABLED:
-		setVisible(*static_cast<bool*>(event->data()));
+		setEnabled(*static_cast<bool*>(event->data()));
+		break;
+	case GameEvent::E_VISIBILITY:
+		{
+			bool* visible = static_cast<bool*>(event->data());
+			if (visible)
+				*visible = getVisibility();
+		}
+		break;
+	case GameEvent::E_GET_ACTIVE_CAM:
+		if (SceneGraphManager::instance()->getActiveCam() == m_hordeID)
+		{
+			unsigned int* id = static_cast<unsigned int*>(event->data());
+			if (id)
+				*id = m_owner->worldId();
+		}
 		break;
 	}
 }
@@ -174,6 +191,7 @@ void SceneGraphComponent::update()
 		GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(m_transformation, 16), this);
 		m_owner->executeEvent(&event);		
 	}
+	m_visibilityFlag = 0;
 }
 
 void SceneGraphComponent::loadFromXml( const XMLNode* description )
@@ -290,12 +308,21 @@ void SceneGraphComponent::translateLocal(const Vec3f* translation)
 	// ensure that m_transfomration is up to date
 	update();
 
-	Matrix4f trans(m_transformation);
+	/*Matrix4f trans(m_transformation);
 	Vec3f t( (trans * *translation) );
 	trans.x[12] = t.x;
 	trans.x[13] = t.y;
 	trans.x[14] = t.z;
-	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(trans.x, 16), 0);
+	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(trans.x, 16), 0);*/
+	
+	Vec3f t( (Matrix4f(m_transformation) * *translation) );
+	m_transformation[12] = t.x;
+	m_transformation[13] = t.y;
+	m_transformation[14] = t.z;
+	// Send transformation to horde
+	sendTransformation();
+	//and to the other components
+	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(m_transformation, 16), this);
 	if (m_owner->checkEvent(&event))
 		// Synchronize component transformations
 		m_owner->executeEvent(&event);
@@ -306,11 +333,19 @@ void SceneGraphComponent::translateGlobal(const Vec3f* translation)
 	// ensure that m_transfomration is up to date
 	update();
 
-	Matrix4f trans(m_transformation);
+	/*Matrix4f trans(m_transformation);
 	trans.x[12] += translation->x;
 	trans.x[13] += translation->y;
 	trans.x[14] += translation->z;
-	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(trans.x, 16), 0);
+	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(trans.x, 16), 0);*/
+
+	m_transformation[12] += translation->x;
+	m_transformation[13] += translation->y;
+	m_transformation[14] += translation->z;
+	// Send transformation to horde
+	sendTransformation();
+	//and to the other components
+	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(m_transformation, 16), this);
 	if (m_owner->checkEvent(&event))
 		// Synchronize component transformations
 		m_owner->executeEvent(&event);
@@ -318,14 +353,26 @@ void SceneGraphComponent::translateGlobal(const Vec3f* translation)
 
 void SceneGraphComponent::setScale(const Vec3f *scale)
 {
-	Vec3f tr,rotation,sc;
+	/*Vec3f tr,rotation,sc;
 	Matrix4f(m_transformation).decompose(tr,rotation,sc);	
 	
 	Matrix4f trans = Matrix4f::ScaleMat( scale->x, scale->y, scale->z );
 	trans = trans * Matrix4f(Quaternion(rotation.x, rotation.y, rotation.z));
 	trans.translate(m_transformation[12], m_transformation[13], m_transformation[14]);
 	
-	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(trans.x, 16), 0);
+	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(trans.x, 16), 0);*/
+
+	Vec3f tr,rotation,sc;
+	Matrix4f(m_transformation).decompose(tr,rotation,sc);	
+	
+	Matrix4f trans = Matrix4f::ScaleMat( scale->x, scale->y, scale->z );
+	trans = trans * Matrix4f(Quaternion(rotation.x, rotation.y, rotation.z));
+	trans.translate(tr.x, tr.y, tr.z);
+	memcpy( m_transformation, trans.x, sizeof( float ) * 16 );
+	// Send transformation to horde
+	sendTransformation();
+	//and to the other components
+	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(m_transformation, 16), this);
 	if (m_owner->checkEvent(&event))
 		// Synchronize component transformations
 		m_owner->executeEvent(&event);
@@ -338,8 +385,15 @@ void SceneGraphComponent::rotate(const Vec3f* rotation)
 	update();
 
 	Matrix4f trans( Matrix4f(m_transformation) * Matrix4f(Quaternion(degToRad(rotation->x), degToRad(rotation->y), degToRad(rotation->z))) );
+	
 	// Create event without sender attribute, such the scenegraph component will be updated using executeEvent too
-	GameEvent event(GameEvent::E_SET_TRANSFORMATION, &GameEventData(trans.x, 16), 0);
+	/*GameEvent event(GameEvent::E_SET_TRANSFORMATION, &GameEventData(trans.x, 16), 0);*/
+
+	memcpy( m_transformation, trans.x, sizeof( float ) * 16 );
+	// Send transformation to horde
+	sendTransformation();
+	//and to the other components
+	GameEvent event(GameEvent::E_SET_TRANSFORMATION, &GameEventData(trans.x, 16), this);
 	// Check if the new transformation can be set
 	if (m_owner->checkEvent(&event))
 		// Synchronize component transformations
@@ -352,8 +406,15 @@ void SceneGraphComponent::setRotation(const Vec3f* rotation)
 	Matrix4f trans = Matrix4f::ScaleMat( scale.x, scale.y, scale.z );
 	trans = trans * Matrix4f(Quaternion(degToRad(rotation->x), degToRad(rotation->y), degToRad(rotation->z)));
 	trans.translate(m_transformation[12], m_transformation[13], m_transformation[14]);
+	
 	// Create event without sender attribute, such the scenegraph component will be updated using executeEvent too
-	GameEvent event(GameEvent::E_SET_TRANSFORMATION, &GameEventData(trans.x, 16), 0);
+	//GameEvent event(GameEvent::E_SET_TRANSFORMATION, &GameEventData(trans.x, 16), 0);
+
+	memcpy( m_transformation, trans.x, sizeof( float ) * 16 );
+	// Send transformation to horde
+	sendTransformation();
+	//and to the other components
+	GameEvent event(GameEvent::E_SET_TRANSFORMATION, &GameEventData(trans.x, 16), this);
 	// Check if the new transformation can be set
 	if (m_owner->checkEvent(&event))
 		// Synchronize component transformations
@@ -411,9 +472,9 @@ void SceneGraphComponent::attach(const Attach* data)
 		data->Sx, data->Sy, data->Sz);
 }
 
-void SceneGraphComponent::setVisible(bool visible)
+void SceneGraphComponent::setEnabled(bool enable)
 {
-	h3dSetNodeActivation(m_hordeID, visible);
+	h3dSetNodeActivation(m_hordeID, enable);
 }
 
 void SceneGraphComponent::unloadTerrainGeoRes()
@@ -424,4 +485,16 @@ void SceneGraphComponent::unloadTerrainGeoRes()
 		h3dReleaseUnusedResources();
 		m_terrainGeoRes = 0;
 	}
+}
+
+bool SceneGraphComponent::getVisibility()
+{
+	if (m_visibilityFlag == 0)
+	{
+		if (h3dCheckNodeVisibility(hordeId(), SceneGraphManager::instance()->getActiveCam(), true, false) != -1)
+			m_visibilityFlag = 1;
+		else
+			m_visibilityFlag = 2;
+	}
+	return (m_visibilityFlag == 1);
 }

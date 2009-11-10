@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib luad.lib xmlparserd.lib horde3d_vc8.lib horde3dutils_vc8.lib"
+				AdditionalDependencies="delayimp.lib luad.lib xmlparserd.lib horde3d_vc8.lib horde3dutils_vc8.lib opengl32.lib"
 				OutputFile="$(SolutionDir)bin\$(ProjectName)d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib lua.lib xmlparser.lib horde3d_vc8.lib horde3dutils_vc8.lib"
+				AdditionalDependencies="delayimp.lib lua.lib xmlparser.lib horde3d_vc8.lib horde3dutils_vc8.lib opengl32.lib"
 				OutputFile="$(SolutionDir)bin\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"

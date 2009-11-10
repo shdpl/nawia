@@ -74,7 +74,7 @@ public:
 	void addNewHordeNode(int newSceneNode) { m_newSceneNodes.push( newSceneNode ); }
 
 
-	void setActiveCam( int cameraID ) { m_activeCam = cameraID; }
+	void setActiveCam( int cameraID );
 
 	int getActiveCam() { return m_activeCam; }
 
@@ -94,7 +94,8 @@ private:
 
 	static SceneGraphManager*			m_instance;
 
-	int									m_activeCam;	
+	int									m_activeCam;
+	int									m_nextCam;
 	std::vector<SceneGraphComponent*>	m_sceneGraphComponents;	
 	std::stack<int>						m_newSceneNodes;
 

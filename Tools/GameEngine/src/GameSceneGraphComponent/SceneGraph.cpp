@@ -37,6 +37,8 @@
 
 #include "SceneGraphComponent.h"
 
+#include <gl/gl.h>
+
 using namespace std;
 
 struct UpdateNode
@@ -62,7 +64,7 @@ void SceneGraphManager::release()
 	m_instance = 0x0;
 }
 
-SceneGraphManager::SceneGraphManager() : GameComponentManager(), m_activeCam(0) 
+SceneGraphManager::SceneGraphManager() : GameComponentManager(), m_activeCam(0), m_nextCam(0)
 {
 
 }
@@ -84,8 +86,25 @@ void SceneGraphManager::removeComponent(SceneGraphComponent* node)
 
 void SceneGraphManager::render()
 {
-	h3dRender(m_activeCam);				
-	h3dFinalizeFrame();
+	if (m_activeCam != 0)
+	{
+		h3dRender(m_activeCam);				
+		h3dFinalizeFrame();
+
+		// Reset OpenGL camera so other components can render their content too
+		const float* cameraTrans = 0; 
+		h3dGetNodeTransMats(m_activeCam, 0, &cameraTrans);
+		if (cameraTrans)
+		{
+			Matrix4f transMat(cameraTrans);
+			float cameraProjMat[16];
+			h3dGetCameraProjMat(m_activeCam, cameraProjMat);
+			glMatrixMode(GL_PROJECTION);		
+			glLoadMatrixf(cameraProjMat);
+			glMatrixMode(GL_MODELVIEW);		
+			glLoadMatrixf(transMat.inverted().x);
+		}
+	}
 }
 
 void SceneGraphManager::update()
@@ -117,11 +136,21 @@ void SceneGraphManager::update()
 		}
 		GameLog::logMessage("%d game entities created", attachments);
 	}
-	// If we don't have an active camera yet, get the first available
-	if( m_activeCam == 0 )
+
+	if (m_activeCam != m_nextCam)
 	{
+		// Update to the new camera
+		m_activeCam = m_nextCam;
+		int camWorldID = findEntity(m_activeCam);
+		GameModules::gameWorld()->executeEvent(
+		&GameEvent(GameEvent::E_ACTIVE_CAM_CHANGE, &GameEventData(camWorldID), 0x0) );
+	}
+	else if (m_activeCam == 0)
+	{
+		// But if we don't have an active camera yet, get the first available
 		int cams = h3dFindNodes( H3DRootNode, "", H3DNodeTypes::Camera );
-		if( cams > 0 )	m_activeCam = h3dGetNodeFindResult(0); 		
+		if( cams > 0 )
+			setActiveCam(h3dGetNodeFindResult(0));
 	}
 
 	// Force Update in Horde3D to make sure the transform flags of the scene nodes are up-to-date
@@ -180,4 +209,9 @@ int SceneGraphManager::findEntity( int hordeID )
 		++iter;
 	}
 	return 0;
+}
+
+void SceneGraphManager::setActiveCam(int cameraID)
+{
+	m_nextCam = cameraID;
 }

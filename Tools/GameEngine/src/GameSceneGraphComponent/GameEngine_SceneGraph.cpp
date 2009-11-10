@@ -175,5 +175,14 @@ namespace GameEngine
 		return h3dGetNodeParamStr( node, H3DNodeParams::NameStr );
 	}
 
+	SCENEGRAPHPLUGINEXP bool getEntityVisiblitiy(unsigned int entityID)
+	{
+		SceneGraphComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityID);
+		if (entity && ( component = static_cast<SceneGraphComponent*>(entity->component("Horde3D")) ) != 0)
+			return component->getVisibility();
+		return false;
+	}
+
 }
 

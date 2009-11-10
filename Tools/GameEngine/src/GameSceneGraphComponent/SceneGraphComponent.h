@@ -158,6 +158,14 @@ public:
 	 * @return Horde3D's scene graph node ID
 	 */ 
 	int hordeId() { return m_hordeID; }
+
+	/**
+	 * \brief get the visibility of the current entitiy in the active cam
+	 * 
+	 * @return visibility
+	 */ 
+	bool getVisibility();
+
 private:
 	
 	void getMeshData(MeshData* data);
@@ -167,7 +175,7 @@ private:
 	void setRotation(const Vec3f* rotation);
 	void setScale(const Vec3f* scale);
 	void attach(const Attach* data);
-	void setVisible(bool visible);
+	void setEnabled(bool enable);
 	void setParentNode(const Attach* data);
 
 	void unloadTerrainGeoRes();
@@ -175,6 +183,9 @@ private:
 	float*				m_transformation;
 	H3DNode				m_hordeID;
 	std::vector<int>	m_currentCollisions;
+
+	// 0 = unknown, 1 = visible, 2 = invisible
+	short				m_visibilityFlag;
 
 	int					m_terrainGeoRes;
 };
