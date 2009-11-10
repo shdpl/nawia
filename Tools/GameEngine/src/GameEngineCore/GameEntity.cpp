@@ -58,8 +58,7 @@ struct GameEntityPrivate
 		if (!Listeners[id].empty())
 		{
 			std::vector<GameComponent*>::iterator component;
-			const std::vector<GameComponent*>::iterator componentsEnd = Listeners[id].end();
-			while ((component = find(Listeners[id].begin(), Listeners[id].end(), listener)) != componentsEnd)
+			while ((component = find(Listeners[id].begin(), Listeners[id].end(), listener)) != Listeners[id].end())
 				Listeners[id].erase(component);
 		}
 	}

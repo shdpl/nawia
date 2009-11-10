@@ -239,7 +239,7 @@ public:
 		E_INVALID, 
 		E_SET_TRANSFORMATION,	/// A transformation change event, containing the new transformation 
 		E_SET_ROTATION,			/// Set the rotation of the object in world space
-		E_SET_TRANSLATION,		/// TODO
+		E_SET_TRANSLATION,		/// A translation change event, containing new global translation (Vec3fData)
 		E_SET_SCALE,			/// Set the scale of the object
 		E_TRANSLATE_LOCAL,		/// Translate Object along it's local axis (using a Vec3fData)
 		E_TRANSLATE_GLOBAL,		/// Translate object along the world axis (using a Vec3fData)
@@ -260,7 +260,9 @@ public:
 		E_SPEAKING_STOPPED,		/// Speak a sentence is finished
 		E_SET_VOICE,			/// Change the TTS Voice of a TTSComponent
 		E_COLLISION,			/// A collision occured
-		E_ACTIVATE_CAM,			///  Make the camera the active one		
+		E_ACTIVATE_CAM,			/// Make the current entity the active camera if it is one
+		E_ACTIVE_CAM_CHANGE,	/// Global event: the current active camera has changed, @data: the cams worldID
+		E_GET_ACTIVE_CAM,		/// Global event: get the currently active camera entity world id
 		E_PERFORM_ACTION,		/// Perform an action
 		E_WITNESS_ACTION,		/// Witness an action
 		E_GO_TO_ENTITY,			/// Move close to another entity
@@ -290,6 +292,8 @@ public:
 		GB_WAVE_BACK,			/// makes the npc react to a waving event
 		GB_RESET,				/// reset all collected data
 		GB_KEY_PRESSED,			/// inidicates a key press event
+		E_AILOD_CHANGE,			/// occurs when the ai lod of an entity has changed, @data: the entity's new lod value
+		E_VISIBILITY,			/// Returns whether the current entity is visible by the active cam
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
 	static GameEvent::EventID convertStringEvent(std::string in)
@@ -336,6 +340,8 @@ public:
 		if(in.find("E_SET_PHONEMES_FILE") != std::string::npos) return GameEvent::E_SET_PHONEMES_FILE;
 		if(in.find("E_SET_ENABLED") != std::string::npos) return GameEvent::E_SET_ENABLED;
 		if(in.find("E_PICKUP") != std::string::npos) return GameEvent::E_PICKUP;
+		if(in.find("E_AILOD_CHANGE") != std::string::npos) return GameEvent::E_AILOD_CHANGE;
+		if(in.find("E_ACTIVE_CAM_CHANGE") != std::string::npos) return GameEvent::E_ACTIVE_CAM_CHANGE;
 		return GameEvent::EVENT_COUNT;
 
 	}

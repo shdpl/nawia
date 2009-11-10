@@ -52,7 +52,7 @@ class DLLEXP GameEntity
 {
 	friend class GameComponent;
 	friend class GameWorld;
-	friend struct DeleteEntity;
+	friend struct GameWorldPrivate;
 
 public:	
 	/**

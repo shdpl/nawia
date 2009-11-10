@@ -55,8 +55,11 @@ struct GameWorldPrivate
 {
 	~GameWorldPrivate()
 	{
-		for_each( WorldList.begin(), WorldList.end(), DeleteEntity() );
-		WorldList.clear();
+		while( !WorldList.empty())
+		{
+			delete WorldList.back();
+			WorldList.pop_back();
+		}
 		WorldMap.clear();	
 		while (!NextIndexList.empty())
 			NextIndexList.pop();
@@ -77,7 +80,8 @@ GameWorld::GameWorld()
 
 GameWorld::~GameWorld()
 {
-	delete m_world;	
+	delete m_world;
+	m_world = 0x0;
 }
 
 
@@ -197,6 +201,7 @@ void GameWorld::renameEntity(const unsigned int oldId, const EntityID& newId)
 
 bool GameWorld::checkEvent(GameEvent* event)
 {
+	// TODO: optimize this
 	vector<GameEntity*>::iterator iter = m_world->WorldList.begin();
 	const vector<GameEntity*>::iterator end = m_world->WorldList.end();
 	while( iter != end )
@@ -209,6 +214,7 @@ bool GameWorld::checkEvent(GameEvent* event)
 
 void GameWorld::executeEvent(GameEvent* event)
 {
+	// TODO: optimize this (entities may register as listener to the game world themselves?)
 	for_each(m_world->WorldList.begin(), m_world->WorldList.end(), ExecuteEvent(event));
 }
 
