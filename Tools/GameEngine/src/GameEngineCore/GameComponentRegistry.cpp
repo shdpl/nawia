@@ -18,7 +18,7 @@
 //
 // GameEngine Core Library of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Volker Wiendl
+// Copyright (C) 2007-2009 Volker Wiendl, Felix Kistler
 // 
 // ****************************************************************************************
 #include "GameComponentRegistry.h"

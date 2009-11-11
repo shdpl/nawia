@@ -25,6 +25,7 @@
 #define GAMEWORLD_H_
 
 #include "GameEntity.h"
+#include "GameEvent.h"
 
 #include <string>
 
@@ -153,6 +154,30 @@ public:
 	 * @param event the event to execute
 	 */ 
 	void executeEvent(unsigned int id, GameEvent* event);
+
+	/**
+	 * \brief Adds a Entity as a listener for the specified event
+	 * 
+	 * @param eventType the ID of the GameEvent the Entity wants to listen to
+	 * @param listener the Entity that wants to be notified about the specified event
+	 */
+	void addListener( GameEvent::EventID id, GameEntity* listener );
+
+	/**
+	 * \brief Removes a Entity from the list of listeners for a specific event
+	 * 
+	 * @param eventType the ID of the GameEvent the Entity has been listen to
+	 * @param listener the Entity that wants to should be removed from the event's listener list
+	 */
+	void removeListener( GameEvent::EventID eventType, GameEntity* listener );
+
+	/**
+	 * \brief Removes a Entity from the World's communication system
+	 * 
+	 * After calling this method the specified Entity won't be notified about any event any longer
+	 * @param listener the Entity that should not be notified about events any longer
+	 */
+	void removeListener( GameEntity* listener );
 
 private:
 	/// Private Constructor (only GameModules is allowed to call it)

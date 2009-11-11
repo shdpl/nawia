@@ -18,11 +18,14 @@
 //
 // GameEngine Core Library of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Volker Wiendl
+// Copyright (C) 2007-2009 Volker Wiendl, Felix Kistler
 // 
 // ****************************************************************************************
 #include "GameEntity.h"
+
 #include "GameLog.h"
+#include "GameModules.h"
+#include "GameWorld.h"
 
 
 #include <algorithm>
@@ -36,6 +39,9 @@
  * 
  * @author Volker Wiendl
  * @date 2008
+ * 
+ * @author Felix Kistler
+ * @date 2009
  */
 struct GameEntityPrivate
 {
@@ -43,34 +49,59 @@ struct GameEntityPrivate
 	{
 		while( !Components.empty() )
 		{
-			// Destructor of GameComponent will remove component from vector
+			// Destructor of GameComponent will remove component from vector and listeners
 			delete Components.front();
 		}
 	}
 
-	void addListener(GameEvent::EventID id, GameComponent* listener)
+	void addListener(GameEvent::EventID id, GameComponent* listener, GameEntity* entity)
 	{
-		Listeners[id].push_back(listener);
-	}
-
-	void removeListener(GameEvent::EventID id, GameComponent* listener)
-	{	
-		if (!Listeners[id].empty())
+		// Don't add components multiple times
+		std::vector<GameComponent*>::iterator component = 
+			find(Listeners[id].begin(), Listeners[id].end(), listener);
+		if (component == Listeners[id].end())
 		{
-			std::vector<GameComponent*>::iterator component;
-			while ((component = find(Listeners[id].begin(), Listeners[id].end(), listener)) != Listeners[id].end())
-				Listeners[id].erase(component);
+			Listeners[id].push_back(listener);
+
+			if (Listeners[id].size() == 1)
+			{
+				// First listener of this kind, so register a listener to the game world
+				GameModules::gameWorld()->addListener(id, entity);
+			}
 		}
 	}
 
-	void removeListener(GameComponent* listener)
+	void removeListener(GameEvent::EventID id, GameComponent* listener, GameEntity* entity)
+	{	
+		if (!Listeners[id].empty())
+		{
+			std::vector<GameComponent*>::iterator component = 
+				find(Listeners[id].begin(), Listeners[id].end(), listener);
+			if (component != Listeners[id].end())
+			{
+				Listeners[id].erase(component);
+				
+				// Last listener so remove listener of the game world
+				if (Listeners[id].empty())
+					GameModules::gameWorld()->removeListener(id, entity);
+			}
+		}
+	}
+
+	void removeListener(GameComponent* listener, GameEntity* entity)
 	{		
 		for (int i=0; i < GameEvent::EVENT_COUNT; ++i)
 		{
-			std::vector<GameComponent*>::iterator component;		
-			// TODO: Can one component be registered to one event multiple times?
-			while ((component = find(Listeners[i].begin(), Listeners[i].end(), listener)) != Listeners[i].end())
+			std::vector<GameComponent*>::iterator component = 
+				find(Listeners[i].begin(), Listeners[i].end(), listener);
+			if (component != Listeners[i].end())
+			{
 				Listeners[i].erase(component);
+
+				// Last listener so remove listener of the game world
+				if (Listeners[i].empty())
+					GameModules::gameWorld()->removeListener((GameEvent::EventID)i, entity);
+			}
 		}
 	}
 
@@ -99,17 +130,17 @@ GameEntity::~GameEntity()
 
 void GameEntity::addListener( GameEvent::EventID eventType, GameComponent* listener )
 {
-	m_privateData->addListener( eventType, listener );
+	m_privateData->addListener( eventType, listener, this );
 }
 
 void GameEntity::removeListener( GameEvent::EventID eventType, GameComponent* listener )
 {
-	m_privateData->removeListener( eventType, listener );
+	m_privateData->removeListener( eventType, listener, this );
 }
 
 void GameEntity::removeListener( GameComponent* listener )
 {
-	m_privateData->removeListener( listener );
+	m_privateData->removeListener( listener, this );
 }
 
 

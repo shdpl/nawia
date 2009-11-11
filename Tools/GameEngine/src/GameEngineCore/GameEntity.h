@@ -18,7 +18,7 @@
 //
 // GameEngine Core Library of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Volker Wiendl
+// Copyright (C) 2007-2009 Volker Wiendl, Felix Kistler
 // 
 // ****************************************************************************************
 #ifndef GAMEENTITY_H_
@@ -29,8 +29,8 @@
 #include <GameEngine/utMath.h>
 
 #include "GameComponent.h"
+#include "GameEvent.h"
 
-class GameEvent;
 struct GameEntityPrivate;
 
 typedef std::string EntityID;
@@ -43,10 +43,10 @@ typedef std::string EntityID;
  * \brief Aggregation of Game Components
  *
  * A GameEntity aggregates several game components and provides event methods to send GameEvent instances 
- * to all aggregated components.
+ * to all aggregated components and other componentes that have registered as listener.
  * 
- * @author Volker Wiendl
- * @date 2008
+ * @author Volker Wiendl, Felix Kistler
+ * @date 2008-2009
  */
 class DLLEXP GameEntity
 {

@@ -18,12 +18,13 @@
 //
 // GameEngine Core Library of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Volker Wiendl
+// Copyright (C) 2007-2009 Volker Wiendl, Felix Kistler
 // 
 // ****************************************************************************************
 #include "GameWorld.h"
 
 #include "GameLog.h"
+#include "GameEntity.h"
 
 #include <map>
 #include <stack>
@@ -32,13 +33,13 @@
 
 using namespace std;
 
-struct DeleteEntity
-{ 
-	template<typename T> void operator()(const T* ptr) const
-	{
-		delete ptr;
-	}
-};
+//struct DeleteEntity
+//{ 
+//	template<typename T> void operator()(const T* ptr) const
+//	{
+//		delete ptr;
+//	}
+//};
 
 struct ExecuteEvent
 { 
@@ -65,7 +66,41 @@ struct GameWorldPrivate
 			NextIndexList.pop();
 	}
 
-	std::map<EntityID, unsigned int> WorldMap;
+	
+	void addListener(GameEvent::EventID id, GameEntity* listener)
+	{
+		// Don't add entities multiple times
+		std::vector<GameEntity*>::iterator component = 
+			find(Listeners[id].begin(), Listeners[id].end(), listener);
+		if (component == Listeners[id].end())
+			Listeners[id].push_back(listener);
+	}
+
+	void removeListener(GameEvent::EventID id, GameEntity* listener)
+	{	
+		if (!Listeners[id].empty())
+		{
+			std::vector<GameEntity*>::iterator component = 
+				find(Listeners[id].begin(), Listeners[id].end(), listener);
+			if (component != Listeners[id].end())
+				Listeners[id].erase(component);
+		}
+	}
+
+	void removeListener(GameEntity* listener)
+	{		
+		for (int i=0; i < GameEvent::EVENT_COUNT; ++i)
+		{
+			std::vector<GameEntity*>::iterator component = 
+				find(Listeners[i].begin(), Listeners[i].end(), listener);
+			if (component != Listeners[i].end())
+				Listeners[i].erase(component);
+		}
+	}
+
+	std::vector<GameEntity*>			Listeners[GameEvent::EVENT_COUNT];
+
+	std::map<EntityID, unsigned int>	WorldMap;
 	std::vector<GameEntity*>			WorldList;
 
 	std::stack<unsigned int>			NextIndexList;
@@ -201,21 +236,31 @@ void GameWorld::renameEntity(const unsigned int oldId, const EntityID& newId)
 
 bool GameWorld::checkEvent(GameEvent* event)
 {
-	// TODO: optimize this
-	vector<GameEntity*>::iterator iter = m_world->WorldList.begin();
-	const vector<GameEntity*>::iterator end = m_world->WorldList.end();
-	while( iter != end )
+	//vector<GameEntity*>::iterator iter = m_world->WorldList.begin();
+	//const vector<GameEntity*>::iterator end = m_world->WorldList.end();
+	//while( iter != end )
+	//{
+	//	if( (*iter)->checkEvent(event) == false ) return false;
+	//	++iter;
+	//}
+	//return true;
+	const int id = event->id();
+	std::vector<GameEntity*>::iterator entityIter = m_world->Listeners[id].begin();
+	const std::vector<GameEntity*>::iterator entitysEnd = m_world->Listeners[id].end();
+	while ( entityIter != entitysEnd )
 	{
-		if( (*iter)->checkEvent(event) == false ) return false;
-		++iter;
+		if (!(*entityIter)->checkEvent(event))
+			return false;
+		entityIter++; 
 	}
 	return true;
 }
 
 void GameWorld::executeEvent(GameEvent* event)
 {
-	// TODO: optimize this (entities may register as listener to the game world themselves?)
-	for_each(m_world->WorldList.begin(), m_world->WorldList.end(), ExecuteEvent(event));
+	//for_each(m_world->WorldList.begin(), m_world->WorldList.end(), ExecuteEvent(event));
+	const int id = event->id();
+	for_each(m_world->Listeners[id].begin(), m_world->Listeners[id].end(), ExecuteEvent(event));
 }
 
 bool GameWorld::checkEvent(unsigned int id, GameEvent* event)
@@ -230,4 +275,19 @@ void GameWorld::executeEvent(unsigned int id, GameEvent* event)
 {
 	if (id <= m_world->WorldList.size() && m_world->WorldList[id])	
 		m_world->WorldList[id]->executeEvent(event);		
+}
+
+void GameWorld::addListener( GameEvent::EventID eventType, GameEntity* listener )
+{
+	m_world->addListener( eventType, listener );
+}
+
+void GameWorld::removeListener( GameEvent::EventID eventType, GameEntity* listener )
+{
+	m_world->removeListener( eventType, listener );
+}
+
+void GameWorld::removeListener( GameEntity* listener )
+{
+	m_world->removeListener( listener );
 }
