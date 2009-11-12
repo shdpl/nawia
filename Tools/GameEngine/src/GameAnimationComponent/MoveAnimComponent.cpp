@@ -41,7 +41,8 @@ GameComponent* MoveAnimComponent::createComponent( GameEntity* owner )
 
 MoveAnimComponent::MoveAnimComponent(GameEntity *owner) : GameComponent(owner, "MoveAnimComponent"), 
 	m_oldPos(0,0,0), m_newPos(0, 0, 0), m_moveAnim(0), m_moveBackAnim(0), m_moveLeftAnim(0), m_nextAnim(0),
-	m_moveRightAnim(0),	m_speed(1.0f), m_activeAnim(0), m_idle(true), m_idleAnimCount(0), m_idleTime(0), m_randSeed(false)
+	m_moveRightAnim(0),	m_speed(1.0f), m_activeAnim(0), m_idle(true), m_idleAnimCount(0), m_idleTime(0),
+	m_randSeed(false), m_LODToStopAnim(999), m_lod(-1)
 {
 	for( int i=0; i< 5; ++i )
 		m_idleAnim[i] = 0x0;
@@ -56,6 +57,9 @@ MoveAnimComponent::MoveAnimComponent(GameEntity *owner) : GameComponent(owner, "
 	
 	//listen for transformation changes
 	owner->addListener(GameEvent::E_SET_TRANSFORMATION, this);
+
+	//listen for lod change
+	owner->addListener(GameEvent::E_AILOD_CHANGE, this);
 	
 	MoveAnimManager::instance()->addObject(this);
 }
@@ -93,6 +97,9 @@ void MoveAnimComponent::executeEvent(GameEvent *event)
 			absTrans.decompose(m_newPos, m_rotation, s);
 		}
 		break;
+	case GameEvent::E_AILOD_CHANGE:
+		m_lod = *static_cast<int*>(event->data());
+		break;
 	}
 }
 
@@ -109,6 +116,11 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 	const char* moveBack = description->getAttribute("moveBackAnimation", "");
 	const char* moveLeft = description->getAttribute("moveLeftAnimation", "");
 	const char* moveRight = description->getAttribute("moveRightAnimation", "");
+
+	// Get lod value from which on animation is stopped, but remove listener if not set
+	m_LODToStopAnim = static_cast<int>(atoi(description->getAttribute("LODToStopAnim", "999")));
+	if (m_LODToStopAnim == 999)
+		m_owner->removeListener(GameEvent::E_AILOD_CHANGE, this);
 
 
 	if( _stricmp(move, "") != 0 )
@@ -175,80 +187,85 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 
 void MoveAnimComponent::update(float fps)
 {
-	//calculate translated distance and speed in x,z plane
-	Vec3f dist = m_newPos - m_oldPos;
-	dist.y = 0;
-	float speed = m_speed * dist.length()* fps;
-	static const float pi3rd = Math::Pi / 3;
-	
-	m_nextAnim = 0x0;
-
-	// Object is moving
-	if( speed >= 0.0005f )
+	if (m_lod < m_LODToStopAnim)
 	{
+		//calculate translated distance and speed in x,z plane
+		Vec3f dist = m_newPos - m_oldPos;
+		dist.y = 0;
+		float speed = m_speed * dist.length()* fps;
+		static const float pi3rd = Math::Pi / 3;
 		
-		// Direction in radiants = angle of walking direction - y-rotation of the object
-		float direction = atan2( -dist.x, -dist.z ) - m_rotation.y;
-		
-		// Normalize direction angle to [-PI, +PI]
-		// To get less if cases
-		if( direction > Math::Pi ) 
-			direction = direction - Math::TwoPi;
-		if( direction < -Math::Pi )
-			direction = Math::TwoPi + direction;
+		m_nextAnim = 0x0;
 
-		// Find the right move animation to play by the moving direction
-		// If the exact animation is not specified, play the one for forward moving 
-		if( direction <= pi3rd && direction >= -pi3rd )
+		// Object is moving
+		if( speed >= 0.0005f )
 		{
-			if( m_moveAnim != 0x0 )
-				m_nextAnim = m_moveAnim;
-		} else if ( direction >= 2*pi3rd || direction <= -2*pi3rd )
-		{
-			if( m_moveBackAnim != 0x0)
-				m_nextAnim = m_moveBackAnim;
-			else if( m_moveAnim != 0x0 ) m_nextAnim = m_moveAnim;
-		} else if ( direction > pi3rd && direction < 2*pi3rd )
-		{
-			if( m_moveLeftAnim != 0x0)
-				m_nextAnim = m_moveLeftAnim;
-			else if( m_moveAnim != 0x0 ) m_nextAnim = m_moveAnim;
-		} else if ( direction > -2*pi3rd && direction < -pi3rd)
-		{
-			if( m_moveRightAnim != 0x0)
-				m_nextAnim = m_moveRightAnim;
-			else if( m_moveAnim != 0x0 )m_nextAnim = m_moveAnim;
-		}
-	}
+			
+			// Direction in radiants = angle of walking direction - y-rotation of the object
+			float direction = atan2( -dist.x, -dist.z ) - m_rotation.y;
+			
+			// Normalize direction angle to [-PI, +PI]
+			// To get less if cases
+			if( direction > Math::Pi ) 
+				direction = direction - Math::TwoPi;
+			if( direction < -Math::Pi )
+				direction = Math::TwoPi + direction;
 
-	// Play idle animation if too slow or no new Animation was specified
-	if (  m_nextAnim == 0x0 && m_idleAnimCount > 0)
-	{
-		if( !m_idle || m_idleTime < 0 ||  m_nextAnim == 0x0 )
-		{
-			if(!m_randSeed)
+			// Find the right move animation to play by the moving direction
+			// If the exact animation is not specified, play the one for forward moving
+			if( direction <= pi3rd && direction >= -pi3rd )
 			{
-				srand( (unsigned int) (fps * 100000) );
-				m_randSeed = true;
+				if( m_moveAnim != 0x0 )
+					m_nextAnim = m_moveAnim;
+			} else if ( direction >= 2*pi3rd || direction <= -2*pi3rd )
+			{
+				if( m_moveBackAnim != 0x0)
+					m_nextAnim = m_moveBackAnim;
+				else if( m_moveAnim != 0x0 ) m_nextAnim = m_moveAnim;
+			} else if ( direction > pi3rd && direction < 2*pi3rd )
+			{
+				if( m_moveLeftAnim != 0x0)
+					m_nextAnim = m_moveLeftAnim;
+				else if( m_moveAnim != 0x0 ) m_nextAnim = m_moveAnim;
+			} else if ( direction > -2*pi3rd && direction < -pi3rd)
+			{
+				if( m_moveRightAnim != 0x0)
+					m_nextAnim = m_moveRightAnim;
+				else if( m_moveAnim != 0x0 )m_nextAnim = m_moveAnim;
 			}
-			int i = rand() % m_idleAnimCount; 
-			setAnim( m_idleAnim[i], true );
 		}
-		else m_idleTime -= 1.0f / fps;
+
+		// Play idle animation if too slow or no new Animation was specified
+		if (  m_nextAnim == 0x0 && m_idleAnimCount > 0)
+		{
+			if( !m_idle || m_idleTime < 0 ||  m_nextAnim == 0x0 )
+			{
+				if(!m_randSeed)
+				{
+					srand( (unsigned int) (fps * 100000) );
+					m_randSeed = true;
+				}
+				int i = rand() % m_idleAnimCount; 
+				setAnim( m_idleAnim[i], true );
+			}
+			else m_idleTime -= 1.0f / fps;
+		}
+		else
+		{
+			m_idle = false;
+			setAnim( m_nextAnim );
+		}
+
+		//update animation speed (only none idle animations)
+		if( m_activeAnim != 0x0 && !m_idle)
+		{
+			GameEvent updateAnim(GameEvent::E_UPDATE_ANIM, &AnimationUpdate(m_activeAnim->JobID, GameEngineAnimParams::Speed, speed, 0), 0);
+			if (m_owner->checkEvent(&updateAnim))
+				m_owner->executeEvent(&updateAnim);
+		}
 	}
 	else
-	{
-		m_idle = false;
-		setAnim( m_nextAnim );
-	}
-
-	//update animation speed (only none idle animations)
-	if( m_activeAnim != 0x0 && !m_idle)
-	{
-		GameEvent updateAnim(GameEvent::E_UPDATE_ANIM, &AnimationUpdate(m_activeAnim->JobID, GameEngineAnimParams::Speed, speed, 0), 0);
-		if (m_owner->checkEvent(&updateAnim))
-			m_owner->executeEvent(&updateAnim);
-	}
+		setAnim(0x0);
 	
 	//update position
 	m_oldPos = m_newPos;

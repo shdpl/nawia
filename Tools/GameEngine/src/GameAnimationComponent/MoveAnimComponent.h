@@ -167,6 +167,11 @@ private:
 	// If the rand seed was set
 	bool m_randSeed;
 
+	// Animations are only played if lod is below this value
+	int m_LODToStopAnim;
+	// Current lod value
+	int m_lod;
+
 };
 
 
