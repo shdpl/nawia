@@ -58,11 +58,11 @@ Resource *GeometryResource::clone()
 	*res = *this;
 
 	// Make a deep copy of the data
-	res->_indexData = new char[_indexCount * _16BitIndices ? 2 : 4];
+	res->_indexData = new char[_indexCount * (_16BitIndices ? 2 : 4)];
 	res->_vertPosData = new Vec3f[_vertCount];
 	res->_vertTanData = new Vec3f[_vertCount * 3];
 	res->_vertStaticData = new VertexDataStatic[_vertCount];
-	memcpy( res->_indexData, _indexData, _indexCount * _16BitIndices ? 2 : 4 );
+	memcpy( res->_indexData, _indexData, _indexCount * (_16BitIndices ? 2 : 4) );
 	memcpy( res->_vertPosData, _vertPosData, _vertCount * sizeof( Vec3f ) );
 	memcpy( res->_vertTanData, _vertTanData, _vertCount * sizeof( Vec3f ) * 3 );
 	memcpy( res->_vertStaticData, _vertStaticData, _vertCount * sizeof( VertexDataStatic ) );
