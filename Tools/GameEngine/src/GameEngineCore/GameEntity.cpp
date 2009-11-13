@@ -149,11 +149,12 @@ bool GameEntity::checkEvent(GameEvent* event) const
 	const int id = event->id();
 	std::vector<GameComponent*>::iterator componentIter = m_privateData->Listeners[id].begin();
 	const std::vector<GameComponent*>::iterator componentsEnd = m_privateData->Listeners[id].end();
+	const GameComponent* sender = event->sender();
 	while ( componentIter != componentsEnd )
 	{
 		GameComponent* component( *componentIter++ );
 		// Don't make a check on the event sender
-		if ( component != event->sender() && !component->checkEvent(event) )
+		if ( component != sender && !component->checkEvent(event) )
 			return false;
 	}
 	return true;
@@ -164,10 +165,11 @@ void GameEntity::executeEvent(GameEvent* event)
 	const int id = event->id();
 	std::vector<GameComponent*>::iterator componentIter = m_privateData->Listeners[id].begin();
 	const std::vector<GameComponent*>::iterator componentsEnd = m_privateData->Listeners[id].end();
+	const GameComponent* sender = event->sender();
 	while (componentIter != componentsEnd)
 	{
 		GameComponent* component( *componentIter );
-		if ( component != event->sender() )
+		if ( component != sender )
 			component->executeEvent(event);
 		++componentIter;
 	}
