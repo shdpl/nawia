@@ -23,6 +23,8 @@
 
 #include <XMLParser/utXMLParser.h>
 
+#include <time.h>
+
 using namespace std;
 
 
@@ -237,6 +239,17 @@ void TTSComponent::loadFromXml(const XMLNode* description)
 			m_FACSvisemes[name] = auValues;
 		}
 	}
+
+	int childCount = description->nChildNode("Sentence");
+	for (int i = 0; i < childCount; ++i)
+	{
+		const XMLNode& sentenceNode = description->getChildNode("Sentence", i);
+		string tag(sentenceNode.getAttribute("tag", "random"));
+		m_sentences[tag].push_back(string(sentenceNode.getText()));
+	}
+	if (childCount > 0)
+		srand((unsigned int) time(0x0));
+
 }
 
 bool TTSComponent::setVoice(const char* voice)
@@ -282,31 +295,48 @@ bool TTSComponent::setVoice(const char* voice)
 	return hr == S_OK;	
 }
 
-void TTSComponent::speak(const char* string, int sentenceID /*=-1*/)
+void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 {
 	if( !m_pVoice )
 	{
 		GameLog::errorMessage("No voice initialized");
-		return;
 	}
-	int lenA = lstrlenA(string);
-	if (lenA<=0)
-		return;
-	int lenW;
-	BSTR unicodestr = 0;
-	lenW = ::MultiByteToWideChar(CP_ACP, 0, string, lenA, 0, 0);
-	if (lenW > 0)
+	else
 	{
-		// Check whether conversion was successful
-		unicodestr = ::SysAllocStringLen(0, lenW);
-		::MultiByteToWideChar(CP_ACP, 0, string, lenA, unicodestr, lenW);		
-		//ULONG numSkipped = 0;
-		//m_pVoice->Skip(L"SENTENCE", 100, &numSkipped);
-		m_pVoice->Speak( unicodestr, SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
-		m_sentenceID = sentenceID;
-		m_isSpeaking = true;
+		// Replace text by random sentence if type string is found
+		SentenceIterator iter = m_sentences.find(string(text));
+		if (iter != m_sentences.end())
+		{
+			std::vector<string>& sentences = iter->second;
+			text = sentences[ rand() % sentences.size()].c_str();
+		}
+
+		int lenA = lstrlenA(text);
+		if (lenA > 0)
+		{
+			int lenW;
+			BSTR unicodestr = 0;
+			lenW = ::MultiByteToWideChar(CP_ACP, 0, text, lenA, 0, 0);
+			if (lenW > 0)
+			{
+				// Check whether conversion was successful
+				unicodestr = ::SysAllocStringLen(0, lenW);
+				::MultiByteToWideChar(CP_ACP, 0, text, lenA, unicodestr, lenW);		
+				//ULONG numSkipped = 0;
+				//m_pVoice->Skip(L"SENTENCE", 100, &numSkipped);
+				m_pVoice->Speak( unicodestr, SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
+				m_sentenceID = sentenceID;
+				m_isSpeaking = true;
+			}
+			::SysFreeString(unicodestr);
+		}
 	}
-	::SysFreeString(unicodestr);
+	if (!m_isSpeaking)
+	{
+		GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(sentenceID), this);
+			if (m_owner->checkEvent(&event))
+				m_owner->executeEvent(&event);	
+	}
 }
 
 void TTSComponent::resetPreviousViseme()
@@ -372,7 +402,7 @@ void TTSComponent::setViseme( const string viseme, const float weight )
 	for( iterOldAUs = oldAUs.begin(); iterOldAUs != oldAUs.end(); iterOldAUs++ )
 	{
 		char buffer[10];
-		sprintf( buffer, "AU_%02i", (*iterOldAUs).first );
+		sprintf_s( buffer, 10, "AU_%02i", (*iterOldAUs).first );
 		string au( buffer );
 
 		MorphTarget morphTargetData( au.c_str(), newAUs[(*iterOldAUs).first] * weight );
@@ -405,7 +435,7 @@ void TTSComponent::setViseme( const string viseme, const float weight )
 	for( iterNewAUs = newAUs.begin(); iterNewAUs != newAUs.end(); iterNewAUs++ )
 	{
 		char buffer[10];
-		sprintf( buffer, "AU_%02i", (*iterNewAUs).first);
+		sprintf_s( buffer, 10, "AU_%02i", (*iterNewAUs).first);
 		string au( buffer );
 
 		if( oldAUs[(*iterNewAUs).first] == 0 )

@@ -82,6 +82,11 @@ private:
 	std::map<std::string, std::map<int, float>> m_FACSvisemes;
 	std::string		m_curFACSViseme;
 	float			m_curFACSWeight;
+
+	// Sentences loaded from xml, stored by tag
+	typedef std::map<std::string, std::vector<std::string>>::iterator SentenceIterator;
+	std::map<std::string, std::vector<std::string>> m_sentences;
+
 };
 
 
