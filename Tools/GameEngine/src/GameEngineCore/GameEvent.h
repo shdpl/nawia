@@ -278,6 +278,7 @@ public:
 		E_SET_SOUND_LOOP,		/// Sets the sound to loop
 		E_SET_SOUND_FILE,		/// Sets a sound file
 		E_SET_PHONEMES_FILE,	/// Sets a phonemes file
+		E_GET_SOUND_DISTANCE,	/// Get the distance of the current sound node to the active listener. @data pointer to float
 		E_SET_ENABLED,			/// Enables components (wether the component should be rendered/updated or not)	
 		E_PICKUP,				/// Attaches a SceneNode to an entity
 		IK_COMPUTE,				/// Computes the IK with the given data and applies it to the chain
