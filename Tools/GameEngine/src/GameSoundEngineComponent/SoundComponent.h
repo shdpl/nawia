@@ -65,6 +65,9 @@ public:
 	void setRefDist(const float value);
 	bool setSoundFile(const char* fileName);
 	bool setPhonemesFile(const char* fileName);
+	inline float getDistanceToListener();
+	
+private:
 	void addPhonem(const XMLNode* phonem);
 	void startVisemes();
 	void stopVisemes();
@@ -82,8 +85,7 @@ public:
 		int m_start, m_end, m_duration;
 		int m_index;
 	};
-	
-private:
+
 	unsigned int		*m_buffer;
 	unsigned int		m_sourceID;
 	int					m_bufferCount;

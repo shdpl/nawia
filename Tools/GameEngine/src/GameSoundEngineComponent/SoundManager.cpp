@@ -156,11 +156,14 @@ void SoundManager::run()
 	
 	// typedef for more readability
 	typedef std::vector<SoundComponent*>::iterator soundIterator;
+	
+	soundIterator end = m_soundNodes.end();
 
 	// fill the priority queue
-	for( soundIterator nodeIter = m_soundNodes.begin(); nodeIter < m_soundNodes.end(); nodeIter++) 
+	for( soundIterator nodeIter = m_soundNodes.begin(); nodeIter != end; ++nodeIter) 
 	{
-		SoundComponent* node = *nodeIter;
+		SoundComponent* node = *nodeIter;	
+
 		// Skip invalid nodes
 		if( node->m_resourceID == 0)
 			continue;
@@ -168,10 +171,10 @@ void SoundManager::run()
 		node->update();
 
 		// calculate distance between listener and sound node
-		float dist = sqrt((
+		float dist = sqrtf((
 			sq(node->m_x - m_activeListener->m_listenerPos[0]) + 
 			sq(node->m_y - m_activeListener->m_listenerPos[1]) + 
-			sq(node->m_z - m_activeListener->m_listenerPos[2])));		
+			sq(node->m_z - m_activeListener->m_listenerPos[2])));	
 
 		//printf("posofsound %f %f %f\n",(*nodeIter)->m_pos.x,(*nodeIter)->m_pos.y,(*nodeIter)->m_pos.z );
 		// check if there are sounds not playing but with allocated source

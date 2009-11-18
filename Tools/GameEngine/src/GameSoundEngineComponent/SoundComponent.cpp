@@ -24,6 +24,7 @@
 #include "SoundComponent.h"
 
 #include "SoundManager.h"
+#include "SoundListenerComponent.h"
 #include "SoundResourceManager.h"
 #include <GameEngine/GameEngine.h>
 #include <GameEngine/GameLog.h>
@@ -33,6 +34,8 @@
 #include <XMLParser/utXMLParser.h>
 
 #include <vector>
+
+#define sq(x) (x)*(x)
 
 const float SoundComponent::OFF = 0.0f;
 
@@ -90,6 +93,7 @@ m_bufferCount(0), m_resourceID(0), m_stream(false), m_gain(0.0f), m_initialGain(
 	owner->addListener(GameEvent::E_SET_TRANSFORMATION, this);
 	owner->addListener(GameEvent::E_SET_TRANSLATION, this);
 	owner->addListener(GameEvent::E_SET_PHONEMES_FILE, this);
+	owner->addListener(GameEvent::E_GET_SOUND_DISTANCE, this);
 
 	SoundManager::instance()->addComponent(this);
 }
@@ -137,12 +141,20 @@ void SoundComponent::executeEvent(GameEvent *event)
 			 m_x = pos->x; m_y = pos->y; m_z = pos->z;
 		}
 		break;
+	case GameEvent::E_GET_SOUND_DISTANCE:
+		{
+			float* dist = static_cast<float*>(event->data());
+			*dist = getDistanceToListener();
+		}
+		break;
 	}
 }
 
 void SoundComponent::loadFromXml(const XMLNode* description)
 {
-	GameLog::logMessage("Loading Sound file: %s", description->getAttribute("file"));
+	const char* file = description->getAttribute("file");
+	if (file)
+		GameLog::logMessage("Loading Sound file: %s", file);
 
 	Matrix4f trans;
 	m_owner->executeEvent(&GameEvent(GameEvent::E_TRANSFORMATION, &GameEventData( (float*) trans.x, 16 ), this));
@@ -153,7 +165,8 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 	
 	// To set the gain correctly at loading
 	// You should not change the following order
-	setSoundFile(description->getAttribute("file"));
+	if (file)
+		setSoundFile(file);
 	setGain(static_cast<float>(atof(description->getAttribute("gain", "0.5"))));
 	setLoop(_stricmp(description->getAttribute("loop", "false"),"true")==0 || _stricmp(description->getAttribute("loop", "false"),"1")==0);
 
@@ -317,9 +330,13 @@ bool SoundComponent::setSoundFile(const char* fileName)
 
 	if ((m_resourceID = SoundResourceManager::instance()->addResource(fileName)) != 0)
 	{
-		m_bufferCount = SoundResourceManager::instance()->getBufferCount(m_resourceID);
-		delete[] m_buffer;
-		m_buffer = new unsigned int[m_bufferCount];
+		int newBufferCount = SoundResourceManager::instance()->getBufferCount(m_resourceID);
+		if (m_bufferCount != newBufferCount)
+		{
+			m_bufferCount = newBufferCount;
+			delete[] m_buffer;
+			m_buffer = new unsigned int[m_bufferCount];
+		}
 		memcpy(m_buffer, SoundResourceManager::instance()->getBuffer(m_resourceID), m_bufferCount * sizeof(int));
 		m_stream = SoundResourceManager::instance()->isStream(m_resourceID); 
 
@@ -494,4 +511,16 @@ void SoundComponent::resetPreviousViseme()
 		m_prevViseme = 0;
 		//printf("Reseted prev viseme\n");
 	}
+}
+
+float SoundComponent::getDistanceToListener()
+{
+	SoundListenerComponent* listener = SoundManager::instance()->activeListener();
+	if (listener)
+		return sqrtf(
+			sq(m_x - listener->m_listenerPos[0]) + 
+			sq(m_y - listener->m_listenerPos[1]) + 
+			sq(m_z - listener->m_listenerPos[2]));
+
+	return 0.0f;
 }

@@ -25,6 +25,7 @@
 class SoundListenerComponent : public GameComponent
 {
 	friend class SoundManager;
+	friend class SoundComponent;
 
 public:
 	static GameComponent* createComponent( GameEntity* owner );
