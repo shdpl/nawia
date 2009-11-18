@@ -90,12 +90,15 @@ GameComponent* TTSComponent::createComponent( GameEntity* owner )
 }
 
 TTSComponent::TTSComponent(GameEntity *owner) : GameComponent(owner, "Sapi"), m_pVoice(0), 
-m_curViseme(0), m_prevViseme(0), m_visemeChanged(false), m_visemeBlendFacPrev(1.0f), m_isSpeaking(false), m_FACSmapping(false)
+m_curViseme(0), m_prevViseme(0), m_visemeChanged(false), m_visemeBlendFacPrev(1.0f),
+m_isSpeaking(false), m_FACSmapping(false), m_useDistanceModel(false), m_dist(0), m_rollOff(1.0f)
 {
 	owner->addListener(GameEvent::E_SPEAK, this);
 	owner->addListener(GameEvent::E_SET_VOICE, this);
 	CoInitialize(NULL);
 	TTSManager::instance()->addComponent(this);
+
+	m_getDistanceEvent = new GameEvent(GameEvent::E_GET_SOUND_DISTANCE, GameEventData(&m_dist), this);
 }
 
 TTSComponent::~TTSComponent()
@@ -103,6 +106,7 @@ TTSComponent::~TTSComponent()
 	TTSManager::instance()->removeComponent(this);
 	if (m_pVoice) m_pVoice->Release();
 	CoUninitialize();
+	delete m_getDistanceEvent;
 }
 
 bool TTSComponent::init()
@@ -210,7 +214,6 @@ void TTSComponent::executeEvent(GameEvent *event)
 
 void TTSComponent::loadFromXml(const XMLNode* description)
 {
-
 	const char* voice = description->getAttribute("voice", "Microsoft Sam");
 	if( !init() )
 		GameLog::errorMessage("TTSComponent: Failed to initialize Microsoft Text-To-Speech Api");
@@ -224,7 +227,7 @@ void TTSComponent::loadFromXml(const XMLNode* description)
 
 		XMLNode xmlNode = XMLNode::openFileHelper( visemefile, "Visemes" );
 		int n = xmlNode.nChildNode( "Viseme" );
-		
+
 		for( int i = 0; i < n; i++ )
 		{
 			XMLNode fe = xmlNode.getChildNode( "Viseme", i );
@@ -250,6 +253,10 @@ void TTSComponent::loadFromXml(const XMLNode* description)
 	if (childCount > 0)
 		srand((unsigned int) time(0x0));
 
+	m_useDistanceModel = _stricmp(description->getAttribute("useDistanceModel", "false"),"true") == 0
+		|| _stricmp(description->getAttribute("useDistanceModel", "false"),"1") == 0;
+
+	m_rollOff = (float) atof(description->getAttribute("rollOff", "1.0"));
 }
 
 bool TTSComponent::setVoice(const char* voice)
@@ -303,6 +310,9 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 	}
 	else
 	{
+		if (m_useDistanceModel)
+			calcVolumeFromDistance();
+
 		// Replace text by random sentence if type string is found
 		SentenceIterator iter = m_sentences.find(string(text));
 		if (iter != m_sentences.end())
@@ -334,8 +344,8 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 	if (!m_isSpeaking)
 	{
 		GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(sentenceID), this);
-			if (m_owner->checkEvent(&event))
-				m_owner->executeEvent(&event);	
+		if (m_owner->checkEvent(&event))
+			m_owner->executeEvent(&event);	
 	}
 }
 
@@ -345,11 +355,11 @@ void TTSComponent::resetPreviousViseme()
 	{
 		if( !m_FACSmapping )
 		{
-		MorphTarget morphTargetData(visemeMapping[m_prevViseme], 0);
-		// Reset visemes
-		GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
-		if (m_owner->checkEvent(&event))
-			m_owner->executeEvent(&event);
+			MorphTarget morphTargetData(visemeMapping[m_prevViseme], 0);
+			// Reset visemes
+			GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
+			if (m_owner->checkEvent(&event))
+				m_owner->executeEvent(&event);
 		}
 		else
 		{
@@ -372,7 +382,10 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 			obj->m_visemeChanged = true;
 			obj->resetPreviousViseme();
 			obj->m_prevViseme = obj->m_curViseme;
-			obj->m_curViseme = e.Viseme();								
+			obj->m_curViseme = e.Viseme();
+			// Update volume every viseme
+			if (obj->m_useDistanceModel)
+				obj->calcVolumeFromDistance();
 			break;
 		case SPEI_END_INPUT_STREAM:
 			GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(obj->m_sentenceID), obj);
@@ -469,4 +482,13 @@ void TTSComponent::setViseme( const string viseme, const float weight )
 
 	m_curFACSViseme = viseme;
 	m_curFACSWeight = weight;
+}
+
+void TTSComponent::calcVolumeFromDistance()
+{
+	// Update distance
+	m_owner->executeEvent(m_getDistanceEvent);
+	// Calculate and set volume (between 0 and 100) by a simple distance model
+	m_pVoice->SetVolume((unsigned short) minf(100.0f, (1000.0f / (0.00001f + m_rollOff * m_dist)) + 0.5f));
+	//m_pVoice->SetVolume(maxf(0.0f, (100.0f - 20.0f * log10(1.0f + m_dist))));
 }

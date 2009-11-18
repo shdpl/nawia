@@ -67,6 +67,8 @@ private:
 	void resetPreviousViseme();
 	void setViseme( const std::string viseme, const float weight );
 
+	void calcVolumeFromDistance();
+
 	static void __stdcall sapiEvent(WPARAM wParam, LPARAM lParam);
 
 	ISpVoice*		m_pVoice;
@@ -86,6 +88,12 @@ private:
 	// Sentences loaded from xml, stored by tag
 	typedef std::map<std::string, std::vector<std::string>>::iterator SentenceIterator;
 	std::map<std::string, std::vector<std::string>> m_sentences;
+
+	// Listen to sound distance events for calculating the volume
+	bool m_useDistanceModel;
+	GameEvent* m_getDistanceEvent;
+	float m_dist;
+	float m_rollOff;
 
 };
 
