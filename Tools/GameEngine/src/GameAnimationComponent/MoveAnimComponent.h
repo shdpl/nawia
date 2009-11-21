@@ -125,6 +125,7 @@ public:
 	 */ 
 	void update(float fps);
 
+private:
 	/**
 	 * \brief Toggles between animations
 	 * 
@@ -133,7 +134,6 @@ public:
 	 */ 
 	void setAnim(AnimationSetup* anim, bool idle=false);
 	
-private:
 	/// Configuration setup for the animation played when translating the entity in -z direction
 	AnimationSetup* m_moveAnim;
 	/// Configuration setup for the animation played when translating the entity in +z direction

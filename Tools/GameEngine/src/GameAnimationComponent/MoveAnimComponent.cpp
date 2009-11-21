@@ -127,33 +127,31 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 	{
 		delete m_moveAnim;
 
-		// Play animation additive (weight < 1) on stage 10 to not disturb other animations on this model
-		// due to a bug in Horde3D currently we cannot play it additive with fastAnimation disabled
-		m_moveAnim = static_cast<AnimationSetup*>(AnimationSetup(move, 10, 30, -1.0f, 0.5f, 0.0f).clone());		
+		// Play animation on stage 10 to not disturb other animations on this model
+		m_moveAnim = static_cast<AnimationSetup*>(AnimationSetup(move, 10, 30, -1.0f, 1.0f, 0.0f).clone());		
 	}
 	if( _stricmp(moveBack, "") != 0 )
 	{
 		delete m_moveBackAnim;
-		m_moveBackAnim = static_cast<AnimationSetup*>(AnimationSetup(moveBack, 10, 30, -1.0f, 0.5f, 0.0f).clone());		
+		m_moveBackAnim = static_cast<AnimationSetup*>(AnimationSetup(moveBack, 10, 30, -1.0f, 1.0f, 0.0f).clone());		
 	}
 	if( _stricmp(moveLeft, "") != 0 )
 	{
 		delete m_moveLeftAnim;
-		m_moveLeftAnim = static_cast<AnimationSetup*>(AnimationSetup(moveLeft, 10, 30, -1.0f, 0.5f, 0.0f).clone());		
+		m_moveLeftAnim = static_cast<AnimationSetup*>(AnimationSetup(moveLeft, 10, 30, -1.0f, 1.0f, 0.0f).clone());		
 	}
 	if( _stricmp(moveRight, "") != 0 )
 	{
 		delete m_moveRightAnim;
-		m_moveRightAnim = static_cast<AnimationSetup*>(AnimationSetup(moveRight, 10, 30, -1.0f, 0.5f, 0.0f).clone());		
+		m_moveRightAnim = static_cast<AnimationSetup*>(AnimationSetup(moveRight, 10, 30, -1.0f, 1.0f, 0.0f).clone());		
 	}	
 	
 	m_idleAnimCount = 0;
 	if( _stricmp(idle, "") != 0 )
 	{
 		delete m_idleAnim[m_idleAnimCount];
-		// Play animation additive (weight < 1) on stage 10 to not disturb other animations on this model
-		// due to a bug in Horde3D currently we cannot play it additive with fastAnimation disabled
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle, 10, 30, -1.0f, 0.5f, 0.0f).clone());
+		// Play animation on stage 10 to not disturb other animations on this model
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle, 10, 30, -1.0f, 1.0f, 0.0f).clone());
 	
 		//initially start idle animation
 		setAnim(m_idleAnim[m_idleAnimCount], true);
@@ -162,25 +160,25 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 	if( _stricmp(idle2, "") != 0 )
 	{
 		delete m_idleAnim[m_idleAnimCount];
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle2, 10, 30, -1.0f, 0.5f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle2, 10, 30, -1.0f, 1.0f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 	if( _stricmp(idle3, "") != 0 )
 	{
 		delete m_idleAnim[m_idleAnimCount];
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle3, 10, 30, -1.0f, 0.5f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle3, 10, 30, -1.0f, 1.0f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 	if( _stricmp(idle4, "") != 0 )
 	{
 		delete m_idleAnim[m_idleAnimCount];
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle4, 10, 30, -1.0f, 0.5f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle4, 10, 30, -1.0f, 1.0f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 	if( _stricmp(idle5, "") != 0 )
 	{
 		delete m_idleAnim[m_idleAnimCount];
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle5, 10, 30, -1.0f, 0.5f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle5, 10, 30, -1.0f, 1.0f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 }
