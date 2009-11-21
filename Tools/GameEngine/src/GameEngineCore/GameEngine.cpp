@@ -181,17 +181,19 @@ namespace GameEngine
 			
 			GameEntity* entity = GameModules::gameWorld()->createEntity(entityID);
 	
-			
-			const int childNodes = attachment.nChildNode();
-			for( int i = 0; i < childNodes; ++i )
+			if (entity)
 			{
-				XMLNode& node = attachment.getChildNode(i);
-				GameComponent* component = GameModules::componentRegistry()->createComponent(node.getName(), entity);
-				if( component ) component->loadFromXml( &node );
-				else GameLog::errorMessage( "No plugin found to handle '%s' nodes", node.getName() );
+				const int childNodes = attachment.nChildNode();
+				for( int i = 0; i < childNodes; ++i )
+				{
+					XMLNode& node = attachment.getChildNode(i);
+					GameComponent* component = GameModules::componentRegistry()->createComponent(node.getName(), entity);
+					if( component ) component->loadFromXml( &node );
+					else GameLog::errorMessage( "No plugin found to handle '%s' nodes", node.getName() );
+				}
+				// TODO Extras
+				return entity->worldId();
 			}
-			// TODO Extras
-			return entity->worldId();
 		}
 		else
 			GameLog::errorMessage("Error reading GameEntity\n%s\n", xmlText);

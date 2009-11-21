@@ -154,7 +154,7 @@ GameEntity* GameWorld::createEntity(const EntityID& id)
 	if (iter != m_world->WorldMap.end())
 	{
 		return 0x0;
-		//GameLog::warnMessage("Entity with name %s already exists!", id.c_str());
+		GameLog::warnMessage("Entity with name %s already exists!", id.c_str());
 		//return m_world->WorldList.at(iter->second - 1);
 	}
 	GameEntity* entity = new GameEntity(id);
