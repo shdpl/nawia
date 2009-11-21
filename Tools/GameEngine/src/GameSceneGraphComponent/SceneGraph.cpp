@@ -177,18 +177,21 @@ unsigned int SceneGraphManager::createGameEntity( const char *xmlText, int horde
 
 		GameEntity* entity = GameModules::gameWorld()->createEntity(entityID);
 		
-		SceneGraphComponent* sceneGraphComponent = new SceneGraphComponent( entity );
-		sceneGraphComponent->setHordeID( hordeID );
-
-		const int childNodes = attachment.nChildNode();
-		for( int i = 0; i < childNodes; ++i )
+		if (entity)
 		{
-			XMLNode& node = attachment.getChildNode(i);
-			GameComponent* component = GameModules::componentRegistry()->createComponent(node.getName(), entity);
-			if( component ) component->loadFromXml( &node );
-			else GameLog::errorMessage( "No plugin found to handle '%s' nodes", node.getName() );
+			SceneGraphComponent* sceneGraphComponent = new SceneGraphComponent( entity );
+			sceneGraphComponent->setHordeID( hordeID );
+
+			const int childNodes = attachment.nChildNode();
+			for( int i = 0; i < childNodes; ++i )
+			{
+				XMLNode& node = attachment.getChildNode(i);
+				GameComponent* component = GameModules::componentRegistry()->createComponent(node.getName(), entity);
+				if( component ) component->loadFromXml( &node );
+				else GameLog::errorMessage( "No plugin found to handle '%s' nodes", node.getName() );
+			}
+			return entity->worldId();
 		}
-		return entity->worldId();
 	}
 	else
 		GameLog::errorMessage("Error '%s' in line %d column %d when reading Attachment\n%s\n", 
