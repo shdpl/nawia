@@ -248,7 +248,23 @@ void TTSComponent::loadFromXml(const XMLNode* description)
 	{
 		const XMLNode& sentenceNode = description->getChildNode("Sentence", i);
 		string tag(sentenceNode.getAttribute("tag", "random"));
-		m_sentences[tag].push_back(string(sentenceNode.getText()));
+
+		const char* text = sentenceNode.getText();
+		int lenA = lstrlenA(text);
+		if (lenA > 0)
+		{
+			int lenW;
+			BSTR unicodestr = 0;
+			lenW = ::MultiByteToWideChar(CP_ACP, 0, text, lenA, 0, 0);
+			if (lenW > 0)
+			{
+				// Check whether conversion was successful
+				unicodestr = ::SysAllocStringLen(0, lenW);
+				::MultiByteToWideChar(CP_ACP, 0, text, lenA, unicodestr, lenW);		
+				m_sentences[tag].push_back(wstring(unicodestr));
+			}
+			::SysFreeString(unicodestr);
+		}
 	}
 	if (childCount > 0)
 		srand((unsigned int) time(0x0));
@@ -313,32 +329,36 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 		if (m_useDistanceModel)
 			calcVolumeFromDistance();
 
-		// Replace text by random sentence if type string is found
+		// Try to find text as tag
 		SentenceIterator iter = m_sentences.find(string(text));
 		if (iter != m_sentences.end())
 		{
-			std::vector<string>& sentences = iter->second;
-			text = sentences[ rand() % sentences.size()].c_str();
+			// This seems to be a tag, so speak it directly
+			std::vector<wstring>& sentences = iter->second;
+			m_pVoice->Speak( sentences[ rand() % sentences.size()].c_str(), SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
 		}
-
-		int lenA = lstrlenA(text);
-		if (lenA > 0)
+		else
 		{
-			int lenW;
-			BSTR unicodestr = 0;
-			lenW = ::MultiByteToWideChar(CP_ACP, 0, text, lenA, 0, 0);
-			if (lenW > 0)
+
+			int lenA = lstrlenA(text);
+			if (lenA > 0)
 			{
-				// Check whether conversion was successful
-				unicodestr = ::SysAllocStringLen(0, lenW);
-				::MultiByteToWideChar(CP_ACP, 0, text, lenA, unicodestr, lenW);		
-				//ULONG numSkipped = 0;
-				//m_pVoice->Skip(L"SENTENCE", 100, &numSkipped);
-				m_pVoice->Speak( unicodestr, SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
-				m_sentenceID = sentenceID;
-				m_isSpeaking = true;
+				int lenW;
+				BSTR unicodestr = 0;
+				lenW = ::MultiByteToWideChar(CP_ACP, 0, text, lenA, 0, 0);
+				if (lenW > 0)
+				{
+					// Check whether conversion was successful
+					unicodestr = ::SysAllocStringLen(0, lenW);
+					::MultiByteToWideChar(CP_ACP, 0, text, lenA, unicodestr, lenW);		
+					//ULONG numSkipped = 0;
+					//m_pVoice->Skip(L"SENTENCE", 100, &numSkipped);
+					m_pVoice->Speak( unicodestr, SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
+					m_sentenceID = sentenceID;
+					m_isSpeaking = true;
+				}
+				::SysFreeString(unicodestr);
 			}
-			::SysFreeString(unicodestr);
 		}
 	}
 	if (!m_isSpeaking)

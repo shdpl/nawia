@@ -86,8 +86,8 @@ private:
 	float			m_curFACSWeight;
 
 	// Sentences loaded from xml, stored by tag
-	typedef std::map<std::string, std::vector<std::string>>::iterator SentenceIterator;
-	std::map<std::string, std::vector<std::string>> m_sentences;
+	typedef std::map<std::string, std::vector<std::wstring>>::iterator SentenceIterator;
+	std::map<std::string, std::vector<std::wstring>> m_sentences;
 
 	// Listen to sound distance events for calculating the volume
 	bool m_useDistanceModel;
