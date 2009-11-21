@@ -9,7 +9,7 @@ Tooltip: 'Export scene from Blender to Horde3D format (.xml)'
 
 __author__ = "Felix Kistler"
 __url__ = ("Uni Augsburg, http://mm-werkstatt.informatik.uni-augsburg.de")
-__version__ = "0.2"
+__version__ = "0.2.1"
 __email__ = "felixkistler@web.de"
 __bpydoc__ = """\
 
@@ -18,29 +18,33 @@ Description: Exports a Blender scene into a Horde3D file.
 Usage: Run the script from the menu or inside Blender.
 """
 
+######################################################
+# Imports
+######################################################
+
 _ERROR = False
+_WARNING = False
 
 try:
 	import Blender
 	from Blender import *
-	from Blender.Draw import *
 	from Blender.BGL import *
 	from Blender.Mathutils import *
 except:
-	print "\nError! Could not find Blender module!"
+	print "[ERROR]: could not find Blender module!"
 	_ERROR = True
 
 try:
 	import os
 	import struct
 except:
-	print "\nError! Could not find IO modules!"
+	printError("could not find IO modules!")
 	_ERROR = True
 
 try:
 	import math
 except:
-	print '\nError ! Could not find the \'math\' module!'
+	printError("could not find the 'math' module!")
 	_ERROR = True
 
 try:
@@ -48,16 +52,20 @@ try:
 	def lineno():
 		"""Returns the current line number in our program."""
 		return inspect.currentframe().f_back.f_lineno
-
 except:
-	print '\nError ! Could not find the \'inspect\' module!'
-	_ERROR = True
+	printWarning("could not find the 'inspect' module, continuing...")
+	def lineno():
+		return -1
 
 if _ERROR:
 	print """Could not load all modules! Please install Python from http://www.python.org
-		and the newest blender version from http://www.blender.org!"""
+		and the newest Blender version from http://www.blender.org!"""
 	Blender.Draw.PupMenu("Could not load all modules! Check console!")
 
+
+######################################################
+# GUI
+######################################################
 
 # Events
 EVENT_NOEVENT = 1
@@ -66,171 +74,148 @@ EVENT_EXIT	= 3
 EVENT_BROWSE  = 4
 EVENT_BUTTONCHANGE = 5
 
-# Polygon Parameters
-fileButton = Create('')
-shaderButton = Create('')
-textureButton = Create('')
-materialButton = Create('')
-animationButton = Create('')
-texPathButton = Create('')
-animOnlyButton = Create(0)
-hordeReg = Blender.Registry.GetKey('horde',True)
+# Default values
+DEFAULT_SCENE_NAME = 'untitled.scene.xml'
+DEFAULT_SHADER_NAME = 'skinning.shader'
 
+# GUI buttons :
+fileButton = Draw.Create('')
+shaderButton = Draw.Create('')
+textureButton = Draw.Create('')
+materialButton = Draw.Create('')
+animationButton = Draw.Create('')
+texPathButton = Draw.Create('')
 
-######################################################
-# GUI
-######################################################
+exportMaterialsButton = Draw.Create(0)
+exportAnimationsButton = Draw.Create(0)
+exportGeometryButton = Draw.Create(0)
+exportSceneButton = Draw.Create(0)
+consoleWarningsButton = Draw.Create(0)
+
+exportButton = Draw.Create('')
+exitButton = Draw.Create('')
+
+def updateRegistry():
+	global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
+	global exportMaterialsButton, exportAnimationsButton, exportGeometryButton, exportSceneButton
+	global consoleWarningsButton
+
+	hordeReg = {}
+	hordeReg['path'] = fileButton.val
+	hordeReg['shader'] = shaderButton.val
+	hordeReg['texSub'] = textureButton.val
+	hordeReg['matPath'] = materialButton.val
+	hordeReg['animPath'] = animationButton.val
+	hordeReg['texPath'] = texPathButton.val
+
+	hordeReg['exportMaterials']  = exportMaterialsButton.val
+	hordeReg['exportAnimations'] = exportAnimationsButton.val
+	hordeReg['exportGeometry']   = exportGeometryButton.val
+	hordeReg['exportScene']      = exportSceneButton.val
+	hordeReg['consoleWarnings']  = consoleWarningsButton.val
+
+	Blender.Registry.SetKey('horde', hordeReg, True)
+
 def draw():
-	if not _ERROR:
-		global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton, animOnlyButton
-		global hordeReg
-		global EVENT_NOEVENT, EVENT_EXPORT, EVENT_EXIT, EVENT_BROWSE, EVENT_BUTTONCHANGE
+	global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
+	global exportMaterialsButton, exportAnimationsButton, exportGeometryButton, exportSceneButton
+	global consoleWarningsButton
 
-		size = Blender.Window.GetAreaSize()
-		# Titel
-		glClearColor(0.7,0.8,0.6,1)
-		glClear(GL_COLOR_BUFFER_BIT)
-		Blender.BGL.glColor3f(0.2, 0.3, 0.7)
-		Blender.BGL.glRasterPos2d(8, size[1]-20)
-		Blender.Draw.Text("Felix Horde3D Exporter", "large")
-
-		# Die Parameter der GUI Buttons
-		glRasterPos2d(8, 83)
-		fileName = fileButton.val
-		if (fileName==''):
-			fileName = Blender.sys.dirname(Blender.sys.progname)+Blender.sys.sep+'untitled.scene.xml'
-			if not (hordeReg is None) and 'path' in hordeReg:
-				fileName = hordeReg['path']
-
-		shaderName = shaderButton.val
-		if (shaderName==''):
-			if not (hordeReg is None) and 'shader' in hordeReg:
-				shaderName = hordeReg['shader']
-			else:
-				shaderName = 'skinning.shader'
-
-		texSubpath = textureButton.val
-		if (texSubpath==''):
-			if not (hordeReg is None) and 'texSub' in hordeReg:
-				texSubpath = hordeReg['texSub']
-
-		matPath = materialButton.val
-		if (matPath == ''):
-			if not (hordeReg is None) and 'matPath' in hordeReg:
-				matPath = hordeReg['matPath']
-			else:
-				matPath = '..'+Blender.sys.sep+'materials'
-
-		animPath = animationButton.val
-		if (animPath == ''):
-			if not (hordeReg is None) and 'animPath' in hordeReg:
-				animPath = hordeReg['animPath']
-			else:
-				animPath = '..'+Blender.sys.sep+'animations'
-
-		texPath = texPathButton.val
-		if (texPath == ''):
-			if not (hordeReg is None) and 'texPath' in hordeReg:
-				texPath = hordeReg['texPath']
-
-		Label('Export Filename:', 10, size[1]/2+100, 100, 20)
-		fileButton = String('', EVENT_BUTTONCHANGE, 210, size[1]/2+100, 400, 20, fileName, 255, 'Filename')
-		Button('...', EVENT_BROWSE, 610, size[1]/2+100, 30, 20)
-
-		Label('Shader:', 10, size[1]/2+60, 100, 20)
-		shaderButton = String('', EVENT_BUTTONCHANGE, 210, size[1]/2+60, 200, 20, shaderName, 255, 'Shader')
-
-		Label('Relative Material Path:', 10, size[1]/2+20, 200, 20)
-		materialButton = String('', EVENT_BUTTONCHANGE, 210, size[1]/2+20, 200, 20, matPath, 255, 'Material Path')
-
-		Label('Relative Animation Path:', 10, size[1]/2-20, 200, 20)
-		animationButton = String('', EVENT_BUTTONCHANGE, 210, size[1]/2-20, 200, 20, animPath, 255, 'Animation Path')
-
-		Label('Texture SubDirectory:', 10, size[1]/2-60, 200, 20)
-		textureButton = String('', EVENT_BUTTONCHANGE, 210, size[1]/2-60, 200, 20, texSubpath, 255, 'Texture SubDirectory')
-
-		Label('Relative Texture Path:', 10, size[1]/2-100, 200, 20)
-		texPathButton = String('', EVENT_BUTTONCHANGE, 210, size[1]/2-100, 200, 20, texPath, 255, 'Texture Path')
-		Label('(If you want to copy textures)', 10, size[1]/2-115, 200,20)
-
-		animOnlyButton = Toggle('Animations only', EVENT_NOEVENT, 10, 64, 120, 20, animOnlyButton.val, "With this checked only animation will be exported.")
-
-		# Export- und Exitbuttons
-		Button('Export',EVENT_EXPORT, 10, 10, 80, 18)
-		Button('Cancel',EVENT_EXIT , 140, 10, 80, 18)
-
-######################################################
-# Event Handler
-######################################################
-def event(evt, val):
-	if (evt == QKEY and not val):
-			Exit()
-def bevent(evt):
-	global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton, animOnlyButton
-	global hordeReg
+	global exportButton, exitButton
 	global EVENT_NOEVENT, EVENT_EXPORT, EVENT_EXIT, EVENT_BROWSE, EVENT_BUTTONCHANGE
 
-	# GUI Events behandeln
-	if (evt == EVENT_BUTTONCHANGE):
-		file = fileButton.val
-		shader = shaderButton.val
-		if shader =='':
-			shader = 'skinning.shader'
-		texSub = textureButton.val
-		matPath = materialButton.val
-		texPath = texPathButton.val
-		animPath = animationButton.val
+	size = Blender.Window.GetAreaSize()
 
-		d = {}
-		d['path']=file
-		d['shader']=shader
-		d['texSub']=texSub
-		d['texPath']=texPath
-		d['animPath']=animPath
-		d['matPath']=matPath
-		Blender.Registry.SetKey('horde', d, True)
+	# Title
+	glClearColor(0.7,0.8,0.6,1)
+	glClear(GL_COLOR_BUFFER_BIT)
+	Blender.BGL.glColor3f(0.2, 0.3, 0.7)
+	Blender.BGL.glRasterPos2d(8, size[1]-20)
+	Blender.Draw.Text("Felix Horde3D Exporter", "large")
+
+	glRasterPos2d(8, 83)
+
+	# Text entry buttons :
+	Draw.Label('Export filename:', 10, size[1]/2+100, 100, 20)
+	fileButton = Draw.String('', EVENT_BUTTONCHANGE, 210, size[1]/2+100, 400, 20, fileButton.val, 255, 'Filename')
+	Draw.Button('...', EVENT_BROWSE, 610, size[1]/2+100, 30, 20)
+
+	Draw.Label('Shader:', 10, size[1]/2+60, 100, 20)
+	shaderButton = Draw.String('', EVENT_BUTTONCHANGE, 210, size[1]/2+60, 200, 20, shaderButton.val, 255, 'Shader')
+
+	Draw.Label('Relative material path:', 10, size[1]/2+20, 200, 20)
+	materialButton = Draw.String('', EVENT_BUTTONCHANGE, 210, size[1]/2+20, 200, 20, materialButton.val, 255, 'Material path')
+
+	Draw.Label('Relative animation path:', 10, size[1]/2-20, 200, 20)
+	animationButton = Draw.String('', EVENT_BUTTONCHANGE, 210, size[1]/2-20, 200, 20, animationButton.val, 255, 'Animation path')
+
+	Draw.Label('Texture subdirectory:', 10, size[1]/2-60, 200, 20)
+	textureButton = Draw.String('', EVENT_BUTTONCHANGE, 210, size[1]/2-60, 200, 20, textureButton.val, 255, 'Texture subdirectory')
+
+	Draw.Label('Relative texture path:', 10, size[1]/2-100, 200, 20)
+	texPathButton = Draw.String('', EVENT_BUTTONCHANGE, 210, size[1]/2-100, 200, 20, texPathButton.val, 255, 'Texture path')
+	Draw.Label('(If you want to copy textures)', 10, size[1]/2-115, 200,20)
+
+	# Toggle buttons :
+	exportMaterialsButton = Draw.Toggle('Export materials', EVENT_NOEVENT, 430, size[1]/2+20, 120, 20, exportMaterialsButton.val, 'Export a .material.xml file from the Blender material properties')
+
+	exportAnimationsButton = Draw.Toggle('Export animations', EVENT_NOEVENT, 430, size[1]/2-20, 120, 20, exportAnimationsButton.val, 'Export a .anim file')
+
+	consoleWarningsButton = Draw.Toggle('Console warnings', EVENT_NOEVENT, 10, 60, 120, 20, consoleWarningsButton.val, "With this checked, warnings will only appear in the console and not in pop-up messages.")
+
+	exportGeometryButton = Draw.Toggle('Export geometry', EVENT_NOEVENT, 150, 60, 120, 20, exportGeometryButton.val, 'Export a .geo file')
+
+	exportSceneButton = Draw.Toggle('Export scene', EVENT_NOEVENT, 290, 60, 120, 20, exportSceneButton.val, 'Export a .scene.xml file')
+
+	# Export- and Exit buttons
+	exportButton = Draw.Button('Export', EVENT_EXPORT, 10, 10, 80, 18)
+	exitButton = Draw.Button('Exit', EVENT_EXIT , 140, 10, 80, 18)
+
+######################################################
+# Event handlers
+######################################################
+def event(evt, val):
+	if (evt == Draw.QKEY and not val):
+		Draw.Exit()
+
+def bevent(evt):
+	global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
+	global exportMaterialsButton, exportAnimationsButton, exportGeometryButton, exportSceneButton
+	global consoleWarningsButton
+	global EVENT_NOEVENT, EVENT_EXPORT, EVENT_EXIT, EVENT_BROWSE, EVENT_BUTTONCHANGE
+	global _WARNING
+
+	# GUI Events handling
+	if (evt == EVENT_BUTTONCHANGE):
+		updateRegistry()
 
 	if (evt == EVENT_EXIT):
-		Exit()
+		Draw.Exit()
 
 	elif (evt== EVENT_BROWSE):
 		Blender.Window.FileSelector(FileSelected,'Select File', Blender.sys.basename(fileButton.val))
-		Redraw(1)
+		Draw.Redraw(1)
 
 	elif (evt== EVENT_EXPORT):
-		file = fileButton.val
-		shader = shaderButton.val
-		if shader =='':
-			shader = 'skinning.shader'
-		texSub = textureButton.val
-		matPath = materialButton.val
-		texPath = texPathButton.val
-		animPath = animationButton.val
-
-		d = {}
-		d['path']=file
-		d['shader']=shader
-		d['texSub']=texSub
-		d['texPath']=texPath
-		d['animPath']=animPath
-		d['matPath']=matPath
-		Blender.Registry.SetKey('horde', d, True)
+		updateRegistry()
 
 		startTime = Blender.sys.time()
-		success = Export(file, shader, texSub, texPath, matPath, animPath, animOnlyButton.val)
+
+		success = Export(fileButton.val, shaderButton.val, textureButton.val,
+						texPathButton.val, materialButton.val, animationButton.val,
+						exportMaterialsButton.val, exportAnimationsButton.val,
+						exportGeometryButton.val, exportSceneButton.val)
+
 		endTime = Blender.sys.time()
 		exportTime = endTime - startTime
 
 		if success:
 			print "Export took: %.6f seconds" % (exportTime )
-			Blender.Draw.PupMenu('Export successful!')
+			if _WARNING:
+				Blender.Draw.PupMenu('Warnings have been emitted, check console !')
+			Blender.Draw.PupMenu('Export successful !')
 		else:
-			print "Export failed!"
-			Blender.Draw.PupMenu('Export failed, see Console!')
-
-
-# Register GUI and Event functions
-Register(draw, event, bevent)
+			printError('export failed, see console !')
 
 ######################################################
 # Callback for File Selector
@@ -238,12 +223,77 @@ Register(draw, event, bevent)
 def FileSelected(file):
 	global fileButton
 	fileButton.val = file
-	Redraw(1)
+	Draw.Redraw(1)
+
+######################################################
+# HERE IS THE MAIN ENTRY POINT :
+######################################################
+
+def main():
+	if not _ERROR:
+		global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
+		global exportMaterialsButton, exportAnimationsButton, exportGeometryButton, exportSceneButton
+		global consoleWarningsButton
+
+		hordeReg = Blender.Registry.GetKey('horde', True)
+		if hordeReg is None:
+			hordeReg = {}
+
+		# Set default values for the GUI buttons :
+		# - text entry buttons :
+		if not 'path' in hordeReg:
+			hordeReg['path']       = Blender.sys.dirname(Blender.sys.progname) + Blender.sys.sep + DEFAULT_SCENE_NAME
+		if not 'shader' in hordeReg:
+			hordeReg['shader']     = DEFAULT_SHADER_NAME
+		if not 'texSub' in hordeReg:
+			hordeReg['texSub'] = ''
+		if not 'matPath' in hordeReg:
+			hordeReg['matPath']    = '..' + Blender.sys.sep + 'materials'
+		if not 'animPath' in hordeReg:
+			hordeReg['animPath']   = '..' + Blender.sys.sep + 'animations'
+		if not 'texPath' in hordeReg:
+			hordeReg['texPath']    = ''
+
+		# - toggle buttons :
+		if  not 'exportMaterials' in hordeReg:
+			hordeReg['exportMaterials'] = 1
+		if  not 'exportAnimations' in hordeReg:
+			hordeReg['exportAnimations'] = 1
+		if  not 'exportGeometry' in hordeReg:
+			hordeReg['exportGeometry'] = 1
+		if  not 'exportScene' in hordeReg:
+			hordeReg['exportScene'] = 1
+		if  not 'consoleWarnings' in hordeReg:
+			hordeReg['consoleWarnings'] = 1
+
+		fileButton.val      = hordeReg['path']
+		shaderButton.val    = hordeReg['shader']
+		textureButton.val   = hordeReg['texSub']
+		materialButton.val  = hordeReg['matPath']
+		animationButton.val = hordeReg['animPath']
+		texPathButton.val   = hordeReg['texPath']
+
+		exportMaterialsButton.val  = hordeReg['exportMaterials']
+		exportAnimationsButton.val = hordeReg['exportAnimations']
+		exportGeometryButton.val   = hordeReg['exportGeometry']
+		exportSceneButton.val      = hordeReg['exportScene']
+		consoleWarningsButton.val  = hordeReg['consoleWarnings']
+
+		# Register GUI and Event functions
+		Blender.Draw.Register(draw, event, bevent)
+
+# => entry point :
+main()
+
+######################################################
+# Here ends the GUI and starts the exportation part  #
+######################################################
+
 
 ######################################################
 # Export Main
 ######################################################
-def Export(path, defShader, texturesub, texPath, matPath, animPath, animOnly):
+def Export(path, defShader, texturesub, texPath, matPath, animPath, exportMat, exportAnim, exportGeo, exportScene):
 
 	# Show the wait cursor in blender and stop editing mode
 	Blender.Window.WaitCursor(1)
@@ -253,10 +303,12 @@ def Export(path, defShader, texturesub, texPath, matPath, animPath, animOnly):
 	dir = Blender.sys.dirname(path) + Blender.sys.sep
 	fileName = Blender.sys.basename(path)
 	fileName = fileName.partition(".")[0]
+
 	# Get texture subpath
 	texSubPath = ''
 	if texturesub != '':
 		texSubPath = texturesub + Blender.sys.sep
+
 	# Get absolute pathes
 	if texPath != '':
 		texPath = dir+texPath+Blender.sys.sep+texSubPath
@@ -267,13 +319,13 @@ def Export(path, defShader, texturesub, texPath, matPath, animPath, animOnly):
 		animPath = animPath + Blender.sys.sep
 	animPath = dir+animPath
 
-	# Check if File and Directory exist
+	# Check if file and directory exist
 	if Blender.sys.exists(path):
-		if not Blender.Draw.PupMenu( "File Already Exists, Overwrite?%t|Yes%x1|No%x0" ):
-			print "Aborted by User!"
+		if not Blender.Draw.PupMenu( "File already exists, Overwrite?%t|Yes%x1|No%x0" ):
+			printError("aborted by user!")
 			return False
 	if not Blender.sys.exists(dir):
-		Blender.Draw.PupMenu( "Path is invalid!" )
+		printError("path is invalid!")
 		return False
 
 	print "Exporting %s ..." % path
@@ -281,43 +333,47 @@ def Export(path, defShader, texturesub, texPath, matPath, animPath, animOnly):
 	# Change working directory
 	try: os.chdir(dir)
 	except:
-		print "Couldn't change working directory!"
+		printError("couldn't change working directory!")
 		return False
 
 	# Get current scene and objects
-	scn = Scene.GetCurrent()
+	scn = Blender.Scene.GetCurrent()
 
 	converter = Converter(path, texSubPath, texPath, matPath, animPath)
 
-	if (animOnly == False):
-		print "Converting Model..."
-		if converter.convertModel( scn ) == False:
-			return False
-		print "Done."
+	print "Converting model..."
+	if converter.convertModel( scn ) == False:
+		return False
+	print "Done."
 
-	if (animOnly == False):
+	if exportScene and exportGeo:
+		print "Writing scene and geometry..."
+	elif exportScene:
+		print "Writing scene..."
+	elif exportGeo:
 		print "Writing geometry..."
-		if converter.saveModel( fileName ) == False:
-			return False
-		print "Done."
 
-	if (animOnly == False):
+	if converter.saveModel( fileName, exportScene, exportGeo ) == False:
+		return False
+	print "Done."
+
+	if exportMat:
 		print "Writing materials..."
 		if converter.writeMaterials( fileName, defShader ) == False:
 			return False
 		print "Done."
 
-	print "Writing animation..."
-	if converter.writeAnimation( fileName ) == False:
-		return False
-	print "Done."
+	if exportAnim:
+		print "Writing animation..."
+		if converter.writeAnimation( fileName ) == False:
+			return False
+		print "Done."
 
-	if (animOnly == False):
-		if texPath != '':
-			print "Copying textures..."
-			if converter.copyTextures() == False:
-				return False
-			print "Done."
+	if texPath != '':
+		print "Copying textures..."
+		if converter.copyTextures() == False:
+			return False
+		print "Done."
 
 
 	# Hide the wait cursor in blender
@@ -325,7 +381,7 @@ def Export(path, defShader, texturesub, texPath, matPath, animPath, animOnly):
 	return True
 
 ######################################################
-# Helper Classes to save model data
+# Helper classes to save model data
 ######################################################
 class Vertex():
 	def __init__(self, pos, normal, uv, index, bIndex):
@@ -410,7 +466,7 @@ class MorphTarget():
 			self.name = name[:255]
 
 ######################################################
-# Converter Class used for reading, converting and saving the scene
+# Converter class used for reading, converting and saving the scene
 ######################################################
 class Converter():
 
@@ -435,7 +491,7 @@ class Converter():
 
 	def convertModel(self, scn):
 		##################
-		# Load and parse model data from blender
+		# Load and parse model data from Blender
 		##################
 
 		# Set to first frame and remember current
@@ -456,7 +512,7 @@ class Converter():
 		for obj in self.__bObjects:
 			if obj.getType() == 'Armature':
 				# Import Armatures
-				arm = obj.getData(False, True)
+				arm = obj.getData(False, True) # "True" => Get a Blender Mesh instead of a deprecated NMesh
 				# Get Bones
 				for bone in arm.bones.values():
 					# Get joint bind pose
@@ -473,7 +529,7 @@ class Converter():
 					self.__joints.append(joint)
 
 			elif obj.getType() != 'Mesh':
-				print "Warning: Can't import non-mesh and non-armature object: %s!" % obj.getName()
+				printWarning("can't import non-mesh and non-armature object: %s" % obj.getName())
 
 		# Get Meshes
 		vCount = 0
@@ -532,7 +588,7 @@ class Converter():
 					i = 0
 					for texture in mat.getTextures():
 						if i > 10:
-							print "Warning: Too many textures in material %s!" % material['name']
+							printWarning("too many textures in material %s!" % material['name'])
 							break
 						texName = ''
 						if texture != None and texture.tex != None and texture.tex.type == Texture.Types.IMAGE and texture.tex.image != None:
@@ -857,7 +913,7 @@ class Converter():
 	def	processJoints(self ):
 		print "  Calculating Joint dependencies..."
 		if len(self.__joints) > 74:
-			print "Warning: Horde only supports 74 joints"
+			printWarning("Horde only supports 74 joints")
 
 		# Append children
 		for joint in self.__joints:
@@ -931,7 +987,7 @@ class Converter():
 										mesh2.matRel = mesh.matRel
 							self.__meshes.append(newMesh)
 						else:
-							print "Warning: empty trigroup: " + name
+							printWarning("empty trigroup: " + name)
 						done.append(tri.material)
 		# Remove empty meshes
 		# (should no longer be nesscecary)
@@ -944,7 +1000,7 @@ class Converter():
 				removed += 1
 		self.__meshes = newMeshes
 		if removed > 0:
-			print "  Warning: removed %d empty meshe(s)!" % removed
+			printWarning("removed %d empty meshe(s)" % removed)
 
 		for mesh in self.__meshes:
 			# Find subMeshes and append children
@@ -970,211 +1026,94 @@ class Converter():
 				for w in range(len(vert.weights)):
 					vert.weights[w] = vert.weights[w] / weightSum
 
-	def saveModel( self, fileName ):
+	def saveModel( self, fileName, exportScene, exportGeo ):
+		# Open .scene.xml file
 		try:
-			sceneFile = open(fileName+".scene.xml", "w")
+			if exportScene:
+				sceneFile = open(fileName+".scene.xml", "w")
 		except:
 			print "Error creating file: %s.scene.xml" % fileName
 			return False
+
+		# Open .geo file
 		try:
-			geoFile = open(fileName+".geo", "wb")
+			if exportGeo:
+				geoFile = open(fileName+".geo", "wb")
 		except:
 			print "Error creating file: %s.geo" % fileName
 			sceneFile.close()
 			return False
 
-		# Write model header
-		sceneFile.write('<Model name="%s" geometry="%s.geo">\n' % (fileName, fileName) )
+		# Export the scene :
+		if exportScene:
 
-		# Write morph target names as comment
-		if len(self.__morphTargets) > 0:
-			sceneFile.write('\t<!-- Morph targets: ')
-			for morph in self.__morphTargets:
-				sceneFile.write('"'+morph.name+'" ')
-			sceneFile.write("-->\n\n")
+			# Write model header
+			sceneFile.write('<Model name="%s" geometry="%s.geo">\n' % (fileName, fileName) )
 
-		# Write joint data
-		for joint in self.__joints:
-			if joint.parent == "":
-				self.writeJoint(sceneFile, joint, 1)
+			# Write morph target names as comment
+			if len(self.__morphTargets) > 0:
+				sceneFile.write('\t<!-- Morph targets: ')
+				for morph in self.__morphTargets:
+					sceneFile.write('"'+morph.name+'" ')
+				sceneFile.write("-->\n\n")
 
-		sceneFile.write('\n')
+			# Write joint data
+			for joint in self.__joints:
+				if joint.parent == "":
+					self.writeJoint(sceneFile, joint, 1)
 
-		# Write mesh data
-		for mesh in self.__meshes:
-			if mesh.parent == "":
-				self.writeMesh(sceneFile, mesh, fileName, 1)
+			sceneFile.write('\n')
 
-		# Close Scene file
-		sceneFile.write('</Model>')
-		sceneFile.close()
+			# Write mesh data
+			for mesh in self.__meshes:
+				if mesh.parent == "":
+					self.writeMesh(sceneFile, mesh, fileName, 1)
 
-		# Write geo header
-		geoFile.write('H3DG')
-		version = struct.pack('i', 5)
-		geoFile.write(version)
+			# Close Scene file
+			sceneFile.write('</Model>')
+			sceneFile.close()
 
-		# Write Number of Joints + 1
-		jointCount = struct.pack('i', len(self.__joints)+1)
-		geoFile.write(jointCount)
+		# Export the geometry :
+		if exportGeo:
+			# Write geo header
+			geoFile.write('H3DG')
+			version = struct.pack('i', 5)
+			geoFile.write(version)
 
-		# Write identity Matrix
-		identMat = struct.pack('16f', 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 )
-		geoFile.write(identMat)
+			# Write Number of Joints + 1
+			jointCount = struct.pack('i', len(self.__joints)+1)
+			geoFile.write(jointCount)
 
-		# Write inversebind matrix for joints
-		for joint in self.__joints:
-			invBindMat = hordeMatrix(joint.invBindMat)
-			for i in range(4):
-				for j in range(4):
-					geoFile.write(struct.pack('f', round(invBindMat[i][j], 6)))
+			# Write identity Matrix
+			identMat = struct.pack('16f', 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 )
+			geoFile.write(identMat)
 
-		# Write vertex stream data
-		if len(self.__joints) == 0:
-			count = struct.pack('i', 6)
-		else:
-			count = struct.pack('i', 8)
-		geoFile.write(count)
-		count = struct.pack('i', len(self.__vertices))
-		geoFile.write(count)
+			# Write inversebind matrix for joints
+			for joint in self.__joints:
+				invBindMat = hordeMatrix(joint.invBindMat)
+				for i in range(4):
+					for j in range(4):
+						geoFile.write(struct.pack('f', round(invBindMat[i][j], 6)))
 
-		for i in range( 8 ):
-			if( len(self.__joints) == 0 and (i == 4 or i == 5) ):
-				continue
+			# Write vertex stream data
+			if len(self.__joints) == 0:
+				count = struct.pack('i', 6)
+			else:
+				count = struct.pack('i', 8)
+			geoFile.write(count)
+			count = struct.pack('i', len(self.__vertices))
+			geoFile.write(count)
 
-			# Position
-			if i == 0:
-				geoFile.write( struct.pack('i', i ))
-				streamElemSize = 3 * len( struct.pack('f', 0.0 ))
-				geoFile.write( struct.pack('i', streamElemSize) )
-				for v in self.__vertices:
-					pos = roundVec(v.pos)
-					geoFile.write( struct.pack('f', pos.x) )
-					geoFile.write( struct.pack('f', pos.y) )
-					geoFile.write( struct.pack('f', pos.z) )
+			for i in range( 8 ):
+				if( len(self.__joints) == 0 and (i == 4 or i == 5) ):
+					continue
 
-			# Normal
-			elif i == 1:
-				geoFile.write( struct.pack('i', i ))
-				streamElemSize = 3 * len( struct.pack('h', 0 ))
-				geoFile.write( struct.pack('i', streamElemSize) )
-				for v in self.__vertices:
-					normal = roundVec(v.normal)
-					if math.isnan(normal.x):
-						print 'FIXME : normal detected as NaN, on line ', lineno(), ' : wrote 0-length vector instead !!'
-						geoFile.write( struct.pack('h', 0) )
-						geoFile.write( struct.pack('h', 0) )
-						geoFile.write( struct.pack('h', 0) )
-					else:
-						geoFile.write( struct.pack('h', normal.x*32767) )
-						geoFile.write( struct.pack('h', normal.y*32767) )
-						geoFile.write( struct.pack('h', normal.z*32767) )
-			# Tangent
-			elif i == 2:
-				geoFile.write( struct.pack('i', i ))
-				streamElemSize = 3 * len( struct.pack('h', 0 ))
-				geoFile.write( struct.pack('i', streamElemSize) )
-				for v in self.__vertices:
-					tangent = roundVec(v.tangent)
-					geoFile.write( struct.pack('h', tangent.x*32767) )
-					geoFile.write( struct.pack('h', tangent.y*32767) )
-					geoFile.write( struct.pack('h', tangent.z*32767) )
-
-			# Bitangent
-			elif i == 3:
-				geoFile.write( struct.pack('i', i ))
-				streamElemSize = 3 * len( struct.pack('h', 0 ))
-				geoFile.write( struct.pack('i', streamElemSize) )
-				for v in self.__vertices:
-					bitangent = roundVec(v.bitangent)
-					geoFile.write( struct.pack('h', bitangent.x*32767) )
-					geoFile.write( struct.pack('h', bitangent.y*32767) )
-					geoFile.write( struct.pack('h', bitangent.z*32767) )
-
-
-			# Joint indices
-			elif i == 4:
-				geoFile.write( struct.pack('i', i ))
-				streamElemSize = 4 * len( struct.pack('c', 'c' ))
-				geoFile.write( struct.pack('i', streamElemSize) )
-				for v in self.__vertices:
-					jointIndices = [chr(0), chr(0), chr(0), chr(0)]
-					for j in range(len(v.joints)):
-						if j > 3:
-							break
-						jointIndices[j] = chr(v.joints[j].index)
-
-					geoFile.write( struct.pack('c', jointIndices[0]) )
-					geoFile.write( struct.pack('c', jointIndices[1]) )
-					geoFile.write( struct.pack('c', jointIndices[2]) )
-					geoFile.write( struct.pack('c', jointIndices[3]) )
-
-			# Weights
-			elif i == 5:
-				geoFile.write( struct.pack('i', i ))
-				streamElemSize = 4 * len( struct.pack('c', 'c' ))
-				geoFile.write( struct.pack('i', streamElemSize) )
-				for v in self.__vertices:
-					weights = [1, 0, 0, 0]
-					for w in range(len(v.weights)):
-						if w > 3:
-							break
-						weights[w] = v.weights[w]
-					geoFile.write( struct.pack('c', chr(int(round(weights[0] * 255)))) )
-					geoFile.write( struct.pack('c', chr(int(round(weights[1] * 255)))) )
-					geoFile.write( struct.pack('c', chr(int(round(weights[2] * 255)))) )
-					geoFile.write( struct.pack('c', chr(int(round(weights[3] * 255)))) )
-
-			# Texture Coord Set 1
-			elif i == 6:
-				geoFile.write( struct.pack('i', i ))
-				streamElemSize = 2 * len( struct.pack('f', 0.0 ))
-				geoFile.write( struct.pack('i', streamElemSize) )
-				for v in self.__vertices:
-					geoFile.write( struct.pack('f', v.texCoords[0]) )
-					geoFile.write( struct.pack('f', v.texCoords[1]) )
-
-			# Texture Coord Set 2
-			elif i == 7:
-				geoFile.write( struct.pack('i', i ))
-				streamElemSize = 2 * len( struct.pack('f', 0.0 ))
-				geoFile.write( struct.pack('i', streamElemSize) )
-				for v in self.__vertices:
-					geoFile.write( struct.pack('f', v.texCoords[0]) )
-					geoFile.write( struct.pack('f', v.texCoords[1]) )
-
-
-		# Write triangle indices
-		count = struct.pack('i', len(self.__indices))
-		geoFile.write(count)
-
-		for i in self.__indices:
-			geoFile.write( struct.pack('i', i))
-
-		# Write morph targets
-		count = struct.pack('i', len(self.__morphTargets))
-		geoFile.write(count)
-
-		for morph in self.__morphTargets:
-			geoFile.write(str256(morph.name));
-
-			# Write vertex indices
-			geoFile.write( struct.pack('i', len(morph.diffs)))
-
-			# indices of the vertices which should be morphed
-			for mDiff in morph.diffs:
-				geoFile.write( struct.pack('i', mDiff.vertIndex))
-
-			# Write stream data
-			geoFile.write( struct.pack('i', 4))
-
-			for i in range(4):
 				# Position
 				if i == 0:
 					geoFile.write( struct.pack('i', i ))
 					streamElemSize = 3 * len( struct.pack('f', 0.0 ))
 					geoFile.write( struct.pack('i', streamElemSize) )
-					for v in morph.diffs:
+					for v in self.__vertices:
 						pos = roundVec(v.pos)
 						geoFile.write( struct.pack('f', pos.x) )
 						geoFile.write( struct.pack('f', pos.y) )
@@ -1183,37 +1122,165 @@ class Converter():
 				# Normal
 				elif i == 1:
 					geoFile.write( struct.pack('i', i ))
-					streamElemSize = 3 * len( struct.pack('f', 0.0 ))
+					streamElemSize = 3 * len( struct.pack('h', 0 ))
 					geoFile.write( struct.pack('i', streamElemSize) )
-					for v in morph.diffs:
+					for v in self.__vertices:
 						normal = roundVec(v.normal)
-						geoFile.write( struct.pack('f', normal.x) )
-						geoFile.write( struct.pack('f', normal.y) )
-						geoFile.write( struct.pack('f', normal.z) )
+						if math.isnan(normal.x):
+							print 'FIXME : normal detected as NaN, on line ', lineno(), ' : wrote 0-length vector instead !!'
+							geoFile.write( struct.pack('h', 0) )
+							geoFile.write( struct.pack('h', 0) )
+							geoFile.write( struct.pack('h', 0) )
+						else:
+							geoFile.write( struct.pack('h', normal.x*32767) )
+							geoFile.write( struct.pack('h', normal.y*32767) )
+							geoFile.write( struct.pack('h', normal.z*32767) )
 				# Tangent
 				elif i == 2:
 					geoFile.write( struct.pack('i', i ))
-					streamElemSize = 3 * len( struct.pack('f', 0.0 ))
+					streamElemSize = 3 * len( struct.pack('h', 0 ))
 					geoFile.write( struct.pack('i', streamElemSize) )
-					for v in morph.diffs:
+					for v in self.__vertices:
 						tangent = roundVec(v.tangent)
-						geoFile.write( struct.pack('f', tangent.x) )
-						geoFile.write( struct.pack('f', tangent.y) )
-						geoFile.write( struct.pack('f', tangent.z) )
+						geoFile.write( struct.pack('h', tangent.x*32767) )
+						geoFile.write( struct.pack('h', tangent.y*32767) )
+						geoFile.write( struct.pack('h', tangent.z*32767) )
 
 				# Bitangent
 				elif i == 3:
 					geoFile.write( struct.pack('i', i ))
-					streamElemSize = 3 * len( struct.pack('f', 0.0 ))
+					streamElemSize = 3 * len( struct.pack('h', 0 ))
 					geoFile.write( struct.pack('i', streamElemSize) )
-					for v in morph.diffs:
+					for v in self.__vertices:
 						bitangent = roundVec(v.bitangent)
-						geoFile.write( struct.pack('f', bitangent.x) )
-						geoFile.write( struct.pack('f', bitangent.y) )
-						geoFile.write( struct.pack('f', bitangent.z) )
+						geoFile.write( struct.pack('h', bitangent.x*32767) )
+						geoFile.write( struct.pack('h', bitangent.y*32767) )
+						geoFile.write( struct.pack('h', bitangent.z*32767) )
 
-		# Close geo file
-		geoFile.close()
+
+				# Joint indices
+				elif i == 4:
+					geoFile.write( struct.pack('i', i ))
+					streamElemSize = 4 * len( struct.pack('c', 'c' ))
+					geoFile.write( struct.pack('i', streamElemSize) )
+					for v in self.__vertices:
+						jointIndices = [chr(0), chr(0), chr(0), chr(0)]
+						for j in range(len(v.joints)):
+							if j > 3:
+								break
+							jointIndices[j] = chr(v.joints[j].index)
+
+						geoFile.write( struct.pack('c', jointIndices[0]) )
+						geoFile.write( struct.pack('c', jointIndices[1]) )
+						geoFile.write( struct.pack('c', jointIndices[2]) )
+						geoFile.write( struct.pack('c', jointIndices[3]) )
+
+				# Weights
+				elif i == 5:
+					geoFile.write( struct.pack('i', i ))
+					streamElemSize = 4 * len( struct.pack('c', 'c' ))
+					geoFile.write( struct.pack('i', streamElemSize) )
+					for v in self.__vertices:
+						weights = [1, 0, 0, 0]
+						for w in range(len(v.weights)):
+							if w > 3:
+								break
+							weights[w] = v.weights[w]
+						geoFile.write( struct.pack('c', chr(int(round(weights[0] * 255)))) )
+						geoFile.write( struct.pack('c', chr(int(round(weights[1] * 255)))) )
+						geoFile.write( struct.pack('c', chr(int(round(weights[2] * 255)))) )
+						geoFile.write( struct.pack('c', chr(int(round(weights[3] * 255)))) )
+
+				# Texture Coord Set 1
+				elif i == 6:
+					geoFile.write( struct.pack('i', i ))
+					streamElemSize = 2 * len( struct.pack('f', 0.0 ))
+					geoFile.write( struct.pack('i', streamElemSize) )
+					for v in self.__vertices:
+						geoFile.write( struct.pack('f', v.texCoords[0]) )
+						geoFile.write( struct.pack('f', v.texCoords[1]) )
+
+				# Texture Coord Set 2
+				elif i == 7:
+					geoFile.write( struct.pack('i', i ))
+					streamElemSize = 2 * len( struct.pack('f', 0.0 ))
+					geoFile.write( struct.pack('i', streamElemSize) )
+					for v in self.__vertices:
+						geoFile.write( struct.pack('f', v.texCoords[0]) )
+						geoFile.write( struct.pack('f', v.texCoords[1]) )
+
+
+			# Write triangle indices
+			count = struct.pack('i', len(self.__indices))
+			geoFile.write(count)
+
+			for i in self.__indices:
+				geoFile.write( struct.pack('i', i))
+
+			# Write morph targets
+			count = struct.pack('i', len(self.__morphTargets))
+			geoFile.write(count)
+
+			for morph in self.__morphTargets:
+				geoFile.write(str256(morph.name));
+
+				# Write vertex indices
+				geoFile.write( struct.pack('i', len(morph.diffs)))
+
+				# indices of the vertices which should be morphed
+				for mDiff in morph.diffs:
+					geoFile.write( struct.pack('i', mDiff.vertIndex))
+
+				# Write stream data
+				geoFile.write( struct.pack('i', 4))
+
+				for i in range(4):
+					# Position
+					if i == 0:
+						geoFile.write( struct.pack('i', i ))
+						streamElemSize = 3 * len( struct.pack('f', 0.0 ))
+						geoFile.write( struct.pack('i', streamElemSize) )
+						for v in morph.diffs:
+							pos = roundVec(v.pos)
+							geoFile.write( struct.pack('f', pos.x) )
+							geoFile.write( struct.pack('f', pos.y) )
+							geoFile.write( struct.pack('f', pos.z) )
+
+					# Normal
+					elif i == 1:
+						geoFile.write( struct.pack('i', i ))
+						streamElemSize = 3 * len( struct.pack('f', 0.0 ))
+						geoFile.write( struct.pack('i', streamElemSize) )
+						for v in morph.diffs:
+							normal = roundVec(v.normal)
+							geoFile.write( struct.pack('f', normal.x) )
+							geoFile.write( struct.pack('f', normal.y) )
+							geoFile.write( struct.pack('f', normal.z) )
+					# Tangent
+					elif i == 2:
+						geoFile.write( struct.pack('i', i ))
+						streamElemSize = 3 * len( struct.pack('f', 0.0 ))
+						geoFile.write( struct.pack('i', streamElemSize) )
+						for v in morph.diffs:
+							tangent = roundVec(v.tangent)
+							geoFile.write( struct.pack('f', tangent.x) )
+							geoFile.write( struct.pack('f', tangent.y) )
+							geoFile.write( struct.pack('f', tangent.z) )
+
+					# Bitangent
+					elif i == 3:
+						geoFile.write( struct.pack('i', i ))
+						streamElemSize = 3 * len( struct.pack('f', 0.0 ))
+						geoFile.write( struct.pack('i', streamElemSize) )
+						for v in morph.diffs:
+							bitangent = roundVec(v.bitangent)
+							geoFile.write( struct.pack('f', bitangent.x) )
+							geoFile.write( struct.pack('f', bitangent.y) )
+							geoFile.write( struct.pack('f', bitangent.z) )
+
+			# Close geo file
+			geoFile.close()
+
 		return True
 
 
@@ -1225,7 +1292,7 @@ class Converter():
 		if mesh.material != None:
 			mat = fileName+'/'+self.__materials[mesh.material]['name']+".material.xml"
 		else:
-			print "Warning: No material found for mesh: "+mesh.name+"!"
+			printWarning("no material found for mesh: "+mesh.name)
 
 		# Leaf
 		if len(mesh.children) == 0:
@@ -1462,7 +1529,7 @@ class Converter():
 				dat.bitans = Vector(0.0, 0.0, 0.0)
 
 		if no_tangent_data:
-			print 'Warning ! There are faces which do not have UV coordinates.'
+			printWarning("there are faces which do not have UV coordinates")
 
 	def copyTextures(self):
 		try:
@@ -1470,7 +1537,7 @@ class Converter():
 				os.makedirs(self.__texPath)
 			os.chdir(self.__texPath)
 		except:
-			print "Can't change directory: "+self.__texPath
+			printWarning("can't change to directory: " + self.__texPath)
 			return False
 
 		error = False
@@ -1491,11 +1558,16 @@ class Converter():
 			except:
 				image.setFilename(oldFile)
 				error = True
-				print 'Error while copying image: '+image.getFilename()
+				printWarning("error while copying image: " + image.getFilename())
 
 		os.chdir(Blender.sys.dirname(self.__filePath))
 
 		return not error
+
+######################################################
+# end of Converter class.
+# Utility functions :
+######################################################
 
 def roundVec(v):
 	return Vector(round(v.x, 5), round(v.z, 5), -round(v.y, 5))
@@ -1522,3 +1594,16 @@ def str256 (s):
 	else:
 		fill = 256-len(s)
 		return s+fill*chr(0)
+
+def printWarning(msg):
+	global _WARNING, consoleWarningsButton
+	print '[WARNING]: ' + msg
+
+	if not consoleWarningsButton.val:
+		Blender.Draw.PupMenu('WARNING: ' + msg)
+
+	_WARNING = True
+
+def printError(msg):
+	print '[ERROR]: ' + msg
+	Blender.Draw.PupMenu('ERROR: ' + msg)

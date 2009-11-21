@@ -1,4 +1,4 @@
-HORDE3D Export Version 0.2
+HORDE3D Export Version 0.2.1
 ==========================
 
 Author: Felix Kistler (felixkistler@gmail.com)
@@ -16,12 +16,13 @@ Usage:
 Settings:
 ---------
 
-- The "Export Filename" defines the directory and filename used for the model and the geometry file.
+- The "Export filename" defines the directory and filename used for the model and the geometry file.
 - The "Shader" defines the shader used within the material files used by the exported model.
 - The "Relative material path" will be used for the Horde3D material files. Note that an additional subdirectory for the exported model will be created. It will be named using the base name of the export filename.
 - The "Relative animation path" will be used for any exported animation files
 - A "Texture subdirectory" can be specified when you want to move all textures used by this model to its own directory within the relative texture path. Otherwise the textures will be copied directly to the texture path (may be useful if you use the same textures in several models
 All textures used by your model will be copied to the Relative texture path.
+- You can choose to create the scene, animation, geometry and material files or not using the appropriate buttons.
 
 Note that if you create the scene graph- and geometry file in a subdirectory of your Horde3D Geometry and/or Scene Graph path, the exporter won't recognize that and links the geometry file within the scene graph as if there is no sub directory. That's why the example above will create a cube.scene.xml in the Cube subdirectory that contains a link to a cube.geo without the additional subdirectory cube.
 
