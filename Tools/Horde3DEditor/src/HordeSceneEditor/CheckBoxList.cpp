@@ -83,6 +83,7 @@ public:
 		 QCheckBox *myEditor = static_cast<QCheckBox*>(editor);
 		 myEditor->setText(index.data(Qt::DisplayRole).toString());
 		 myEditor->setChecked(index.data(Qt::UserRole).toBool());
+		 myEditor->setProperty( "int", index.data( Qt::UserRole + 1 ) );
 	 }
 
 	 void setModelData(QWidget *editor, QAbstractItemModel *model,
@@ -96,6 +97,7 @@ public:
 		 QMap<int,QVariant> data;
 		 data.insert(Qt::DisplayRole,myEditor->text());
 		 data.insert(Qt::UserRole,value);
+		 data.insert(Qt::UserRole + 1, myEditor->property( "int" ) );
 		 model->setItemData(index,data);
 	 }
 

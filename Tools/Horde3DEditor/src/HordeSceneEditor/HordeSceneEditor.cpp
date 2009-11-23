@@ -778,25 +778,26 @@ void HordeSceneEditor::fileChanged(const QString& path)
 			return;
 		}
 	}
+	QString relPath = QDir::current().relativeFilePath( path );
 	H3DRes resource = 0;
 	// Shader file?
 	if (resource == 0 )
-		resource = h3dFindResource(H3DResTypes::Shader, qPrintable( path ) );
+		resource = h3dFindResource(H3DResTypes::Shader, qPrintable( relPath ) );
 	// Code file?
 	if (resource == 0 )
-		resource = h3dFindResource(H3DResTypes::Code, qPrintable( path ) );		
+		resource = h3dFindResource(H3DResTypes::Code, qPrintable( relPath ) );		
 	// Material ? 
 	if (resource == 0 )
-		resource = h3dFindResource(H3DResTypes::Material, qPrintable( path ) );
+		resource = h3dFindResource(H3DResTypes::Material, qPrintable( relPath ) );
 	// Texture ? 
 	if (resource == 0 )
-		resource = h3dFindResource(H3DResTypes::Texture, qPrintable( path ) );
+		resource = h3dFindResource(H3DResTypes::Texture, qPrintable( relPath ) );
 	// Effect ?
 	if (resource == 0 )
-		resource = h3dFindResource(H3DResTypes::ParticleEffect, qPrintable( path ) );
+		resource = h3dFindResource(H3DResTypes::ParticleEffect, qPrintable( relPath ) );
 	// Pipeline ?
 	if (resource == 0 )
-		resource = h3dFindResource(H3DResTypes::Pipeline, qPrintable( path ) );		
+		resource = h3dFindResource(H3DResTypes::Pipeline, qPrintable( relPath ) );		
 
 	// If the resource was loaded before 	
 	if (resource != 0)

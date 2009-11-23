@@ -80,79 +80,6 @@ public:
 	QString activeCam() const;
 	void setActiveCam(const QString& cameraName);
 
-	QString materialDir() const
-	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("materialpath", "");
-		directory.replace('\\', QDir::separator());
-		directory.replace('/', QDir::separator());
-		return directory;
-	}
-	void setMaterialDir(const QString& directory);
-
-	QString textureDir() const
-	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("texturepath", "");
-		directory.replace('\\', QDir::separator());
-		directory.replace('/', QDir::separator());
-		return directory;
-	}
-	void setTextureDir(const QString& directory);
-
-	QString animationDir() const
-	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("animationpath", "");
-		directory.replace('\\', QDir::separator());
-		directory.replace('/', QDir::separator());
-		return directory;
-	}	
-	void setAnimationDir(const QString& directory);
-
-
-	QString shaderDir() const
-	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("shaderpath", "");
-		directory.replace('\\', QDir::separator());
-		directory.replace('/', QDir::separator());
-		return directory;
-	}
-	void setShaderDir(const QString& directory);
-
-	QString geometryDir() const
-	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("geometrypath", "");
-		directory.replace('\\', QDir::separator());
-		directory.replace('/', QDir::separator());
-		return directory;
-	}
-	void setGeometryDir(const QString& directory);
-
-	QString sceneGraphDir() const
-	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("scenegraphpath", "");
-		directory.replace('\\', QDir::separator());
-		directory.replace('/', QDir::separator());
-		return directory;
-	}
-	void setSceneGraphDir(const QString& directory);
-
-	QString effectDir() const
-	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("effectspath", "");
-		directory.replace('\\', QDir::separator());
-		directory.replace('/', QDir::separator());
-		return directory;
-	}
-	void setEffectDir(const QString& directory);
-
-	QString pipelineDir() const
-	{
-		QString directory = m_sceneFileXml.documentElement().firstChildElement("EnginePath").attribute("pipelinepath", "");
-		directory.replace('\\', QDir::separator());
-		directory.replace('/', QDir::separator());
-		return directory;
-	}
-	void setPipelineDir(const QString& directory);
-
 	QFileInfoList fileReferences() const;
 
 	void cleanSceneDirectory();
@@ -160,6 +87,7 @@ public:
 private:
 
 	QFileInfoList findReferences(const QFileInfo& fileName) const;
+	QFileInfoList findCodeReferences( const QFileInfo& fileName ) const;
 	QFileInfoList findReferences(const QDomElement& node) const;
 	QFileInfoList filesInSceneDir(const QDir& directory) const;
 

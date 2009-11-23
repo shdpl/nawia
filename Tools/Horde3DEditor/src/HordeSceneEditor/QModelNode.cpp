@@ -174,10 +174,10 @@ void QModelNode::addRepresentation()
 	h3dSetNodeTransform(m_hordeID, x, y, z, rx, ry, rz, sx, sy, sz);
 	
 	h3dSetNodeParamI(m_hordeID, H3DModel::SWSkinningI, softwareSkinning());
-	h3dSetNodeParamI(m_hordeID, H3DModel::LodDist1F, lodDist1());
-	h3dSetNodeParamI(m_hordeID, H3DModel::LodDist2F, lodDist2());
-	h3dSetNodeParamI(m_hordeID, H3DModel::LodDist3F, lodDist3());
-	h3dSetNodeParamI(m_hordeID, H3DModel::LodDist4F, lodDist4());
+	h3dSetNodeParamF(m_hordeID, H3DModel::LodDist1F, 0, lodDist1());
+	h3dSetNodeParamF(m_hordeID, H3DModel::LodDist2F, 0, lodDist2());
+	h3dSetNodeParamF(m_hordeID, H3DModel::LodDist3F, 0, lodDist3());
+	h3dSetNodeParamF(m_hordeID, H3DModel::LodDist4F, 0, lodDist4());
 
 	// Attachment
 	QDomElement attachment = m_xmlNode.firstChildElement("Attachment");	

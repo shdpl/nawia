@@ -173,60 +173,19 @@ void SceneFile::setActiveCam(const QString& cameraName)
 	m_sceneFileXml.documentElement().namedItem("ActiveCamera").toElement().setAttribute("name", cameraName);
 }
 
-void SceneFile::setMaterialDir(const QString& directory)
-{
-	QDomElement pathes = m_sceneFileXml.documentElement().firstChildElement("EnginePath");
-	pathes.setAttribute("materialpath", directory);
-}
-
-void SceneFile::setTextureDir(const QString& directory)
-{
-	QDomElement pathes = m_sceneFileXml.documentElement().firstChildElement("EnginePath");
-	pathes.setAttribute("texturepath", directory);
-}
-
-void SceneFile::setAnimationDir(const QString& directory)
-{
-	QDomElement pathes = m_sceneFileXml.documentElement().firstChildElement("EnginePath");
-	pathes.setAttribute("animationpath", directory);
-}
-
-void SceneFile::setShaderDir(const QString& directory)
-{
-	QDomElement pathes = m_sceneFileXml.documentElement().firstChildElement("EnginePath");
-	pathes.setAttribute("shaderpath", directory);
-}
-
-void SceneFile::setGeometryDir(const QString& directory)
-{
-	QDomElement pathes = m_sceneFileXml.documentElement().firstChildElement("EnginePath");
-	pathes.setAttribute("geometrypath", directory);
-}
-
-void SceneFile::setSceneGraphDir(const QString& directory)
-{
-	QDomElement pathes = m_sceneFileXml.documentElement().firstChildElement("EnginePath");
-	pathes.setAttribute("scenegraphpath", directory);
-}
-
-void SceneFile::setEffectDir(const QString& directory)
-{
-	QDomElement pathes = m_sceneFileXml.documentElement().firstChildElement("EnginePath");
-	pathes.setAttribute("effectspath", directory);
-}
-
-
-void SceneFile::setPipelineDir(const QString& directory)
-{
-	QDomElement pathes = m_sceneFileXml.documentElement().firstChildElement("EnginePath");
-	pathes.setAttribute("pipelinepath", directory);
-}
-
 QFileInfoList SceneFile::fileReferences() const
 {
 	QFileInfoList references;
 	references.push_back(m_sceneGraph);
 	references << findReferences(m_sceneGraph);
+	
+	int i = 0;
+	while( ( i = h3dGetNextResource( H3DResTypes::Code, i ) ) != 0 )
+	{
+		QFileInfo codeFile( QDir::current(), h3dGetResName( i ) );
+		if( codeFile.exists() )
+			references.push_back( codeFile );
+	}
 	return references;
 }
 
@@ -248,7 +207,7 @@ QFileInfoList SceneFile::findReferences(const QDomElement& node) const
 	
 	if (node.hasAttribute("sceneGraph"))
 	{
-		QFileInfo file(QDir(sceneGraphDir()), node.attribute("sceneGraph"));
+		QFileInfo file(QDir::current(), node.attribute("sceneGraph"));
 		if( !references.contains(file) )
 		{
 			references.append(file);
@@ -257,7 +216,7 @@ QFileInfoList SceneFile::findReferences(const QDomElement& node) const
 	}
 	if (node.hasAttribute("material"))
 	{
-		QFileInfo file(QDir(materialDir()), node.attribute("material"));
+		QFileInfo file(QDir::current(), node.attribute("material"));
 		if( !references.contains(file) )
 		{
 			references.append(file);
@@ -266,7 +225,7 @@ QFileInfoList SceneFile::findReferences(const QDomElement& node) const
 	}
 	if( node.tagName() == "Material" && node.hasAttribute("link") )
 	{
-		QFileInfo file(QDir(materialDir()), node.attribute("link"));
+		QFileInfo file(QDir::current(), node.attribute("link"));
 		if( !references.contains(file) )
 		{
 			references.append(file);
@@ -275,7 +234,7 @@ QFileInfoList SceneFile::findReferences(const QDomElement& node) const
 	}
 	if (node.tagName() == "Stage" && node.hasAttribute("link"))
 	{
-		QFileInfo file(QDir(materialDir()), node.attribute("link"));
+		QFileInfo file(QDir::current(), node.attribute("link"));
 		if( !references.contains(file) )
 		{
 			references.append(file);
@@ -284,26 +243,20 @@ QFileInfoList SceneFile::findReferences(const QDomElement& node) const
 	}
 	if (node.tagName() == "Shader" && node.hasAttribute("source"))
 	{
-		QFileInfo file(QDir(shaderDir()), node.attribute("source"));
+		QFileInfo file(QDir::current(), node.attribute("source"));
 		if( !references.contains(file) )
 		{
 			references.append(file);
-			references << findReferences(file);
 		}
-	}
-	if (node.hasAttribute("code"))
-	{
-		QFileInfo file(QDir(shaderDir()), node.attribute("code"));
-		references.append(file);
-	}
+	}	
 	if (node.hasAttribute("geometry"))
 	{
-		QFileInfo file(QDir(geometryDir()), node.attribute("geometry"));
+		QFileInfo file(QDir::current(), node.attribute("geometry"));
 		references.append(file);		
 	}
 	if (node.hasAttribute("effect"))
 	{
-		QFileInfo file(QDir(effectDir()), node.attribute("effect"));
+		QFileInfo file(QDir::current(), node.attribute("effect"));
 		if( !references.contains(file) )
 		{
 			references.append(file);
@@ -312,7 +265,7 @@ QFileInfoList SceneFile::findReferences(const QDomElement& node) const
 	}
 	if (node.hasAttribute("pipeline"))
 	{
-		QFileInfo file(QDir(pipelineDir()), node.attribute("pipeline"));
+		QFileInfo file(QDir::current(), node.attribute("pipeline"));
 		if( !references.contains(file) )
 		{
 			references.append(file);
@@ -321,12 +274,12 @@ QFileInfoList SceneFile::findReferences(const QDomElement& node) const
 	}
 	if (node.hasAttribute("map"))
 	{
-		QFileInfo file(QDir(textureDir()), node.attribute("map"));
+		QFileInfo file(QDir::current(), node.attribute("map"));
 		references.append(file);
 	}
 	if (node.hasAttribute("heightmap"))
 	{
-		QFileInfo file(QDir(textureDir()), node.attribute("map"));
+		QFileInfo file(QDir::current(), node.attribute("map"));
 		references.append(file);
 	}
 	if( node.tagName() == "Attachment" && m_pluginManager->attachmentPlugIn() )

@@ -76,6 +76,9 @@ void MaterialWidget::init()
 
 void MaterialWidget::setCurrentMaterial(const QString &materialFileName)
 {
+	if( m_currentMaterialFile == materialFileName && !m_saveButton->isEnabled() )
+		return;
+
 	blockSignals(true);
 	closeMaterial();
 	m_matHandle = h3dFindResource( H3DResTypes::Material, qPrintable( materialFileName ) );	
@@ -123,23 +126,42 @@ void MaterialWidget::closeMaterial()
 	m_saveButton->setEnabled(false);
 	if (parentWidget())
 		parentWidget()->setWindowTitle(tr("Material Settings"));
-	m_materialXml.setContent( QString("<Material/>") );	
-	release();
+	m_materialXml.setContent( QString("<Material/>") );		
+	m_shader->setCurrentIndex( -1 );	
 }
 
 void MaterialWidget::save()
 {
 	if (!m_currentMaterialFile.isEmpty() && m_saveButton->isEnabled())
 	{
+		QDomDocument cleanMaterial = m_materialXml.cloneNode( true ).toDocument();
+		QDomNodeList samplers = cleanMaterial.documentElement().elementsByTagName( "Sampler" );
+		for( int i = 0; i < samplers.count();  )
+		{
+			if( samplers.at( i ).toElement().attribute( "map" ).isEmpty() )
+				cleanMaterial.documentElement().removeChild( samplers.at( i ) );				
+			else
+				++i;
+		}		
+
+		QDomNodeList shaderFlags = cleanMaterial.documentElement().elementsByTagName( "ShaderFlag" );
+		for( int i = 0; i < shaderFlags.count(); )
+		{
+			if( shaderFlags.at( i ).toElement().attribute( "name" ).isEmpty() )
+				cleanMaterial.documentElement().removeChild( shaderFlags.at( i ) );
+			else
+				++i;
+		}
+
 		if (m_className->text().isEmpty())
-			m_materialXml.documentElement().removeAttribute("class");
+			cleanMaterial.documentElement().removeAttribute("class");
 		else
-			m_materialXml.documentElement().setAttribute("class", m_className->text());		
+			cleanMaterial.documentElement().setAttribute("class", m_className->text());		
 		QFile file( QDir::current().absoluteFilePath(m_currentMaterialFile));
 		if (file.open(QIODevice::WriteOnly | QIODevice::Truncate))
 		{
 			QTextStream stream(&file);
-			m_materialXml.save(stream, 4);
+			cleanMaterial.save(stream, 4);
 			file.flush();
 			file.close();
 		}
@@ -221,6 +243,25 @@ void MaterialWidget::classChanged()
 void MaterialWidget::flagsChanged( int index, bool checked )
 {
 	m_saveButton->setEnabled(true);
+	QDomNodeList shaderFlags = m_materialXml.elementsByTagName( "ShaderFlag" );
+	for( int i = 0; i < m_shaderFlags->count(); ++i )
+	{
+		qDebug( "Flag %d", m_shaderFlags->itemData( i, Qt::UserRole + 1 ).toInt() );
+	}
+	int flag = m_shaderFlags->itemData( index, Qt::UserRole + 1 ).toInt();
+	QString flagName = 
+		QString( "_F%1_%2" ).arg( flag, 2, 10, QChar::fromLatin1('0') ).arg( m_shaderFlags->itemText( index ) );
+	for( int i = 0; i < shaderFlags.size(); ++i )
+	{		
+		if( shaderFlags.at( i ).toElement().attribute( "name" ) == flagName )
+		{
+			if( !checked )
+				m_materialXml.documentElement().removeChild( shaderFlags.at( i ) );
+			return;
+		}
+	}
+	QDomNode shaderFlag = m_materialXml.documentElement().appendChild( m_materialXml.createElement( "ShaderFlag" ) );
+	shaderFlag.toElement().setAttribute( "name", flagName );
 }
 
 void MaterialWidget::release()
@@ -246,8 +287,7 @@ void MaterialWidget::release()
 	}
 	m_texUnitCombo->clear();
 	
-	m_shaderFlags->clear();
-
+	m_shaderFlags->clear();	
 }
 
 void MaterialWidget::syncWithShader()
@@ -274,6 +314,7 @@ void MaterialWidget::syncWithShader()
 	}
 	
 	QDomNodeList flags = m_materialXml.elementsByTagName( "ShaderFlag" );
+	m_shaderFlags->blockSignals( true );
 	for( int i = 0; i < m_shaderData->flags().size(); ++i)
 	{
 		bool set = false;
@@ -289,8 +330,9 @@ void MaterialWidget::syncWithShader()
 			}
 		}
 		m_shaderFlags->addItem( m_shaderData->flags().at(i).Name, set );
-		m_shaderFlags->setItemData( m_shaderFlags->count(), m_shaderData->flags().at(i).Flag, Qt::UserRole + 1 );
+		m_shaderFlags->setItemData( m_shaderFlags->count() - 1, m_shaderData->flags().at(i).Flag, Qt::UserRole + 1 );
 	}
+	m_shaderFlags->blockSignals( false );
 
 	QDomNodeList samplers = m_materialXml.documentElement().elementsByTagName("Sampler");
 	int numSamplers = h3dGetResElemCount( m_shaderHandle, H3DShaderRes::SamplerElem );	
@@ -299,8 +341,6 @@ void MaterialWidget::syncWithShader()
 		QString sampler = h3dGetResParamStr( m_shaderHandle, H3DShaderRes::SamplerElem, i, H3DShaderRes::SampNameStr );
 		QString tip("Sampler %1");		
 		tip.arg( sampler );
-		m_texUnitCombo->setItemData( m_texUnitCombo->count(), tip, Qt::ToolTipRole );
-		m_texUnitCombo->setItemData( m_texUnitCombo->count(), tip, Qt::StatusTipRole);
 		QDomElement samplerXML;
 		for( int j = 0;  j < samplers.count(); ++j)
 		{			
@@ -312,11 +352,13 @@ void MaterialWidget::syncWithShader()
 		}
 		if( samplerXML.isNull() )
 		{
-			samplerXML = m_materialXml.appendChild( m_materialXml.createElement("Sampler") ).toElement();
+			samplerXML = m_materialXml.documentElement().appendChild( m_materialXml.createElement("Sampler") ).toElement();
 			samplerXML.setAttribute( "name", sampler );
 		}
 		QTexUnit *unit = new QTexUnit( samplerXML, m_texUnitCombo );
 		m_texUnitCombo->addItem( sampler, QVariant::fromValue<void*>( unit ) );
+		m_texUnitCombo->setItemData( m_texUnitCombo->count()-1, tip, Qt::ToolTipRole );
+		m_texUnitCombo->setItemData( m_texUnitCombo->count()-1, tip, Qt::StatusTipRole);
 	}
 
 	QDomNodeList uniforms = m_materialXml.documentElement().elementsByTagName("Uniform");

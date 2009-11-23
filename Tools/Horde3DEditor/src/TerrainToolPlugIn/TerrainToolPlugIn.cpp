@@ -151,7 +151,7 @@ void TerrainToolPlugIn::setSceneFile(SceneFile* scene)
 
 void TerrainToolPlugIn::heightMapConverter()
 {
-	QDir textureDir(m_scene->textureDir());
+	QDir textureDir = QDir::current();
 	QWizard wizard;
 	wizard.addPage(new ConverterWizard(&wizard));
 	if (wizard.exec() == QDialog::Accepted)
