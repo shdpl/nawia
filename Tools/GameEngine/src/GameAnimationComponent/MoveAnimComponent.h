@@ -18,7 +18,7 @@
 //
 // GameEngine Animation Component of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Felix Kistler
+// Copyright (C) 2007-2009 Felix Kistler
 // 
 // ****************************************************************************************
 #ifndef MOVEANIMCOMPONENT_H_
@@ -46,13 +46,13 @@
       <StaticAnimation fps="30" name="idle" file="female_idle.anim" />
       <StaticAnimation fps="30" name="walk" file="female_walk.anim" />
     </KeyframeAnimation>
-    <MoveAnimation moveAnimation="walk" idleAnimation="idle" speed="7.0" />
+    <MoveAnimation moveAnim="walk" idleAnim="idle" speed="7.0" blendTime="0.5"/>
   </GameEntity>
   \endcode
  * <br>
  * In this example you have two static animations for the KeyframeAnimComponent. 
  * These two animations will be used in the MoveAnimComponent referenced by the
- * attributes moveAnimation and idleAnimation. If the translation change of an 
+ * attributes moveAnim and idleAnim. If the translation change of an 
  * entity between two frames falls below a specific threshold the idleAnimation will be activated.
  * Otherwise the activeAnimation will be used. To adjust the animation speed by a constant
  * factor (maybe because the default framerate of the animation does not fit to the characters translation
@@ -157,9 +157,6 @@ private:
 
 	/// Current animation playing
 	AnimationSetup* m_activeAnim;
-
-	/// Next animation to be played
-	AnimationSetup* m_nextAnim;
 
 	// Whether object is idle
 	bool m_idle;
