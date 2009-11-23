@@ -11,14 +11,12 @@ ShaderData::ShaderData( const QByteArray& data, QObject* parent ) : QObject(pare
 
 ShaderData::~ShaderData()
 {
-	qDeleteAll( m_uniforms );
 }
 
 bool ShaderData::loadShader( const QByteArray& data )
 {
 	// Parse sections
 	const char *pData = data.constData();
-	QByteArray tmpCode;
 	while( *pData != '\0' )
 	{
 		if( *pData++ == '[' && *pData++ == '[' )
@@ -37,15 +35,7 @@ bool ShaderData::loadShader( const QByteArray& data )
 			const char *sectionContentEnd = pData;
 			
 
-			if( sectionNameEnd - sectionNameStart == 2 &&
-			    *sectionNameStart == 'F' && *(sectionNameStart+1) == 'X' )
-			{
-				// Parse FX section
-				tmpCode = "<Shader>";
-				tmpCode.append( QByteArray( sectionContentStart, sectionContentEnd - sectionContentStart ) );
-				tmpCode += "</Shader>";
-			}
-			else
+			if( sectionNameEnd - sectionNameStart != 2 || *sectionNameStart != 'F' || *(sectionNameStart+1) != 'X' )
 			{				
 				// Add section as private code resource which is not managed by resource manager
 				QByteArray tmpCode0( sectionNameStart, sectionNameEnd - sectionNameStart );
@@ -57,8 +47,6 @@ bool ShaderData::loadShader( const QByteArray& data )
 		}
 	}
 
-	if( tmpCode.isEmpty() ) return raiseError( "Missing FX section" );
-	if( !parseFXSection( tmpCode ) ) return false;
 	return true;
 }
 
@@ -140,69 +128,6 @@ bool ShaderData::loadCode( const QByteArray& data )
 	return true;
 }
 
-bool ShaderData::parseFXSection(const QByteArray &data)
-{
-	QString errorMsg;
-	int errorLine, errorColumn;
-	// Parse FX section
-	QDomDocument doc;
-	if( !doc.setContent( data, &errorMsg, &errorLine, &errorColumn ) )
-		return raiseError( QObject::tr("Error (%1) in FX section, line %2, column %3").arg(errorMsg).arg(errorLine).arg(errorColumn) );		
-
-	// Parse samplers
-	bool unitFree[12] = {true, true, true, true, true, true, true, true, true, true, true, true}; 
-		
-	QDomElement node1 = doc.documentElement().firstChildElement( "Sampler" );
-	while( !node1.isNull() )
-	{
-		if( node1.attribute( "id" ) == 0x0 ) return raiseError( "Missing Sampler attribute 'id'" );
-		
-		ShaderSampler sampler;
-
-		sampler.Id = node1.attribute( "id" );
-		sampler.TexUnit = node1.attribute( "texUnit", "-1" ).toInt();
-		if( sampler.TexUnit > 11 ) return raiseError( "texUnit exceeds limit" );
-		// Shouldn't unitFree checked before?
-		if( sampler.TexUnit >= 0 ) unitFree[sampler.TexUnit] = false;
-
-		m_samplers.push_back( sampler );
-
-		node1 = node1.nextSiblingElement( "Sampler" );
-	}
-
-	// Parse uniforms
-	node1 = doc.documentElement().firstChildElement( "Uniform" );
-	while( !node1.isNull() )
-	{
-		if( !node1.hasAttribute( "id" ) ) return raiseError( "Missing Uniform attribute 'id'" );
-		
-		QUniform* uniform = new QUniform( node1, true );
-		m_uniforms.push_back( uniform );
-		
-		node1 = node1.nextSiblingElement( "Uniform" );
-	}
-
-	// Automatic texture unit assignment
-	for( uint32 i = 0; i < m_samplers.size(); ++i )
-	{
-		if( m_samplers[i].TexUnit < 0 )
-		{	
-			for( uint32 j = 0; j < 12; ++j )
-			{
-				if( unitFree[j] )
-				{
-					m_samplers[i].TexUnit = j;
-					unitFree[j] = false;
-					break;
-				}
-			}
-			if( m_samplers[i].TexUnit < 0 )
-				return raiseError( "Automatic texture unit assignment: No free unit found" );
-		}
-	}
-
-	return true;
-}
 
 bool ShaderData::raiseError( const QString& error )
 {

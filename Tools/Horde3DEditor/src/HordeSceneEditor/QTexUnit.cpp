@@ -23,8 +23,7 @@
 
 #include <Horde3D.h>
 
-QTexUnit::QTexUnit( int unit, const QDomElement& texUnitNode, QObject* parent /*= 0*/) : QObject(parent), m_texUnitNode(texUnitNode),
-m_unit(unit)
+QTexUnit::QTexUnit( const QDomElement& texUnitNode, QObject* parent /*= 0*/) : QObject(parent), m_texUnitNode(texUnitNode)
 {
 	
 }
@@ -39,10 +38,6 @@ QString QTexUnit::name() const
 	return m_texUnitNode.attribute("name");
 }
 
-int QTexUnit::unit() const
-{
-	return m_unit;
-}
 
 Texture QTexUnit::map() const
 {

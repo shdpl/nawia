@@ -28,6 +28,8 @@
 #include <QtXml/qdom.h>
 #include <ShaderData.h>
 
+#include <Horde3D.h>
+
 class QFileSystemWatcher;
 
 /**
@@ -71,6 +73,8 @@ private:
 	QString				m_currentMaterialFile;
 	QDomDocument		m_materialXml;
 	QString				m_resourcePath;
+	H3DRes				m_matHandle;
+	H3DRes				m_shaderHandle;
 
 };
 #endif

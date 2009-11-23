@@ -4,12 +4,6 @@
 #include <QtCore/QStringList>
 #include "QUniform.h"
 
-struct ShaderSampler
-{
-	QString Id;
-	int		TexUnit;
-};
-
 struct ShaderFlag
 {
 	int		Flag;
@@ -32,18 +26,12 @@ public:
 	const QStringList& includeFiles() { return m_includedFiles; }
 	
 	const QList<ShaderFlag>& flags() { return m_flags; }
-	const QList<QUniform*>& uniforms() { return m_uniforms; }
-	const QList<ShaderSampler>& samplers() { return m_samplers; }
 
 private:
 	bool loadShader( const QByteArray& data );
 	bool loadCode( const QByteArray& data );
-	bool parseFXSection( const QByteArray& data );
-
 
 	bool raiseError( const QString& error );
-	QList<ShaderSampler>		m_samplers;
-	QList<QUniform*>			m_uniforms;
 	QList<ShaderFlag>			m_flags;
 	QStringList					m_includedFiles;
 	QString						m_lastError;
