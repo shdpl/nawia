@@ -271,6 +271,7 @@ public:
 		E_GO_TO_STOPPED,		/// Entity has arrived at the desired location
 		E_SET_PROPERTY,			/// Sets a property		
 		E_GET_PROPERTY,			/// Gets a property
+		E_ADJUST_PROPERTY,		/// Adjusts a property	
 		E_INTERACT,				/// Interact with another Entity
 		E_INTERACTED_WITH,		/// Informs an Entity that it's interacted with by another Entity
 		E_INTERACT_POSITION,	/// Gets the position where to interact with a SmartObject
@@ -332,6 +333,7 @@ public:
 		if(in.find("E_GO_TO_STOPPED") != std::string::npos) return GameEvent::E_GO_TO_STOPPED;
 		if(in.find("E_SET_PROPERTY") != std::string::npos) return GameEvent::E_SET_PROPERTY;
 		if(in.find("E_GET_PROPERTY") != std::string::npos) return GameEvent::E_GET_PROPERTY;
+		if(in.find("E_ADJUST_PROPERTY") != std::string::npos) return GameEvent::E_ADJUST_PROPERTY;
 		if(in.find("E_INTERACT") != std::string::npos) return GameEvent::E_INTERACT;
 		if(in.find("E_INTERACTED_WITH") != std::string::npos) return GameEvent::E_INTERACTED_WITH;
 		if(in.find("E_INTERACT_POSITION") != std::string::npos) return GameEvent::E_INTERACT_POSITION;
@@ -678,7 +680,7 @@ class Property : public GameEventData
 {
 
 public:
-	Property(const char* name, bool value ) : GameEventData(CUSTOM), Name(name), Value(value) 
+	Property(const char* name, double value ) : GameEventData(CUSTOM), Name(name), Value(value) 
 	{
 		m_data.ptr = this;
 	}
@@ -703,7 +705,7 @@ public:
 	}
 
 	const char* Name;
-	bool Value;
+	double Value;
 
 	GameEventData* clone() const
 	{
@@ -980,17 +982,17 @@ class Interaction : public GameEventData
 {
 
 public:
-	Interaction(const char* targetID, const char* interactionName) : GameEventData(CUSTOM), TargetID(targetID), InteractionName(interactionName)
+	Interaction(int targetID, const char* interactionName) : GameEventData(CUSTOM), TargetID(targetID), InteractionName(interactionName)
 	{
 		m_data.ptr = this;
 	}
 
-	Interaction(const char* targetID) : GameEventData(CUSTOM), TargetID(targetID), InteractionName(0)
+	Interaction(int targetID) : GameEventData(CUSTOM), TargetID(targetID), InteractionName(0)
 	{
 		m_data.ptr = this;
 	}
 
-	Interaction(const Interaction& copy) : GameEventData(CUSTOM)
+	Interaction(const Interaction& copy) : GameEventData(CUSTOM), TargetID(copy.TargetID)
 	{
 		m_data.ptr = this;
 		m_owner = true;
@@ -999,11 +1001,6 @@ public:
 		InteractionName = new char[lenInteractionName + 1];
 		memcpy( (char*) InteractionName, copy.InteractionName, lenInteractionName );
 		const_cast<char*>(InteractionName)[lenInteractionName] = '\0';
-		
-		const size_t lenTarget = copy.TargetID ? strlen(copy.TargetID) : 0;
-		TargetID = new char[lenTarget + 1];
-		memcpy( (char*) TargetID, copy.TargetID, lenTarget );
-		const_cast<char*>(TargetID)[lenTarget] = '\0';
 	}
 
 	void setInteractionName(const char* name)
@@ -1018,12 +1015,11 @@ public:
 	{
 		if( m_owner )
 		{
-			delete[] TargetID;
 			delete[] InteractionName;
 		}
 	}
 
-	const char* TargetID;
+	int TargetID;
 	const char* InteractionName;
 
 	GameEventData* clone() const
