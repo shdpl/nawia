@@ -336,6 +336,8 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 			// This seems to be a tag, so speak it directly
 			std::vector<wstring>& sentences = iter->second;
 			m_pVoice->Speak( sentences[ rand() % sentences.size()].c_str(), SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
+			m_sentenceID = sentenceID;
+			m_isSpeaking = true;
 		}
 		else
 		{
