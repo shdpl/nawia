@@ -512,7 +512,7 @@ bool HordeSceneEditor::closeScene()
 	// Save widget layout
 	saveWindowSettings();
 	// Check for modified materials
-	if (m_materialWidget->isModified())	m_materialWidget->closeMaterial();
+	m_materialWidget->closeMaterial();
 	// Stop render events
 	m_renderTimer->stop();
 	//if (m_glWidget)	m_renderTimer->disconnect(m_glWidget, SLOT(updateGL()));

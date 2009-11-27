@@ -126,6 +126,9 @@ void MaterialWidget::closeMaterial()
 	m_saveButton->setEnabled(false);
 	if (parentWidget())
 		parentWidget()->setWindowTitle(tr("Material Settings"));
+
+	release();
+
 	m_materialXml.setContent( QString("<Material/>") );		
 	m_shader->setCurrentIndex( -1 );	
 }
@@ -230,7 +233,6 @@ void MaterialWidget::shaderChanged()
 	shader.setAttribute("source", m_shader->currentText());
 	if ( m_shader->currentText().isEmpty() )
 		m_materialXml.documentElement().removeChild(shader);
-	m_shaderHandle = h3dFindResource( H3DResTypes::Shader, qPrintable( m_shader->currentText() ) );
 	syncWithShader();
 	m_saveButton->setEnabled(true);
 }
@@ -288,6 +290,12 @@ void MaterialWidget::release()
 	m_texUnitCombo->clear();
 	
 	m_shaderFlags->clear();	
+	if( m_shaderHandle )
+	{
+		h3dRemoveResource( m_shaderHandle );
+		m_shaderHandle = 0;
+		h3dReleaseUnusedResources();
+	}
 }
 
 void MaterialWidget::syncWithShader()
@@ -300,7 +308,9 @@ void MaterialWidget::syncWithShader()
 	}
 	release();
 
-	m_shaderData = new ShaderData( shaderFile.readAll() );
+	QByteArray shaderData = shaderFile.readAll();
+	shaderData.append( '\0' );
+	m_shaderData = new ShaderData( shaderData );
 	if( !m_shaderData->isValid() )
 	{
 		QMessageBox::warning( 
@@ -312,7 +322,11 @@ void MaterialWidget::syncWithShader()
 		m_shaderData = 0;
 		return;
 	}
+
+	m_shaderHandle = h3dAddResource( H3DResTypes::Shader, qPrintable( m_shader->currentText() ), 0 );
 	
+	h3dLoadResource( m_shaderHandle, shaderData.constData(), shaderData.size() );
+
 	QDomNodeList flags = m_materialXml.elementsByTagName( "ShaderFlag" );
 	m_shaderFlags->blockSignals( true );
 	for( int i = 0; i < m_shaderData->flags().size(); ++i)
