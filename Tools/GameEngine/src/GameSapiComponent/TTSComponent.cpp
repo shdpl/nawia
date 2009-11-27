@@ -95,7 +95,7 @@ m_isSpeaking(false), m_FACSmapping(false), m_useDistanceModel(false), m_dist(0),
 {
 	owner->addListener(GameEvent::E_SPEAK, this);
 	owner->addListener(GameEvent::E_SET_VOICE, this);
-	CoInitialize(NULL);
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	TTSManager::instance()->addComponent(this);
 
 	m_getDistanceEvent = new GameEvent(GameEvent::E_GET_SOUND_DISTANCE, GameEventData(&m_dist), this);
