@@ -61,6 +61,7 @@ void MaterialResource::release()
 
 	_samplers.clear();
 	_uniforms.clear();
+	_shaderFlags.clear();
 }
 
 
@@ -104,6 +105,8 @@ bool MaterialResource::load( const char *data, int size )
 		uint32 mat = Modules::resMan().addResource(
 			ResourceTypes::Material, rootNode.getAttribute( "link" ), 0, false );
 		_matLink = (MaterialResource *)Modules::resMan().resolveResHandle( mat );
+		if( _matLink == this )
+			return raiseError( "Illegal self link in material, causing infinite link loop" );
 	}
 
 	// Shader Flags
