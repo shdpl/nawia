@@ -33,11 +33,6 @@ QTexUnit::~QTexUnit()
 {
 }
 
-QString QTexUnit::name() const 
-{
-	return m_texUnitNode.attribute("name");
-}
-
 
 Texture QTexUnit::map() const
 {

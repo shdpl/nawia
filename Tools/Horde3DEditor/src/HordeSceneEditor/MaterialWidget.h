@@ -61,6 +61,7 @@ private slots:
 	void texUnitDataChanged();
 	void uniformChanged(int);
 	void uniformDataChanged();
+	void linkChanged(int index);
 	void shaderChanged();
 	void classChanged();
 	void flagsChanged( int index, bool checked );

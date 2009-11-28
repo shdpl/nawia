@@ -32,9 +32,7 @@ class QUniform : public QObject
 	Q_OBJECT
 
 	Q_CLASSINFO("QUniform", "Uniform");
-
-
-	Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
+	
 	Q_PROPERTY(double a READ a WRITE setA DESIGNABLE true USER true)
 	Q_PROPERTY(double b READ b WRITE setB DESIGNABLE true USER true)
 	Q_PROPERTY(double c READ c WRITE setC DESIGNABLE true USER true)

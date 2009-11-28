@@ -33,7 +33,6 @@ class QTexUnit : public QObject
 
 	Q_CLASSINFO("QTexUnit", "Sampler");
 
-	Q_PROPERTY(QString Name READ name DESIGNABLE true USER true)
 	Q_PROPERTY(Texture Map READ map WRITE setMap DESIGNABLE true USER true)
 	Q_PROPERTY(bool Mipmaps READ mipmaps WRITE setMipmaps DESIGNABLE true USER true)
 	Q_PROPERTY(bool Compressed READ compressed WRITE setCompressed DESIGNABLE true USER true)
@@ -41,8 +40,6 @@ class QTexUnit : public QObject
 public:
 	QTexUnit( const QDomElement& texUnitNode, QObject* parent = 0 );
 	virtual ~QTexUnit();
-
-	QString name() const;
 	
 	Texture map() const;
 	void setMap(const Texture& map);

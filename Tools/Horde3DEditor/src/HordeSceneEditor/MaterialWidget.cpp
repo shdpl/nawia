@@ -44,6 +44,7 @@ m_shaderHandle( 0 )
 	connect(m_editShader, SIGNAL(clicked()), this, SLOT(editShader()));
 	connect(m_texUnitCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(texUnitChanged(int)));
 	connect(m_uniformCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(uniformChanged(int)));
+	connect(m_linkMaterial, SIGNAL(currentIndexChanged(int)), this, SLOT(linkChanged(int)));
 	connect(m_saveButton, SIGNAL(clicked()), this, SLOT(save()));
 	connect(m_className, SIGNAL(textEdited(const QString&)), this, SLOT(classChanged()));
 	m_texUnitProperties->registerCustomPropertyCB(CustomTypes::createCustomProperty);
@@ -64,6 +65,7 @@ void MaterialWidget::init()
 {
 	m_shader->blockSignals(true);
 	m_shader->init( QDir::currentPath() );
+	m_linkMaterial->init( QDir::currentPath() );
 	if( m_currentMaterialFile.isEmpty() ) 
 		m_shader->setCurrentIndex(-1);
 	else
@@ -191,6 +193,7 @@ void MaterialWidget::editShader()
 void MaterialWidget::initValues()
 {
 	m_className->setText(m_materialXml.documentElement().attribute("class"));
+	m_linkMaterial->setCurrentIndex( m_linkMaterial->findText( m_materialXml.documentElement().attribute( "link", "No material" ) ) );
 	QString shader = m_materialXml.documentElement().firstChildElement("Shader").attribute("source");
 	m_shader->setCurrentIndex(m_shader->findText(shader));
 	if (m_shader->currentIndex() == -1)
@@ -223,6 +226,15 @@ void MaterialWidget::uniformDataChanged()
 {
 	QUniform* uniform = static_cast<QUniform*>(m_uniformCombo->itemData(m_uniformCombo->currentIndex()).value<void*>());	
 	m_saveButton->setEnabled(true);	
+}
+
+void MaterialWidget::linkChanged(int index)
+{
+	if( index == 0 ) // No material index
+		m_materialXml.documentElement().removeAttribute( "link" );
+	else
+		m_materialXml.documentElement().setAttribute( "link", m_linkMaterial->currentText() );
+	m_saveButton->setEnabled(true);
 }
 
 void MaterialWidget::shaderChanged()
