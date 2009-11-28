@@ -28,7 +28,7 @@ class GameComponent;
 class GameEntity;
 
 #include <string.h>
-#include <assert.h>
+//#include <assert.h>
 
 #include <GameEngine/utMath.h>
 #include <stdlib.h>
@@ -236,7 +236,31 @@ class GameEvent
 
 public:
 	enum EventID {
-		E_INVALID, 
+		E_INVALID,	// Invalid eventID
+
+		///////////////////////////////////////////////////////////////////////////////////////////
+		/**
+		 * 1. SET EVENTS:
+		 * 
+		 * @send:
+		 * If these events are send by a component, it directly wants to modify an attribute of other components,
+		 * or cause a specific action of another component.
+		 * 
+		 * @listen:
+		 * If a component listens to such an event, it has an attribut that will be modified by the event,
+		 * or an action that will be executed by the event,
+		 * or it just wants to be notified when such an attribute changes or action occures in another component.
+		 * 
+		 * @eventData: the event data includes the new value for the attribute to set (or to modify it by),
+		 * or optional information for the action to be executed
+		 * 
+		 * @allowed by:
+		 * Every component can send and/or listen to these events.
+		 * 
+		 * @check?:
+		 * You should call checkEvent() before executeEvent().
+		 */ 
+		///////////////////////////////////////////////////////////////////////////////////////////
 		E_SET_TRANSFORMATION,	/// A transformation change event, containing the new transformation 
 		E_SET_ROTATION,			/// Set the rotation of the object in world space
 		E_SET_TRANSLATION,		/// A translation change event, containing new global translation (Vec3fData)
@@ -244,42 +268,30 @@ public:
 		E_TRANSLATE_LOCAL,		/// Translate Object along it's local axis (using a Vec3fData)
 		E_TRANSLATE_GLOBAL,		/// Translate object along the world axis (using a Vec3fData)
 		E_ROTATE_LOCAL,			/// Rotate object about it's local axis (using a Vec3fData)
-		E_TRANSFORMATION,		/// Copies the current object transformation to the memory buffer provided by the Event (currently float[16])
-		E_MESH_DATA,			/// Copies the mesh parameters of a mesh representation in Horde3D to the provided MeshData struct within the event
 		E_MORPH_TARGET,			/// Sets the model morpher of a Horde3D representation to the provided morph target position 
 		E_MORPH_TARGET_ANIM,    /// Animates a morph target
-		E_KEY_PRESS,			/// A key has been pressed
 		E_PLAY_ANIM,			/// Play an animation 
 		E_UPDATE_ANIM,			/// Updates a running animation
-		E_ANIM_STOPPED,			/// Indicates that an animation has stopped
 		E_SETUP_ANIM,			/// Loads an animation on a model stage
 		E_SET_ANIM_FRAME,		/// Sets the frame of a loaded animation 
 		E_ATTACH,				/// Attaches a SceneNode to another SceneNode
-		E_SET_NODE_PARENT,		/// Sets a new Parten for a SceneNode
+		E_SET_NODE_PARENT,		/// Sets a new Parent for a SceneNode
 		E_SPEAK,				/// Speak a sentence
-		E_SPEAKING_STOPPED,		/// Speak a sentence is finished
 		E_SET_VOICE,			/// Change the TTS Voice of a TTSComponent
-		E_COLLISION,			/// A collision occured
 		E_ACTIVATE_CAM,			/// Make the current entity the active camera if it is one
-		E_ACTIVE_CAM_CHANGE,	/// Global event: the current active camera has changed, @data: the cams worldID
-		E_GET_ACTIVE_CAM,		/// Global event: get the currently active camera entity world id
 		E_PERFORM_ACTION,		/// Perform an action
-		E_WITNESS_ACTION,		/// Witness an action
 		E_GO_TO_ENTITY,			/// Move close to another entity
 		E_GO_TO_POSITION,		/// Move to a position
 		E_GO_TO_RELATIVE,		/// Move to a position relative to the entity's own position
 		E_GO_TO_STOPPED,		/// Entity has arrived at the desired location
-		E_SET_PROPERTY,			/// Sets a property		
-		E_GET_PROPERTY,			/// Gets a property
-		E_ADJUST_PROPERTY,		/// Adjusts a property	
-		E_INTERACT,				/// Interact with another Entity
-		E_INTERACTED_WITH,		/// Informs an Entity that it's interacted with by another Entity
-		E_INTERACT_POSITION,	/// Gets the position where to interact with a SmartObject
+		E_SET_PROPERTY,			/// Sets a property	
+		E_ADJUST_PROPERTY,		/// Adjusts a property
+		E_INTERACT,				/// Causes an Entity to interact with another Entity.
+		E_INTERACT_PARTNER,		/// Informs an Entity that another Entity is interacting with it and causes reactions for the interaction
 		E_SET_SOUND_GAIN,		/// Sets the sound gain
 		E_SET_SOUND_LOOP,		/// Sets the sound to loop
 		E_SET_SOUND_FILE,		/// Sets a sound file
 		E_SET_PHONEMES_FILE,	/// Sets a phonemes file
-		E_GET_SOUND_DISTANCE,	/// Get the distance of the current sound node to the active listener. @data pointer to float
 		E_SET_ENABLED,			/// Enables components (wether the component should be rendered/updated or not)	
 		E_PICKUP,				/// Attaches a SceneNode to an entity
 		IK_COMPUTE,				/// Computes the IK with the given data and applies it to the chain
@@ -293,9 +305,60 @@ public:
 		GB_SEARCH_ON_OFF,		/// activates/deactivates character's searching behaviour
 		GB_WAVE_BACK,			/// makes the npc react to a waving event
 		GB_RESET,				/// reset all collected data
-		GB_KEY_PRESSED,			/// inidicates a key press event
-		E_AILOD_CHANGE,			/// occurs when the ai lod of an entity has changed, @data: the entity's new lod value
-		E_VISIBILITY,			/// Returns whether the current entity is visible by the active cam
+
+		///////////////////////////////////////////////////////////////////////////////////////////
+		/**
+		 * 1. GET EVENTS:
+		 * 
+		 * @send:
+		 * If these events are send by a component, it wants to get the current value of another component's attribute.
+		 * 
+		 * @listen:
+		 * If a component listens to such an event, it has an attribut that it will return to the sender.
+		 * 
+		 * @eventData: Contains a pointer where the value should be copied to.
+		 * 
+		 * @allowed by:
+		 * Every component can send such an event, only one should listen to it for setting the value.
+		 * 
+		 * @check?:
+		 * You don't need to call checkEvent() before executeEvent().
+		 */ 
+		///////////////////////////////////////////////////////////////////////////////////////////
+		E_TRANSFORMATION,		/// Copies the current object transformation to the memory buffer provided by the Event (currently float[16])
+		E_MESH_DATA,			/// Copies the mesh parameters of a mesh representation in Horde3D to the provided MeshData struct within the event
+		E_GET_ACTIVE_CAM,		/// Global event: get the currently active camera entity world id
+		E_GET_PROPERTY,			/// Gets a property
+		E_GET_INTERACT_POSITION,/// Gets the position where to interact with a SmartObject
+		E_GET_SOUND_DISTANCE,	/// Get the distance of the current sound node to the active listener. @data pointer to float
+		E_GET_VISIBILITY,		/// Returns whether the current entity is visible by the active cam
+		
+		///////////////////////////////////////////////////////////////////////////////////////////
+		/**
+		 * 1. CHANGE EVENTS:
+		 * 
+		 * @send/listen:
+		 * These events inform that an attribute has changed, or an action has been executed
+		 * 
+		 * @eventData: Contains the new value for the attribute or optional information about the action.
+		 * 
+		 * @allowed by:
+		 * Every component can listen to these events.
+		 * Only one component should send them (with few exceptions).
+		 * 
+		 * @check?:
+		 * You don't need to call checkEvent() before executeEvent().
+		 */ 
+		///////////////////////////////////////////////////////////////////////////////////////////
+		E_KEY_PRESS,			/// A key has been pressed
+		E_ANIM_STOPPED,			/// Indicates that an animation has stopped
+		E_SPEAKING_STOPPED,		/// Speak a sentence is finished
+		E_COLLISION,			/// A collision occured
+		E_ACTIVE_CAM_CHANGE,	/// Global event: the current active camera has changed, @data: the cams worldID
+		E_WITNESS_ACTION,		/// Witness an action
+		GB_KEY_PRESSED,			/// Inidicates a key press event
+		E_AILOD_CHANGE,			/// Occurs when the ai lod of an entity has changed, @data: the entity's new lod value				
+		
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
 	static GameEvent::EventID convertStringEvent(std::string in)
@@ -335,8 +398,8 @@ public:
 		if(in.find("E_GET_PROPERTY") != std::string::npos) return GameEvent::E_GET_PROPERTY;
 		if(in.find("E_ADJUST_PROPERTY") != std::string::npos) return GameEvent::E_ADJUST_PROPERTY;
 		if(in.find("E_INTERACT") != std::string::npos) return GameEvent::E_INTERACT;
-		if(in.find("E_INTERACTED_WITH") != std::string::npos) return GameEvent::E_INTERACTED_WITH;
-		if(in.find("E_INTERACT_POSITION") != std::string::npos) return GameEvent::E_INTERACT_POSITION;
+		if(in.find("E_INTERACT_PARTNER") != std::string::npos) return GameEvent::E_INTERACT_PARTNER;
+		if(in.find("E_GET_INTERACT_POSITION") != std::string::npos) return GameEvent::E_GET_INTERACT_POSITION;
 		if(in.find("E_SET_SOUND_GAIN") != std::string::npos) return GameEvent::E_SET_SOUND_GAIN;
 		if(in.find("E_SET_SOUND_LOOP") != std::string::npos) return GameEvent::E_SET_SOUND_LOOP;
 		if(in.find("E_SET_SOUND_FILE") != std::string::npos) return GameEvent::E_SET_SOUND_FILE;
