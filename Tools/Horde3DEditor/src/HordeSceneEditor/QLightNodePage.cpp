@@ -34,7 +34,7 @@ QLightNodePage::QLightNodePage(QWidget* parent /*= 0*/) : QWizardPage(parent)
 	setSubTitle(tr("Create a new light source for the current scene"));
 	registerField("lightfov", m_fov, "value", SIGNAL(valueChanged(double)));
 	registerField("radius", m_radius, "value", SIGNAL(valueChanged(double)));
-	registerField("lightname*", m_name);
+	registerField("lightname", m_name);
 	registerField("shadowmapbias", m_shadowMapBias, "value", SIGNAL(valueChanged(double)));
 	registerField("shadowcontext", m_shadowContext);
 	registerField("lightingcontext", m_lightContext);	

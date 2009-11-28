@@ -38,7 +38,7 @@ QCameraNodePage::QCameraNodePage(/*const QDomElement& init = QDomElement(),*/ QW
 	m_rightPlane->setValidator(new QDoubleValidator(m_rightPlane));
 	m_bottomPlane->setValidator(new QDoubleValidator(m_bottomPlane));
 	m_topPlane->setValidator(new QDoubleValidator(m_topPlane));
-	registerField("cameraname*", m_name);
+	registerField("cameraname", m_name);
 	registerField("asymFrustum", m_asymFrustum, "checked", SIGNAL(toggled(bool)));
 	registerField("symFrustum", m_symFrustum, "checked", SIGNAL(toggled(bool)));
 	registerField("camerafov", m_fov, "value", SIGNAL(valueChanged(double)));
@@ -53,6 +53,7 @@ QCameraNodePage::QCameraNodePage(/*const QDomElement& init = QDomElement(),*/ QW
 	registerField("asymNear", m_asymNearClipping, "value", SIGNAL(valueChanged(double)));
 	registerField("asymFar", m_asymFarClipping, "value", SIGNAL(valueChanged(double)));
 	registerField("pipeline", m_pipeline, "pipelineFile", SIGNAL(pipelineChanged()));
+	connect( m_pipeline, SIGNAL( pipelineChanged() ), this, SIGNAL( completeChanged() ) );
 	connect(m_importButton, SIGNAL(clicked()), this, SLOT(importCamera()));
 	connect(m_asymFrustum, SIGNAL(toggled(bool)), this, SLOT(switchPage(bool)));
 }
@@ -93,6 +94,11 @@ void QCameraNodePage::initializePage()
 //			m_asymFrustum->setChecked(true);			
 //	}
 //}
+
+bool QCameraNodePage::isComplete() const
+{
+	return !field("pipeline").toString().isEmpty();
+}
 
 void QCameraNodePage::switchPage(bool asym)
 {

@@ -578,7 +578,7 @@ void GLWidget::cameraNavigationUpdate(float x, float y, float z, float rx, float
 			const_cast<float*>(transMat)[13] = newy;
 			const_cast<float*>(transMat)[14] = newz;
 			h3dSetNodeTransMat(cameraID, transMat);
-		}
+		}		
 	}
 	if( rx != 0.0f || ry != 0.0f)
 	{
@@ -586,7 +586,7 @@ void GLWidget::cameraNavigationUpdate(float x, float y, float z, float rx, float
 		h3dGetNodeTransform(cameraID, &t_px, &t_py, &t_pz, 0,0,0, &t_sx,&t_sy,&t_sz);		
 		h3dSetNodeTransform(cameraID, t_px, t_py, t_pz, m_navRx - ry, m_navRy - rx, 0, t_sx, t_sy, t_sz);
 		m_navRx = m_navRx - ry; m_navRy = m_navRy - rx;
-	}
+	}	
 }
 
 void GLWidget::translateObject(int x, int y)
@@ -1237,21 +1237,32 @@ void GLWidget::drawBaseGrid(const float camX, const float camY, const float camZ
 	if (abs(camY) > farPlane)
 		return;
 
+	// TODO adjust grid scale based on length of the backprojection of a unit vector
 
 	int numSteps = (int(farPlane) / m_gridScale) >> 1;	
+	//int numSteps = 60;
 	int offsetX = (int(camX) / m_gridScale) * m_gridScale;
 	int offsetZ = (int(camZ) / m_gridScale) * m_gridScale;
-	glColor3f(0.5f, 0.5f, 0.5f);
 	glBegin(GL_LINES);
-	for (int i=-numSteps; i<numSteps; ++i)
+	for (int i=-numSteps; i<=numSteps; ++i)
 	{
-		glVertex3i(i*m_gridScale + offsetX, 0, -numSteps * m_gridScale + offsetZ);
-		glVertex3i(i*m_gridScale + offsetX, 0, +numSteps * m_gridScale + offsetZ);
+		int x = i*m_gridScale + offsetX;
+		if( x == 0 ) glColor3f(0.3f, 0.3f, 0.8f);
+		else if(x % 10 == 0) glColor3f(0.4f, 0.4f, 0.4f);
+		else glColor3f(0.2f, 0.2f, 0.2f);
+
+		glVertex3i(x, 0, -numSteps * m_gridScale + offsetZ);
+		glVertex3i(x, 0, +numSteps * m_gridScale + offsetZ);
 	}
-	for (int i=-numSteps; i<numSteps; ++i)
+	for (int i=-numSteps; i<=numSteps; ++i)
 	{
-		glVertex3i(-numSteps * m_gridScale + offsetX, 0, i * m_gridScale + offsetZ);
-		glVertex3i(+numSteps * m_gridScale + offsetX, 0, i * m_gridScale + offsetZ);
+		int z = i * m_gridScale + offsetZ;
+		if( z == 0 ) glColor3f(0.8f, 0.3f, 0.3f);
+		else if(z % 10 == 0) glColor3f(0.4f, 0.4f, 0.4f);
+		else glColor3f(0.2f, 0.2f, 0.2f);
+		
+		glVertex3i(-numSteps * m_gridScale + offsetX, 0, z);
+		glVertex3i(+numSteps * m_gridScale + offsetX, 0, z);
 	}
 	glEnd();
 }

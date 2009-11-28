@@ -44,6 +44,8 @@ public:
 
 	void initializePage();
 
+	bool isComplete() const;
+
 private slots:
 	void switchPage(bool asym);
 	void importCamera();

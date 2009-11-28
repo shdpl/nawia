@@ -433,6 +433,7 @@ void HordeSceneEditor::newScene()
 		return; // if closing was canceled return
 	// create a new scene using a wizard
 	m_sceneFile = SceneWizard::createScene(this);
+	m_actionRenderBaseGrid->setChecked( true );
 	// if the file was created
 	if (m_sceneFile) m_sceneFile = SceneFile::load(m_sceneFile->absoluteSceneFilePath()); // load the new scene
 	// update gui 
