@@ -65,7 +65,7 @@ SceneGraphComponent::SceneGraphComponent( GameEntity* owner) : GameComponent(own
 	owner->addListener(GameEvent::E_COLLISION, this);
 	owner->addListener(GameEvent::E_SET_ENABLED, this);
 	owner->addListener(GameEvent::E_GET_ACTIVE_CAM, this);
-	owner->addListener(GameEvent::E_VISIBILITY, this);
+	owner->addListener(GameEvent::E_GET_VISIBILITY, this);
 	//printf("ID added %d\n", hordeID);
 	SceneGraphManager::instance()->addComponent( this );
 }
@@ -160,7 +160,7 @@ void SceneGraphComponent::executeEvent(GameEvent *event)
 	case GameEvent::E_SET_ENABLED:
 		setEnabled(*static_cast<bool*>(event->data()));
 		break;
-	case GameEvent::E_VISIBILITY:
+	case GameEvent::E_GET_VISIBILITY:
 		{
 			bool* visible = static_cast<bool*>(event->data());
 			if (visible)
@@ -315,17 +315,31 @@ void SceneGraphComponent::translateLocal(const Vec3f* translation)
 	trans.x[14] = t.z;
 	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(trans.x, 16), 0);*/
 	
+	// Backup trans
+	Vec3f transBackup(m_transformation[12], m_transformation[13], m_transformation[14]);
+
+	// Apply it
 	Vec3f t( (Matrix4f(m_transformation) * *translation) );
 	m_transformation[12] = t.x;
 	m_transformation[13] = t.y;
 	m_transformation[14] = t.z;
-	// Send transformation to horde
-	sendTransformation();
-	//and to the other components
+	
+	// Check the event
 	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(m_transformation, 16), this);
 	if (m_owner->checkEvent(&event))
-		// Synchronize component transformations
+	{
+		// Send trans to horde
+		sendTransformation();
+		// and to other components
 		m_owner->executeEvent(&event);
+	}
+	else
+	{
+		// Revert changes
+		m_transformation[12] = transBackup.x;
+		m_transformation[13] = transBackup.y;
+		m_transformation[14] = transBackup.z;
+	}
 }
 
 void SceneGraphComponent::translateGlobal(const Vec3f* translation)
@@ -339,16 +353,28 @@ void SceneGraphComponent::translateGlobal(const Vec3f* translation)
 	trans.x[14] += translation->z;
 	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(trans.x, 16), 0);*/
 
+	// Backup trans
+	Vec3f transBackup(m_transformation[12], m_transformation[13], m_transformation[14]);
+
 	m_transformation[12] += translation->x;
 	m_transformation[13] += translation->y;
 	m_transformation[14] += translation->z;
-	// Send transformation to horde
-	sendTransformation();
-	//and to the other components
+	
 	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(m_transformation, 16), this);
 	if (m_owner->checkEvent(&event))
-		// Synchronize component transformations
+	{
+		// Send transformation to horde
+		sendTransformation();
+		//and to the other components
 		m_owner->executeEvent(&event);
+	}
+	else
+	{
+		// Revert changes
+		m_transformation[12] = transBackup.x;
+		m_transformation[13] = transBackup.y;
+		m_transformation[14] = transBackup.z;
+	}
 }
 
 void SceneGraphComponent::setScale(const Vec3f *scale)
@@ -368,14 +394,17 @@ void SceneGraphComponent::setScale(const Vec3f *scale)
 	Matrix4f trans = Matrix4f::ScaleMat( scale->x, scale->y, scale->z );
 	trans = trans * Matrix4f(Quaternion(rotation.x, rotation.y, rotation.z));
 	trans.translate(tr.x, tr.y, tr.z);
-	memcpy( m_transformation, trans.x, sizeof( float ) * 16 );
-	// Send transformation to horde
-	sendTransformation();
-	//and to the other components
-	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(m_transformation, 16), this);
+	
+	GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(trans.x, 16), this);
 	if (m_owner->checkEvent(&event))
-		// Synchronize component transformations
+	{
+		// Apply the new transformation
+		memcpy( m_transformation, trans.x, sizeof( float ) * 16 );
+		// Send it to horde
+		sendTransformation();
+		//and to the other components
 		m_owner->executeEvent(&event);
+	}
 }
 
 
@@ -389,15 +418,17 @@ void SceneGraphComponent::rotate(const Vec3f* rotation)
 	// Create event without sender attribute, such the scenegraph component will be updated using executeEvent too
 	/*GameEvent event(GameEvent::E_SET_TRANSFORMATION, &GameEventData(trans.x, 16), 0);*/
 
-	memcpy( m_transformation, trans.x, sizeof( float ) * 16 );
-	// Send transformation to horde
-	sendTransformation();
-	//and to the other components
 	GameEvent event(GameEvent::E_SET_TRANSFORMATION, &GameEventData(trans.x, 16), this);
 	// Check if the new transformation can be set
 	if (m_owner->checkEvent(&event))
-		// Synchronize component transformations
+	{
+		// Apply transformation
+		memcpy( m_transformation, trans.x, sizeof( float ) * 16 );
+		// Send transformation to horde
+		sendTransformation();
+		// and to the other components
 		m_owner->executeEvent(&event);
+	}
 }
 
 void SceneGraphComponent::setRotation(const Vec3f* rotation)
@@ -410,15 +441,17 @@ void SceneGraphComponent::setRotation(const Vec3f* rotation)
 	// Create event without sender attribute, such the scenegraph component will be updated using executeEvent too
 	//GameEvent event(GameEvent::E_SET_TRANSFORMATION, &GameEventData(trans.x, 16), 0);
 
-	memcpy( m_transformation, trans.x, sizeof( float ) * 16 );
-	// Send transformation to horde
-	sendTransformation();
-	//and to the other components
 	GameEvent event(GameEvent::E_SET_TRANSFORMATION, &GameEventData(trans.x, 16), this);
 	// Check if the new transformation can be set
 	if (m_owner->checkEvent(&event))
-		// Synchronize component transformations
+	{
+		// Apply transformation
+		memcpy( m_transformation, trans.x, sizeof( float ) * 16 );
+		// Send transformation to horde
+		sendTransformation();
+		// and to the other components
 		m_owner->executeEvent(&event);
+	}
 }
 void SceneGraphComponent::setParentNode(const Attach* data)
 {
