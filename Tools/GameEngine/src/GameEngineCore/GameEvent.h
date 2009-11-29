@@ -1069,10 +1069,15 @@ public:
 
 	void setInteractionName(const char* name)
 	{
+		if( m_owner )
+		{
+			delete[] InteractionName;
+		}
 		const size_t lenInteractionName = strlen(name);
 		InteractionName = new char[lenInteractionName + 1];
 		memcpy( (char*) InteractionName, name, lenInteractionName );
 		const_cast<char*>(InteractionName)[lenInteractionName] = '\0';
+		m_owner = true;
 	}
 	
 	~Interaction()
