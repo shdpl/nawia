@@ -332,6 +332,7 @@ public:
 		E_GET_INTERACT_POSITION,/// Gets the position where to interact with a SmartObject
 		E_GET_SOUND_DISTANCE,	/// Get the distance of the current sound node to the active listener. @data pointer to float
 		E_GET_VISIBILITY,		/// Returns whether the current entity is visible by the active cam
+		E_GET_SCENEGRAPH_ID,	/// Returns the entity's scenegraph id (hordeID)
 		
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
