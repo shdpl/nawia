@@ -1045,12 +1045,12 @@ class Interaction : public GameEventData
 {
 
 public:
-	Interaction(int targetID, const char* interactionName) : GameEventData(CUSTOM), TargetID(targetID), InteractionName(interactionName)
+	Interaction(unsigned int targetID, const char* interactionName) : GameEventData(CUSTOM), TargetID(targetID), InteractionName(interactionName)
 	{
 		m_data.ptr = this;
 	}
 
-	Interaction(int targetID) : GameEventData(CUSTOM), TargetID(targetID), InteractionName(0)
+	Interaction(unsigned int targetID) : GameEventData(CUSTOM), TargetID(targetID), InteractionName(0)
 	{
 		m_data.ptr = this;
 	}
@@ -1082,7 +1082,7 @@ public:
 		}
 	}
 
-	int TargetID;
+	unsigned int TargetID;
 	const char* InteractionName;
 
 	GameEventData* clone() const
