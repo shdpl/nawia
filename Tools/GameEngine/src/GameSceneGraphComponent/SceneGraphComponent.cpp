@@ -66,6 +66,7 @@ SceneGraphComponent::SceneGraphComponent( GameEntity* owner) : GameComponent(own
 	owner->addListener(GameEvent::E_SET_ENABLED, this);
 	owner->addListener(GameEvent::E_GET_ACTIVE_CAM, this);
 	owner->addListener(GameEvent::E_GET_VISIBILITY, this);
+	owner->addListener(GameEvent::E_GET_SCENEGRAPH_ID, this);
 	//printf("ID added %d\n", hordeID);
 	SceneGraphManager::instance()->addComponent( this );
 }
@@ -173,6 +174,13 @@ void SceneGraphComponent::executeEvent(GameEvent *event)
 			unsigned int* id = static_cast<unsigned int*>(event->data());
 			if (id)
 				*id = m_owner->worldId();
+		}
+		break;
+	case GameEvent::E_GET_SCENEGRAPH_ID:
+		{
+			int* id = static_cast<int*>(event->data());
+			if (id)
+				*id = m_hordeID;
 		}
 		break;
 	}
