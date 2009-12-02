@@ -145,10 +145,11 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 		m_moveRightAnim = static_cast<AnimationSetup*>(AnimationSetup(moveRight, 10, 30, -1.0f, 1.0f, 0.0f).clone());		
 	}	
 	
+	// Idle anims have weight 0, means they are only played if there is no other animation playing
 	m_idleAnimCount = 0;
 	if( _stricmp(idle, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle, 10, 30, -1.0f, 1.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle, 10, 30, -1.0f, 0.0f, 0.0f).clone());
 	
 		//initially start idle animation
 		setAnim(m_idleAnim[m_idleAnimCount], true);
@@ -156,28 +157,29 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 	}
 	if( _stricmp(idle2, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle2, 10, 30, -1.0f, 1.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle2, 10, 30, -1.0f, 0.0f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 	if( _stricmp(idle3, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle3, 10, 30, -1.0f, 1.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle3, 10, 30, -1.0f, 0.0f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 	if( _stricmp(idle4, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle4, 10, 30, -1.0f, 1.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle4, 10, 30, -1.0f, 0.0f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 	if( _stricmp(idle5, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle5, 10, 30, -1.0f, 1.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle5, 10, 30, -1.0f, 0.0f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 }
 
 void MoveAnimComponent::update(float fps)
 {
+	// Only calc next anim if LOD is low enough
 	if (m_lod < m_LODToStopAnim)
 	{
 		//calculate translated distance and speed in x,z plane
@@ -185,12 +187,11 @@ void MoveAnimComponent::update(float fps)
 		dist.y = 0;
 		float speed = m_speed * dist.length()* fps;
 		static const float pi3rd = Math::Pi / 3;
-		
-		AnimationSetup* nextAnim = 0x0;
 
 		// Object is moving
 		if( speed >= 0.0005f )
-		{			
+		{	
+			AnimationSetup* nextAnim = 0x0;
 			// Direction in radiants = angle of walking direction - y-rotation of the object
 			float direction = atan2( -dist.x, -dist.z ) - m_rotation.y;
 			
@@ -219,10 +220,11 @@ void MoveAnimComponent::update(float fps)
 			{
 				nextAnim = m_moveAnim;
 			}
+			// Set anim or reset everything if none found (nextAnim == 0x0)
+			setAnim(nextAnim);
 		}
-
-		// Play idle animation if too slow or no new Animation was specified
-		if (nextAnim == 0x0 && m_idleAnimCount > 0)
+		// Play idle animation if too slow and one is specified
+		else if (m_idleAnimCount > 0)
 		{
 			// We weren't in idle state before or the animation time for the idle anim has passed
 			if(!m_idle || m_idleTime < 0)
@@ -244,9 +246,10 @@ void MoveAnimComponent::update(float fps)
 				m_idleTime -= 1.0f / fps;
 			}
 		}
+		// We don't have an anim to play, so stop any currently playing 
 		else
 		{
-			setAnim(nextAnim);
+			setAnim(0x0);
 		}
 
 		//update animation speed (only none idle animations)
@@ -257,6 +260,7 @@ void MoveAnimComponent::update(float fps)
 				m_owner->executeEvent(&updateAnim);
 		}
 	}
+	// The LOD is above the critical value, so stop all current anims
 	else
 		setAnim(0x0);
 	
