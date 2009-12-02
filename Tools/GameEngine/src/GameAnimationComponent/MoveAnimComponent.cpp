@@ -41,7 +41,7 @@ GameComponent* MoveAnimComponent::createComponent( GameEntity* owner )
 
 MoveAnimComponent::MoveAnimComponent(GameEntity *owner) : GameComponent(owner, "MoveAnimComponent"), 
 	m_oldPos(0,0,0), m_newPos(0, 0, 0), m_moveAnim(0), m_moveBackAnim(0), m_moveLeftAnim(0),
-	m_moveRightAnim(0),	m_speed(1.0f), m_activeAnim(0), m_idle(true), m_idleAnimCount(0), m_idleTime(0),
+	m_moveRightAnim(0),	m_speed(1.0f), m_activeAnim(0), m_idle(false), m_idleAnimCount(0), m_idleTime(0),
 	m_randSeed(false), m_LODToStopAnim(999), m_lod(-1)
 {
 	for( int i=0; i< 5; ++i )
@@ -50,7 +50,7 @@ MoveAnimComponent::MoveAnimComponent(GameEntity *owner) : GameComponent(owner, "
 	//get initial position
 	float absTrans[16];
 	GameEvent getTransformation(GameEvent::E_TRANSFORMATION, absTrans, this);	
-	m_owner->executeEvent(&getTransformation);
+	owner->executeEvent(&getTransformation);
 	Vec3f s;
 	Matrix4f(absTrans).decompose(m_newPos, m_rotation, s);
 	m_oldPos;	
@@ -58,6 +58,9 @@ MoveAnimComponent::MoveAnimComponent(GameEntity *owner) : GameComponent(owner, "
 	//listen for transformation changes
 	owner->addListener(GameEvent::E_SET_TRANSFORMATION, this);
 	owner->addListener(GameEvent::E_SET_TRANSLATION, this);
+
+	// listen if move anim should be set
+	owner->addListener(GameEvent::E_SET_MOVE_ANIM, this);
 
 	//listen for lod change
 	owner->addListener(GameEvent::E_AILOD_CHANGE, this);
@@ -101,6 +104,11 @@ void MoveAnimComponent::executeEvent(GameEvent *event)
 		break;
 	case GameEvent::E_SET_TRANSLATION:
 		m_newPos = *static_cast<Vec3f*>(event->data());
+		break;
+	case GameEvent::E_SET_MOVE_ANIM:
+		std::pair<std::string, std::string>* data = 
+			static_cast<std::pair<std::string, std::string>*>(event->data());
+		changeMoveAnim(data->first, data->second);
 		break;
 	}
 }
@@ -311,4 +319,80 @@ void MoveAnimComponent::setAnim(AnimationSetup *anim, bool idle /*=false*/)
 			m_idleTime *= 1.0f + (rand() % 4);
 		}
 	}
+}
+
+
+void MoveAnimComponent::changeMoveAnim(const std::string& tag, const std::string& name)
+{
+	AnimationSetup* animToDelete = 0x0;
+	if (tag.compare("moveAnimation") == 0)
+	{
+		animToDelete = m_moveAnim;
+		m_moveAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 1.0f, 0.0f).clone());		 
+	}
+	else if (tag.compare("idleAnimation") == 0)
+	{
+		if (m_idleAnimCount > 0)
+			animToDelete = m_idleAnim[0];
+		else m_idleAnimCount++;
+		m_idleAnim[0] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 0.0f, 0.0f).clone());
+	}
+	else if (tag.compare("idleAnimation2") == 0 && m_idleAnimCount > 0)
+	{
+		if (m_idleAnimCount > 1)
+			animToDelete = m_idleAnim[1];
+		else m_idleAnimCount++;
+		m_idleAnim[1] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 0.0f, 0.0f).clone());
+	}
+	else if (tag.compare("idleAnimation3") == 0 && m_idleAnimCount > 1)
+	{
+		if (m_idleAnimCount > 2)
+			animToDelete = m_idleAnim[2];
+		else m_idleAnimCount++;
+		m_idleAnim[2] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 0.0f, 0.0f).clone());
+	}
+	else if (tag.compare("idleAnimation4") == 0 && m_idleAnimCount > 2)
+	{
+		if (m_idleAnimCount > 3)
+			animToDelete = m_idleAnim[3];
+		else m_idleAnimCount++;
+		m_idleAnim[3] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 0.0f, 0.0f).clone());
+	}
+	else if (tag.compare("idleAnimation5") == 0 && m_idleAnimCount > 3)
+	{
+		if (m_idleAnimCount > 4)
+			animToDelete = m_idleAnim[4];
+		else m_idleAnimCount++;
+		m_idleAnim[4] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 0.0f, 0.0f).clone());
+	}
+	else if (tag.compare("moveBackAnimation") == 0)
+	{
+		animToDelete = m_moveBackAnim;
+		m_moveBackAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 1.0f, 0.0f).clone());		 
+	}
+	else if (tag.compare("moveLeftAnimation") == 0)
+	{
+		animToDelete = m_moveLeftAnim;
+		m_moveLeftAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 1.0f, 0.0f).clone());		 
+	}
+	else if (tag.compare("moveRightAnimation") == 0)
+	{
+		animToDelete = m_moveRightAnim;
+		m_moveRightAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 1.0f, 0.0f).clone());		 
+	}
+
+	if (m_activeAnim != 0x0 && animToDelete == m_activeAnim)
+	{
+		// Stop active anim because it will be deleted
+		GameEvent updateAnim(GameEvent::E_UPDATE_ANIM, &AnimationUpdate(m_activeAnim->JobID, GameEngineAnimParams::Duration, 0, 0), 0);
+		if (m_owner->checkEvent(&updateAnim))
+		{
+			m_owner->executeEvent(&updateAnim);
+			m_activeAnim = 0x0;
+		}
+	}
+	// Reset idle state to reload changed idle animation
+	m_idle = false;
+	// Now the anim can be safely deleted
+	delete animToDelete;
 }

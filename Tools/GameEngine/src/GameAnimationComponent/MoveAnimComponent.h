@@ -133,6 +133,14 @@ private:
 	 * @param idle whether the animation is an idle one.
 	 */ 
 	void setAnim(AnimationSetup* anim, bool idle=false);
+
+	/**
+	 * \brief Change one of the configured anims
+	 * 
+	 * @param tag specifying which anim should be set
+	 * @param name the name of the new anim
+	 */ 
+	void changeMoveAnim(const std::string& tag, const std::string& name);
 	
 	/// Configuration setup for the animation played when translating the entity in -z direction
 	AnimationSetup* m_moveAnim;
