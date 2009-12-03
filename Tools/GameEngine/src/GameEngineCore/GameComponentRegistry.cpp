@@ -33,7 +33,7 @@
 #include <string>
 #include <algorithm>
 
-// Uncomment this line to active printing of benchmark info
+// Uncomment this line to activate printing of benchmark info
 //#define COMPONENT_BENCHMARK
 
 
