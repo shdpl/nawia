@@ -463,17 +463,16 @@ void SceneGraphComponent::setRotation(const Vec3f* rotation)
 }
 void SceneGraphComponent::setParentNode(const Attach* data)
 {
-	H3DNode otherNode;
+	H3DNode otherNode = H3DRootNode;
 	int nodes;
 	
-	if(strcmp(data->EntityID,"Root") == 0 )
+	// Get the real horde id
+	GameEntity* entity = GameModules::gameWorld()->entity(data->EntityID);
+	if (entity)
 	{
-		otherNode = H3DRootNode;
-	}
-	else
-	{
-		nodes = h3dFindNodes( H3DRootNode, data->EntityID, H3DNodeTypes::Model );
-		otherNode = h3dGetNodeFindResult(0);
+		SceneGraphComponent* component = static_cast<SceneGraphComponent*>(entity->component("Horde3D"));
+		if (component)
+			otherNode = component->hordeId();
 	}
 	
 	
@@ -499,13 +498,24 @@ void SceneGraphComponent::setParentNode(const Attach* data)
 void SceneGraphComponent::attach(const Attach* data)
 {
 	//Assuming the entity has the same name as the node it is attached to
-	int nodes = h3dFindNodes(H3DRootNode, data->EntityID, H3DNodeTypes::Model );
-	H3DNode otherNode = h3dGetNodeFindResult(0);
+	/*int nodes = h3dFindNodes(H3DRootNode, data->EntityID, H3DNodeTypes::Model );
+	H3DNode otherNode = h3dGetNodeFindResult(0);*/
 
-	nodes = h3dFindNodes( m_hordeID, data->Child, H3DNodeTypes::Undefined );
+	//TODO Proposal: create a SET_NODE_PARENT event, send this event to the data->EntityID using GameEngine::sendEvent
+
+	// Get the real horde id
+	H3DNode otherNode = H3DRootNode;
+	GameEntity* entity = GameModules::gameWorld()->entity(data->EntityID);
+	if (entity)
+	{
+		SceneGraphComponent* component = static_cast<SceneGraphComponent*>(entity->component("Horde3D"));
+		if (component)
+			otherNode = component->hordeId();
+	}
+
+	h3dFindNodes( m_hordeID, data->Child, H3DNodeTypes::Undefined );
 	H3DNode child = h3dGetNodeFindResult(0);
 
-	// Proposal: create a SET_NODE_PARENT event, send this event to the data->EntityID using GameEngine::sendEvent
 	h3dSetNodeParent(otherNode, child);
 	
 	h3dSetNodeTransform(otherNode,data->Tx,data->Ty, data->Tz,
