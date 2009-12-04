@@ -61,9 +61,9 @@ public:
 
 	bool isShaderUniform() const { return m_shaderUniform; }
 private:
-	// Indicates if this uniform belongs to a shader ( or a material otherwise )
-	bool			m_shaderUniform;
 	QDomElement		m_uniformNode;
-	
+        // Indicates if this uniform belongs to a shader ( or a material otherwise )
+        bool			m_shaderUniform;
+
 };
 #endif

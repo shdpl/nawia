@@ -156,7 +156,7 @@ void NodeWidget::scaleObject(const float sx, const float sy, const float sz)
 {	
 	if( !m_currentNode || !m_currentNode->property("Scale").isValid() ) return;
 
-	const int hordeID = m_currentNode->property("ID").toInt();
+        // const int hordeID = m_currentNode->property("ID").toInt();
 	if (sx != sx && sy != sy && sz != sz) // reset
 	{
 		QVec3f pos(m_currentNode->property("Position").value<QVec3f>());

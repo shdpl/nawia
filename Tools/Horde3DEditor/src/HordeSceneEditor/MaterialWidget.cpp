@@ -224,7 +224,7 @@ void MaterialWidget::uniformChanged(int)
 
 void MaterialWidget::uniformDataChanged()
 {
-	QUniform* uniform = static_cast<QUniform*>(m_uniformCombo->itemData(m_uniformCombo->currentIndex()).value<void*>());	
+        //QUniform* uniform = static_cast<QUniform*>(m_uniformCombo->itemData(m_uniformCombo->currentIndex()).value<void*>());
 	m_saveButton->setEnabled(true);	
 }
 
