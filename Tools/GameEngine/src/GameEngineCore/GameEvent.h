@@ -293,7 +293,8 @@ public:
 		E_SET_SOUND_FILE,		/// Sets a sound file
 		E_SET_PHONEMES_FILE,	/// Sets a phonemes file
 		E_SET_ENABLED,			/// Enables components (wether the component should be rendered/updated or not)	
-		E_PICKUP,				/// Attaches a SceneNode to an entity
+		E_PICKUP,				/// Attaches an entity under the child scene node of another entity
+		E_PUTDOWN,				/// Detaches an entity
 		E_SET_MOVE_ANIM,		/// Change one of the move animations. @data = pair<string, string>: tag, name of animation
 		IK_COMPUTE,				/// Computes the IK with the given data and applies it to the chain
 		IK_GAZE,				/// Computes and applies a gaze action
@@ -902,20 +903,20 @@ class Attach : public GameEventData
 {
 
 public:
-	Attach( const char* childName, const char* id, float tx, float ty, float tz, float rx, float ry, float rz, float sx, float sy, float sz ) 
-		: GameEventData(CUSTOM), Child(childName), EntityID(id), Tx(tx), Ty(ty), Tz(tz), Rx(rx), Ry(ry), Rz(rz), Sx(sx), Sy(sy), Sz(sz) 
+	Attach( const char* childName, unsigned int entityID, float tx, float ty, float tz, float rx, float ry, float rz, float sx, float sy, float sz ) 
+		: GameEventData(CUSTOM), Child(childName), EntityID(entityID), Tx(tx), Ty(ty), Tz(tz), Rx(rx), Ry(ry), Rz(rz), Sx(sx), Sy(sy), Sz(sz) 
 	{
 		m_data.ptr = this;
 	}
 
-	Attach( const char* childName, const char* id) 
+	Attach( const char* childName, unsigned int id) 
 		: GameEventData(CUSTOM), Child(childName), EntityID(id), Tx(0), Ty(0), Tz(0), Rx(0), Ry(0), Rz(0), Sx(1), Sy(1), Sz(1) 
 	{
 		m_data.ptr = this;
 	}
 
 	Attach(const Attach& copy) : GameEventData(CUSTOM), Tx(copy.Tx), Ty(copy.Ty), Tz(copy.Tz), 
-		Rx(copy.Rx), Ry(copy.Ry), Rz(copy.Rz), Sx(copy.Sx), Sy(copy.Sy), Sz(copy.Sz)
+		Rx(copy.Rx), Ry(copy.Ry), Rz(copy.Rz), Sx(copy.Sx), Sy(copy.Sy), Sz(copy.Sz), EntityID(copy.EntityID)
 	{
 		m_data.ptr = this;
 		m_owner = true;
@@ -924,11 +925,6 @@ public:
 		Child = new char[lenChildname + 1];
 		memcpy( (char*) Child, copy.Child, lenChildname );
 		const_cast<char*>(Child)[lenChildname] = '\0';
-		
-		const size_t lenID = copy.EntityID ? strlen(copy.EntityID) : 0;
-		EntityID = new char[lenID + 1];
-		memcpy( (char*) EntityID, copy.EntityID, lenID );
-		const_cast<char*>(EntityID)[lenID] = '\0';
 	}
 
 	~Attach()
@@ -936,21 +932,20 @@ public:
 		if( m_owner )
 		{
 			delete[] Child;
-			delete[] EntityID;
 		}
 	}
 
 	const char* Child;
-	const char* EntityID;
-	const float Tx;
-	const float Ty;
-	const float Tz;
-	const float Rx;
-	const float Ry;
-	const float Rz;
-	const float Sx;
-	const float Sy;
-	const float Sz;
+	unsigned int EntityID;
+	float Tx;
+	float Ty;
+	float Tz;
+	float Rx;
+	float Ry;
+	float Rz;
+	float Sx;
+	float Sy;
+	float Sz;
 
 	GameEventData* clone() const
 	{
