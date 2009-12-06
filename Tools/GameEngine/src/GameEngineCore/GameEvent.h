@@ -822,9 +822,9 @@ public:
 		}
 	}
 
-	const float X;
-	const float Y;
-	const float Z;
+	float X;
+	float Y;
+	float Z;
 	const char* AnimName;
 	float Speed;
 	
