@@ -52,13 +52,13 @@ std::string generatePath( const char *p, const std::string &file )
 #endif
 }
 
-int GLFWCALL windowCloseListener()
+int windowCloseListener()
 {
 	running = false;
 	return 0;
 }
 
-void GLFWCALL keyPressListener( int key, int action )
+void keyPressListener( int key, int action )
 {
 	if( !running )
 		return;
@@ -110,7 +110,7 @@ void GLFWCALL keyPressListener( int key, int action )
 		app->keyStateChange( key, action == GLFW_PRESS );
 }
 
-void GLFWCALL mouseMoveListener( int x, int y )
+void mouseMoveListener( int x, int y )
 {
 	if( running )
 		app->mouseMoveEvent( x - mousePosX, y - mousePosY );
@@ -160,7 +160,8 @@ int main( int argc, char *argv[] )
 		glfwCloseWindow();
 		glfwOpenWindow( 800, 16, 8, 8, 8, 8, 24, 8, GLFW_WINDOW );
 		glfwSetWindowTitle( "Unable to initalize engine - Make sure you have an OpenGL 2.0 compatible graphics card" );
-		glfwSleep( 5 );
+		double startTime = glfwGetTime();
+		while( glfwGetTime() - startTime < 5.0 ) {}  // Sleep
 
 		std::cout << "Unable to initalize engine" << std::endl;
 		std::cout << "Make sure you have an OpenGL 2.0 compatible graphics card";

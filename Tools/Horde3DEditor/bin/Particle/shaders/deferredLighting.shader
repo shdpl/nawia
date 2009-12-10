@@ -1,27 +1,27 @@
 [[FX]]
 
 // Samplers
-sampler depthBuf = sampler_state
+sampler2D depthBuf = sampler_state
 {
 	Address = Clamp;
 };
 
-sampler buf0 = sampler_state
+sampler2D buf0 = sampler_state
 {
 	Address = Clamp;
 };
 
-sampler buf1 = sampler_state
+sampler2D buf1 = sampler_state
 {
 	Address = Clamp;
 };
 
-sampler buf2 = sampler_state
+sampler2D buf2 = sampler_state
 {
 	Address = Clamp;
 };
 
-sampler ambientMap = sampler_state
+samplerCube ambientMap = sampler_state
 {
 	Address = Clamp;
 	Filter = Bilinear;

@@ -14,7 +14,6 @@
 #include "egModules.h"
 #include "utXMLParser.h"
 #include "utPlatform.h"
-#include <sstream>
 #include <fstream>
 
 #include "utDebug.h"
@@ -302,41 +301,24 @@ protected:
 	
 	void getNextToken()
 	{
-		// Skip whitespace and comments
-		while( *_p )
-		{
-			const char *p0 = _p;
-			
-			// Skip whitespace
-			skip( " \t\n\r" );
-
-			// Handle comments
-			if( *_p == '/' && *(_p+1) == '/' )
-			{
-				seekChar( "\n\r" );
-			}
-			else if( *_p == '/' && *(_p+1) == '*' )
-			{
-				while( *_p )
-				{
-					seekChar( "*" );
-					if( *++_p == '/' )
-					{	
-						++_p;
-						break;
-					}
-				}
-			}
-
-			if( _p == p0 ) break;  // No more whitespace and comments found
-		}
+		// Skip whitespace
+		skip( " \t\n\r" );
 
 		// Parse token
-		const char *p0 = _p;
-		seekChar( " \t\n\r{}()<>=,;" );  // Advanve until whitespace or special char found
-		if( _p == p0 && *_p != '\0' ) ++_p;  // Handle special char
-		memcpy( _token, p0, std::min( (ptrdiff_t)(_p - p0), tokenSize-1 ) );
-		_token[std::min( (ptrdiff_t)(_p - p0), tokenSize-1 )] = '\0';
+		const char *p0 = _p, *p1 = _p;
+		if( *_p == '"' )  // Handle string
+		{
+			++_p; ++p0;
+			if( seekChar( "\"\n\r" ) ) p1 = _p++;
+		}
+		else
+		{
+			seekChar( " \t\n\r{}()<>=,;" );  // Advance until whitespace or special char found
+			if( _p == p0 && *_p != '\0' ) ++_p;  // Handle special char
+			p1 = _p;
+		}
+		memcpy( _token, p0, std::min( (ptrdiff_t)(p1 - p0), tokenSize-1 ) );
+		_token[std::min( (ptrdiff_t)(p1 - p0), tokenSize-1 )] = '\0';
 	}
 
 public:
@@ -347,11 +329,11 @@ public:
 
 	bool hasToken() { return _token[0] != '\0'; }
 	
-	bool checkToken( const char *token )
+	bool checkToken( const char *token, bool peekOnly = false )
 	{
 		if( _stricmp( _token, token ) == 0 )
 		{
-			getNextToken();
+			if( !peekOnly ) getNextToken();
 			return true;
 		}
 		return false;
@@ -359,14 +341,17 @@ public:
 
 	const char *getToken( const char *charset )
 	{
-		// Validate token
-		const char *p = _token;
-		while( *p )
+		if( charset )
 		{
-			if( strchr( charset, *p++ ) == 0x0 )
+			// Validate token
+			const char *p = _token;
+			while( *p )
 			{
-				_prevToken[0] = '\0';
-				return _prevToken;
+				if( strchr( charset, *p++ ) == 0x0 )
+				{
+					_prevToken[0] = '\0';
+					return _prevToken;
+				}
 			}
 		}
 		
@@ -375,14 +360,13 @@ public:
 		return _prevToken;
 	}
 
-	bool seekAndSkipChar( const char c )
+	bool seekToken( const char *token )
 	{
-		const char chars[2] = { c, '\0' };
-
-		bool result = seekChar( chars );
-		if( result ) ++_p;
-		getNextToken();
-		return result;
+		while( _stricmp( getToken( 0x0 ), token ) != 0 )
+		{
+			if( !hasToken() ) return false;
+		}
+		return true;
 	}
 };
 
@@ -445,8 +429,28 @@ bool ShaderResource::raiseError( const string &msg, int line )
 }
 
 
-bool ShaderResource::parseFXSection( const char *data )
+bool ShaderResource::parseFXSection( char *data )
 {
+	// Preprocessing: Replace comments with whitespace
+	char *p = data;
+	while( *p )
+	{
+		if( *p == '/' && *(p+1) == '/' )
+		{
+			while( *p != '\n' && *p != '\r' )
+				*p++ = ' ';
+		}
+		else if( *p == '/' && *(p+1) == '*' )
+		{
+			*p++ = ' '; *p++ = ' ';
+			while( *p != '*' && *(p+1) != '/' )
+				*p++ = ' ';
+			*p++ = ' '; *p++ = ' ';
+		}
+		++p;
+	}
+	
+	// Parsing
 	const char *identifier = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
 	const char *intnum = "+-0123456789";
 	const char *floatnum = "+-0123456789.eE";
@@ -465,7 +469,7 @@ bool ShaderResource::parseFXSection( const char *data )
 			
 			// Skip annotations
 			if( tok.checkToken( "<" ) )
-				if( !tok.seekAndSkipChar( '>' ) ) return raiseError( "FX: expected '>'", tok.getLine() );
+				if( !tok.seekToken( ">" ) ) return raiseError( "FX: expected '>'", tok.getLine() );
 			
 			if( tok.checkToken( "=" ) )
 			{
@@ -480,15 +484,25 @@ bool ShaderResource::parseFXSection( const char *data )
 
 			_uniforms.push_back( uniform );
 		}
-		else if( tok.checkToken( "sampler" ) )
+		else if( tok.checkToken( "sampler2D", true ) || tok.checkToken( "samplerCube", true ) )
 		{
 			ShaderSampler sampler;
+			if( tok.checkToken( "sampler2D" ) )
+			{	
+				sampler.type = TextureTypes::Tex2D;
+				sampler.defTex = (TextureResource *)Modules::resMan().findResource( ResourceTypes::Texture, "$Tex2D" );
+			}
+			else if( tok.checkToken( "samplerCube" ) )
+			{
+				sampler.type = TextureTypes::TexCube;
+				sampler.defTex = (TextureResource *)Modules::resMan().findResource( ResourceTypes::Texture, "$TexCube" );
+			}
 			sampler.id = tok.getToken( identifier );
 			if( sampler.id == "" ) return raiseError( "FX: Invalid identifier", tok.getLine() );
 
 			// Skip annotations
 			if( tok.checkToken( "<" ) )
-				if( !tok.seekAndSkipChar( '>' ) ) return raiseError( "FX: expected '>'", tok.getLine() );
+				if( !tok.seekToken( ">" ) ) return raiseError( "FX: expected '>'", tok.getLine() );
 			
 			if( tok.checkToken( "=" ) )
 			{
@@ -500,6 +514,13 @@ bool ShaderResource::parseFXSection( const char *data )
 						return raiseError( "FX: expected '}'", tok.getLine() );
 					else if( tok.checkToken( "}" ) )
 						break;
+					else if( tok.checkToken( "Texture" ) )
+					{
+						if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
+						ResHandle texMap =  Modules::resMan().addResource(
+							ResourceTypes::Texture, tok.getToken( 0x0 ), 0, false );
+						sampler.defTex = (TextureResource *)Modules::resMan().resolveResHandle( texMap );
+					}
 					else if( tok.checkToken( "TexUnit" ) )
 					{
 						if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
@@ -545,7 +566,7 @@ bool ShaderResource::parseFXSection( const char *data )
 
 			// Skip annotations
 			if( tok.checkToken( "<" ) )
-				if( !tok.seekAndSkipChar( '>' ) ) return raiseError( "FX: expected '>'", tok.getLine() );
+				if( !tok.seekToken( ">" ) ) return raiseError( "FX: expected '>'", tok.getLine() );
 			
 			if( !tok.checkToken( "{" ) ) return raiseError( "FX: expected '{'", tok.getLine() );
 			while( true )
@@ -668,7 +689,7 @@ bool ShaderResource::load( const char *data, int size )
 	
 	// Parse sections
 	const char *pData = data;
-	_tmpCode1 = "";
+	char *fxCode = 0x0;
 	
 	while( *pData != '\0' )
 	{
@@ -692,7 +713,10 @@ bool ShaderResource::load( const char *data, int size )
 			    *sectionNameStart == 'F' && *(sectionNameStart+1) == 'X' )
 			{
 				// FX section
-				_tmpCode1.assign( sectionContentStart, sectionContentEnd );
+				if( fxCode != 0x0 ) return raiseError( "More than one FX section" );
+				fxCode = new char[sectionContentEnd - sectionContentStart + 1];
+				memcpy( fxCode, sectionContentStart, sectionContentEnd - sectionContentStart );
+				fxCode[sectionContentEnd - sectionContentStart] = '\0';
 			}
 			else
 			{
@@ -705,8 +729,10 @@ bool ShaderResource::load( const char *data, int size )
 		}
 	}
 
-	if( _tmpCode1.empty() ) return raiseError( "Missing FX section" );
-	if( !parseFXSection( _tmpCode1.c_str() ) ) return false;
+	if( fxCode == 0x0 ) return raiseError( "Missing FX section" );
+	bool result = parseFXSection( fxCode );
+	delete[] fxCode; fxCode = 0x0;
+	if( !result ) return false;
 
 	compileContexts();
 	

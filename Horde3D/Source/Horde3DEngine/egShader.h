@@ -15,6 +15,7 @@
 
 #include "egPrerequisites.h"
 #include "egResource.h"
+#include "egTexture.h"
 #include <set>
 
 struct XMLNode;
@@ -199,6 +200,8 @@ struct ShaderContext
 struct ShaderSampler
 {
 	std::string            id;
+	TextureTypes::List     type;
+	PTextureResource       defTex;
 	int                    texUnit;
 	TexAddressModes::List  addressMode;
 	TexFilterModes::List   filterMode;
@@ -233,7 +236,7 @@ private:
 	std::set< uint32 >            _preLoadList;
 
 	bool raiseError( const std::string &msg, int line = -1 );
-	bool parseFXSection( const char *data );
+	bool parseFXSection( char *data );
 	void compileCombination( ShaderContext &context, ShaderCombination &sc );
 
 public:

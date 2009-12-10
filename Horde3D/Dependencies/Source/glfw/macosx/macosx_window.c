@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        macosx_window.c
 // Platform:    Mac OS X
-// API Version: 2.6
+// API Version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -143,6 +143,7 @@ EventTypeSpec GLFW_KEY_EVENT_TYPES[] =
 {
     { kEventClassKeyboard, kEventRawKeyDown },
     { kEventClassKeyboard, kEventRawKeyUp },
+    { kEventClassKeyboard, kEventRawKeyRepeat },
     { kEventClassKeyboard, kEventRawKeyModifiersChanged }
 };
 
@@ -156,6 +157,7 @@ OSStatus _glfwKeyEventHandler( EventHandlerCallRef handlerCallRef,
 
     switch( GetEventKind( event ) )
     {
+        case kEventRawKeyRepeat:
         case kEventRawKeyDown:
         {
             if( GetEventParameter( event,
@@ -623,6 +625,13 @@ int  _glfwPlatformOpenWindow( int width,
 
     unsigned int windowAttributes;
 
+    // Neither AGL nor CGL currently provide a mechanism for creating versioned
+    // or forward-compatible contexts.  Fail if such a context was requested.
+    if( hints->OpenGLMajor > 2 || hints->OpenGLForward )
+    {
+	return GL_FALSE;
+    }
+
     // TO DO: Refactor this function!
     _glfwWin.WindowFunctions = ( _glfwWin.Fullscreen ?
                                &_glfwMacFSWindowFunctions :
@@ -707,11 +716,13 @@ int  _glfwPlatformOpenWindow( int width,
             return GL_FALSE;
         }
 
-        if (_glfwLibrary.Unbundled)
+#if MACOSX_DEPLOYMENT_TARGET > MAC_OS_X_VERSION_10_2
+
+        if( _glfwLibrary.Unbundled )
         {
             if( GetCurrentProcess( &psn ) != noErr )
             {
-                fprintf( stderr, "glfwOpenWindow failing because it can't get its PSN\n" );
+                fprintf( stderr, "glfwOpenWindow failing because it can't get the PSN\n" );
                 _glfwPlatformCloseWindow();
                 return GL_FALSE;
             }
@@ -722,16 +733,9 @@ int  _glfwPlatformOpenWindow( int width,
                 _glfwPlatformCloseWindow();
                 return GL_FALSE;
             }
-            
-            /* Keith Bauer 2007-07-12 - I don't believe this is desirable
-    	    if( SetFrontProcess( &psn ) != noErr )
-            {
-                fprintf( stderr, "glfwOpenWindow failing because it can't become the front process\n" );
-                _glfwPlatformCloseWindow();
-                return GL_FALSE;
-            }
-            */
         }
+
+#endif /* higher than Jagwire */
 	    
         // create window
         Rect windowContentBounds;

@@ -29,9 +29,13 @@ inline float degToRad( float f )
 }
 
 
-Application::Application( const std::string &contentDir )
+Application::Application( const std::string &appPath )
 {
-	for( unsigned int i = 0; i < 320; ++i ) _keys[i] = false;
+	for( unsigned int i = 0; i < 320; ++i )
+	{	
+		_keys[i] = false;
+		_prevKeys[i] = false;
+	}
 
 	_x = 5; _y = 3; _z = 19; _rx = 7; _ry = 15; _velocity = 10.0f;
 	_curFPS = 30;
@@ -41,7 +45,7 @@ Application::Application( const std::string &contentDir )
 	_animTime = 0; _weight = 1.0f;
 	_cam = 0;
 
-	_contentDir = contentDir;
+	_contentDir = appPath + "../Content";
 }
 
 
@@ -122,8 +126,6 @@ bool Application::init()
 void Application::mainLoop( float fps )
 {
 	_curFPS = fps;
-
-	keyHandler();
 	
 	h3dSetOption( H3DOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
 	h3dSetOption( H3DOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
@@ -191,12 +193,15 @@ void Application::resize( int width, int height )
 }
 
 
-void Application::keyPressEvent( int key )
+void Application::keyStateHandler()
 {
-	if( key == 32 )		// Space
+	// ----------------
+	// Key-press events
+	// ----------------
+	if( _keys[32] && !_prevKeys[32] )  // Space
 		_freeze = !_freeze;
 
-	if( key == 260 )	// F3
+	if( _keys[260] && !_prevKeys[260] )  // F3
 	{
 		if( h3dGetNodeParamI( _cam, H3DCamera::PipeResI ) == _hdrPipeRes )
 			h3dSetNodeParamI( _cam, H3DCamera::PipeResI, _forwardPipeRes );
@@ -204,22 +209,21 @@ void Application::keyPressEvent( int key )
 			h3dSetNodeParamI( _cam, H3DCamera::PipeResI, _hdrPipeRes );
 	}
 	
-	if( key == 264 )	// F7
+	if( _keys[264] && !_prevKeys[264] )  // F7
 		_debugViewMode = !_debugViewMode;
 
-	if( key == 265 )	// F8
+	if( _keys[265] && !_prevKeys[265] )  // F8
 		_wireframeMode = !_wireframeMode;
 	
-	if( key == 266 )	// F9
+	if( _keys[266] && !_prevKeys[266] )  // F9
 	{
 		_statMode += 1;
 		if( _statMode > H3DUTMaxStatMode ) _statMode = 0;
 	}
-}
-
-
-void Application::keyHandler()
-{
+	
+	// --------------
+	// Key-down state
+	// --------------
 	float curVel = _velocity / _curFPS;
 	
 	if( _keys[287] ) curVel *= 5;	// LShift
@@ -231,7 +235,6 @@ void Application::keyHandler()
 		_y -= sinf( -degToRad( _rx ) ) * curVel;
 		_z -= cosf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
 	}
-
 	if( _keys['S'] )
 	{
 		// Move backward
@@ -239,28 +242,24 @@ void Application::keyHandler()
 		_y += sinf( -degToRad( _rx ) ) * curVel;
 		_z += cosf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
 	}
-
 	if( _keys['A'] )
 	{
 		// Strafe left
 		_x += sinf( degToRad( _ry - 90) ) * curVel;
 		_z += cosf( degToRad( _ry - 90 ) ) * curVel;
 	}
-
 	if( _keys['D'] )
 	{
 		// Strafe right
 		_x += sinf( degToRad( _ry + 90 ) ) * curVel;
 		_z += cosf( degToRad( _ry + 90 ) ) * curVel;
 	}
-
 	if( _keys['1'] )
 	{
 		// Change blend weight
 		_weight += 2 / _curFPS;
 		if( _weight > 1 ) _weight = 1;
 	}
-	
 	if( _keys['2'] )
 	{
 		// Change blend weight

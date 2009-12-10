@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        win32_time.c
 // Platform:    Windows
-// API version: 2.6
+// API version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -36,24 +36,24 @@
 //************************************************************************
 
 //========================================================================
-// _glfwInitTimer() - Initialise timer
+// Initialise timer
 //========================================================================
 
-void _glfwInitTimer( void )
+void _glfwInitTimer(void)
 {
     __int64 freq;
 
     // Check if we have a performance counter
-    if( QueryPerformanceFrequency( (LARGE_INTEGER *)&freq ) )
+    if (QueryPerformanceFrequency((LARGE_INTEGER*) &freq))
     {
         // Performance counter is available => use it!
         _glfwLibrary.Timer.HasPerformanceCounter = GL_TRUE;
 
         // Counter resolution is 1 / counter frequency
-        _glfwLibrary.Timer.Resolution = 1.0 / (double)freq;
+        _glfwLibrary.Timer.Resolution = 1.0 / (double) freq;
 
         // Set start time for timer
-        QueryPerformanceCounter( (LARGE_INTEGER *)&_glfwLibrary.Timer.t0_64 );
+        QueryPerformanceCounter((LARGE_INTEGER*) &_glfwLibrary.Timer.t0_64);
     }
     else
     {
@@ -77,19 +77,19 @@ void _glfwInitTimer( void )
 // Return timer value in seconds
 //========================================================================
 
-double _glfwPlatformGetTime( void )
+double _glfwPlatformGetTime(void)
 {
     double  t;
     __int64 t_64;
 
-    if( _glfwLibrary.Timer.HasPerformanceCounter )
+    if (_glfwLibrary.Timer.HasPerformanceCounter)
     {
-        QueryPerformanceCounter( (LARGE_INTEGER *)&t_64 );
-        t =  (double)(t_64 - _glfwLibrary.Timer.t0_64);
+        QueryPerformanceCounter((LARGE_INTEGER*) &t_64);
+        t =  (double) (t_64 - _glfwLibrary.Timer.t0_64);
     }
     else
     {
-        t = (double)(_glfw_timeGetTime() - _glfwLibrary.Timer.t0_32);
+        t = (double) (_glfw_timeGetTime() - _glfwLibrary.Timer.t0_32);
     }
 
     // Calculate the current time in seconds
@@ -101,46 +101,16 @@ double _glfwPlatformGetTime( void )
 // Set timer value in seconds
 //========================================================================
 
-void _glfwPlatformSetTime( double t )
+void _glfwPlatformSetTime(double t)
 {
     __int64 t_64;
 
-    if( _glfwLibrary.Timer.HasPerformanceCounter )
+    if (_glfwLibrary.Timer.HasPerformanceCounter)
     {
-        QueryPerformanceCounter( (LARGE_INTEGER *)&t_64 );
-        _glfwLibrary.Timer.t0_64 = t_64 - (__int64)(t/_glfwLibrary.Timer.Resolution);
+        QueryPerformanceCounter((LARGE_INTEGER*) &t_64);
+        _glfwLibrary.Timer.t0_64 = t_64 - (__int64) (t/_glfwLibrary.Timer.Resolution);
     }
     else
-    {
-        _glfwLibrary.Timer.t0_32 = _glfw_timeGetTime() - (int)(t*1000.0);
-    }
-}
-
-
-//========================================================================
-// Put a thread to sleep for a specified amount of time
-//========================================================================
-
-void _glfwPlatformSleep( double time )
-{
-    DWORD t;
-
-    if( time == 0.0 )
-    {
-	t = 0;
-    }
-    else if( time < 0.001 )
-    {
-        t = 1;
-    }
-    else if( time > 2147483647.0 )
-    {
-        t = 2147483647;
-    }
-    else
-    {
-        t = (DWORD)(time*1000.0 + 0.5);
-    }
-    Sleep( t );
+        _glfwLibrary.Timer.t0_32 = _glfw_timeGetTime() - (int) (t*1000.0);
 }
 

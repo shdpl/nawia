@@ -439,64 +439,76 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		glActiveTexture( GL_TEXTURE0 + shaderRes->_samplers[i].texUnit );
 		
 		ShaderSampler &sampler = shaderRes->_samplers[i];
+		TextureResource *texRes = 0x0;
 		int target = 0;
 		bool mips = false;
 
+		// Use default texture
+		if( firstRec) texRes = sampler.defTex;
+		
 		// Find sampler in material
 		for( size_t j = 0, s = materialRes->_samplers.size(); j < s; ++j )
 		{
-			MatSampler &matSampler = materialRes->_samplers[j];
-			
-			if( matSampler.name == sampler.id )
+			if( materialRes->_samplers[j].name == sampler.id )
 			{
-				if( matSampler.texRes->getTexType() == TextureTypes::Tex2D )
-				{
-					target = GL_TEXTURE_2D;
-					mips = matSampler.texRes->hasMipMaps();
-					
-					if( matSampler.texRes->getRBObject() == 0 )
-					{
-						bindTexture( shaderRes->_samplers[i].texUnit, matSampler.texRes->getTexObject() );
-					}
-					else if( matSampler.texRes->getRBObject() != _curRendBuf )
-					{
-						glActiveTexture( GL_TEXTURE0 + shaderRes->_samplers[i].texUnit );
-						glBindTexture( GL_TEXTURE_2D, getRenderBufferTex( matSampler.texRes->getRBObject(), 0 ) );
-					}
-					else  // Trying to bind active render buffer as texture
-					{
-						bindTexture( shaderRes->_samplers[i].texUnit, TextureResource::defTex2DObject );
-					}
-				}
-				else if( matSampler.texRes->getTexType() == TextureTypes::TexCube )
-				{
-					target = GL_TEXTURE_CUBE_MAP;
-					mips = matSampler.texRes->hasMipMaps();
-					bindTexture( shaderRes->_samplers[i].texUnit, matSampler.texRes->getTexObject() );
-				}
-
+				texRes = materialRes->_samplers[j].texRes;
 				break;
+			}
+		}
+
+		// Bind texture
+		if( texRes != 0x0 )
+		{
+			if( texRes->getTexType() != sampler.type ) break;  // Wrong type
+			
+			if( texRes->getTexType() == TextureTypes::Tex2D )
+			{
+				target = GL_TEXTURE_2D;
+				mips = texRes->hasMipMaps();
+				
+				if( texRes->getRBObject() == 0 )
+				{
+					bindTexture( shaderRes->_samplers[i].texUnit, texRes->getTexObject() );
+				}
+				else if( texRes->getRBObject() != _curRendBuf )
+				{
+					glActiveTexture( GL_TEXTURE0 + shaderRes->_samplers[i].texUnit );
+					glBindTexture( GL_TEXTURE_2D, getRenderBufferTex( texRes->getRBObject(), 0 ) );
+				}
+				else  // Trying to bind active render buffer as texture
+				{
+					bindTexture( shaderRes->_samplers[i].texUnit, TextureResource::defTex2DObject );
+				}
+			}
+			else if( texRes->getTexType() == TextureTypes::TexCube )
+			{
+				target = GL_TEXTURE_CUBE_MAP;
+				mips = texRes->hasMipMaps();
+				bindTexture( shaderRes->_samplers[i].texUnit, texRes->getTexObject() );
 			}
 		}
 
 		// Find sampler in pipeline
-		for( size_t j = 0, s = _pipeSamplerBindings.size(); j < s; ++j )
+		if( firstRec )
 		{
-			if( strcmp( _pipeSamplerBindings[j].sampler, sampler.id.c_str() ) == 0 )
+			for( size_t j = 0, s = _pipeSamplerBindings.size(); j < s; ++j )
 			{
-				target = GL_TEXTURE_2D;
-				mips = false;
-				glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
+				if( strcmp( _pipeSamplerBindings[j].sampler, sampler.id.c_str() ) == 0 )
+				{
+					target = GL_TEXTURE_2D;
+					mips = false;
+					glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
 
-				glBindTexture( GL_TEXTURE_2D, getRenderBufferTex(
-					_pipeSamplerBindings[j].rbObj, _pipeSamplerBindings[j].bufIndex ) );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
+					glBindTexture( GL_TEXTURE_2D, getRenderBufferTex(
+						_pipeSamplerBindings[j].rbObj, _pipeSamplerBindings[j].bufIndex ) );
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
 
-				break;
+					break;
+				}
 			}
 		}
 
-		if( target == 0 ) continue;  // Texture for sampler not found (maybe in linked material)
+		if( target == 0 ) continue;
 
 		// Address mode
 		switch( sampler.addressMode )
@@ -1516,13 +1528,13 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 				
 				Vec4f color;
 				if( curLod == 0 ) color = Vec4f( 0.5f, 0.75f, 1, 1 );
-				else if( curLod == 1 ) color = Vec4f( 0.75f, 0.25, 0.75f, 1 );
-				else if( curLod == 2 ) color = Vec4f( 0.25f, 0.75, 0.25f, 1 );
-				else if( curLod == 3 ) color = Vec4f( 1.0f, 0.75f, 0.0f, 1 );
-				else color = Vec4f( 1.0f, 0.25, 0.25f, 1 );
+				else if( curLod == 1 ) color = Vec4f( 0.25f, 0.75, 0.75f, 1 );
+				else if( curLod == 2 ) color = Vec4f( 0.25f, 0.75, 0.5f, 1 );
+				else if( curLod == 3 ) color = Vec4f( 0.5f, 0.5f, 0.25f, 1 );
+				else color = Vec4f( 0.75f, 0.5, 0.25f, 1 );
 
 				// Darken models with skeleton so that bones are more noticable
-				if( !modelNode->_jointList.empty() ) color = color * 0.5f;
+				if( !modelNode->_jointList.empty() ) color = color * 0.3f;
 
 				glUniform4fv( Modules::renderer()._defColShader_color, 1, &color.x );
 			}

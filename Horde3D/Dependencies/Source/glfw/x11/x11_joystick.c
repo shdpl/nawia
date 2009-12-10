@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        x11_joystick.c
 // Platform:    X11 (Unix)
-// API version: 2.6
+// API version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -154,7 +154,7 @@ void _glfwInitJoysticks( void )
                     continue;
                 }
                 _glfwJoy[ joy_count ].Button =
-                    (char *) malloc( sizeof(char) *
+                    (unsigned char *) malloc( sizeof(char) *
                                      _glfwJoy[ joy_count ].NumButtons );
                 if( _glfwJoy[ joy_count ].Button == NULL )
                 {

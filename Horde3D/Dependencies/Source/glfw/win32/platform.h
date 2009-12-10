@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        platform.h
 // Platform:    Windows
-// API version: 2.6
+// API version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -39,7 +39,7 @@
 // Include files
 #include <windows.h>
 #include <mmsystem.h>
-#include "../../../Include/glfw.h"
+#include "../../Include/glfw.h"
 
 
 //========================================================================
@@ -139,7 +139,10 @@ typedef BOOL (WINAPI * WGLGETPIXELFORMATATTRIBIVARB_T) (HDC, int, int, UINT, con
 typedef const char *(APIENTRY * WGLGETEXTENSIONSSTRINGEXT_T)( void );
 // wglGetExtensionStringARB typedef
 typedef const char *(APIENTRY * WGLGETEXTENSIONSSTRINGARB_T)( HDC );
+// wglCreateContextAttribsARB typedef
+typedef HGLRC (APIENTRY * WGLCREATECONTEXTATTRIBSARB_T)( HDC, HGLRC, const int*);
 
+/* Constants for wglGetPixelFormatAttribivARB */
 #define WGL_DRAW_TO_WINDOW_ARB    0x2001
 #define WGL_SUPPORT_OPENGL_ARB    0x2010
 #define WGL_ACCELERATION_ARB      0x2003
@@ -161,7 +164,15 @@ typedef const char *(APIENTRY * WGLGETEXTENSIONSSTRINGARB_T)( HDC );
 #define WGL_AUX_BUFFERS_ARB       0x2024 
 #define WGL_SAMPLE_BUFFERS_ARB    0x2041
 #define WGL_SAMPLES_ARB           0x2042
-
+ 
+/* Constants for wglCreateContextAttribsARB */
+#define WGL_CONTEXT_MAJOR_VERSION_ARB          0x2091
+#define WGL_CONTEXT_MINOR_VERSION_ARB          0x2092
+#define WGL_CONTEXT_LAYER_PLANE_ARB            0x2093
+#define WGL_CONTEXT_FLAGS_ARB                  0x2094
+#define WGL_CONTEXT_DEBUG_BIT_ARB              0x0001
+#define WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB 0x0002
+#define GL_ERROR_INVALID_VERSION_ARB           0x2095
 
 //========================================================================
 // DLLs that are loaded at glfwInit()
@@ -266,9 +277,7 @@ struct _GLFWwin_struct {
     int       Samples;
 
     // Extensions & OpenGL version
-    int       Has_GL_SGIS_generate_mipmap;
-    int       Has_GL_ARB_texture_non_power_of_two;
-    int       GLVerMajor,GLVerMinor;
+    int       GLVerMajor,GLVerMinor,GLForward,GLDebug;
 
 
 // ========= PLATFORM SPECIFIC PART ======================================
@@ -289,6 +298,7 @@ struct _GLFWwin_struct {
     WGLGETPIXELFORMATATTRIBIVARB_T GetPixelFormatAttribiv;
     WGLGETEXTENSIONSSTRINGEXT_T    GetExtensionsStringEXT;
     WGLGETEXTENSIONSSTRINGARB_T    GetExtensionsStringARB;
+    WGLCREATECONTEXTATTRIBSARB_T   CreateContextAttribsARB;
 
     // Various platform specific internal variables
     int       OldMouseLock;    // Old mouse-lock flag (used for remembering
@@ -380,65 +390,6 @@ GLFWGLOBAL struct {
 #endif
 
 } _glfwLibrary;
-
-
-//------------------------------------------------------------------------
-// Thread record (one for each thread)
-//------------------------------------------------------------------------
-typedef struct _GLFWthread_struct _GLFWthread;
-
-struct _GLFWthread_struct {
-
-// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
-
-    // Pointer to previous and next threads in linked list
-    _GLFWthread   *Previous, *Next;
-
-    // GLFW user side thread information
-    GLFWthread    ID;
-    GLFWthreadfun Function;
-
-// ========= PLATFORM SPECIFIC PART ======================================
-
-    // System side thread information
-    HANDLE        Handle;
-    DWORD         WinID;
-
-};
-
-
-//------------------------------------------------------------------------
-// General thread information
-//------------------------------------------------------------------------
-GLFWGLOBAL struct {
-
-// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
-
-    // Next thread ID to use (increments for every created thread)
-    GLFWthread       NextID;
-
-    // First thread in linked list (always the main thread)
-    _GLFWthread      First;
-
-// ========= PLATFORM SPECIFIC PART ======================================
-
-    // Critical section lock
-    CRITICAL_SECTION CriticalSection;
-
-} _glfwThrd;
-
-
-
-//========================================================================
-// Macros for encapsulating critical code sections (i.e. making parts
-// of GLFW thread safe)
-//========================================================================
-
-// Thread list management
-#define ENTER_THREAD_CRITICAL_SECTION \
-        EnterCriticalSection( &_glfwThrd.CriticalSection );
-#define LEAVE_THREAD_CRITICAL_SECTION \
-        LeaveCriticalSection( &_glfwThrd.CriticalSection );
 
 
 //========================================================================

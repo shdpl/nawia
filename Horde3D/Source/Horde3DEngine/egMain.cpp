@@ -126,6 +126,28 @@ DLLEXP bool h3dInit()
 	// Register extensions at last so that they can overwrite the registered resources and nodes
 	if( !Modules::extMan().init() ) return false;
 
+	// Create default resources
+	TextureResource *tex2DRes = new TextureResource(
+		"$Tex2D", 32, 32, TextureFormats::BGRA8, ResourceFlags::NoTexMipmaps );
+	void *image = tex2DRes->mapStream( TextureResData::ImageElem, 0, TextureResData::ImgPixelStream, false, true );
+	ASSERT( image != 0x0 );
+	for( int i = 0; i < 32*32; ++i ) ((int *)image)[i] = 0xffffffff;
+	tex2DRes->unmapStream();
+	tex2DRes->addRef();
+	Modules::resMan().addNonExistingResource( *tex2DRes, false );
+
+	TextureResource *texCubeRes = new TextureResource(
+		"$TexCube", 32, 32, TextureFormats::BGRA8, ResourceFlags::TexCubemap | ResourceFlags::NoTexMipmaps );
+	for( uint32 i = 0; i < 6; ++i )
+	{
+		void *image = texCubeRes->mapStream( TextureResData::ImageElem, i, TextureResData::ImgPixelStream, false, true );
+		ASSERT( image != 0x0 );
+		for( int i = 0; i < 32*32; ++i ) ((int *)image)[i] = 0xff000000;
+		texCubeRes->unmapStream();
+	}
+	texCubeRes->addRef();
+	Modules::resMan().addNonExistingResource( *texCubeRes, false );
+	
 	return true;
 }
 

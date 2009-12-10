@@ -11,17 +11,20 @@
 
 
 // Samplers
-sampler albedoMap;
-sampler normalMap;
+sampler2D albedoMap;
+sampler2D normalMap = sampler_state
+{
+	Texture = "textures/common/defnorm.tga";
+};
 
-sampler ambientMap = sampler_state
+samplerCube ambientMap = sampler_state
 {
 	Address = Clamp;
 	Filter = Bilinear;
 	MaxAnisotropy = 1;
 };
 
-sampler envMap = sampler_state
+samplerCube envMap = sampler_state
 {
 	Address = Clamp;
 	Filter = Bilinear;

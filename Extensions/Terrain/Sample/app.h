@@ -24,8 +24,8 @@
 class Application
 {
 private:
+	bool         _keys[320], _prevKeys[320];
 
-	bool         _keys[320];
 	float        _x, _y, _z, _rx, _ry;  // Viewer position and orientation
 	float        _velocity;  // Velocity for movement
 	float        _curFPS;
@@ -42,16 +42,18 @@ private:
 	void keyHandler();
 
 public:
+	Application( const std::string &appPath );
 	
-	Application( const std::string &contentDir );
+	void setKeyState( int key, bool state ) { _prevKeys[key] = _keys[key]; _keys[key] = state; }
+
+	const char *getTitle() { return "Terrain - Horde3D Extension Sample"; }
 	
 	bool init();
 	void mainLoop( float fps );
 	void release();
 	void resize( int width, int height );
 
-	void keyPressEvent( int key );
-	void keyStateChange( int key, bool state ) { if( key >= 0 && key < 320 ) _keys[key] = state; }
+	void keyStateHandler();
 	void mouseMoveEvent( float dX, float dY );
 };
 

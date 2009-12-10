@@ -23,11 +23,11 @@ vec4 getParticleColor()
 	return parColorArray[int( parIdx )];
 }
 
-vec4 calcParticleViewPos()
+vec4 calcParticleViewPos( const vec3 pos )
 {
 	// Position
-	vec3 pos = gl_Vertex.xyz + parPosArray[int( parIdx )] +
-			   parCorners[int( parCornerIdx )] * parSizeAndRotArray[int( parIdx )].x;
+	vec3 pos1 = pos + parPosArray[int( parIdx )] +
+			    parCorners[int( parCornerIdx )] * parSizeAndRotArray[int( parIdx )].x;
 	
 	// Rotation
 	float s = sin( parSizeAndRotArray[int( parIdx )].y * 0.0174532925 );
@@ -37,6 +37,6 @@ vec4 calcParticleViewPos()
 						0,  0, 1, 0,
 						0,  0, 0, 1 );
 	vec4 mid = gl_ModelViewMatrix * vec4( parPosArray[int( parIdx )], 1 );
-	vec4 pos2 = gl_ModelViewMatrix * vec4( pos, 1 );
+	vec4 pos2 = gl_ModelViewMatrix * vec4( pos1, 1 );
 	return rotMat * (pos2 - mid) + mid;
 }

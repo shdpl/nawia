@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        x11_init.c
 // Platform:    X11 (Unix)
-// API version: 2.6
+// API version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -37,104 +37,6 @@
 //************************************************************************
 
 //========================================================================
-// Initialize GLFW thread package
-//========================================================================
-
-static void _glfwInitThreads( void )
-{
-    // Initialize critical section handle
-#ifdef _GLFW_HAS_PTHREAD
-    (void) pthread_mutex_init( &_glfwThrd.CriticalSection, NULL );
-#endif
-
-    // The first thread (the main thread) has ID 0
-    _glfwThrd.NextID = 0;
-
-    // Fill out information about the main thread (this thread)
-    _glfwThrd.First.ID       = _glfwThrd.NextID++;
-    _glfwThrd.First.Function = NULL;
-    _glfwThrd.First.Previous = NULL;
-    _glfwThrd.First.Next     = NULL;
-#ifdef _GLFW_HAS_PTHREAD
-    _glfwThrd.First.PosixID  = pthread_self();
-#endif
-}
-
-
-//========================================================================
-// Terminate GLFW thread package
-//========================================================================
-
-static void _glfwTerminateThreads( void )
-{
-#ifdef _GLFW_HAS_PTHREAD
-
-    _GLFWthread *t, *t_next;
-
-    // Enter critical section
-    ENTER_THREAD_CRITICAL_SECTION
-
-    // Kill all threads (NOTE: THE USER SHOULD WAIT FOR ALL THREADS TO
-    // DIE, _BEFORE_ CALLING glfwTerminate()!!!)
-    t = _glfwThrd.First.Next;
-    while( t != NULL )
-    {
-        // Get pointer to next thread
-        t_next = t->Next;
-
-        // Simply murder the process, no mercy!
-        pthread_kill( t->PosixID, SIGKILL );
-
-        // Free memory allocated for this thread
-        free( (void *) t );
-
-        // Select next thread in list
-        t = t_next;
-    }
-
-    // Leave critical section
-    LEAVE_THREAD_CRITICAL_SECTION
-
-    // Delete critical section handle
-    pthread_mutex_destroy( &_glfwThrd.CriticalSection );
-
-#endif // _GLFW_HAS_PTHREAD
-}
-
-
-//========================================================================
-// Dynamically load libraries
-//========================================================================
-
-#ifdef _GLFW_DLOPEN_LIBGL
-static char * _glfw_libGL_name[ ] =
-{
-    "libGL.so",
-    "libGL.so.1",
-    "/usr/lib/libGL.so",
-    "/usr/lib/libGL.so.1",
-    NULL
-};
-#endif
-
-static void _glfwInitLibraries( void )
-{
-#ifdef _GLFW_DLOPEN_LIBGL
-    int i;
-
-    _glfwLibrary.Libs.libGL = NULL;
-    for( i = 0; !_glfw_libGL_name[ i ] != NULL; i ++ )
-    {
-        _glfwLibrary.Libs.libGL = dlopen( _glfw_libGL_name[ i ],
-                                          RTLD_LAZY | RTLD_GLOBAL );
-	if( _glfwLibrary.Libs.libGL )
-	    break;
-    }
-#endif
-}
-
-
-//========================================================================
 // Terminate GLFW when exiting application
 //========================================================================
 
@@ -151,20 +53,16 @@ void _glfwTerminate_atexit( void )
 static int _glfwInitDisplay( void )
 {
     // Open display
-    _glfwLibrary.Dpy = XOpenDisplay( 0 );
-    if( !_glfwLibrary.Dpy )
+    _glfwLibrary.display = XOpenDisplay( 0 );
+    if( !_glfwLibrary.display )
     {
         return GL_FALSE;
     }
 
-    // Check screens
-    _glfwLibrary.NumScreens = ScreenCount( _glfwLibrary.Dpy );
-    _glfwLibrary.DefaultScreen = DefaultScreen( _glfwLibrary.Dpy );
-
     // Check for XF86VidMode extension
 #ifdef _GLFW_HAS_XF86VIDMODE
     _glfwLibrary.XF86VidMode.Available =
-        XF86VidModeQueryExtension( _glfwLibrary.Dpy,
+        XF86VidModeQueryExtension( _glfwLibrary.display,
 	                           &_glfwLibrary.XF86VidMode.EventBase,
 	                           &_glfwLibrary.XF86VidMode.ErrorBase);
 #else
@@ -174,7 +72,7 @@ static int _glfwInitDisplay( void )
     // Check for XRandR extension
 #ifdef _GLFW_HAS_XRANDR
     _glfwLibrary.XRandR.Available =
-        XRRQueryExtension( _glfwLibrary.Dpy,
+        XRRQueryExtension( _glfwLibrary.display,
 	                   &_glfwLibrary.XRandR.EventBase,
 			   &_glfwLibrary.XRandR.ErrorBase );
 #else
@@ -192,10 +90,10 @@ static int _glfwInitDisplay( void )
 static void _glfwTerminateDisplay( void )
 {
     // Open display
-    if( _glfwLibrary.Dpy )
+    if( _glfwLibrary.display )
     {
-        XCloseDisplay( _glfwLibrary.Dpy );
-        _glfwLibrary.Dpy = NULL;
+        XCloseDisplay( _glfwLibrary.display );
+        _glfwLibrary.display = NULL;
     }
 }
 
@@ -216,12 +114,6 @@ int _glfwPlatformInit( void )
         return GL_FALSE;
     }
 
-    // Initialize thread package
-    _glfwInitThreads();
-
-    // Try to load libGL.so if necessary
-    _glfwInitLibraries();
-
     // Install atexit() routine
     atexit( _glfwTerminate_atexit );
 
@@ -236,39 +128,19 @@ int _glfwPlatformInit( void )
 
 
 //========================================================================
-// Close window and kill all threads
+// Close window
 //========================================================================
 
 int _glfwPlatformTerminate( void )
 {
-#ifdef _GLFW_HAS_PTHREAD
-    // Only the main thread is allowed to do this...
-    if( pthread_self() != _glfwThrd.First.PosixID )
-    {
-        return GL_FALSE;
-    }
-#endif // _GLFW_HAS_PTHREAD
-
     // Close OpenGL window
     glfwCloseWindow();
-
-    // Kill thread package
-    _glfwTerminateThreads();
 
     // Terminate display
     _glfwTerminateDisplay();
 
     // Terminate joysticks
     _glfwTerminateJoysticks();
-
-    // Unload libGL.so if necessary
-#ifdef _GLFW_DLOPEN_LIBGL
-    if( _glfwLibrary.Libs.libGL != NULL )
-    {
-        dlclose( _glfwLibrary.Libs.libGL );
-        _glfwLibrary.Libs.libGL = NULL;
-    }
-#endif
 
     return GL_TRUE;
 }

@@ -197,10 +197,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\image.c"
-				>
-			</File>
-			<File
 				RelativePath=".\init.c"
 				>
 			</File>
@@ -210,18 +206,6 @@
 			</File>
 			<File
 				RelativePath=".\joystick.c"
-				>
-			</File>
-			<File
-				RelativePath=".\stream.c"
-				>
-			</File>
-			<File
-				RelativePath=".\tga.c"
-				>
-			</File>
-			<File
-				RelativePath=".\thread.c"
 				>
 			</File>
 			<File
@@ -250,10 +234,6 @@
 			</File>
 			<File
 				RelativePath=".\win32\win32_joystick.c"
-				>
-			</File>
-			<File
-				RelativePath=".\win32\win32_thread.c"
 				>
 			</File>
 			<File

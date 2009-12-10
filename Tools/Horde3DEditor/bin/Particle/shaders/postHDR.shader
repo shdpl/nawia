@@ -1,12 +1,12 @@
 [[FX]]
 
 // Samplers
-sampler buf0 = sampler_state
+sampler2D buf0 = sampler_state
 {
 	Address = Clamp;
 };
 
-sampler buf1 = sampler_state
+sampler2D buf1 = sampler_state
 {
 	Address = Clamp;
 };

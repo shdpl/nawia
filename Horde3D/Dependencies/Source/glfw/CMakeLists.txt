@@ -2,13 +2,9 @@ set(GLFW_SOURCES
 	enable.c
 	fullscreen.c
 	glext.c
-	image.c
 	init.c
 	input.c
 	joystick.c
-	stream.c
-	tga.c
-	thread.c
 	time.c
 	window.c
 	)
@@ -24,7 +20,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 		win32/win32_glext.c
 		win32/win32_init.c
 		win32/win32_joystick.c
-		win32/win32_thread.c
 		win32/win32_time.c
 		win32/win32_window.c
 		)
@@ -41,7 +36,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 		x11/x11_init.c
 		x11/x11_joystick.c
 		x11/x11_keysym2unicode.c
-		x11/x11_thread.c
 		x11/x11_time.c
 		x11/x11_window.c
 		)
@@ -58,7 +52,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		macosx/macosx_glext.c
 		macosx/macosx_init.c
 		macosx/macosx_joystick.c
-		macosx/macosx_thread.c
 		macosx/macosx_time.c
 		macosx/macosx_window.c
 		)

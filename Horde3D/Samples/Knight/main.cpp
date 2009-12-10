@@ -24,7 +24,6 @@
 #include "app.h"
 
 // Configuration
-const char *caption = "Knight - Horde3D Sample";
 const int appWidth = 800;
 const int appHeight = 600;
 static bool fullScreen = false;
@@ -37,37 +36,33 @@ static int mx0, my0;
 static Application *app;
 
 
-std::string generatePath( char p[], const std::string &file )
+std::string extractAppPath( char *fullPath )
 {
 #ifdef __APPLE__
-	std::string s(p);
-	for (int i = 0; i < 4; i++)
+	std::string s( fullPath );
+	for( int i = 0; i < 4; ++i )
 		s = s.substr( 0, s.rfind( "/" ) );
-	return s + "/../" + file;
+	return s + "/../";
 #else
-	const std::string s( p );
+	const std::string s( fullPath );
 	if( s.find( "/" ) != std::string::npos )
-	{
-		return s.substr( 0, s.rfind( "/" ) ) + "/" + file;
-	}
+		return s.substr( 0, s.rfind( "/" ) ) + "/";
 	else if( s.find( "\\" ) != std::string::npos )
-	{
-		return s.substr( 0, s.rfind( "\\" ) ) + "\\" + file;
-	}
+		return s.substr( 0, s.rfind( "\\" ) ) + "\\";
 	else
-		return file;
+		return "";
 #endif
 }
 
 
-int GLFWCALL windowCloseListener()
+int windowCloseListener()
 {
 	running = false;
 	return 0;
 }
 
 
-void GLFWCALL keyPressListener( int key, int action )
+void keyPressListener( int key, int action )
 {
 	if( !running ) return;
 
@@ -79,9 +74,6 @@ void GLFWCALL keyPressListener( int key, int action )
 		{
 		case GLFW_KEY_ESC:
 			running = false;
-			break;
-		case GLFW_KEY_SPACE:
-			app->keyPressEvent( key );
 			break;
 		case GLFW_KEY_F1:
 			app->release();
@@ -121,17 +113,12 @@ void GLFWCALL keyPressListener( int key, int action )
 			app->resize( width, height );
 			t0 = glfwGetTime();
 			break;
-		default:
-			app->keyPressEvent( key );
-			break;
 		}
 	}
-
-	if( key >= 0 ) app->keyStateChange( key, action == GLFW_PRESS );
 }
 
 
-void GLFWCALL mouseMoveListener( int x, int y )
+void mouseMoveListener( int x, int y )
 {
 	if( !running )
 	{
@@ -152,8 +139,6 @@ bool setupWindow( int width, int height, bool fullscreen )
 		glfwTerminate();
 		return false;
 	}
-
-	if( !fullscreen ) glfwSetWindowTitle( caption );
 	
 	// Disable vertical synchronization
 	glfwSwapInterval( 0 );
@@ -171,6 +156,7 @@ int main( int argc, char** argv )
 {
 	// Initialize GLFW
 	glfwInit();
+	glfwEnable( GLFW_STICKY_KEYS );
 	if( !setupWindow( appWidth, appHeight, fullScreen ) ) return -1;
 
 	// Check if benchmark mode is requested
@@ -182,14 +168,17 @@ int main( int argc, char** argv )
 	}
 	
 	// Initialize application and engine
-	app = new Application( generatePath( argv[0], "../Content" ) );
+	app = new Application( extractAppPath( argv[0] ) );
+	if( !fullScreen ) glfwSetWindowTitle( app->getTitle() );
+	
 	if ( !app->init() )
 	{
 		// Fake message box
 		glfwCloseWindow();
 		glfwOpenWindow( 800, 16, 8, 8, 8, 8, 24, 8, GLFW_WINDOW );
 		glfwSetWindowTitle( "Unable to initalize engine - Make sure you have an OpenGL 2.0 compatible graphics card" );
-		glfwSleep( 5 );
+		double startTime = glfwGetTime();
+		while( glfwGetTime() - startTime < 5.0 ) {}  // Sleep
 		
 		std::cout << "Unable to initalize engine" << std::endl;
 		std::cout << "Make sure you have an OpenGL 2.0 compatible graphics card";
@@ -214,9 +203,15 @@ int main( int argc, char** argv )
 		{
 			double t = glfwGetTime();
 			fps = frames / (float)(t - t0);
+			if( fps < 1 ) fps = 30;  // Handle breakpoints
 			frames = 0;
 			t0 = t;
 		}
+
+		// Update key states
+		for( int i = 0; i < 320; ++i )
+			app->setKeyState( i, glfwGetKey( i ) == GLFW_PRESS );
+		app->keyStateHandler();
 
 		// Render
 		app->mainLoop( benchmark ? 60 : fps );
@@ -236,7 +231,8 @@ int main( int argc, char** argv )
 		glfwCloseWindow();
 		glfwOpenWindow( 800, 16, 8, 8, 8, 8, 24, 8, GLFW_WINDOW );
 		glfwSetWindowTitle( title );
-		glfwSleep( 5 );
+		double startTime = glfwGetTime();
+		while( glfwGetTime() - startTime < 5.0 ) {}  // Sleep
 	}
 	
 	// Quit

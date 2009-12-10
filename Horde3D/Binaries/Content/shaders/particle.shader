@@ -1,7 +1,7 @@
 [[FX]]
 
 // Samplers
-sampler albedoMap = sampler_state
+sampler2D albedoMap = sampler_state
 {
 	Filter = Bilinear;
 	MaxAnisotropy = 1;

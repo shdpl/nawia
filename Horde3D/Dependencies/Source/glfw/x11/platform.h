@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        platform.h
 // Platform:    X11 (Unix)
-// API version: 2.6
+// API version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -44,12 +44,11 @@
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
 #include <GL/glx.h>
-#include "../../../Include/glfw.h"
+#include "../../Include/glfw.h"
+#include "x11_config.h"
 
-// Do we have pthread support?
-#ifdef _GLFW_HAS_PTHREAD
- #include <pthread.h>
- #include <sched.h>
+#if !defined( GLX_VERSION_1_4 )
+ #error "GLFW requires GLX version 1.4 or above"
 #endif
 
 // With XFree86, we can use the XF86VidMode extension
@@ -59,78 +58,6 @@
 
 #if defined( _GLFW_HAS_XRANDR )
  #include <X11/extensions/Xrandr.h>
-#endif
-
-// Do we have support for dlopen/dlsym?
-#if defined( _GLFW_HAS_DLOPEN )
- #include <dlfcn.h>
-#endif
-
-// We support two different ways for getting the number of processors in
-// the system: sysconf (POSIX) and sysctl (BSD?)
-#if defined( _GLFW_HAS_SYSCONF )
-
- // Use a single constant for querying number of online processors using
- // the sysconf function (e.g. SGI defines _SC_NPROC_ONLN instead of
- // _SC_NPROCESSORS_ONLN)
- #ifndef _SC_NPROCESSORS_ONLN
-  #ifdef  _SC_NPROC_ONLN
-   #define _SC_NPROCESSORS_ONLN _SC_NPROC_ONLN
-  #else
-   #error POSIX constant _SC_NPROCESSORS_ONLN not defined!
-  #endif
- #endif
-
- // Macro for querying the number of processors
- #define _glfw_numprocessors(n) n=(int)sysconf(_SC_NPROCESSORS_ONLN)
-
-#elif defined( _GLFW_HAS_SYSCTL )
-
- #include <sys/types.h>
- #include <sys/sysctl.h>
-
- // Macro for querying the number of processors
- #define _glfw_numprocessors(n) { \
-    int mib[2], ncpu; \
-    size_t len = 1; \
-    mib[0] = CTL_HW; \
-    mib[1] = HW_NCPU; \
-    n      = 1; \
-    if( sysctl( mib, 2, &ncpu, &len, NULL, 0 ) != -1 ) \
-    { \
-        if( len > 0 ) \
-        { \
-            n = ncpu; \
-        } \
-    } \
- }
-
-#else
-
- // If neither sysconf nor sysctl is supported, assume single processor
- // system
- #define _glfw_numprocessors(n) n=1
-
-#endif
-
-void (*glXGetProcAddress(const GLubyte *procName))();
-void (*glXGetProcAddressARB(const GLubyte *procName))();
-void (*glXGetProcAddressEXT(const GLubyte *procName))();
-
-// We support four different ways for getting addresses for GL/GLX
-// extension functions: glXGetProcAddress, glXGetProcAddressARB,
-// glXGetProcAddressEXT, and dlsym
-#if   defined( _GLFW_HAS_GLXGETPROCADDRESSARB )
- #define _glfw_glXGetProcAddress(x) glXGetProcAddressARB(x)
-#elif defined( _GLFW_HAS_GLXGETPROCADDRESS )
- #define _glfw_glXGetProcAddress(x) glXGetProcAddress(x)
-#elif defined( _GLFW_HAS_GLXGETPROCADDRESSEXT )
- #define _glfw_glXGetProcAddress(x) glXGetProcAddressEXT(x)
-#elif defined( _GLFW_HAS_DLOPEN )
- #define _glfw_glXGetProcAddress(x) dlsym(_glfwLibs.libGL,x)
- #define _GLFW_DLOPEN_LIBGL
-#else
-#define _glfw_glXGetProcAddress(x) NULL
 #endif
 
 // glXSwapIntervalSGI typedef (X11 buffer-swap interval control)
@@ -189,21 +116,20 @@ struct _GLFWwin_struct {
     int       Samples;
 
     // Extensions & OpenGL version
-    int       Has_GL_SGIS_generate_mipmap;
-    int       Has_GL_ARB_texture_non_power_of_two;
-    int       GLVerMajor,GLVerMinor;
+    int       GLVerMajor,GLVerMinor,GLForward,GLDebug;
 
 
 // ========= PLATFORM SPECIFIC PART ======================================
 
     // Platform specific window resources
-    Window      Win;             // Window
-    int         Scrn;            // Screen ID
-    XVisualInfo *VI;             // Visual
-    GLXContext  CX;              // OpenGL rendering context
+    Window      window;          // Window
+    int         screen;          // Screen ID
+    GLXFBConfig fbconfig;        // GLX FB config
+    XVisualInfo *visual;         // Visual
+    GLXContext  context;         // OpenGL rendering context
     Atom        WMDeleteWindow;  // For WM close detection
     Atom        WMPing;          // For WM ping response
-    XSizeHints  *Hints;          // WM size hints
+    XSizeHints  *hints;          // WM size hints
 
     // Platform specific extensions
     GLXSWAPINTERVALSGI_T SwapInterval;
@@ -280,9 +206,7 @@ GLFWGLOBAL struct {
 
 // ========= PLATFORM SPECIFIC PART ======================================
 
-    Display     *Dpy;
-    int         NumScreens;
-    int         DefaultScreen;
+    Display     *display;
 
     struct {
 	int	Available;
@@ -302,61 +226,7 @@ GLFWGLOBAL struct {
 	long long    t0;
     } Timer;
 
-#if defined(_GLFW_DLOPEN_LIBGL)
-    struct {
-	void        *libGL;          // dlopen handle for libGL.so
-    } Libs;
-#endif
 } _glfwLibrary;
-
-
-//------------------------------------------------------------------------
-// Thread record (one for each thread)
-//------------------------------------------------------------------------
-typedef struct _GLFWthread_struct _GLFWthread;
-
-struct _GLFWthread_struct {
-
-// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
-
-    // Pointer to previous and next threads in linked list
-    _GLFWthread   *Previous, *Next;
-
-    // GLFW user side thread information
-    GLFWthread    ID;
-    GLFWthreadfun Function;
-
-// ========= PLATFORM SPECIFIC PART ======================================
-
-    // System side thread information
-#ifdef _GLFW_HAS_PTHREAD
-    pthread_t     PosixID;
-#endif
-
-};
-
-
-//------------------------------------------------------------------------
-// General thread information
-//------------------------------------------------------------------------
-GLFWGLOBAL struct {
-
-// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
-
-    // Next thread ID to use (increments for every created thread)
-    GLFWthread       NextID;
-
-    // First thread in linked list (always the main thread)
-    _GLFWthread      First;
-
-// ========= PLATFORM SPECIFIC PART ======================================
-
-    // Critical section lock
-#ifdef _GLFW_HAS_PTHREAD
-    pthread_mutex_t  CriticalSection;
-#endif
-
-} _glfwThrd;
 
 
 //------------------------------------------------------------------------
@@ -370,23 +240,6 @@ GLFWGLOBAL struct {
     float         *Axis;
     unsigned char *Button;
 } _glfwJoy[ GLFW_JOYSTICK_LAST + 1 ];
-
-
-//========================================================================
-// Macros for encapsulating critical code sections (i.e. making parts
-// of GLFW thread safe)
-//========================================================================
-
-// Thread list management
-#ifdef _GLFW_HAS_PTHREAD
- #define ENTER_THREAD_CRITICAL_SECTION \
-         pthread_mutex_lock( &_glfwThrd.CriticalSection );
- #define LEAVE_THREAD_CRITICAL_SECTION \
-         pthread_mutex_unlock( &_glfwThrd.CriticalSection );
-#else
- #define ENTER_THREAD_CRITICAL_SECTION
- #define LEAVE_THREAD_CRITICAL_SECTION
-#endif
 
 
 //========================================================================

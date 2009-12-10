@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        platform.h
 // Platform:    Mac OS X
-// API Version: 2.6
+// API Version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -40,10 +40,16 @@
 #include <Carbon/Carbon.h>
 #include <OpenGL/OpenGL.h>
 #include <AGL/agl.h>
-#include <sched.h>
-#include <pthread.h>
-#include <sys/sysctl.h>
-#include "../../../Include/glfw.h"
+
+#include "../../Include/glfw.h"
+
+#if MACOSX_DEPLOYMENT_TARGET < MAC_OS_X_VERSION_10_3
+
+#ifndef kCGLNoError
+#define kCGLNoError 0
+#endif
+
+#endif
 
 
 //========================================================================
@@ -144,11 +150,6 @@ struct _GLFWwin_struct {
 
     // ========= PLATFORM INDEPENDENT MANDATORY PART =========================
 
-    // Window states
-    int       Opened;          // Flag telling if window is opened or not
-    int       Active;          // Application active flag
-    int       Iconified;       // Window iconified flag
-
     // User callback functions
     GLFWwindowsizefun    WindowSizeCallback;
     GLFWwindowclosefun   WindowCloseCallback;
@@ -164,17 +165,31 @@ struct _GLFWwin_struct {
     int       MouseLock;       // Mouse-lock flag
     int       AutoPollEvents;  // Auto polling flag
     int       SysKeysDisabled; // System keys disabled flag
-    int       RefreshRate;     // Refresh rate (for fullscreen mode)
     int       WindowNoResize;  // Resize- and maximize gadgets disabled flag
-    int	      Samples;
 
-    // Window status
+    // Window status & parameters
+    int       Opened;          // Flag telling if window is opened or not
+    int       Active;          // Application active flag
+    int       Iconified;       // Window iconified flag
     int       Width, Height;   // Window width and heigth
+    int       Accelerated;     // GL_TRUE if window is HW accelerated
+    int       RedBits;
+    int       GreenBits;
+    int       BlueBits;
+    int       AlphaBits;
+    int       DepthBits;
+    int       StencilBits;
+    int       AccumRedBits;
+    int       AccumGreenBits;
+    int       AccumBlueBits;
+    int       AccumAlphaBits;
+    int       AuxBuffers;
+    int       Stereo;
+    int       RefreshRate;     // Vertical monitor refresh rate
+    int       Samples;
 
     // Extensions & OpenGL version
-    int       Has_GL_SGIS_generate_mipmap;
-    int       Has_GL_ARB_texture_non_power_of_two;
-    int       GLVerMajor,GLVerMinor;
+    int       GLVerMajor,GLVerMinor,GLForward,GLDebug;
 
 
     // ========= PLATFORM SPECIFIC PART ======================================
@@ -189,18 +204,30 @@ struct _GLFWwin_struct {
     EventHandlerUPP         WindowUPP;
 
     _GLFWmacwindowfunctions* WindowFunctions;
-
-    // for easy access by _glfwPlatformGetWindowParam
-    int Accelerated;
-    int RedBits, GreenBits, BlueBits, AlphaBits;
-    int DepthBits;
-    int StencilBits;
-    int AccumRedBits, AccumGreenBits, AccumBlueBits, AccumAlphaBits;
-    int AuxBuffers;
-    int Stereo;
 };
 
 GLFWGLOBAL _GLFWwin _glfwWin;
+
+
+//------------------------------------------------------------------------
+// Library global data
+//------------------------------------------------------------------------
+GLFWGLOBAL struct {
+
+    // Timer data
+    struct {
+	double       t0;
+    } Timer;
+
+    struct {
+	    // Bundle for dynamically-loading extension function pointers
+    	CFBundleRef OpenGLFramework;
+    } Libs;
+    
+    int Unbundled;
+    
+} _glfwLibrary;
+
 
 
 //------------------------------------------------------------------------
@@ -231,87 +258,6 @@ GLFWGLOBAL struct {
 
 } _glfwInput;
 
-
-
-
-//------------------------------------------------------------------------
-// Thread information
-//------------------------------------------------------------------------
-typedef struct _GLFWthread_struct _GLFWthread;
-
-// Thread record (one for each thread)
-struct _GLFWthread_struct {
-    // Pointer to previous and next threads in linked list
-    _GLFWthread   *Previous, *Next;
-
-    // GLFW user side thread information
-    GLFWthread    ID;
-    GLFWthreadfun Function;
-
-    // System side thread information
-    pthread_t     PosixID;
-};
-
-// General thread information
-GLFWGLOBAL struct {
-    // Critical section lock
-    pthread_mutex_t  CriticalSection;
-
-    // Next thread ID to use (increments for every created thread)
-    GLFWthread       NextID;
-
-    // First thread in linked list (always the main thread)
-    _GLFWthread      First;
-} _glfwThrd;
-
-
-//------------------------------------------------------------------------
-// Library global data
-//------------------------------------------------------------------------
-GLFWGLOBAL struct {
-
-    // Timer data
-    struct {
-	double       t0;
-    } Timer;
-
-    struct {
-	    // Bundle for dynamically-loading extension function pointers
-    	CFBundleRef OpenGLFramework;
-    } Libs;
-    
-    int Unbundled;
-    
-} _glfwLibrary;
-
-
-
-//========================================================================
-// Macros for encapsulating critical code sections (i.e. making parts
-// of GLFW thread safe)
-//========================================================================
-
-// Define so we can use the same thread code as X11
-#define _glfw_numprocessors(n) { \
-    int mib[2], ncpu; \
-    size_t len = 1; \
-    mib[0] = CTL_HW; \
-    mib[1] = HW_NCPU; \
-    n      = 1; \
-    if( sysctl( mib, 2, &ncpu, &len, NULL, 0 ) != -1 ) \
-    { \
-        if( len > 0 ) \
-        { \
-            n = ncpu; \
-        } \
-    } \
-}
-
-// Thread list management
-#define ENTER_THREAD_CRITICAL_SECTION \
-pthread_mutex_lock( &_glfwThrd.CriticalSection );
-#define LEAVE_THREAD_CRITICAL_SECTION \
-pthread_mutex_unlock( &_glfwThrd.CriticalSection );
 
 
 //========================================================================

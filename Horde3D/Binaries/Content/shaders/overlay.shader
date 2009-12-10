@@ -1,7 +1,7 @@
 [[FX]]
 
 // Samplers
-sampler albedoMap;
+sampler2D albedoMap;
 
 // Contexts
 context OVERLAY

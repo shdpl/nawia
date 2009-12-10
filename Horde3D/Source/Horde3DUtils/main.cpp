@@ -261,7 +261,7 @@ DLLEXP bool h3dutDumpMessages()
 		// Reset log file
 		outf.setf( ios::fixed );
 		outf.precision( 3 );
-		outf.open( "EngineLog.html", ios::out );
+		outf.open( "Horde3D_Log.html", ios::out );
 		if( !outf ) return false;
 
 		outf << "<html>\n";

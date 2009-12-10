@@ -1,8 +1,8 @@
 [[FX]]
 
 // Samplers
-sampler heightNormMap;
-sampler detailMap;
+sampler2D heightNormMap;
+sampler2D detailMap;
 
 // Uniforms
 float4 sunDir = {1.0, -1.0, 0, 0};

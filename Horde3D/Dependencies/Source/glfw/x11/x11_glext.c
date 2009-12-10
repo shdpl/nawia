@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        x11_glext.c
 // Platform:    X11 (Unix)
-// API version: 2.6
+// API version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -44,8 +44,8 @@ int _glfwPlatformExtensionSupported( const char *extension )
     const GLubyte *extensions;
 
     // Get list of GLX extensions
-    extensions = (const GLubyte*) glXQueryExtensionsString( _glfwLibrary.Dpy,
-                                                            _glfwWin.Scrn );
+    extensions = (const GLubyte*) glXQueryExtensionsString( _glfwLibrary.display,
+                                                            _glfwWin.screen );
     if( extensions != NULL )
     {
         if( _glfwStringInExtensionString( extension, extensions ) )
@@ -64,6 +64,6 @@ int _glfwPlatformExtensionSupported( const char *extension )
 
 void * _glfwPlatformGetProcAddress( const char *procname )
 {
-    return (void *) _glfw_glXGetProcAddress( (const GLubyte *) procname );
+    return (void *) glXGetProcAddress( (const GLubyte *) procname );
 }
 

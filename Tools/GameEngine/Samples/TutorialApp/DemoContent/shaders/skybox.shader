@@ -1,7 +1,7 @@
 [[FX]]
 
 // Samplers
-sampler albedoMap = sampler_state
+samplerCube albedoMap = sampler_state
 {
 	Address = Clamp;
 };

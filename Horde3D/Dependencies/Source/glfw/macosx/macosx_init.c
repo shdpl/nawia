@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        macosx_init.c
 // Platform:    Mac OS X
-// API Version: 2.6
+// API Version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -41,24 +41,8 @@ void *KCHRPtr;
 
 
 //========================================================================
-// _glfwInitThreads() - Initialize GLFW thread package
+// Initialize GLFW
 //========================================================================
-
-static void _glfwInitThreads( void )
-{
-    // Initialize critical section handle
-    (void) pthread_mutex_init( &_glfwThrd.CriticalSection, NULL );
-
-    // The first thread (the main thread) has ID 0
-    _glfwThrd.NextID = 0;
-
-    // Fill out information about the main thread (this thread)
-    _glfwThrd.First.ID       = _glfwThrd.NextID ++;
-    _glfwThrd.First.Function = NULL;
-    _glfwThrd.First.PosixID  = pthread_self();
-    _glfwThrd.First.Previous = NULL;
-    _glfwThrd.First.Next     = NULL;
-}
 
 #define NO_BUNDLE_MESSAGE \
     "Working in unbundled mode.  " \
@@ -72,11 +56,16 @@ static void _glfwInitThreads( void )
 void _glfwChangeToResourcesDirectory( void )
 {
     CFBundleRef mainBundle = CFBundleGetMainBundle();
+    if( mainBundle == NULL )
+    {
+	UNBUNDLED;
+    }
+
     CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL( mainBundle );
     char resourcesPath[ _GLFW_MAX_PATH_LENGTH ];
     
     CFStringRef lastComponent = CFURLCopyLastPathComponent( resourcesURL );
-    if ( kCFCompareEqualTo != CFStringCompare(
+    if( kCFCompareEqualTo != CFStringCompare(
             CFSTR( "Resources" ),
             lastComponent,
             0 ) )
@@ -139,8 +128,6 @@ int _glfwPlatformInit( void )
             "glfwInit failing because it kind find the desktop display mode\n" );
         return GL_FALSE;
     }
-
-    _glfwInitThreads();
 
     _glfwChangeToResourcesDirectory();
 
