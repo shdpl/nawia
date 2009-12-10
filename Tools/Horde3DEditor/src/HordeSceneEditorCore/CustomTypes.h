@@ -135,10 +135,10 @@ struct Pipeline
 Q_DECLARE_METATYPE(Pipeline)
 
 // -------------------------------------------------------------------------------------------------
-// QQuaternion
+// QQuatF
 // -------------------------------------------------------------------------------------------------
 
-class QQuaternion
+class QQuatF
 {
 public:	
 	float x, y, z;
@@ -147,19 +147,19 @@ public:
 	// ------------
 	// Constructors
 	// ------------
-	QQuaternion() : x(0.0f), y(0.0f), z(0.0f), w( 0.0f ) 
+	QQuatF() : x(0.0f), y(0.0f), z(0.0f), w( 0.0f ) 
 	{ 
 	}
 	
-	explicit QQuaternion( const float& X, const float& Y, const float& Z, const float& W ) : x( X ), y( Y ), z( Z ), w( W )
+	explicit QQuatF( const float& X, const float& Y, const float& Z, const float& W ) : x( X ), y( Y ), z( Z ), w( W )
 	{
 	}
 	
-	QQuaternion( const float eulerX, const float eulerY, const float eulerZ )
+	QQuatF( const float eulerX, const float eulerY, const float eulerZ )
 	{
-		QQuaternion  roll( sinf( eulerX / 2 ),                  0,                  0, cosf( eulerX / 2 ) );
-		QQuaternion pitch(                  0, sinf( eulerY / 2 ),                  0, cosf( eulerY / 2 ) );
-		QQuaternion   yaw(                  0,                  0, sinf( eulerZ / 2 ), cosf( eulerZ / 2 ) );
+		QQuatF  roll( sinf( eulerX / 2 ),                  0,                  0, cosf( eulerX / 2 ) );
+		QQuatF pitch(                  0, sinf( eulerY / 2 ),                  0, cosf( eulerY / 2 ) );
+		QQuatF   yaw(                  0,                  0, sinf( eulerZ / 2 ), cosf( eulerZ / 2 ) );
 	
 		// Order: y * x * z
 		*this = pitch * roll * yaw;
@@ -168,17 +168,17 @@ public:
 	// ---------------------
 	// Artitmetic operations
 	// ---------------------
-	QQuaternion operator*( const QQuaternion &q ) const
+	QQuatF operator*( const QQuatF &q ) const
 	{
-		return QQuaternion( 
+		return QQuatF( 
 			(y * q.z - z * q.y) + q.x * w + x * q.w, 
 			(z * q.x - x * q.z) + q.y * w + y * q.w, 
 			(x * q.y - y * q.x) + q.z * w + z * q.w,
 			 w * q.w - (x * q.x + y * q.y + z * q.z));
-		//return QQuaternion( v.crossProduct( q.v ) + q.v * w + v * q.w, w * q.w - v * q.v );
+		//return QQuatF( v.crossProduct( q.v ) + q.v * w + v * q.w, w * q.w - v * q.v );
 	}
 
-	QQuaternion operator*=( const QQuaternion &q )
+	QQuatF operator*=( const QQuatF &q )
 	{
 		*this = *this * q;
 		return *this;
@@ -267,18 +267,18 @@ public:
 	static QMatrix4f RotMat( float x, float y, float z )
 	{
 		// Rotation order: YXZ [* Vector]
-		return QMatrix4f( QQuaternion( x, y, z ) );
+		return QMatrix4f( QQuatF( x, y, z ) );
 	}
 
 	static QMatrix4f RotMat( QVec3f axis, float angle )
 	{
 		axis = axis * sinf( angle / 2 );
-		return QMatrix4f( QQuaternion( axis.X, axis.Y, axis.Z, cosf( angle / 2 ) ) );
+		return QMatrix4f( QQuatF( axis.X, axis.Y, axis.Z, cosf( angle / 2 ) ) );
 	}
 
 	static QMatrix4f RotMat( QVec3f angles )
 	{		
-		return QMatrix4f( QQuaternion( angles.X, angles.Y, angles.Z ) );
+		return QMatrix4f( QQuatF( angles.X, angles.Y, angles.Z ) );
 	}
 
 	// ------------
@@ -303,7 +303,7 @@ public:
 		}
 	}
 
-	QMatrix4f( const QQuaternion &q )
+	QMatrix4f( const QQuatF &q )
 	{
 		float wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
 
