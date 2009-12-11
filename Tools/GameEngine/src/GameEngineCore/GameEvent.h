@@ -331,7 +331,6 @@ public:
 		E_MESH_DATA,			/// Copies the mesh parameters of a mesh representation in Horde3D to the provided MeshData struct within the event
 		E_GET_ACTIVE_CAM,		/// Global event: get the currently active camera entity world id
 		E_GET_PROPERTY,			/// Gets a property
-		E_GET_INTERACT_POSITION,/// Gets the position where to interact with a SmartObject
 		E_GET_SOUND_DISTANCE,	/// Get the distance of the current sound node to the active listener. @data pointer to float
 		E_GET_VISIBILITY,		/// Returns whether the current entity is visible by the active cam
 		E_GET_SCENEGRAPH_ID,	/// Returns the entity's scenegraph id (hordeID)
@@ -402,7 +401,6 @@ public:
 		if(in.find("E_ADJUST_PROPERTY") != std::string::npos) return GameEvent::E_ADJUST_PROPERTY;
 		if(in.find("E_INTERACT") != std::string::npos) return GameEvent::E_INTERACT;
 		if(in.find("E_INTERACT_PARTNER") != std::string::npos) return GameEvent::E_INTERACT_PARTNER;
-		if(in.find("E_GET_INTERACT_POSITION") != std::string::npos) return GameEvent::E_GET_INTERACT_POSITION;
 		if(in.find("E_SET_SOUND_GAIN") != std::string::npos) return GameEvent::E_SET_SOUND_GAIN;
 		if(in.find("E_SET_SOUND_LOOP") != std::string::npos) return GameEvent::E_SET_SOUND_LOOP;
 		if(in.find("E_SET_SOUND_FILE") != std::string::npos) return GameEvent::E_SET_SOUND_FILE;
@@ -1042,50 +1040,28 @@ class Interaction : public GameEventData
 {
 
 public:
-	Interaction(unsigned int targetID, const char* interactionName) : GameEventData(CUSTOM), TargetID(targetID), InteractionName(interactionName)
+	Interaction(unsigned int targetID, const std::string& interactionName, const std::string& satisfies, unsigned int interactionID, int slotID = -1) : GameEventData(CUSTOM),
+		TargetID(targetID), InteractionName(interactionName), SlotID(slotID),
+		InteractionID(interactionID), Satisfies(satisfies)
 	{
 		m_data.ptr = this;
 	}
 
-	Interaction(unsigned int targetID) : GameEventData(CUSTOM), TargetID(targetID), InteractionName(0)
+	Interaction(const Interaction& copy) : GameEventData(CUSTOM),
+		TargetID(copy.TargetID), InteractionName(copy.InteractionName), SlotID(copy.SlotID),
+		InteractionID(copy.InteractionID), Satisfies(copy.Satisfies)
 	{
 		m_data.ptr = this;
-	}
-
-	Interaction(const Interaction& copy) : GameEventData(CUSTOM), TargetID(copy.TargetID)
-	{
-		m_data.ptr = this;
-		m_owner = true;
-		
-		const size_t lenInteractionName = copy.InteractionName ? strlen(copy.InteractionName) : 0;
-		InteractionName = new char[lenInteractionName + 1];
-		memcpy( (char*) InteractionName, copy.InteractionName, lenInteractionName );
-		const_cast<char*>(InteractionName)[lenInteractionName] = '\0';
-	}
-
-	void setInteractionName(const char* name)
-	{
-		if( m_owner )
-		{
-			delete[] InteractionName;
-		}
-		const size_t lenInteractionName = strlen(name);
-		InteractionName = new char[lenInteractionName + 1];
-		memcpy( (char*) InteractionName, name, lenInteractionName );
-		const_cast<char*>(InteractionName)[lenInteractionName] = '\0';
-		m_owner = true;
 	}
 	
 	~Interaction()
-	{
-		if( m_owner )
-		{
-			delete[] InteractionName;
-		}
-	}
+	{}
 
 	unsigned int TargetID;
-	const char* InteractionName;
+	std::string InteractionName;
+	std::string Satisfies;
+	int SlotID;
+	unsigned int InteractionID;
 
 	GameEventData* clone() const
 	{
