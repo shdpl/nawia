@@ -35,7 +35,7 @@ namespace TTSLua
 			else
 			{
 				unsigned int entityWorldID = 0;
-				if( lua_isstring(L, 1) )
+				if( lua_type(L, 1) == LUA_TSTRING )
 					entityWorldID = GameEngine::entityWorldID( luaL_checkstring(L,1) );
 				else
 					entityWorldID = static_cast<unsigned int>(luaL_checkint( L, 1 ));
@@ -47,6 +47,7 @@ namespace TTSLua
 
 				const char* sentence = luaL_checkstring(L, 2);
 				GameEngine::speak(entityWorldID, sentence);
+				return 1;
 			}
 			return 0;
 		}
