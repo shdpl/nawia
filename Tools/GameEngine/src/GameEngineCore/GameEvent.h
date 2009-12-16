@@ -359,7 +359,9 @@ public:
 		E_ACTIVE_CAM_CHANGE,	/// Global event: the current active camera has changed, @data: the cams worldID
 		E_WITNESS_ACTION,		/// Witness an action
 		GB_KEY_PRESSED,			/// Inidicates a key press event
-		E_AILOD_CHANGE,			/// Occurs when the ai lod of an entity has changed, @data: the entity's new lod value				
+		E_AILOD_CHANGE,			/// Occurs when the ai lod of an entity has changed, @data: the entity's new lod value
+		GL_DRAW,				/// A GL function call. @data: Uses the DataType GLFunction. @allowed by: GLDrawingComponent listens, any componant may send
+		GP_STATE_CHANGE,		/// The state of a gamepad has changed
 		
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
@@ -409,6 +411,8 @@ public:
 		if(in.find("E_PICKUP") != std::string::npos) return GameEvent::E_PICKUP;
 		if(in.find("E_AILOD_CHANGE") != std::string::npos) return GameEvent::E_AILOD_CHANGE;
 		if(in.find("E_ACTIVE_CAM_CHANGE") != std::string::npos) return GameEvent::E_ACTIVE_CAM_CHANGE;
+		if(in.find("GL_DRAW") != std::string::npos) return GameEvent::GL_DRAW;
+		if(in.find("GP_STATE_CHANGE") != std::string::npos) return GameEvent::GP_STATE_CHANGE;
 		return GameEvent::EVENT_COUNT;
 
 	}
@@ -1075,6 +1079,136 @@ public:
 	GameEventData* clone() const
 	{
 		return new Interaction(*this);
+	}
+};
+
+class GLFunction : public GameEventData
+{
+
+public:
+	enum functions {
+		drawCross = 0,
+		drawCircle,
+		drawLine,
+		drawNumber,
+		setColor,
+		drawCircleFilled
+	};
+
+	/* function drawCross uses param0 as x, param1 as y and param2 as z
+	function setColor uses param0 as r, param2 as g and param3 as b */
+	GLFunction( unsigned int functionID, float param0, float param1, float param2 ) 
+		: GameEventData(CUSTOM), FunctionID(functionID), Param0(param0), Param1(param1), Param2(param2), Param3(0), Param4(0),
+		Param5(0), Param6(0), Param7(0), Param8(0), Param9(0)
+	{
+		m_data.ptr = this;
+	}
+
+	/* function drawCircle uses param0 as x, param1 as y, param2 as z and param3 as radius
+	function drawNumber uses param0 as number, param1 as x, param2 as y, param3 as z*/
+	GLFunction( unsigned int functionID, float param0, float param1, float param2, float param3 ) 
+		: GameEventData(CUSTOM), FunctionID(functionID), Param0(param0), Param1(param1), Param2(param2), Param3(param3), Param4(0),
+		Param5(0), Param6(0), Param7(0), Param8(0), Param9(0)
+	{
+		m_data.ptr = this;
+	}
+
+	/* function drawLine uses param0 as x0, param1 as y0, param2 as z0, param3 as x1, param4 as y1, param5 as z1*/
+	GLFunction( unsigned int functionID, float param0, float param1, float param2, float param3, float param4, float param5 ) 
+		: GameEventData(CUSTOM), FunctionID(functionID), Param0(param0), Param1(param1), Param2(param2), Param3(param3), Param4(param4),
+		Param5(param5), Param6(0), Param7(0), Param8(0), Param9(0)
+	{
+		m_data.ptr = this;
+	}
+
+	GLFunction(const GLFunction& copy) : GameEventData(CUSTOM), FunctionID(copy.FunctionID), Param0(copy.Param0), Param1(copy.Param1), 
+		Param2(copy.Param2), Param3(copy.Param3), Param4(copy.Param4), Param5(copy.Param5), Param6(copy.Param6), Param7(copy.Param7),
+		Param8(copy.Param8), Param9(copy.Param9)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+	}
+
+	~GLFunction()
+	{
+		if( m_owner ) { }
+	}
+
+	unsigned int FunctionID;
+	const float Param0;
+	const float Param1;
+	const float Param2;
+	const float Param3;
+	const float Param4;
+	const float Param5;
+	const float Param6;
+	const float Param7;
+	const float Param8;
+	const float Param9;
+
+	GameEventData* clone() const
+	{
+		return new GLFunction(*this);
+
+	}
+};
+
+class GamepadData : public GameEventData
+{
+	//the values for Sticks and Triggers is in a range between 0 and 1
+	//the values for buttons may be 0 for not pressed, 1 for newly pressed and 2 for holding
+
+public:
+	GamepadData() 
+		: GameEventData(CUSTOM), Index(0), StickLeftX(0), StickLeftY(0), StickRightX(0), StickRightY(0),
+		DigitalPadX(0), DigitalPadY(0), ButtonA(0), ButtonB(0), ButtonX(0), ButtonY(0), ButtonStart(0), ButtonBack(0),
+		TriggerLeft(0), TriggerRight(0), ShoulderRight(0), ShoulderLeft(0), VibratorLeft(0), VibratorRight(0)
+	{
+		m_data.ptr = this;
+	}
+
+	GamepadData( unsigned int gamepadIndex, float thumbStickLX, float thumbStickLY, float thumbStickRX, float thumbStickRY, float dPadX, float dPadY, 
+		unsigned int butA, unsigned int butB, unsigned int butX, unsigned int butY, unsigned int butStart, unsigned int butBack,
+		float triggerL, float triggerR, unsigned int shoulderR, unsigned int shoulderL )
+		: GameEventData(CUSTOM), Index(gamepadIndex), StickLeftX(thumbStickLX), StickLeftY(thumbStickLY), StickRightX(thumbStickRX), StickRightY(thumbStickRY),
+		DigitalPadX(dPadX), DigitalPadY(dPadY), ButtonA(butA), ButtonB(butB), ButtonX(butX), ButtonY(butY), ButtonStart(butStart), ButtonBack(butBack),
+		TriggerLeft(triggerL), TriggerRight(triggerR), ShoulderRight(shoulderL), ShoulderLeft(shoulderR), VibratorLeft(0), VibratorRight(0)
+	{
+		m_data.ptr = this;
+	}
+
+	GamepadData(const GamepadData& copy) : GameEventData(CUSTOM), Index(copy.Index), StickLeftX(copy.StickLeftX), StickLeftY(copy.StickLeftY), StickRightX(copy.StickRightX), StickRightY(copy.StickRightY),
+		DigitalPadX(copy.DigitalPadX), DigitalPadY(copy.DigitalPadY), ButtonA(copy.ButtonA), ButtonB(copy.ButtonB), ButtonX(copy.ButtonX), ButtonY(copy.ButtonY), ButtonStart(copy.ButtonStart), ButtonBack(copy.ButtonBack),
+		TriggerLeft(copy.TriggerLeft), TriggerRight(copy.TriggerRight), ShoulderRight(copy.ShoulderRight), ShoulderLeft(copy.ShoulderLeft), 
+		VibratorLeft(copy.VibratorLeft), VibratorRight(copy.VibratorRight)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+	}
+
+	unsigned int Index;
+	float StickLeftX;
+	float StickLeftY;
+	float StickRightX;
+	float StickRightY;
+	float DigitalPadX;
+	float DigitalPadY;
+	float ButtonA;
+	float ButtonB;
+	float ButtonX;
+	float ButtonY;
+	float ButtonStart;
+	float ButtonBack;
+	float TriggerLeft;
+	float TriggerRight;
+	float ShoulderRight;
+	float ShoulderLeft;
+	float VibratorRight;
+	float VibratorLeft;
+
+	GameEventData* clone() const
+	{
+		return new GamepadData(*this);
 	}
 };
 
