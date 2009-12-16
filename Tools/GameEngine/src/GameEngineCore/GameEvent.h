@@ -282,7 +282,6 @@ public:
 		E_PERFORM_ACTION,		/// Perform an action
 		E_GO_TO_ENTITY,			/// Move close to another entity
 		E_GO_TO_POSITION,		/// Move to a position
-		E_GO_TO_RELATIVE,		/// Move to a position relative to the entity's own position
 		E_GO_TO_STOPPED,		/// Entity has arrived at the desired location
 		E_SET_PROPERTY,			/// Sets a property	
 		E_ADJUST_PROPERTY,		/// Adjusts a property
@@ -396,7 +395,6 @@ public:
 		if(in.find("E_WITNESS_ACTION") != std::string::npos) return GameEvent::E_WITNESS_ACTION;
 		if(in.find("E_GO_TO_ENTITY") != std::string::npos) return GameEvent::E_GO_TO_ENTITY;
 		if(in.find("E_GO_TO_POSITION") != std::string::npos) return GameEvent::E_GO_TO_POSITION;
-		if(in.find("E_GO_TO_RELATIVE") != std::string::npos) return GameEvent::E_GO_TO_RELATIVE;
 		if(in.find("E_GO_TO_STOPPED") != std::string::npos) return GameEvent::E_GO_TO_STOPPED;
 		if(in.find("E_SET_PROPERTY") != std::string::npos) return GameEvent::E_SET_PROPERTY;
 		if(in.find("E_GET_PROPERTY") != std::string::npos) return GameEvent::E_GET_PROPERTY;
@@ -432,20 +430,20 @@ public:
 	const GameEvent& operator= (const GameEvent& other)
 	{
 		if(m_owner) delete m_pData;
-		m_pData = other.m_pData->clone();
+		m_pData = other.m_pData ? other.m_pData->clone() : 0;
 		m_owner = true;
 		m_id = other.m_id;
 		m_sender = other.m_sender;
 		return *this;
 	} 
 	
-	GameEvent(const GameEvent& other) : m_id(other.m_id), m_pData(other.m_pData->clone()), m_sender(other.m_sender), m_owner(true)
+	GameEvent(const GameEvent& other) : m_id(other.m_id), m_pData(other.m_pData ? other.m_pData->clone() : 0x0), m_sender(other.m_sender), m_owner(true)
 	{
 		
 	}
 	
 	const EventID id() const {return m_id;}
-	void* data() const {return m_pData->data();}
+	void* data() const {return m_pData ? m_pData->data() : 0x0;}
 	const GameComponent* sender() const {return m_sender;}
 
 private:
@@ -787,13 +785,13 @@ class GoToPosition : public GameEventData
 {
 
 public:
-	GoToPosition(float x, float y, float z, const char* animName, float speed ) 
-		: GameEventData(CUSTOM), X(x), Y(y), Z(z), AnimName(animName), Speed(speed) 
+	GoToPosition(float x, float y, float z, float speed ) 
+		: GameEventData(CUSTOM), X(x), Y(y), Z(z), Speed(speed) 
 	{
 		m_data.ptr = this;
 	}
 
-	GoToPosition(float x, float y, float z) : GameEventData(CUSTOM), X(x), Y(y), Z(z), AnimName(0), Speed(0.0f) 
+	GoToPosition(float x, float y, float z) : GameEventData(CUSTOM), X(x), Y(y), Z(z), Speed(0.0f) 
 	{
 		m_data.ptr = this;
 	}
@@ -802,33 +800,14 @@ public:
 	{
 		m_data.ptr = this;
 		m_owner = true;
-		
-		const size_t lenAnimName = copy.AnimName ? strlen(copy.AnimName) : 0;
-		AnimName = new char[lenAnimName + 1];
-		memcpy( (char*) AnimName, copy.AnimName, lenAnimName );
-		const_cast<char*>(AnimName)[lenAnimName] = '\0';
-	}
-
-	void setAnimName(const char* name)
-	{
-		const size_t lenAnimName = strlen(name);
-		AnimName = new char[lenAnimName + 1];
-		memcpy( (char*) AnimName, name, lenAnimName );
-		const_cast<char*>(AnimName)[lenAnimName] = '\0';
 	}
 	
 	~GoToPosition()
-	{
-		if( m_owner )
-		{
-			delete[] AnimName;
-		}
-	}
+	{}
 
 	float X;
 	float Y;
 	float Z;
-	const char* AnimName;
 	float Speed;
 	
 
@@ -836,7 +815,6 @@ public:
 	GameEventData* clone() const
 	{
 		return new GoToPosition(*this);
-
 	}
 
 };
