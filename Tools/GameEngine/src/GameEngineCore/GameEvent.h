@@ -428,6 +428,7 @@ public:
 	const GameEvent& operator= (const GameEvent& other)
 	{
 		if(m_owner) delete m_pData;
+		m_pData = other.m_pData->clone();
 		m_owner = true;
 		m_id = other.m_id;
 		m_sender = other.m_sender;
@@ -1047,8 +1048,15 @@ public:
 		m_data.ptr = this;
 	}
 
+	Interaction(const std::string& target, const std::string& interactionName, const std::string& satisfies, unsigned int interactionID, int slotID = -1) : GameEventData(CUSTOM),
+		Target(target), TargetID(0), InteractionName(interactionName), SlotID(slotID),
+		InteractionID(interactionID), Satisfies(satisfies)
+	{
+		m_data.ptr = this;
+	}
+
 	Interaction(const Interaction& copy) : GameEventData(CUSTOM),
-		TargetID(copy.TargetID), InteractionName(copy.InteractionName), SlotID(copy.SlotID),
+		TargetID(copy.TargetID), Target(copy.Target), InteractionName(copy.InteractionName), SlotID(copy.SlotID),
 		InteractionID(copy.InteractionID), Satisfies(copy.Satisfies)
 	{
 		m_data.ptr = this;
@@ -1058,6 +1066,7 @@ public:
 	{}
 
 	unsigned int TargetID;
+	std::string Target;
 	std::string InteractionName;
 	std::string Satisfies;
 	int SlotID;
