@@ -1171,16 +1171,16 @@ public:
 	float StickRightY;
 	float DigitalPadX;
 	float DigitalPadY;
-	float ButtonA;
-	float ButtonB;
-	float ButtonX;
-	float ButtonY;
-	float ButtonStart;
-	float ButtonBack;
+	unsigned int ButtonA;
+	unsigned int ButtonB;
+	unsigned int ButtonX;
+	unsigned int ButtonY;
+	unsigned int ButtonStart;
+	unsigned int ButtonBack;
 	float TriggerLeft;
 	float TriggerRight;
-	float ShoulderRight;
-	float ShoulderLeft;
+	unsigned int ShoulderRight;
+	unsigned int ShoulderLeft;
 	float VibratorRight;
 	float VibratorLeft;
 
