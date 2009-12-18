@@ -52,12 +52,25 @@ GameComponent* FACSControlComponent::createComponent( GameEntity* owner )
 
 FACSControlComponent::FACSControlComponent(GameEntity* owner) : GameComponent(owner, "FACSControlComponent"), m_currentIntensity(1)
 {
+	owner->addListener(GameEvent::FACS_SET_EXPRESSION, this);
 	FACSControlManager::instance()->addComponent(this);
 }
 
 FACSControlComponent::~FACSControlComponent()
 {
 	FACSControlManager::instance()->removeComponent(this);
+}
+
+
+void FACSControlComponent::executeEvent(GameEvent *event)
+{
+	switch(event->id())
+	{
+	case GameEvent::FACS_SET_EXPRESSION:
+		Property* prop =  static_cast<Property*>(event->data());
+		setFacialExpression(prop->Name, prop->Value);
+		break;
+	}
 }
 
 void FACSControlComponent::loadFromXml(const XMLNode* node)

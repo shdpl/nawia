@@ -28,7 +28,7 @@ public:
 	virtual ~FACSControlComponent();
 
 	bool checkEvent(GameEvent* event) { return true; }
-	void executeEvent(GameEvent* event) {}
+	void executeEvent(GameEvent* event);
 	void loadFromXml(const XMLNode* description);
 	void update();
 
