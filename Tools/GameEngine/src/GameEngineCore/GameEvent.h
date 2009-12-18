@@ -306,6 +306,9 @@ public:
 		GB_SEARCH_ON_OFF,		/// activates/deactivates character's searching behaviour
 		GB_WAVE_BACK,			/// makes the npc react to a waving event
 		GB_RESET,				/// reset all collected data
+		SP_START_SCRIPT,		/// starts sn action script
+		IB_EYE_FIXATED,			/// informs about an eye fixation
+		FACS_SET_EXPRESSION,	/// sets a facial expression
 
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
