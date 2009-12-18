@@ -30,6 +30,7 @@
 #include <stack>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 
@@ -151,24 +152,45 @@ unsigned int GameWorld::entityID(const EntityID& id)
 GameEntity* GameWorld::createEntity(const EntityID& id)
 {
 	map<EntityID, unsigned int>::iterator iter = m_world->WorldMap.find(id);
+	
+	EntityID newID;
+	bool changeID = false;
 	if (iter != m_world->WorldMap.end())
 	{
-		return 0x0;
-		GameLog::warnMessage("Entity with name %s already exists!", id.c_str());
-		//return m_world->WorldList.at(iter->second - 1);
+		// Try to find a free id
+		stringstream idstream;
+		unsigned int i;
+		for (i = 0; i < 1000 && iter != m_world->WorldMap.end(); ++i)
+		{
+			idstream.clear();
+			idstream << id << i;
+			iter = m_world->WorldMap.find(idstream.str());		
+		}
+		if (i < 1000)
+		{
+			GameLog::warnMessage("Entity with name %s already exists, renaming to %s", id.c_str(), idstream.str().c_str());
+			newID = idstream.str();
+			changeID = true;
+		}
+		else
+		{
+			GameLog::errorMessage("No free name found for Entity % s!", id.c_str());
+			return 0x0;
+		}
 	}
-	GameEntity* entity = new GameEntity(id);
+
+	GameEntity* entity = new GameEntity(changeID ? newID : id);
 	if ( m_world->NextIndexList.empty() )
 	{
 		m_world->WorldList.push_back(entity);
 		entity->m_worldId = (unsigned int) m_world->WorldList.size();
-		m_world->WorldMap.insert(make_pair<string, unsigned int>(id, entity->m_worldId));
+		m_world->WorldMap.insert(make_pair<string, unsigned int>(changeID ? newID : id, entity->m_worldId));
 	}
 	else
 	{
 		entity->m_worldId = m_world->NextIndexList.top() + 1;
 		m_world->WorldList[m_world->NextIndexList.top()] = entity;
-		m_world->WorldMap.insert(make_pair<string, unsigned int>(id, m_world->NextIndexList.top() + 1));
+		m_world->WorldMap.insert(make_pair<string, unsigned int>(changeID ? newID : id, m_world->NextIndexList.top() + 1));
 		m_world->NextIndexList.pop();
 	}
 	return entity;
