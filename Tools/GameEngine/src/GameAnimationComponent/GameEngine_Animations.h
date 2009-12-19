@@ -118,6 +118,16 @@ namespace GameEngine
 	 */ 
 	ANIMATIONSPLUGINEXP float getAnimLength( unsigned int entityWorldID, const char* animation);
 
+	/**
+	 * \brief Get the speed of an animation
+	 * 
+	 * 
+	 * @param entityWorldID the entity's world ID to which the animation belongs
+	 * @param animation the animation for which you want to get the speed
+	 * @return the speed of the animation or 0 if it wasn't found.
+	 */ 
+	ANIMATIONSPLUGINEXP float getAnimSpeed( unsigned int entityWorldID, const char* animation);
+
 	/*! @}*/
 
 }

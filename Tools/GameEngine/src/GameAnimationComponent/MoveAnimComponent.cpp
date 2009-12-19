@@ -138,26 +138,30 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 	// Play animation on stage 10 to not disturb other animations on this model
 	if( _stricmp(move, "") != 0 )
 	{
-		m_moveAnim = static_cast<AnimationSetup*>(AnimationSetup(move, 10, 30, -1.0f, 1.0f, 0.0f).clone());		
+		m_moveAnim = static_cast<AnimationSetup*>(AnimationSetup(move, 10, 0, -1.0f, 1.0f, 0.0f).clone());		
+		m_moveAnim->Speed = GameEngine::getAnimSpeed(m_owner->worldId(), m_moveAnim->Animation);
 	}
 	if( _stricmp(moveBack, "") != 0 )
 	{
-		m_moveBackAnim = static_cast<AnimationSetup*>(AnimationSetup(moveBack, 10, 30, -1.0f, 1.0f, 0.0f).clone());		
+		m_moveBackAnim = static_cast<AnimationSetup*>(AnimationSetup(moveBack, 10, 0, -1.0f, 1.0f, 0.0f).clone());		
+		m_moveBackAnim->Speed = GameEngine::getAnimSpeed(m_owner->worldId(), m_moveBackAnim->Animation);
 	}
 	if( _stricmp(moveLeft, "") != 0 )
 	{
-		m_moveLeftAnim = static_cast<AnimationSetup*>(AnimationSetup(moveLeft, 10, 30, -1.0f, 1.0f, 0.0f).clone());		
+		m_moveLeftAnim = static_cast<AnimationSetup*>(AnimationSetup(moveLeft, 10, 0, -1.0f, 1.0f, 0.0f).clone());		
+		m_moveLeftAnim->Speed = GameEngine::getAnimSpeed(m_owner->worldId(), m_moveLeftAnim->Animation);
 	}
 	if( _stricmp(moveRight, "") != 0 )
 	{
-		m_moveRightAnim = static_cast<AnimationSetup*>(AnimationSetup(moveRight, 10, 30, -1.0f, 1.0f, 0.0f).clone());		
+		m_moveRightAnim = static_cast<AnimationSetup*>(AnimationSetup(moveRight, 10, 0, -1.0f, 1.0f, 0.0f).clone());		
+		m_moveRightAnim->Speed = GameEngine::getAnimSpeed(m_owner->worldId(), m_moveRightAnim->Animation);
 	}	
 	
 	// Idle anims have weight 0, means they are only played if there is no other animation playing
 	m_idleAnimCount = 0;
 	if( _stricmp(idle, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle, 10, 30, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle, 10, 0, -1.0f, 0.0f, 0.0f).clone());
 	
 		//initially start idle animation
 		setAnim(m_idleAnim[m_idleAnimCount], true);
@@ -165,22 +169,22 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 	}
 	if( _stricmp(idle2, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle2, 10, 30, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle2, 10, 0, -1.0f, 0.0f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 	if( _stricmp(idle3, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle3, 10, 30, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle3, 10, 0, -1.0f, 0.0f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 	if( _stricmp(idle4, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle4, 10, 30, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle4, 10, 0, -1.0f, 0.0f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 	if( _stricmp(idle5, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle5, 10, 30, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle5, 10, 0, -1.0f, 0.0f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 }
@@ -263,7 +267,7 @@ void MoveAnimComponent::update(float fps)
 		//update animation speed (only none idle animations)
 		if( m_activeAnim != 0x0 && !m_idle)
 		{
-			GameEvent updateAnim(GameEvent::E_UPDATE_ANIM, &AnimationUpdate(m_activeAnim->JobID, GameEngineAnimParams::Speed, speed, 0), 0);
+			GameEvent updateAnim(GameEvent::E_UPDATE_ANIM, &AnimationUpdate(m_activeAnim->JobID, GameEngineAnimParams::Speed, m_activeAnim->Speed * speed, 0), 0);
 			if (m_owner->checkEvent(&updateAnim))
 				m_owner->executeEvent(&updateAnim);
 		}
@@ -328,57 +332,61 @@ void MoveAnimComponent::changeMoveAnim(const std::string& tag, const std::string
 	if (tag.compare("moveAnimation") == 0)
 	{
 		animToDelete = m_moveAnim;
-		m_moveAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 1.0f, 0.0f).clone());		 
+		m_moveAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 0, -1.0f, 1.0f, 0.0f).clone());		 
+		m_moveAnim->Speed = GameEngine::getAnimSpeed(m_owner->worldId(), m_moveAnim->Animation);
 	}
 	else if (tag.compare("idleAnimation") == 0)
 	{
 		if (m_idleAnimCount > 0)
 			animToDelete = m_idleAnim[0];
 		else m_idleAnimCount++;
-		m_idleAnim[0] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[0] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 0, -1.0f, 0.0f, 0.0f).clone());
 	}
 	else if (tag.compare("idleAnimation2") == 0 && m_idleAnimCount > 0)
 	{
 		if (m_idleAnimCount > 1)
 			animToDelete = m_idleAnim[1];
 		else m_idleAnimCount++;
-		m_idleAnim[1] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[1] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 0, -1.0f, 0.0f, 0.0f).clone());
 	}
 	else if (tag.compare("idleAnimation3") == 0 && m_idleAnimCount > 1)
 	{
 		if (m_idleAnimCount > 2)
 			animToDelete = m_idleAnim[2];
 		else m_idleAnimCount++;
-		m_idleAnim[2] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[2] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 0, -1.0f, 0.0f, 0.0f).clone());
 	}
 	else if (tag.compare("idleAnimation4") == 0 && m_idleAnimCount > 2)
 	{
 		if (m_idleAnimCount > 3)
 			animToDelete = m_idleAnim[3];
 		else m_idleAnimCount++;
-		m_idleAnim[3] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[3] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 0, -1.0f, 0.0f, 0.0f).clone());
 	}
 	else if (tag.compare("idleAnimation5") == 0 && m_idleAnimCount > 3)
 	{
 		if (m_idleAnimCount > 4)
 			animToDelete = m_idleAnim[4];
 		else m_idleAnimCount++;
-		m_idleAnim[4] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[4] = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 0, -1.0f, 0.0f, 0.0f).clone());
 	}
 	else if (tag.compare("moveBackAnimation") == 0)
 	{
 		animToDelete = m_moveBackAnim;
-		m_moveBackAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 1.0f, 0.0f).clone());		 
+		m_moveBackAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 0, -1.0f, 1.0f, 0.0f).clone());		 
+		m_moveBackAnim->Speed = GameEngine::getAnimSpeed(m_owner->worldId(), m_moveBackAnim->Animation);
 	}
 	else if (tag.compare("moveLeftAnimation") == 0)
 	{
 		animToDelete = m_moveLeftAnim;
-		m_moveLeftAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 1.0f, 0.0f).clone());		 
+		m_moveLeftAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 0, -1.0f, 1.0f, 0.0f).clone());		 
+		m_moveLeftAnim->Speed = GameEngine::getAnimSpeed(m_owner->worldId(), m_moveLeftAnim->Animation);
 	}
 	else if (tag.compare("moveRightAnimation") == 0)
 	{
 		animToDelete = m_moveRightAnim;
-		m_moveRightAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 30, -1.0f, 1.0f, 0.0f).clone());		 
+		m_moveRightAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 0, -1.0f, 1.0f, 0.0f).clone());		 
+		m_moveRightAnim->Speed = GameEngine::getAnimSpeed(m_owner->worldId(), m_moveRightAnim->Animation);
 	}
 
 	if (m_activeAnim != 0x0 && animToDelete == m_activeAnim)

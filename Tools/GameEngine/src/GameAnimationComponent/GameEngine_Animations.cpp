@@ -81,5 +81,16 @@ namespace GameEngine
 		}
 		return 0;
 	}
+
+	ANIMATIONSPLUGINEXP float getAnimSpeed( unsigned int entityWorldID, const char* animation)
+	{
+		KeyframeAnimComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( component = static_cast<KeyframeAnimComponent*>(entity->component("KeyframeAnimComponent")) ) != 0 )
+		{
+			return component->getAnimSpeed(animation);
+		}
+		return 0;
+	}
 }
 

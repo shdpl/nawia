@@ -503,7 +503,14 @@ float KeyframeAnimComponent::getAnimLength(const char *animation)
 	if(iter == m_animations.end()) return 0;
 
 	return iter->second->Frames / iter->second->Speed;
+}
 
+float KeyframeAnimComponent::getAnimSpeed(const char *animation)
+{
+	std::map<std::string, AnimationControl::Animation*>::iterator iter = m_animations.find(animation);
+	if(iter == m_animations.end()) return 0;
+
+	return iter->second->Speed;
 }
 
 void KeyframeAnimComponent::setupAnim(AnimationSetup *command)

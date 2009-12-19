@@ -58,6 +58,8 @@ public:
 
 	float getAnimLength( const char* animation );
 
+	float getAnimSpeed( const char* animation );
+
 	int getJobCount()
 	{
 		return int(m_animationRegistry.size());
