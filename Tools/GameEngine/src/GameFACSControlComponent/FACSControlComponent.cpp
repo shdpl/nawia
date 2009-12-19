@@ -52,7 +52,10 @@ GameComponent* FACSControlComponent::createComponent( GameEntity* owner )
 
 FACSControlComponent::FACSControlComponent(GameEntity* owner) : GameComponent(owner, "FACSControlComponent"), m_currentIntensity(1)
 {
+	m_duration = 0.5f;
+
 	owner->addListener(GameEvent::FACS_SET_EXPRESSION, this);
+	
 	FACSControlManager::instance()->addComponent(this);
 }
 
@@ -168,7 +171,7 @@ void FACSControlComponent::setFacialExpression( const string expression, const f
 		sprintf( buffer, "AU_%02i", (*iterOldAUs).first );
 		string au( buffer );
 
-		MorphTargetAnimation morphTargetAnimData( au.c_str(), newAUs[(*iterOldAUs).first] * intensity, 0.1f );
+		MorphTargetAnimation morphTargetAnimData( au.c_str(), newAUs[(*iterOldAUs).first] * intensity, m_duration );
 		GameEvent event( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData, this );
 		if( m_owner->checkEvent( &event ) )
 		{
@@ -185,14 +188,14 @@ void FACSControlComponent::setFacialExpression( const string expression, const f
 		// Special treatment for AU27
 		if( (*iterOldAUs).first == 27 )
 		{
-			MorphTargetAnimation morphTargetAnimData( "bottom_au_27", newAUs[(*iterOldAUs).first] * intensity, 0.1f );
+			MorphTargetAnimation morphTargetAnimData( "bottom_au_27", newAUs[(*iterOldAUs).first] * intensity, m_duration );
 			GameEvent event( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData, this );
 			if( m_owner->checkEvent( &event ) )
 			{
 				m_owner->executeEvent( &event );
 			}
 
-			MorphTargetAnimation morphTargetAnimData2( "bottomgums_au_27", newAUs[(*iterOldAUs).first] * intensity, 0.1f );
+			MorphTargetAnimation morphTargetAnimData2( "bottomgums_au_27", newAUs[(*iterOldAUs).first] * intensity, m_duration );
 			GameEvent event2( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData2, this );
 			if( m_owner->checkEvent( &event2 ) )
 			{
@@ -210,7 +213,7 @@ void FACSControlComponent::setFacialExpression( const string expression, const f
 
 		if( oldAUs[(*iterNewAUs).first] == 0 )
 		{
-			MorphTargetAnimation morphTargetAnimData( au.c_str(), (*iterNewAUs).second * intensity, 0.1f );
+			MorphTargetAnimation morphTargetAnimData( au.c_str(), (*iterNewAUs).second * intensity, m_duration );
 			GameEvent event( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData, this );
 			if ( m_owner->checkEvent( &event ) )
 			{
@@ -227,14 +230,14 @@ void FACSControlComponent::setFacialExpression( const string expression, const f
 			// Special treatment for AU27
 			if( (*iterNewAUs).first == 27 )
 			{
-				MorphTargetAnimation morphTargetAnimData( "bottom_au_27", (*iterNewAUs).second * intensity, 0.1f );
+				MorphTargetAnimation morphTargetAnimData( "bottom_au_27", (*iterNewAUs).second * intensity, m_duration );
 				GameEvent event( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData, this );
 				if( m_owner->checkEvent( &event ) )
 				{
 					m_owner->executeEvent( &event );
 				}
 
-				MorphTargetAnimation morphTargetAnimData2( "bottomgums_au_27", (*iterNewAUs).second * intensity, 0.1f );
+				MorphTargetAnimation morphTargetAnimData2( "bottomgums_au_27", (*iterNewAUs).second * intensity, m_duration );
 				GameEvent event2( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData2, this );
 				if( m_owner->checkEvent( &event2 ) )
 				{
@@ -253,63 +256,63 @@ void FACSControlComponent::setFacialExpressionPAD( float p, float a, float d )
 {
 	int p_i = (int) round( p * 10 + 10 );
 	int a_i = (int) round( a * 10 + 10 );
-	MorphTargetAnimation morphTargetAnimData01( "AU_01", au_01[p_i][a_i], 0.1f );
+	MorphTargetAnimation morphTargetAnimData01( "AU_01", au_01[p_i][a_i], m_duration );
 	GameEvent event01( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData01, this );
 	if( m_owner->checkEvent( &event01 ) )
 	{
 		m_owner->executeEvent( &event01 );
 	}
 	
-	MorphTargetAnimation morphTargetAnimData02( "AU_02", au_02[p_i][a_i], 0.1f );
+	MorphTargetAnimation morphTargetAnimData02( "AU_02", au_02[p_i][a_i], m_duration );
 	GameEvent event02( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData02, this );
 	if( m_owner->checkEvent( &event02 ) )
 	{
 		m_owner->executeEvent( &event02 );
 	}
 
-	MorphTargetAnimation morphTargetAnimData04( "AU_04", au_04[p_i][a_i], 0.1f );
+	MorphTargetAnimation morphTargetAnimData04( "AU_04", au_04[p_i][a_i], m_duration );
 	GameEvent event04( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData04, this );
 	if( m_owner->checkEvent( &event04 ) )
 	{
 		m_owner->executeEvent( &event04 );
 	}
 
-	MorphTargetAnimation morphTargetAnimData05( "AU_05", au_05[p_i][a_i], 0.1f );
+	MorphTargetAnimation morphTargetAnimData05( "AU_05", au_05[p_i][a_i], m_duration );
 	GameEvent event05( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData05, this );
 	if( m_owner->checkEvent( &event05 ) )
 	{
 		m_owner->executeEvent( &event05 );
 	}
 
-	MorphTargetAnimation morphTargetAnimData06( "AU_06", au_06[p_i][a_i], 0.1f );
+	MorphTargetAnimation morphTargetAnimData06( "AU_06", au_06[p_i][a_i], m_duration );
 	GameEvent event06( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData06, this );
 	if( m_owner->checkEvent( &event06 ) )
 	{
 		m_owner->executeEvent( &event06 );
 	}
 
-	MorphTargetAnimation morphTargetAnimData07( "AU_07", au_07[p_i][a_i], 0.1f );
+	MorphTargetAnimation morphTargetAnimData07( "AU_07", au_07[p_i][a_i], m_duration );
 	GameEvent event07( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData07, this );
 	if( m_owner->checkEvent( &event07 ) )
 	{
 		m_owner->executeEvent( &event07 );
 	}
 
-	MorphTargetAnimation morphTargetAnimData11( "AU_11", au_11[p_i][a_i], 0.1f );
+	MorphTargetAnimation morphTargetAnimData11( "AU_11", au_11[p_i][a_i], m_duration );
 	GameEvent event11( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData11, this );
 	if( m_owner->checkEvent( &event11 ) )
 	{
 		m_owner->executeEvent( &event11 );
 	}
 
-	MorphTargetAnimation morphTargetAnimData12( "AU_12", au_12[p_i][a_i], 0.1f );
+	MorphTargetAnimation morphTargetAnimData12( "AU_12", au_12[p_i][a_i], m_duration );
 	GameEvent event12( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData12, this );
 	if( m_owner->checkEvent( &event12 ) )
 	{
 		m_owner->executeEvent( &event12 );
 	}
 
-	MorphTargetAnimation morphTargetAnimData20( "AU_20", au_20[p_i][a_i], 0.1f );
+	MorphTargetAnimation morphTargetAnimData20( "AU_20", au_20[p_i][a_i], m_duration );
 	GameEvent event20( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData20, this );
 	if( m_owner->checkEvent( &event20 ) )
 	{

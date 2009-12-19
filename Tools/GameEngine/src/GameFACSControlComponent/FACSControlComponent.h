@@ -42,7 +42,8 @@ private:
 	std::map<std::string, std::map<int, float>> m_expressions;
 	std::vector<std::string> m_availableExpressions;
 	std::string m_currentExpression;
-	float  m_currentIntensity;
+	float m_currentIntensity;
+	float m_duration;
 };
 
 #endif
