@@ -310,6 +310,7 @@ public:
 		SP_START_SCRIPT,		/// starts sn action script
 		IB_EYE_FIXATED,			/// informs about an eye fixation
 		FACS_SET_EXPRESSION,	/// sets a facial expression
+		E_SEND_SOCKET_DATA,		/// sends data via the socket component
 
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
