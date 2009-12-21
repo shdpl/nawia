@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="Extension Terrain"
+	Name="Extension_Terrain"
 	ProjectGUID="{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}"
 	RootNamespace="Extension_Terrain"
 	Keyword="Win32Proj"
