@@ -46,7 +46,7 @@ unsigned int MeshOptimizer::removeDegeneratedTriangles( TriGroup &triGroup, vect
 		Vec3f &v1 = vertices[indices[k + 1]].pos;
 		Vec3f &v2 = vertices[indices[k + 2]].pos;
 
-		if( (v2 - v0).cross( v1 - v0 ) == Vec3f( 0, 0, 0 ) )
+		if( (v2 - v0).cross( v1 - v0 ).length() < Math::ZeroEpsilon )
 		{
 			++numDegTris;
 			// Remove triangle indices

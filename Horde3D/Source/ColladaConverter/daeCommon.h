@@ -32,33 +32,34 @@ struct DaeSource
 		bool isFloatArray = true;
 		elemsPerEntry = 1;
 		
-		// Check accessor
-		XMLNode node1 = sourceNode.getChildNode( "technique_common" );
-		if( node1.isEmpty() ) return false;
-		XMLNode node2 = node1.getChildNode( "accessor" );
-		if( node2.isEmpty() ) return false;
-		
-		int numEntries = atoi( node2.getAttribute( "count", "0" ) );
-		if( numEntries == 0 ) return false;
-		
 		id = sourceNode.getAttribute( "id", "" );
 		if( id == "" ) return false;
 
-		node1 = sourceNode.getChildNode( "float_array" );
-		if( node1.isEmpty() )
+		XMLNode arrayNode = sourceNode.getChildNode( "float_array" );
+		if( arrayNode.isEmpty() )
 		{	
-			node1 = sourceNode.getChildNode( "Name_array" );
-			if( node1.isEmpty() ) node1 = sourceNode.getChildNode( "IDREF_array" );
-			if( node1.isEmpty() ) return false;
+			arrayNode = sourceNode.getChildNode( "Name_array" );
+			if( arrayNode.isEmpty() ) arrayNode = sourceNode.getChildNode( "IDREF_array" );
+			if( arrayNode.isEmpty() ) return false;
 			isFloatArray = false;
 		}
+		int count = atoi( arrayNode.getAttribute( "count", "0" ) );
 		
-		int count = atoi( node1.getAttribute( "count", "0" ) );
+		// Check accessor
+		int numEntries = count;
+		XMLNode node1 = sourceNode.getChildNode( "technique_common" );
+		if( !node1.isEmpty() )
+		{
+			XMLNode node2 = node1.getChildNode( "accessor" );
+			if( !node2.isEmpty() )
+				numEntries = atoi( node2.getAttribute( "count", "0" ) );
+		}
+
 		elemsPerEntry = count / numEntries;
 
 		// Parse data
 		unsigned int pos = 0;
-		char *s = (char *)node1.getText();
+		char *s = (char *)arrayNode.getText();
 		if( s == 0x0 ) return false;
 		for( int i = 0; i < count; ++i )
 		{

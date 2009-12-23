@@ -36,12 +36,14 @@ namespace Math
 	const int MinInt32 = 0x80000000;
 	const int MaxInt32 = 0x7FFFFFFF;
 	const float MaxFloat = 3.402823466e+38F;
+	const float MinPosFloat = 1.175494351e-38F;
 	
 	const float Pi = 3.141592654f;
 	const float TwoPi = 6.283185307f;
 	const float PiHalf = 1.570796327f;
 
 	const float Epsilon = 0.000001f;
+	const float ZeroEpsilon = 32.0f * MinPosFloat;  // Very small epsilon for checking against 0.0f
 	const float NaN = *(float *)&MaxUInt32;
 
 	enum NoInitHint
