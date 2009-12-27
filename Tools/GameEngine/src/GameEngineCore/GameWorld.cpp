@@ -162,8 +162,13 @@ GameEntity* GameWorld::createEntity(const EntityID& id)
 		unsigned int i;
 		for (i = 0; i < 1000 && iter != m_world->WorldMap.end(); ++i)
 		{
+			// Reset stream buffer
+			idstream.str("");
+			// Clear flags
 			idstream.clear();
+			// Now add old name and number
 			idstream << id << i;
+			// And search for an entity with the same name
 			iter = m_world->WorldMap.find(idstream.str());		
 		}
 		if (i < 1000)
