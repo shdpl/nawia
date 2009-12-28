@@ -296,6 +296,7 @@ public:
 		E_PUTDOWN,				/// Detaches an entity
 		E_SET_MOVE_ANIM,		/// Change one of the move animations. @data = pair<string, string>: tag, name of animation
 		E_SET_CROWD_TAG,		/// Sets the current crowd sim tag of a particle, so it starts wandering around if the tag > 0
+		E_SET_CROWD_IGNORE_FORCES, /// The crowd particle will ignore forces if the particle is not moving
 		IK_COMPUTE,				/// Computes the IK with the given data and applies it to the chain
 		IK_GAZE,				/// Computes and applies a gaze action
 		IK_INIT_ANIM,			/// Initializes an IK animation
