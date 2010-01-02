@@ -79,6 +79,11 @@ bool RendererBase::init()
 		Modules::log().writeError( "Extension EXT_texture_compression_s3tc not supported" );
 		failed = true;
 	}
+	if( !glExt::EXT_texture_sRGB )
+	{
+		Modules::log().writeError( "Extension EXT_texture_sRGB not supported" );
+		failed = true;
+	}
 	
 	if( failed )
 	{
@@ -242,7 +247,7 @@ uint32 RendererBase::calcTextureSize( TextureFormats::List format, int width, in
 
 
 uint32 RendererBase::createTexture( TextureTypes::List type, int width, int height, TextureFormats::List format,
-	                                bool hasMips, bool genMips, bool compress )
+	                                bool hasMips, bool genMips, bool compress, bool sRGB )
 {
 	if( !_caps[RenderCaps::Tex_NPOT] )
 	{
@@ -254,6 +259,7 @@ uint32 RendererBase::createTexture( TextureTypes::List type, int width, int heig
 	RBTexture tex;
 	tex.type = type;
 	tex.format = format;
+	tex.sRGB = sRGB && Modules::config().sRGBLinearization;
 	glGenTextures( 1, &tex.glObj );
 	glBindTexture( tex.type, tex.glObj );
 	
@@ -289,17 +295,17 @@ void RendererBase::uploadTextureData( uint32 texObj, int width, int height, Text
 	switch( format )
 	{
 	case TextureFormats::BGRA8:
-		internalFormat = GL_RGBA8;
+		internalFormat = tex.sRGB ? GL_SRGB8_ALPHA8_EXT : GL_RGBA8;
 		inputFormat = GL_BGRA;
 		break;
 	case TextureFormats::DXT1:
-		internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+		internalFormat = tex.sRGB ? GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT : GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 		break;
 	case TextureFormats::DXT3:
-		internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+		internalFormat = tex.sRGB ? GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT : GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 		break;
 	case TextureFormats::DXT5:
-		internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		internalFormat = tex.sRGB ? GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT : GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 		break;
 	case TextureFormats::RGBA16F:
 		internalFormat = GL_RGBA16F_ARB;

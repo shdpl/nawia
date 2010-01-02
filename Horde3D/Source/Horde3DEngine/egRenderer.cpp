@@ -150,7 +150,7 @@ bool Renderer::init()
 	                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-	_defShadowMap = createTexture( TextureTypes::Tex2D, 8, 8, TextureFormats::DEPTH, false, false, false );
+	_defShadowMap = createTexture( TextureTypes::Tex2D, 8, 8, TextureFormats::DEPTH, false, false, false, false );
 	uploadTextureData( _defShadowMap, 8, 8, TextureFormats::DEPTH, 0, 0, shadowTex );
 
 	// Create particle geometry array

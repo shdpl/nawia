@@ -27,6 +27,7 @@ EngineConfig::EngineConfig()
 	trilinearFiltering = true;
 	maxAnisotropy = 1;
 	texCompression = false;
+	sRGBLinearization = false;
 	loadTextures = true;
 	fastAnimation = true;
 	shadowMapSize = 1024;
@@ -52,6 +53,8 @@ float EngineConfig::getOption( EngineOptions::List param )
 		return (float)maxAnisotropy;
 	case EngineOptions::TexCompression:
 		return texCompression ? 1.0f : 0.0f;
+	case EngineOptions::SRGBLinearization:
+		return sRGBLinearization ? 1.0f : 0.0f;
 	case EngineOptions::LoadTextures:
 		return loadTextures ? 1.0f : 0.0f;
 	case EngineOptions::FastAnimation:
@@ -95,6 +98,9 @@ bool EngineConfig::setOption( EngineOptions::List param, float value )
 		return true;
 	case EngineOptions::TexCompression:
 		texCompression = (value != 0);
+		return true;
+	case EngineOptions::SRGBLinearization:
+		sRGBLinearization = (value != 0);
 		return true;
 	case EngineOptions::LoadTextures:
 		loadTextures = (value != 0);

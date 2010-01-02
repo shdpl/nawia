@@ -157,6 +157,10 @@ bool MaterialResource::load( const char *data, int size )
 			_stricmp( node1.getAttribute( "mipmaps", "1" ), "0" ) == 0 )
 			flags |= ResourceFlags::NoTexMipmaps;
 
+		if( _stricmp( node1.getAttribute( "sRGB", "false" ), "true" ) == 0 ||
+			_stricmp( node1.getAttribute( "sRGB", "0" ), "1" ) == 0 )
+			flags |= ResourceFlags::TexSRGB;
+
 		texMap = Modules::resMan().addResource(
 			ResourceTypes::Texture, node1.getAttribute( "map" ), flags, false );
 

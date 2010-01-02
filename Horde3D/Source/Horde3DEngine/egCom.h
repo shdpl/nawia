@@ -37,6 +37,7 @@ struct EngineOptions
 		TrilinearFiltering,
 		MaxAnisotropy,
 		TexCompression,
+		SRGBLinearization,
 		LoadTextures,
 		FastAnimation,
 		ShadowMapSize,
@@ -59,6 +60,7 @@ public:
 	int   shadowMapSize;
 	int   sampleCount;
 	bool  texCompression;
+	bool  sRGBLinearization;
 	bool  loadTextures;
 	bool  fastAnimation;
 	bool  trilinearFiltering;

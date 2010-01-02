@@ -81,11 +81,11 @@ void TextureResource::initializationFunc()
 
 	// Upload default textures
 	defTex2DObject = Modules::renderer().createTexture( TextureTypes::Tex2D, 4, 4,
-	                                                    TextureFormats::BGRA8, true, true, false );
+	                                                    TextureFormats::BGRA8, true, true, false, false );
 	Modules::renderer().uploadTextureData( defTex2DObject, 4, 4, TextureFormats::BGRA8, 0, 0, texData );
 	
 	defTexCubeObject = Modules::renderer().createTexture( TextureTypes::TexCube, 4, 4,
-	                                                      TextureFormats::BGRA8, true, true, false );
+	                                                      TextureFormats::BGRA8, true, true, false, false );
 	for( uint32 i = 0; i < 6; ++i ) 
 	{
 		Modules::renderer().uploadTextureData( defTexCubeObject, 4, 4, TextureFormats::BGRA8, i, 0, texData );
@@ -122,8 +122,13 @@ TextureResource::TextureResource( const string &name, uint32 width, uint32 heigh
 		else if( _texFormat == TextureFormats::RGBA32F ) rbFmt = RenderBufferFormats::RGBA32F;
 		else _texFormat = TextureFormats::BGRA8;
 		
-		_texType = TextureTypes::Tex2D;
 		_flags &= ~ResourceFlags::TexCubemap;
+		_flags &= ~ResourceFlags::TexSRGB;
+		_flags &= ResourceFlags::NoTexCompression;
+		_flags &= ResourceFlags::NoTexMipmaps;
+
+		_texType = TextureTypes::Tex2D;
+		_sRGB = false;
 		_hasMipMaps= false;
 		_rbObj = Modules::renderer().createRenderBuffer( width, height, rbFmt, false, 1, 0 ); 
 		_texObject = Modules::renderer().getRenderBufferTex( _rbObj, 0 );
@@ -135,9 +140,10 @@ TextureResource::TextureResource( const string &name, uint32 width, uint32 heigh
 		memset( pixels, 0, size );
 		
 		_texType = flags & ResourceFlags::TexCubemap ? TextureTypes::TexCube : TextureTypes::Tex2D;
+		_sRGB = (_flags & ResourceFlags::TexSRGB) != 0;
 		_hasMipMaps = !(_flags & ResourceFlags::NoTexMipmaps);
 		_texObject = Modules::renderer().createTexture( _texType, _width, _height, _texFormat,
-		                                                _hasMipMaps, _hasMipMaps, false );
+		                                                _hasMipMaps, _hasMipMaps, false, _sRGB );
 		Modules::renderer().uploadTextureData( _texObject, _width, _height, _texFormat, 0, 0, pixels );
 		
 		delete[] pixels;
@@ -157,6 +163,7 @@ void TextureResource::initDefault()
 	_rbObj = 0;
 	_texFormat = TextureFormats::BGRA8;
 	_width = 0; _height = 0;
+	_sRGB = false;
 	_hasMipMaps = true;
 	
 	if( _texType == TextureTypes::TexCube )
@@ -219,6 +226,7 @@ bool TextureResource::load( const char *data, int size )
 		_height = ddsHeader.dwHeight;
 		_texFormat = TextureFormats::Unknown;
 		_texObject = 0;
+		_sRGB = (_flags & ResourceFlags::TexSRGB) != 0;
 		int mipCount = ddsHeader.dwFlags & DDSD_MIPMAPCOUNT ? ddsHeader.dwMipMapCount : 1;
 		_hasMipMaps = mipCount > 1 ? true : false;
 
@@ -300,7 +308,7 @@ bool TextureResource::load( const char *data, int size )
 
 		// Create texture
 		_texObject = Modules::renderer().createTexture(
-			_texType, _width, _height, _texFormat, mipCount > 1, false, false );
+			_texType, _width, _height, _texFormat, mipCount > 1, false, false, _sRGB );
 		
 		// Upload texture subresources
 		int numSlices = _texType == TextureTypes::TexCube ? 6 : 1;
@@ -376,11 +384,12 @@ bool TextureResource::load( const char *data, int size )
 		
 		_texType = TextureTypes::Tex2D;
 		_texFormat = hdr ? TextureFormats::RGBA16F : TextureFormats::BGRA8;
+		_sRGB = (_flags & ResourceFlags::TexSRGB) != 0;
 		_hasMipMaps = !(_flags & ResourceFlags::NoTexMipmaps);
 		
 		// Create and upload texture
 		_texObject = Modules::renderer().createTexture( _texType, _width, _height, _texFormat,
-			_hasMipMaps, _hasMipMaps, !(_flags & ResourceFlags::NoTexCompression) );
+			_hasMipMaps, _hasMipMaps, !(_flags & ResourceFlags::NoTexCompression), _sRGB );
 		Modules::renderer().uploadTextureData( _texObject, _width, _height, _texFormat, 0, 0, pixels );
 
 		stbi_image_free( pixels );

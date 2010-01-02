@@ -52,6 +52,7 @@ protected:
 	int                   _width, _height;
 	uint32                _texObject;
 	uint32                _rbObj;  // Used when texture is renderable
+	bool                  _sRGB;
 	bool                  _hasMipMaps;
 
 	bool raiseError( const std::string &msg );

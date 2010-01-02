@@ -23,6 +23,7 @@ namespace glExt
 	bool EXT_framebuffer_multisample = false;
 	bool EXT_texture_filter_anisotropic = false;
 	bool EXT_texture_compression_s3tc = false;
+	bool EXT_texture_sRGB = false;
 	bool ARB_texture_float = false;
 	bool ARB_texture_non_power_of_two = false;
 	bool EXT_timer_query = false;
@@ -378,6 +379,8 @@ bool initOpenGLExtensions()
 	glExt::EXT_texture_filter_anisotropic = isExtensionSupported( "GL_EXT_texture_filter_anisotropic" );
 
 	glExt::EXT_texture_compression_s3tc = isExtensionSupported( "GL_EXT_texture_compression_s3tc" );
+
+	glExt::EXT_texture_sRGB = isExtensionSupported( "GL_EXT_texture_sRGB" );
 
 	glExt::ARB_texture_float = isExtensionSupported( "GL_ARB_texture_float" ) ||
 	                           isExtensionSupported( "GL_ATI_texture_float" );

@@ -72,6 +72,7 @@ struct H3DOptions
 		MaxAnisotropy       - Sets the maximum quality for anisotropic filtering. (Values: 1, 2, 4, 8; Default: 1)
 		TexCompression      - Enables or disables texture compression; only affects textures that are
 		                      loaded after setting the option. (Values: 0, 1; Default: 0)
+		SRGBLinearization   - Eanbles or disables gamma-to-linear-space conversion of input textures that are tagged as sRGB (Values: 0, 1; Default: 0)
 		LoadTextures        - Enables or disables loading of texture images; option can be used to
 		                      minimize loading times for testing. (Values: 0, 1; Default: 1)
 		FastAnimation       - Disables or enables inter-frame interpolation for animations. (Values: 0, 1; Default: 1)
@@ -92,6 +93,7 @@ struct H3DOptions
 		TrilinearFiltering,
 		MaxAnisotropy,
 		TexCompression,
+		SRGBLinearization,
 		LoadTextures,
 		FastAnimation,
 		ShadowMapSize,
@@ -172,6 +174,8 @@ struct H3DResFlags
 		TexCubemap        - Sets Texture resource to be a cubemap.
 		TexDynamic        - Enables more efficient updates of Texture resource streams.
 		TexRenderable     - Makes Texture resource usable as render target.
+		TexSRGB           - Indicates that Texture resource is in sRGB color space and should be converted
+		                    to linear space when being sampled.
 	*/
 	enum Flags
 	{
@@ -180,7 +184,8 @@ struct H3DResFlags
 		NoTexMipmaps = 4,
 		TexCubemap = 8,
 		TexDynamic = 16,
-		TexRenderable = 32
+		TexRenderable = 32,
+		TexSRGB = 64
 	};
 };
 
