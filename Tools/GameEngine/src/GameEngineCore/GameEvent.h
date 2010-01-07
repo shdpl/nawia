@@ -339,6 +339,7 @@ public:
 		E_GET_SOUND_DISTANCE,	/// Get the distance of the current sound node to the active listener. @data pointer to float
 		E_GET_VISIBILITY,		/// Returns whether the current entity is visible by the active cam
 		E_GET_SCENEGRAPH_ID,	/// Returns the entity's scenegraph id (hordeID)
+		E_GET_ANIM_LENGTH,		/// Get the length of an animation in seconds (using all frames and default speed).
 		
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
@@ -1193,6 +1194,48 @@ public:
 	GameEventData* clone() const
 	{
 		return new GamepadData(*this);
+	}
+};
+
+
+/**
+ * \brief Data container for the E_GET_ANIM_LENGTH event
+ */ 
+class AnimLengthData : public GameEventData
+{
+
+public:
+	AnimLengthData(const char* name, float* length, float speed = 0 ) : GameEventData(CUSTOM), Name(name), Length(length), Speed(speed)
+	{
+		m_data.ptr = this;
+	}
+
+	AnimLengthData(const AnimLengthData& copy) : GameEventData(CUSTOM), Length(copy.Length), Speed(copy.Speed)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+		const size_t lenName = copy.Name ? strlen(copy.Name) : 0;
+		Name = new char[lenName + 1];
+		memcpy( (char*) Name, copy.Name, lenName );
+		const_cast<char*>(Name)[lenName] = '\0';
+	}
+
+	~AnimLengthData()
+	{
+		if( m_owner )
+		{
+			delete[] Name;
+		}
+	}
+
+	const char* Name;
+	float Speed;
+	float* Length;
+
+	AnimLengthData* clone() const
+	{
+		return new AnimLengthData(*this);
+
 	}
 };
 
