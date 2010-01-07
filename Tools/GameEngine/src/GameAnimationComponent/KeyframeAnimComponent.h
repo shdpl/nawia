@@ -56,7 +56,7 @@ public:
 
 	bool isPlaying( const char* animation );
 
-	float getAnimLength( const char* animation );
+	float getAnimLength( const char* animation, float speed = 0);
 
 	float getAnimSpeed( const char* animation );
 

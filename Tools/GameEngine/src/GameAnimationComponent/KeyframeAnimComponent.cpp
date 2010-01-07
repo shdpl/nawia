@@ -369,7 +369,9 @@ GameComponent* KeyframeAnimComponent::createComponent( GameEntity* owner )
 KeyframeAnimComponent::KeyframeAnimComponent(GameEntity* owner) : GameComponent(owner, "KeyframeAnimComponent"), MAX_STAGES(16)
 {
 	owner->addListener(GameEvent::E_PLAY_ANIM, this);
-	owner->addListener(GameEvent::E_UPDATE_ANIM, this);	
+	owner->addListener(GameEvent::E_UPDATE_ANIM, this);
+	owner->addListener(GameEvent::E_GET_ANIM_LENGTH, this);
+
 	m_stageControllers = new AnimationControl::StageController[MAX_STAGES];
 	for (int i=0; i<MAX_STAGES; ++i)
 	{
@@ -409,6 +411,12 @@ void KeyframeAnimComponent::executeEvent(GameEvent *event)
 		break;
 	case GameEvent::E_UPDATE_ANIM:
 		updateAnim(static_cast<AnimationUpdate*>(event->data()));
+		break;
+	case GameEvent::E_GET_ANIM_LENGTH:
+		{
+			AnimLengthData* data = static_cast<AnimLengthData*>(event->data());
+			*(data->Length) = getAnimLength(data->Name, data->Speed);
+		}
 		break;
 	}
 }
@@ -497,12 +505,16 @@ bool KeyframeAnimComponent::isPlaying(const char *animation)
 	return false;
 }
 
-float KeyframeAnimComponent::getAnimLength(const char *animation)
+float KeyframeAnimComponent::getAnimLength(const char *animation, float speed /*= 0*/)
 {
 	std::map<std::string, AnimationControl::Animation*>::iterator iter = m_animations.find(animation);
 	if(iter == m_animations.end()) return 0;
 
-	return iter->second->Frames / iter->second->Speed;
+	if (speed > 0)
+		return iter->second->Frames / speed;
+	else if (iter->second->Speed > 0)
+		return iter->second->Frames / iter->second->Speed;
+	return 0;
 }
 
 float KeyframeAnimComponent::getAnimSpeed(const char *animation)
