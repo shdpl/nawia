@@ -460,9 +460,28 @@ bool ShaderResource::parseFXSection( char *data )
 
 	while( tok.hasToken() )
 	{
-		if( tok.checkToken( "float4" ) )
+		if( tok.checkToken( "float" ) )
 		{
 			ShaderUniform uniform;
+			uniform.size = 1;
+			uniform.id = tok.getToken( identifier );
+			if( uniform.id == "" ) return raiseError( "FX: Invalid identifier", tok.getLine() );
+			uniform.defValues[0] = uniform.defValues[1] = uniform.defValues[2] = uniform.defValues[3] = 0.0f;
+			
+			// Skip annotations
+			if( tok.checkToken( "<" ) )
+				if( !tok.seekToken( ">" ) ) return raiseError( "FX: expected '>'", tok.getLine() );
+			
+			if( tok.checkToken( "=" ) )
+				uniform.defValues[0] = (float)atof( tok.getToken( floatnum ) );
+			if( !tok.checkToken( ";" ) ) return raiseError( "FX: expected ';'", tok.getLine() );
+
+			_uniforms.push_back( uniform );
+		}
+		else if( tok.checkToken( "float4" ) )
+		{
+			ShaderUniform uniform;
+			uniform.size = 4;
 			uniform.id = tok.getToken( identifier );
 			if( uniform.id == "" ) return raiseError( "FX: Invalid identifier", tok.getLine() );
 			uniform.defValues[0] = uniform.defValues[1] = uniform.defValues[2] = uniform.defValues[3] = 0.0f;
@@ -951,6 +970,26 @@ int ShaderResource::getElemCount( int elem )
 	default:
 		return Resource::getElemCount( elem );
 	}
+}
+
+
+int ShaderResource::getElemParamI( int elem, int elemIdx, int param )
+{
+	switch( elem )
+	{
+	case ShaderResData::UniformElem:
+		if( (unsigned)elemIdx < _uniforms.size() )
+		{
+			switch( param )
+			{
+			case ShaderResData::UnifSizeI:
+				return _uniforms[elemIdx].size;
+			}
+		}
+		break;
+	}
+	
+	return Resource::getElemParamI( elem, elemIdx, param );
 }
 
 

@@ -116,8 +116,9 @@ bool Application::init()
 
 	// Customize post processing effects
 	H3DNode matRes = h3dFindResource( H3DResTypes::Material, "pipelines/postHDR.material.xml" );
-	// hdrParams: exposure, brightpass threshold, brightpass offset (see shader for description)
-	h3dSetMaterialUniform( matRes, "hdrParams", 2.5f, 0.5f, 0.08f, 0 );
+	h3dSetMaterialUniform( matRes, "hdrExposure", 2.5f, 0, 0, 0 );
+	h3dSetMaterialUniform( matRes, "hdrBrightThres", 0.5f, 0, 0, 0 );
+	h3dSetMaterialUniform( matRes, "hdrBrightOffset", 0.08f, 0, 0, 0 );
 	
 	return true;
 }

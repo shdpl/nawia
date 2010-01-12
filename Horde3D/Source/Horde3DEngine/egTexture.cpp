@@ -82,13 +82,13 @@ void TextureResource::initializationFunc()
 	// Upload default textures
 	defTex2DObject = Modules::renderer().createTexture( TextureTypes::Tex2D, 4, 4,
 	                                                    TextureFormats::BGRA8, true, true, false, false );
-	Modules::renderer().uploadTextureData( defTex2DObject, 4, 4, TextureFormats::BGRA8, 0, 0, texData );
+	Modules::renderer().uploadTextureData( defTex2DObject, 0, 0, texData );
 	
 	defTexCubeObject = Modules::renderer().createTexture( TextureTypes::TexCube, 4, 4,
 	                                                      TextureFormats::BGRA8, true, true, false, false );
 	for( uint32 i = 0; i < 6; ++i ) 
 	{
-		Modules::renderer().uploadTextureData( defTexCubeObject, 4, 4, TextureFormats::BGRA8, i, 0, texData );
+		Modules::renderer().uploadTextureData( defTexCubeObject, i, 0, texData );
 	}
 }
 
@@ -144,7 +144,7 @@ TextureResource::TextureResource( const string &name, uint32 width, uint32 heigh
 		_hasMipMaps = !(_flags & ResourceFlags::NoTexMipmaps);
 		_texObject = Modules::renderer().createTexture( _texType, _width, _height, _texFormat,
 		                                                _hasMipMaps, _hasMipMaps, false, _sRGB );
-		Modules::renderer().uploadTextureData( _texObject, _width, _height, _texFormat, 0, 0, pixels );
+		Modules::renderer().uploadTextureData( _texObject, 0, 0, pixels );
 		
 		delete[] pixels;
 		if( _texObject == 0 ) initDefault();
@@ -348,12 +348,12 @@ bool TextureResource::load( const char *data, int size )
 						for( uint32 k = 0; k < pixCount * 4; k += 4 )
 							*p++ = pixels[k+2] | pixels[k+1]<<8 | pixels[k+0]<<16 | pixels[k+3]<<24;
 					
-					Modules::renderer().uploadTextureData( _texObject, width, height, _texFormat, i, j, dstBuf );
+					Modules::renderer().uploadTextureData( _texObject, i, j, dstBuf );
 				}
 				else
 				{
 					// Upload DDS data directly
-					Modules::renderer().uploadTextureData( _texObject, width, height, _texFormat, i, j, pixels );
+					Modules::renderer().uploadTextureData( _texObject, i, j, pixels );
 				}
 
 				pixels += mipSize;
@@ -390,7 +390,7 @@ bool TextureResource::load( const char *data, int size )
 		// Create and upload texture
 		_texObject = Modules::renderer().createTexture( _texType, _width, _height, _texFormat,
 			_hasMipMaps, _hasMipMaps, !(_flags & ResourceFlags::NoTexCompression), _sRGB );
-		Modules::renderer().uploadTextureData( _texObject, _width, _height, _texFormat, 0, 0, pixels );
+		Modules::renderer().uploadTextureData( _texObject, 0, 0, pixels );
 
 		stbi_image_free( pixels );
 	}
@@ -500,8 +500,7 @@ void TextureResource::unmapStream()
 		{
 			int slice = mappedWriteImage / (getMipCount() + 1);
 			int mipLevel = mappedWriteImage % (getMipCount() + 1);
-			int width = _width >> mipLevel, height = _height >> mipLevel;
-			Modules::renderer().updateTextureData( _texObject, slice, mipLevel, mappedData, width, height );
+			Modules::renderer().updateTextureData( _texObject, slice, mipLevel, mappedData );
 			mappedWriteImage = -1;
 		}
 		

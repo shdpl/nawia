@@ -151,7 +151,7 @@ bool Renderer::init()
 	                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 	_defShadowMap = createTexture( TextureTypes::Tex2D, 8, 8, TextureFormats::DEPTH, false, false, false, false );
-	uploadTextureData( _defShadowMap, 8, 8, TextureFormats::DEPTH, 0, 0, shadowTex );
+	uploadTextureData( _defShadowMap, 0, 0, shadowTex );
 
 	// Create particle geometry array
 	ParticleVert v0( 0, 0, 0 );
@@ -573,7 +573,7 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 	{
 		if( _curShader->customUniforms[i] < 0 ) continue;
 		
-		bool found = false;
+		float *unifData = 0x0;
 
 		// Find uniform in material
 		for( size_t j = 0, s = materialRes->_uniforms.size(); j < s; ++j )
@@ -582,19 +582,26 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 			
 			if( matUniform.name == shaderRes->_uniforms[i].id )
 			{
-				glUniform4f( _curShader->customUniforms[i], matUniform.values[0], matUniform.values[1],
-				             matUniform.values[2], matUniform.values[3] );
-				found = true;
+				unifData = matUniform.values;
 				break;
 			}
 		}
 
 		// Use default values if not found
-		if( !found && firstRec )
+		if( unifData == 0x0 && firstRec )
+			unifData = shaderRes->_uniforms[i].defValues;
+
+		if( unifData )
 		{
-			ShaderUniform &uniform = shaderRes->_uniforms[i];
-			glUniform4f( _curShader->customUniforms[i], uniform.defValues[0], uniform.defValues[1],
-				         uniform.defValues[2], uniform.defValues[3] );
+			switch( shaderRes->_uniforms[i].size )
+			{
+			case 1:
+				glUniform1f( _curShader->customUniforms[i], *unifData );
+				break;
+			case 4:
+				glUniform4fv( _curShader->customUniforms[i], 1, unifData );
+				break;
+			}
 		}
 	}
 

@@ -259,6 +259,8 @@ uint32 RendererBase::createTexture( TextureTypes::List type, int width, int heig
 	RBTexture tex;
 	tex.type = type;
 	tex.format = format;
+	tex.width = width;
+	tex.height = height;
 	tex.sRGB = sRGB && Modules::config().sRGBLinearization;
 	glGenTextures( 1, &tex.glObj );
 	glBindTexture( tex.type, tex.glObj );
@@ -280,11 +282,10 @@ uint32 RendererBase::createTexture( TextureTypes::List type, int width, int heig
 }
 
 
-void RendererBase::uploadTextureData( uint32 texObj, int width, int height, TextureFormats::List format,
-                                      int slice, int mipLevel, const void *pixels )
+void RendererBase::uploadTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels )
 {
 	const RBTexture &tex = _textures.getRef( texObj );
-	ASSERT( format == tex.format );
+	TextureFormats::List format = tex.format;
 
 	glBindTexture( tex.type, tex.glObj );
 	
@@ -323,6 +324,9 @@ void RendererBase::uploadTextureData( uint32 texObj, int width, int height, Text
 		inputType = GL_FLOAT;
 	};
 	
+	// Calculate size of next mipmap using "floor" convention
+	int width = tex.width >> mipLevel, height = tex.height >> mipLevel;
+	
 	if( format == TextureFormats::DXT1 || format == TextureFormats::DXT3 || format == TextureFormats::DXT5 )
 		glCompressedTexImage2D( target, mipLevel, internalFormat, width, height, 0,
 		                        calcTextureSize( format, width, height ), pixels );	
@@ -351,15 +355,14 @@ void RendererBase::releaseTexture( uint32 texObj )
 }
 
 
-void RendererBase::updateTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels,
-                                      int width, int height )
+void RendererBase::updateTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels )
 {
 	const RBTexture &tex = _textures.getRef( texObj );
 	
 	glBindTexture( tex.type + slice, tex.glObj );
 	glTexParameteri( tex.type, GL_GENERATE_MIPMAP, GL_FALSE );
 	
-	uploadTextureData( texObj, width, height, tex.format, slice, mipLevel, pixels );
+	uploadTextureData( texObj, slice, mipLevel, pixels );
 }
 
 

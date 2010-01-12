@@ -135,6 +135,7 @@ struct RBTexture
 	uint32                glObj;
 	int                   type;
 	TextureFormats::List  format;
+	int                   width, height;
 	int                   memSize;
 	bool                  sRGB;
 };
@@ -243,10 +244,9 @@ public:
 	uint32 calcTextureSize( TextureFormats::List format, int width, int height );
 	uint32 createTexture( TextureTypes::List type, int width, int height, TextureFormats::List format,
 	                      bool hasMips, bool genMips, bool compress, bool sRGB );
-	void uploadTextureData( uint32 texObj, int width, int height, TextureFormats::List format,
-                            int slice, int mipLevel, const void *pixels );
+	void uploadTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels );
 	void releaseTexture( uint32 texObj );
-	void updateTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels, int width, int height ); 
+	void updateTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels );
 	bool getTextureData( uint32 texObj, int slice, int mipLevel, void *buffer );
 	void bindTexture( uint32 unit, uint32 texObj );
 	uint32 getTextureMem() { return _textureMem; }

@@ -302,6 +302,7 @@ struct H3DShaderRes
 		ContNameStr     - Name of context [read-only]
 		SampNameStr     - Name of sampler [read-only]
 		UnifNameStr     - Name of uniform [read-only]
+		UnifSizeI       - Size (number of components) of uniform [read-only]
 		UnifDefValueF4  - Default value of uniform (a, b, c, d)
 	*/
 	enum List
@@ -312,6 +313,7 @@ struct H3DShaderRes
 		ContNameStr,
 		SampNameStr,
 		UnifNameStr,
+		UnifSizeI,
 		UnifDefValueF4
 	};
 };

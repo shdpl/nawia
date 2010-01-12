@@ -77,6 +77,7 @@ struct ShaderResData
 		ContNameStr,
 		SampNameStr,
 		UnifNameStr,
+		UnifSizeI,
 		UnifDefValueF4
 	};
 };
@@ -218,8 +219,9 @@ struct ShaderSampler
 
 struct ShaderUniform
 {
-	std::string  id;
-	float        defValues[4];
+	std::string    id;
+	float          defValues[4];
+	unsigned char  size;
 };
 
 
@@ -261,6 +263,7 @@ public:
 	ShaderCombination *getCombination( ShaderContext &context, uint32 combMask );
 
 	int getElemCount( int elem );
+	int getElemParamI( int elem, int elemIdx, int param );
 	float getElemParamF( int elem, int elemIdx, int param, int compIdx );
 	void setElemParamF( int elem, int elemIdx, int param, int compIdx, float value );
 	const char *getElemParamStr( int elem, int elemIdx, int param );
