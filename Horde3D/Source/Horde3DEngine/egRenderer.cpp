@@ -248,6 +248,7 @@ bool Renderer::createShaderComb( const char *vertexShader, const char *fragmentS
 	sc.uni_frameBufSize = glGetUniformLocation( shdObj, "frameBufSize" );
 	sc.uni_worldMat = glGetUniformLocation( shdObj, "worldMat" );
 	sc.uni_worldNormalMat = glGetUniformLocation( shdObj, "worldNormalMat" );
+	sc.uni_nodeId = glGetUniformLocation( shdObj, "nodeId" );
 	sc.uni_viewer = glGetUniformLocation( shdObj, "viewer" );
 	sc.uni_lightPos = glGetUniformLocation( shdObj, "lightPos" );
 	sc.uni_lightDir = glGetUniformLocation( shdObj, "lightDir" );
@@ -1570,6 +1571,10 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 				                       normalMat4.x[8], normalMat4.x[9], normalMat4.x[10] };
 				glUniformMatrix3fv( curShader->uni_worldNormalMat, 1, false, normalMat );
 			}
+			if( curShader->uni_nodeId >= 0 )
+			{
+				glUniform1f( curShader->uni_nodeId, (float)meshNode->getHandle() );
+			}
 
 			// Apply vertex layout
 			if( curShader != prevShader )
@@ -1688,6 +1693,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 		// Shader uniforms
 		ShaderCombination *curShader = Modules::renderer().getCurShader();
 		if( curShader->uni_parCorners >= 0 ) glUniform3fv( curShader->uni_parCorners, 4, (float *)cornerCoords );
+		if( curShader->uni_nodeId >= 0 ) glUniform1f( curShader->uni_nodeId, (float)emitter->getHandle() );
 
 		// Divide particles in batches and render them
 		for( uint32 j = 0; j < emitter->_particleCount / ParticlesPerBatch; ++j )

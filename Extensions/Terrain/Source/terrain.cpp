@@ -266,7 +266,7 @@ namespace Horde3DTerrain
 			Modules::renderer().bindVertexBuffer( 1, terrain->_vertexBuffer, terrain->getVertexCount() * 12, 4 );
 			if( !Modules::renderer().applyVertexLayout( vlTerrain ) ) continue;
 		
-			// World transformation
+			// Set uniforms
 			ShaderCombination *curShader = Modules::renderer().getCurShader();
 			if( curShader->uni_worldMat >= 0 )
 			{
@@ -279,6 +279,10 @@ namespace Horde3DTerrain
 				                       normalMat4.x[4], normalMat4.x[5], normalMat4.x[6],
 				                       normalMat4.x[8], normalMat4.x[9], normalMat4.x[10] };
 				glUniformMatrix3fv( curShader->uni_worldNormalMat, 1, false, normalMat );
+			}
+			if( curShader->uni_nodeId >= 0 )
+			{
+				glUniform1f( curShader->uni_nodeId, (float)terrain->getHandle() );
 			}
 
 			drawTerrainBlock( terrain, 0.0f, 0.0f, 1.0f, 1.0f, 0, 1.0f, localCamPos, frust1, frust2, uni_terBlockParams );
