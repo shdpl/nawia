@@ -946,21 +946,24 @@ class IKData : public GameEventData
 {
 public:
 	//Contructor for gaze data
-	IKData(float TargetX, float TargetY, float TargetZ, bool MoveLEye, bool MoveREye, bool MoveNeck, int Head_pitch )
+	IKData(float TargetX, float TargetY, float TargetZ, bool MoveLEye, bool MoveREye, bool MoveNeck, int Head_pitch, bool IsTest = false )
 		: GameEventData(CUSTOM), endEffektorName(0), stopName(0), 
-		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), moveLEye(MoveLEye), moveREye(MoveREye), moveNeck(MoveNeck), head_pitch(Head_pitch)
+		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), moveLEye(MoveLEye), moveREye(MoveREye), moveNeck(MoveNeck), 
+		  head_pitch(Head_pitch), result(1), isTest(IsTest)
 	{
 		m_data.ptr = this;
 	}
 	//Contrcutor for ik data
-	IKData(const char* EndEffektorName,	const char* StopName, float TargetX, float TargetY, float TargetZ)
+	IKData(const char* EndEffektorName,	const char* StopName, float TargetX, float TargetY, float TargetZ, bool IsTest = false )
 		: GameEventData(CUSTOM), endEffektorName(EndEffektorName), stopName(StopName), 
-		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), moveLEye(false), moveREye(false), moveNeck(false), head_pitch(0)
+		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), moveLEye(false), moveREye(false), moveNeck(false), 
+		  head_pitch(0), result(1), isTest(IsTest)
 	{
 		m_data.ptr = this;
 	}
 
-	IKData(const IKData& copy) : GameEventData(CUSTOM), targetX(copy.targetX), targetY(copy.targetY), targetZ(copy.targetZ)
+	IKData(const IKData& copy) : GameEventData(CUSTOM), targetX(copy.targetX), targetY(copy.targetY), targetZ(copy.targetZ), 
+								result(copy.result), isTest(copy.isTest)
 	{
 		m_data.ptr = this;
 		m_owner = true;
@@ -996,7 +999,8 @@ public:
 	float targetX, targetY, targetZ;
 	bool moveLEye, moveREye, moveNeck;
 	int head_pitch;
-	//bool restrict, optimize, zlock;
+	int result;
+	bool isTest;
 };
 
 class Vec3fData : public GameEventData
