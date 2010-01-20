@@ -1145,30 +1145,32 @@ public:
 class GamepadData : public GameEventData
 {
 	//the values for Sticks and Triggers is in a range between 0 and 1
-	//the values for buttons may be 0 for not pressed, 1 for newly pressed and 2 for holding
+	//the values for buttons may be 0 for not pressed, 1 for newly pressed
 
 public:
 	GamepadData() 
 		: GameEventData(CUSTOM), Index(0), StickLeftX(0), StickLeftY(0), StickRightX(0), StickRightY(0),
 		DigitalPadX(0), DigitalPadY(0), ButtonA(0), ButtonB(0), ButtonX(0), ButtonY(0), ButtonStart(0), ButtonBack(0),
-		TriggerLeft(0), TriggerRight(0), ShoulderRight(0), ShoulderLeft(0), VibratorLeft(0), VibratorRight(0)
+		TriggerLeft(0), TriggerRight(0), ShoulderRight(0), ShoulderLeft(0), StickLeftClick(0), StickRightClick(0),
+		VibratorLeft(0), VibratorRight(0)
 	{
 		m_data.ptr = this;
 	}
 
 	GamepadData( unsigned int gamepadIndex, float thumbStickLX, float thumbStickLY, float thumbStickRX, float thumbStickRY, float dPadX, float dPadY, 
 		unsigned int butA, unsigned int butB, unsigned int butX, unsigned int butY, unsigned int butStart, unsigned int butBack,
-		float triggerL, float triggerR, unsigned int shoulderR, unsigned int shoulderL )
+		float triggerL, float triggerR, unsigned int shoulderR, unsigned int shoulderL, unsigned int thumbStickLClick, unsigned int thumbStickRClick )
 		: GameEventData(CUSTOM), Index(gamepadIndex), StickLeftX(thumbStickLX), StickLeftY(thumbStickLY), StickRightX(thumbStickRX), StickRightY(thumbStickRY),
 		DigitalPadX(dPadX), DigitalPadY(dPadY), ButtonA(butA), ButtonB(butB), ButtonX(butX), ButtonY(butY), ButtonStart(butStart), ButtonBack(butBack),
-		TriggerLeft(triggerL), TriggerRight(triggerR), ShoulderRight(shoulderL), ShoulderLeft(shoulderR), VibratorLeft(0), VibratorRight(0)
+		TriggerLeft(triggerL), TriggerRight(triggerR), ShoulderRight(shoulderL), ShoulderLeft(shoulderR), StickLeftClick( thumbStickLClick ), StickRightClick( thumbStickRClick),
+		VibratorLeft(0), VibratorRight(0)
 	{
 		m_data.ptr = this;
 	}
 
 	GamepadData(const GamepadData& copy) : GameEventData(CUSTOM), Index(copy.Index), StickLeftX(copy.StickLeftX), StickLeftY(copy.StickLeftY), StickRightX(copy.StickRightX), StickRightY(copy.StickRightY),
 		DigitalPadX(copy.DigitalPadX), DigitalPadY(copy.DigitalPadY), ButtonA(copy.ButtonA), ButtonB(copy.ButtonB), ButtonX(copy.ButtonX), ButtonY(copy.ButtonY), ButtonStart(copy.ButtonStart), ButtonBack(copy.ButtonBack),
-		TriggerLeft(copy.TriggerLeft), TriggerRight(copy.TriggerRight), ShoulderRight(copy.ShoulderRight), ShoulderLeft(copy.ShoulderLeft), 
+		TriggerLeft(copy.TriggerLeft), TriggerRight(copy.TriggerRight), ShoulderRight(copy.ShoulderRight), ShoulderLeft(copy.ShoulderLeft), StickLeftClick( copy.StickLeftClick ), StickRightClick( copy.StickRightClick ),
 		VibratorLeft(copy.VibratorLeft), VibratorRight(copy.VibratorRight)
 	{
 		m_data.ptr = this;
@@ -1194,6 +1196,8 @@ public:
 	unsigned int ShoulderLeft;
 	float VibratorRight;
 	float VibratorLeft;
+	unsigned int StickLeftClick;
+	unsigned int StickRightClick;
 
 	GameEventData* clone() const
 	{
