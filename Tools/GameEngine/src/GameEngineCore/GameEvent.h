@@ -1146,10 +1146,11 @@ class GamepadData : public GameEventData
 {
 	//the values for Sticks and Triggers is in a range between 0 and 1
 	//the values for buttons may be 0 for not pressed, 1 for newly pressed
+	//index is used as indicator, if controller is connected. if index is -1, then its not. Else index is the index of the controller (0-3)
 
 public:
 	GamepadData() 
-		: GameEventData(CUSTOM), Index(0), StickLeftX(0), StickLeftY(0), StickRightX(0), StickRightY(0),
+		: GameEventData(CUSTOM), Index(-1), StickLeftX(0), StickLeftY(0), StickRightX(0), StickRightY(0),
 		DigitalPadX(0), DigitalPadY(0), ButtonA(0), ButtonB(0), ButtonX(0), ButtonY(0), ButtonStart(0), ButtonBack(0),
 		TriggerLeft(0), TriggerRight(0), ShoulderRight(0), ShoulderLeft(0), StickLeftClick(0), StickRightClick(0),
 		VibratorLeft(0), VibratorRight(0)
@@ -1177,7 +1178,7 @@ public:
 		m_owner = true;
 	}
 
-	unsigned int Index;
+	int Index;
 	float StickLeftX;
 	float StickLeftY;
 	float StickRightX;
