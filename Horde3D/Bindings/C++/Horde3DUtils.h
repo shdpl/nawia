@@ -67,7 +67,7 @@ DLL void h3dutFreeMem( char **ptr );
 	
 	Details:
 		This utility function pops all messages from the message queue and writes them to a HTML formated
-		log file 'EngineLog.html'.
+		log file 'Horde3D_Log.html'.
 	
 	Parameters:
 		none

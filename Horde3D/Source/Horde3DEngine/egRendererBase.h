@@ -16,8 +16,6 @@
 #include "egPrerequisites.h"
 #include "utMath.h"
 #include "utOpenGL.h"
-#include <cstdlib>
-#include <cstring>
 #include <string>
 #include <vector>
 #include <map>

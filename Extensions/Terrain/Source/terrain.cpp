@@ -11,10 +11,16 @@
 
 #include "terrain.h"
 #include "egModules.h"
+#include "egCom.h"
+#include "egRenderer.h"
 #include "egMaterial.h"
+#include "egCamera.h"
 #include "utOpenGL.h"
 
+#include "utDebug.h"
+
 using namespace std;
+
 
 namespace Horde3DTerrain
 {

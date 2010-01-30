@@ -12,12 +12,13 @@
 
 #include "egTexture.h"
 #include "egModules.h"
+#include "egCom.h"
+#include "egRenderer.h"
 #include "utImage.h"
 
 #include "utDebug.h"
 
 using namespace std;
-
 
 // *************************************************************************************************
 // Class TextureResource

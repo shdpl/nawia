@@ -13,6 +13,8 @@
 #include "egParticle.h"
 #include "egMaterial.h"
 #include "egModules.h"
+#include "egCom.h"
+#include "egRenderer.h"
 #include "utXMLParser.h"
 #include "utPlatform.h"
 

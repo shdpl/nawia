@@ -14,13 +14,8 @@
 #define _egCom_H_
 
 #include "egPrerequisites.h"
-#include <stdarg.h>
-#include <cstdlib>
-#include <cstring>
 #include <string>
 #include <queue>
-#include <vector>
-
 #include "utTimer.h"
 
 

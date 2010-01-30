@@ -17,7 +17,9 @@
 
 #ifdef PLATFORM_WIN
 #   define WIN32_LEAN_AND_MEAN 1
-#	define NOMINMAX
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif
 #   include <windows.h>
 #else
 #	include <sys/time.h>

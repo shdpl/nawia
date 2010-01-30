@@ -15,8 +15,7 @@
 
 #include "egPrerequisites.h"
 #include "egResource.h"
-#include "egScene.h"
-#include "egAnimation.h"
+#include "egPrimitives.h"
 #include "utMath.h"
 
 

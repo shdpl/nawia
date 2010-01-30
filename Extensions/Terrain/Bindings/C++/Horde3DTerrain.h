@@ -43,18 +43,6 @@
 	the information is usually done with an appropriate tool. If you just want to use 8 bit
 	height information, you can simply copy the greyscale image to the red channel of the height
 	map and leave the green channel black.
-	
-	To install the extension, copy the Extensions directory to the path where the Horde3D SDK resides,
-	so that the two directories are on the same level in the hierarchy.
-	In Visual Studio, add the extension and sample projects to the Horde3D solution. Then add the extension
-	project to the project dependencies of the Horde3D Engine and the Horde3D Engine to the dependencies of
-	the Terrain Sample. After that, include 'Terrain/extension.h' in 'egExtensions.cpp' of the engine and add
-	'#pragma comment( lib, "Extension_Terrain.lib" )' to link against the terrain extension (under Windows).
-	Finally, add the following line to ExtensionManager::installExtensions to register the extension:
-
-	- installExtension( Horde3DTerrain::getExtensionName, Horde3DTerrain::initExtension, Horde3DTerrain::releaseExtension );
-
-	The extension is then part of the Horde3D DLL and can be used with the Horde3DTerrain.h header file.
 
 	The extension defines the uniform *terBlockParams* and the attribute *terHeight* that can be used
 	in a shader to render the terrain. To see how this is working in detail, have a look at the included

@@ -24,6 +24,7 @@
 #include <al.h>
 
 #include "egModules.h"
+#include "egCom.h"
 
 #ifndef WIN32
 #include <stdarg.h>

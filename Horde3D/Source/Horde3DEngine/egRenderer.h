@@ -16,14 +16,13 @@
 #include "egPrerequisites.h"
 #include "egRendererBase.h"
 #include "egPrimitives.h"
-#include "egLight.h"
-#include "egCamera.h"
 #include "egModel.h"
 #include <vector>
 #include <algorithm>
 
-
 class MaterialResource;
+class LightNode;
+class CameraNode;
 struct ShaderContext;
 
 const uint32 ParticlesPerBatch = 64;	// Warning: The GPU must have enough registers

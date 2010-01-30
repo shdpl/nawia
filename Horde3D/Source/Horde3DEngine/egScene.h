@@ -16,14 +16,13 @@
 #include "egPrerequisites.h"
 #include "utMath.h"
 #include "egPrimitives.h"
-#include "egResource.h"
 #include "egPipeline.h"
 #include <map>
-
 
 struct SceneNodeTpl;
 class CameraNode;
 class SceneGraphResource;
+
 
 const int RootNode = 1;
 

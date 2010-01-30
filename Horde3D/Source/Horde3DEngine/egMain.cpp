@@ -11,21 +11,30 @@
 // *************************************************************************************************
 
 #include "egModules.h"
+#include "egCom.h"
+#include "egExtensions.h"
+#include "egRenderer.h"
 #include "egModel.h"
+#include "egLight.h"
+#include "egCamera.h"
 #include "egParticle.h"
-#include "egSceneGraphRes.h"
 #include "egTexture.h"
 #include "utPlatform.h"
 #include <cstdlib>
 #include <cstring>
 #include <string>
-using namespace std;
 
 #ifdef PLATFORM_WIN
 #   define WIN32_LEAN_AND_MEAN 1
-#	define NOMINMAX
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif
 #	include <windows.h>
 #endif
+
+#include "utDebug.h"
+
+using namespace std;
 
 
 bool initialized;
@@ -56,7 +65,7 @@ inline const string &safeStr( const char *str, int index )
 
 DLLEXP const char *h3dGetVersionString()
 {
-	return versionString;
+	return Modules::versionString;
 }
 
 
@@ -82,73 +91,7 @@ DLLEXP bool h3dInit()
 	}
 	initialized = true;
 
-	Modules::init();
-
-	// Register renderer before resources so that they can upload data to the GPU
-	if( !Modules::renderer().init() ) return false;
-
-	// Register resource types
-	Modules::resMan().registerType( ResourceTypes::SceneGraph, "SceneGraph", 0x0, 0x0,
-		SceneGraphResource::factoryFunc );
-	Modules::resMan().registerType( ResourceTypes::Geometry, "Geometry", GeometryResource::initializationFunc,
-		GeometryResource::releaseFunc, GeometryResource::factoryFunc );
-	Modules::resMan().registerType( ResourceTypes::Animation, "Animation", 0x0, 0x0,
-		AnimationResource::factoryFunc );
-	Modules::resMan().registerType( ResourceTypes::Material, "Material", 0x0, 0x0,
-		MaterialResource::factoryFunc );
-	Modules::resMan().registerType( ResourceTypes::Code, "Code", 0x0, 0x0,
-		CodeResource::factoryFunc );
-	Modules::resMan().registerType( ResourceTypes::Shader, "Shader", 0x0, 0x0,
-		ShaderResource::factoryFunc );
-	Modules::resMan().registerType( ResourceTypes::Texture, "Texture", TextureResource::initializationFunc,
-		TextureResource::releaseFunc, TextureResource::factoryFunc );
-	Modules::resMan().registerType( ResourceTypes::ParticleEffect, "ParticleEffect", 0x0, 0x0,
-		ParticleEffectResource::factoryFunc );
-	Modules::resMan().registerType( ResourceTypes::Pipeline, "Pipeline", 0x0, 0x0,
-		PipelineResource::factoryFunc );
-
-	// Register node types
-	Modules::sceneMan().registerType( SceneNodeTypes::Group, "Group",
-		GroupNode::parsingFunc, GroupNode::factoryFunc, 0x0 );
-	Modules::sceneMan().registerType( SceneNodeTypes::Model, "Model",
-		ModelNode::parsingFunc, ModelNode::factoryFunc, Renderer::drawModels );
-	Modules::sceneMan().registerType( SceneNodeTypes::Mesh, "Mesh",
-		MeshNode::parsingFunc, MeshNode::factoryFunc, 0x0 );
-	Modules::sceneMan().registerType( SceneNodeTypes::Joint, "Joint",
-		JointNode::parsingFunc, JointNode::factoryFunc, 0x0 );
-	Modules::sceneMan().registerType( SceneNodeTypes::Light, "Light",
-		LightNode::parsingFunc, LightNode::factoryFunc, 0x0 );
-	Modules::sceneMan().registerType( SceneNodeTypes::Camera, "Camera",
-		CameraNode::parsingFunc, CameraNode::factoryFunc, 0x0 );
-	Modules::sceneMan().registerType( SceneNodeTypes::Emitter, "Emitter",
-		EmitterNode::parsingFunc, EmitterNode::factoryFunc, Renderer::drawParticles );
-	
-	// Register extensions at last so that they can overwrite the registered resources and nodes
-	if( !Modules::extMan().init() ) return false;
-
-	// Create default resources
-	TextureResource *tex2DRes = new TextureResource(
-		"$Tex2D", 32, 32, TextureFormats::BGRA8, ResourceFlags::NoTexMipmaps );
-	void *image = tex2DRes->mapStream( TextureResData::ImageElem, 0, TextureResData::ImgPixelStream, false, true );
-	ASSERT( image != 0x0 );
-	for( int i = 0; i < 32*32; ++i ) ((int *)image)[i] = 0xffffffff;
-	tex2DRes->unmapStream();
-	tex2DRes->addRef();
-	Modules::resMan().addNonExistingResource( *tex2DRes, false );
-
-	TextureResource *texCubeRes = new TextureResource(
-		"$TexCube", 32, 32, TextureFormats::BGRA8, ResourceFlags::TexCubemap | ResourceFlags::NoTexMipmaps );
-	for( uint32 i = 0; i < 6; ++i )
-	{
-		void *image = texCubeRes->mapStream( TextureResData::ImageElem, i, TextureResData::ImgPixelStream, false, true );
-		ASSERT( image != 0x0 );
-		for( int i = 0; i < 32*32; ++i ) ((int *)image)[i] = 0xff000000;
-		texCubeRes->unmapStream();
-	}
-	texCubeRes->addRef();
-	Modules::resMan().addNonExistingResource( *texCubeRes, false );
-	
-	return true;
+	return Modules::init();
 }
 
 

@@ -12,6 +12,7 @@
 
 #include "egAnimation.h"
 #include "egModules.h"
+#include "egCom.h"
 
 #include "utDebug.h"
 

@@ -12,6 +12,7 @@
 
 #include "egRendererBase.h"
 #include "egModules.h"
+#include "egCom.h"
 #include "utOpenGL.h"
 
 #include "utDebug.h"

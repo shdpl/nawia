@@ -1,6 +1,6 @@
 
 include_directories(../../Bindings/C++)
-include_directories(../../Dependencies/Include)
+include_directories(../glfw)
 
 IF(MSVC)
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup ")

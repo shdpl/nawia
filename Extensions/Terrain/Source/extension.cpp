@@ -10,21 +10,24 @@
 // *************************************************************************************************
 
 #include "utPlatform.h"
-
-#include "terrain.h"
 #include "egModules.h"
+#include "egCom.h"
+#include "egRenderer.h"
+#include "extension.h"
+#include "terrain.h"
 
-using namespace std;
+#include "utDebug.h"
 
+
+// Internal extension interface
 namespace Horde3DTerrain
 {
-	const char *getExtensionName()
+	const char *ExtTerrain::getName()
 	{
 		return "Terrain";
 	}
 	
-	
-	bool initExtension()
+	bool ExtTerrain::init()
 	{
 		Modules::sceneMan().registerType( SNT_TerrainNode, "Terrain",
 			TerrainNode::parsingFunc, TerrainNode::factoryFunc, TerrainNode::renderFunc );
@@ -41,15 +44,18 @@ namespace Horde3DTerrain
 		return true;
 	}
 
-	
-	void releaseExtension()
+	void ExtTerrain::release()
 	{
 		Modules::renderer().releaseVertexLayout( TerrainNode::vlTerrain );
 		Modules::renderer().releaseShaderComb( TerrainNode::debugViewShader );
 	}
+}
 
-	
-	string safeStr( const char *str )
+
+// Public C API
+namespace Horde3DTerrain
+{
+	std::string safeStr( const char *str )
 	{
 		if( str != 0x0 ) return str;
 		else return "";

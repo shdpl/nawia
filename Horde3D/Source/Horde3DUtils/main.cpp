@@ -16,7 +16,9 @@
 #include <math.h>
 #ifdef PLATFORM_WIN
 #	define WIN32_LEAN_AND_MEAN 1
-#	define NOMINMAX
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif
 #	include <windows.h>
 #endif
 #ifndef PLATFORM_MAC
@@ -30,6 +32,7 @@
 #include <map>
 #include <fstream>
 #include <iomanip>
+
 using namespace std;
 
 #ifdef __MINGW32__

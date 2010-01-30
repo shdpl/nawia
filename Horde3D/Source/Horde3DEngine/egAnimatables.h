@@ -16,9 +16,9 @@
 #include "egPrerequisites.h"
 #include "egScene.h"
 #include "egAnimation.h"
-#include "egMaterial.h"
 #include "utMath.h"
 
+class MaterialResource;
 class ModelNode;
 
 

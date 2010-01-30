@@ -22,6 +22,7 @@
 // *************************************************************************************************
 
 #include "egModules.h"
+#include "egCom.h"
 #include "utPlatform.h"
 #include "utMath.h"
 

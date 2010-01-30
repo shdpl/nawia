@@ -12,10 +12,12 @@
 
 #include "egCamera.h"
 #include "egModules.h"
+#include "egRenderer.h"
 
 #include "utDebug.h"
 
 using namespace std;
+
 
 CameraNode::CameraNode( const CameraNodeTpl &cameraTpl ) :
 	SceneNode( cameraTpl )

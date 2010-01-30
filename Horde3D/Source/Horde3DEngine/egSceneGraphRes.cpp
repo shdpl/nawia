@@ -12,12 +12,14 @@
 
 #include "egSceneGraphRes.h"
 #include "egModules.h"
+#include "egCom.h"
 #include "utXMLParser.h"
 #include "utPlatform.h"
 
 #include "utDebug.h"
 
 using namespace std;
+
 
 SceneGraphResource::SceneGraphResource( const string &name, int flags ) :
 	Resource( ResourceTypes::SceneGraph, name, flags )

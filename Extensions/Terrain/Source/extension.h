@@ -12,11 +12,19 @@
 #ifndef _Horde3DTerrain_extension_H_
 #define _Horde3DTerrain_extension_H_
 
+#include "egPrerequisites.h"
+#include "egExtensions.h"
+
+
 namespace Horde3DTerrain
 {
-	const char *getExtensionName();
-	bool initExtension();
-	void releaseExtension();
+	class ExtTerrain: public IExtension
+	{
+	public:
+		virtual const char *getName();
+		virtual bool init();
+		virtual void release();
+	};
 }
 
 #endif	// _Horde3DTerrain_extension_H_

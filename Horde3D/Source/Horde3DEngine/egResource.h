@@ -15,9 +15,9 @@
 
 #include "egPrerequisites.h"
 #include "utMath.h"
+#include <string>
 #include <vector>
 #include <map>
-#include <string>
 
 
 // =================================================================================================

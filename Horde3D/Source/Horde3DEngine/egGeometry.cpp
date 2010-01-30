@@ -11,13 +11,16 @@
 // *************************************************************************************************
 
 #include "egGeometry.h"
-#include "egAnimation.h"
 #include "egResource.h"
+#include "egAnimation.h"
 #include "egModules.h"
+#include "egCom.h"
+#include "egRenderer.h"
 
 #include "utDebug.h"
 
 using namespace std;
+
 
 uint32 GeometryResource::defVertBuffer = 0;
 uint32 GeometryResource::defIndexBuffer = 0;

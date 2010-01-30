@@ -11,13 +11,13 @@
 // *************************************************************************************************
 
 #include "egScene.h"
-#include "egModules.h"
 #include "egSceneGraphRes.h"
-#include "egModel.h"
-#include "egMaterial.h"
 #include "egLight.h"
 #include "egCamera.h"
 #include "egParticle.h"
+#include "egModules.h"
+#include "egCom.h"
+#include "egRenderer.h"
 
 #include "utDebug.h"
 

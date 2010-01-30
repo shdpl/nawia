@@ -13,15 +13,17 @@
 #include "utils.h"
 #include "utPlatform.h"
 #include <iostream>
-using namespace std;
 
 #ifdef PLATFORM_WIN
 #   define WIN32_LEAN_AND_MEAN 1
-#	define NOMINMAX
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif
 #	include <windows.h>
 #endif
 
 using namespace std;
+
 
 bool parseString( char *s, unsigned int &pos, string &token )
 {

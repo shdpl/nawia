@@ -12,6 +12,8 @@
 
 #include "egShader.h"
 #include "egModules.h"
+#include "egCom.h"
+#include "egRenderer.h"
 #include "utXMLParser.h"
 #include "utPlatform.h"
 #include <fstream>

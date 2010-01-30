@@ -11,9 +11,12 @@
 // *************************************************************************************************
 
 #include "egCom.h"
+#include "utMath.h"
 #include "egModules.h"
+#include "egRenderer.h"
 #include <stdarg.h>
 #include <stdio.h>
+
 #include "utDebug.h"
 
 

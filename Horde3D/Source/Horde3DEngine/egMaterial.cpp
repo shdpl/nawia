@@ -12,14 +12,15 @@
 
 #include "egMaterial.h"
 #include "egTexture.h"
-#include "egCom.h"
 #include "egModules.h"
+#include "egCom.h"
 #include "utPlatform.h"
 #include "utXMLParser.h"
 
 #include "utDebug.h"
 
 using namespace std;
+
 
 MaterialResource::MaterialResource( const string &name, int flags ) :
 	Resource( ResourceTypes::Material, name, flags )

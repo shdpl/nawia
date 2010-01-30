@@ -14,8 +14,6 @@
 #define _egPipeline_H_
 
 #include "egPrerequisites.h"
-#include "egRendererBase.h"
-#include "egResource.h"
 #include "egMaterial.h"
 #include <string>
 #include <vector>

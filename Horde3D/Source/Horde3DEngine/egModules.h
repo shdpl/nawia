@@ -14,15 +14,15 @@
 #define _egModules_H_
 
 #include "egPrerequisites.h"
-#include "egCom.h"
-#include "egScene.h"
-#include "egResource.h"
-#include "egRenderer.h"
-#include "egPipeline.h"
-#include "egExtensions.h"
 
-
-extern const char *versionString;
+// Forward declarations
+class EngineConfig;
+class EngineLog;
+class StatManager;
+class SceneManager;
+class ResourceManager;
+class Renderer;
+class ExtensionManager;
 
 
 // =================================================================================================
@@ -43,9 +43,13 @@ private:
 	static Renderer          *_renderer;
 	static ExtensionManager  *_extensionManager;
 
+	static void installExtensions();
+
 public:
 
-	static void init();
+	static const char *versionString;
+	
+	static bool init();
 	static void release();
 
 	static void setError( const char *error );

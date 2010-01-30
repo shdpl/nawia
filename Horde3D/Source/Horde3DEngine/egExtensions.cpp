@@ -12,43 +12,33 @@
 
 #include "egExtensions.h"
 
-// Include files for extensions
-
-#ifdef CMAKE
-
-#include "egExtensions_auto_include.h"
-
-#else
-
-#include "Terrain/Source/extension.h"
-// Lib files for extensions
-#pragma comment( lib, "Extension_Terrain.lib" )
-
-#ifndef QMAKE
-#include "Sound/Source/sound_extension.h"
-#pragma comment( lib, "Extension_Sound.lib" )
-#endif
-
-#endif
+#include "utDebug.h"
 
 
-bool ExtensionManager::installExtensions()
+ExtensionManager::~ExtensionManager()
 {
-	// Install desired extensions here
+	for( uint32 i = 0; i < _extensions.size(); ++i )
+	{
+		_extensions[i]->release();
+		delete _extensions[i];
+	}
 
-#ifdef CMAKE
+	_extensions.clear();
+}
 
-	#include "egExtensions_auto_install.h"
-	
-#else
-	
-	installExtension( Horde3DTerrain::getExtensionName, Horde3DTerrain::initExtension, Horde3DTerrain::releaseExtension );
 
-#ifndef QMAKE
-        installExtension( Horde3DSound::getExtensionName, Horde3DSound::initExtension, Horde3DSound::releaseExtension );
-#endif
+bool ExtensionManager::checkExtension( const std::string &name )
+{
+	for( uint32 i = 0; i < _extensions.size(); ++i )
+	{
+		if( strcmp( _extensions[i]->getName(), name.c_str() ) == 0 ) return true;
+	}
+	return false;
+}
 
-#endif
 
-	return true;
+bool ExtensionManager::installExtension( IExtension *extension )
+{
+	_extensions.push_back( extension );
+	return _extensions.back()->init();
 }

@@ -28,7 +28,7 @@ if(HORDE3D_BUILD_TERRAIN)
 		)
 	set(HORDE3D_EXTENSION_INSTALLS
 		${HORDE3D_EXTENSION_INSTALLS}
-		"installExtension(Horde3DTerrain::getExtensionName, Horde3DTerrain::initExtension, Horde3DTerrain::releaseExtension);\n"
+		"extMan().installExtension( new Horde3DTerrain::ExtTerrain() );\n"		
 		)
 	set(HORDE3D_EXTENSION_INCLUDES
 		${HORDE3D_EXTENSION_INCLUDES}
@@ -52,7 +52,7 @@ if(HORDE3D_BUILD_SOUND)
 		)
 	set(HORDE3D_EXTENSION_INSTALLS
 		${HORDE3D_EXTENSION_INSTALLS}
-		"installExtension(Horde3DSound::getExtensionName, Horde3DSound::initExtension, Horde3DSound::releaseExtension);\n"
+		"extMan().installExtension( new Horde3DTerrain::ExtTerrain() );\n"
 		)
 	set(HORDE3D_EXTENSION_INCLUDES
 		${HORDE3D_EXTENSION_INCLUDES}

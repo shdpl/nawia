@@ -21,8 +21,10 @@
 //
 // *************************************************************************************************
 
+#include "sound_extension.h"
 #include "utPlatform.h"
 #include "egModules.h"
+#include "egCom.h"
 
 #include "manager.h"
 #include "listener.h"
@@ -57,12 +59,12 @@ std::string safeStr( const char *str )
 namespace Horde3DSound
 {
 
-	const char *getExtensionName()
+	const char *ExtSound::getName()
 	{
 		return "Sound";
 	}
 
-	bool initExtension()
+	bool ExtSound::init()
 	{
 		Modules::resMan().registerType( RST_SoundResource, "Sound", 0x0, 0x0, SoundResource::factoryFunc );
 
@@ -76,7 +78,7 @@ namespace Horde3DSound
 		return true;
 	}
 
-	void releaseExtension()
+	void ExtSound::release()
 	{
 		SoundManager::instance()->release();
 	}

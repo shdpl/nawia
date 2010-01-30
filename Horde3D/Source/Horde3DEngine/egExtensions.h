@@ -14,76 +14,39 @@
 #define _egExtensions_H_
 
 #include "egPrerequisites.h"
-#include <cstdlib>
-#include <cstring>
 #include <string>
 #include <vector>
 
 
-typedef const char *(*ExtensionNameFunc)();
-typedef bool (*ExtensionInitFunc)();
-typedef void (*ExtensionReleaseFunc)();
+// =================================================================================================
+// IExtension
+// =================================================================================================
+
+class IExtension
+{
+public:
+	virtual const char *getName() = 0;
+	virtual bool init() = 0;
+	virtual void release() = 0;
+};
 
 
 // =================================================================================================
 // Extension Manager
 // =================================================================================================
 
-struct Extension
-{
-	std::string           name;
-	ExtensionInitFunc     initFunc;
-	ExtensionReleaseFunc  releaseFunc;
-};
-
-// =================================================================================================
-
 class ExtensionManager
 {
 protected:
 
-	std::vector< Extension >  _extensions;
-
-	void installExtension( ExtensionNameFunc nameFunc, ExtensionInitFunc initFunc,
-	                       ExtensionReleaseFunc releaseFunc )
-	{
-		Extension ext;
-		ext.name = (*nameFunc)();
-		ext.initFunc = initFunc;
-		ext.releaseFunc = releaseFunc;
-		_extensions.push_back( ext );
-	}
+	std::vector< IExtension * >  _extensions;
 
 public:
 
-	~ExtensionManager()
-	{
-		for( uint32 i = 0; i < _extensions.size(); ++i )
-		{	
-			(*_extensions[i].releaseFunc)();
-		}
-	}
+	~ExtensionManager();
 	
-	bool init()
-	{
-		installExtensions();
-		for( uint32 i = 0; i < _extensions.size(); ++i )
-		{
-			if( !(*_extensions[i].initFunc)() ) return false;
-		}
-		return true;
-	}
-
-	bool checkExtension( const std::string &name )
-	{
-		for( uint32 i = 0; i < _extensions.size(); ++i )
-		{
-			if( _extensions[i].name == name ) return true;
-		}
-		return false;
-	}
-
-	bool installExtensions();
+	bool installExtension( IExtension *extension );
+	bool checkExtension( const std::string &name );
 };
 
 #endif // _egExtensions_H_

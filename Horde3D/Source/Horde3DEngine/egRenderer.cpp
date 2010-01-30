@@ -12,18 +12,16 @@
 
 #include "egRenderer.h"
 #include "utOpenGL.h"
-#include "egModules.h"
-#include "egGeometry.h"
-#include "egModel.h"
 #include "egParticle.h"
-#include "egMaterial.h"
-#include "egTexture.h"
-#include "egShader.h"
 #include "egLight.h"
+#include "egCamera.h"
+#include "egModules.h"
+#include "egCom.h"
 
 #include "utDebug.h"
 
 using namespace std;
+
 
 const char *vsDefColor =
 	"uniform mat4 worldMat;\n"

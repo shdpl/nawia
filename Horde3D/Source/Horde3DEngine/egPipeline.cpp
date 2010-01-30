@@ -11,14 +11,17 @@
 // *************************************************************************************************
 
 #include "egPipeline.h"
-#include "egModules.h"
 #include "egMaterial.h"
+#include "egModules.h"
+#include "egCom.h"
+#include "egRenderer.h"
 #include "utXMLParser.h"
 #include "utPlatform.h"
 #include <fstream>
-using namespace std;
 
 #include "utDebug.h"
+
+using namespace std;
 
 
 PipelineResource::PipelineResource( const string &name, int flags ) :

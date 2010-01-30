@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Coconut_shy"
 	ProjectGUID="{0D5CC932-3AEA-4AB2-802C-D4DA76A3A390}"
 	RootNamespace="Coconut_shy"
@@ -25,7 +25,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\libs\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\Include\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -105,7 +105,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\libs\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\Include\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -183,7 +183,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\libs\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\Include\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

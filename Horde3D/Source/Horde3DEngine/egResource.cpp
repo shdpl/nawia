@@ -12,12 +12,7 @@
 
 #include "egResource.h"
 #include "egModules.h"
-#include "egGeometry.h"
-#include "egSceneGraphRes.h"
-#include "egTexture.h"
-#include "egMaterial.h"
-#include "egAnimation.h"
-#include "egShader.h"
+#include "egCom.h"
 #include <sstream>
 
 #include "utDebug.h"

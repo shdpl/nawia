@@ -16,15 +16,17 @@
 
 #ifdef PLATFORM_WIN
 #   define WIN32_LEAN_AND_MEAN 1
-#	define NOMINMAX
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif
 #	include <windows.h>
 #	include <direct.h>
 #else
 #	include <sys/stat.h>
 #endif
 
-
 using namespace std;
+
 
 int main( int argc, char **argv )
 {
