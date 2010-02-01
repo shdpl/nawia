@@ -78,6 +78,7 @@ type
     MaxAnisotropy       - Sets the maximum quality for anisotropic filtering. (Values: 1, 2, 4, 8; Default: 1)
     TexCompression      - Enables or disables texture compression; only affects textures that are
                           loaded after setting the option. (Values: 0, 1; Default: 0)
+    SRGBLinearization   - Eanbles or disables gamma-to-linear-space conversion of input textures that are tagged as sRGB (Values: 0, 1; Default: 0)
     LoadTextures        - Enables or disables loading of texture images; option can be used to
                           minimize loading times for testing. (Values: 0, 1; Default: 1)
     FastAnimation       - Disables or enables inter-frame interpolation for animations. (Values: 0, 1; Default: 1)
@@ -96,6 +97,7 @@ type
     H3DOptions_TrilinearFiltering,
     H3DOptions_MaxAnisotropy,
     H3DOptions_TexCompression,
+    H3DOptions_SRGBLinearization,
     H3DOptions_LoadTextures,
     H3DOptions_FastAnimation,
     H3DOptions_ShadowMapSize,
@@ -171,6 +173,8 @@ const
     TexCubemap        - Sets Texture resource to be a cubemap.
     TexDynamic        - Enables more efficient updates of Texture resource streams.
     TexRenderable     - Makes Texture resource usable as render target.
+    TexSRGB           - Indicates that Texture resource is in sRGB color space and should be converted
+                        to linear space when being sampled.
   }
   H3DResFlags_NoQuery: Integer = 1;
   H3DResFlags_NoTexCompression: Integer = 2;
@@ -178,6 +182,7 @@ const
   H3DResFlags_TexCubemap: Integer = 8;
   H3DResFlags_TexDynamic: Integer = 16;
   H3DResFlags_TexRenderable: Integer = 32;
+  H3DResFlags_TexSRGB: Integer = 64;
 
 type
   H3DFormats = (
@@ -274,6 +279,7 @@ type
     ContNameStr     - Name of context [read-only]
     SampNameStr     - Name of sampler [read-only]
     UnifNameStr     - Name of uniform [read-only]
+    UnifSizeI       - Size (number of components) of uniform [read-only]
     UnifDefValueF4  - Default value of uniform (a, b, c, d)
   }
     H3DShaderRes_ContextElem = 600,
@@ -282,6 +288,7 @@ type
     H3DShaderRes_ContNameStr,
     H3DShaderRes_SampNameStr,
     H3DShaderRes_UnifNameStr,
+    H3DShaderRes_UnifSizeI,
     H3DShaderRes_UnifDefValueF4,
 
   {
@@ -848,7 +855,7 @@ function h3dGetResName(res: H3DRes): PAnsiChar; cdecl; external Horde3DLib;
     The first iteration step should start at 0 and iteration can be ended when the function returns 0.
 
   Parameters:
-    type   - type of resource to be searched (ResourceTypes::Undefined for all types)
+    type   - type of resource to be searched (H3DResTypes::Undefined for all types)
     start  - resource handle after which the search begins (can be 0 for beginning of resource list)
 
   Returns:
@@ -1386,7 +1393,7 @@ function h3dGetNodeParent(node: H3DNode): H3DNode; cdecl; external Horde3DLib;
   Details:
     This function relocates a scene node. It detaches the node from its current parent and attaches
     it to the specified new parent node. If the attachment to the new parent is not possible, the
-    function returns false. Relocation is not possible for the RootNode.
+    function returns false. Relocation is not possible for the H3DRootNode.
 
   Parameters:
     node    - handle to the scene node to be relocated
@@ -1719,7 +1726,7 @@ procedure h3dGetNodeAABB(node: H3DNode;
   Parameters:
     startNode  - handle to the node where the search begins
     name       - name of nodes to be searched (empty string for all nodes)
-    type       - type of nodes to be searched (SceneNodeTypes::Undefined for all types)
+    type       - type of nodes to be searched (H3DNodeTypes::Undefined for all types)
 
   Returns:
     number of search results
