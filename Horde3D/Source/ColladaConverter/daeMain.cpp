@@ -16,6 +16,14 @@
 
 using namespace std;
 
+
+ColladaDocument::ColladaDocument()
+{
+	scene = 0x0;
+	y_up = true;
+}
+
+
 bool ColladaDocument::parseFile( const string &fileName )
 {
 	// Parse Collada file

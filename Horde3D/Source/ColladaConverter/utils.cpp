@@ -20,6 +20,9 @@
 #		define NOMINMAX
 #	endif
 #	include <windows.h>
+#	include <direct.h>
+#else
+#	include <sys/stat.h>  // For mkdir
 #endif
 
 using namespace std;
@@ -149,9 +152,9 @@ string extractFileName( const string &fullPath, bool extension )
 
 string extractFilePath( const string &fullPath )
 {
-	int last = (int)fullPath.length() - 1;
+	int last = 0;
 	
-	for( int i = last; i >= 0; --i )
+	for( int i = (int)fullPath.length() - 1; i >= 0; --i )
 	{
 		if( fullPath[i] == '\\' || fullPath[i] == '/' )
 		{
@@ -161,6 +164,18 @@ string extractFilePath( const string &fullPath )
 	}
 
 	return fullPath.substr( 0, last );
+}
+
+
+string cleanPath( const string &path )
+{
+	size_t len = path.length();
+	if( len == 0 ) return path;
+	
+	if( path[len - 1] == '/' || path[len - 1] == '\\' )
+		return path.substr( 0, len - 1 );
+	else
+		return path;
 }
 
 
@@ -206,4 +221,23 @@ Matrix4f makeMatrix4f( float *floatArray16, bool y_up )
 	}
 
 	return mat;
+}
+
+
+void createDirectories( const string &basePath, const string &newPath )
+{
+	if( newPath.empty() ) return;
+	
+	string tmpString;
+	tmpString.reserve( 256 );
+	size_t i = 0, len = newPath.length();
+
+	while( ++i < len )
+	{
+		if( newPath[i] == '/' || newPath[i] == '\\' || i == len-1 )
+		{
+			tmpString = basePath + newPath.substr( 0, ++i );
+			_mkdir( tmpString.c_str() );
+		}
+	}
 }

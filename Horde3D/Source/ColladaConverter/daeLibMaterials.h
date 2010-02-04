@@ -37,9 +37,9 @@ struct DaeMaterial
 
 	bool parse( const XMLNode &matNode )
 	{
-		id = matNode.getAttribute( "id", "" );
-		if( id == "" ) return false;
+		id = matNode.getAttribute( "id", "unnamed" );
 		name = matNode.getAttribute( "name", "" );
+		if( name.empty() ) name = id;
 		
 		XMLNode node1 = matNode.getChildNode( "instance_effect" );
 		if( !node1.isEmpty() )

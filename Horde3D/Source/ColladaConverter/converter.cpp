@@ -26,7 +26,8 @@
 using namespace std;
 
 
-Converter::Converter( const string &outPath, float *lodDists )
+Converter::Converter( ColladaDocument &doc, const string &outPath, float *lodDists ) :
+	_daeDoc( doc )
 {
 	_outPath = outPath;
 	
@@ -48,14 +49,14 @@ Converter::~Converter()
 }
 
 
-Matrix4f Converter::getNodeTransform( ColladaDocument &doc, DaeNode &node, unsigned int frame )
+Matrix4f Converter::getNodeTransform( DaeNode &node, unsigned int frame )
 {
 	// Note: Function assumes sampled animation data
 	
 	for( unsigned int i = 0; i < node.transStack.size(); ++i )
 	{
 		int compIndex;
-		DaeSampler *sampler = doc.libAnimations.findAnimForTarget( node.id, node.transStack[i].sid, &compIndex );
+		DaeSampler *sampler = _daeDoc.libAnimations.findAnimForTarget( node.id, node.transStack[i].sid, &compIndex );
 
 		if( sampler != 0x0 )
 		{
@@ -96,7 +97,7 @@ Matrix4f Converter::getNodeTransform( ColladaDocument &doc, DaeNode &node, unsig
 		}
 	}
 
-	return makeMatrix4f( node.assembleAnimMatrix().transposed().x, doc.y_up );
+	return makeMatrix4f( node.assembleAnimMatrix().transposed().x, _daeDoc.y_up );
 }
 
 
@@ -149,33 +150,33 @@ void Converter::checkNodeName( SceneNode *node )
 }
 
 
-bool Converter::validateInstance( ColladaDocument &doc, const std::string &instanceId )
+bool Converter::validateInstance( const std::string &instanceId )
 {
 	string id = instanceId;
 	
-	DaeSkin *skin = doc.libControllers.findSkin( id );
-	DaeMorph *morpher = doc.libControllers.findMorph( id );
+	DaeSkin *skin = _daeDoc.libControllers.findSkin( id );
+	DaeMorph *morpher = _daeDoc.libControllers.findMorph( id );
 	
 	// Resolve controller stack
 	if( skin != 0x0 )
 	{	
 		id = skin->ownerId;
-		morpher = doc.libControllers.findMorph( id );
+		morpher = _daeDoc.libControllers.findMorph( id );
 		if( morpher != 0x0 ) id = morpher->ownerId;
 	}
 	else if( morpher != 0x0 )
 	{
 		id = morpher->ownerId;
-		skin = doc.libControllers.findSkin( id );
+		skin = _daeDoc.libControllers.findSkin( id );
 		if( skin != 0x0 ) id = skin->ownerId;
 	}
 	
-	DaeGeometry *geo = doc.libGeometries.findGeometry( id );
+	DaeGeometry *geo = _daeDoc.libGeometries.findGeometry( id );
 	return geo != 0x0 && !geo->triGroups.empty();
 }
 
 
-SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNode *parentNode,
+SceneNode *Converter::processNode( DaeNode &node, SceneNode *parentNode,
                                    Matrix4f transAccum, vector< Matrix4f > animTransAccum )
 {
 	// Note: animTransAccum is used for pure transformation nodes of Collada that are no joints or meshes
@@ -190,14 +191,14 @@ SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNod
 	
 	if (node.reference )
 	{
-		DaeNode* n = doc.libNodes.findNode( node.name );
-		if( n )	return processNode( doc, *n, parentNode, transAccum, animTransAccum );
+		DaeNode* n = _daeDoc.libNodes.findNode( node.name );
+		if( n )	return processNode( *n, parentNode, transAccum, animTransAccum );
 		else log( "Warning: undefined reference '"+ node.name +"' in instance_node" );
 		return 0x0;
 	}
 
 	// Assemble matrix
-	Matrix4f relMat = transAccum * makeMatrix4f( node.assembleMatrix().transposed().x, doc.y_up );
+	Matrix4f relMat = transAccum * makeMatrix4f( node.assembleMatrix().transposed().x, _daeDoc.y_up );
 	
 	SceneNode *oNode = 0x0;
 	
@@ -205,7 +206,7 @@ SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNod
 	std::vector< int > validInsts;
 	for( unsigned int i = 0; i < node.instances.size(); ++i )
 	{
-		if( validateInstance( doc, node.instances[i].url ) )
+		if( validateInstance( node.instances[i].url ) )
 			validInsts.push_back( i );
 	}
 	
@@ -304,7 +305,7 @@ SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNod
 	// Animation
 	for( unsigned int i = 0; i < _frameCount; ++i )
 	{
-		Matrix4f mat = animTransAccum[i] * getNodeTransform( doc, node, i );
+		Matrix4f mat = animTransAccum[i] * getNodeTransform( node, i );
 		if( oNode != 0x0 )
 		{
 			oNode->frames.push_back( mat );
@@ -318,7 +319,7 @@ SceneNode *Converter::processNode( ColladaDocument &doc, DaeNode &node, SceneNod
 	{
 		SceneNode *parNode = oNode != 0x0 ? oNode : parentNode;
 		
-		SceneNode *childNode = processNode( doc, *node.children[i], parNode,
+		SceneNode *childNode = processNode( *node.children[i], parNode,
 		                                    transAccum, animTransAccum );
 		if( childNode != 0x0 && parNode != 0x0 ) parNode->children.push_back( childNode );
 	}
@@ -420,7 +421,7 @@ void Converter::processJoints()
 }
 
 
-void Converter::processMeshes( ColladaDocument &doc, bool optimize )
+void Converter::processMeshes( bool optimize )
 {
 	// Note: At the moment the geometry for all nodes is copied and not referenced
 	for( unsigned int i = 0; i < _meshes.size(); ++i )
@@ -444,20 +445,20 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 		// Find geometry/controller for node
 		string id = _meshes[i]->daeInstance->url;
 		
-		DaeSkin *skin = doc.libControllers.findSkin( id );
-		DaeMorph *morpher = doc.libControllers.findMorph( id );
+		DaeSkin *skin = _daeDoc.libControllers.findSkin( id );
+		DaeMorph *morpher = _daeDoc.libControllers.findMorph( id );
 		
 		// Resolve controller stack
 		if( skin != 0x0 )
 		{	
 			id = skin->ownerId;
-			morpher = doc.libControllers.findMorph( id );
+			morpher = _daeDoc.libControllers.findMorph( id );
 			if( morpher != 0x0 ) id = morpher->ownerId;
 		}
 		else if( morpher != 0x0 )
 		{
 			id = morpher->ownerId;
-			skin = doc.libControllers.findSkin( id );
+			skin = _daeDoc.libControllers.findSkin( id );
 			if( skin != 0x0 ) id = skin->ownerId;
 		}
 
@@ -471,7 +472,7 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 			}
 		}
 		
-		DaeGeometry *geo = doc.libGeometries.findGeometry( id );
+		DaeGeometry *geo = _daeDoc.libGeometries.findGeometry( id );
 		ASSERT( geo != 0x0 );
 		
 		vector< Joint * > jointLookup;
@@ -502,7 +503,7 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 			}
 			
 			// Find bind matrices
-			Matrix4f bindShapeMat = makeMatrix4f( &skin->bindShapeMat[0], doc.y_up );
+			Matrix4f bindShapeMat = makeMatrix4f( &skin->bindShapeMat[0], _daeDoc.y_up );
 			for( unsigned int j = 0; j < skin->jointArray->stringArray.size(); ++j )
 			{
 				if( jointLookup[j] != 0x0 )
@@ -510,7 +511,7 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 					jointLookup[j]->used = true;
 					
 					jointLookup[j]->daeInvBindMat =
-						makeMatrix4f( &skin->bindMatArray->floatArray[j * 16], doc.y_up );
+						makeMatrix4f( &skin->bindMatArray->floatArray[j * 16], _daeDoc.y_up );
 
 					// Multiply bind matrices with bind shape matrix
 					jointLookup[j]->daeInvBindMat = jointLookup[j]->daeInvBindMat * bindShapeMat;
@@ -525,12 +526,15 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 			DaeTriGroup &iTriGroup = geo->triGroups[j];
 			TriGroup oTriGroup;
 
-			oTriGroup.matName = _meshes[i]->daeInstance->materialBindings[iTriGroup.matId];
-			DaeMaterial *mat = doc.libMaterials.findMaterial( oTriGroup.matName );
-			if( mat == 0x0 )
-				log( "Warning: Material '" + oTriGroup.matName + "' not found" );
-			else
+			DaeMaterial *mat = _daeDoc.libMaterials.findMaterial(
+				_meshes[i]->daeInstance->materialBindings[iTriGroup.matId] );
+			if( mat != 0x0 )
+			{
+				oTriGroup.matName = mat->name;
 				mat->used = true;
+			}
+			else
+				log( "Warning: Material '" + oTriGroup.matName + "' not found" );
 
 			oTriGroup.first = (unsigned int)_indices.size();
 			oTriGroup.count = (unsigned int)iTriGroup.indices.size();
@@ -581,7 +585,7 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 					// Position
 					v.storedPos = iTriGroup.getPos( v.daePosIndex );
 					v.pos = v.storedPos;
-					if( !doc.y_up )
+					if( !_daeDoc.y_up )
 					{	
 						swap( v.pos.y, v.pos.z );
 						v.pos.z *= -1;
@@ -682,7 +686,7 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 			for( unsigned int j = 0; j < morpher->targetArray->stringArray.size(); ++j )
 			{
 				string targetId = morpher->targetArray->stringArray[j];
-				DaeGeometry *targetGeo = doc.libGeometries.findGeometry( targetId );
+				DaeGeometry *targetGeo = _daeDoc.libGeometries.findGeometry( targetId );
 				if( targetGeo == 0x0 ) continue;
 				
 				// Try to find morph target
@@ -727,7 +731,7 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 					
 					if( targetPos != basePos )
 					{
-						if( !doc.y_up )
+						if( !_daeDoc.y_up )
 						{	
 							swap( targetPos.y, targetPos.z );
 							targetPos.z *= -1;
@@ -827,22 +831,22 @@ void Converter::processMeshes( ColladaDocument &doc, bool optimize )
 	}
 
 	// Output info about optimization
-	if( optNumCalls > 0 )
+	/*if( optNumCalls > 0 )
 	{
 		stringstream ss;
 		ss << fixed << setprecision( 3 );
 		ss << "Optimized geometry for vertex cache: from ATVR " << optEffBefore / optNumCalls;
 		ss << " to ATVR " << optEffAfter / optNumCalls;
 		log( ss.str() );
-	}
+	}*/
 }
 
 
-bool Converter::convertModel( ColladaDocument &doc, bool optimize )
+bool Converter::convertModel( bool optimize )
 {
-	if( doc.scene == 0x0 ) return true;		// Nothing to convert
+	if( _daeDoc.scene == 0x0 ) return true;		// Nothing to convert
 	
-	_frameCount = doc.libAnimations.maxFrameCount;
+	_frameCount = _daeDoc.libAnimations.maxFrameCount;
 
 	// Output default pose if no animation is available
 	if( _frameCount == 0 ) _frameCount = 1;
@@ -851,9 +855,9 @@ bool Converter::convertModel( ColladaDocument &doc, bool optimize )
 	animTransAccum.resize( _frameCount );
 	
 	// Process all nodes
-	for( unsigned int i = 0; i < doc.scene->nodes.size(); ++i )
+	for( unsigned int i = 0; i < _daeDoc.scene->nodes.size(); ++i )
 	{
-		processNode( doc, *doc.scene->nodes[i], 0x0, Matrix4f(), animTransAccum );
+		processNode( *_daeDoc.scene->nodes[i], 0x0, Matrix4f(), animTransAccum );
 	}
 
 	if( _animNotSampled )
@@ -861,15 +865,21 @@ bool Converter::convertModel( ColladaDocument &doc, bool optimize )
 
 	// Process joints and meshes
 	processJoints();
-	processMeshes( doc, optimize );
+	processMeshes( optimize );
 	
 	return true;
 }
 
 
-bool Converter::writeGeometry( const string &name )
+bool Converter::writeGeometry( const string &assetPath, const string &assetName )
 {
-	FILE *f = fopen( (_outPath + "/models/" + name + "/" + name + ".geo").c_str(), "wb" );
+	string fileName = _outPath + assetPath + assetName + ".geo";
+	FILE *f = fopen( fileName.c_str(), "wb" );
+	if( f == 0x0 )
+	{	
+		log( "Failed to write .geo file" );
+		return false;
+	}
 
 	// Write header
 	unsigned int version = 5;
@@ -1085,7 +1095,7 @@ bool Converter::writeGeometry( const string &name )
 }
 
 
-void Converter::writeSGNode( const string &modelName, SceneNode *node, unsigned int depth, ofstream &outf )
+void Converter::writeSGNode( const string &assetPath, SceneNode *node, unsigned int depth, ofstream &outf )
 {
 	Vec3f trans, rot, scale;
 	node->matRel.decompose( trans, rot, scale );
@@ -1107,7 +1117,7 @@ void Converter::writeSGNode( const string &modelName, SceneNode *node, unsigned 
 			outf << "name=\"" << (i > 0 ? "#" : "") << mesh->name << "\" ";
 			if( mesh->lodLevel > 0 ) outf << "lodLevel=\"" << mesh->lodLevel << "\" ";
 			outf << "material=\"";
-			outf << "models/" << modelName + "/" + mesh->triGroups[i].matName + ".material.xml\" ";
+			outf << assetPath + mesh->triGroups[i].matName + ".material.xml\" ";
 			
 			if( i == 0 )
 			{
@@ -1165,7 +1175,7 @@ void Converter::writeSGNode( const string &modelName, SceneNode *node, unsigned 
 	{
 		outf << ">\n";
 		for( unsigned int j = 0; j < node->children.size(); ++j )
-			writeSGNode( modelName, node->children[j], depth + 1, outf );
+			writeSGNode( assetPath, node->children[j], depth + 1, outf );
 
 		// Closing tag
 		for( unsigned int j = 0; j < depth + 1; ++j ) outf << "\t";
@@ -1175,12 +1185,17 @@ void Converter::writeSGNode( const string &modelName, SceneNode *node, unsigned 
 }
 
 
-bool Converter::writeSceneGraph( const string &name )
+bool Converter::writeSceneGraph( const string &assetPath, const string &assetName )
 {
 	ofstream outf;
-	outf.open( (_outPath + "/models/" + name + "/" + name + ".scene.xml").c_str(), ios::out );
+	outf.open( (_outPath + assetPath + assetName + ".scene.xml").c_str(), ios::out );
+	if( !outf.good() )
+	{
+		log( "Failed to write .scene file" );
+		return false;
+	}
 	
-	outf << "<Model name=\"" << name << "\" geometry=\"models/" << name << "/" << name << ".geo\"";
+	outf << "<Model name=\"" << assetName << "\" geometry=\"" << assetPath << assetName << ".geo\"";
 	if( _maxLodLevel >= 1 ) outf << " lodDist1=\"" << _lodDist1 << "\"";
 	if( _maxLodLevel >= 2 ) outf << " lodDist2=\"" << _lodDist2 << "\"";
 	if( _maxLodLevel >= 3 ) outf << " lodDist3=\"" << _lodDist3 << "\"";
@@ -1201,7 +1216,7 @@ bool Converter::writeSceneGraph( const string &name )
 	// Joints
 	for( unsigned int i = 0; i < _joints.size(); ++i )
 	{
-		if( _joints[i]->parent == 0x0 ) writeSGNode( name, _joints[i], 0, outf );
+		if( _joints[i]->parent == 0x0 ) writeSGNode( assetPath, _joints[i], 0, outf );
 	}
 
 	outf << "\n";
@@ -1209,7 +1224,7 @@ bool Converter::writeSceneGraph( const string &name )
 	// Meshes
 	for( unsigned int i = 0; i < _meshes.size(); ++i )
 	{
-		if( _meshes[i]->parent == 0x0 ) writeSGNode( name, _meshes[i], 0, outf );
+		if( _meshes[i]->parent == 0x0 ) writeSGNode( assetPath, _meshes[i], 0, outf );
 	}
 
 	outf << "</Model>\n";
@@ -1220,38 +1235,45 @@ bool Converter::writeSceneGraph( const string &name )
 }
 
 
-bool Converter::saveModel( const string &name )
+bool Converter::writeModel( const std::string &assetPath, const std::string &assetName )
 {
-	writeGeometry( name );
-	writeSceneGraph( name );
+	bool result = true;
+	
+	if( !writeGeometry( assetPath, assetName ) ) result = false;
+	if( !writeSceneGraph( assetPath, assetName ) ) result = false;
 
-	return true;
+	return result;
 }
 
 
-bool Converter::writeMaterials( ColladaDocument &doc, const string &name, bool replace )
+bool Converter::writeMaterials( const string &assetPath, bool replace )
 {
-	for( unsigned int i = 0; i < doc.libMaterials.materials.size(); ++i )
+	for( unsigned int i = 0; i < _daeDoc.libMaterials.materials.size(); ++i )
 	{
-		DaeMaterial &material = *doc.libMaterials.materials[i];
+		DaeMaterial &material = *_daeDoc.libMaterials.materials[i];
 		
 		if( !material.used ) continue;
 		
-		string fileName = _outPath + "/models/" + name + "/" + material.id + ".material.xml";
+		string fileName = _outPath + assetPath + material.name + ".material.xml";
 		
 		if( !replace )
 		{
-			// Skip writing material file it it already exists
+			// Skip writing material file if it already exists
 			ifstream inf( fileName.c_str() );
 			if( inf.good() )
 			{	
-				log( "Skipping material " + material.id + ".material.xml" );
+				log( "Skipping material '" + assetPath + material.name + ".material.xml'" );
 				continue;
 			}
 		}
 
 		ofstream outf;
 		outf.open( fileName.c_str(), ios::out );
+		if( !outf.good() )
+		{
+			log( "Failed writing .material.xml file" );
+			continue;
+		}
 
 		outf << "<Material>\n";
 		
@@ -1266,7 +1288,7 @@ bool Converter::writeMaterials( ColladaDocument &doc, const string &name, bool r
 			if( material.effect->diffuseMap != 0x0 )
 			{
 				outf << "\t<Sampler name=\"albedoMap\" map=\"";
-				outf << "models/" << name << "/" << material.effect->diffuseMap->fileName;
+				outf << assetPath << material.effect->diffuseMap->fileName;
 				outf << "\" />\n";
 			}
 		}
@@ -1328,9 +1350,14 @@ void Converter::writeAnimFrames( SceneNode &node, FILE *f )
 }
 
 
-bool Converter::writeAnimation( const string &name )
+bool Converter::writeAnimation( const string &assetPath, const string &assetName )
 {
-	FILE *f = fopen( (_outPath + "/animations/" + name + ".anim").c_str(), "wb" );
+	FILE *f = fopen( (_outPath + assetPath + assetName + ".anim").c_str(), "wb" );
+	if( f == 0x0 )
+	{
+		log( "Failed writing .anim file" );
+		return false;
+	}
 
 	// Write header
 	unsigned int version = 3;

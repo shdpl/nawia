@@ -15,18 +15,19 @@
 
 #include <assert.h>
 
-#ifndef PLATFORM_WIN
-#	if defined( WIN32 ) || defined( _WINDOWS )
+#if defined( WIN32 ) || defined( _WINDOWS )
+#	if !defined( PLATFORM_WIN )
 #		define PLATFORM_WIN
 #	endif
-#endif
-
-#ifndef PLATFORM_MAC
-#   if defined( __APPLE__ ) || defined( __APPLE_CC__ )
+#elif defined( __APPLE__ ) || defined( __APPLE_CC__ )
+#   if !defined( PLATFORM_MAC )
 #      define PLATFORM_MAC
 #   endif
+#else
+#	if !defined( PLATFORM_LINUX )
+#		define PLATFORM_LINUX
+#	endif
 #endif
-
 
 
 #ifndef DLLEXP
@@ -42,12 +43,12 @@
 #endif
 
 #ifndef PLATFORM_WIN
-# define _stricmp strcasecmp
-# define _mkdir( name ) mkdir( name, 0755 )
+#	define _stricmp strcasecmp
+#	define _mkdir( name ) mkdir( name, 0755 )
 #endif
 
 #ifndef _MSC_VER
-# define strncpy_s( dst, dstSize, src, count ) strncpy( dst, src, count < dstSize ? count : dstSize )
+#	define strncpy_s( dst, dstSize, src, count ) strncpy( dst, src, count < dstSize ? count : dstSize )
 #endif
 
 typedef long long int64;

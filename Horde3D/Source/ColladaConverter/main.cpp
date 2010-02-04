@@ -23,157 +23,266 @@
 #	include <direct.h>
 #else
 #	include <sys/stat.h>
+#	include <dirent.h>
 #endif
 
 using namespace std;
 
 
+struct AssetTypes
+{
+	enum List
+	{
+		Unknown,
+		Model,
+		Animation
+	};
+};
+
+
+void createAssetList( const string &basePath, const string &assetPath, vector< string > &assetList )
+{
+	vector< string >  directories;
+	vector< string >  files;
+	
+// Find all files and subdirectories in current search path
+#ifdef PLATFORM_WIN
+	string searchString( basePath + assetPath + "*" );
+	
+	WIN32_FIND_DATA fdat;
+	HANDLE h = FindFirstFile( searchString.c_str(), &fdat );
+	if( h == INVALID_HANDLE_VALUE ) return;
+	do
+	{
+		// Ignore hidden files
+		if( strcmp( fdat.cFileName, "." ) == 0 || strcmp( fdat.cFileName, ".." ) == 0 ||
+		    fdat.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN )
+		{	
+			continue;
+		}
+		
+		if( fdat.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
+			directories.push_back( fdat.cFileName );
+		else
+			files.push_back( fdat.cFileName );
+	} while( FindNextFile( h, &fdat ) );
+#else
+	dirent *dirEnt;
+	struct stat fileStat;
+	string finalPath = basePath + assetPath;
+	DIR *dir = opendir( finalPath.c_str() );
+    if( dir == 0x0 ) return;
+
+	while( (dirEnt = readdir( dir )) != 0x0 )
+	{
+		if( dirEnt->d_name[0] == '.' ) continue;  // Ignore hidden files
+
+		lstat( (finalPath + dirEnt->d_name).c_str(), &fileStat );
+		
+		if( S_ISDIR( fileStat.st_mode ) )
+			directories.push_back( dirEnt->d_name );
+		else if( S_ISREG( fileStat.st_mode ) )
+			files.push_back( dirEnt->d_name );
+	}
+
+    closedir( dir );
+
+    sort( directories.begin(), directories.end() );
+	sort( files.begin(), files.end() );
+#endif
+
+	// Check file extensions
+	for( unsigned int i = 0; i < files.size(); ++i )
+	{
+		size_t len = files[i].length();
+
+		if( len > 4 && _stricmp( files[i].c_str() + (len-4), ".dae" ) == 0 )
+		{
+			assetList.push_back( assetPath + files[i] );
+		}
+	}
+	
+	// Search in subdirectories
+	for( unsigned int i = 0; i < directories.size(); ++i )
+	{
+		createAssetList( basePath, assetPath + directories[i] + "/", assetList );
+	}
+}
+
+
+void printHelp()
+{
+	log( "Usage:" );
+	log( "ColladaConv input [optional arguments]" );
+	log( "" );
+	log( "input             asset file or directory to be processed" );
+	log( "/type model|anim  asset type to be processed (default: geo)" );
+	log( "/base path        base path where the repository root is located" );
+	log( "/dest path        existing destination path where output is written" );
+	log( "/noGeoOpt         disable geometry optimization" );
+	log( "/overwriteMats    force update of existing materials" );
+	log( "/lodDist1 dist    distance for LOD1" );
+	log( "/lodDist2 dist    distance for LOD2" );
+	log( "/lodDist3 dist    distance for LOD3" );
+	log( "/lodDist4 dist    distance for LOD4" );
+}
+
+
 int main( int argc, char **argv )
 {
-	log( "Horde3D Collada Converter" );
-	log( "Version 1.0.0 Beta4" );
+	log( "Horde3D ColladaConv - 1.0.0 Beta5" );
 	log( "" );
 	
 	if( argc < 2 )
 	{
-		log( "Usage:" );
-		log( "ColladaConv inputFile [optional arguments]" );
-		log( "" );
-		log( "inputFile       filename of the COLLADA document" );
-		log( "-o outputName   name of the output files (without extension)" );
-		log( "-dest outPath   destination path to which output is written" );
-		log( "-noopt          disable geometry optimization" );
-		log( "-anim           export animations only" );
-		log( "-forceMat       force update of existing materials" );
-		log( "-lodDist1       distance for LOD1" );
-		log( "-lodDist2       distance for LOD2" );
-		log( "-lodDist3       distance for LOD3" );
-		log( "-lodDist4       distance for LOD4" );
-		return 0;
+		printHelp();
+		return 1;
 	}
 	
-	string inName = argv[1];
-	string outName = extractFileName( inName, false );
-	string outPath = ".";
-	bool forceMat = false, optimize = true, animsOnly = false;
-	float lodDists[4] = { 10, 20, 40, 80 };
+	// =============================================================================================
+	// Parse arguments
+	// =============================================================================================
 
+	vector< string > assetList;
+	string input = argv[1], basePath = "./", outPath = "./";
+	AssetTypes::List assetType = AssetTypes::Model;
+	bool geoOpt = true, overwriteMats = false;
+	float lodDists[4] = { 10, 20, 40, 80 };
+	
+	// Make sure that first argument ist not an option
+	if( argv[1][0] == '/' )
+	{
+		log( "Missing input file or dir; use . for repository root" );
+		return 1;
+	}
+	
+	// Check optional arguments
 	for( int i = 2; i < argc; ++i )
 	{
-		if( strcmp( argv[i], "-o" ) == 0 )
+		if( _stricmp( argv[i], "/type" ) == 0 && argc > i + 1 )
 		{
-			if( argc > i + 1 )
-			{	
-				outName = argv[++i];
-			}
-			else
-			{
-				log( "Invalid argument" );
-				return 0;
-			}
+			if( _stricmp( argv[++i], "model" ) == 0 ) assetType = AssetTypes::Model;
+			else if( _stricmp( argv[i], "anim" ) == 0 ) assetType = AssetTypes::Animation;
+			else assetType = AssetTypes::Unknown;
 		}
-		else if( strcmp( argv[i], "-dest" ) == 0 )
+		else if( _stricmp( argv[i], "/base" ) == 0 && argc > i + 1 )
 		{
-			if( argc > i + 1 )
-			{	
-				outPath = argv[++i];
-			}
-			else
-			{
-				log( "Invalid argument" );
-				return 0;
-			}
+			basePath = cleanPath( argv[++i] ) + "/";
 		}
-		else if( strcmp( argv[i], "-noopt" ) == 0 )
+		else if( _stricmp( argv[i], "/dest" ) == 0 && argc > i + 1 )
 		{
-			optimize = false;
+			outPath = cleanPath( argv[++i] ) + "/";
 		}
-		else if( strcmp( argv[i], "-anim" ) == 0 )
+		else if( _stricmp( argv[i], "/noGeoOpt" ) == 0 )
 		{
-			animsOnly = true;
+			geoOpt = false;
 		}
-		else if( strcmp( argv[i], "-forceMat" ) == 0 )
+		else if( _stricmp( argv[i], "/overwriteMats" ) == 0 )
 		{
-			forceMat = true;
+			overwriteMats = true;
 		}
-		else if( strcmp( argv[i], "-lodDist1" ) == 0 ||
-		         strcmp( argv[i], "-lodDist2" ) == 0 ||
-		         strcmp( argv[i], "-lodDist3" ) == 0 ||
-		         strcmp( argv[i], "-lodDist4" ) == 0 )
+		else if( (_stricmp( argv[i], "/lodDist1" ) == 0 || _stricmp( argv[i], "/lodDist2" ) == 0 ||
+		          _stricmp( argv[i], "/lodDist3" ) == 0 || _stricmp( argv[i], "/lodDist4" ) == 0) && argc > i + 1 )
 		{
-			if( argc > i + 1 )
-			{	
-				int index = 0;
-				if( strcmp( argv[i], "-lodDist2" ) == 0 ) index = 1;
-				else if( strcmp( argv[i], "-lodDist3" ) == 0 ) index = 2;
-				else if( strcmp( argv[i], "-lodDist4" ) == 0 ) index = 3;
-				
-				lodDists[index] = (float)atof( argv[++i] );
-			}
-			else
-			{
-				log( "Invalid argument" );
-				return 0;
-			}
+			int index = 0;
+			if( _stricmp( argv[i], "/lodDist2" ) == 0 ) index = 1;
+			else if( _stricmp( argv[i], "/lodDist3" ) == 0 ) index = 2;
+			else if( _stricmp( argv[i], "/lodDist4" ) == 0 ) index = 3;
+			
+			lodDists[index] = (float)atof( argv[++i] );
 		}
 		else
 		{
-			log( "Invalid argument" );
-			return 0;
+			log( "Invalid arguments" );
+			printHelp();
+			return 1;
 		}
 	}
 
-	ColladaDocument *colladaFile = new ColladaDocument();
-	
-	log( "Parsing collada file " + inName + "..." );
-	if( !colladaFile->parseFile( inName ) )
+	// Check whether input is single file or directory and create asset input list
+	if( input.length() > 4 && _stricmp( input.c_str() + (input.length() - 4), ".dae" ) == 0 )
 	{
-		return 0;
+		assetList.push_back ( input );
 	}
 	else
 	{
-		log( "Done." );
+		if( input == "." ) input = "";
+		else input = cleanPath( input ) + "/";
+		createAssetList( basePath, input, assetList );
 	}
 
-	// Set output directory (needed when using drag&drop of input file on application)
-#ifdef PLATFORM_WIN
-	SetCurrentDirectory( extractFilePath( inName ).c_str() );
-#endif
-	
-	// Convert
-	log( "Converting data for model " + outName + "..." );
-	if( !optimize ) log( "Geometry optimization disabled" );
-	Converter *converter = new Converter( outPath, lodDists );
-	converter->convertModel( *colladaFile, optimize );
-	log( "Done." );
-	
-	if( !animsOnly )
+	// =============================================================================================
+	// Batch conversion
+	// =============================================================================================
+
+	if( assetType == AssetTypes::Unknown )
 	{
-		_mkdir( (outPath + "/models").c_str() );
-		_mkdir( (outPath + "/models/" + outName).c_str() );
-		
-		log( "Writing geometry..." );
-		converter->saveModel( outName );
-		log( "Done." );
-		
-		log( "Writing materials..." );
-		converter->writeMaterials( *colladaFile, outName, forceMat );
-		log( "Done." );
+		log( "Error: Asset type not supported by ColladaConv" );
+		return 1;
 	}
-
-	if( converter->hasAnimation() )
+	else
 	{
-		_mkdir( (outPath + "/animations").c_str() );
-		log( "Writing animation..." );
-		converter->writeAnimation( outName );
-		log( "Done." );
+		if( assetType == AssetTypes::Model )
+			log( "Processing MODELS - Path: " + input );
+		else if( assetType == AssetTypes::Animation )
+			log( "Processing ANIMATIONS - Path: " + input );
+		log( "" );
 	}
+	
+	string tmpStr;
+	tmpStr.reserve( 256 );
+	
+	for( unsigned int i = 0; i < assetList.size(); ++i )
+	{
+		if( assetType == AssetTypes::Model || assetType == AssetTypes::Animation )
+		{
+			string sourcePath = basePath + assetList[i];
+			string assetName = extractFileName( assetList[i], false );
+			string assetPath = extractFilePath( assetList[i] );
+			if( !assetPath.empty() ) assetPath += "/";
+			
+			ColladaDocument *daeDoc = new ColladaDocument();
+			
+			log( "Parsing dae asset '" + assetList[i] + "'..." );
+			if( !daeDoc->parseFile( sourcePath ) )
+				return 1;
+			
+			if( assetType == AssetTypes::Model )
+			{
+				log( "Compiling model data..." );
+				Converter *converter = new Converter( *daeDoc, outPath, lodDists );
+				converter->convertModel( geoOpt );
+				
+				createDirectories( outPath, assetPath );
+				converter->writeModel( assetPath, assetName );
+				converter->writeMaterials( assetPath, overwriteMats );
 
-	log( "" );
-	log( "Finished conversion." );
+				delete converter; converter = 0x0;
+			}
+			else if( assetType == AssetTypes::Animation )
+			{	
+				log( "Compiling animation data..." );
+				Converter *converter = new Converter( *daeDoc, outPath, lodDists );
+				converter->convertModel( false );
+				
+				if( converter->hasAnimation() )
+				{
+					createDirectories( outPath, assetPath );
+					converter->writeAnimation( assetPath, assetName );
+				}
+				else
+				{
+					log( "Skipping file (does not contain animation data)" );
+				}
+
+				delete converter; converter = 0x0;
+			}
+			
+			delete daeDoc; daeDoc = 0x0;
+		}
+
+		log( "" );
+	}
 	
-	delete colladaFile; colladaFile = 0x0;
-	delete converter; converter = 0x0;
-	
-	return 1;
+	return 0;
 }

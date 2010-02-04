@@ -124,6 +124,8 @@ class Converter
 {
 private:
 
+	ColladaDocument              &_daeDoc;
+	
 	std::vector< Vertex >        _vertices;
 	std::vector< unsigned int >  _indices;
 	std::vector< Mesh * >        _meshes;
@@ -137,31 +139,31 @@ private:
 	bool                         _animNotSampled;
 
 
-	Matrix4f getNodeTransform( ColladaDocument &doc, DaeNode &node, unsigned int frame );
+	Matrix4f getNodeTransform( DaeNode &node, unsigned int frame );
 	SceneNode *findNode( const char *name, SceneNode *ignoredNode );
 	void checkNodeName( SceneNode *node );
-	bool validateInstance( ColladaDocument &doc, const std::string &instanceId );
-	SceneNode *processNode( ColladaDocument &doc, DaeNode &node, SceneNode *parentNode,
+	bool validateInstance( const std::string &instanceId );
+	SceneNode *processNode( DaeNode &node, SceneNode *parentNode,
 	                        Matrix4f transAccum, std::vector< Matrix4f > animTransAccum );
 	void calcTangentSpaceBasis( std::vector< Vertex > &vertices );
 	void processJoints();
-	void processMeshes( ColladaDocument &doc, bool optimize );
-	bool writeGeometry( const std::string &name );
-	void writeSGNode( const std::string &modelName, SceneNode *node, unsigned int depth, std::ofstream &outf );
-	bool writeSceneGraph( const std::string &name );
+	void processMeshes( bool optimize );
+	bool writeGeometry( const std::string &assetPath, const std::string &assetName );
+	void writeSGNode( const std::string &assetPath, SceneNode *node, unsigned int depth, std::ofstream &outf );
+	bool writeSceneGraph( const std::string &assetPath, const std::string &assetName );
 	void writeAnimFrames( SceneNode &node, FILE *f );
 
 public:
 
-	Converter( const std::string &outPath, float *lodDists );
+	Converter( ColladaDocument &doc, const std::string &outPath, float *lodDists );
 	~Converter();
 	
-	bool convertModel( ColladaDocument &doc, bool optimize );
-	bool saveModel( const std::string &name );
+	bool convertModel( bool optimize );
 	
-	bool writeMaterials( ColladaDocument &doc, const std::string &name, bool replace );
+	bool writeModel( const std::string &assetPath, const std::string &assetName );
+	bool writeMaterials( const std::string &assetPath, bool replace );
 	bool hasAnimation();
-	bool writeAnimation( const std::string &name );
+	bool writeAnimation( const std::string &assetPath, const std::string &assetName );
 };
 
 #endif // _converter_H_
