@@ -210,7 +210,7 @@ void SoundManager::run()
 		//printf("Distance %.4f\n", dist) ;
 	}
 
-	std::vector<SoundComponent* const> playingSounds;
+	std::vector<SoundComponent*> playingSounds;
 	int accociated = 0;
 	// Configure the first m_sources.size() sounds ( maximum number of parallel sounds )
 	const size_t numSources = m_sources.size();
@@ -256,7 +256,7 @@ void SoundManager::run()
 	}
 
 	// typedef for more readability
-	typedef std::vector<SoundComponent* const>::iterator playingSoundIter;
+	typedef std::vector<SoundComponent*>::iterator playingSoundIter;
 
 	// play the sounds that don't have a source buffer yet
 	for( playingSoundIter iter = playingSounds.begin(); iter < playingSounds.end() && !m_sourcesAvailable.empty(); iter++) 

@@ -33,7 +33,7 @@
 
 #include <XMLParser/utXMLParser.h>
 
-#include <vector>
+#include <string>
 
 #define sq(x) (x)*(x)
 
