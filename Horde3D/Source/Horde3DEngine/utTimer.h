@@ -35,7 +35,7 @@ protected:
 
 #ifdef PLATFORM_WIN
 	LARGE_INTEGER  _timerFreq;
-	DWORD          _affMask;
+	DWORD_PTR      _affMask;
 #endif
 
 	bool           _enabled;
@@ -68,7 +68,7 @@ public:
 	{
 	#ifdef PLATFORM_WIN
 		// Find first available CPU
-		DWORD procMask, sysMask;
+		DWORD_PTR procMask, sysMask;
 		GetProcessAffinityMask( GetCurrentProcess(), &procMask, &sysMask );
 		_affMask = 1;
 		while( (_affMask & procMask) == 0 ) _affMask <<= 1;
