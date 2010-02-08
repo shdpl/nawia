@@ -18,6 +18,8 @@
 
 #include <algorithm>
 
+using namespace std;
+
 CollisionManager* CollisionManager::m_instance = 0x0;
 
 CollisionManager* CollisionManager::instance()
