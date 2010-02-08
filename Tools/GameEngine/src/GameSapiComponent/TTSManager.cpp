@@ -17,6 +17,8 @@
 
 #include <algorithm>
 
+using namespace std;
+
 struct UpdateNode
 { 		
 	void operator()(TTSComponent* ptr) const
