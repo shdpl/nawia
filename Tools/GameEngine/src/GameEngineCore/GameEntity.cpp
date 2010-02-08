@@ -30,6 +30,8 @@
 
 #include <algorithm>
 
+using namespace std;
+
 /**
  * \brief
  * Stores the components and listeners of a GameEntity
@@ -57,7 +59,7 @@ struct GameEntityPrivate
 	void addListener(GameEvent::EventID id, GameComponent* listener, GameEntity* entity)
 	{
 		// Don't add components multiple times
-		std::vector<GameComponent*>::iterator component = 
+		vector<GameComponent*>::iterator component = 
 			find(Listeners[id].begin(), Listeners[id].end(), listener);
 		if (component == Listeners[id].end())
 		{
@@ -75,7 +77,7 @@ struct GameEntityPrivate
 	{	
 		if (!Listeners[id].empty())
 		{
-			std::vector<GameComponent*>::iterator component = 
+			vector<GameComponent*>::iterator component = 
 				find(Listeners[id].begin(), Listeners[id].end(), listener);
 			if (component != Listeners[id].end())
 			{
@@ -92,7 +94,7 @@ struct GameEntityPrivate
 	{		
 		for (int i=0; i < GameEvent::EVENT_COUNT; ++i)
 		{
-			std::vector<GameComponent*>::iterator component = 
+			vector<GameComponent*>::iterator component = 
 				find(Listeners[i].begin(), Listeners[i].end(), listener);
 			if (component != Listeners[i].end())
 			{
@@ -105,8 +107,8 @@ struct GameEntityPrivate
 		}
 	}
 
-	std::vector<GameComponent*>	 Listeners[GameEvent::EVENT_COUNT];
-	std::vector<GameComponent*>	 Components;
+	vector<GameComponent*>	 Listeners[GameEvent::EVENT_COUNT];
+	vector<GameComponent*>	 Components;
 };
 
 
@@ -147,8 +149,8 @@ void GameEntity::removeListener( GameComponent* listener )
 bool GameEntity::checkEvent(GameEvent* event) const
 {	
 	const int id = event->id();
-	std::vector<GameComponent*>::iterator componentIter = m_privateData->Listeners[id].begin();
-	const std::vector<GameComponent*>::iterator componentsEnd = m_privateData->Listeners[id].end();
+	vector<GameComponent*>::iterator componentIter = m_privateData->Listeners[id].begin();
+	const vector<GameComponent*>::iterator componentsEnd = m_privateData->Listeners[id].end();
 	const GameComponent* sender = event->sender();
 	while ( componentIter != componentsEnd )
 	{
@@ -163,8 +165,8 @@ bool GameEntity::checkEvent(GameEvent* event) const
 void GameEntity::executeEvent(GameEvent* event) 
 {	
 	const int id = event->id();
-	std::vector<GameComponent*>::iterator componentIter = m_privateData->Listeners[id].begin();
-	const std::vector<GameComponent*>::iterator componentsEnd = m_privateData->Listeners[id].end();
+	vector<GameComponent*>::iterator componentIter = m_privateData->Listeners[id].begin();
+	const vector<GameComponent*>::iterator componentsEnd = m_privateData->Listeners[id].end();
 	const GameComponent* sender = event->sender();
 	while (componentIter != componentsEnd)
 	{
@@ -177,8 +179,8 @@ void GameEntity::executeEvent(GameEvent* event)
 
 GameComponent* GameEntity::component(const GameComponent::ComponentID& id)
 {
-	std::vector<GameComponent*>::iterator iter = m_privateData->Components.begin();
-	const std::vector<GameComponent*>::iterator end = m_privateData->Components.end();
+	vector<GameComponent*>::iterator iter = m_privateData->Components.begin();
+	const vector<GameComponent*>::iterator end = m_privateData->Components.end();
 	while( iter != end )
 	{
 		if( (*iter)->componentID() == id )	return *iter;
@@ -190,8 +192,8 @@ GameComponent* GameEntity::component(const GameComponent::ComponentID& id)
 void GameEntity::removeComponent(const GameComponent::ComponentID& id)
 {
 	// The GameComponent Destructor automatically removes the component from m_privateData
-	std::vector<GameComponent*>::iterator iter = m_privateData->Components.begin();
-	const std::vector<GameComponent*>::iterator end = m_privateData->Components.end();
+	vector<GameComponent*>::iterator iter = m_privateData->Components.begin();
+	const vector<GameComponent*>::iterator end = m_privateData->Components.end();
 	while( iter != end )
 	{
 		if( (*iter)->componentID() == id )
@@ -215,8 +217,8 @@ void GameEntity::addComponent(GameComponent* component)
 
 void GameEntity::removeComponent(GameComponent *component)
 {
-	std::vector<GameComponent*>::iterator iter = m_privateData->Components.begin();
-	const std::vector<GameComponent*>::iterator end = m_privateData->Components.end();
+	vector<GameComponent*>::iterator iter = m_privateData->Components.begin();
+	const vector<GameComponent*>::iterator end = m_privateData->Components.end();
 	while( iter != end )
 	{
 		if( (*iter) == component )

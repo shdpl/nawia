@@ -27,7 +27,7 @@
 class GameComponent;
 class GameEntity;
 
-#include <string.h>
+#include <string>
 //#include <assert.h>
 
 #include <GameEngine/utMath.h>
