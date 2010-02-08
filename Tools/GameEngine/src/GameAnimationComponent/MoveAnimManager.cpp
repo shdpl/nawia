@@ -30,6 +30,8 @@
 #include <vector>
 #include <algorithm>
 
+using namespace std;
+
 struct NodeUpdate
 {
 	NodeUpdate(float fps) : m_fps(fps) {}

@@ -141,7 +141,7 @@ namespace AnimationControl
 			else
 				m_timeline.push_back(TimelineWeight(GameEngine::timeStamp() + command->TimeOffset + command->Duration, command->Weight));		
 			// Register Animation Job in owner's registry
-			std::vector<AnimationJob*>::iterator iter = find(m_owner->m_animationRegistry.begin(), m_owner->m_animationRegistry.end(), (AnimationJob*) 0);
+			std::vector<AnimationJob*>::iterator iter = std::find(m_owner->m_animationRegistry.begin(), m_owner->m_animationRegistry.end(), (AnimationJob*) 0);
 			if ( iter == owner->m_animationRegistry.end() )
 			{
 				m_owner->m_animationRegistry.push_back(this);

@@ -30,6 +30,8 @@
 
 #include <algorithm>
 
+using namespace std;
+
 struct NodeUpdate
 {
 	NodeUpdate(const float timestamp) : m_timestamp(timestamp) {}
