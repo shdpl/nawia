@@ -90,6 +90,7 @@ private:
 	std::map<std::string, std::vector<std::wstring>> m_sentences;
 
 	// Listen to sound distance events for calculating the volume
+	// SoundComponent needed to get distance from active sound listener
 	bool m_useDistanceModel;
 	GameEvent* m_getDistanceEvent;
 	float m_dist;

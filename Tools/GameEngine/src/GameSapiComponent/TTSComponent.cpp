@@ -269,6 +269,7 @@ void TTSComponent::loadFromXml(const XMLNode* description)
 	if (childCount > 0)
 		srand((unsigned int) time(0x0));
 
+	// SoundComponent needed to get distance from active sound listener
 	m_useDistanceModel = _stricmp(description->getAttribute("useDistanceModel", "false"),"true") == 0
 		|| _stricmp(description->getAttribute("useDistanceModel", "false"),"1") == 0;
 
