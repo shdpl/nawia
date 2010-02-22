@@ -55,7 +55,7 @@ public:
 	 * \brief Checks if entitiy is speaking
 	 * 
 	 * @todo change to event based checking 
-	 * @todo the 'SPEI_END_INPUT_STREAM' event is somehow delayed
+	 * @todo the 'SPEI_END_INPUT_STREAM' event is somehow delayed (not anymore?)
 	 * @return true if speaking
 	 */ 
 	bool isSpeaking();
@@ -80,6 +80,8 @@ private:
 	int				m_sentenceID;
 	bool			m_isSpeaking;
 	bool			m_FACSmapping;
+	std::string		m_currentSentence;
+	float			m_startSpeaking;
 
 	std::map<std::string, std::map<int, float>> m_FACSvisemes;
 	std::string		m_curFACSViseme;

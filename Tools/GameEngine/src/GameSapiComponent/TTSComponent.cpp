@@ -119,7 +119,7 @@ bool TTSComponent::init()
 		return false;
 
 	// TODO Add interests for word boundary
-	if( FAILED( m_pVoice->SetInterest( SPFEI( SPEI_VISEME ) | SPFEI( SPEI_END_INPUT_STREAM ), SPFEI( SPEI_VISEME ) | SPFEI( SPEI_END_INPUT_STREAM ) ) ) ) 
+	if( FAILED( m_pVoice->SetInterest( SPFEI( SPEI_VISEME ) | SPFEI( SPEI_END_INPUT_STREAM ) | SPFEI( SPEI_WORD_BOUNDARY ), SPFEI( SPEI_VISEME ) | SPFEI( SPEI_END_INPUT_STREAM ) | SPFEI( SPEI_WORD_BOUNDARY ) ) ) ) 
 		return false;
 
 
@@ -321,6 +321,7 @@ bool TTSComponent::setVoice(const char* voice)
 
 void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 {
+	m_currentSentence = reinterpret_cast<const char*>(text);
 	if( !m_pVoice )
 	{
 		GameLog::errorMessage("No voice initialized");
@@ -357,6 +358,7 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 					//ULONG numSkipped = 0;
 					//m_pVoice->Skip(L"SENTENCE", 100, &numSkipped);
 					m_pVoice->Speak( unicodestr, SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
+					m_startSpeaking = GameEngine::timeStamp();
 					m_sentenceID = sentenceID;
 					m_isSpeaking = true;
 				}
@@ -397,26 +399,40 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 {
 	TTSComponent* obj = (TTSComponent*) wParam;
 	CSpEvent e;  
+
 	while( e.GetFrom( obj->m_pVoice ) == S_OK )
 	{		
 		switch( e.eEventId )
 		{
 		case SPEI_VISEME:
-			obj->m_visemeChanged = true;
-			obj->resetPreviousViseme();
-			obj->m_prevViseme = obj->m_curViseme;
-			obj->m_curViseme = e.Viseme();
-			// Update volume every viseme
-			if (obj->m_useDistanceModel)
-				obj->calcVolumeFromDistance();
-			break;
+			{
+				obj->m_visemeChanged = true;
+				obj->resetPreviousViseme();
+				obj->m_prevViseme = obj->m_curViseme;
+				obj->m_curViseme = e.Viseme();
+				// Update volume every viseme
+				if (obj->m_useDistanceModel)
+					obj->calcVolumeFromDistance();
+				break;
+			}
 		case SPEI_END_INPUT_STREAM:
-			GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(obj->m_sentenceID), obj);
-			if (obj->m_owner->checkEvent(&event))
-				obj->m_owner->executeEvent(&event);			
-			obj->m_sentenceID = -1;
-			obj->m_isSpeaking = false;
-			break;
+			{
+				GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(obj->m_sentenceID), obj);
+				if (obj->m_owner->checkEvent(&event))
+					obj->m_owner->executeEvent(&event);			
+				obj->m_sentenceID = -1;
+				obj->m_isSpeaking = false;
+				break;
+			}
+		case SPEI_WORD_BOUNDARY:
+			{
+				ULONG start, end;
+				start = e.InputWordPos();
+				end = e.InputWordLen();
+				printf( "%f: %s\n", GameEngine::timeStamp()-obj->m_startSpeaking, obj->m_currentSentence.substr(start, end).c_str() );
+
+				break;
+			}
 		}
 	}
 }
