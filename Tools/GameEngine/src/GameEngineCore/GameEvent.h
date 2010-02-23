@@ -313,6 +313,19 @@ public:
 		FACS_SET_EXPRESSION,	/// sets a facial expression
 		E_SEND_SOCKET_DATA,		/// sends data via the socket component
 
+		NV_GAZING_START,		/// informs agent that he is being gazed at
+		NV_GAZING_STOP,			/// informs agent that he is no longer being gazed at
+		//NV_SAY_SENTENCE,		/// sentence to create speaking behavior for
+		//NV_HEAR_SENTENCE,		/// sentence to create listening behavior for
+		EM_GET_MOOD_PAD,		/// gets the current mood from the Emotion component as PAD values (using Vec3f)
+		EM_SET_EMOTION,			/// set mood to a specific emotion, e.g. at the beginning of a dialogue (using string) 
+		EM_OWN_EMOTION,			/// add new "inner" emotion to overall mood (using EmotionData)
+		EM_OBSERVE_EMOTION,		/// react to other characters' emotion (using EmotionData)
+		EM_OWN_CONTEXT,			/// add new context information to mood calculation(using EmotionData)
+		D_INIT_SPEAKERS,		/// initialize speakers 
+		D_START_DIALOGUE,		/// start playing the parsed dialogue
+		//D_SHOW_SUBTITLES,		/// switch subtitles in dialogue component on or off
+		
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
 		 * 1. GET EVENTS:
@@ -1246,6 +1259,44 @@ public:
 		return new AnimLengthData(*this);
 
 	}
+};
+
+/**
+ * Container for Emotion Data used by a GameEvent
+ */
+class EmotionData : public GameEventData
+{
+public:
+	EmotionData(const char* emotionName, bool checkIntensifier) : GameEventData(CUSTOM),
+		emotion(emotionName), intensifier(checkIntensifier)
+	{
+		m_data.ptr = this;
+	}
+
+	EmotionData(const EmotionData& copy) : GameEventData(CUSTOM), emotion(copy.emotion), intensifier(copy.intensifier)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+		const size_t len = copy.emotion ? strlen(copy.emotion) : 0;
+		emotion = new char[len + 1];
+		memcpy( (char*) emotion, copy.emotion, len );
+		const_cast<char*>(emotion)[len] = '\0';
+	}
+
+	~EmotionData()
+	{
+		if (m_owner)
+			delete[] emotion;
+	}
+
+
+	GameEventData* clone() const
+	{
+		return new EmotionData(*this);
+	}
+
+	const char* emotion;
+	bool intensifier;
 };
 
 /*! @}*/
