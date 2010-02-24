@@ -27,6 +27,13 @@
 
 using namespace std;
 
+// Uncomment to print words that are spoken
+//#define PRINT_WORDS
+
+#ifdef PRINT_WORDS
+#include <iostream>
+#endif
+
 
 // http://www.digitalcuriosity.com/VocaliseTTS/SimpleCharacterTutorial_1.htm
 // http://udn.epicgames.com/Two/ImpersonatorHeadRigging
@@ -321,7 +328,6 @@ bool TTSComponent::setVoice(const char* voice)
 
 void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 {
-	m_currentSentence = reinterpret_cast<const char*>(text);
 	if( !m_pVoice )
 	{
 		GameLog::errorMessage("No voice initialized");
@@ -337,8 +343,10 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 		{
 			// This seems to be a tag, so speak it directly
 			std::vector<wstring>& sentences = iter->second;
-			m_pVoice->Speak( sentences[ rand() % sentences.size()].c_str(), SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
-			m_sentenceID = sentenceID;
+			m_currentSentence = sentences[ rand() % sentences.size()];
+			m_startSpeaking = GameEngine::currentTimeStamp();
+			m_pVoice->Speak( m_currentSentence.c_str(), SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
+			m_sentenceID = sentenceID;			
 			m_isSpeaking = true;
 		}
 		else
@@ -357,8 +365,9 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 					::MultiByteToWideChar(CP_ACP, 0, text, lenA, unicodestr, lenW);		
 					//ULONG numSkipped = 0;
 					//m_pVoice->Skip(L"SENTENCE", 100, &numSkipped);
+					m_currentSentence = unicodestr;
 					m_pVoice->Speak( unicodestr, SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
-					m_startSpeaking = GameEngine::timeStamp();
+					m_startSpeaking = GameEngine::currentTimeStamp();
 					m_sentenceID = sentenceID;
 					m_isSpeaking = true;
 				}
@@ -426,10 +435,14 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 			}
 		case SPEI_WORD_BOUNDARY:
 			{
+#ifdef PRINT_WORDS
 				ULONG start, end;
 				start = e.InputWordPos();
 				end = e.InputWordLen();
-				printf( "%f: %s\n", GameEngine::timeStamp()-obj->m_startSpeaking, obj->m_currentSentence.substr(start, end).c_str() );
+
+				if (start < obj->m_currentSentence.size())
+					std::wcout << GameEngine::timeStamp()-obj->m_startSpeaking << ": " << obj->m_currentSentence.substr(start, end) << std::endl;
+#endif
 
 				break;
 			}

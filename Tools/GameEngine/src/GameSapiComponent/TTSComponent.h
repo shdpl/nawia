@@ -80,7 +80,7 @@ private:
 	int				m_sentenceID;
 	bool			m_isSpeaking;
 	bool			m_FACSmapping;
-	std::string		m_currentSentence;
+	std::wstring	m_currentSentence;
 	float			m_startSpeaking;
 
 	std::map<std::string, std::map<int, float>> m_FACSvisemes;
