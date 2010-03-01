@@ -313,18 +313,14 @@ public:
 		FACS_SET_EXPRESSION,	/// sets a facial expression
 		E_SEND_SOCKET_DATA,		/// sends data via the socket component
 
-		NV_GAZING_START,		/// informs agent that he is being gazed at
-		NV_GAZING_STOP,			/// informs agent that he is no longer being gazed at
-		//NV_SAY_SENTENCE,		/// sentence to create speaking behavior for
-		//NV_HEAR_SENTENCE,		/// sentence to create listening behavior for
-		EM_GET_MOOD_PAD,		/// gets the current mood from the Emotion component as PAD values (using Vec3f)
+		NV_SAY_SENTENCE,		/// sentence to create speaking behavior for
+		NV_HEAR_SENTENCE,		/// sentence to create listening behavior for
 		EM_SET_EMOTION,			/// set mood to a specific emotion, e.g. at the beginning of a dialogue (using string) 
-		EM_OWN_EMOTION,			/// add new "inner" emotion to overall mood (using EmotionData)
+		EM_OWN_EMOTION,			/// emotional input for a character (using EmotionData)
 		EM_OBSERVE_EMOTION,		/// react to other characters' emotion (using EmotionData)
 		EM_OWN_CONTEXT,			/// add new context information to mood calculation(using EmotionData)
 		D_INIT_SPEAKERS,		/// initialize speakers 
 		D_START_DIALOGUE,		/// start playing the parsed dialogue
-		//D_SHOW_SUBTITLES,		/// switch subtitles in dialogue component on or off
 		
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
@@ -353,6 +349,8 @@ public:
 		E_GET_VISIBILITY,		/// Returns whether the current entity is visible by the active cam
 		E_GET_SCENEGRAPH_ID,	/// Returns the entity's scenegraph id (hordeID)
 		E_GET_ANIM_LENGTH,		/// Get the length of an animation in seconds (using all frames and default speed).
+		EM_GET_MOOD_PAD,		/// gets the current mood from the Emotion component as PAD values (using Vec3f)
+		D_CURRENT_SENTENCE,		/// get current sentence from Dialogue components
 		
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
@@ -381,6 +379,8 @@ public:
 		E_AILOD_CHANGE,			/// Occurs when the ai lod of an entity has changed, @data: the entity's new lod value
 		GL_DRAW,				/// A GL function call. @data: Uses the DataType GLFunction. @allowed by: GLDrawingComponent listens, any componant may send
 		GP_STATE_CHANGE,		/// The state of a gamepad has changed
+		NV_GAZING_START,		/// informs agent that he is being gazed at
+		NV_GAZING_STOP,			/// informs agent that he is no longer being gazed at
 		
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
@@ -1297,6 +1297,42 @@ public:
 
 	const char* emotion;
 	bool intensifier;
+};
+
+
+class SentenceData : public GameEventData
+{
+public:
+	SentenceData(const char* sentence, unsigned int partnerId) : GameEventData(CUSTOM),
+		text(sentence), partnerID(partnerId)
+	{
+		m_data.ptr = this;
+	}
+
+	SentenceData(const SentenceData& copy) : GameEventData(CUSTOM), text(copy.text), partnerID(copy.partnerID)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+		const size_t len = copy.text ? strlen(copy.text) : 0;
+		text = new char[len + 1];
+		memcpy( (char*) text, copy.text, len );
+		const_cast<char*>(text)[len] = '\0';
+	}
+
+	~SentenceData()
+	{
+		if (m_owner)
+			delete[] text;
+	}
+
+
+	GameEventData* clone() const
+	{
+		return new SentenceData(*this);
+	}
+
+	const char* text;
+	unsigned int partnerID;
 };
 
 /*! @}*/
