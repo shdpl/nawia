@@ -14,6 +14,7 @@
 #define _egModules_H_
 
 #include "egPrerequisites.h"
+#include "utPlatform.h"
 
 // Forward declarations
 class EngineConfig;
@@ -24,6 +25,12 @@ class ResourceManager;
 class Renderer;
 class ExtensionManager;
 
+
+// =================================================================================================
+// Configuration
+// =================================================================================================
+
+#define DEBUGGER_OUTPUT        // Sends log messages to the debugger for display
 
 // =================================================================================================
 // Modules

@@ -100,6 +100,17 @@ bool RendererBase::init()
 	_caps[RenderCaps::Tex_NPOT] = glExt::ARB_texture_non_power_of_two ? 1 : 0;
 	_caps[RenderCaps::RT_Multisampling] = glExt::EXT_framebuffer_multisample ? 1 : 0;
 
+	// Find supported depth format (some old ATI cards only support 16 bit depth for FBOs)
+	_depthFormat = GL_DEPTH_COMPONENT24;
+	uint32 testBuf = createRenderBuffer( 32, 32, RenderBufferFormats::RGBA8, true, 1, 0 ); 
+	if( testBuf == 0 )
+	{	
+		_depthFormat = GL_DEPTH_COMPONENT16;
+		Modules::log().writeWarning( "Render target depth precision limited to 16 bit" );
+	}
+	else
+		releaseRenderBuffer( testBuf );
+	
 	initStates();
 
 	return true;
@@ -320,7 +331,7 @@ void RendererBase::uploadTextureData( uint32 texObj, int slice, int mipLevel, co
 		inputType = GL_FLOAT;
 		break;
 	case TextureFormats::DEPTH:
-		internalFormat = GL_DEPTH_COMPONENT;
+		internalFormat = _depthFormat;
 		inputFormat = GL_DEPTH_COMPONENT;
 		inputType = GL_FLOAT;
 	};
@@ -360,7 +371,7 @@ void RendererBase::updateTextureData( uint32 texObj, int slice, int mipLevel, co
 {
 	const RBTexture &tex = _textures.getRef( texObj );
 	
-	glBindTexture( tex.type + slice, tex.glObj );
+	glBindTexture( tex.type, tex.glObj );
 	glTexParameteri( tex.type, GL_GENERATE_MIPMAP, GL_FALSE );
 	
 	uploadTextureData( texObj, slice, mipLevel, pixels );
@@ -713,17 +724,9 @@ uint32 RendererBase::createRenderBuffer( uint32 width, uint32 height, RenderBuff
 		glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, rb.width, rb.height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0x0 );
+		glTexImage2D( GL_TEXTURE_2D, 0, _depthFormat, rb.width, rb.height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0x0 );
 		// Attach the texture
 		glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, rb.depthTex, 0 );
-
-		// Check depth precision
-		int depthBits;
-		glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_DEPTH_SIZE, &depthBits );
-		if( depthBits == 16 )
-		{
-			Modules::log().writeWarning( "Rendertarget depth precision is limited to 16 bits" );
-		}
 
 		if( samples > 0 )
 		{
@@ -732,28 +735,37 @@ uint32 RendererBase::createRenderBuffer( uint32 width, uint32 height, RenderBuff
 			glGenRenderbuffersEXT( 1, &rb.depthBuf );
 			glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, rb.depthBuf );
 			glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT, rb.samples,
-			                                     GL_DEPTH_COMPONENT, rb.width, rb.height );
+			                                     _depthFormat, rb.width, rb.height );
 			// Attach the renderbuffer
 			glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
 			                              GL_RENDERBUFFER_EXT, rb.depthBuf );
 		}
 	}
 
-	// Check if successful
+	uint32 rbObj = _rendBufs.add( rb );
+	
+	// Check if FBO is complete
+	bool valid = true;
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, rb.fbo );
 	uint32 status = glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT );
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
-	if( status != GL_FRAMEBUFFER_COMPLETE_EXT ) return 0;
+	if( status != GL_FRAMEBUFFER_COMPLETE_EXT ) valid = false;
 	
 	if( samples > 0 )
 	{
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, rb.fboMS );
 		status = glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT );
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
-		if( status != GL_FRAMEBUFFER_COMPLETE_EXT ) return 0;
+		if( status != GL_FRAMEBUFFER_COMPLETE_EXT ) valid = false;
 	}
 
-	return _rendBufs.add( rb );
+	if( !valid )
+	{
+		releaseRenderBuffer( rbObj );
+		return 0;
+	}
+	
+	return rbObj;
 }
 
 
@@ -777,6 +789,8 @@ void RendererBase::releaseRenderBuffer( uint32 rbObj )
 	if( rb.fbo != 0 ) glDeleteFramebuffersEXT( 1, &rb.fbo );
 	if( rb.fboMS != 0 ) glDeleteFramebuffersEXT( 1, &rb.fboMS );
 	rb.fbo = rb.fboMS = 0;
+
+	_rendBufs.remove( rbObj );
 }
 
 

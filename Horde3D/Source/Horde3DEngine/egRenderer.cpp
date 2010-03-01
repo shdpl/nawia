@@ -193,29 +193,6 @@ void Renderer::resize( int x, int y, int width, int height )
 // Misc Helper Functions
 // =================================================================================================
 
-int Renderer::registerOccSet()
-{
-	for( int i = 0; i < (int)_occSets.size(); ++i )
-	{
-		if( _occSets[i] == 0 )
-		{
-			_occSets[i] = 1;
-			return i;
-		}
-	}
-
-	_occSets.push_back( 1 );
-	return (int)_occSets.size() - 1;
-}
-
-
-void Renderer::unregisterOccSet( int occSet )
-{
-	if( occSet >= 0 && occSet < (int)_occSets.size() )
-		_occSets[occSet] = 0;
-}
-
-
 void Renderer::setupViewMatrices( CameraNode *cam )
 {
 	glMatrixMode( GL_PROJECTION );
@@ -251,7 +228,6 @@ bool Renderer::createShaderComb( const char *vertexShader, const char *fragmentS
 	sc.uni_lightPos = glGetUniformLocation( shdObj, "lightPos" );
 	sc.uni_lightDir = glGetUniformLocation( shdObj, "lightDir" );
 	sc.uni_lightColor = glGetUniformLocation( shdObj, "lightColor" );
-	sc.uni_lightCosCutoff = glGetUniformLocation( shdObj, "lightCosCutoff" );
 	sc.uni_shadowSplitDists = glGetUniformLocation( shdObj, "shadowSplitDists" );
 	sc.uni_shadowMats = glGetUniformLocation( shdObj, "shadowMats" );
 	sc.uni_shadowMapSize = glGetUniformLocation( shdObj, "shadowMapSize" );
@@ -406,13 +382,14 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 							 _curLight->_absPos.z, _curLight->_radius );
 			
 			if( _curShader->uni_lightDir >= 0 )
-				glUniform3fv( _curShader->uni_lightDir, 1, &_curLight->_spotDir.x );
+				glUniform4f( _curShader->uni_lightDir, _curLight->_spotDir.x, _curLight->_spotDir.y,
+				             _curLight->_spotDir.z, cosf( degToRad( _curLight->_fov / 2.0f ) ) );
 			
 			if( _curShader->uni_lightColor >= 0 )
-				glUniform3fv( _curShader->uni_lightColor, 1, &_curLight->_diffuseCol.x );
-			
-			if( _curShader->uni_lightCosCutoff >= 0 )
-				glUniform1f( _curShader->uni_lightCosCutoff, cosf( degToRad( _curLight->_fov/ 2 ) ) );
+			{
+				Vec3f col = _curLight->_diffuseCol * _curLight->_diffuseColMult;
+				glUniform3fv( _curShader->uni_lightColor, 1, &col.x );
+			}
 			
 			if( _curShader->uni_shadowSplitDists >= 0 )
 				glUniform4fv( _curShader->uni_shadowSplitDists, 1, &_splitPlanes[1] );
@@ -450,7 +427,8 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		{
 			if( materialRes->_samplers[j].name == sampler.id )
 			{
-				texRes = materialRes->_samplers[j].texRes;
+				if( materialRes->_samplers[j].texRes->isLoaded() )
+					texRes = materialRes->_samplers[j].texRes;
 				break;
 			}
 		}
@@ -632,7 +610,7 @@ bool Renderer::setMaterial( MaterialResource *materialRes, const string &shaderC
 		glDisable( GL_SAMPLE_ALPHA_TO_COVERAGE );
 		glEnable( GL_DEPTH_TEST );
 		glDepthFunc( GL_LEQUAL );
-		glDepthMask( 1 );
+		glDepthMask( GL_TRUE );
 		return false;
 	}
 	else if( _curShader != 0x0 && materialRes == _curMatRes ) return true;
@@ -958,6 +936,64 @@ void Renderer::drawAABB( const Vec3f &bbMin, const Vec3f &bbMax )
 
 
 // =================================================================================================
+// Occlusion Culling
+// =================================================================================================
+
+int Renderer::registerOccSet()
+{
+	for( int i = 0; i < (int)_occSets.size(); ++i )
+	{
+		if( _occSets[i] == 0 )
+		{
+			_occSets[i] = 1;
+			return i;
+		}
+	}
+
+	_occSets.push_back( 1 );
+	return (int)_occSets.size() - 1;
+}
+
+
+void Renderer::unregisterOccSet( int occSet )
+{
+	if( occSet >= 0 && occSet < (int)_occSets.size() )
+		_occSets[occSet] = 0;
+}
+
+
+void Renderer::drawOccProxies( uint32 list )
+{
+	ASSERT( list < 2 );
+	
+	GLboolean colMask[4], depthMask;
+	glGetBooleanv( GL_COLOR_WRITEMASK, colMask );
+	glGetBooleanv( GL_DEPTH_WRITEMASK, &depthMask );
+	
+	setMaterial( 0x0, "" );
+	glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
+	glDepthMask( GL_FALSE );
+	setShaderComb( &Modules::renderer()._occShader );
+	
+	for( size_t i = 0, s = _occProxies[list].size(); i < s; ++i )
+	{
+		OccProxy &proxy = _occProxies[list][i];
+		
+		// Draw occlusion box
+		beginQuery( proxy.queryObj );
+		drawAABB( proxy.bbMin, proxy.bbMax );
+		endQuery( proxy.queryObj );
+	}
+
+	setShaderComb( 0x0 );
+	glDepthMask( depthMask );
+	glColorMask( colMask[0], colMask[1], colMask[2], colMask[3] );
+
+	_occProxies[list].resize( 0 );
+}
+
+
+// =================================================================================================
 // Overlays
 // =================================================================================================
 
@@ -1053,17 +1089,17 @@ void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
                       float r, float g, float b, float a )
 {
 	int mask = 0;
-	uint32 prevBuffers[4];
+	uint32 prevBuffers[4] = { 0 };
 
-	// Store state of glDrawBuffers
-	for( uint32 i = 0; i < 4; ++i ) glGetIntegerv( GL_DRAW_BUFFER0 + i, (int *)&prevBuffers[i] );
-	
 	glDisable( GL_BLEND );	// Clearing floating point buffers causes problems when blending is enabled on Radeon 9600
 	glDepthMask( GL_TRUE );
 	glClearColor( r, g, b, a );
 
 	if( _curRendBuf != 0x0 )
 	{
+		// Store state of glDrawBuffers
+		for( uint32 i = 0; i < 4; ++i ) glGetIntegerv( GL_DRAW_BUFFER0 + i, (int *)&prevBuffers[i] );
+		
 		RBRenderBuffer &rb = _rendBufs.getRef( _curRendBuf );
 		uint32 buffers[4], cnt = 0;
 
@@ -1092,8 +1128,8 @@ void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
 	glDisable( GL_SCISSOR_TEST );
 	
 	// Restore state of glDrawBuffers
-	uint32 cnt = 4;
-	glDrawBuffers( cnt, prevBuffers );
+	if( _curRendBuf != 0x0 )
+		glDrawBuffers( 4, prevBuffers );
 }
 
 
@@ -1177,23 +1213,13 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 				{
 					_curLight->_lastVisited[occSet] = Modules::renderer().getFrameID();
 				
-					Vec3f mins, maxs;
-					_curLight->getFrustum().calcAABB( mins, maxs );
+					Vec3f bbMin, bbMax;
+					_curLight->getFrustum().calcAABB( bbMin, bbMax );
 					
 					// Check that viewer is outside light bounds
-					if( nearestDistToAABB( _curCamera->getFrustum().getOrigin(), mins, maxs ) )
+					if( nearestDistToAABB( _curCamera->getFrustum().getOrigin(), bbMin, bbMax ) )
 					{
-						// Draw occlusion box
-						Modules::renderer().setMaterial( 0x0, "" );
-						glColorMask( 0, 0, 0, 0 );
-						glDepthMask( 0 );
-						Modules::renderer().beginQuery( _curLight->_occQueries[occSet] );
-						Modules::renderer().setShaderComb( &Modules::renderer()._occShader );
-						Modules::renderer().drawAABB( mins, maxs );
-						Modules::renderer().endQuery( _curLight->_occQueries[occSet] );
-						glDepthMask( 1 );
-						glColorMask( 1, 1, 1, 1 );
-						Modules::renderer().setMaterial( 0x0, "" );
+						Modules::renderer().pushOccProxy( 1, bbMin, bbMax, _curLight->_occQueries[occSet] );
 
 						// Check query result from previous frame
 						if( Modules::renderer().getQueryResult( _curLight->_occQueries[occSet] ) < 1 )
@@ -1241,6 +1267,10 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 	}
 
 	_curLight = 0x0;
+
+	// Draw occlusion proxies
+	if( occSet >= 0 )
+		Modules::renderer().drawOccProxies( 1 );
 }
 
 
@@ -1259,8 +1289,6 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 		
 		// Check if light is not visible
 		if( _curCamera->getFrustum().cullFrustum( _curLight->getFrustum() ) ) continue;
-
-		setupViewMatrices( _curCamera );
 		
 		// Check if light is occluded
 		if( occSet >= 0 )
@@ -1281,23 +1309,13 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 				{
 					_curLight->_lastVisited[occSet] = Modules::renderer().getFrameID();
 				
-					Vec3f mins, maxs;
-					_curLight->getFrustum().calcAABB( mins, maxs );
+					Vec3f bbMin, bbMax;
+					_curLight->getFrustum().calcAABB( bbMin, bbMax );
 					
 					// Check that viewer is outside light bounds
-					if( nearestDistToAABB( _curCamera->getFrustum().getOrigin(), mins, maxs ) )
+					if( nearestDistToAABB( _curCamera->getFrustum().getOrigin(), bbMin, bbMax ) )
 					{
-						// Draw occlusion box
-						Modules::renderer().setMaterial( 0x0, "" );
-						glColorMask( 0, 0, 0, 0 );
-						glDepthMask( 0 );
-						Modules::renderer().beginQuery( _curLight->_occQueries[occSet] );
-						Modules::renderer().setShaderComb( &Modules::renderer()._occShader );
-						Modules::renderer().drawAABB( mins, maxs );
-						Modules::renderer().endQuery( _curLight->_occQueries[occSet] );
-						glDepthMask( 1 );
-						glColorMask( 1, 1, 1, 1 );
-						Modules::renderer().setMaterial( 0x0, "" );
+						Modules::renderer().pushOccProxy( 1, bbMin, bbMax, _curLight->_occQueries[occSet] );
 
 						// Check query result from previous frame
 						if( Modules::renderer().getQueryResult( _curLight->_occQueries[occSet] ) < 1 )
@@ -1346,6 +1364,13 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 	}
 
 	_curLight = 0x0;
+
+	// Draw occlusion proxies
+	if( occSet >= 0 )
+	{
+		setupViewMatrices( _curCamera );
+		Modules::renderer().drawOccProxies( 1 );
+	}
 }
 
 
@@ -1406,8 +1431,8 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 		ModelNode *modelNode = (ModelNode *)Modules::sceneMan().getRenderableQueue()[i].node;
 		if( modelNode->getGeometryResource() == 0x0 ) continue;
 
-		bool occQuery = false;
 		bool modelChanged = true;
+		uint32 queryObj = 0;
 
 		// Occlusion culling
 		if( occSet >= 0 )
@@ -1419,9 +1444,9 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			}
 			if( modelNode->_occQueries[occSet] == 0 )
 			{
-				modelNode->_occQueries[occSet] = Modules::renderer().createOcclusionQuery();
+				queryObj = Modules::renderer().createOcclusionQuery();
+				modelNode->_occQueries[occSet] = queryObj;
 				modelNode->_lastVisited[occSet] = 0;
-				occQuery = true;
 			}
 			else
 			{
@@ -1434,22 +1459,12 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 					                       modelNode->getBBox().max ) != 0 &&
 						Modules::renderer().getQueryResult( modelNode->_occQueries[occSet] ) < 1 )
 					{
-						// Draw occlusion box
-						Modules::renderer().setMaterial( 0x0, "" );
-						glColorMask( 0, 0, 0, 0 );
-						glDepthMask( 0 );
-						Modules::renderer().beginQuery( modelNode->_occQueries[occSet] );
-						Modules::renderer().setShaderComb( &Modules::renderer()._occShader );
-						Modules::renderer().drawAABB( modelNode->getBBox().min, modelNode->getBBox().max );
-						Modules::renderer().endQuery( modelNode->_occQueries[occSet] );
-						glDepthMask( 1 );
-						glColorMask( 1, 1, 1, 1 );
-						Modules::renderer().setMaterial( 0x0, "" );
-
+						Modules::renderer().pushOccProxy( 0, modelNode->getBBox().min, modelNode->getBBox().max,
+						                                  modelNode->_occQueries[occSet] );
 						continue;
 					}
 					else
-						occQuery = true;
+						queryObj = modelNode->_occQueries[occSet];
 				}
 			}
 		}
@@ -1499,8 +1514,8 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 		// LOD
 		uint32 curLod = modelNode->calcLodLevel( camPos );
 		
-		if( occQuery )
-			Modules::renderer().beginQuery( modelNode->_occQueries[occSet] );
+		if( queryObj )
+			Modules::renderer().beginQuery( queryObj );
 		
 		for( size_t j = 0, s = modelNode->_meshList.size(); j < s; ++j )
 		{
@@ -1601,9 +1616,13 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			Modules::stats().incStat( EngineStats::TriCount, meshNode->getBatchCount() / 3.0f );
 		}
 
-		if( occQuery )
-			Modules::renderer().endQuery( modelNode->_occQueries[occSet] );
+		if( queryObj )
+			Modules::renderer().endQuery( queryObj );
 	}
+
+	// Draw occlusion proxies
+	if( occSet >= 0 )
+		Modules::renderer().drawOccProxies( 0 );
 
 	Modules::renderer().applyVertexLayout( 0 );
 }
@@ -1641,7 +1660,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 		if( !emitter->_materialRes->isOfClass( theClass ) ) continue;
 		
 		// Occlusion culling
-		bool occQuery = false;
+		uint32 queryObj = 0;
 		if( occSet >= 0 )
 		{
 			if( occSet > (int)emitter->_occQueries.size() - 1 )
@@ -1651,9 +1670,9 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 			}
 			if( emitter->_occQueries[occSet] == 0 )
 			{
-				emitter->_occQueries[occSet] = Modules::renderer().createOcclusionQuery();
+				queryObj = Modules::renderer().createOcclusionQuery();
+				emitter->_occQueries[occSet] = queryObj;
 				emitter->_lastVisited[occSet] = 0;
-				occQuery = true;
 			}
 			else
 			{
@@ -1666,22 +1685,12 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 					                       emitter->getBBox().max ) != 0 &&
 						Modules::renderer().getQueryResult( emitter->_occQueries[occSet] ) < 1 )
 					{
-						// Draw occlusion box
-						Modules::renderer().setMaterial( 0x0, "" );
-						glColorMask( 0, 0, 0, 0 );
-						glDepthMask( 0 );
-						Modules::renderer().beginQuery( emitter->_occQueries[occSet] );
-						Modules::renderer().setShaderComb( &Modules::renderer()._occShader );
-						Modules::renderer().drawAABB( emitter->getBBox().min, emitter->getBBox().max );
-						Modules::renderer().endQuery( emitter->_occQueries[occSet] );
-						glDepthMask( 1 );
-						glColorMask( 1, 1, 1, 1 );
-						Modules::renderer().setMaterial( 0x0, "" );
-
+						Modules::renderer().pushOccProxy( 0, emitter->getBBox().min, emitter->getBBox().max,
+						                                  emitter->_occQueries[occSet] );
 						continue;
 					}
 					else
-						occQuery = true;
+						queryObj = emitter->_occQueries[occSet];
 				}
 			}
 		}
@@ -1692,8 +1701,8 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 		// Set vertex layout
 		if( !Modules::renderer().applyVertexLayout( Modules::renderer()._vlParticle ) ) continue;
 		
-		if( occQuery )
-			Modules::renderer().beginQuery( emitter->_occQueries[occSet] );
+		if( queryObj )
+			Modules::renderer().beginQuery( queryObj );
 		
 		// Shader uniforms
 		ShaderCombination *curShader = Modules::renderer().getCurShader();
@@ -1743,24 +1752,30 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 					break;
 				}
 			}
-			if( allDead ) continue;
 			
-			// Render batch
-			if( curShader->uni_parPosArray >= 0 )
-				glUniform3fv( curShader->uni_parPosArray, count, (float *)emitter->_parPositions + offset*3 );
-			if( curShader->uni_parSizeAndRotArray >= 0 )
-				glUniform2fv( curShader->uni_parSizeAndRotArray, count, (float *)emitter->_parSizesANDRotations + offset*2 );
-			if( curShader->uni_parColorArray >= 0 )
-				glUniform4fv( curShader->uni_parColorArray, count, (float *)emitter->_parColors + offset*4 );
-			
-			glDrawArrays( GL_QUADS, 0, count * 4 );
-			Modules::stats().incStat( EngineStats::BatchCount, 1 );
-			Modules::stats().incStat( EngineStats::TriCount, count * 2.0f );
+			if( !allDead )
+			{
+				// Render batch
+				if( curShader->uni_parPosArray >= 0 )
+					glUniform3fv( curShader->uni_parPosArray, count, (float *)emitter->_parPositions + offset*3 );
+				if( curShader->uni_parSizeAndRotArray >= 0 )
+					glUniform2fv( curShader->uni_parSizeAndRotArray, count, (float *)emitter->_parSizesANDRotations + offset*2 );
+				if( curShader->uni_parColorArray >= 0 )
+					glUniform4fv( curShader->uni_parColorArray, count, (float *)emitter->_parColors + offset*4 );
+				
+				glDrawArrays( GL_QUADS, 0, count * 4 );
+				Modules::stats().incStat( EngineStats::BatchCount, 1 );
+				Modules::stats().incStat( EngineStats::TriCount, count * 2.0f );
+			}
 		}
 
-		if( occQuery )
-			Modules::renderer().endQuery( emitter->_occQueries[occSet] );
+		if( queryObj )
+			Modules::renderer().endQuery( queryObj );
 	}
+
+	// Draw occlusion proxies
+	if( occSet >= 0 )
+		Modules::renderer().drawOccProxies( 0 );
 	
 	Modules::renderer().applyVertexLayout( 0 );
 }

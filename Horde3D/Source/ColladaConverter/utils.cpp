@@ -185,7 +185,7 @@ void log( const std::string &msg )
 	
 #ifdef PLATFORM_WIN
 	OutputDebugString( msg.c_str() );
-	OutputDebugString( "\n" );
+	OutputDebugString( "\r\n" );
 #endif
 }
 

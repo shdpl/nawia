@@ -121,7 +121,7 @@ bool Modules::init()
 		"$Tex2D", 32, 32, TextureFormats::BGRA8, ResourceFlags::NoTexMipmaps );
 	void *image = tex2DRes->mapStream( TextureResData::ImageElem, 0, TextureResData::ImgPixelStream, false, true );
 	ASSERT( image != 0x0 );
-	for( int i = 0; i < 32*32; ++i ) ((int *)image)[i] = 0xffffffff;
+	for( uint32 i = 0; i < 32*32; ++i ) ((uint32 *)image)[i] = 0xffffffff;
 	tex2DRes->unmapStream();
 	tex2DRes->addRef();
 	resMan().addNonExistingResource( *tex2DRes, false );
@@ -132,7 +132,7 @@ bool Modules::init()
 	{
 		void *image = texCubeRes->mapStream( TextureResData::ImageElem, i, TextureResData::ImgPixelStream, false, true );
 		ASSERT( image != 0x0 );
-		for( int i = 0; i < 32*32; ++i ) ((int *)image)[i] = 0xff000000;
+		for( uint32 j = 0; j < 32*32; ++j ) ((uint32 *)image)[j] = 0xff000000;
 		texCubeRes->unmapStream();
 	}
 	texCubeRes->addRef();

@@ -200,6 +200,7 @@ class RendererBase
 protected:
 
 	int           _caps[RenderCaps::ListSize];
+	uint32        _depthFormat;
 	int           _vpX, _vpY, _vpWidth, _vpHeight;
 	int           _fbWidth, _fbHeight;
 	uint32        _curShaderObj;

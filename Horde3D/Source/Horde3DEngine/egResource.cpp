@@ -14,6 +14,7 @@
 #include "egModules.h"
 #include "egCom.h"
 #include <sstream>
+#include <string.h>
 
 #include "utDebug.h"
 
@@ -170,8 +171,8 @@ ResourceManager::~ResourceManager()
 	map< int, ResourceRegEntry >::const_iterator itr = _registry.begin();
 	while( itr != _registry.end() )
 	{
-		if( itr->second.initializationFunc != 0x0 )
-			(*itr->second.initializationFunc)();
+		if( itr->second.releaseFunc != 0x0 )
+			(*itr->second.releaseFunc)();
 
 		++itr;
 	}

@@ -205,7 +205,6 @@ bool TextureResource::raiseError( const string &msg )
 bool TextureResource::load( const char *data, int size )
 {
 	if( !Resource::load( data, size ) ) return false;
-	if( !Modules::config().loadTextures ) return true;
 
 	// Check if image is a dds
 	if( size > 128 && *((uint32 *)data) == FOURCC( 'D', 'D', 'S', ' ' ) )

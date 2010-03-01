@@ -152,7 +152,7 @@ struct ShaderCombination
 	int                 uni_worldMat, uni_worldNormalMat;
 	int                 uni_nodeId;
 	int                 uni_viewer;
-	int                 uni_lightPos, uni_lightDir, uni_lightColor, uni_lightCosCutoff;
+	int                 uni_lightPos, uni_lightDir, uni_lightColor;
 	int                 uni_shadowSplitDists, uni_shadowMats;
 	int                 uni_shadowMapSize, uni_shadowBias;
 	int                 uni_skinMatRows;

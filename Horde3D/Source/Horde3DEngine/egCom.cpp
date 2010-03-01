@@ -11,6 +11,7 @@
 // *************************************************************************************************
 
 #include "egCom.h"
+#include "utPlatform.h"
 #include "utMath.h"
 #include "egModules.h"
 #include "egRenderer.h"
@@ -169,19 +170,27 @@ void EngineLog::pushMessage( int level, const char *msg, va_list args )
 {
 	float time = _timer.getElapsedTimeMS() / 1000.0f;
 	
+#pragma warning( push )
+#pragma warning( disable:4996 )
+	vsnprintf( _textBuf, 2048, msg, args );
+#pragma warning( pop )
+	
 	if( _messages.size() < _maxNumMessages - 1 )
 	{
-		#pragma warning( push )
-		#pragma warning( disable:4996 )
-		vsnprintf( _textBuf, 2048, msg, args );
-		#pragma warning( pop )
-
 		_messages.push( LogMessage( _textBuf, level, time ) );
 	}
 	else if( _messages.size() == _maxNumMessages - 1 )
 	{
 		_messages.push( LogMessage( "Message queue is full", 1, time ) );
 	}
+
+#if defined( PLATFORM_WIN ) && defined( DEBUGGER_OUTPUT )
+	const char *headers[6] = {"", "  [h3d-err] ", "  [h3d-warn] ", "[h3d] ", "  [h3d-dbg] ", "[h3d- ] "};
+	
+	OutputDebugString( headers[std::min( (uint32)level, (uint32)5 )] );
+	OutputDebugString( _textBuf );
+	OutputDebugString( "\r\n" );
+#endif
 }
 
 

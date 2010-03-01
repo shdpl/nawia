@@ -86,6 +86,18 @@ struct ParticleVert
 
 // =================================================================================================
 
+struct OccProxy
+{
+	Vec3f   bbMin, bbMax;
+	uint32  queryObj;
+
+	OccProxy() {}
+	OccProxy( const Vec3f &bbMin, const Vec3f &bbMax, uint32 queryObj ) :
+		bbMin( bbMin ), bbMax( bbMax ), queryObj( queryObj )
+	{
+	}
+};
+
 struct PipeSamplerBinding
 {
 	char    sampler[64];
@@ -103,6 +115,7 @@ protected:
 	
 	std::vector< PipeSamplerBinding >  _pipeSamplerBindings;
 	std::vector< char >                _occSets;  // Actually bool
+	std::vector< OccProxy >            _occProxies[2];  // 0: renderables, 1: lights
 	std::vector< Overlay >             _overlays;
 	
 	uint32                             _shadowRB;
@@ -165,9 +178,6 @@ public:
 	
 	bool init();
 	void resize( int x, int y, int width, int height );
-	
-	int registerOccSet();
-	void unregisterOccSet( int occSet );
 
 	bool createShaderComb( const char *vertexShader, const char *fragmentShader, ShaderCombination &sc );
 	void releaseShaderComb( ShaderCombination &sc );
@@ -177,6 +187,12 @@ public:
 	bool createShadowRB( uint32 width, uint32 height );
 	void releaseShadowRB();
 
+	int registerOccSet();
+	void unregisterOccSet( int occSet );
+	void drawOccProxies( uint32 list );
+	void pushOccProxy( uint32 list, const Vec3f &bbMin, const Vec3f &bbMax, uint32 queryObj )
+		{ _occProxies[list].push_back( OccProxy( bbMin, bbMax, queryObj ) ); }
+	
 	void showOverlay( const Overlay &overlay );
 	void clearOverlays();
 	

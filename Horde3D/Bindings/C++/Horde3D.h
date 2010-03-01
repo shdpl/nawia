@@ -73,8 +73,8 @@ struct H3DOptions
 		TexCompression      - Enables or disables texture compression; only affects textures that are
 		                      loaded after setting the option. (Values: 0, 1; Default: 0)
 		SRGBLinearization   - Eanbles or disables gamma-to-linear-space conversion of input textures that are tagged as sRGB (Values: 0, 1; Default: 0)
-		LoadTextures        - Enables or disables loading of texture images; option can be used to
-		                      minimize loading times for testing. (Values: 0, 1; Default: 1)
+		LoadTextures        - Enables or disables loading of textures referenced by materials; this can be useful to reduce
+		                      loading times for testing. (Values: 0, 1; Default: 1)
 		FastAnimation       - Disables or enables inter-frame interpolation for animations. (Values: 0, 1; Default: 1)
 		ShadowMapSize       - Sets the size of the shadow map buffer (Values: 128, 256, 512, 1024, 2048; Default: 1024)
 		SampleCount         - Maximum number of samples used for multisampled render targets; only affects pipelines
@@ -521,6 +521,7 @@ struct H3DLight
 		RadiusF             - Radius of influence (default: 100.0)
 		FovF                - Field of view (FOV) angle (default: 90.0)
 		ColorF3             - Diffuse color RGB (default: 1.0, 1.0, 1.0)
+		ColorMultiplierF    - Diffuse color multiplier for altering intensity, mainly useful for HDR (default: 1.0)
 		ShadowMapCountI     - Number of shadow maps used for light source (values: 0, 1, 2, 3, 4; default: 0)]
 		ShadowSplitLambdaF  - Constant determining segmentation of view frustum for Parallel Split Shadow Maps (default: 0.5)
 		ShadowMapBiasF      - Bias value for shadow mapping to reduce shadow acne (default: 0.005)
@@ -533,6 +534,7 @@ struct H3DLight
 		RadiusF,
 		FovF,
 		ColorF3,
+		ColorMultiplierF,
 		ShadowMapCountI,
 		ShadowSplitLambdaF,
 		ShadowMapBiasF,
