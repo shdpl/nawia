@@ -36,16 +36,6 @@ const char *fsDefColor =
 	"	gl_FragColor = color;\n"
 	"}\n";
 
-const char *vsOccBox =
-	"void main() {\n"
-	"	gl_Position = ftransform();\n"
-	"}\n";
-
-const char *fsOccBox =
-	"void main() {\n"
-	"	gl_FragColor = vec4( 1, 0, 0, 0 );\n"
-	"}\n";
-
 
 Renderer::Renderer() : RendererBase()
 {
@@ -68,10 +58,10 @@ Renderer::~Renderer()
 	releaseShadowRB();
 	releaseTexture( _defShadowMap );
 	releaseBuffer( _particleVBO );
+	releaseVertexLayout( _vlPosOnly );
 	releaseVertexLayout( _vlModel );
 	releaseVertexLayout( _vlParticle );
 	Modules::renderer().releaseShaderComb( _defColorShader );
-	Modules::renderer().releaseShaderComb( _occShader );
 
 	delete[] _scratchBuf;
 }
@@ -108,6 +98,9 @@ bool Renderer::init()
 		Modules::log().writeWarning( "Renderer: No multisampling for render targets available" );
 	
 	// Create vertex layouts
+	_vlPosOnly = createVertexLayout( 1 );
+	setVertexLayoutElem( _vlPosOnly, 0, "vertPos", 0, 3, 0 );
+	
 	_vlModel = createVertexLayout( 8 );
 	setVertexLayoutElem( _vlModel, 0, "vertPos", 0, 3, 0 );
 	setVertexLayoutElem( _vlModel, 1, "tangent", 1, 3, 0 );
@@ -123,11 +116,9 @@ bool Renderer::init()
 	setVertexLayoutElem( _vlParticle, 1, "parIdx", 0, 1, 24 );
 	setVertexLayoutElem( _vlParticle, 2, "parCornerIdx", 0, 1, 20 );
 	setVertexLayoutElem( _vlParticle, 3, "texCoords0", 0, 2, 12 );
-
 	
 	// Upload default shaders
-	if( !createShaderComb( vsDefColor, fsDefColor, _defColorShader ) ||
-	    !createShaderComb( vsOccBox, fsOccBox, _occShader ) )
+	if( !createShaderComb( vsDefColor, fsDefColor, _defColorShader ) )
 	{
 		Modules::log().writeError( "Failed to compile default shaders" );
 		return false;
@@ -171,6 +162,9 @@ bool Renderer::init()
 
 	_overlays.reserve( 100 );
 
+	// Create unit primitives
+	createPrimitives();
+
 	// Init scratch buffer with some default size
 	useScratchBuf( 4 * 1024*1024 );
 
@@ -199,6 +193,123 @@ void Renderer::setupViewMatrices( CameraNode *cam )
 	glLoadMatrixf( cam->getProjMat().x );
 	glMatrixMode( GL_MODELVIEW );
 	glLoadMatrixf( cam->getViewMat().x );
+}
+
+
+// =================================================================================================
+// Rendering Helper Functions
+// =================================================================================================
+
+void Renderer::createPrimitives()
+{
+	// Unit cube
+	float cubeVerts[8 * 3] = {  // x, y, z
+		0.f, 0.f, 1.f,   1.f, 0.f, 1.f,   1.f, 1.f, 1.f,   0.f, 1.f, 1.f,
+		0.f, 0.f, 0.f,   1.f, 0.f, 0.f,   1.f, 1.f, 0.f,   0.f, 1.f, 0.f
+	};
+	uint16 cubeInds[36] = {
+		0, 1, 2, 2, 3, 0,   1, 5, 6, 6, 2, 1,   5, 4, 7, 7, 6, 5,
+		4, 0, 3, 3, 7, 4,   3, 2, 6, 6, 7, 3,   4, 5, 1, 1, 0, 4
+	};
+	_vbCube = Modules::renderer().createVertexBuffer( 8 * 3 * sizeof( float ), cubeVerts );
+	_ibCube = Modules::renderer().createIndexBuffer( 36 * sizeof( uint16 ), cubeInds );
+
+	// Unit (geodesic) sphere (created by recursively subdividing a base octahedron)
+	Vec3f spVerts[126] = {  // x, y, z
+		Vec3f( 0.f, 1.f, 0.f ),   Vec3f( 0.f, -1.f, 0.f ),
+		Vec3f( -0.707f, 0.f, 0.707f ),   Vec3f( 0.707f, 0.f, 0.707f ),
+		Vec3f( 0.707f, 0.f, -0.707f ),   Vec3f( -0.707f, 0.f, -0.707f )
+	};
+	uint16 spInds[128 * 3] = {  // Number of faces: (4 ^ iterations) * 8
+		2, 3, 0,   3, 4, 0,   4, 5, 0,   5, 2, 0,   2, 1, 3,   3, 1, 4,   4, 1, 5,   5, 1, 2
+	};
+	for( uint32 i = 0, nv = 6, ni = 24; i < 2; ++i )  // Two iterations
+	{
+		// Subdivide each face into 4 tris by bisecting each edge and push vertices onto unit sphere
+		for( uint32 j = 0, prevNumInds = ni; j < prevNumInds; j += 3 )
+		{
+			spVerts[nv++] = ((spVerts[spInds[j + 0]] + spVerts[spInds[j + 1]]) * 0.5f).normalized();
+			spVerts[nv++] = ((spVerts[spInds[j + 1]] + spVerts[spInds[j + 2]]) * 0.5f).normalized();
+			spVerts[nv++] = ((spVerts[spInds[j + 2]] + spVerts[spInds[j + 0]]) * 0.5f).normalized();
+
+			spInds[ni++] = spInds[j + 0]; spInds[ni++] = nv - 3; spInds[ni++] = nv - 1;
+			spInds[ni++] = nv - 3; spInds[ni++] = spInds[j + 1]; spInds[ni++] = nv - 2;
+			spInds[ni++] = nv - 2; spInds[ni++] = spInds[j + 2]; spInds[ni++] = nv - 1;
+			spInds[j + 0] = nv - 3; spInds[j + 1] = nv - 2; spInds[j + 2] = nv - 1;
+		}
+	}
+	_vbSphere = Modules::renderer().createVertexBuffer( 126 * sizeof( Vec3f ), spVerts );
+	_ibSphere = Modules::renderer().createIndexBuffer( 128 * 3 * sizeof( uint16 ), spInds );
+	
+	// Unit cone
+	float coneVerts[13 * 3] = {  // x, y, z
+		0.f, 0.f, 0.f,
+		0.f, 1.f, -1.f,   -0.5f, 0.866f, -1.f,   -0.866f, 0.5f, -1.f,
+		-1.f, 0.f, -1.f,   -0.866f, -0.5f, -1.f,   -0.5f, -0.866f, -1.f,
+		0.f, -1.f, -1.f,   0.5f, -0.866f, -1.f,   0.866f, -0.5f, -1.f,
+		1.f, 0.f, -1.f,   0.866f, 0.5f, -1.f,   0.5f, 0.866f, -1.f,
+	};
+	uint16 coneInds[22 * 3] = {
+		0, 1, 2,   0, 2, 3,   0, 3, 4,   0, 4, 5,   0, 5, 6,   0, 6, 7,
+		0, 7, 8,   0, 8, 9,   0, 9, 10,   0, 10, 11,   0, 11, 12,   0, 12, 1,
+		10, 6, 2,   10, 8, 6,   10, 9, 8,   8, 7, 6,   6, 4, 2,   6, 5, 4,   4, 3, 2,
+		2, 12, 10,   2, 1, 12,   12, 11, 10
+	};
+	_vbCone = Modules::renderer().createVertexBuffer( 13 * 3 * sizeof( float ), coneVerts );
+	_ibCone = Modules::renderer().createIndexBuffer( 22 * 3 * sizeof( uint16 ), coneInds );
+
+	// Fullscreen polygon
+	float fsVerts[3 * 5] = {  // x, y, z
+		0.f, 0.f, 1.f,   2.f, 0.f, 1.f,   0.f, 2.f, 1.f
+	};
+	_vbFSPoly = Modules::renderer().createVertexBuffer( 3 * 5 * sizeof( float ), fsVerts );
+}
+
+
+void Renderer::drawAABB( const Vec3f &bbMin, const Vec3f &bbMax )
+{
+	ASSERT( _curShader != 0x0 );
+	
+	Matrix4f mat = Matrix4f::TransMat( bbMin.x, bbMin.y, bbMin.z ) *
+		Matrix4f::ScaleMat( bbMax.x - bbMin.x, bbMax.y - bbMin.y, bbMax.z - bbMin.z );
+	glUniformMatrix4fv( _curShader->uni_worldMat, 1, false, &mat.x[0] );
+	
+	bindVertexBuffer( 0, _vbCube, 0, 12 );
+	bindIndexBuffer( _ibCube );
+	applyVertexLayout( _vlPosOnly );
+
+	glDrawElements( GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (char *)0 );
+}
+
+
+void Renderer::drawSphere( const Vec3f &pos, float radius )
+{
+	ASSERT( _curShader != 0x0 );
+
+	Matrix4f mat = Matrix4f::TransMat( pos.x, pos.y, pos.z ) *
+	               Matrix4f::ScaleMat( radius, radius, radius );
+	glUniformMatrix4fv( _curShader->uni_worldMat, 1, false, &mat.x[0] );
+	
+	bindVertexBuffer( 0, _vbSphere, 0, 12 );
+	bindIndexBuffer( _ibSphere );
+	applyVertexLayout( _vlPosOnly );
+
+	glDrawElements( GL_TRIANGLES, 128 * 3, GL_UNSIGNED_SHORT, (char *)0 );
+}
+
+
+void Renderer::drawCone( float height, float radius, const Matrix4f &transMat )
+{
+	ASSERT( _curShader != 0x0 );
+
+	Matrix4f mat = transMat * Matrix4f::ScaleMat( radius, radius, height );
+	glUniformMatrix4fv( _curShader->uni_worldMat, 1, false, &mat.x[0] );
+	
+	bindVertexBuffer( 0, _vbCone, 0, 12 );
+	bindIndexBuffer( _ibCone );
+	applyVertexLayout( _vlPosOnly );
+
+	glDrawElements( GL_TRIANGLES, 22 * 3, GL_UNSIGNED_SHORT, (char *)0 );
 }
 
 
@@ -765,7 +876,8 @@ void Renderer::updateShadowMap()
 	
 	uint32 _prevRendBuf = _curRendBuf;
 	setRenderBuffer( _shadowRB );
-
+	
+	glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
 	glDepthMask( GL_TRUE );
 	glClearDepth( 1.0f );
     glClear( GL_DEPTH_BUFFER_BIT );
@@ -897,41 +1009,7 @@ void Renderer::updateShadowMap()
 	glCullFace( GL_BACK );
 		
 	setRenderBuffer( _prevRendBuf );
-}
-
-
-// =================================================================================================
-// Rendering Helper Functions
-// =================================================================================================
-
-void Renderer::drawAABB( const Vec3f &bbMin, const Vec3f &bbMax )
-{
-	static const unsigned int indices[24] = {
-		0, 1, 2, 3,
-		1, 5, 6, 2,
-		5, 4, 7, 6,
-		4, 0, 3, 7,
-		3, 2, 6, 7,
-		4, 5, 1, 0
-	};
-	
-	Vec3f corners[8] = {
-		Vec3f( bbMin.x, bbMin.y, bbMax.z ),
-		Vec3f( bbMax.x, bbMin.y, bbMax.z ),
-		Vec3f( bbMax.x, bbMax.y, bbMax.z ),
-		Vec3f( bbMin.x, bbMax.y, bbMax.z ),
-		Vec3f( bbMin.x, bbMin.y, bbMin.z ),
-		Vec3f( bbMax.x, bbMin.y, bbMin.z ),
-		Vec3f( bbMax.x, bbMax.y, bbMin.z ),
-		Vec3f( bbMin.x, bbMax.y, bbMin.z )
-	};
-
-	glBegin( GL_QUADS );
-	for( unsigned int i = 0; i < 24; ++i )
-	{
-		glVertex3fv( &corners[indices[i]].x );
-	}
-	glEnd();
+	glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 }
 
 
@@ -973,15 +1051,26 @@ void Renderer::drawOccProxies( uint32 list )
 	setMaterial( 0x0, "" );
 	glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
 	glDepthMask( GL_FALSE );
-	setShaderComb( &Modules::renderer()._occShader );
 	
+	setShaderComb( &Modules::renderer()._defColorShader );
+	bindVertexBuffer( 0, _vbCube, 0, 12 );
+	bindIndexBuffer( _ibCube );
+	applyVertexLayout( _vlPosOnly );
+
+	// Draw occlusion proxies
 	for( size_t i = 0, s = _occProxies[list].size(); i < s; ++i )
 	{
 		OccProxy &proxy = _occProxies[list][i];
-		
-		// Draw occlusion box
+
 		beginQuery( proxy.queryObj );
-		drawAABB( proxy.bbMin, proxy.bbMax );
+		
+		Matrix4f mat = Matrix4f::TransMat( proxy.bbMin.x, proxy.bbMin.y, proxy.bbMin.z ) *
+			Matrix4f::ScaleMat( proxy.bbMax.x - proxy.bbMin.x, proxy.bbMax.y - proxy.bbMin.y, proxy.bbMax.z - proxy.bbMin.z );
+		glUniformMatrix4fv( _curShader->uni_worldMat, 1, false, &mat.x[0] );
+
+		// Draw AABB
+		glDrawElements( GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (char *)0 );
+
 		endQuery( proxy.queryObj );
 	}
 
@@ -1150,13 +1239,12 @@ void Renderer::drawFSQuad( Resource *matRes, const string &shaderContext )
 		glLoadMatrixf( _curCamera->getViewMat().x );
 	else
 		glLoadMatrixf( Matrix4f().x );
-	
-	glBegin(GL_QUADS);
-	glTexCoord2f( 0, 0 ); glVertex3f( 0, 0, 1 );
-	glTexCoord2f( 1, 0 ); glVertex3f( 1, 0, 1 );
-	glTexCoord2f( 1, 1 ); glVertex3f( 1, 1, 1 );
-	glTexCoord2f( 0, 1 ); glVertex3f( 0, 1, 1 );
-	glEnd();
+
+	bindVertexBuffer( 0, _vbFSPoly, 0, 12 );
+	bindIndexBuffer( 0 );
+	applyVertexLayout( _vlPosOnly );
+
+	glDrawArrays( GL_TRIANGLES, 0, 3 );
 }
 
 
@@ -1217,7 +1305,7 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 					_curLight->getFrustum().calcAABB( bbMin, bbMax );
 					
 					// Check that viewer is outside light bounds
-					if( nearestDistToAABB( _curCamera->getFrustum().getOrigin(), bbMin, bbMax ) )
+					if( nearestDistToAABB( _curCamera->getFrustum().getOrigin(), bbMin, bbMax ) > 0 )
 					{
 						Modules::renderer().pushOccProxy( 1, bbMin, bbMax, _curLight->_occQueries[occSet] );
 
@@ -1313,7 +1401,7 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 					_curLight->getFrustum().calcAABB( bbMin, bbMax );
 					
 					// Check that viewer is outside light bounds
-					if( nearestDistToAABB( _curCamera->getFrustum().getOrigin(), bbMin, bbMax ) )
+					if( nearestDistToAABB( _curCamera->getFrustum().getOrigin(), bbMin, bbMax ) > 0 )
 					{
 						Modules::renderer().pushOccProxy( 1, bbMin, bbMax, _curLight->_occQueries[occSet] );
 
@@ -1327,37 +1415,35 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 			}
 		}
 		
-		// Calculate light screen space position
-		float bbx, bby, bbw, bbh;
-		_curLight->calcScreenSpaceAABB( _curCamera->getProjMat() * _curCamera->getViewMat(),
-		                                bbx, bby, bbw, bbh );
-		
 		// Update shadow map
 		if( !noShadows && _curLight->_shadowMapCount > 0 ) updateShadowMap();
-
-		// Prepare postprocessing step (set the camera transformation in MV matrix)
-		glMatrixMode( GL_PROJECTION );
-		glLoadMatrixf( Matrix4f::OrthoMat( 0, 1, 0, 1, -1, 1 ).x );
-		glMatrixMode( GL_MODELVIEW );
-		glLoadMatrixf( _curCamera->getViewMat().x );
 		
 		setupShadowMap( noShadows );
 
 		if( shaderContext == "" ) context = _curLight->_lightingContext;
 
+		setupViewMatrices( _curCamera );
 		setMaterial( 0x0, "" );		// Reset material
 		if( !setMaterial( _curLight->_materialRes, context ) ) continue;
-		
-		// Draw quad
-		glBegin( GL_QUADS );
-		glTexCoord2f( bbx, bby ); glVertex3f( bbx, bby, 1 );
-		glTexCoord2f( bbx + bbw, bby ); glVertex3f( bbx + bbw, bby, 1 );
-		glTexCoord2f( bbx + bbw, bby + bbh ); glVertex3f( bbx + bbw, bby + bbh, 1 );
-		glTexCoord2f( bbx, bby + bbh ); glVertex3f( bbx, bby + bbh, 1 );
-		glEnd();
+
+		glCullFace( GL_FRONT );
+		glDisable( GL_DEPTH_TEST );
+
+		if( _curLight->_fov < 180 )
+		{
+			float r = _curLight->_radius * tanf( degToRad( _curLight->_fov / 2 ) );
+			drawCone( _curLight->_radius, r, _curLight->_absTrans );
+		}
+		else
+		{
+			drawSphere( _curLight->_absPos, _curLight->_radius );
+		}
+
 		Modules().stats().incStat( EngineStats::LightPassCount, 1 );
 
 		// Reset
+		glEnable( GL_DEPTH_TEST );
+		glCullFace( GL_BACK );
 		glActiveTexture( GL_TEXTURE12 );
 		glBindTexture( GL_TEXTURE_2D, 0 );
 		glActiveTexture( GL_TEXTURE0 );
@@ -1456,7 +1542,7 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 				
 					// Check query result (viewer must be outside of bounding box)
 					if( nearestDistToAABB( frust1->getOrigin(), modelNode->getBBox().min,
-					                       modelNode->getBBox().max ) != 0 &&
+					                       modelNode->getBBox().max ) > 0 &&
 						Modules::renderer().getQueryResult( modelNode->_occQueries[occSet] ) < 1 )
 					{
 						Modules::renderer().pushOccProxy( 0, modelNode->getBBox().min, modelNode->getBBox().max,
@@ -1682,7 +1768,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 				
 					// Check query result (viewer must be outside of bounding box)
 					if( nearestDistToAABB( frust1->getOrigin(), emitter->getBBox().min,
-					                       emitter->getBBox().max ) != 0 &&
+					                       emitter->getBBox().max ) > 0 &&
 						Modules::renderer().getQueryResult( emitter->_occQueries[occSet] ) < 1 )
 					{
 						Modules::renderer().pushOccProxy( 0, emitter->getBBox().min, emitter->getBBox().max,
@@ -1920,11 +2006,11 @@ void Renderer::renderDebugView()
 	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None, true, true );
 	setupViewMatrices( _curCamera );
 
-	// Draw nodes
+	// Draw renderable nodes as wireframe
 	drawRenderables( "", "", true, &_curCamera->getFrustum(), 0x0, RenderingOrder::None, -1 );
 
 	// Draw bounding boxes
-	//glDisable( GL_CULL_FACE );
+	glDisable( GL_CULL_FACE );
 	setMaterial( 0x0, "" );
 	setShaderComb( &_defColorShader );
 	glUniformMatrix4fv( _defColorShader.uni_worldMat, 1, false, &Matrix4f().x[0] );
@@ -1934,20 +2020,11 @@ void Renderer::renderDebugView()
 		SceneNode *sn = Modules::sceneMan().getRenderableQueue()[i].node;
 		
 		drawAABB( sn->_bBox.min, sn->_bBox.max );
-
-		/*// Draw mesh AABBs
-		if( sn->getType() == SceneNodeTypes::Model )
-		{
-			ModelNode *model = (ModelNode *)sn;
-
-			for( uint32 j = 0, s = (uint32)model->_meshList.size(); j < s; ++j )
-			{
-				drawAABB( model->_meshList[j]->_bBox.min, model->_meshList[j]->_bBox.max );
-			}
-		}*/
 	}
+	glEnable( GL_CULL_FACE );
 
 	// Draw skeleton
+	glUniformMatrix4fv( _defColorShader.uni_worldMat, 1, false, &Matrix4f().x[0] );
 	glUniform4f( Modules::renderer()._defColShader_color, 1.0f, 0, 0, 1 );
 	glLineWidth( 2.0f );
 	glPointSize( 5.0f );
@@ -1982,6 +2059,10 @@ void Renderer::renderDebugView()
 	glPointSize( 1.0f );
 
 	// Draw light volumes
+	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+	glCullFace( GL_FRONT );
 	glUniform4f( Modules::renderer()._defColShader_color, 1, 1, 0, 0.25f );
 	for( size_t i = 0, s = Modules::sceneMan().getLightQueue().size(); i < s; ++i )
 	{
@@ -1989,64 +2070,15 @@ void Renderer::renderDebugView()
 		
 		if( lightNode->_fov < 180 )
 		{
-			glLoadMatrixf( (_curCamera->getViewMat() * lightNode->_absTrans).x );
-			
-			// Render cone
 			float r = lightNode->_radius * tanf( degToRad( lightNode->_fov / 2 ) );
-			glBegin( GL_TRIANGLE_FAN );
-			glVertex3f( 0, 0, 0 );
-			for( int j = 32; j >= 0; --j )
-			{
-				glVertex3f( r * sinf( j / 32.0f * Math::TwoPi ),
-				            r * cosf( j / 32.0f * Math::TwoPi ),
-				            -lightNode->_radius );
-			}
-			glEnd();
-
-			glLoadMatrixf( _curCamera->getViewMat().x );
+			drawCone( lightNode->_radius, r, lightNode->_absTrans );
 		}
 		else
 		{
-			drawAABB( Vec3f( lightNode->_absPos.x - lightNode->_radius,
-			                 lightNode->_absPos.y - lightNode->_radius,
-			                 lightNode->_absPos.z - lightNode->_radius ),
-			          Vec3f( lightNode->_absPos.x + lightNode->_radius,
-			                 lightNode->_absPos.y + lightNode->_radius,
-			                 lightNode->_absPos.z + lightNode->_radius ) );
+			drawSphere( lightNode->_absPos, lightNode->_radius );
 		}
 	}
-
-	// Draw screen space projection of light sources
-	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-	glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-	glUniform4f( Modules::renderer()._defColShader_color, 1, 1, 1, 0.25f );
-	
-	for( size_t i = 0, s = Modules::sceneMan().getLightQueue().size(); i < s; ++i )
-	{
-		LightNode *lightNode = (LightNode *)Modules::sceneMan().getLightQueue()[i];
-		
-		if( _curCamera->getFrustum().cullFrustum( lightNode->getFrustum() ) ) continue;
-
-		// Calculate light screen space position
-		float bbx, bby, bbw, bbh;
-		lightNode->calcScreenSpaceAABB( _curCamera->getProjMat() * _curCamera->getViewMat(),
-		                                bbx, bby, bbw, bbh );
-
-		glMatrixMode( GL_PROJECTION );
-		glLoadMatrixf( Matrix4f::OrthoMat( 0, 1, 0, 1, -1, 1 ).x );
-		glMatrixMode( GL_MODELVIEW );
-		glLoadMatrixf( Matrix4f().x );
-		
-		glBegin( GL_QUADS );
-		glVertex3f( bbx, bby, 1 );
-		glVertex3f( bbx + bbw, bby, 1 );
-		glVertex3f( bbx + bbw, bby + bbh, 1 );
-		glVertex3f( bbx, bby + bbh, 1 );
-		glEnd();
-	}
-
-	glEnable( GL_CULL_FACE );
+	glCullFace( GL_BACK );
 	glDisable( GL_BLEND );
 }
 

@@ -133,9 +133,12 @@ protected:
 	float                              _splitPlanes[5];
 	Matrix4f                           _lightMats[4];
 
-	uint32                             _vlModel, _vlParticle;
-	ShaderCombination                  _defColorShader, _occShader;
+	uint32                             _vlPosOnly, _vlModel, _vlParticle;
+	ShaderCombination                  _defColorShader;
 	int                                _defColShader_color;  // Uniform location
+	
+	uint32                             _vbCube, _ibCube, _vbSphere, _ibSphere;
+	uint32                             _vbCone, _ibCone, _vbFSPoly;
 
 	static bool nodeFrontToBackOrder( MeshNode *e1, MeshNode *e2 )
 		{ return e1->tmpSortValue < e2->tmpSortValue; }
@@ -145,6 +148,8 @@ protected:
 		{ return e1->getMaterialRes() < e2->getMaterialRes(); }
 	
 	void setupViewMatrices( CameraNode *cam );
+	
+	void createPrimitives();
 	
 	bool setMaterialRec( MaterialResource *materialRes, const std::string &shaderContext, ShaderResource *shaderRes );
 	
@@ -179,6 +184,10 @@ public:
 	bool init();
 	void resize( int x, int y, int width, int height );
 
+	void drawAABB( const Vec3f &bbMin, const Vec3f &bbMax );
+	void drawSphere( const Vec3f &pos, float radius );
+	void drawCone( float height, float fov, const Matrix4f &transMat );
+	
 	bool createShaderComb( const char *vertexShader, const char *fragmentShader, ShaderCombination &sc );
 	void releaseShaderComb( ShaderCombination &sc );
 	void setShaderComb( ShaderCombination *sc );
@@ -195,8 +204,6 @@ public:
 	
 	void showOverlay( const Overlay &overlay );
 	void clearOverlays();
-	
-	void drawAABB( const Vec3f &bbMin, const Vec3f &bbMax );
 	
 	static void drawModels( const std::string &shaderContext, const std::string &theClass, bool debugView,
 		const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order, int occSet );

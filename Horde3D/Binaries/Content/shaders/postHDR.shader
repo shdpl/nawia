@@ -47,12 +47,13 @@ context FINALPASS
 [[VS_FSQUAD]]
 // =================================================================================================
 
+attribute vec3 vertPos;
 varying vec2 texCoords;
 				
 void main( void )
 {
-	texCoords = gl_MultiTexCoord0.st; 
-	gl_Position = gl_ProjectionMatrix * gl_Vertex;
+	texCoords = vertPos.xy; 
+	gl_Position = gl_ProjectionMatrix * vec4( vertPos, 1 );
 }
 
 
