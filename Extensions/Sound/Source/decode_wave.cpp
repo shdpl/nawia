@@ -26,6 +26,11 @@
 
 #include "decode_wave.h"
 
+#ifndef WIN32
+#include <string.h>
+#endif
+
+
 	size_t WaveDecoder::findChunk( const char *buffer, size_t bufferSize, const char chunkName[4], size_t &chunkSize )
 	{
 		bool found = false;

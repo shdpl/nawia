@@ -22,6 +22,7 @@
 // *************************************************************************************************
 
 #include <al.h>
+#include <alext.h>
 
 #include "egModules.h"
 #include "egCom.h"
@@ -29,6 +30,7 @@
 #ifndef WIN32
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 #endif
 
 #include "manager.h"

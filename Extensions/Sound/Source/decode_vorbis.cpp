@@ -26,6 +26,11 @@
 
 #include "decode_vorbis.h"
 
+#ifndef WIN32
+#include <string.h>
+#endif
+
+
 	ov_callbacks vorbisCallbacks =
 	{
 		VorbisDecoder::VorbisRead,
