@@ -38,7 +38,7 @@ try:
 except OSError:
 	h3d = cdll.LoadLibrary('Horde3D.dll')
 
-if hasattr(h3d, 'addTerrainNode'):
+if hasattr(h3d, 'h3dextAddTerrainNode'):
 	NodeType_Terrain = 100
 	__all__.append('NodeType_Terrain')
 
@@ -56,12 +56,12 @@ if hasattr(h3d, 'addTerrainNode'):
 	addTerrainNode.argtypes = [c_int, c_char_p, c_int, c_int]
 	__all__.append('addTerrainNode')
 
-	_createGeyRes = h3d.h3dextCreateGeoRes
-	_createGeoRes.restype = c_int
-	_createGeoRes.argtypes = [c_int, c_char_p, c_float]
-	def createGeRes(node, resName, meshQuality):
-		return _createGeoRes(node, resName, c_float(meshQuality))
-	__all__.append('createGeoRes')
+	_createTerrainGeoRes = h3d.h3dextCreateTerrainGeoRes
+	_createTerrainGeoRes.restype = c_int
+	_createTerrainGeoRes.argtypes = [c_int, c_char_p, c_float]
+	def createTerrainGeoRes(node, resName, meshQuality):
+		return _createTerrainGeoRes(node, resName, c_float(meshQuality))
+	__all__.append('createTerrainGeoRes')
 
 
 
