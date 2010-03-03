@@ -141,7 +141,7 @@ class ChicagoApp(app.App):
         h3d.setNodeTransform(self._light, 0, 20, 50, -30, 0, 0, 1, 1, 1)
         h3d.setNodeParamF(self._light, h3d.Light.RadiusF, 0, 200)
         h3d.setNodeParamF(self._light, h3d.Light.FovF, 0, 90)
-        h3d.setNodeParamF(self._light, h3d.Light.ShadowMapCountI, 0, 3)
+        h3d.setNodeParamI(self._light, h3d.Light.ShadowMapCountI, 0, 3)
         h3d.setNodeParamF(self._light, h3d.Light.ShadowSplitLambdaF, 0, 0.9)
         h3d.setNodeParamF(self._light, h3d.Light.ShadowMapBiasF, 0, 0.001)
         h3d.setNodeParamF(self._light, h3d.Light.ColorF3, 0, 0.9)
