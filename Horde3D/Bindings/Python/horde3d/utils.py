@@ -39,31 +39,31 @@ except OSError:
 	h3dutils = cdll.LoadLibrary('Horde3DUtils.dll')
 
 
-dumpMessages = h3dutils.dumpMessages
+dumpMessages = h3dutils.h3dutDumpMessages
 dumpMessages.restype = c_bool
 dumpMessages.argtypes = []
 __all__.append('dumpMessages')
 
 
-getResourcePath = h3dutils.getResourcePath
+getResourcePath = h3dutils.h3dutGetResourcePath
 getResourcePath.restype = c_char_p
 getResourcePath.argtypes = [c_int]
 __all__.append('getResourcePath')
 
 
-setResourcePath = h3dutils.setResourcePath
+setResourcePath = h3dutils.h3dutSetResourcePath
 setResourcePath.restype = None
 setResourcePath.argtypes = [c_int, c_char_p]
 __all__.append('setResourcePath')
 
 
-loadResourcesFromDisk = h3dutils.loadResourcesFromDisk
+loadResourcesFromDisk = h3dutils.h3dutLoadResourcesFromDisk
 loadResourcesFromDisk.restype = c_bool
 loadResourcesFromDisk.argtypes = [c_char_p]
 __all__.append('loadResourcesFromDisk')
 
 
-_pickRay = h3dutils.pickRay
+_pickRay = h3dutils.h3dutPickRay
 _pickRay.restype = None
 _pickRay.argtypes = [
 		c_int,
@@ -83,7 +83,7 @@ def pickRay(cameraNode, nwx, nwy):
 __all__.append('pickRay')
 
 
-_pickNode = h3dutils.pickNode
+_pickNode = h3dutils.h3dutPickNode
 _pickNode.restype = c_int
 _pickNode.argtypes = [c_int, c_float, c_float]
 def pickNode(cameraNode, nwx, nwy):
@@ -91,7 +91,7 @@ def pickNode(cameraNode, nwx, nwy):
 __all__.append('pickNode')
 
 
-_showText = h3dutils.showText
+_showText = h3dutils.h3dutShowText
 _showText.restype = None
 _showText.argtypes = [c_char_p, c_float, c_float, c_float, c_float, c_float, c_float, c_int, c_int]
 def showText(text, x, y, size, r, g, b, fontMaterialRes, layer):
@@ -99,7 +99,7 @@ def showText(text, x, y, size, r, g, b, fontMaterialRes, layer):
 __all__.append('showText')
 
 
-_showFrameStats = h3dutils.showFrameStats
+_showFrameStats = h3dutils.h3dutShowFrameStats
 _showFrameStats.restype = None
 _showFrameStats.argtypes = [c_int, c_int, c_int]
 def showFrameStats(fontMaterialRes, boxMaterialRes, mode):

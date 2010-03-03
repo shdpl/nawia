@@ -39,29 +39,29 @@ except OSError:
 	h3d = cdll.LoadLibrary('Horde3D.dll')
 
 if hasattr(h3d, 'addTerrainNode'):
-	SNT_TerrainNode = 100
-	__all__.append('SNT_TerrainNode')
+	NodeType_Terrain = 100
+	__all__.append('NodeType_Terrain')
 
 	class TerrainNodeParams(object):
-		HeightMapRes = 10000
-		MaterialRes = 10001
-		MeshQuality = 10002
-		SkirtHeight = 10003
-		BlockSize = 10004
-	__all__.append('TerrainNodeParams')
+		HeightTexResI = 10000
+		MatResI = 10001
+		MeshQualityF = 10002
+		SkirtHeightF = 10003
+		BlockSizeI = 10004
+	__all__.append('Terrain')
 
 
-	addTerrainNode = h3d.addTerrainNode
+	addTerrainNode = h3d.h3dextAddTerrainNode
 	addTerrainNode.restype = c_int
 	addTerrainNode.argtypes = [c_int, c_char_p, c_int, c_int]
 	__all__.append('addTerrainNode')
 
-	_createGeometryResource = h3d.createGeometryResource
-	_createGeometryResource.restype = c_int
-	_createGeometryResource.argtypes = [c_int, c_char_p, c_float]
-	def createGeometryResource(node, resName, meshQuality):
-		return _createGeometryResource(node, resName, c_float(meshQuality))
-	__all__.append('createGeometryResource')
+	_createGeyRes = h3d.h3dextCreateGeoRes
+	_createGeoRes.restype = c_int
+	_createGeoRes.argtypes = [c_int, c_char_p, c_float]
+	def createGeRes(node, resName, meshQuality):
+		return _createGeoRes(node, resName, c_float(meshQuality))
+	__all__.append('createGeoRes')
 
 
 

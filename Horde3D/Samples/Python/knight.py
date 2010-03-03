@@ -35,11 +35,11 @@ class KnightWindow(app.Window):
         elif symbol == key.SPACE:
             self._app._freeze = not self._app._freeze
         elif symbol == key.F3:
-            p = h3d.getNodeParami(self.camera, h3d.CameraNodeParams.PipelineRes)
+            p = h3d.getNodeParamI(self.camera, h3d.Camera.PipeResI)
             if p == self._app._h3dres.hdrPipe:
-                h3d.setNodeParami(self.camera, h3d.CameraNodeParams.PipelineRes, self._app._h3dres.forwardPipe)
+                h3d.setNodeParamI(self.camera, h3d.Camera.PipeResI, self._app._h3dres.forwardPipe)
             else:
-                h3d.setNodeParami(self.camera, h3d.CameraNodeParams.PipelineRes, self._app._h3dres.hdrPipe)
+                h3d.setNodeParamI(self.camera, h3d.Camera.PipeResI, self._app._h3dres.hdrPipe)
         elif symbol == key.F7:
             self._app._debugViewMode = not self._app._debugViewMode
         elif symbol == key.F8:
@@ -91,20 +91,20 @@ class KnightApp(app.App):
         self._h3dres = h3dres
 
         # Pipelines
-        h3dres.hdrPipe = h3d.addResource(h3d.ResourceTypes.Pipeline, "pipelines/hdr.pipeline.xml", 0)
-        h3dres.forwardPipe = h3d.addResource(h3d.ResourceTypes.Pipeline, "pipelines/forward.pipeline.xml", 0)
+        h3dres.hdrPipe = h3d.addResource(h3d.ResTypes.Pipeline, "pipelines/hdr.pipeline.xml", 0)
+        h3dres.forwardPipe = h3d.addResource(h3d.ResTypes.Pipeline, "pipelines/forward.pipeline.xml", 0)
         # Overlays
-        h3dres.fontMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/font.material.xml", 0)
-        h3dres.panelMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/panel.material.xml", 0)
-        h3dres.logoMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/logo.material.xml", 0)
+        h3dres.fontMat = h3d.addResource(h3d.ResTypes.Material, "overlays/font.material.xml", 0)
+        h3dres.panelMat = h3d.addResource(h3d.ResTypes.Material, "overlays/panel.material.xml", 0)
+        h3dres.logoMat = h3d.addResource(h3d.ResTypes.Material, "overlays/logo.material.xml", 0)
         # Environment
-        h3dres.env = h3d.addResource(h3d.ResourceTypes.SceneGraph, "models/sphere/sphere.scene.xml", 0)
+        h3dres.env = h3d.addResource(h3d.ResTypes.SceneGraph, "models/sphere/sphere.scene.xml", 0)
         # Knight
-        h3dres.knight = h3d.addResource(h3d.ResourceTypes.SceneGraph, "models/knight/knight.scene.xml", 0)
-        h3dres.knightAnim1 = h3d.addResource(h3d.ResourceTypes.Animation, "animations/knight_order.anim", 0)
-        h3dres.knightAnim2 = h3d.addResource(h3d.ResourceTypes.Animation, "animations/knight_attack.anim", 0)
+        h3dres.knight = h3d.addResource(h3d.ResTypes.SceneGraph, "models/knight/knight.scene.xml", 0)
+        h3dres.knightAnim1 = h3d.addResource(h3d.ResTypes.Animation, "animations/knight_order.anim", 0)
+        h3dres.knightAnim2 = h3d.addResource(h3d.ResTypes.Animation, "animations/knight_attack.anim", 0)
         # Particle system
-        h3dres.particleSys = h3d.addResource(h3d.ResourceTypes.SceneGraph, "particles/particleSys1/particleSys1.scene.xml", 0)
+        h3dres.particleSys = h3d.addResource(h3d.ResTypes.SceneGraph, "particles/particleSys1/particleSys1.scene.xml", 0)
 
     def _h3dSetupScene(self):
         h3dres = self._h3dres
@@ -114,29 +114,31 @@ class KnightApp(app.App):
 
         self._knight = h3d.addNodes(h3d.RootNode, h3dres.knight)
         h3d.setNodeTransform(self._knight, 0, 0, 0, 0, 180, 0, 0.1, 0.1, 0.1)
-        h3d.setupModelAnimStage(self._knight, 0, h3dres.knightAnim1, '', False)
-        h3d.setupModelAnimStage(self._knight, 1, h3dres.knightAnim2, '', False)
+        h3d.setupModelAnimStage(self._knight, 0, h3dres.knightAnim1, 0, '', False)
+        h3d.setupModelAnimStage(self._knight, 1, h3dres.knightAnim2, 0, '', False)
 
         # Attach particle system to hand joint
-        h3d.findNodes(self._knight, 'Bip01_R_Hand', h3d.SceneNodeTypes.Joint)
+        h3d.findNodes(self._knight, 'Bip01_R_Hand', h3d.NodeTypes.Joint)
         hand = h3d.getNodeFindResult(0)
         self._particleSystem = h3d.addNodes(hand, h3dres.particleSys)
         h3d.setNodeTransform(self._particleSystem, 0, 40, 0, 90, 0, 0, 1, 1, 1)
 
         self._light = h3d.addLightNode(h3d.RootNode, 'Light1', 0, 'LIGHTING', 'SHADOWMAP')
         h3d.setNodeTransform(self._light, 0, 15, 10, -60, 0, 0, 1, 1, 1)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.Radius, 30)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.FOV, 90)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.ShadowMapCount, 1)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.ShadowMapBias, 0.01)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.Col_R, 1.0)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.Col_G, 0.8)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.Col_B, 0.7)
+        h3d.setNodeParamF(self._light, h3d.Light.RadiusF, 0, 30)
+        h3d.setNodeParamF(self._light, h3d.Light.FovF, 0, 90)
+        h3d.setNodeParamI(self._light, h3d.Light.ShadowMapCountI, 1)
+        h3d.setNodeParamF(self._light, h3d.Light.ShadowMapBiasF, 0, 0.01)
+        h3d.setNodeParamF(self._light, h3d.Light.ColorF3, 0, 1.0)
+        h3d.setNodeParamF(self._light, h3d.Light.ColorF3, 1, 0.8)
+        h3d.setNodeParamF(self._light, h3d.Light.ColorF3, 2, 0.7)
 
         # Customize post processing effects
-        mat = h3d.findResource(h3d.ResourceTypes.Material, 'pipelines/postHDR.material.xml')
+        mat = h3d.findResource(h3d.ResTypes.Material, 'pipelines/postHDR.material.xml')
         # hdrParams: exposure, brightpass threshold, brightpass offset (see shader for description)
-        h3d.setMaterialUniform(mat, 'hdrParams', 2.5, 0.5, 0.08, 0.0)
+        h3d.setMaterialUniform(mat, 'hdrExposure', 2.5, 0.0, 0.0, 0.0)
+        h3d.setMaterialUniform(mat, 'hdrBrightThres', 0.5, 0.0, 0.0, 0.0)
+        h3d.setMaterialUniform(mat, 'hdrBrightOffset', 0.08, 0.0, 0.0, 0.0)
 
     def _mainloopUpdate(self, dt):
         app.App._mainloopUpdate(self, dt)
@@ -145,14 +147,14 @@ class KnightApp(app.App):
             h3d.setNodeTransform(w.camera, self._x, self._y, self._z, self._rx, self._ry, 0, 1, 1, 1)
 
             if self._debugViewMode:
-                h3d.setOption(h3d.EngineOptions.DebugViewMode, 1.0)
+                h3d.setOption(h3d.Options.DebugViewMode, 1.0)
             else:
-                h3d.setOption(h3d.EngineOptions.DebugViewMode, 0.0)
+                h3d.setOption(h3d.Options.DebugViewMode, 0.0)
 
             if self._wireframeMode:
-                h3d.setOption(h3d.EngineOptions.WireframeMode, 1.0)
+                h3d.setOption(h3d.Options.WireframeMode, 1.0)
             else:
-                h3d.setOption(h3d.EngineOptions.WireframeMode, 0.0)
+                h3d.setOption(h3d.Options.WireframeMode, 0.0)
 
             key = pyglet.window.key
             curVel = self._velocity * dt
@@ -189,7 +191,7 @@ class KnightApp(app.App):
             h3d.setModelAnimParams(self._knight, 0, self._animTime * 24.0, self._weight)
             h3d.setModelAnimParams(self._knight, 1, self._animTime * 24.0, 1.0 - self._weight)
 
-            count = h3d.findNodes(self._particleSystem, '', h3d.SceneNodeTypes.Emitter)
+            count = h3d.findNodes(self._particleSystem, '', h3d.NodeTypes.Emitter)
             for i in range(count):
                 h3d.advanceEmitterTime(h3d.getNodeFindResult(i), dt)
 

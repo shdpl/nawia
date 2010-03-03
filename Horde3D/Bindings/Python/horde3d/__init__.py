@@ -4,7 +4,8 @@
 #   Next-Generation Graphics Engine
 # --------------------------------------
 # Copyright (C) 2006-2009 Nicolas Schulz
-#               2008-2009 Florian Noeding (Python wrapper)
+#               2008-2010 Florian Noeding (Python wrapper)
+#               2009      Alex Fuller (updates for SVN 331)
 #
 #
 # This library is free software; you can redistribute it and/or
@@ -23,7 +24,7 @@
 #
 # *************************************************************************************************
 
-# Updated to Horde3D version beta 3
+# Horde3D version beta 4 (svn r386)
 
 from ctypes import *
 
@@ -62,32 +63,37 @@ RootNode = 1
 __all__.append('RootNode')
 
 
-class EngineOptions(object):
+class Options(object):
 	MaxLogLevel = 1
 	MaxNumMessages = 2
-	TrilinearFilterung = 3
+	TrilinearFiltering = 3
 	MaxAnisotropy = 4
 	TexCompression = 5
-	LoadTextures = 6
-	FastAnimation = 7
-	ShadowMapSize = 8
-	SampleCount = 9
-	WireframeMode = 10
-	DebugViewMode = 11
-	DumpFailedShaders = 12
-__all__.append('EngineOptions')
+	SRGBLinearization = 6
+	LoadTextures = 7
+	FastAnimation = 8
+	ShadowMapSize = 9
+	SampleCount = 10
+	WireframeMode = 11
+	DebugViewMode = 12
+	DumpFailedShaders = 13
+	GatherTimeStats = 14
+__all__.append('Options')
 
 
-class EngineStats(object):
+class Stats(object):
 	TriCount = 100
 	BatchCount = 101
 	LightPassCount = 102
 	FrameTime = 103
-	CustomTime = 104
-__all__.append('EngineStats')
+	AnimationTime = 104
+	CustomTime = 105
+	TextureVMem = 106
+	GeometryVMem = 107
+__all__.append('Stats')
 
 
-class ResourceTypes(object):
+class ResTypes(object):
 	Undefined = 0
 	SceneGraph = 1
 	Geometry = 2
@@ -98,73 +104,111 @@ class ResourceTypes(object):
 	Texture = 7
 	ParticleEffect = 8
 	Pipeline = 9
-__all__.append('ResourceTypes')
+__all__.append('ResTypes')
 
 
-class ResourceFlags(object):
+class ResFlags(object):
 	NoQuery = 1
 	NoTexCompression = 2
 	NoTexMipmaps = 4
-__all__.append('ResourceFlags')
+	TexCubemap = 8
+	TexDynamic = 16
+	TexRenderable = 32
+	TexSRGB = 64
+__all__.append('ResFlags')
 
 
-class GeometryResParams(object):
-	VertexCount = 200
-	IndexCount = 201
-	VertexData = 202
-	IndexData = 203
-__all__.append('GeometryResParams')
+class Formats(object):
+	Unknown = 0
+	TEX_BGRA8 = 1
+	TEX_DXT1 = 2
+	TEX_DXT3 = 3
+	TEX_DXT5 = 4
+	TEX_RGBA16F = 5
+	TEX_RGBA32F = 6
+__all__.append('Formats')
 
 
-class AnimationResParams(object):
-	FrameCount = 300
-__all__.append('AnimationResParams')
+class GeoRes(object):
+	GeometryElem = 200
+	GeoIndexCountI = 201
+	GeoVertexCountI = 202
+	GeoIndices16I = 203
+	GeoIndexStream = 204
+	GeoVertPosStream = 205
+	GeoVertTanStream = 206
+	GeoVertStaticStream = 207
+__all__.append('GeoRes')
 
 
-class MaterialResParams(object):
-	Class = 400
-	Link = 401
-	Shader = 402
-__all__.append('MaterialResParams')
+class AnimRes(object):
+	EntityElem = 300
+	EntFrameCountI = 301
+__all__.append('AnimRes')
 
 
-class TextureResParams(object):
-	PixelData = 700
-	TexType = 701
-	TexFormat = 702
-	Width = 703
-	Height = 704
-__all__.append('TextureResParams')
+class MatRes(object):
+	MaterialElem = 400
+	SamplerElem = 401
+	UniformElem = 402
+	MatClassStr = 403
+	MatLinkI = 404
+	MatShaderI = 405
+	SampNameStr = 406
+	SampTexStr = 407
+	UnifNameStr = 408
+	UnifValueF4 = 409
+__all__.append('MatRes')
 
 
-class EffectResParams(object):
-	LifeMin = 900
-	LifeMax = 901
-	MoveVelMin = 902
-	MoveVelMax = 903
-	MoveVelEndRate = 904
-	RotVelMin = 905
-	RotVelMax = 906
-	RotVelEndRate = 907
-	SizeMin = 908
-	SizeMax = 909
-	SizeEndRate = 910
-	Col_R_Min = 911
-	Col_R_Max = 912
-	Col_R_EndRate = 913
-	Col_G_Min = 914
-	Col_G_Max = 915
-	Col_G_EndRate = 916
-	Col_B_Min = 917
-	Col_B_Max = 918
-	Col_B_EndRate = 919
-	Col_A_Min = 920		 ##NEW
-	Col_A_Max = 921		 ##NEW
-	Col_A_EndRate = 922	 ##NEW
-__all__.append('EffectResParams')
+class ShaderRes(object):
+	ContextElem = 600
+	SamplerElem = 601
+	UniformElem = 602
+	ContNameStr = 603
+	SampNameStr = 604
+	UnifNameStr = 605
+	UnifSizeI = 606
+	UnifDefValueF4 = 607
+__all__.append('ShaderRes')
 
 
-class SceneNodeTypes(object):
+class TexRes(object):
+	TextureElem = 700
+	ImageElem = 701
+	TexFormatI = 702
+	TexSliceCountI = 703
+	ImgWidthI = 704
+	ImgHeightI = 705
+	ImgPixelStream = 706
+__all__.append('TexRes')
+
+
+class PartEffRes(object):
+	ParticleElem = 800
+	ChanMoveVelElem = 801
+	ChanRotVelElem = 802
+	ChanSizeElem = 803
+	ChanColRElem = 804
+	ChanColGElem = 805
+	ChanColBElem = 806
+	ChanCalAElem = 807
+	PartLifeMinF = 808
+	PartLifeMaxF = 809
+	ChanStartMinF = 810
+	ChanStartMaxF = 811
+	ChanEndRateF = 812
+__all__.append('PartEffRes')
+
+
+class PipeRes(object):
+	StageElem = 900
+	StageNameStr = 901
+	StageActivationI = 902
+__all__.append('PipeRes')
+
+
+class NodeTypes(object):
 	Undefined = 0
 	Group = 1
 	Model = 2
@@ -173,132 +217,137 @@ class SceneNodeTypes(object):
 	Light = 5
 	Camera = 6
 	Emitter = 7
-__all__.append('SceneNodeTypes')
+__all__.append('NodeTypes')
 
 
-class SceneNodeParams(object):
-	Name = 1
-	AttachmentString = 2
-__all__.append('SceneNodeParams')
+class NodeParams(object):
+	NameStr = 1
+	AttachmentStr = 2
+__all__.append('NodeParams')
 
 
-class ModelNodeParams(object):
-	GeometryRes = 200
-	SoftwareSkinning = 201
-	LodDist1 = 202
-	LodDist2 = 203
-	LodDist3 = 204
-	LodDist4 = 205
-__all__.append('ModelNodeParams')
+class Model(object):
+	GeoResI = 200
+	SWSkinningI = 201
+	LodDist1F = 202
+	LodDist2F = 203
+	LodDist3F = 204
+	LodDist4F = 205
+__all__.append('Model')
 
 
-class MeshNodeParams(object):
-	MaterialRes = 300
-	BatchStart = 301
-	BatchCount = 302
-	VertRStart = 303
-	VertREnd = 304
-	LodLevel = 305
-__all__.append('MeshNodeParams')
+class Mesh(object):
+	MatResI = 300
+	BatchStartI = 301
+	BatchCountI = 302
+	VertRStartI = 303
+	VertREndI = 304
+	LodLevelI = 305
+__all__.append('Mesh')
 
 
-class JointNodeParams(object):
-	JointIndex = 400
-__all__.append('JointNodeParams')
+class Joint(object):
+	JointIndexI = 400
+__all__.append('Joint')
 
 
-class LightNodeParams(object):
-	MaterialRes = 500
-	Radius = 501
-	FOV = 502
-	Col_R = 503
-	Col_G = 504
-	Col_B = 505
-	ShadowMapCount = 506
-	ShadowSplitLambda = 507
-	ShadowMapBias = 508
-__all__.append('LightNodeParams')
+class Light(object):
+	MatResI = 500
+	RadiusF = 501
+	FovF = 502
+	ColorF3 = 503
+	ColorMultiplierF = 504
+	ShadowMapCountI = 505
+	ShadowSplitLambdaF = 506
+	ShadowMapBiasF = 507
+	LightingContextStr = 508
+	ShadowContextStr = 509
+__all__.append('Light')
 
 
-class CameraNodeParams(object):
-	PipelineRes = 600
-	OutputTex = 601
-	OutputBufferIndex = 602
-	LeftPlane = 603
-	RightPlane = 604
-	BottomPlane = 605
-	TopPlane = 606
-	NearPlane = 607
-	FarPlane = 608
-	Orthographic = 609
-	OcclusionCulling = 610
-__all__.append('CameraNodeParams')
+class Camera(object):
+	PipeResI = 600
+	OutTexResI = 601
+	OutBufIndexI = 602
+	LeftPlaneF = 603
+	RightPlaneF = 604
+	BottomPlaneF = 605
+	TopPlaneF = 606
+	NearPlaneF = 607
+	FarPlaneF = 608
+	OrthoI = 609
+	OccCullingI = 610
+__all__.append('Camera')
 
 
-class EmitterNodeParams(object):
-	MaterialRes = 700
-	ParticleEffectRes = 701
-	MaxCount = 702
-	RespawnCount = 703
-	Delay = 704
-	EmissionRate = 705
-	SpreadAngle = 706
-	ForceX = 707
-	ForceY = 708
-	ForceZ = 709
-__all__.append('EmitterNodeParams')
+class Emitter(object):
+	MatResI = 700
+	PartEffResI = 701
+	MaxCountI = 702
+	RespawnCountI = 703
+	DelayF = 704
+	EmissionRateF = 705
+	SpreadAngleF = 706
+	ForceF3 = 707
+__all__.append('Emitter')
 
 
 
-getVersionString = h3d.getVersionString
+getVersionString = h3d.h3dGetVersionString
 getVersionString.restype = c_char_p
 getVersionString.argtypes = []
 __all__.append('getVersionString')
 
 
-checkExtension = h3d.checkExtension
+checkExtension = h3d.h3dCheckExtension
 checkExtension.restype = c_bool
 checkExtension.argtypes = [c_char_p]
 __all__.append('checkExtension')
 
 
-init = h3d.init
+getError = h3d.h3dGetError
+getError.restype = c_bool
+getError.argtypes = []
+__all__.append('getError')
+
+
+init = h3d.h3dInit
 init.restype = c_bool
 init.argtypes = []
 __all__.append('init')
 
 
-release = h3d.release
+release = h3d.h3dRelease
 release.restype = None
 release.argtypes = []
 __all__.append('release')
 
 
-setupViewport = h3d.setupViewport
+setupViewport = h3d.h3dSetupViewport
 setupViewport.restype = None
 setupViewport.argtypes = [c_int, c_int, c_int, c_int, c_bool]
 __all__.append('setupViewport')
 
 
-render = h3d.render
+render = h3d.h3dRender
 render.restype = c_bool
 render.argtypes = [c_int]
 __all__.append('render')
 
 
-finalizeFrame = h3d.finalizeFrame
-finalizeFrame.restype = c_bool
+finalizeFrame = h3d.h3dFinalizeFrame
+finalizeFrame.restype = None
 finalizeFrame.argtypes = []
 __all__.append('finalizeFrame')
 
 
-clear = h3d.clear
+clear = h3d.h3dClear
 clear.restype = None
 clear.argtypes = []
 __all__.append('clear')
 
 
-_getMessage = h3d.getMessage
+_getMessage = h3d.h3dGetMessage
 _getMessage.restype = c_char_p
 _getMessage.argtypes = [POINTER(c_int), POINTER(c_float)]
 def getMessage():
@@ -310,13 +359,13 @@ def getMessage():
 __all__.append('getMessage')
 
 
-getOption = h3d.getOption
+getOption = h3d.h3dGetOption
 getOption.restype = c_float
 getOption.argtypes = [c_int]
 __all__.append('getOption')
 
 
-_setOption = h3d.setOption
+_setOption = h3d.h3dSetOption
 _setOption.restype = c_bool
 _setOption.argtypes = [c_int, c_float]
 def setOption(param, value):
@@ -324,7 +373,7 @@ def setOption(param, value):
 __all__.append('setOption')
 
 
-_getStat = h3d.getStat
+_getStat = h3d.h3dGetStat
 _getStat.restype = c_float
 _getStat.argtypes = [c_int, c_bool]
 def getStat(param, reset):
@@ -332,7 +381,7 @@ def getStat(param, reset):
 __all__.append('getStat')
 
 
-_showOverlay = h3d.showOverlay
+_showOverlay = h3d.h3dShowOverlay
 _showOverlay.restype = None
 _showOverlay.argtypes = [
 		c_float, c_float, c_float, c_float,
@@ -359,60 +408,61 @@ def showOverlay(
 __all__.append('showOverlay')
 
 
-clearOverlays = h3d.clearOverlays
+clearOverlays = h3d.h3dClearOverlays
 clearOverlays.restype = None
 clearOverlays.argtypes = []
 __all__.append('clearOverlays')
 
 
-getResourceType = h3d.getResourceType
-getResourceType.restype = c_int
-getResourceType.argtypes = [c_int]
-__all__.append('getResourceType')
+getResType = h3d.h3dGetResType
+getResType.restype = c_int
+getResType.argtypes = [c_int]
+__all__.append('getResType')
 
 
-getResourceName = h3d.getResourceName
-getResourceName.restype = c_char_p
-getResourceName.argtypes = [c_int]
-__all__.append('getResourceName')
+getResName = h3d.h3dGetResName
+getResName.restype = c_char_p
+getResName.argtypes = [c_int]
+__all__.append('getResName')
 
 
-getNextResource = h3d.getNextResource
+getNextResource = h3d.h3dGetNextResource
 getNextResource.restype = c_int
 getNextResource.append = [c_int, c_int]
 __all__.append('getNextResource')
 
 
-findResource = h3d.findResource
+findResource = h3d.h3dFindResource
 findResource.restype = c_int
 findResource.argtypes = [c_int, c_char_p]
 __all__.append('findResource')
 
 
-addResource = h3d.addResource
+addResource = h3d.h3dAddResource
 addResource.restype = c_int
 addResource.argtypes = [c_int, c_char_p, c_int]
 __all__.append('addResource')
 
 
-cloneResource = h3d.cloneResource
+cloneResource = h3d.h3dCloneResource
 cloneResource.restype = c_int
 cloneResource.argtypes = [c_int, c_char_p]
 __all__.append('cloneResource')
 
-removeResource = h3d.removeResource
+
+removeResource = h3d.h3dRemoveResource
 removeResource.restype = c_int
 removeResource.argtypes = [c_int]
 __all__.append('removeResource')
 
 
-isResourceLoaded = h3d.isResourceLoaded
-isResourceLoaded.restype = c_bool
-isResourceLoaded.argtypes = [c_int]
-__all__.append('isResourceLoaded')
+isResLoaded = h3d.h3dIsResLoaded
+isResLoaded.restype = c_bool
+isResLoaded.argtypes = [c_int]
+__all__.append('isResLoaded')
 
 
-_loadResource = h3d.loadResource
+_loadResource = h3d.h3dLoadResource
 _loadResource.restype = c_bool
 _loadResource.argtypes = [c_int, c_void_p, c_int]
 def loadResource(res, data):
@@ -420,89 +470,101 @@ def loadResource(res, data):
 __all__.append('loadResource')
 
 
-unloadResource = h3d.unloadResource
-unloadResource.restype = c_bool
+unloadResource = h3d.h3dUnloadResource
+unloadResource.restype = None
 unloadResource.argtypes = [c_int]
 __all__.append('unloadResource')
 
 
-getResourceParami = h3d.getResourceParami
-getResourceParami.restype = c_int
-getResourceParami.argtypes = [c_int, c_int]
-__all__.append('getResourceParami')
-
-setResourceParami = h3d.setResourceParami
-setResourceParami.restype = c_bool
-setResourceParami.argtypes = [c_int, c_int, c_int]
-__all__.append('setResourceParami')
+getResElemCount = h3d.h3dGetResElemCount
+getResElemCount.restype = c_int
+getResElemCount.argtypes = [c_int, c_int]
+__all__.append('getResElemCount')
 
 
-_getResourceParamf = h3d.getResourceParamf
-_getResourceParamf.restype = c_float
-_getResourceParamf.argtypes = [c_int, c_int]
-def getResourceParamf(res, param):
-	return _getResourceParamf(res, param).value
-__all__.append('getResourceParamf')
+findResElem = h3d.h3dFindResElem
+findResElem.restype = c_int
+findResElem.argtypes = [c_int, c_int, c_int, c_char_p]
+__all__.append('findResElem')
 
 
-_setResourceParamf = h3d.setResourceParamf
-_setResourceParamf.restype = c_bool
-_setResourceParamf.argtypes = [c_int, c_int, c_float]
-def setResourceParamf(res, param, value):
-	return _setResourceParamf(res, param, c_float(value))
-__all__.append('setResourceParamf')
+getResParamI = h3d.h3dGetResParamI
+getResParamI.restype = c_int
+getResParamI.argtypes = [c_int, c_int, c_int, c_int]
+__all__.append('getResParamI')
 
 
-getResourceParamstr = h3d.getResourceParamstr
-getResourceParamstr.restype = c_char_p
-getResourceParamstr.argtypes = [c_int, c_int]
-__all__.append('getResourceParamstr')
+setResParamI = h3d.h3dSetResParamI
+setResParamI.restype = None
+setResParamI.argtypes = [c_int, c_int, c_int, c_int, c_int]
+__all__.append('setResParamI')
 
 
-setResourceParamstr = h3d.getResourceParamstr
-setResourceParamstr.restype = c_bool
-setResourceParamstr.argtypes = [c_int, c_int, c_char_p]
-__all__.append('setResourceParamstr')
+_getResParamF = h3d.h3dGetResParamF
+_getResParamF.restype = c_float
+_getResParamF.argtypes = [c_int, c_int, c_int, c_int, c_int]
+def getResParamF(res, param):
+	return _getResParamF(res, param).value
+__all__.append('getResParamF')
 
 
-# getResourceData
-getResourceData = h3d.getResourceData
-getResourceData.restype = c_void_p
-getResourceData.argtypes = [c_int, c_int]
-__all__.append('getResourceData')
+_setResParamF = h3d.h3dSetResParamF
+_setResParamF.restype = None
+_setResParamF.argtypes = [c_int, c_int, c_int, c_int, c_int, c_float]
+def setResParamF(res, elem, elemIdx, param, compIdx, value):
+	return _setResParamF(res, elem, elemIdx, param, compIdx, c_float(value))
+__all__.append('setResParamF')
 
-_updateResourceData = h3d.updateResourceData
-_updateResourceData.restype = c_bool
-_updateResourceData.argtypes = [c_int, c_int, c_void_p, c_int]
-def updateResourceData(res, param, data):
-	return _updateResourceData(res, param, data, len(data))
-__all__.append('updateResourceData')
 
-queryUnloadedResource = h3d.queryUnloadedResource
+getResParamStr = h3d.h3dGetResParamStr
+getResParamStr.restype = c_char_p
+getResParamStr.argtypes = [c_int, c_int, c_int, c_int]
+__all__.append('getResParamStr')
+
+
+setResParamStr = h3d.h3dGetResParamStr
+setResParamStr.restype = c_bool
+setResParamStr.argtypes = [c_int, c_int, c_int, c_int, c_char_p]
+__all__.append('setResParamStr')
+
+
+mapResStream = h3d.h3dMapResStream
+mapResStream.restype = c_void_p
+mapResStream.argtypes = [c_int, c_int, c_int, c_int, c_bool, c_bool]
+__all__.append('mapResStream')
+
+
+unmapResStream = h3d.h3dUnmapResStream
+unmapResStream.restype = None
+unmapResStream.argtypes = [c_int]
+__all__.append('unmapResStream')
+
+
+queryUnloadedResource = h3d.h3dQueryUnloadedResource
 queryUnloadedResource.restype = c_int
 queryUnloadedResource.argtypes = [c_int]
 __all__.append('queryUnloadedResource')
 
 
-releaseUnusedResources = h3d.releaseUnusedResources
+releaseUnusedResources = h3d.h3dReleaseUnusedResources
 releaseUnusedResources.restype = None
 releaseUnusedResources.argtypes = []
 __all__.append('releaseUnusedResources')
 
 
-createTexture2D = h3d.createTexture2D
-createTexture2D.restype = c_int
-createTexture2D.argtypes = [c_char_p, c_int, c_int, c_int, c_bool]
-__all__.append('createTexture2D')
+createTexture = h3d.h3dCreateTexture
+createTexture.restype = c_int
+createTexture.argtypes = [c_char_p, c_int, c_int, c_int, c_int]
+__all__.append('createTexture')
 
 
-setShaderPreambles = h3d.setShaderPreambles
+setShaderPreambles = h3d.h3dSetShaderPreambles
 setShaderPreambles.restype = None
 setShaderPreambles.argtypes = [c_char_p, c_char_p]
 __all__.append('setShaderPreambles')
 
 
-_setMaterialUniform = h3d.setMaterialUniform
+_setMaterialUniform = h3d.h3dSetMaterialUniform
 _setMaterialUniform.restype = c_bool
 _setMaterialUniform.argtypes = [c_int, c_char_p, c_float, c_float, c_float, c_float]
 def setMaterialUniform(materialRes, name, a, b, c, d):
@@ -510,19 +572,7 @@ def setMaterialUniform(materialRes, name, a, b, c, d):
 __all__.append('setMaterialUniform')
 
 
-setMaterialSampler = h3d.setMaterialSampler
-setMaterialSampler.restype = c_bool
-setMaterialSampler.argtypes = [c_int, c_char_p, c_int]
-__all__.append('setMaterialSampler')
-
-
-setPipelineStageActivation = h3d.setPipelineStageActivation
-setPipelineStageActivation.restype = c_bool
-setPipelineStageActivation.argtypes = [c_int, c_char_p, c_bool]
-__all__.append('setPipelineStageActivation')
-
-
-_getPipelineRenderTargetData = h3d.getPipelineRenderTargetData
+_getPipelineRenderTargetData = h3d.h3dGetPipelineRenderTargetData
 _getPipelineRenderTargetData.restype = c_bool
 _getPipelineRenderTargetData.argtypes = [c_int, c_char_p, c_int, POINTER(c_int), POINTER(c_int), POINTER(c_int), POINTER(c_float), c_int]
 def getPipelineRenderTargetData(pipelineRes, targetName, bufIndex):
@@ -542,56 +592,56 @@ def getPipelineRenderTargetData(pipelineRes, targetName, bufIndex):
 __all__.append('getPipelineRenderTargetData')
 
 
-getNodeType = h3d.getNodeType
+getNodeType = h3d.h3dGetNodeType
 getNodeType.restype = c_int
 getNodeType.argtypes = [c_int]
 __all__.append('getNodeType')
 
 
-getNodeParent = h3d.getNodeParent
+getNodeParent = h3d.h3dGetNodeParent
 getNodeParent.restype = c_int
 getNodeParent.argtypes = [c_int]
 __all__.append('getNodeParent')
 
 
-setNodeParent = h3d.setNodeParent
-setNodeParent.restype = c_int
+setNodeParent = h3d.h3dSetNodeParent
+setNodeParent.restype = c_bool
 setNodeParent.argtypes = [c_int, c_int]
 __all__.append('setNodeParent')
 
 
-getNodeChild = h3d.getNodeChild
+getNodeChild = h3d.h3dGetNodeChild
 getNodeChild.restype = c_int
 getNodeChild.argtypes = [c_int, c_int]
 __all__.append('getNodeChild')
 
 
-addNodes = h3d.addNodes
+addNodes = h3d.h3dAddNodes
 addNodes.restype = c_int
 addNodes.argtypes = [c_int, c_int]
 __all__.append('addNodes')
 
 
-removeNode = h3d.removeNode
-removeNode.restype = c_bool
+removeNode = h3d.h3dRemoveNode
+removeNode.restype = None
 removeNode.argtypes = [c_int]
 __all__.append('removeNode')
 
 
-setNodeActivation = h3d.setNodeActivation
-setNodeActivation.restype = c_bool
+setNodeActivation = h3d.h3dSetNodeActivation
+setNodeActivation.restype = None
 setNodeActivation.argtypes = [c_int, c_bool]
 __all__.append('setNodeActivation')
 
 
-checkNodeTransformFlag = h3d.checkNodeTransformFlag
-checkNodeTransformFlag.restype = c_bool
-checkNodeTransformFlag.argtypes = [c_int, c_bool]
-__all__.append('checkNodeTransformFlag')
+checkNodeTransFlag = h3d.h3dCheckNodeTransFlag
+checkNodeTransFlag.restype = c_bool
+checkNodeTransFlag.argtypes = [c_int, c_bool]
+__all__.append('checkNodeTransFlag')
 
 
-_getNodeTransform = h3d.getNodeTransform
-_getNodeTransform.restype = c_bool
+_getNodeTransform = h3d.h3dGetNodeTransform
+_getNodeTransform.restype = None
 _getNodeTransform.argtypes = [c_int,
 		POINTER(c_float), POINTER(c_float), POINTER(c_float),
 		POINTER(c_float), POINTER(c_float), POINTER(c_float),
@@ -602,107 +652,105 @@ def getNodeTransform(node):
 	rx, ry, rz = c_float(), c_float(), c_float()
 	sx, sy, sz = c_float(), c_float(), c_float()
 
-	# FIXME really assert?
-	assert(_getNodeTransform(node,
-		byref(tx), byref(ty), byref(tz),
-		byref(rx), byref(ry), byref(rz),
-		byref(sx), byref(sy), byref(sz),
-		))
+	_getNodeTransform(node,
+			byref(tx), byref(ty), byref(tz),
+			byref(rx), byref(ry), byref(rz),
+			byref(sx), byref(sy), byref(sz),
+			)
 
 	return [
 			[tx.value, ty.value, tz.value]
 			[rx.value, ry.value, rz.value]
 			[sx.value, sy.value, sz.value]
 			]
-__all__.append('getNodeTransform')
+	__all__.append('getNodeTransform')
 
 
-_setNodeTransform = h3d.setNodeTransform
-_setNodeTransform.restype = c_bool
+_setNodeTransform = h3d.h3dSetNodeTransform
+_setNodeTransform.restype = None
 _setNodeTransform.argtypes = [c_int,
-					c_float, c_float, c_float,
-					c_float, c_float, c_float,
-					c_float, c_float, c_float,
-					]
+		c_float, c_float, c_float,
+		c_float, c_float, c_float,
+		c_float, c_float, c_float,
+		]
 def setNodeTransform(node, tx, ty, tz, rx, ry, rz, sx, sy, sz):
-	return _setNodeTransform(node,
+	_setNodeTransform(node,
 			c_float(tx), c_float(ty), c_float(tz),
 			c_float(rx), c_float(ry), c_float(rz),
 			c_float(sx), c_float(sy), c_float(sz),
 			)
-__all__.append('setNodeTransform')
+	__all__.append('setNodeTransform')
 
 
-_getNodeTransformMatrices = h3d.getNodeTransformMatrices
-_getNodeTransformMatrices.restype = c_bool
-_getNodeTransformMatrices.argtypes = [c_int, POINTER(c_float * 16), POINTER(c_float * 16)]
-def getNodeTransformMatrices(node):
+_getNodeTransMats = h3d.h3dGetNodeTransMats
+_getNodeTransMats.restype = None
+_getNodeTransMats.argtypes = [c_int, POINTER(c_float * 16), POINTER(c_float * 16)]
+def getNodeTransMats(node):
 	t = c_float * 16
 	rel = t()
 	abs = t()
-	# FIXME really assert?
-	assert(_getNodeTransformMatrices(node, byref(rel), byref(abs)))
+
+	_getNodeTransMats(node, byref(rel), byref(abs))
 
 	a = tuple([x for x in rel])
 	b = tuple([x for x in abs])
 	return (a, b)
-__all__.append('getNodeTransformMatrices')
+__all__.append('getNodeTransMats')
 
 
-_setNodeTransformMatrix = h3d.setNodeTransformMatrix
-_setNodeTransformMatrix.restype = c_bool
-_setNodeTransformMatrix.argtypes = [c_int, c_float * 16]
-def setNodeTransformMatrix(node, mat):
+_setNodeTransMat = h3d.h3dSetNodeTransMat
+_setNodeTransMat.restype = None
+_setNodeTransMat.argtypes = [c_int, c_float * 16]
+def setNodeTransMat(node, mat):
 	t = c_float * 16
 	f16 = t()
 	for i in range(16):
 		f16[i] = mat[i]
-	# FIXME really assert?
-	assert(_setNodeTransformMatrix(node, f16))
-__all__.append('setNodeTransformMatrix')
+	_setNodeTransMat(node, f16)
+__all__.append('setNodeTransMat')
 
 
-_getNodeParamf = h3d.getNodeParamf
-_getNodeParamf.restype = c_float
-_getNodeParamf.argtypes = [c_int, c_int]
-def getNodeParamf(node, param):
-	return _getNodeParamf(node, param).value
-__all__.append('getNodeParamf')
+getNodeParamI = h3d.h3dGetNodeParamI
+getNodeParamI.restype = c_int
+getNodeParamI.argtypes = [c_int, c_int]
+__all__.append('getNodeParamI')
+
+setNodeParamI = h3d.h3dSetNodeParamI
+setNodeParamI.restype = None
+setNodeParamI.argtypes = [c_int, c_int, c_int]
+__all__.append('setNodeParamI')
 
 
-_setNodeParamf = h3d.setNodeParamf
-_setNodeParamf.restype = c_bool
-_setNodeParamf.argtypes = [c_int, c_int, c_float]
-def setNodeParamf(node, param, value):
-	return _setNodeParamf(node, param, c_float(value))
-__all__.append('setNodeParamf')
+_getNodeParamF = h3d.h3dGetNodeParamF
+_getNodeParamF.restype = c_float
+_getNodeParamF.argtypes = [c_int, c_int, c_int]
+def getNodeParamF(node, param, idx):
+	return _getNodeParamF(node, param, idx).value
+__all__.append('getNodeParamF')
 
 
-getNodeParami = h3d.getNodeParami
-getNodeParami.restype = c_int
-getNodeParami.argtypes = [c_int, c_int]
-__all__.append('getNodeParami')
-
-setNodeParami = h3d.setNodeParami
-setNodeParami.restype = c_bool
-setNodeParami.argtypes = [c_int, c_int, c_int]
-__all__.append('setNodeParami')
+_setNodeParamF = h3d.h3dSetNodeParamF
+_setNodeParamF.restype = None
+_setNodeParamF.argtypes = [c_int, c_int, c_int, c_float]
+def setNodeParamF(node, param, idx, value):
+	return _setNodeParamF(node, param, idx, c_float(value))
+__all__.append('setNodeParamF')
 
 
-getNodeParamstr = h3d.getNodeParamstr
-getNodeParamstr.restype = c_char_p
-getNodeParamstr.argtypes = [c_int, c_int]
-__all__.append('getNodeParamstr')
+getNodeParamStr = h3d.h3dGetNodeParamStr
+getNodeParamStr.restype = c_char_p
+getNodeParamStr.argtypes = [c_int, c_int]
+__all__.append('getNodeParamStr')
 
 
-setNodeParamstr = h3d.setNodeParamstr
-setNodeParamstr.restype = c_bool
-setNodeParamstr.argtypes = [c_int, c_int, c_char_p]
-__all__.append('setNodeParamstr')
+setNodeParamStr = h3d.h3dSetNodeParamStr
+setNodeParamStr.restype = None
+setNodeParamStr.argtypes = [c_int, c_int, c_char_p]
+__all__.append('setNodeParamStr')
 
 
-_getNodeAABB = h3d.getNodeAABB
-_getNodeAABB.restype = c_bool
+_getNodeAABB = h3d.h3dGetNodeAABB
+_getNodeAABB.restype = None
 _getNodeAABB.argtypes = [c_int,
 		POINTER(c_float), POINTER(c_float), POINTER(c_float),
 		POINTER(c_float), POINTER(c_float), POINTER(c_float),
@@ -711,28 +759,27 @@ def getNodeAABB(node):
 	minX, minY, minZ = c_float(), c_float(), c_float()
 	maxX, maxY, maxZ = c_float(), c_float(), c_float()
 
-	# FIXME really assert?
-	assert(_getNodeAABB(node,
-		byref(minX), byref(minY), byref(minZ),
-		byref(maxX), byref(maxY), byref(maxZ),
-		))
+	_getNodeAABB(node,
+			byref(minX), byref(minY), byref(minZ),
+			byref(maxX), byref(maxY), byref(maxZ),
+			)
 	return [[minX, minY, minZ], [maxX, maxY, maxZ]]
 __all__.append('getNodeAABB')
 
 
-findNodes = h3d.findNodes
+findNodes = h3d.h3dFindNodes
 findNodes.restype = c_int
 findNodes.argtypes = [c_int, c_char_p, c_int]
 __all__.append('findNodes')
 
 
-getNodeFindResult = h3d.getNodeFindResult
+getNodeFindResult = h3d.h3dGetNodeFindResult
 getNodeFindResult.restype = c_int
 getNodeFindResult.argtypes = [c_int]
 __all__.append('getNodeFindResult')
 
 
-_castRay = h3d.castRay
+_castRay = h3d.h3dCastRay
 _castRay.restype = c_int
 _castRay.argtypes = [c_int,
 		c_float, c_float, c_float,
@@ -743,10 +790,10 @@ def castRay(node, ox, oy, oz, dx, dy, dz, numNearest):
 			c_float(ox), c_float(oy), c_float(oz),
 			c_float(dx), c_float(dy), c_float(dz),
 			numNearest)
-__all__.append('castRay')
+	__all__.append('castRay')
 
 
-_getCastRayResult = h3d.getCastRayResult
+_getCastRayResult = h3d.h3dGetCastRayResult
 _getCastRayResult.restype = c_bool
 _getCastRayResult.argtypes = [c_int, POINTER(c_int), POINTER(c_float), POINTER(c_float * 3)]
 def getCastRayResult(index):
@@ -761,40 +808,40 @@ def getCastRayResult(index):
 __all__.append('getCastRayResult')
 
 
-checkNodeVisibility = h3d.checkNodeVisibility
+checkNodeVisibility = h3d.h3dCheckNodeVisibility
 checkNodeVisibility.restype = c_int
 checkNodeVisibility.argtypes = [c_int, c_int, c_bool, c_bool]
 __all__.append('checkNodeVisibility')
 
 
-addGroupNode = h3d.addGroupNode
+addGroupNode = h3d.h3dAddGroupNode
 addGroupNode.restype = c_int
 addGroupNode.argtypes = [c_int, c_char_p]
 __all__.append('addGroupNode')
 
 
-addModelNode = h3d.addModelNode
+addModelNode = h3d.h3dAddModelNode
 addModelNode.restype = c_int
 addModelNode.argtypes = [c_int, c_char_p, c_int]
 __all__.append('addModelNode')
 
 
-setupModelAnimStage = h3d.setupModelAnimStage
-setupModelAnimStage.restype = c_bool
-setupModelAnimStage.argtypes = [c_int, c_int, c_int, c_char_p, c_bool]
+setupModelAnimStage = h3d.h3dSetupModelAnimStage
+setupModelAnimStage.restype = None
+setupModelAnimStage.argtypes = [c_int, c_int, c_int, c_int, c_char_p, c_bool]
 __all__.append('setupModelAnimStage')
 
 
-_setModelAnimParams = h3d.setModelAnimParams
-_setModelAnimParams.restype = c_bool
+_setModelAnimParams = h3d.h3dSetModelAnimParams
+_setModelAnimParams.restype = None
 _setModelAnimParams.argtypes = [c_int, c_int, c_float, c_float]
 def setModelAnimParams(modelNode, stage, time, weight):
-	return _setModelAnimParams(modelNode, stage, c_float(time), c_float(weight))
+	_setModelAnimParams(modelNode, stage, c_float(time), c_float(weight))
 __all__.append('setModelAnimParams')
 
 
 
-_setModelMorper = h3d.setModelMorpher
+_setModelMorper = h3d.h3dSetModelMorpher
 _setModelMorper.restype = c_bool
 _setModelMorper.argtypes = [c_int, c_char_p, c_float]
 def setModelMorpher(modelNode, target, weight):
@@ -802,72 +849,64 @@ def setModelMorpher(modelNode, target, weight):
 __all__.append('setModelMorpher')
 
 
-addMeshNode = h3d.addMeshNode
+addMeshNode = h3d.h3dAddMeshNode
 addMeshNode.restype = c_int
 addMeshNode.argtypes = [c_int, c_char_p, c_int, c_int, c_int, c_int, c_int]
 __all__.append('addMeshNode')
 
 
-addJointNode = h3d.addJointNode
+addJointNode = h3d.h3dAddJointNode
 addJointNode.restype = c_int
 addJointNode.argtypes = [c_int, c_char_p, c_int]
 __all__.append('addJointNode')
 
 
-addLightNode = h3d.addLightNode
+addLightNode = h3d.h3dAddLightNode
 addLightNode.restype = c_int
 addLightNode.argtypes = [c_int, c_char_p, c_int, c_char_p, c_char_p]
 __all__.append('addLightNode')
 
 
-setLightContexts = h3d.setLightContexts
-setLightContexts.restype = c_bool
-setLightContexts.argtypes = [c_int, c_char_p, c_char_p]
-__all__.append('setLightContexts')
-
-
-addCameraNode = h3d.addCameraNode
+addCameraNode = h3d.h3dAddCameraNode
 addCameraNode.restype = c_int
 addCameraNode.argtypes = [c_int, c_char_p, c_int]
 __all__.append('addCameraNode')
 
 
-_setupCameraView = h3d.setupCameraView
-_setupCameraView.restype = c_bool
+_setupCameraView = h3d.h3dSetupCameraView
+_setupCameraView.restype = None
 _setupCameraView.argtypes = [c_int, c_float, c_float, c_float, c_float]
 def setupCameraView(cameraNode, fov, aspect, nearDist, farDist):
-	return _setupCameraView(cameraNode, c_float(fov), c_float(aspect), c_float(nearDist), c_float(farDist))
+	_setupCameraView(cameraNode, c_float(fov), c_float(aspect), c_float(nearDist), c_float(farDist))
 __all__.append('setupCameraView')
 
 
-_getCameraProjectionMatrix = h3d.getCameraProjectionMatrix
-_getCameraProjectionMatrix.restype = c_bool
-_getCameraProjectionMatrix.argtypes = [c_int, c_float * 16]
-def getCameraProjectionMatrix(node, mat):
-	t = c_float * 16
-	f16 = t()
-	for i in range(16):
-		f16[i] = mat[i]
-	# FIXME really assert?
-	assert(_getCameraProjectionMatrix(node, f16))
-__all__.append('getCameraProjectionMatrix')
+_getCameraProjMat = h3d.h3dGetCameraProjMat
+_getCameraProjMat.restype = None
+_getCameraProjMat.argtypes = [c_int, POINTER(c_float)]
+def getCameraProjMat(node):
+	buffer = (c_float * 16)
+	_getCameraProjMat(node, buffer)
+
+	return [x.value for x in buffer]
+__all__.append('getCameraProjMat')
 
 
-addEmitterNode = h3d.addEmitterNode
+addEmitterNode = h3d.h3dAddEmitterNode
 addEmitterNode.restype = c_int
 addEmitterNode.argtypes = [c_int, c_char_p, c_int, c_int, c_int, c_int]
 __all__.append('addEmitterNode')
 
 
-_advanceEmitterTime = h3d.advanceEmitterTime
-_advanceEmitterTime.restype = c_bool
+_advanceEmitterTime = h3d.h3dAdvanceEmitterTime
+_advanceEmitterTime.restype = None
 _advanceEmitterTime.argtypes = [c_int, c_float]
 def advanceEmitterTime(emitterNode, timeDelta):
-	return _advanceEmitterTime(emitterNode, c_float(timeDelta))
+	_advanceEmitterTime(emitterNode, c_float(timeDelta))
 __all__.append('advanceEmitterTime')
 
 
-hasEmitterFinished = h3d.hasEmitterFinished
+hasEmitterFinished = h3d.h3dHasEmitterFinished
 hasEmitterFinished.restype = c_bool
 hasEmitterFinished.argtypes = [c_int]
 __all__.append('hasEmitterFinished')

@@ -47,12 +47,12 @@ class ChicagoWindow(app.Window):
             self._app._crowdSim.setRange(min(32, self._app._crowdSim._range * 2))
             
         elif symbol == key.F6:
-            p = h3d.getNodeParami(self.camera, h3d.CameraNodeParams.PipelineRes)
+            p = h3d.getNodeParamI(self.camera, h3d.Camera.PipeResI)
             if p == self._app._h3dres.forwardPipe:
                 pipe = self._app._h3dres.deferredPipe
             else:
                 pipe = self._app._h3dres.forwardPipe
-            h3d.setNodeParami(self.camera, h3d.CameraNodeParams.PipelineRes, pipe)
+            h3d.setNodeParamI(self.camera, h3d.Camera.PipeResI, pipe)
         
         elif symbol == key.F7:
             self._app._debugViewMode = not self._app._debugViewMode
@@ -98,11 +98,11 @@ class ChicagoApp(app.App):
         return w
 
     def _h3dEngineOptions(self):
-        h3d.setOption(h3d.EngineOptions.LoadTextures, 1)
-        h3d.setOption(h3d.EngineOptions.TexCompression, 0)
-        h3d.setOption(h3d.EngineOptions.MaxAnisotropy, 4)
-        h3d.setOption(h3d.EngineOptions.ShadowMapSize, 2048)
-        h3d.setOption(h3d.EngineOptions.FastAnimation, 1)
+        h3d.setOption(h3d.Options.LoadTextures, 1)
+        h3d.setOption(h3d.Options.TexCompression, 0)
+        h3d.setOption(h3d.Options.MaxAnisotropy, 4)
+        h3d.setOption(h3d.Options.ShadowMapSize, 2048)
+        h3d.setOption(h3d.Options.FastAnimation, 1)
 
     def _h3dAddResources(self):
         class H3DRes:
@@ -112,18 +112,18 @@ class ChicagoApp(app.App):
         self._h3dres = h3dres
 
         # Pipelines
-        h3dres.forwardPipe = h3d.addResource(h3d.ResourceTypes.Pipeline, "pipelines/forward.pipeline.xml", 0)
-        h3dres.deferredPipe = h3d.addResource(h3d.ResourceTypes.Pipeline, "pipelines/deferred.pipeline.xml", 0)
+        h3dres.forwardPipe = h3d.addResource(h3d.ResTypes.Pipeline, "pipelines/forward.pipeline.xml", 0)
+        h3dres.deferredPipe = h3d.addResource(h3d.ResTypes.Pipeline, "pipelines/deferred.pipeline.xml", 0)
         # Overlays
-        h3dres.fontMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/font.material.xml", 0)
-        h3dres.panelMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/panel.material.xml", 0)
-        h3dres.logoMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/logo.material.xml", 0)
+        h3dres.fontMat = h3d.addResource(h3d.ResTypes.Material, "overlays/font.material.xml", 0)
+        h3dres.panelMat = h3d.addResource(h3d.ResTypes.Material, "overlays/panel.material.xml", 0)
+        h3dres.logoMat = h3d.addResource(h3d.ResTypes.Material, "overlays/logo.material.xml", 0)
         # Shader for deferred shading
-        h3dres.lightMat = h3d.addResource(h3d.ResourceTypes.Material, "materials/light.material.xml", 0)
+        h3dres.lightMat = h3d.addResource(h3d.ResTypes.Material, "materials/light.material.xml", 0)
         # Environment
-        h3dres.env = h3d.addResource(h3d.ResourceTypes.SceneGraph, "models/platform/platform.scene.xml", 0)
+        h3dres.env = h3d.addResource(h3d.ResTypes.SceneGraph, "models/platform/platform.scene.xml", 0)
         # Skybox
-        h3dres.skyBox = h3d.addResource(h3d.ResourceTypes.SceneGraph, "models/skybox/skybox.scene.xml", 0)
+        h3dres.skyBox = h3d.addResource(h3d.ResTypes.SceneGraph, "models/skybox/skybox.scene.xml", 0)
         # Load character animations
         self._crowdSim = CrowdSim()
 
@@ -139,14 +139,14 @@ class ChicagoApp(app.App):
         # Add light source
         self._light = h3d.addLightNode(h3d.RootNode, 'Light1', h3dres.lightMat, 'LIGHTING', 'SHADOWMAP')
         h3d.setNodeTransform(self._light, 0, 20, 50, -30, 0, 0, 1, 1, 1)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.Radius, 200)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.FOV, 90)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.ShadowMapCount, 3)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.ShadowSplitLambda, 0.9)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.ShadowMapBias, 0.001)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.Col_R, 0.9)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.Col_G, 0.7)
-        h3d.setNodeParamf(self._light, h3d.LightNodeParams.Col_B, 0.75)
+        h3d.setNodeParamF(self._light, h3d.Light.RadiusF, 0, 200)
+        h3d.setNodeParamF(self._light, h3d.Light.FovF, 0, 90)
+        h3d.setNodeParamF(self._light, h3d.Light.ShadowMapCountI, 0, 3)
+        h3d.setNodeParamF(self._light, h3d.Light.ShadowSplitLambdaF, 0, 0.9)
+        h3d.setNodeParamF(self._light, h3d.Light.ShadowMapBiasF, 0, 0.001)
+        h3d.setNodeParamF(self._light, h3d.Light.ColorF3, 0, 0.9)
+        h3d.setNodeParamF(self._light, h3d.Light.ColorF3, 1, 0.7)
+        h3d.setNodeParamF(self._light, h3d.Light.ColorF3, 2, 0.75)
         # Init character positions
         self._crowdSim.init()
 
@@ -156,8 +156,8 @@ class ChicagoApp(app.App):
 
         for w in self._windows:
             h3d.setNodeTransform(w.camera, self._x, self._y, self._z, self._rx, self._ry, 0, 1, 1, 1)
-            h3d.setOption(h3d.EngineOptions.DebugViewMode, float(self._debugViewMode))
-            h3d.setOption(h3d.EngineOptions.WireframeMode, float(self._wireframeMode))
+            h3d.setOption(h3d.Options.DebugViewMode, float(self._debugViewMode))
+            h3d.setOption(h3d.Options.WireframeMode, float(self._wireframeMode))
 
             key = pyglet.window.key
             curVel = self._velocity * dt
@@ -187,7 +187,7 @@ class ChicagoApp(app.App):
         if self._showStats:
             h3d.utils.showFrameStats(self._h3dres.fontMat, self._h3dres.panelMat, self._statMode)
             if self._statMode:
-                p = h3d.getNodeParami(self._windows[0].camera, h3d.CameraNodeParams.PipelineRes)
+                p = h3d.getNodeParamI(self._windows[0].camera, h3d.Camera.PipeResI)
                 if p == self._h3dres.forwardPipe:
                     text = "Pipeline(F6): forward"
                 else:
@@ -199,8 +199,8 @@ class ChicagoApp(app.App):
 class CrowdSim(object):    
     def __init__(self):
         # Load character with walk animation
-        self.character = h3d.addResource(h3d.ResourceTypes.SceneGraph, "models/man/man.scene.xml", 0)
-        self.characterWalk = h3d.addResource(h3d.ResourceTypes.Animation, "animations/man.anim", 0)
+        self.character = h3d.addResource(h3d.ResTypes.SceneGraph, "models/man/man.scene.xml", 0)
+        self.characterWalk = h3d.addResource(h3d.ResTypes.Animation, "animations/man.anim", 0)
         self.particles = []
         self.setRange(32)
 
@@ -276,7 +276,7 @@ class Particle(object):
     def __init__(self, parent, a):
         # Add character to scene and apply animation
         self.node = h3d.addNodes(h3d.RootNode, parent.character)
-        h3d.setupModelAnimStage(self.node, 0, parent.characterWalk, "", False)
+        h3d.setupModelAnimStage(self.node, 0, parent.characterWalk, 0, "", False)
         # Characters start in a circle formation
         self.px = sin(a * 6.28) * 10.0
         self.pz = cos(a * 6.28) * 10.0

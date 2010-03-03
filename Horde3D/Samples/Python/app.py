@@ -113,7 +113,7 @@ class App(object):
 		pass
 
 	def _createWindow(self, name):
-		config = pyglet.gl.Config(buffer_size=32, depth_size=24, double_buffer=True)
+		config = pyglet.gl.Config(buffer_size=32, depth_size=24, stencil_size=8, double_buffer=True)
 		w = self._windowClass(
 				self,
 				config,
@@ -143,7 +143,7 @@ class App(object):
 
 		# load resources from disk
 		if not h3d.utils.loadResourcesFromDisk(self._options.contentPaths):
-			print 'loading of some resources failed: See EngineLog.html'
+			print 'loading of some resources failed: See Horde3D_Log.html'
 
 		for w in self._windows:
 			self._initHorde3DWindow(w)
@@ -155,11 +155,11 @@ class App(object):
 
 	def _h3dEngineOptions(self):
 		# engine options
-		h3d.setOption(h3d.EngineOptions.LoadTextures, 1)
-		h3d.setOption(h3d.EngineOptions.TexCompression, 0)
-		h3d.setOption(h3d.EngineOptions.FastAnimation, 0)
-		h3d.setOption(h3d.EngineOptions.MaxAnisotropy, 4)
-		h3d.setOption(h3d.EngineOptions.ShadowMapSize, 2048)
+		h3d.setOption(h3d.Options.LoadTextures, 1)
+		h3d.setOption(h3d.Options.TexCompression, 0)
+		h3d.setOption(h3d.Options.FastAnimation, 0)
+		h3d.setOption(h3d.Options.MaxAnisotropy, 4)
+		h3d.setOption(h3d.Options.ShadowMapSize, 2048)
 
 	def _h3dAddResources(self):
 		# add resources
@@ -168,9 +168,9 @@ class App(object):
 		h3dres = H3DRes()
 		self._h3dres = h3dres
 
-		h3dres.forwardPipe = h3d.addResource(h3d.ResourceTypes.Pipeline, "pipelines/forward.pipeline.xml", 0)
-		h3dres.vfontMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/font.material.xml", 0)
-		h3dres.logoMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/logo.material.xml", 0)
+		h3dres.forwardPipe = h3d.addResource(h3d.ResTypes.Pipeline, "pipelines/forward.pipeline.xml", 0)
+		h3dres.fontMat = h3d.addResource(h3d.ResTypes.Material, "overlays/font.material.xml", 0)
+		h3dres.logoMat = h3d.addResource(h3d.ResTypes.Material, "overlays/logo.material.xml", 0)
 
 	def _h3dSetupScene(self):
 		pass
