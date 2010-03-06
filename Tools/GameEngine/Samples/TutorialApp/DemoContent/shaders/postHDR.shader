@@ -12,13 +12,11 @@ sampler2D buf1 = sampler_state
 };
 
 // Uniforms
-float4 hdrParams
-	// a - Exposure (higher values make scene brighter)
-	// b - Brightpass threshold (intensity where blooming begins)
-	// c - BrightPass offset (smaller values produce stronger blooming) 
-= {2, 0.6, 0.06, 0};
+float hdrExposure = 2.0;       // Exposure (higher values make scene brighter)
+float hdrBrightThres = 0.6;    // Brightpass threshold (intensity where blooming begins)
+float hdrBrightOffset = 0.06;  // Brightpass offset (smaller values produce stronger blooming)
 
-float4 blurParams;
+float4 blurParams = {0, 0, 0, 0};
 
 // Contexts
 context BRIGHTPASS
@@ -49,12 +47,13 @@ context FINALPASS
 [[VS_FSQUAD]]
 // =================================================================================================
 
+attribute vec3 vertPos;
 varying vec2 texCoords;
 				
 void main( void )
 {
-	texCoords = gl_MultiTexCoord0.st; 
-	gl_Position = gl_ProjectionMatrix * gl_Vertex;
+	texCoords = vertPos.xy; 
+	gl_Position = gl_ProjectionMatrix * vec4( vertPos, 1 );
 }
 
 
@@ -65,7 +64,9 @@ void main( void )
 
 uniform sampler2D buf0;
 uniform vec2 frameBufSize;
-uniform vec4 hdrParams;
+//uniform float hdrExposure;
+uniform float hdrBrightThres;
+uniform float hdrBrightOffset;
 varying vec2 texCoords;
 
 void main( void )
@@ -81,11 +82,11 @@ void main( void )
 	sum /= 4.0;
 	
 	// Tonemap
-	//sum = 1.0 - exp2( -hdrParams.x * sum );
+	//sum = 1.0 - exp2( -hdrExposure * sum );
 	
 	// Extract bright values
-	sum = max( sum - hdrParams.y, 0.0 );
-	sum /= hdrParams.z + sum;
+	sum = max( sum - hdrBrightThres, 0.0 );
+	sum /= hdrBrightOffset + sum;
 	
 	gl_FragColor = sum;
 }
@@ -112,7 +113,7 @@ void main( void )
 
 uniform sampler2D buf0, buf1;
 uniform vec2 frameBufSize;
-uniform vec4 hdrParams;
+uniform float hdrExposure;
 varying vec2 texCoords;
 
 void main( void )
@@ -120,8 +121,8 @@ void main( void )
 	vec4 col0 = texture2D( buf0, texCoords );	// HDR color
 	vec4 col1 = texture2D( buf1, texCoords );	// Bloom
 	
-	// Tonemap
-	vec4 col = 1.0 - exp2( -hdrParams.x * col0 );
+	// Tonemap (using photographic exposure mapping)
+	vec4 col = 1.0 - exp2( -hdrExposure * col0 );
 	
 	gl_FragColor = col + col1;
 }

@@ -31,7 +31,7 @@ samplerCube ambientMap = sampler_state
 // Contexts
 context AMBIENT
 {
-	VertexShader = compile GLSL VS_QUAD;
+	VertexShader = compile GLSL VS_FSQUAD;
 	PixelShader = compile GLSL FS_AMBIENT;
 	
 	ZWriteEnable = false;
@@ -40,7 +40,7 @@ context AMBIENT
 
 context LIGHTING
 {
-	VertexShader = compile GLSL VS_QUAD;
+	VertexShader = compile GLSL VS_VOLUME;
 	PixelShader = compile GLSL FS_LIGHTING;
 	
 	ZWriteEnable = false;
@@ -49,19 +49,32 @@ context LIGHTING
 
 context COPY_DEPTH
 {
-	VertexShader = compile GLSL VS_QUAD;
+	VertexShader = compile GLSL VS_FSQUAD;
 	PixelShader = compile GLSL FS_COPY_DEPTH;
 }
 
 
-[[VS_QUAD]]
+[[VS_FSQUAD]]
 
+attribute vec3 vertPos;
 varying vec2 texCoords;
-
+				
 void main( void )
 {
-	texCoords = gl_MultiTexCoord0.st;
-	gl_Position = gl_ProjectionMatrix * gl_Vertex;
+	texCoords = vertPos.xy; 
+	gl_Position = gl_ProjectionMatrix * vec4( vertPos, 1 );
+}
+
+
+[[VS_VOLUME]]
+
+attribute vec3 vertPos;
+varying vec2 fragCoord;
+				
+void main( void )
+{
+	gl_Position = gl_ProjectionMatrix * vec4( vertPos, 1 );
+	fragCoord = gl_Position.xy * 0.5 + 0.5;
 }
 
 
@@ -94,17 +107,17 @@ void main( void )
 #include "shaders/utilityLib/fragLighting.glsl"
 #include "shaders/utilityLib/fragDeferredRead.glsl"
 
-varying vec2 texCoords;
+varying vec2 fragCoord;
 
 void main( void )
 {
-	if( getMatID( texCoords ) == 1.0 )	// Standard phong material
+	if( getMatID( fragCoord ) == 1.0 )	// Standard phong material
 	{
-		float vsPos = (gl_ModelViewMatrix * vec4( getPos( texCoords ), 1.0 )).z;
+		float vsPos = (gl_ModelViewMatrix * vec4( getPos( fragCoord ), 1.0 )).z;
 		
 		gl_FragColor.rgb =
-			calcPhongSpotLight( getPos( texCoords ), getNormal( texCoords ),
-								getAlbedo( texCoords ), getSpecMask( texCoords ), 16.0, -vsPos, 0.3 );
+			calcPhongSpotLight( getPos( fragCoord ), getNormal( fragCoord ),
+								getAlbedo( fragCoord ), getSpecMask( fragCoord ), 16.0, -vsPos, 0.3 );
 	}
 	else discard;
 }
