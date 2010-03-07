@@ -337,7 +337,7 @@ void RendererBase::uploadTextureData( uint32 texObj, int slice, int mipLevel, co
 	};
 	
 	// Calculate size of next mipmap using "floor" convention
-	int width = tex.width >> mipLevel, height = tex.height >> mipLevel;
+	int width = std::max( tex.width >> mipLevel, 1 ), height = std::max( tex.height >> mipLevel, 1 );
 	
 	if( format == TextureFormats::DXT1 || format == TextureFormats::DXT3 || format == TextureFormats::DXT5 )
 		glCompressedTexImage2D( target, mipLevel, internalFormat, width, height, 0,
