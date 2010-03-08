@@ -33,6 +33,7 @@ public:
 	void update();
 
 	void setFacialExpression( std::string expression, float intensity );
+	void setFacialExpression( std::string expression, float intensity, float duration );
 	void setFacialExpressionPAD( float p, float a, float d );
 	void getAvailableExpressions( std::vector<std::string> &availableExpressions);
 

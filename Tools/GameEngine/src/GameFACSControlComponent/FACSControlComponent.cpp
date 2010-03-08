@@ -52,9 +52,10 @@ GameComponent* FACSControlComponent::createComponent( GameEntity* owner )
 
 FACSControlComponent::FACSControlComponent(GameEntity* owner) : GameComponent(owner, "FACSControlComponent"), m_currentIntensity(1)
 {
-	m_duration = 0.5f;
+	m_duration = 0.1f;
 
 	owner->addListener(GameEvent::FACS_SET_EXPRESSION, this);
+	owner->addListener(GameEvent::E_SPEAKING_STOPPED, this);
 	
 	FACSControlManager::instance()->addComponent(this);
 }
@@ -69,10 +70,18 @@ void FACSControlComponent::executeEvent(GameEvent *event)
 {
 	switch(event->id())
 	{
-	case GameEvent::FACS_SET_EXPRESSION:
-		Property* prop =  static_cast<Property*>(event->data());
-		setFacialExpression(prop->Name, prop->Value);
-		break;
+		case GameEvent::FACS_SET_EXPRESSION:
+		{
+			Property* prop =  static_cast<Property*>(event->data());
+			setFacialExpression(prop->Name, prop->Value);
+			break;
+		}
+		case GameEvent::E_SPEAKING_STOPPED:
+		{
+			//10, 12, 16, 18, 20, 23, 24, 25, 27
+			setFacialExpression( m_currentExpression, 0.4f, 0.2f );
+			break;
+		}
 	}
 }
 
@@ -251,6 +260,100 @@ void FACSControlComponent::setFacialExpression( const string expression, const f
 	m_currentIntensity = intensity;
 }
 
+void FACSControlComponent::setFacialExpression( const string expression, const float intensity, const float duration )
+{
+	map<int, float> oldAUs = m_expressions[m_currentExpression];
+	map<int, float>::iterator iterOldAUs;
+
+	map<int, float> newAUs = m_expressions[expression];
+	map<int, float>::iterator iterNewAUs;
+
+	// resetting old morph targets
+	for( iterOldAUs = oldAUs.begin(); iterOldAUs != oldAUs.end(); iterOldAUs++ )
+	{
+		char buffer[10];
+		sprintf( buffer, "AU_%02i", (*iterOldAUs).first );
+		string au( buffer );
+
+		MorphTargetAnimation morphTargetAnimData( au.c_str(), newAUs[(*iterOldAUs).first] * intensity, duration );
+		GameEvent event( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData, this );
+		if( m_owner->checkEvent( &event ) )
+		{
+			m_owner->executeEvent( &event );
+		}
+		else
+		{
+			//			MorphTarget morphTargetData( au.c_str(), newAUs[(*iterOldAUs).first] );
+			//			GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);
+			//			if (m_owner->checkEvent(&event)) m_owner->executeEvent(&event);
+			// TODO: add warning about missing <MorphtargetAnimation /> here? Avoid spaming the log file...
+		}
+
+		// Special treatment for AU27
+		if( (*iterOldAUs).first == 27 )
+		{
+			MorphTargetAnimation morphTargetAnimData( "bottom_au_27", newAUs[(*iterOldAUs).first] * intensity, duration );
+			GameEvent event( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData, this );
+			if( m_owner->checkEvent( &event ) )
+			{
+				m_owner->executeEvent( &event );
+			}
+
+			MorphTargetAnimation morphTargetAnimData2( "bottomgums_au_27", newAUs[(*iterOldAUs).first] * intensity, duration );
+			GameEvent event2( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData2, this );
+			if( m_owner->checkEvent( &event2 ) )
+			{
+				m_owner->executeEvent( &event2 );
+			}
+		}
+	}
+
+	// setting new morph targets
+	for( iterNewAUs = newAUs.begin(); iterNewAUs != newAUs.end(); iterNewAUs++ )
+	{
+		char buffer[10];
+		sprintf( buffer, "AU_%02i", (*iterNewAUs).first);
+		string au( buffer );
+
+		if( oldAUs[(*iterNewAUs).first] == 0 )
+		{
+			MorphTargetAnimation morphTargetAnimData( au.c_str(), (*iterNewAUs).second * intensity, duration );
+			GameEvent event( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData, this );
+			if ( m_owner->checkEvent( &event ) )
+			{
+				m_owner->executeEvent( &event );
+			}
+			else
+			{
+				//				MorphTarget morphTargetData( au.c_str(), (*iterNewAUs).second );
+				//				GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);
+				//				if (m_owner->checkEvent(&event)) m_owner->executeEvent(&event);
+				// TODO: add warning about missing <MorphtargetAnimation /> here? Avoid spaming the log file... (see above)
+			}
+
+			// Special treatment for AU27
+			if( (*iterNewAUs).first == 27 )
+			{
+				MorphTargetAnimation morphTargetAnimData( "bottom_au_27", (*iterNewAUs).second * intensity, duration );
+				GameEvent event( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData, this );
+				if( m_owner->checkEvent( &event ) )
+				{
+					m_owner->executeEvent( &event );
+				}
+
+				MorphTargetAnimation morphTargetAnimData2( "bottomgums_au_27", (*iterNewAUs).second * intensity, duration );
+				GameEvent event2( GameEvent::E_MORPH_TARGET_ANIM, &morphTargetAnimData2, this );
+				if( m_owner->checkEvent( &event2 ) )
+				{
+					m_owner->executeEvent( &event2 );
+				}
+			}
+		}
+	}
+
+	m_currentExpression = expression;
+	m_currentIntensity = intensity;
+}
 
 void FACSControlComponent::setFacialExpressionPAD( float p, float a, float d )
 {
