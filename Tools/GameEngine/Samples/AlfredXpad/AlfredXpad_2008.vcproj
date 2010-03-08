@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="AlfredXpad"
 	ProjectGUID="{E6F87B71-B9B4-405A-812D-350DD5B6E213}"
 	RootNamespace="AlfredXpad"
@@ -292,14 +292,6 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
-		<File
-			RelativePath=".\Alfred\models\alfred.scene.xml"
-			>
-		</File>
-		<File
-			RelativePath=".\Alfred\models\alfred_model.scene.xml"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

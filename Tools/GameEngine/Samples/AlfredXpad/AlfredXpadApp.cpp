@@ -52,8 +52,8 @@ bool AlfredXpadApp::init(const char *fileName)
 
 		m_alfred = GameEngine::entitySceneGraphID( GameEngine::entityWorldID( "Alfred" ) );
 
-		m_logoMatRes = Horde3D::addResource( ResourceTypes::Material, "logo.material.xml", 0 );
-		Horde3DUtils::loadResourcesFromDisk( "" );
+		m_logoMatRes = h3dAddResource( H3DResTypes::Material, "logo.material.xml", 0 );
+		h3dutLoadResourcesFromDisk(".");
 
 		for (int i = 0; i < 45; i++)
 			AUs[i] = 0.0f;
@@ -94,7 +94,7 @@ void AlfredXpadApp::keyHandler()
 {		
 	if( m_keys[118] )  // F7
 	{
-		Horde3D::setOption( EngineOptions::DebugViewMode, Horde3D::getOption(EngineOptions::DebugViewMode) != 0 ? 0 : 1 );
+		h3dSetOption( H3DOptions::DebugViewMode, h3dGetOption(H3DOptions::DebugViewMode) != 0 ? 0 : 1 );
 		m_keys[118] = 0;
 	}
 
@@ -167,22 +167,22 @@ void AlfredXpadApp::mouseMoved(float x, float y)
 
 void AlfredXpadApp::render()
 {
-	Horde3D::clearOverlays();
+	h3dClearOverlays();
 	keyHandler();
 
 	parseAU();
 
-	Horde3D::showOverlay( 0.6f, 0, 0, 0, 
+	h3dShowOverlay( 0.6f, 0, 0, 0, 
 		1, 0, 1, 0, 
 		1, 0.2f, 1,	1,
 		0.6f, 0.2f, 0, 1, 
-		0, m_logoMatRes
+		1, 1, 1, 1, m_logoMatRes, 0
 		);
 
 	GameEngine::update();
 
-	Horde3D::clearOverlays();
-	Horde3DUtils::dumpMessages();
+	h3dClearOverlays();
+	h3dutDumpMessages();
 }
 
 void AlfredXpadApp::setAU(int auID, float weight)
@@ -195,12 +195,12 @@ void AlfredXpadApp::setAU(int auID, float weight)
 		auStr << "0";
 	auStr << auID;
 
-	Horde3D::setModelMorpher( m_alfred, auStr.str().c_str(), weight );
+	h3dSetModelMorpher( m_alfred, auStr.str().c_str(), weight );
 
 	if ( auID == 27 )
 	{
-		Horde3D::setModelMorpher( m_alfred, "bottomgums_au_27", weight );
-		Horde3D::setModelMorpher( m_alfred, "bottom_au_27", weight );
+		h3dSetModelMorpher( m_alfred, "bottomgums_au_27", weight );
+		h3dSetModelMorpher( m_alfred, "bottom_au_27", weight );
 	}
 }
 
@@ -271,6 +271,6 @@ void AlfredXpadApp::resizeCb(int width, int height, void *userData)
 		app->m_height = height;
 	}
 
-	Horde3D::setupViewport(0, 0, width, height, true);
-	Horde3D::setupCameraView( GameEngine::entitySceneGraphID( GameEngine::entityWorldID( "Camera" ) ), 28.6f, (float) width / height, 0.1f, 1000.0f );
+	h3dSetupViewport(0, 0, width, height, true);
+	h3dSetupCameraView( GameEngine::entitySceneGraphID( GameEngine::entityWorldID( "Camera" ) ), 28.6f, (float) width / height, 0.1f, 1000.0f );
 }

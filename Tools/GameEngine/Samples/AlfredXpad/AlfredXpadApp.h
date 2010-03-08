@@ -39,7 +39,7 @@ private:
 
 	int m_alfred;
 
-	ResHandle m_logoMatRes;
+	H3DRes m_logoMatRes;
 
 	long			result;
 	int				addrLen;
