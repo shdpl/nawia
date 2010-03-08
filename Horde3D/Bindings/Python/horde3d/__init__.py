@@ -659,8 +659,8 @@ def getNodeTransform(node):
 			)
 
 	return [
-			[tx.value, ty.value, tz.value]
-			[rx.value, ry.value, rz.value]
+			[tx.value, ty.value, tz.value],
+			[rx.value, ry.value, rz.value],
 			[sx.value, sy.value, sz.value]
 			]
 	__all__.append('getNodeTransform')
