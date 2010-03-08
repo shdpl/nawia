@@ -22,7 +22,9 @@
 // *************************************************************************************************
 
 #include <al.h>
+#ifdef PLATFORM_WIN
 #include <alext.h>
+#endif
 
 #include "egModules.h"
 #include "egCom.h"
