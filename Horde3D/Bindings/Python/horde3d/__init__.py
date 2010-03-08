@@ -684,17 +684,16 @@ def setNodeTransform(node, tx, ty, tz, rx, ry, rz, sx, sy, sz):
 
 _getNodeTransMats = h3d.h3dGetNodeTransMats
 _getNodeTransMats.restype = None
-_getNodeTransMats.argtypes = [c_int, POINTER(c_float * 16), POINTER(c_float * 16)]
+_getNodeTransMats.argtypes = [c_int, POINTER(POINTER(c_float)), POINTER(POINTER(c_float))]
 def getNodeTransMats(node):
-	t = c_float * 16
-	rel = t()
-	abs = t()
-
+	tt = c_float
+	rel = pointer(tt())
+	abs = pointer(tt())
 	_getNodeTransMats(node, byref(rel), byref(abs))
 
-	a = tuple([x for x in rel])
-	b = tuple([x for x in abs])
-	return (a, b)
+	rel = [rel[i] for i in range(16)]
+	abs = [abs[i] for i in range(16)]
+	return (rel, abs)
 __all__.append('getNodeTransMats')
 
 
