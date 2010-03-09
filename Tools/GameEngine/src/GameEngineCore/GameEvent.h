@@ -317,7 +317,7 @@ public:
 		NV_HEAR_SENTENCE,		/// sentence to create listening behavior for
 		EM_SET_EMOTION,			/// set mood to a specific emotion, e.g. at the beginning of a dialogue (using string) 
 		EM_OWN_EMOTION,			/// emotional input for a character (using EmotionData)
-		EM_OBSERVE_EMOTION,		/// react to other characters' emotion (using EmotionData)
+		//EM_OBSERVE_EMOTION,		/// react to other characters' emotion (using EmotionData)
 		EM_OWN_CONTEXT,			/// add new context information to mood calculation(using EmotionData)
 		D_INIT_SPEAKERS,		/// initialize speakers 
 		D_START_DIALOGUE,		/// start playing the parsed dialogue
@@ -381,7 +381,9 @@ public:
 		GP_STATE_CHANGE,		/// The state of a gamepad has changed
 		NV_GAZING_START,		/// informs agent that he is being gazed at
 		NV_GAZING_STOP,			/// informs agent that he is no longer being gazed at
-		
+		NV_SPEAKING_STOPPED,	/// tells dialogue partner to stop listening 
+		EM_MOOD_CHANGED,		/// informs an agent that the emotion was updated (sending new mood as Vec3f)
+
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
 	static GameEvent::EventID convertStringEvent(std::string in)
