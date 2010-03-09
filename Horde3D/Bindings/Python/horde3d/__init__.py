@@ -882,12 +882,12 @@ __all__.append('setupCameraView')
 
 _getCameraProjMat = h3d.h3dGetCameraProjMat
 _getCameraProjMat.restype = None
-_getCameraProjMat.argtypes = [c_int, POINTER(c_float)]
+_getCameraProjMat.argtypes = [c_int, POINTER(c_float * 16)]
 def getCameraProjMat(node):
-	buffer = (c_float * 16)
-	_getCameraProjMat(node, buffer)
+	buffer = (c_float * 16)()
+	_getCameraProjMat(node, byref(buffer))
 
-	return [x.value for x in buffer]
+	return [x for x in buffer]
 __all__.append('getCameraProjMat')
 
 
