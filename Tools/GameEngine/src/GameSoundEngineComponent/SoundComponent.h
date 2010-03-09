@@ -28,6 +28,8 @@
 #include <GameEngine/GameComponent.h>
 
 #include <vector>
+#include <string>
+#include <map>
 
 /**
  * Component to enable 3D Sound provided by OpenAL
@@ -72,6 +74,7 @@ private:
 	void startVisemes();
 	void stopVisemes();
 	void resetPreviousViseme();
+	void setViseme( const std::string viseme, const float weight );
 
 	/**
 	 * Includes the viseme timings
@@ -114,6 +117,10 @@ private:
 	float				m_visemeBlendFac, m_visemeBlendFacPrev;
 	bool				m_isSpeaking;
 
+	bool				m_FACSmapping;
+	std::map<std::string, std::map<int, float>> m_FACSvisemes;
+	std::string			m_curFACSViseme;
+	float				m_curFACSWeight;
 };
 
 
