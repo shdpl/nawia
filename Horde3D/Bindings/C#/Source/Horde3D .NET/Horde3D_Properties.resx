@@ -117,29 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LibraryIncompatibleExceptionString" xml:space="preserve">
-    <value>Horde3D .NET wrapper is not compatible with Horde3D link library.</value>
-  </data>
-  <data name="LoadResourceArgumentExceptionString" xml:space="preserve">
-    <value>The amount of data does not match with the size parameter.</value>
-  </data>
-  <data name="MatrixOutOfRangeExceptionString" xml:space="preserve">
-    <value>The parameter is not a 4x4 float matrix.</value>
-  </data>
-  <data name="NotImplementedExceptionString" xml:space="preserve">
-    <value>The method is not implemented, yet.</value>
-  </data>
-  <data name="NotSupportedExceptionString" xml:space="preserve">
-    <value>The library method is not supported by Horde3D .NET wrapper.</value>
-  </data>
-  <data name="StringNullExceptionString" xml:space="preserve">
-    <value>The string value ist null. Maybe the argument is not initialized.</value>
-  </data>
   <data name="UIntOutOfRangeExceptionString" xml:space="preserve">
     <value>The parameter value is lesser than zero. Internally this value is represented by an unsigned integer.</value>
   </data>
   <data name="VersionString" xml:space="preserve">
-    <value>Horde3D 1.0.0 Beta3</value>
-    <comment>The supported version of the Horde library.</comment>
+    <value>Horde3D 1.0.0 Beta4</value>
+  </data>
+  <data name="MatrixOutOfRangeExceptionString" xml:space="preserve">
+    <value>The parameter is not a 4x4 float matrix.</value>
+  </data>
+  <data name="NotSupportedExceptionString" xml:space="preserve">
+    <value>The library method is not supported by Horde3D .NET wrapper.</value>
+  </data>
+  <data name="NotImplementedExceptionString" xml:space="preserve">
+    <value>The method is not implemented, yet.</value>
+  </data>
+  <data name="LoadResourceArgumentExceptionString" xml:space="preserve">
+    <value>The amount of data does not match with the size parameter.</value>
+  </data>
+  <data name="LibraryIncompatibleExceptionString" xml:space="preserve">
+    <value>Horde3D .NET wrapper is not compatible with Horde3D link library.</value>
+  </data>
+  <data name="StringNullExceptionString" xml:space="preserve">
+    <value>The string value ist null. Maybe the argument is not initialized.</value>
   </data>
 </root>

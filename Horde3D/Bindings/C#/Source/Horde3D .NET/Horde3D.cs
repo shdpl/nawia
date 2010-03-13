@@ -1,49 +1,34 @@
 // *************************************************************************************************
 //
-// Horde3D .NET wrapper
+// h3d .NET wrapper
 // ----------------------------------
 // Copyright (C) 2007 Martin Burkhard
+// Copyright (C) 2009 Volker Wiendl
 //
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
 //
 // *************************************************************************************************
 
 using System;
-using System.IO;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 using System.Runtime.InteropServices;
 using Horde3DNET.Properties;
 
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, Unrestricted = true)]
-[assembly: CLSCompliant(true)]
 namespace Horde3DNET
 {
-    public static class Horde3D
+    public static class h3d
     {
-
         // Predefined constants
         private static int _rootNode = 1;
 
-        public static int RootNode
+        public static int H3DRootNode
         {
             get { return _rootNode; }
         }
 
-        public enum EngineOptions
+        public enum H3DOptions
         {
             MaxLogLevel = 1,
             MaxNumMessages,
@@ -56,19 +41,22 @@ namespace Horde3DNET
             SampleCount,
             WireframeMode,
             DebugViewMode,
-            DumpFailedShaders
+            DumpFailedShaders,
+            GatherTimeStats
         }
 
-        public enum EngineStats
+        public enum H3DStats
         {
             TriCount = 100,
             BatchCount,
             LightPassCount,
             FrameTime,
-            CustomTime
+            CustomTime,
+            TextureVMem,
+            GeometryVMem
         }
 
-        public enum ResourceTypes
+        public enum H3DResTypes
         {
             Undefined = 0,
             SceneGraph,
@@ -83,70 +71,106 @@ namespace Horde3DNET
         }
 
         // Flags
-        public enum ResourceFlags
+        public enum H3DResFlags
         {
             NoQuery = 1, //horde3d 1.0
             NoTexCompression = 2, //horde3d 1.0
-            NoTexMipmaps = 4 //horde3d 1.0
+            NoTexMipmaps = 4, //horde3d 1.0
+            TexCubeMap = 8,
+            TexDynamic = 16,
+            TexRenderable = 32
         }
 
-        public enum GeometryResParams
+        public enum H3DFormats
         {
-       		VertexCount = 200,
-		    IndexCount,
-		    VertexData,
-		    IndexData
+            Unknown = 0,
+            TEX_BGRA8,
+            TEX_DXT1,
+            TEX_DXT3,
+            TEX_DXT5,
+            TEX_RGBA16F,
+            TEX_RGBA32F
         }
 
-        public enum AnimationResParams
+        public enum H3DGeoRes
+        {            
+            GeometryElem = 200,
+            GeoIndexCountI,
+            GeoVertexCountI,
+            GeoIndices16I,
+            GeoIndexStream,
+            GeoVertPosStream,
+            GeoVertTanStream,
+            GeoVertStaticStream
+        }
+
+        public enum H3DAnimRes
         {
-            FrameCount = 300
+            EntityElem = 300,
+            EntFrameCountI
         }
 
-        public enum MaterialResParams
+        public enum H3DMatRes
         {
-            Class = 400,
-            Link,
-            Shader
+            MaterialElem = 400,
+            SamplerElem,
+            UniformElem,
+            MatClassStr,
+            MatLinkI,
+            MatShaderI,
+            SampNameStr,
+            SampTexResI,
+            UnifNameStr,
+            UnifValueF4
         }
 
-        public enum TextureResParams
+        public enum H3DShaderRes
         {
-            PixelData = 700,
-            TexType,
-            TexFormat,
-            Width,
-            Height
+            ContextElem = 600,
+            SamplerElem,
+            UniformElem,
+            ContNameStr,
+            SampNameStr,
+            UnifNameStr,
+            UnifDefValueF4
         }
 
-        public enum EffectResParams
+        public enum H3DTexRes
         {
-            LifeMin = 900,
-            LifeMax,
-            MoveVelMin,
-            MoveVelMax,
-            MoveVelEndRate,
-            RotVelMin,
-            RotVelMax,
-            RotVelEndRate,
-            SizeMin,
-            SizeMax,
-            SizeEndRate,
-            Col_R_Min,
-            Col_R_Max,
-            Col_R_EndRate,
-            Col_G_Min,
-            Col_G_Max,
-            Col_G_EndRate,
-            Col_B_Min,
-            Col_B_Max,
-            Col_B_EndRate,
-            Col_A_Min,
-            Col_A_Max,
-            Col_A_EndRate
+            TextureElem = 700,
+            ImageElem,
+            TexFormatI,
+            TexSliceCountI,
+            ImgWidthI,
+            ImgHeightI,
+            ImgPixelStream
         }
 
-        public enum SceneNodeTypes
+        public enum H3DPartEffRes
+        {
+            ParticleElem = 800,
+            ChanMoveVelElem,
+            ChanRotVelElem,
+            ChanSizeElem,
+            ChanColRElem,
+            ChanColGElem,
+            ChanColBElem,
+            ChanColAElem,
+            PartLifeMinF,
+            PartLifeMaxF,
+            ChanStartMinF,
+            ChanStartMaxF,
+            ChanEndRateF
+        }
+
+        public enum H3DPipeRes
+        {
+            StageElem = 900,
+            StageNameStr,
+            StageActivationI
+        }
+
+        public enum H3DNodeTypes
         {
             Undefined = 0,
             Group,
@@ -158,93 +182,85 @@ namespace Horde3DNET
             Emitter
         }
 
-        public enum SceneNodeParams
+        public enum H3DNodeParams
         {
             Name = 1,
             AttachmentString
         }
 
-        public enum GroupNodeParams
+        public enum H3DModel
         {
-            MinDist = 100, //horde3d 1.0
-            MaxDist
+            GeoResI = 200,
+            SWSkinningI,
+            LodDist1F,
+            LodDist2F,
+            LodDist3F,
+            LodDist4F
         }
 
-        public enum ModelNodeParams
+        public enum H3DMesh
         {
-            GeometryRes = 200,
-            SoftwareSkinning,
-            LodDist1,
-            LodDist2,
-            LodDist3,
-            LodDist4
+            MatResI = 300,
+            BatchStartI,
+            BatchCountI,
+            VertRStartI,
+            VertREndI,
+            LodLevelI
         }
 
-        public enum MeshNodeParams
-        {
-            MaterialRes = 300,
-            BatchStart,
-            BatchCount,
-            VertRStart,
-            VertREnd,
-            LodLevel
-        }
-
-        public enum JointNodeParams
+        public enum H3DJoint
         {
             JointIndex = 400
         }
 
-        public enum LightNodeParams
+        public enum H3DLight
         {
-            MaterialRes = 500,
-            Radius,
-            FOV,
-            Col_R,
-            Col_G,
-            Col_B,
-            ShadowMapCount,
-            ShadowSplitLambda,
-            ShadowMapBias
+            MatResI = 500,
+            RadiusF,
+            FovF,
+            ColorF3,
+            ShadowMapCountI,
+            ShadowSplitLambdaF,
+            ShadowMapBiasF,
+            LightingContextStr,
+            ShadowContextStr
         }
 
-        public enum CameraNodeParams
+        public enum H3DCamera
         {
-            PipelineRes = 600,
-            OutputTex,
-            OutputBufferIndex,
-            LeftPlane,
-            RightPlane,
-            BottomPlane,
-            TopPlane,
-            NearPlane,
-            FarPlane,
-            Orthographic,
-            OcclusionCulling
+            PipeResI = 600,
+            OutTexResI,
+            OutBufIndexI,
+            LeftPlaneF,
+            RightPlaneF,
+            BottomPlaneF,
+            TopPlaneF,
+            NearPlaneF,
+            FarPlaneF,
+            OrthoI,
+            OccCullingI
         }
 
-        public enum EmitterNodeParams
+        public enum H3DEmitter
         {
-            MaterialRes = 700,
-            ParticleEffectRes,
-            MaxCount,
-            RespawnCount,
-            Delay,
-            EmissionRate,
-            SpreadAngle,
-            ForceX,
-            ForceY,
-            ForceZ
+            MatResI = 700,
+            PartEffResI,
+            MaxCountI,
+            RespawnCountI,
+            DelayF,
+            EmissionRateF,
+            SpreadAngleF,
+            ForceF3
         }
 
         // --- Basic funtions ---
         /// <summary>
-        /// This function returns a string containing the current version of Horde3D.
+        /// This function returns a string containing the current version of h3d.
         /// </summary>
         /// <returns>The version string</returns>
         public static string getVersionString()
         {
-            IntPtr ptr = NativeMethodsEngine.getVersionString();
+            IntPtr ptr = NativeMethodsEngine.h3dGetVersionString();
             //Console.WriteLine(Marshal.PtrToStringAnsi(ptr));
             return Marshal.PtrToStringAnsi(ptr);
         }
@@ -256,7 +272,7 @@ namespace Horde3DNET
         /// <returns>true if extension is implemented, otherwise false</returns>
         public static bool checkExtension(string extensionName)
         {
-            return NativeMethodsEngine.checkExtension(extensionName);
+            return NativeMethodsEngine.h3dCheckExtension(extensionName);
         }
 
         /// <summary>
@@ -271,7 +287,7 @@ namespace Horde3DNET
             if (getVersionString() != Resources.VersionString)
                 throw new LibraryIncompatibleException(Resources.LibraryIncompatibleExceptionString);
 
-            return NativeMethodsEngine.init();
+            return NativeMethodsEngine.h3dInit();
         }
 
         /// <summary>
@@ -280,7 +296,7 @@ namespace Horde3DNET
         /// </summary>
         public static void release()
         {
-            NativeMethodsEngine.release();
+            NativeMethodsEngine.h3dRelease();
         }
 
         /// <summary>
@@ -298,7 +314,7 @@ namespace Horde3DNET
         /// <param name="resizeBuffers">specifies whether render targets should be adapted to new size</param>
         public static void setupViewport(int x, int y, int width, int height, bool resizeBuffers)
         {
-            NativeMethodsEngine.setupViewport(x, y, width, height,resizeBuffers);
+            NativeMethodsEngine.h3dSetupViewport(x, y, width, height, resizeBuffers);
         }
 
         /// <summary>
@@ -310,9 +326,9 @@ namespace Horde3DNET
         /// <param name="node">camera node used for rendering scene</param>
         /// <returns>true in case of success, otherwise false</returns>
         /// </summary>       
-        public static bool render(int node)
+        public static void render(int node)
         {
-            return NativeMethodsEngine.render(node);
+            NativeMethodsEngine.h3dRender(node);
         }
 
         /// <summary>
@@ -320,9 +336,9 @@ namespace Horde3DNET
         /// subsequent rendering operations will be for the next frame.
         /// </summary>
         /// <returns>true in case of success, otherwise false</returns>
-        public static bool finalizeFrame()
+        public static void finalizeFrame()
         {
-            return NativeMethodsEngine.finalizeFrame();
+            NativeMethodsEngine.h3dFinalizeFrame();
         }
 
         /// <summary>
@@ -331,7 +347,7 @@ namespace Horde3DNET
         /// </summary>
         public static void clear()
         {
-            NativeMethodsEngine.clear();
+            NativeMethodsEngine.h3dClear();
         }
 
 
@@ -345,7 +361,7 @@ namespace Horde3DNET
         /// <returns>message string or empty string if no message is in queue</returns>
         public static string getMessage(out int level, out float time)
         {
-            IntPtr ptr = NativeMethodsEngine.getMessage(out level, out time);
+            IntPtr ptr = NativeMethodsEngine.h3dGetMessage(out level, out time);
             return Marshal.PtrToStringAnsi(ptr);
         }
 
@@ -354,9 +370,9 @@ namespace Horde3DNET
         /// </summary>
         /// <param name="param">option parameter</param>
         /// <returns>current value of the specified option parameter</returns>
-        public static float getOption(EngineOptions param)
+        public static float getOption(H3DOptions param)
         {
-            return NativeMethodsEngine.getOption(param);
+            return NativeMethodsEngine.h3dGetOption(param);
         }
 
         /// <summary>
@@ -365,9 +381,9 @@ namespace Horde3DNET
         /// <param name="param">option parameter</param>
         /// <param name="value">value of the option parameter</param>
         /// <returns>true if the option could be set to the specified value, otherwise false</returns>
-        public static bool setOption(EngineOptions param, float value)
+        public static bool setOption(H3DOptions param, float value)
         {
-            return NativeMethodsEngine.setOption( (int) param, value);
+            return NativeMethodsEngine.h3dSetOption((int)param, value);
         }
 
         /// <summary>
@@ -378,9 +394,9 @@ namespace Horde3DNET
         /// <param name="param">statistic parameter</param>
         /// <param name="reset">flag specifying whether statistic value should be reset</param>
         /// <returns>current value of the specified statistic parameter</returns>
-        public static float getStat(EngineStats param, bool reset)
+        public static float getStat(H3DStats param, bool reset)
         {
-            return NativeMethodsEngine.getStat((int)param, reset);
+            return NativeMethodsEngine.h3dGetStat((int)param, reset);
         }
 
         /// <summary>
@@ -415,14 +431,15 @@ namespace Horde3DNET
         /// <param name="colA">alpha color value of the overlay that is set for the material's shader</param>
         /// <param name="material">material resource used for rendering</param>
         /// <param name="layer">layer index of the overlay (Values: from 0 to 7)</param>
-        public static void showOverlay(float x_ll, float y_ll, float u_ll, float v_ll,
-                                        float x_lr, float y_lr, float u_lr, float v_lr,
-                                        float x_ur, float y_ur, float u_ur, float v_ur,
-                                        float x_ul, float y_ul, float u_ul, float v_ul,
-                                        float colR, float colG, float colB, float colA,
-                                        int layer, int material)
+        public static void showOverlay(
+                         float x_tl, float y_tl, float u_tl, float v_tl,
+                         float x_bl, float y_bl, float u_bl, float v_bl,
+                         float x_br, float y_br, float u_br, float v_br,
+                         float x_tr, float y_tr, float u_tr, float v_tr,
+                         float colR, float colG, float colB, float colA,
+                         int materialRes, int layer)
         {
-            NativeMethodsEngine.showOverlay(x_ll, y_ll, u_ll, v_ll, x_lr, y_lr, u_lr, v_lr, x_ur, y_ur, u_ur, v_ur, x_ul, y_ul, u_ul, v_ul, colR, colG, colB, colA, material, layer);
+            NativeMethodsEngine.h3dShowOverlay(x_tl, y_tl, u_tl, v_tl, x_bl, y_bl, u_bl, v_bl, x_br, y_br, u_br, v_br, x_tr, y_tr, u_tr, v_tr, colR, colG, colB, colA, materialRes, layer);
         }
 
         /// <summary>
@@ -430,7 +447,7 @@ namespace Horde3DNET
         /// </summary>
         public static void clearOverlays()
         {
-            NativeMethodsEngine.clearOverlays();
+            NativeMethodsEngine.h3dClearOverlays();
         }
 
 
@@ -441,9 +458,9 @@ namespace Horde3DNET
         /// </summary>
         /// <param name="res">handle to the resource whose type will be returned</param>
         /// <returns>type of the scene node</returns>
-        public static int getResourceType(int res)
+        public static int getResType(int res)
         {
-            return NativeMethodsEngine.getResourceType(res);
+            return NativeMethodsEngine.h3dGetResType(res);
         }
 
         /// <summary>
@@ -453,9 +470,9 @@ namespace Horde3DNET
         /// is invalid, the function returns an empty string.        
         /// <param name="res">handle to the resource</param>
         /// <returns>name of the resource or empty string in case of failure</returns>
-        public static string getResourceName(int res)
+        public static string getResName(int res)
         {
-            return Marshal.PtrToStringAnsi(NativeMethodsEngine.getResourceName(res));
+            return Marshal.PtrToStringAnsi(NativeMethodsEngine.h3dGetResName(res));
         }
 
         /// <summary>
@@ -467,7 +484,7 @@ namespace Horde3DNET
         /// <returns></returns>
         public static int getNextResource(int type, int start)
         {
-            return (int)NativeMethodsEngine.getNextResource(type, start);
+            return (int)NativeMethodsEngine.h3dGetNextResource(type, start);
         }
 
         /// <summary>
@@ -482,7 +499,7 @@ namespace Horde3DNET
         public static int findResource(int type, string name)
         {
             if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
-            return (int)NativeMethodsEngine.findResource(type, name);
+            return (int)NativeMethodsEngine.h3dFindResource(type, name);
         }
 
         /// <summary>
@@ -497,7 +514,7 @@ namespace Horde3DNET
         {
             if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
 
-            return (int)NativeMethodsEngine.addResource(type, name, flags);
+            return (int)NativeMethodsEngine.h3dAddResource(type, name, flags);
         }
 
         /// <summary>
@@ -514,7 +531,7 @@ namespace Horde3DNET
         public static int cloneResource(int sourceRes, string name)
         {
             if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
-            return (int)NativeMethodsEngine.cloneResource(sourceRes, name);
+            return (int)NativeMethodsEngine.h3dCloneResource(sourceRes, name);
         }
 
         /// <summary>
@@ -527,7 +544,7 @@ namespace Horde3DNET
         /// <returns>true in case of success, otherwise false</returns>
         public static int removeResource(int res)
         {
-            return NativeMethodsEngine.removeResource(res);
+            return NativeMethodsEngine.h3dRemoveResource(res);
         }
 
         /// <summary>
@@ -536,9 +553,9 @@ namespace Horde3DNET
         /// This function checks if the specified resource has been successfully loaded.
         /// <param name="res">handle to the resource to be checked</param>
         /// <returns>true if resource is loaded, otherwise or in case of failure false</returns>
-        public static bool isResourceLoaded(int res)
+        public static bool isResLoaded(int res)
         {
-            return NativeMethodsEngine.isResourceLoaded(res);
+            return NativeMethodsEngine.h3dIsResLoaded(res);
         }
 
         /// <summary>
@@ -574,7 +591,7 @@ namespace Horde3DNET
             Marshal.WriteByte(ptr, size, 0x00);
 
             // load resource
-            bool result = NativeMethodsEngine.loadResource(res, ptr, size);
+            bool result = NativeMethodsEngine.h3dLoadResource(res, ptr, size);
 
             // free previously allocated memory
             Marshal.FreeHGlobal(ptr);
@@ -585,11 +602,23 @@ namespace Horde3DNET
         /// <summary>
         /// This function unloads a previously loaded resource and restores the default values it had before loading. The state is set back to unloaded which makes it possible to load the resource again.
         /// </summary>
-        /// <param name="res">handle to resource to be unloaded</param>
-        /// <returns>true in case of success, otherwise false</returns>
-        public static bool unloadResource(int res)
+        /// <param name="res">handle to resource to be unloaded</param>        
+        public static void unloadResource(int res)
         {
-            return NativeMethodsEngine.unloadResource((int) res);
+            NativeMethodsEngine.h3dUnloadResource((int)res);
+        }
+
+        /// <summary>
+        /// Gets the number of elements in a resource.
+        /// </summary>
+        /// This function returns how many elements of the specified element type a specified
+		/// resource has.
+        /// <param name="res">handle to the resource to be accessed</param>
+        /// <param name="elem">element type</param>
+        /// <returns>number of elements</returns>
+        public static int getResElemCount(int res, int elem)
+        {
+            return NativeMethodsEngine.h3dGetResElemCount(res, elem);
         }
 
         /// <summary>
@@ -600,9 +629,9 @@ namespace Horde3DNET
         /// <param name="res">handle to the resource to be accessed</param>
         /// <param name="param">parameter to be accessed</param>
         /// <returns>value of the parameter</returns>
-        public static int getResourceParami(int res, int param)
+        public static int getResParamI(int res, int param)
         {
-            return NativeMethodsEngine.getResourceParami(res, param);
+            return NativeMethodsEngine.h3dGetResParamI(res, param);
         }
 
         /// <summary>
@@ -612,11 +641,10 @@ namespace Horde3DNET
         /// The property must be of the type int.
         /// <param name="res">handle to the node to be modified</param>
         /// <param name="param">parameter to be modified</param>
-        /// <param name="value">new value for the specified parameter</param>
-        /// <returns>true in case of success otherwise false</returns>
-        public static bool setResourceParami(int res, int param, int value)
+        /// <param name="value">new value for the specified parameter</param>        
+        public static void setResParamI(int res, int param, int value)
         {
-            return NativeMethodsEngine.setResourceParami(res, param, value);
+            NativeMethodsEngine.h3dSetResParamI(res, param, value);
         }
 
         /// <summary>
@@ -627,9 +655,9 @@ namespace Horde3DNET
         /// <param name="res">handle to the resource to be accessed</param>
         /// <param name="param">parameter to be accessed</param>
         /// <returns>value of the parameter</returns>
-        public static float getResourceParamf(int res, int param)
+        public static float getResParamF(int res, int param)
         {
-            return NativeMethodsEngine.getResourceParamf(res, param);
+            return NativeMethodsEngine.h3dGetResParamF(res, param);
         }
 
         /// <summary>
@@ -639,11 +667,10 @@ namespace Horde3DNET
         /// The property must be of the type float.
         /// <param name="res">handle to the node to be modified</param>
         /// <param name="param">parameter to be modified</param>
-        /// <param name="value">new value for the specified parameter</param>
-        /// <returns>true in case of success otherwise false</returns>
-        public static bool setResourceParamf(int res, int param, float value)
+        /// <param name="value">new value for the specified parameter</param>        
+        public static void setResParamF(int res, int param, float value)
         {
-            return NativeMethodsEngine.setResourceParamf(res, param, value);
+            NativeMethodsEngine.h3dSetResParamF(res, param, value);
         }
 
         /// <summary>
@@ -655,9 +682,9 @@ namespace Horde3DNET
         /// <param name="res">handle to the resource to be accessed</param>
         /// <param name="param">parameter to be accessed</param>
         /// <returns>value of the property or empty string if no such property exists</returns>
-        public static string getResourceParamstr(int res, int param)
+        public static string getResParamStr(int res, int param)
         {
-            return Marshal.PtrToStringAnsi(NativeMethodsEngine.getResourceParamstr(res, param));
+            return Marshal.PtrToStringAnsi(NativeMethodsEngine.h3dGetResParamStr(res, param));
         }
 
         /// <summary>
@@ -668,64 +695,41 @@ namespace Horde3DNET
         /// <param name="res">handle to the node to be modified</param>
         /// <param name="param">parameter to be modified</param>
         /// <param name="value">new value for the specified parameter</param>
-        /// <returns>true in case of success otherwise false</returns>
-        public static bool setResourceParamstr(int res, int param, string value)
+        public static void setResParamStr(int res, int param, string value)
         {
-            return NativeMethodsEngine.setResourceParamstr(res, param, value);
+            NativeMethodsEngine.h3dSetResParamStr(res, param, value);
         }
 
         /// <summary>
-        /// This function returns a pointer to the specified data of a specified resource. 
-        /// For information on the format (int, float, ..) of the pointer see the ResourceData description. 
+        /// Maps the stream of a resource element.
         /// </summary>
-        /// <param name="res">handle to the resource to be accessed</param>
-        /// <param name="param">parameter indicating data of the resource that will be accessed</param>
-        /// <returns>specified resource data if it is available</returns>
-        public static IntPtr getResourceData(int res, int param)
+        /// This function maps the specified stream of a specified resource element and returns a
+        /// pointer to the stream data. The required access to the data can be specified with the read
+        /// write parameters. If read is false, the pointer will usually not contain meaningful data.
+        /// Not all resource streams can be mapped with both read and write access. If it is not
+        /// possible to map the stream, the function will return a NULL pointer. A mapped stream should
+        /// be unmapped again as soon as possible but always before subsequent API calls are made. It
+        /// is only possible to map one stream per resource at a time.
+        /// <param name="res">handle to the resource to be mapped</param>
+        /// <param name="elem">element type</param>
+        /// <param name="elemIdx">index of element</param>
+        /// <param name="stream">stream to be mapped</param>
+        /// <param name="read">flag indicating whether read access is required</param>
+        /// <param name="write">flag indicating whether write access is required</param>
+        /// <returns>pointer to stream data or NULL if stream cannot be mapped</returns>
+        public static IntPtr mapResStream(int res, int elem, int elemIdx, int stream, bool read, bool write)
         {
-            return NativeMethodsEngine.getResourceData(res, param);
+            return NativeMethodsEngine.h3dMapResStream(res, elem, elemIdx, stream, read, write);
         }
-        
+
         /// <summary>
-        /// This function updates the content of a resource that was successfully loaded before.
-        /// The new data must have exactly the same data layout as the data that was loaded.
+        /// Unmaps a previously mapped resource stream.
         /// </summary>
-        /// <remarks>Notes on available ResourceData parameters: 
-        /// Tex2DPixelData - Sets the image data of a Texture2D resource. 
-        /// The data must point to a memory block that contains the pixels of the image. 
-        /// Each pixel needs to have 32 bit color data in BGRA format. 
-        /// The dimensions of the image (width, height) must be exactly the same as the dimensions 
-        /// of the image that was originally loaded for the resource.
-        /// PLEASE NOTE: calls to updateResourceData are not threadsafe and so it might not work in case you have a separated render thread.</remarks>
-        /// <param name="res">handle to the resource for which the data is modified</param>
-        /// <param name="param">data structure which will be updated</param>
-        /// <param name="data">the new data</param>
-        /// <param name="size">size of the new data block</param>
-        /// <returns>true in case of success, otherwise false</returns>
-        public static bool updateResourceData(int res, int param, byte[] data, int size)
+        /// This function unmaps a resource stream that has been mapped before.
+        /// <param name="res">handle to the resource to be unmapped</param>        
+        public static void unmapResStream(int res)
         {
-            if (data == null)
-                throw new ArgumentNullException("data");
-
-            if (data.Length < size)
-                throw new ArgumentException(Resources.LoadResourceArgumentExceptionString, "data");
-
-            // allocate memory for resource data
-            IntPtr ptr = Marshal.AllocHGlobal(size + 1);
-
-            // copy byte data into allocated memory
-            Marshal.Copy(data, 0, ptr, size);
-
-            // terminate string
-            Marshal.WriteByte(ptr, size, 0x00);
-
-            // load resource
-            bool result = NativeMethodsEngine.updateResourceData(res, param, ptr, size);
-
-            // free previously allocated memory
-            Marshal.FreeHGlobal(ptr);
-
-            return result;
+            NativeMethodsEngine.h3dUnmapResStream(res);
         }
 
         /// <summary>
@@ -738,7 +742,7 @@ namespace Horde3DNET
         /// <returns>handle to an unloaded resource or 0</returns>
         public static int queryUnloadedResource(int index)
         {
-            return NativeMethodsEngine.queryUnloadedResource(index);            
+            return NativeMethodsEngine.h3dQueryUnloadedResource(index);            
         }
 
         /// <summary>
@@ -747,27 +751,27 @@ namespace Horde3DNET
         /// </summary>
         public static void releaseUnusedResources()
         {
-            NativeMethodsEngine.releaseUnusedResources();
+            NativeMethodsEngine.h3dReleaseUnusedResources();
         }
 
         /// <summary>
         /// Adds a Texture2D resource.
         /// </summary>
-        /// This function tries to create and add a Texture2D resource with the specified name to the resource
-        /// manager. If a Texture2D resource with the same name is already existing, the function fails. The
+        /// This function tries to create and add a Texture resource with the specified name to the resource
+        /// manager. If a Texture resource with the same name is already existing, the function fails. The
         /// texture is initialized with the specified dimensions and the resource is declared as loaded. This
         /// function is especially useful to create dynamic textures (e.g. for displaying videos) or output buffers
         /// for render-to-texture.
         /// <remarks>*Note: The name string may not contain a colon character (:)*</remarks>
         /// <param name="name">name of the resource</param>
-        /// <param name="flags">flags used for creating the resource</param>
         /// <param name="width">width of the texture image</param>
         /// <param name="height">height of the texture image</param>
-        /// <param name="renderable">flag indicating whether the texture can be used as an output buffer for a Camera node</param>
+        /// <param name="fmt">texture format (see stream formats)</param>
+        /// <param name="flags">flags used for creating the resource</param>
         /// <returns>handle to the created resource or 0 in case of failure</returns>
-        public static int createTexture2D(string name, int flags, int width, int height, bool renderable)
+        public static int createTexture(string name, int width, int height, int fmt, int flags)
         {
-            return NativeMethodsEngine.createTexture2D(name, flags, width, height, renderable);
+            return NativeMethodsEngine.h3dCreateTexture(name, width, height, fmt, flags);
         }
 
         /// <summary>
@@ -781,7 +785,7 @@ namespace Horde3DNET
         /// <param name="fragPreamble">preamble text of fragment shaders (default: empty string)</param>
         public static void setShaderPreambles(string vertPreamble, string fragPreamble)
         {
-            NativeMethodsEngine.setShaderPreambles(vertPreamble, fragPreamble);
+            NativeMethodsEngine.h3dSetShaderPreambles(vertPreamble, fragPreamble);
         }
 
         // Material specific
@@ -799,33 +803,8 @@ namespace Horde3DNET
         {
             if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
 
-            return NativeMethodsEngine.setMaterialUniform(materialRes, name, a, b, c, d);
-        }
-
-       /// <summary>
-       /// Binds a texture to a sampler of a Material resource.
-       /// </summary>
-	   /// This function binds a texture resource to the specified sampler of the specified material.							
-	   public static bool setMaterialSampler( int materialRes, string name, int texRes )
-       {
-           if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
-
-           return NativeMethodsEngine.setMaterialSampler(materialRes, name, texRes);
-       }
-
-
-        /// <summary>
-        /// Sets the activation state of a pipeline stage.
-        /// </summary>
-        /// This function enables or disables a specified stage of the specified pipeline resource.
-        /// <param name="pipelineRes">handle to the Pipeline resource to be accessed</param>
-        /// <param name="stageName">name of the stage to be modified</param>
-        /// <param name="enabled">flag indicating whether the stage shall be enabled or disabled</param>
-        /// <returns>true in case of success, otherwise false</returns>
-        public static bool setPipelineStageActivation(int pipelineRes, string stageName, bool enabled)
-        {
-            return NativeMethodsEngine.setPipelineStageActivation(pipelineRes, stageName, enabled);
-        }
+            return NativeMethodsEngine.h3dSetMaterialUniform(materialRes, name, a, b, c, d);
+        }      
 
         /// <summary>
         /// Reads the pixel data of a pipeline render target buffer.
@@ -858,9 +837,9 @@ namespace Horde3DNET
         /// </summary>
         /// <param name="node">handle to the scene node whose type will be returned</param>
         /// <returns>type of the scene node</returns>
-        public static SceneNodeTypes getNodeType(int node)
+        public static H3DNodeTypes getNodeType(int node)
         {
-            return NativeMethodsEngine.getNodeType(node);
+            return NativeMethodsEngine.h3dGetNodeType(node);
         }
 
         /// <summary>
@@ -872,7 +851,7 @@ namespace Horde3DNET
         /// <returns>handle to parent node or 0 in case of failure</returns>
         public static int getNodeParent(int node)
         {
-            return NativeMethodsEngine.getNodeParent(node);
+            return NativeMethodsEngine.h3dGetNodeParent(node);
         }
 
         /// <summary>
@@ -880,13 +859,13 @@ namespace Horde3DNET
         /// </summary>
         /// This function relocates a scene node. It detaches the node from its current parent and attaches
         /// it to the specified new parent node. If the attachment to the new parent is not possible, the
-        /// function returns false. Relocation is not possible for the RootNode.
+        /// function returns false. Relocation is not possible for the H3DRootNode.
         /// <param name="node">handle to the scene node to be relocated</param>
         /// <param name="parent">handle to the new parent node</param>
         /// <returns>true in case of success, otherwise false</returns>
         public static bool setNodeParent(int node, int parent)
         {
-            return NativeMethodsEngine.setNodeParent(node, parent);
+            return NativeMethodsEngine.h3dSetNodeParent(node, parent);
         }
 
         /// <summary>
@@ -900,7 +879,7 @@ namespace Horde3DNET
         /// <returns>handle to the child node or 0 if child doesn't exist</returns>
         public static int getNodeChild(int node, int index)
         {
-            return NativeMethodsEngine.getNodeChild(node, index);
+            return NativeMethodsEngine.h3dGetNodeChild(node, index);
         }
 
         /// <summary>
@@ -911,28 +890,26 @@ namespace Horde3DNET
         /// <returns>handle to the root of the created nodes or 0 in case of failure</returns>
         public static int addNodes(int parent, int res)
         {
-            return (int)NativeMethodsEngine.addNodes(parent, res);
+            return (int)NativeMethodsEngine.h3dAddNodes(parent, res);
         }
 
         /// <summary>
         /// This function removes the specified node and all of it's children from the scene.
         /// </summary>
-        /// <param name="node">handle to the node to be removed</param>
-        /// <returns>true in case of success otherwise false</returns>
-        public static bool removeNode(int node)
+        /// <param name="node">handle to the node to be removed</param>        
+        public static void removeNode(int node)
         {
-            return NativeMethodsEngine.removeNode(node);
+            NativeMethodsEngine.h3dRemoveNode(node);
         }
 
         /// <summary>
         /// This function sets the activation state of the specified node to active or inactive. Inactive nodes are excluded from rendering.
         /// </summary>
         /// <param name="node">handle to the node to be modified</param>
-        /// <param name="active">boolean value indicating whether node is active or inactive</param>
-        /// <returns>true in case of success, otherwise false</returns>
-        public static bool setNodeActivation(int node, bool active)
-        {            
-            return NativeMethodsEngine.setNodeActivation(node, active);
+        /// <param name="active">boolean value indicating whether node is active or inactive</param>        
+        public static void setNodeActivation(int node, bool active)
+        {
+            NativeMethodsEngine.h3dSetNodeActivation(node, active);
         }
 
         /// <summary>
@@ -946,9 +923,9 @@ namespace Horde3DNET
         /// <param name="node">handle to the node to be accessed</param>
         /// <param name="reset">flag indicating whether transformation flag shall be reset</param>
         /// <returns>true if node has been transformed, otherwise false</returns>
-        public static bool checkNodeTransformFlag(int node, bool reset)
+        public static bool checkNodeTransFlag(int node, bool reset)
         {
-            return NativeMethodsEngine.checkNodeTransformFlag(node, reset);
+            return NativeMethodsEngine.h3dCheckNodeTransFlag(node, reset);
         }
 
         /// <summary>
@@ -964,12 +941,11 @@ namespace Horde3DNET
         /// <param name="rz">z variable where rotation of the node in Euler angles (degrees) will be stored</param>
         /// <param name="sx">x variable where scale of the node will be stored</param>
         /// <param name="sy">y variable where scale of the node will be stored</param>
-        /// <param name="sz">z variable where scale of the node will be stored</param>
-        /// <returns>true in case of success, otherwise false</returns>
-        public static bool getNodeTransform(int node, out float px, out float py, out float pz,
+        /// <param name="sz">z variable where scale of the node will be stored</param>        
+        public static void getNodeTransform(int node, out float px, out float py, out float pz,
                                 out float rx, out float ry, out float rz, out float sx, out float sy, out float sz)
         {
-            return NativeMethodsEngine.getNodeTransform(node, out px, out py, out pz, out rx, out ry, out rz, out sx, out sy, out sz);
+            NativeMethodsEngine.h3dGetNodeTransform(node, out px, out py, out pz, out rx, out ry, out rz, out sx, out sy, out sz);
         }
 
         /// <summary>
@@ -985,12 +961,11 @@ namespace Horde3DNET
         /// <param name="rz">z rotation of the node in Euler angles (degrees)</param>
         /// <param name="sx">x scale of the node</param>
         /// <param name="sy">y scale of the node</param>
-        /// <param name="sz">z scale of the node</param>
-        /// <returns>true in case of success, otherwise false</returns>
-        public static bool setNodeTransform(int node, float px, float py, float pz,
+        /// <param name="sz">z scale of the node</param>        
+        public static void setNodeTransform(int node, float px, float py, float pz,
                                 float rx, float ry, float rz, float sx, float sy, float sz)
         {
-            return NativeMethodsEngine.setNodeTransform(node, px, py, pz, rx, ry, rz, sx, sy, sz);
+            NativeMethodsEngine.h3dSetNodeTransform(node, px, py, pz, rx, ry, rz, sx, sy, sz);
         }
 
         /// <summary>
@@ -998,11 +973,10 @@ namespace Horde3DNET
         /// </summary>
         /// <param name="node">handle to the scene node whose matrices will be accessed</param>
         /// <param name="relMat">pointer to a variable where the address of the relative transformation matrix will be stored</param>
-        /// <param name="absMat">pointer to a variable where the address of the absolute transformation matrix will be stored</param>
-        /// <returns>true in case of success, otherwise false</returns>
-        public static bool getNodeTransformMatrices(int node, out IntPtr relMat, out IntPtr absMat)
+        /// <param name="absMat">pointer to a variable where the address of the absolute transformation matrix will be stored</param>        
+        public static void getNodeTransMats(int node, out IntPtr relMat, out IntPtr absMat)
         {
-            return NativeMethodsEngine.getNodeTransformMatrices(node, out relMat, out absMat);
+            NativeMethodsEngine.h3dGetNodeTransMats(node, out relMat, out absMat);
         }
 
         /// <summary>
@@ -1010,13 +984,12 @@ namespace Horde3DNET
         /// It is basically the same as setNodeTransform but takes directly a matrix instead of individual transformation parameters.
         /// </summary>
         /// <param name="node">handle to the scene node whose matrix will be updated</param>
-        /// <param name="mat4x4">array of a 4x4 matrix in column major order</param>
-        /// <returns>true in case of success, otherwise false</returns>
-        public static bool setNodeTransformMatrix(int node, float[] mat4x4)
+        /// <param name="mat4x4">array of a 4x4 matrix in column major order</param>        
+        public static void setNodeTransMat(int node, float[] mat4x4)
         {
             if (mat4x4.Length != 16) throw new ArgumentOutOfRangeException("mat4x4", Resources.MatrixOutOfRangeExceptionString);
 
-            return NativeMethodsEngine.setNodeTransformMatrix(node, mat4x4);
+            NativeMethodsEngine.h3dSetNodeTransMat(node, mat4x4);
         }
 
         /// <summary>
@@ -1025,9 +998,23 @@ namespace Horde3DNET
         /// <param name="node"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public static float getNodeParamf(int node, int param)
+        public static float getNodeParamF(int node, int param)
         {
-            return NativeMethodsEngine.getNodeParamf(node, param);
+            return NativeMethodsEngine.h3dGetNodeParamF(node, param);
+        }
+
+        /// <summary>
+        /// Sets a property of a scene node.
+        /// </summary>
+        /// <remarks>This function sets a specified property of the specified node to a specified value.
+		/// The property must be of the type float.</remarks>
+        /// <param name="node">handle to the node to be modified</param>
+        /// <param name="param">parameter to be modified</param>
+        /// <param name="compIdx>component of the parameter to be modified</param>
+        /// <param name="value">new value for the specified parameter</param>        
+        public static void setNodeParamF(int node, int param, int compIdx, float value)
+        {
+            NativeMethodsEngine.h3dSetNodeParamF(node, param, compIdx, value);
         }
 
         /// <summary>
@@ -1035,22 +1022,10 @@ namespace Horde3DNET
         /// </summary>
         /// <param name="node"></param>
         /// <param name="param"></param>
-        /// <param name="value"></param>
         /// <returns></returns>
-        public static bool setNodeParamf(int node, int param, float value)
+        public static int getNodeParamI(int node, int param)
         {
-            return NativeMethodsEngine.setNodeParamf(node, param, value);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        public static int getNodeParami(int node, int param)
-        {
-            return NativeMethodsEngine.getNodeParami(node, param);
+            return NativeMethodsEngine.h3dGetNodeParamI(node, param);
         }
 
         /// <summary>
@@ -1060,11 +1035,10 @@ namespace Horde3DNET
 		/// The property must be of the type int or ResHandle.</remarks>
         /// <param name="node">handle to the node to be modified</param>
         /// <param name="param">parameter to be modified</param>
-        /// <param name="value">new value for the specified parameter</param>
-        /// <returns>true in case of success otherwise false</returns>
-        public static bool setNodeParami(int node, int param, int value)
+        /// <param name="value">new value for the specified parameter</param>        
+        public static void setNodeParamI(int node, int param, int value)
         {
-            return NativeMethodsEngine.setNodeParami(node, param, value);
+            NativeMethodsEngine.h3dSetNodeParamI(node, param, value);
         }
 
 
@@ -1076,9 +1050,9 @@ namespace Horde3DNET
         /// <param name="node">handle to the node to be accessed</param>
         /// <param name="param">parameter to be accessed</param>
         /// <returns>value of the property or empty string if no such property exists</returns>
-        public static string getNodeParamstr(int node, int param)
+        public static string getNodeParamStr(int node, int param)
         {
-            return  Marshal.PtrToStringAnsi(NativeMethodsEngine.getNodeParamstr(node, param));
+            return Marshal.PtrToStringAnsi(NativeMethodsEngine.h3dGetNodeParamStr(node, param));
         }
 
         /// <summary>
@@ -1089,12 +1063,11 @@ namespace Horde3DNET
         /// 
         /// <param name="node">handle to the node to be modified</param>
         /// <param name="param">parameter to be modified</param>
-        /// <param name="value">new value for the specified parameter</param>
-        /// <returns></returns>
-        public static bool setNodeParamstr(int node, int param, string value)
+        /// <param name="value">new value for the specified parameter</param>        
+        public static void setNodeParamStr(int node, int param, string value)
         {
             if( value == null) throw new ArgumentNullException("value", Resources.StringNullExceptionString);
-            return NativeMethodsEngine.setNodeParamstr(node, param, value);
+            NativeMethodsEngine.h3dSetNodeParamStr(node, param, value);
         }
 
 
@@ -1112,10 +1085,10 @@ namespace Horde3DNET
         /// <returns>true in case of success, otherwise false</returns>
         public static bool getNodeAABB(int node, out float minX, out float minY, out float minZ, out float maxX, out float maxY, out float maxZ)
         {
-            return NativeMethodsEngine.getNodeAABB(node, out minX, out minY, out minZ, out maxX, out maxY, out maxZ);
+            return NativeMethodsEngine.h3dGetNodeAABB(node, out minX, out minY, out minZ, out maxX, out maxY, out maxZ);
         }
 
-        // added (Horde3D 1.0)
+        // added (h3d 1.0)
         /// <summary>
         /// Finds scene nodes with the specified properties.
         /// </summary>
@@ -1129,7 +1102,7 @@ namespace Horde3DNET
         /// <returns></returns>
         public static int findNodes(int node, string name, int type)
         {
-            return NativeMethodsEngine.findNodes(node, name, type);
+            return NativeMethodsEngine.h3dFindNodes(node, name, type);
         }
 
         /// <summary>
@@ -1142,7 +1115,7 @@ namespace Horde3DNET
         /// <returns>handle to scene node from findNodes query or 0 if result doesn't exist</returns>
         public static int getNodeFindResult(int index)
         {
-            return NativeMethodsEngine.getNodeFindResult(index);
+            return NativeMethodsEngine.h3dGetNodeFindResult(index);
         }
         
         /// <summary>
@@ -1162,7 +1135,7 @@ namespace Horde3DNET
         /// <returns>handle to nearest intersected node or 0 if no node was hit</returns>
         public static int castRay(int node, float ox, float oy, float oz, float dx, float dy, float dz, int numNearest)
         {
-            return NativeMethodsEngine.castRay(node, ox, oy, oz, dx, dy, dz, numNearest);
+            return NativeMethodsEngine.h3dCastRay(node, ox, oy, oz, dx, dy, dz, numNearest);
         }
 
 
@@ -1176,9 +1149,9 @@ namespace Horde3DNET
         /// <param name="distance">distance from ray origin to intersection point</param>
         /// <param name="intersection">coordinates of intersection point (float[3] array)</param>
         /// <returns></returns>
-        public static bool getCastRayResult(int index, int node, out float distance, float[] intersection)
+        public static bool getCastRayResult(int index, out int node, out float distance, float[] intersection)
         {
-            return NativeMethodsEngine.getCastRayResult(index, node, out distance, intersection);
+            return NativeMethodsEngine.h3dGetCastRayResult(index, out node, out distance, intersection);
         }
 
         /// <summary>
@@ -1197,7 +1170,7 @@ namespace Horde3DNET
         /// <returns>computed LOD level or -1 if node is not visible</returns>
         public static int checkNodeVisibility(int node, int cameraNode, bool checkOcclusion, bool calcLod)
         {
-            return NativeMethodsEngine.checkNodeVisibility(node, cameraNode, checkOcclusion, calcLod);
+            return NativeMethodsEngine.h3dCheckNodeVisibility(node, cameraNode, checkOcclusion, calcLod);
         }
 
         // Group specific
@@ -1211,7 +1184,7 @@ namespace Horde3DNET
         {
             if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
 
-            return (int)NativeMethodsEngine.addGroupNode(parent, name);
+            return (int)NativeMethodsEngine.h3dAddGroupNode(parent, name);
         }
 
 
@@ -1227,33 +1200,39 @@ namespace Horde3DNET
         {
             if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
 
-            return (int)NativeMethodsEngine.addModelNode(parent, name, geoRes);
+            return (int)NativeMethodsEngine.h3dAddModelNode(parent, name, geoRes);
         }
 
         /// <summary>
-        /// This function is used to setup the specified animation stage (channel) of the specified Model node.
+        /// This function is used to setup the specified animation stage/slot of the specified Model node.
         /// </summary>
         /// <remarks>
-        /// The function operates on Model nodes but accepts also Group nodes in which case the call is passed recursively to the Model child nodes.
-        /// The function is used for animation blending. There is a fixed number of stages (by default 16) on which different animations can be played. 
-        /// The animation mask determines which child-nodes of the model (joints or meshes) are affected by the specified animation on the stage to be configured. 
-        /// If the mask is an empty string, the animation affects all nodes. Otherwise the mask can contain several node names separated by the two character sequence. 
-        /// When a mask is specified, the initial state of all nodes is 'not affected by animation'. For every node in the mask the function recurses down the (skeleton-) 
-        /// hierarchy starting at the currently processed node in the mask and inverts the state of the considered nodes. This makes it possible to do complex animation mixing.
-        /// A simpler way to do animation mixing is using additive animations. If a stage is configured to be additive the engine calculates the difference between the current 
-        /// frame and the first frame in the animation and adds this delta to the current transformation of the joints or meshes.
+        /// The function can be used for animation blending and mixing. There is a fixed number of stages
+        /// (by default 16) on which different animations can be played. The start node determines the first node
+        /// (Joint or Mesh) to which the animation is recursively applied. If the start node is an empty string, the
+        /// animation affects all animatable nodes (Joints and Meshes) of the model. If a NULL-handle is used for
+        /// animationRes, the stage is cleared and the currently set animation is removed.
+        ///
+        /// The layer determines the priority of the animation and how the weights are distributed. See
+        /// h3dSetModelAnimParams for more information.
+        ///		
+        /// A simple way to do animation mixing is using additive animations. If a stage is configured to be
+        /// additive, the engine calculates the difference between the current frame and the first frame in the
+        /// animation and adds this delta to the current transformation of the joints or meshes. Additive animations
+        /// ignore the weight and layer settings. They are only applied by the engine if a non-additive animation
+        /// is assigned to the model as well.        
         /// </remarks>
-        /// <param name="node">handle to the node to be modified</param>
+        /// <param name="node">handle to the Model node to be modified</param>
         /// <param name="stage">index of the animation stage to be configured</param>
-        /// <param name="res">handle to Animation resource</param>
-        /// <param name="animMask">mask defining which nodes will be affected by animation</param>
-        /// <param name="additive">flag indicating whether stage is additive</param>
-        /// <returns>true in case of success, otherwise false</returns>
-        public static bool setupModelAnimStage(int node, int stage, int res, string animMask, bool additive)
+        /// <param name="animationRes">handle to Animation resource (can be 0)</param>
+        /// <param name="layer">layer id</param>
+        /// <param name="startNode">name of first node to which animation shall be applied (or empty string)</param>
+        /// <param name="additive">flag indicating whether stage is additive</param>        
+        public static void setupModelAnimStage(int node, int stage, int animationRes, int layer, string startNode, bool additive)
         {
-            if (animMask == null) throw new ArgumentNullException("animMask", Resources.StringNullExceptionString);
+            if (startNode == null) throw new ArgumentNullException("startNode", Resources.StringNullExceptionString);
 
-            return NativeMethodsEngine.setupModelAnimStage(node, stage, res, animMask, additive);
+            NativeMethodsEngine.h3dSetupModelAnimStage(node, stage, animationRes, layer, startNode, additive);
         }
 
         /// <summary>
@@ -1267,11 +1246,10 @@ namespace Horde3DNET
         /// <param name="node">handle to the node to be modified</param>
         /// <param name="stage">index of the animation stage to be modified</param>
         /// <param name="time">new animation time</param>
-        /// <param name="weight">new animation weight</param>
-        /// <returns>true in case of success, otherwise false</returns>
-        public static bool setModelAnimParams(int node, int stage, float time, float weight)
+        /// <param name="weight">new animation weight</param>        
+        public static void setModelAnimParams(int node, int stage, float time, float weight)
         {
-            return NativeMethodsEngine.setModelAnimParams(node, stage, time, weight);
+            NativeMethodsEngine.h3dSetModelAnimParams(node, stage, time, weight);
         }
 
         /// <summary>
@@ -1285,7 +1263,7 @@ namespace Horde3DNET
         {
             if (target == null) throw new ArgumentNullException("target", Resources.StringNullExceptionString);
 
-            return NativeMethodsEngine.setModelMorpher(node, target, weight);
+            return NativeMethodsEngine.h3dSetModelMorpher(node, target, weight);
         }
 
         // Mesh specific
@@ -1303,7 +1281,7 @@ namespace Horde3DNET
         public static int addMeshNode(int parent, string name, int matRes, int batchStart, int batchCount, int vertRStart, int vertREnd)
         {
             if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
-            return (int)NativeMethodsEngine.addMeshNode(parent, name, matRes, batchStart, batchCount, vertRStart, vertREnd);
+            return (int)NativeMethodsEngine.h3dAddMeshNode(parent, name, matRes, batchStart, batchCount, vertRStart, vertREnd);
         }
 
    
@@ -1319,7 +1297,7 @@ namespace Horde3DNET
         {
             if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
 
-            return (int)NativeMethodsEngine.addJointNode(parent, name, jointIndex);
+            return (int)NativeMethodsEngine.h3dAddJointNode(parent, name, jointIndex);
         }
 
         // Light specific
@@ -1336,27 +1314,8 @@ namespace Horde3DNET
         {
             if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
 
-            return (int)NativeMethodsEngine.addLightNode(parent, name, materialRes, lightingContext, shadowContext);
+            return (int)NativeMethodsEngine.h3dAddLightNode(parent, name, materialRes, lightingContext, shadowContext);
         }
-
-
-        /// <summary>
-        /// This function sets the lighting and shadow shader contexts of the specified light source. 
-        /// The contexts define which shader code is used when doing lighting calculations or rendering the shadow map. 
-        /// The function works on a Light node or a Group node in which case the call is recursively passed to all child Light nodes.
-        /// </summary>
-        /// <param name="node">handle to the node to be modified</param>
-        /// <param name="lightingContext">name of the shader context used for performing lighting calculations</param>
-        /// <param name="shadowContext"><name of the shader context used for rendering shadow maps/param>
-        /// <returns>true in case of success otherwise false</returns>
-        public static  bool setLightContexts( int node, string lightingContext, string shadowContext )
-        {
-            if (lightingContext == null) throw new ArgumentNullException("lightingContext", Resources.StringNullExceptionString);
-            if (shadowContext == null) throw new ArgumentNullException("shadowContext", Resources.StringNullExceptionString);
-
-            return NativeMethodsEngine.setLightContexts( node, lightingContext, shadowContext);
-        }
-
 
         // Camera specific
         /// <summary>
@@ -1369,7 +1328,7 @@ namespace Horde3DNET
         {
             if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
 
-            return (int)NativeMethodsEngine.addCameraNode(parent, name, pipelineRes);
+            return (int)NativeMethodsEngine.h3dAddCameraNode(parent, name, pipelineRes);
         }
         
 
@@ -1381,11 +1340,10 @@ namespace Horde3DNET
         /// <param name="fov">field of view (FOV) in degrees</param>
         /// <param name="aspect">aspect ratio</param>
         /// <param name="nearDist">distance of near clipping plane</param>
-        /// <param name="farDist">distance of far clipping plane</param>
-        /// <returns>true in case of success, otherwise false</returns>
-        public static bool setupCameraView(int node, float fov, float aspect, float nearDist, float farDist)
+        /// <param name="farDist">distance of far clipping plane</param>        
+        public static void setupCameraView(int node, float fov, float aspect, float nearDist, float farDist)
         {
-            return NativeMethodsEngine.setupCameraView(node, fov, aspect, nearDist, farDist);
+            NativeMethodsEngine.h3dSetupCameraView(node, fov, aspect, nearDist, farDist);
         }
 
         /// <summary>
@@ -1395,11 +1353,11 @@ namespace Horde3DNET
         /// <param name="node">handle to Camera node</param>
         /// <param name="projMat">pointer to float array with 16 elements</param>
         /// <returns>true in case of success, otherwise false</returns>
-        public static bool getCameraProjectionMatrix(int node, float[] projMat)
+        public static void getCameraProjMat(int node, float[] projMat)
         {
             if (projMat.Length != 16) throw new ArgumentOutOfRangeException("projMat", Resources.MatrixOutOfRangeExceptionString);
 
-            return NativeMethodsEngine.getCameraProjectionMatrix(node, projMat);
+            NativeMethodsEngine.h3dGetCameraProjMat(node, projMat);
         }
 
 
@@ -1419,7 +1377,7 @@ namespace Horde3DNET
         {
             if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
 
-            return (int)NativeMethodsEngine.addEmitterNode(parent, name, matRes, effectRes, maxParticleCount, respawnCount);
+            return (int)NativeMethodsEngine.h3dAddEmitterNode(parent, name, matRes, effectRes, maxParticleCount, respawnCount);
         }
 
 
@@ -1427,11 +1385,10 @@ namespace Horde3DNET
         /// This function advances the simulation time of a particle system and continues the particle simulation with timeDelta being the time elapsed since the last call of this function.
         /// </summary>
         /// <param name="node">handle to the Emitter node which will be modified</param>
-        /// <param name="timeDelta">time delta in seconds</param>
-        /// <returns>true in case of success, otherwise false</returns>
-        public static bool advanceEmitterTime(int node, float timeDelta)
+        /// <param name="timeDelta">time delta in seconds</param>        
+        public static void advanceEmitterTime(int node, float timeDelta)
         {
-            return NativeMethodsEngine.advanceEmitterTime(node, timeDelta);
+            NativeMethodsEngine.h3dAdvanceEmitterTime(node, timeDelta);
         }
 
         /// <summary>
@@ -1445,12 +1402,12 @@ namespace Horde3DNET
         /// <returns>true if Emitter will no more emit any particles, otherwise or in case of failure false</returns>
         public static bool hasEmitterFinished(int emitterNode)
         {
-            return NativeMethodsEngine.hasEmitterFinished(emitterNode);
+            return NativeMethodsEngine.h3dHasEmitterFinished(emitterNode);
         }
     }
 
     /// <summary>
-    /// This Exception is thrown in case you don't use the correct Horde3D engine library version.
+    /// This Exception is thrown in case you don't use the correct h3d engine library version.
     /// </summary>
     [Serializable]
     public class LibraryIncompatibleException : Exception
@@ -1472,7 +1429,5 @@ namespace Horde3DNET
         protected LibraryIncompatibleException(SerializationInfo info, StreamingContext context) : base(info,context)
         {
         }
-
     }
-
 }
