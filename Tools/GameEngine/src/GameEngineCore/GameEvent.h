@@ -321,6 +321,8 @@ public:
 		EM_OWN_CONTEXT,			/// add new context information to mood calculation(using EmotionData)
 		D_INIT_SPEAKERS,		/// initialize speakers 
 		D_START_DIALOGUE,		/// start playing the parsed dialogue
+		E_CHARACTER_ACTION,		/// character performs an action
+		E_REPORT_SUCCESS,		/// reports whether a character action was succesfull
 		
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
@@ -841,6 +843,46 @@ public:
 
 };
 
+class SuccessData : public GameEventData
+{
+
+public:
+	SuccessData(int id, bool successful ) : GameEventData(CUSTOM), Id(id), Successful(successful) 
+	{
+		m_data.ptr = this;
+	}
+
+
+
+	SuccessData(const SuccessData& copy) : GameEventData(CUSTOM), Id(copy.Id), Successful(copy.Successful)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+	}
+
+
+	
+	~SuccessData()
+	{
+		if( m_owner )
+		{
+
+		}
+	}
+
+	int Id;
+	bool Successful;
+	
+
+
+	GameEventData* clone() const
+	{
+		return new SuccessData(*this);
+
+	}
+
+};
+
 class GoTo : public GameEventData
 {
 
@@ -897,6 +939,56 @@ public:
 	GameEventData* clone() const
 	{
 		return new GoTo(*this);
+
+	}
+
+};
+
+class CharacterAction : public GameEventData
+{
+
+public:
+	CharacterAction(const char* action, const char* parameters, int id ) : GameEventData(CUSTOM), Action(action), Parameters(parameters), Id(id) 
+	{
+		m_data.ptr = this;
+	}
+
+
+	CharacterAction(const CharacterAction& copy) : GameEventData(CUSTOM), Id(copy.Id)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+		
+		const size_t lenAction = copy.Action ? strlen(copy.Action) : 0;
+		Action = new char[lenAction + 1];
+		memcpy( (char*) Action, copy.Action, lenAction );
+		const_cast<char*>(Action)[lenAction] = '\0';
+		
+		const size_t lenParameters = copy.Parameters ? strlen(copy.Parameters) : 0;
+		Parameters = new char[lenParameters + 1];
+		memcpy( (char*) Parameters, copy.Parameters, lenParameters );
+		const_cast<char*>(Parameters)[lenParameters] = '\0';
+	}
+
+	
+	~CharacterAction()
+	{
+		if( m_owner )
+		{
+			delete[] Action;
+			delete[] Parameters;
+		}
+	}
+
+	const char* Action;
+	const char* Parameters;
+	int Id;
+	
+
+
+	GameEventData* clone() const
+	{
+		return new CharacterAction(*this);
 
 	}
 
