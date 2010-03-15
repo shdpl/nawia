@@ -762,7 +762,7 @@ def getNodeAABB(node):
 			byref(minX), byref(minY), byref(minZ),
 			byref(maxX), byref(maxY), byref(maxZ),
 			)
-	return [[minX, minY, minZ], [maxX, maxY, maxZ]]
+	return [[minX.value, minY.value, minZ.value], [maxX.value, maxY.value, maxZ.value]]
 __all__.append('getNodeAABB')
 
 
