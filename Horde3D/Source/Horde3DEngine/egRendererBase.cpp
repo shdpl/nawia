@@ -334,6 +334,8 @@ void RendererBase::uploadTextureData( uint32 texObj, int slice, int mipLevel, co
 		internalFormat = _depthFormat;
 		inputFormat = GL_DEPTH_COMPONENT;
 		inputType = GL_FLOAT;
+	default:
+		break;
 	};
 	
 	// Calculate size of next mipmap using "floor" convention

@@ -44,7 +44,11 @@ namespace Math
 
 	const float Epsilon = 0.000001f;
 	const float ZeroEpsilon = 32.0f * MinPosFloat;  // Very small epsilon for checking against 0.0f
+#ifdef __GNUC__
+	const float NaN = __builtin_nanf("");
+#else
 	const float NaN = *(float *)&MaxUInt32;
+#endif
 
 	enum NoInitHint
 	{
@@ -108,8 +112,14 @@ static inline int ftoi_r( double val )
 	// Fast round (banker's round) using Sree Kotay's method
 	// This function is much faster than a naive cast from float to int
 
-	val	= val + 6755399441055744.0;  // Magic number: 2^52 * 1.5;
-	return ((int *)&val)[0];         // Needs to be [1] for big-endian
+	union
+	{
+		double dval;
+		int ival[2];
+	} u;
+
+	u.dval = val + 6755399441055744.0;  // Magic number: 2^52 * 1.5;
+	return u.ival[0];         // Needs to be [1] for big-endian
 }
 
 

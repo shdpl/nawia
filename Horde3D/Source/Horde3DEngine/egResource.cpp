@@ -14,7 +14,7 @@
 #include "egModules.h"
 #include "egCom.h"
 #include <sstream>
-#include <string.h>
+#include <cstring>
 
 #include "utDebug.h"
 

@@ -190,9 +190,9 @@ struct ShaderContext
 
 
 	ShaderContext() :
-		compiled( false ), writeDepth( true ), blendMode( BlendModes::Replace ),
-		depthTest( TestModes::LessEqual ), cullMode( CullModes::Back ), alphaToCoverage( false ),
-		vertCodeIdx( -1 ), fragCodeIdx( -1 )
+		blendMode( BlendModes::Replace ), depthTest( TestModes::LessEqual ),
+		cullMode( CullModes::Back ), writeDepth( true ), alphaToCoverage( false ),
+		vertCodeIdx( -1 ), fragCodeIdx( -1 ), compiled( false )
 	{
 	}
 };

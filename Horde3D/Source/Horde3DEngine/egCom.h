@@ -16,7 +16,7 @@
 #include "egPrerequisites.h"
 #include <string>
 #include <queue>
-#include <stdarg.h>
+#include <cstdarg>
 #include "utTimer.h"
 
 

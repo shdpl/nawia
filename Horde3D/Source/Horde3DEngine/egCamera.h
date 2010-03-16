@@ -56,11 +56,11 @@ struct CameraNodeTpl : public SceneNodeTpl
 
 	CameraNodeTpl( const std::string &name, PipelineResource *pipelineRes ) :
 		SceneNodeTpl( SceneNodeTypes::Camera, name ), pipeRes( pipelineRes ),
-		outputTex( 0x0 ), outputBufferIndex( 0 ),
+		outputTex( 0x0 ),
 		// Default params: fov=45, aspect=4/3
 		leftPlane( -0.055228457f ), rightPlane( 0.055228457f ), bottomPlane( -0.041421354f ),
-		topPlane( 0.041421354f ), nearPlane( 0.1f ), farPlane( 1000.0f ), orthographic( false ),
-		occlusionCulling( false )
+		topPlane( 0.041421354f ), nearPlane( 0.1f ), farPlane( 1000.0f ), outputBufferIndex( 0 ),
+		orthographic( false ), occlusionCulling( false )
 	{
 	}
 };

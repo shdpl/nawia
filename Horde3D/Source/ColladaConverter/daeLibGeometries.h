@@ -191,17 +191,17 @@ struct DaeTriGroup
 			while( parseUInt( s, pos, ui ) )
 			{
 				// No else-if since offset sharing is possible
-				if( inputCnt == vertexOffset )
+				if( (int)inputCnt == vertexOffset )
 					indexEntry.posIndex = ui;
-				if( inputCnt == normOffset )
+				if( (int)inputCnt == normOffset )
 					indexEntry.normIndex = (int)ui;
-				if( inputCnt == texCoordOffset[0] )	
+				if( (int)inputCnt == texCoordOffset[0] )	
 					indexEntry.texIndex[0] = (int)ui;
-				if( inputCnt == texCoordOffset[1] )	
+				if( (int)inputCnt == texCoordOffset[1] )	
 					indexEntry.texIndex[1] = (int)ui;
-				if( inputCnt == texCoordOffset[2] )	
+				if( (int)inputCnt == texCoordOffset[2] )	
 					indexEntry.texIndex[2] = (int)ui;
-				if( inputCnt == texCoordOffset[3] )	
+				if( (int)inputCnt == texCoordOffset[3] )	
 					indexEntry.texIndex[3] = (int)ui;
 
 				if( ++inputCnt == numInputs )

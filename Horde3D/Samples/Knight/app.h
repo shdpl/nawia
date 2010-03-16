@@ -33,7 +33,8 @@ private:
 	std::stringstream  _text;
 
 	int                _statMode;
-	bool               _freeze, _debugViewMode, _wireframeMode;
+	int                _freezeMode;
+	bool               _debugViewMode, _wireframeMode;
 	float              _animTime, _weight;
 	
 	// Engine objects

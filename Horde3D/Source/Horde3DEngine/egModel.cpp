@@ -22,9 +22,10 @@ using namespace std;
 
 ModelNode::ModelNode( const ModelNodeTpl &modelTpl ) :
 	SceneNode( modelTpl ), _geometryRes( modelTpl.geoRes ), _baseGeoRes( 0x0 ),
-	_softwareSkinning( modelTpl.softwareSkinning ), _morpherUsed( false ), _morpherDirty( false ),
-	_nodeListDirty( false ), _skinningDirty( false ), _lodDist1( modelTpl.lodDist1 ),
-	_lodDist2( modelTpl.lodDist2 ), _lodDist3( modelTpl.lodDist3 ), _lodDist4( modelTpl.lodDist4 )
+	_lodDist1( modelTpl.lodDist1 ), _lodDist2( modelTpl.lodDist2 ),
+	_lodDist3( modelTpl.lodDist3 ), _lodDist4( modelTpl.lodDist4 ),
+	_softwareSkinning( modelTpl.softwareSkinning ), _skinningDirty( false ),
+	_nodeListDirty( false ), _morpherUsed( false ), _morpherDirty( false )
 {
 	_renderable = true;
 	

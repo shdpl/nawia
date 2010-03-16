@@ -70,6 +70,7 @@ namespace StaticAssert
 #define ASSERT_STATIC( exp ) (StaticAssert::FAILED< (exp) != 0 >())
 
 
+#ifdef _utPlatform_H___ValidatePlatform__
 // Check the size of some common types
 // Note: this function is never called but just wraps the compile time asserts
 static void __ValidatePlatform__()
@@ -79,5 +80,6 @@ static void __ValidatePlatform__()
 	ASSERT_STATIC( sizeof( short ) == 2 );
 	ASSERT_STATIC( sizeof( char ) == 1 );
 }
+#endif
 
 #endif // _utPlatform_H_

@@ -117,7 +117,7 @@ public:
 	void getTransform( Vec3f &trans, Vec3f &rot, Vec3f &scale );	// Not virtual for performance
 	void setTransform( Vec3f trans, Vec3f rot, Vec3f scale );	// Not virtual for performance
 	void setTransform( const Matrix4f &mat );
-	const void getTransMatrices( const float **relMat, const float **absMat );
+	void getTransMatrices( const float **relMat, const float **absMat ) const;
 
 	virtual int getParamI( int param );
 	virtual void setParamI( int param, int value );
@@ -192,7 +192,7 @@ struct RendQueueEntry
 	int        type;  // Type is stored explicitly for better cache efficiency when iterating over list
 
 	RendQueueEntry() {}
-	RendQueueEntry( int type, SceneNode *node ) : type( type ), node( node ) {}
+	RendQueueEntry( int type, SceneNode *node ) : node( node ), type( type ) {}
 };
 
 class SpatialGraph

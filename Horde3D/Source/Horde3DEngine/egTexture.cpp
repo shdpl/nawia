@@ -33,7 +33,7 @@ using namespace std;
 #define DDPF_RGB              0x00000040
 
 #define DDSCAPS2_CUBEMAP      0x00000200
-#define DDSCAPS2_CM_COMPLETE  0x00000400 | 0x00000800 | 0x00001000 | 0x00002000 | 0x00004000 | 0x00008000
+#define DDSCAPS2_CM_COMPLETE  ( 0x00000400 | 0x00000800 | 0x00001000 | 0x00002000 | 0x00004000 | 0x00008000 )
 
 #define D3DFMT_A16B16G16R16F  113
 #define D3DFMT_A32B32G32R32F  116
@@ -111,7 +111,7 @@ TextureResource::TextureResource( const string &name, int flags ) :
 
 TextureResource::TextureResource( const string &name, uint32 width, uint32 height,
                                   TextureFormats::List fmt, int flags ) :
-	Resource( ResourceTypes::Texture, name, flags ), _rbObj( 0 ), _width( width ), _height( height )
+	Resource( ResourceTypes::Texture, name, flags ), _width( width ), _height( height ), _rbObj( 0 )
 {	
 	_loaded = true;
 	_texFormat = fmt;

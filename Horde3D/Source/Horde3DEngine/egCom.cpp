@@ -169,11 +169,15 @@ EngineLog::EngineLog()
 void EngineLog::pushMessage( int level, const char *msg, va_list args )
 {
 	float time = _timer.getElapsedTimeMS() / 1000.0f;
-	
+
+#if defined( PLATFORM_WIN )
 #pragma warning( push )
 #pragma warning( disable:4996 )
 	vsnprintf( _textBuf, 2048, msg, args );
 #pragma warning( pop )
+#else
+	vsnprintf( _textBuf, 2048, msg, args );
+#endif
 	
 	if( _messages.size() < _maxNumMessages - 1 )
 	{

@@ -1568,7 +1568,6 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			uint32 posVBuf = curGeoRes->getPosVBuf();
 			uint32 tanVBuf = curGeoRes->getTanVBuf();
 			uint32 staticVBuf = curGeoRes->getStaticVBuf();
-			uint32 size = curGeoRes->_vertCount * sizeof( Vec3f );
 			
 			Modules::renderer().bindVertexBuffer( 0, posVBuf, 0, sizeof( Vec3f ) );
 			Modules::renderer().bindVertexBuffer( 1, tanVBuf, sizeof( Vec3f ) * 0, sizeof( Vec3f ) * 3 );
@@ -1578,7 +1577,7 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 		}
 		
 		// Sort meshes
-		if( order == RenderingOrder::FrontToBack || order == RenderingOrder::BackToFront && frust1 != 0x0 )
+		if( ( order == RenderingOrder::FrontToBack || order == RenderingOrder::BackToFront ) && frust1 != 0x0 )
 		{
 			for( size_t j = 0, s = modelNode->_meshList.size(); j < s; ++j )
 			{

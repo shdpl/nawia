@@ -31,7 +31,8 @@ private:
 	float        _curFPS;
 
 	int          _statMode;
-	bool         _freeze, _debugViewMode, _wireframeMode;
+	int          _freezeMode;
+	bool         _debugViewMode, _wireframeMode;
 	
 	CrowdSim     *_crowdSim;
 	

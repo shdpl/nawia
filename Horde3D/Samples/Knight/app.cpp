@@ -41,7 +41,7 @@ Application::Application( const std::string &appPath )
 	_curFPS = 30;
 
 	_statMode = 0;
-	_freeze = false; _debugViewMode = false; _wireframeMode = false;
+	_freezeMode = 0; _debugViewMode = false; _wireframeMode = false;
 	_animTime = 0; _weight = 1.0f;
 	_cam = 0;
 
@@ -113,6 +113,7 @@ bool Application::init()
 	h3dSetNodeParamF( light, H3DLight::ColorF3, 0, 1.0f );
 	h3dSetNodeParamF( light, H3DLight::ColorF3, 1, 0.8f );
 	h3dSetNodeParamF( light, H3DLight::ColorF3, 2, 0.7f );
+	h3dSetNodeParamF( light, H3DLight::ColorMultiplierF, 0, 1.0f );
 
 	// Customize post processing effects
 	H3DNode matRes = h3dFindResource( H3DResTypes::Material, "pipelines/postHDR.material.xml" );
@@ -131,7 +132,7 @@ void Application::mainLoop( float fps )
 	h3dSetOption( H3DOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
 	h3dSetOption( H3DOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
 	
-	if( !_freeze )
+	if( !_freezeMode )
 	{
 		_animTime += 1.0f / _curFPS;
 
@@ -140,7 +141,7 @@ void Application::mainLoop( float fps )
 		h3dSetModelAnimParams( _knight, 1, _animTime * 24.0f, 1.0f - _weight );
 
 		// Animate particle systems (several emitters in a group node)
-		unsigned int cnt = cnt = h3dFindNodes( _particleSys, "", H3DNodeTypes::Emitter );
+		unsigned int cnt = h3dFindNodes( _particleSys, "", H3DNodeTypes::Emitter );
 		for( unsigned int i = 0; i < cnt; ++i )
 			h3dAdvanceEmitterTime( h3dGetNodeFindResult( i ), 1.0f / _curFPS );
 	}
@@ -200,7 +201,9 @@ void Application::keyStateHandler()
 	// Key-press events
 	// ----------------
 	if( _keys[32] && !_prevKeys[32] )  // Space
-		_freeze = !_freeze;
+	{
+		if( ++_freezeMode == 3 ) _freezeMode = 0;
+	}
 
 	if( _keys[260] && !_prevKeys[260] )  // F3
 	{
@@ -225,53 +228,58 @@ void Application::keyStateHandler()
 	// --------------
 	// Key-down state
 	// --------------
-	float curVel = _velocity / _curFPS;
-	
-	if( _keys[287] ) curVel *= 5;	// LShift
-	
-	if( _keys['W'] )
+	if( _freezeMode != 2 )
 	{
-		// Move forward
-		_x -= sinf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
-		_y -= sinf( -degToRad( _rx ) ) * curVel;
-		_z -= cosf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
-	}
-	if( _keys['S'] )
-	{
-		// Move backward
-		_x += sinf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
-		_y += sinf( -degToRad( _rx ) ) * curVel;
-		_z += cosf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
-	}
-	if( _keys['A'] )
-	{
-		// Strafe left
-		_x += sinf( degToRad( _ry - 90) ) * curVel;
-		_z += cosf( degToRad( _ry - 90 ) ) * curVel;
-	}
-	if( _keys['D'] )
-	{
-		// Strafe right
-		_x += sinf( degToRad( _ry + 90 ) ) * curVel;
-		_z += cosf( degToRad( _ry + 90 ) ) * curVel;
-	}
-	if( _keys['1'] )
-	{
-		// Change blend weight
-		_weight += 2 / _curFPS;
-		if( _weight > 1 ) _weight = 1;
-	}
-	if( _keys['2'] )
-	{
-		// Change blend weight
-		_weight -= 2 / _curFPS;
-		if( _weight < 0 ) _weight = 0;
+		float curVel = _velocity / _curFPS;
+		
+		if( _keys[287] ) curVel *= 5;	// LShift
+		
+		if( _keys['W'] )
+		{
+			// Move forward
+			_x -= sinf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
+			_y -= sinf( -degToRad( _rx ) ) * curVel;
+			_z -= cosf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
+		}
+		if( _keys['S'] )
+		{
+			// Move backward
+			_x += sinf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
+			_y += sinf( -degToRad( _rx ) ) * curVel;
+			_z += cosf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
+		}
+		if( _keys['A'] )
+		{
+			// Strafe left
+			_x += sinf( degToRad( _ry - 90) ) * curVel;
+			_z += cosf( degToRad( _ry - 90 ) ) * curVel;
+		}
+		if( _keys['D'] )
+		{
+			// Strafe right
+			_x += sinf( degToRad( _ry + 90 ) ) * curVel;
+			_z += cosf( degToRad( _ry + 90 ) ) * curVel;
+		}
+		if( _keys['1'] )
+		{
+			// Change blend weight
+			_weight += 2 / _curFPS;
+			if( _weight > 1 ) _weight = 1;
+		}
+		if( _keys['2'] )
+		{
+			// Change blend weight
+			_weight -= 2 / _curFPS;
+			if( _weight < 0 ) _weight = 0;
+		}
 	}
 }
 
 
 void Application::mouseMoveEvent( float dX, float dY )
 {
+	if( _freezeMode == 2 ) return;
+	
 	// Look left/right
 	_ry -= dX / 100 * 30;
 	

@@ -56,13 +56,13 @@ struct Overlay
 	         const float &x_tr, const float &y_tr, const float &u_tr, const float &v_tr,
 			 const float &colR, const float &colG, const float &colB, const float &colA,
 	         MaterialResource *matRes, int layer ) :
+		materialRes( matRes ), layer( layer ),
 		x_tl( x_tl ), y_tl( y_tl ), u_tl( u_tl ), v_tl( v_tl ),
 		x_bl( x_bl ), y_bl( y_bl ), u_bl( u_bl ), v_bl( v_bl ),
 		x_br( x_br ), y_br( y_br ), u_br( u_br ), v_br( v_br ),
 		x_tr( x_tr ), y_tr( y_tr ), u_tr( u_tr ), v_tr( v_tr ),
-		colR( colR ), colG( colG ), colB( colB ), colA( colA ),
-		materialRes( matRes ), layer( layer )
-	{	
+		colR( colR ), colG( colG ), colB( colB ), colA( colA )
+	{
 	}
 };
 

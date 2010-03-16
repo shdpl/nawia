@@ -41,7 +41,7 @@ Application::Application( const std::string &appPath )
 	_curFPS = 30;
 
 	_statMode = 0;
-	_freeze = false; _debugViewMode = false; _wireframeMode = false;
+	_freezeMode = 0; _debugViewMode = false; _wireframeMode = false;
 	_cam = 0;
 
 	_contentDir = appPath + "../Content";
@@ -118,7 +118,7 @@ void Application::mainLoop( float fps )
 	h3dSetOption( H3DOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
 	h3dSetOption( H3DOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
 	
-	if( !_freeze )
+	if( !_freezeMode )
 	{
 		_crowdSim->update( _curFPS );
 	}
@@ -179,7 +179,9 @@ void Application::keyStateHandler()
 	// Key-press events
 	// ----------------
 	if( _keys[32] && !_prevKeys[32] )  // Space
-		_freeze = !_freeze;
+	{
+		if( ++_freezeMode == 3 ) _freezeMode = 0;
+	}
 	
 	if( _keys[260] && !_prevKeys[260] )  // F3
 	{
@@ -204,41 +206,46 @@ void Application::keyStateHandler()
 	// --------------
 	// Key-down state
 	// --------------
-	float curVel = _velocity / _curFPS;
-	
-	if( _keys[287] ) curVel *= 5;	// LShift
-	
-	if( _keys['W'] )
+	if( _freezeMode != 2 )
 	{
-		// Move forward
-		_x -= sinf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
-		_y -= sinf( -degToRad( _rx ) ) * curVel;
-		_z -= cosf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
-	}
-	if( _keys['S'] )
-	{
-		// Move backward
-		_x += sinf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
-		_y += sinf( -degToRad( _rx ) ) * curVel;
-		_z += cosf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
-	}
-	if( _keys['A'] )
-	{
-		// Strafe left
-		_x += sinf( degToRad( _ry - 90) ) * curVel;
-		_z += cosf( degToRad( _ry - 90 ) ) * curVel;
-	}
-	if( _keys['D'] )
-	{
-		// Strafe right
-		_x += sinf( degToRad( _ry + 90 ) ) * curVel;
-		_z += cosf( degToRad( _ry + 90 ) ) * curVel;
+		float curVel = _velocity / _curFPS;
+		
+		if( _keys[287] ) curVel *= 5;	// LShift
+		
+		if( _keys['W'] )
+		{
+			// Move forward
+			_x -= sinf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
+			_y -= sinf( -degToRad( _rx ) ) * curVel;
+			_z -= cosf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
+		}
+		if( _keys['S'] )
+		{
+			// Move backward
+			_x += sinf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
+			_y += sinf( -degToRad( _rx ) ) * curVel;
+			_z += cosf( degToRad( _ry ) ) * cosf( -degToRad( _rx ) ) * curVel;
+		}
+		if( _keys['A'] )
+		{
+			// Strafe left
+			_x += sinf( degToRad( _ry - 90) ) * curVel;
+			_z += cosf( degToRad( _ry - 90 ) ) * curVel;
+		}
+		if( _keys['D'] )
+		{
+			// Strafe right
+			_x += sinf( degToRad( _ry + 90 ) ) * curVel;
+			_z += cosf( degToRad( _ry + 90 ) ) * curVel;
+		}
 	}
 }
 
 
 void Application::mouseMoveEvent( float dX, float dY )
 {
+	if( _freezeMode == 2 ) return;
+	
 	// Look left/right
 	_ry -= dX / 100 * 30;
 	

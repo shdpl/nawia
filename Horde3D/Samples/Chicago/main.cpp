@@ -203,7 +203,7 @@ int main( int argc, char** argv )
 		{
 			double t = glfwGetTime();
 			fps = frames / (float)(t - t0);
-			if( fps < 1 ) fps = 30;  // Handle breakpoints
+			if( fps < 5 ) fps = 30;  // Handle breakpoints
 			frames = 0;
 			t0 = t;
 		}

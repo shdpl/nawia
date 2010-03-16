@@ -23,11 +23,11 @@
 
 #ifdef PLATFORM_WIN
 #   define WIN32_LEAN_AND_MEAN 1
-#	ifndef NOMINMAX
-#		define NOMINMAX
-#	endif
+#   ifndef NOMINMAX
+#       define NOMINMAX
+#   endif
 #   include <windows.h>
-#	include <stddef.h>
+#   include <stddef.h>
 #   define GLAPI __declspec( dllimport )
 #   define GLAPIENTRY _stdcall
 #   define GLAPIENTRYP _stdcall *
@@ -40,7 +40,7 @@
 #      include <Carbon/Carbon.h>
 #   else
 extern "C" void (*glXGetProcAddressARB( const unsigned char *procName ))( void );
-#   endif 
+#   endif
 #endif
 
 

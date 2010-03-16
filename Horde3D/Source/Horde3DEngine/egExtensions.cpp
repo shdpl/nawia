@@ -11,10 +11,9 @@
 // *************************************************************************************************
 
 #include "egExtensions.h"
-#include <string.h>
+#include <cstring>
 
 #include "utDebug.h"
-
 
 ExtensionManager::~ExtensionManager()
 {

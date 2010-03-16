@@ -19,6 +19,7 @@
 #include "egCamera.h"
 #include "egParticle.h"
 #include "egTexture.h"
+#define _utPlatform_H___ValidatePlatform__
 #include "utPlatform.h"
 #include <cstdlib>
 #include <cstring>

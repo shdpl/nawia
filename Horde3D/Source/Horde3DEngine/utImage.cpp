@@ -2102,7 +2102,9 @@ static int create_png_image_raw(png *a, uint8 *raw, uint32 raw_len, int out_n, u
 	if (!a->out) return e("outofmem", "Out of memory");
 	if (!stbi_png_partial) {
 		if (s->img_x == x && s->img_y == y)
+		{
 			if (raw_len != (img_n * x + 1) * y) return e("not enough pixels","Corrupt PNG");
+		}
 		else // interlaced:
 			if (raw_len < (img_n * x + 1) * y) return e("not enough pixels","Corrupt PNG");
 	}
@@ -2877,7 +2879,7 @@ static stbi_uc *tga_load(stbi *s, int *x, int *y, int *comp, int req_comp)
 	unsigned char *tga_palette = NULL;
 	int i, j;
 	unsigned char raw_data[4];
-	unsigned char trans_data[4];
+	unsigned char trans_data[4] = {0, 0, 0, 0};
 	int RLE_count = 0;
 	int RLE_repeating = 0;
 	int read_next_pixel = 1;

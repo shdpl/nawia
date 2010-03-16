@@ -28,7 +28,7 @@ using namespace std;
 // *************************************************************************************************
 
 SceneNode::SceneNode( const SceneNodeTpl &tpl ) :
-	_type( tpl.type ), _parent( 0x0 ), _handle( 0 ), _sgHandle( 0 ),
+	_parent( 0x0 ), _type( tpl.type ), _handle( 0 ), _sgHandle( 0 ),
 	_dirty( true ), _transformed( true ), _renderable( false ), _active( true ),
 	_name( tpl.name ), _attachment( tpl.attachmentString )
 {
@@ -107,7 +107,7 @@ void SceneNode::setTransform( const Matrix4f &mat )
 }
 
 
-const void SceneNode::getTransMatrices( const float **relMat, const float **absMat )
+void SceneNode::getTransMatrices( const float **relMat, const float **absMat ) const
 {
 	if( relMat != 0x0 )
 	{
