@@ -43,7 +43,7 @@ struct Frame
 
 struct AnimResEntity
 {
-	std::string           name;
+	uint32                nameId;
 	Matrix4f              firstFrameInvTrans;
 	std::vector< Frame >  frames;
 };
@@ -75,7 +75,7 @@ public:
 	int getElemCount( int elem );
 	int getElemParamI( int elem, int elemIdx, int param );
 
-	AnimResEntity *findEntity( const std::string &name );
+	AnimResEntity *findEntity( uint32 nameId );
 
 	friend class Renderer;
 	friend class ModelNode;
@@ -102,11 +102,11 @@ public:
 
 struct AnimStage
 {
-	PAnimationResource  anim;
+	PAnimationResource  anim;  // If NULL, stage is inactive
 	int                 layer;
+	uint32              startNodeNameId;
 	float               animTime;
 	float               weight;
-	std::string         startNode;
 	bool                additive;
 };
 
@@ -120,7 +120,7 @@ class AnimationController
 {
 protected:
 
-	std::vector< AnimStage * >   _animStages;
+	std::vector< AnimStage >     _animStages;
 	std::vector< uint32 >        _activeStages;
 	std::vector< AnimCtrlNode >  _nodeList;
 	bool                         _dirty;
@@ -129,6 +129,8 @@ protected:
 	void updateActiveList();
 
 public:
+	
+	static uint32 hashName( const char *name );
 	
 	AnimationController();
 	~AnimationController();

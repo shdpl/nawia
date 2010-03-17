@@ -105,7 +105,7 @@ bool AnimationResource::load( const char *data, int size )
 		AnimResEntity &entity = _entities[i];
 		
 		memcpy( name, pData, 256 ); pData += 256;
-		entity.name = name;
+		entity.nameId = AnimationController::hashName( name );
 		
 		// Animation compression
 		if( version == 3 )
@@ -140,6 +140,15 @@ bool AnimationResource::load( const char *data, int size )
 		if( !entity.frames.empty() )
 			entity.firstFrameInvTrans = entity.frames[0].bakedTransMat.inverted();
 	}
+
+	// Sort entities by name id
+	struct CompFunc
+	{
+		bool operator()( const AnimResEntity &a, const AnimResEntity &b ) const
+			{ return a.nameId < b.nameId; }
+	};
+	
+	std::sort( _entities.begin(), _entities.end(), CompFunc() );
 	
 	return true;
 }
@@ -174,12 +183,17 @@ int AnimationResource::getElemParamI( int elem, int elemIdx, int param )
 }
 
 
-AnimResEntity *AnimationResource::findEntity( const string &name )
+AnimResEntity *AnimationResource::findEntity( uint32 nameId )
 {
-	for( uint32 i = 0; i < _entities.size(); ++i )
+	// Perform binary search (requires that _entities is sorted)
+	int first = 0, last = (int)_entities.size() - 1;
+	while( first <= last )
 	{
-		if( _entities[i].name == name ) return &_entities[i];
-	}
+		int mid = (first + last) / 2;
+		if( nameId > _entities[mid].nameId ) first = mid + 1;
+		else if( nameId < _entities[mid].nameId ) last = mid - 1;
+		else return &_entities[mid];
+   }
 
 	return 0x0;
 }
@@ -189,18 +203,28 @@ AnimResEntity *AnimationResource::findEntity( const string &name )
 // Animation Controller
 // =================================================================================================
 
+uint32 AnimationController::hashName( const char *name )
+{
+	uint32 hash = 0;
+
+	// SDBM hash
+	while( char c = *name++ )
+		hash = c + (hash << 6) + (hash << 16) - hash;
+
+	return hash;
+}
+
+
 AnimationController::AnimationController() :
 	_dirty( false )
 {
-	_animStages.resize( MaxNumAnimStages, 0x0 );
+	_animStages.resize( MaxNumAnimStages );
 	_activeStages.reserve( MaxNumAnimStages );
 }
 
 
 AnimationController::~AnimationController()
 {
-	for( uint32 i = 0; i < _animStages.size(); ++i )
-		delete _animStages[i];
 }
 
 
@@ -219,7 +243,7 @@ void AnimationController::registerNode( IAnimatableNode *node )
 
 	for( uint32 i = 0; i < _animStages.size(); ++i )
 	{
-		if( _animStages[i] != 0x0 ) mapAnimRes( (uint32)_nodeList.size() - 1, i );
+		mapAnimRes( (uint32)_nodeList.size() - 1, i );
 	}
 }
 
@@ -230,7 +254,7 @@ void AnimationController::mapAnimRes( uint32 node, uint32 stage )
 	
 	_dirty = true;
 	
-	AnimationResource *animRes = _animStages[stage]->anim;
+	AnimationResource *animRes = _animStages[stage].anim;
 	if( animRes == 0x0 )
 	{	
 		_nodeList[node].animEntities[stage] = 0x0;
@@ -240,14 +264,14 @@ void AnimationController::mapAnimRes( uint32 node, uint32 stage )
 	// Animation mask
 	bool includeNode = true;
 
-	if( _animStages[stage]->startNode != "" )
+	if( _animStages[stage].startNodeNameId != 0 )
 	{
 		includeNode = false;
 		
 		IAnimatableNode *animNode = _nodeList[node].node;
 		while( animNode != 0x0 )
 		{
-			if( animNode->getANName() == _animStages[stage]->startNode )
+			if( hashName( animNode->getANName().c_str() ) == _animStages[stage].startNodeNameId )
 			{
 				includeNode = true;
 				break;
@@ -258,9 +282,14 @@ void AnimationController::mapAnimRes( uint32 node, uint32 stage )
 	
 	// Find node in animation resource if not masked out
 	if( includeNode )
-		_nodeList[node].animEntities[stage] = animRes->findEntity( _nodeList[node].node->getANName() );
+	{
+		uint32 nameId = hashName( _nodeList[node].node->getANName().c_str() );
+		_nodeList[node].animEntities[stage] = animRes->findEntity( nameId );
+	}
 	else
+	{
 		_nodeList[node].animEntities[stage] = 0x0;
+	}
 }
 
 
@@ -271,12 +300,12 @@ void AnimationController::updateActiveList()
 	// Create list of active blend stages that is sorted by layers (higher layers first)
 	for( uint32 i = 0, s = (uint32)_animStages.size(); i < s; ++i )
 	{
-		if( _animStages[i] != 0x0 && !_animStages[i]->additive && _animStages[i]->anim != 0x0 )
+		if( _animStages[i].anim != 0x0 && !_animStages[i].additive )
 		{
 			bool inserted = false;
 			for( uint32 j = 0, s = (uint32)_activeStages.size(); j < s; ++j )
 			{
-				if( _animStages[i]->layer >= _animStages[_activeStages[j]]->layer )
+				if( _animStages[i].layer >= _animStages[_activeStages[j]].layer )
 				{
 					_activeStages.insert( _activeStages.begin() + j, i );
 					inserted = true;
@@ -291,7 +320,7 @@ void AnimationController::updateActiveList()
 	// Add additive animations at the end
 	for( uint32 i = 0, s = (uint32)_animStages.size(); i < s; ++i )
 	{
-		if( _animStages[i] != 0x0 && _animStages[i]->additive && _animStages[i]->anim != 0x0 )
+		if( _animStages[i].anim != 0x0 && _animStages[i].additive )
 		{
 			_activeStages.push_back( i );
 		}
@@ -308,35 +337,11 @@ bool AnimationController::setupAnimStage( int stage, AnimationResource *anim, in
 		return false;
 	}
 	
-	AnimStage *curStage = _animStages[stage];
-	if( anim == 0x0 )
-	{
-		// Erase stage
-		if( curStage != 0x0 )
-		{
-			delete _animStages[stage]; _animStages[stage] = 0x0;
-		}
-		
-		_dirty = true;
-	    updateActiveList();
-		return true;
-	}
-	else if( curStage != 0x0 )
-	{
-		// Reset stage
-		if( curStage->anim != 0x0 ) curStage->anim = 0x0;
-	}
-	else
-	{
-		// Create stage
-		_animStages[stage] = new AnimStage();
-		curStage = _animStages[stage];
-	}
-	
-	curStage->anim = anim;
-	curStage->layer = layer;
-	curStage->startNode = startNode;
-	curStage->additive = additive;
+	AnimStage &curStage = _animStages[stage];
+	curStage.anim = anim;
+	curStage.layer = layer;
+	curStage.startNodeNameId = hashName( startNode.c_str() );
+	curStage.additive = additive;
 
 	for( size_t i = 0, s = _nodeList.size(); i < s; ++i )
 		mapAnimRes( (uint32)i, stage );
@@ -354,11 +359,11 @@ bool AnimationController::setAnimParams( int stage, float time, float weight )
 		return false;
 	}
 
-	AnimStage *curStage = _animStages[stage];
-	if( curStage == 0x0 || curStage->anim == 0x0 ) return false;
+	AnimStage &curStage = _animStages[stage];
+	if( curStage.anim == 0x0 ) return false;
 
-	curStage->animTime = time;
-	curStage->weight = weight;
+	curStage.animTime = time;
+	curStage.weight = weight;
 
 	// Reset ignore animation flag
 	for( size_t i = 0, s = _nodeList.size(); i < s; ++i )
@@ -397,7 +402,7 @@ bool AnimationController::animate()
 			AnimResEntity *animEnt = _nodeList[i].animEntities[firstStage];
 			if( animEnt != 0x0 && !animEnt->frames.empty() )
 			{
-				uint32 frame = (uint32)ftoi_t( _animStages[firstStage]->animTime ) % animEnt->frames.size();
+				uint32 frame = (uint32)ftoi_t( _animStages[firstStage].animTime ) % animEnt->frames.size();
 				if( animEnt->frames.size() == 1 ) frame = 0;  // Animation compression
 				_nodeList[i].node->getANRelTransRef() = animEnt->frames[frame].bakedTransMat;
 			}
@@ -412,7 +417,7 @@ bool AnimationController::animate()
 		for( size_t j = 0, s = _activeStages.size(); j < s; ++j )
 		{
 			uint32 stageIdx = _activeStages[j];
-			AnimStage &curStage = *_animStages[stageIdx];
+			const AnimStage &curStage = _animStages[stageIdx];
 
 			// Check if layer has changed
 			if( j == 0 || curStage.layer != prevLayer )
@@ -423,8 +428,8 @@ bool AnimationController::animate()
 				layerWeightSum = curStage.weight;
 				for( size_t k = j + 1, s = _activeStages.size(); k < s; ++k )
 				{
-					if( _animStages[_activeStages[k]]->layer == curStage.layer )
-						layerWeightSum += _animStages[_activeStages[k]]->weight;
+					if( _animStages[_activeStages[k]].layer == curStage.layer )
+						layerWeightSum += _animStages[_activeStages[k]].weight;
 					else
 						break;
 				}
