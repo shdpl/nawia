@@ -14,6 +14,7 @@
 #include "egModules.h"
 #include "egCom.h"
 #include <cstring>
+#include <algorithm>
 
 #include "utDebug.h"
 
@@ -70,6 +71,12 @@ bool AnimationResource::raiseError( const string &msg )
 	return false;
 }
 
+
+struct AnimEntCompFunc  // Functor for std::sort (can't be nested directly in function)
+{
+	bool operator()( const AnimResEntity &a, const AnimResEntity &b ) const
+		{ return a.nameId < b.nameId; }
+};
 
 bool AnimationResource::load( const char *data, int size )
 {
@@ -142,13 +149,7 @@ bool AnimationResource::load( const char *data, int size )
 	}
 
 	// Sort entities by name id
-	struct CompFunc
-	{
-		bool operator()( const AnimResEntity &a, const AnimResEntity &b ) const
-			{ return a.nameId < b.nameId; }
-	};
-	
-	std::sort( _entities.begin(), _entities.end(), CompFunc() );
+	std::sort( _entities.begin(), _entities.end(), AnimEntCompFunc() );
 	
 	return true;
 }
