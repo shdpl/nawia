@@ -74,7 +74,7 @@ vec3 light = -normalize( sunDir.xyz );
 
 void main( void )
 {
-	vec3 detailMap = texture2D( detailMap, texCoords * 300.0 ).rgb;
+	vec3 detailCol = texture2D( detailMap, texCoords * 300.0 ).rgb;
 	vec4 texel = texture2D( heightNormMap, texCoords ) * 2.0 - 1.0;
 	float ny = sqrt( max( 1.0 - texel.b*texel.b - texel.a*texel.a, 0.0 ) );		// Use max because of numerical issues
 	vec3 normal = vec3( texel.b, ny, texel.a );
@@ -82,7 +82,7 @@ void main( void )
 	setMatID( 1.0 );
 	setPos( pos.xyz );
 	setNormal( normalize( normal ) );
-	setAlbedo( detailMap );
+	setAlbedo( detailCol );
 	setSpecMask( 0.0 );
 }
 				
@@ -133,13 +133,13 @@ varying vec2 texCoords;
 
 void main( void )
 {
-	vec3 detailMap = texture2D( detailMap, texCoords * 300.0 ).rgb;
+	vec3 detailCol = texture2D( detailMap, texCoords * 300.0 ).rgb;
 	vec4 texel = texture2D( heightNormMap, texCoords ) * 2.0 - 1.0;
 	float ny = sqrt( max( 1.0 - texel.b*texel.b - texel.a*texel.a, 0.0 ) );		// Use max because of numerical issues
 	vec3 normal = vec3( texel.b, ny, texel.a );
 	
 	gl_FragColor.rgb =
-		calcPhongSpotLight( pos.xyz, normalize( normal ), detailMap, 0.0, 16.0, -vsPos.z, 0.3 );
+		calcPhongSpotLight( pos.xyz, normalize( normal ), detailCol, 0.0, 16.0, -vsPos.z, 0.3 );
 }
 
 
@@ -154,7 +154,7 @@ vec3 light = -normalize( sunDir.xyz );
 
 void main( void )
 {
-	vec3 detailMap = texture2D( detailMap, texCoords * 300.0 ).rgb;
+	vec3 detailCol = texture2D( detailMap, texCoords * 300.0 ).rgb;
 	vec4 texel = texture2D( heightNormMap, texCoords ) * 2.0 - 1.0;
 	float ny = sqrt( max( 1.0 - texel.b*texel.b - texel.a*texel.a, 0.0 ) );		// Use max because of numerical issues
 	vec3 normal = vec3( texel.b, ny, texel.a );
@@ -162,5 +162,5 @@ void main( void )
 	// Wrap lighting fur sun
 	float l = max( dot( normal, light ), 0.0 ) * 0.5 + 0.5;
 	
-	gl_FragColor = vec4( detailMap * l, 1.0 );
+	gl_FragColor = vec4( detailCol * l, 1.0 );
 }
