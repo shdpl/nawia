@@ -826,7 +826,12 @@ public:
 		return Vec4f( x[row + 0], x[row + 4], x[row + 8], x[row + 12] );
 	}
 
-	Vec3f getScale()
+	Vec3f getTrans() const
+	{
+		return Vec3f( c[3][0], c[3][1], c[3][2] );
+	}
+	
+	Vec3f getScale() const
 	{
 		Vec3f scale;
 		// Scale is length of columns

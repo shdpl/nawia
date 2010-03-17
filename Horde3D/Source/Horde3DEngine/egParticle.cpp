@@ -76,6 +76,7 @@ void ParticleEffectResource::initDefault()
 	_lifeMin = 0; _lifeMax = 0;
 	_moveVel.reset();
 	_rotVel.reset();
+	_drag.reset();
 	_size.reset();
 	_colR.reset();
 	_colG.reset();
@@ -133,8 +134,9 @@ bool ParticleEffectResource::load( const char *data, int size )
 		if( node1.getAttribute( "channel" ) != 0x0 )
 		{
 			if( _stricmp( node1.getAttribute( "channel" ), "moveVel" ) == 0 ) _moveVel.parse( node1 );
-			else if( _stricmp( node1.getAttribute( "channel" ), "size" ) == 0 ) _size.parse( node1 );
 			else if( _stricmp( node1.getAttribute( "channel" ), "rotVel" ) == 0 ) _rotVel.parse( node1 );
+			else if( _stricmp( node1.getAttribute( "channel" ), "drag" ) == 0 ) _drag.parse( node1 );
+			else if( _stricmp( node1.getAttribute( "channel" ), "size" ) == 0 ) _size.parse( node1 );
 			else if( _stricmp( node1.getAttribute( "channel" ), "colR" ) == 0 ) _colR.parse( node1 );
 			else if( _stricmp( node1.getAttribute( "channel" ), "colG" ) == 0 ) _colG.parse( node1 );
 			else if( _stricmp( node1.getAttribute( "channel" ), "colB" ) == 0 ) _colB.parse( node1 );
@@ -157,6 +159,7 @@ int ParticleEffectResource::getElemCount( int elem )
 	case ParticleEffectResData::ParticleElem:
 	case ParticleEffectResData::ChanMoveVelElem:
 	case ParticleEffectResData::ChanRotVelElem:
+	case ParticleEffectResData::ChanDragElem:
 	case ParticleEffectResData::ChanSizeElem:
 	case ParticleEffectResData::ChanColRElem:
 	case ParticleEffectResData::ChanColGElem:
@@ -189,6 +192,9 @@ float ParticleEffectResource::getElemParamF( int elem, int elemIdx, int param, i
 		break;
 	case ParticleEffectResData::ChanRotVelElem:
 		chan = &_rotVel;
+		break;
+	case ParticleEffectResData::ChanDragElem:
+		chan = &_drag;
 		break;
 	case ParticleEffectResData::ChanSizeElem:
 		chan = &_size;
@@ -247,6 +253,9 @@ void ParticleEffectResource::setElemParamF( int elem, int elemIdx, int param, in
 	case ParticleEffectResData::ChanRotVelElem:
 		chan = &_rotVel;
 		break;
+	case ParticleEffectResData::ChanDragElem:
+		chan = &_drag;
+		break;
 	case ParticleEffectResData::ChanSizeElem:
 		chan = &_size;
 		break;
@@ -303,6 +312,7 @@ EmitterNode::EmitterNode( const EmitterNodeTpl &emitterTpl ) :
 
 	_timeDelta = 0;
 	_emissionAccum = 0;
+	_prevAbsTrans = _absTrans;
 
 	_particles = 0x0;
 	_parPositions = 0x0;
@@ -557,6 +567,24 @@ void EmitterNode::onPostUpdate()
 		_emissionAccum += _emissionRate * _timeDelta;
 	else
 		_delay -= _timeDelta;
+
+	Vec3f motionVec = _absTrans.getTrans() - _prevAbsTrans.getTrans();
+
+	// Check how many particles will be spawned
+	float spawnCount = 0;
+	for( uint32 i = 0; i < _particleCount; ++i )
+	{
+		ParticleData &p = _particles[i];
+		if( p.life <= 0 && ((int)p.respawnCounter < _respawnCount || _respawnCount < 0) )
+		{
+			spawnCount += 1.0f;
+			if( spawnCount >= _emissionAccum ) break;
+		}
+	}
+
+	// Particles are distributed along emitter's motion vector to avoid blobs when fps is low
+	float curStep = 0, stepWidth = 0.5f;
+	if( spawnCount > 2.0f ) stepWidth = motionVec.length() / spawnCount;
 	
 	for( uint32 i = 0; i < _particleCount; ++i )
 	{
@@ -575,11 +603,13 @@ void EmitterNode::onPostUpdate()
 				m.c[3][0] = 0; m.c[3][1] = 0; m.c[3][2] = 0;
 				m.rotate( randomF( -angle, angle ), randomF( -angle, angle ), randomF( -angle, angle ) );
 				p.dir = (m * Vec3f( 0, 0, -1 )).normalized();
+				p.dragVec = motionVec / _timeDelta;
 				++p.respawnCounter;
 
 				// Generate start values
 				p.moveVel0 = randomF( _effectRes->_moveVel.startMin, _effectRes->_moveVel.startMax );
 				p.rotVel0 = randomF( _effectRes->_rotVel.startMin, _effectRes->_rotVel.startMax );
+				p.drag0 = randomF( _effectRes->_drag.startMin, _effectRes->_drag.startMax );
 				p.size0 = randomF( _effectRes->_size.startMin, _effectRes->_size.startMax );
 				p.r0 = randomF( _effectRes->_colR.startMin, _effectRes->_colR.startMax );
 				p.g0 = randomF( _effectRes->_colG.startMin, _effectRes->_colG.startMax );
@@ -587,9 +617,9 @@ void EmitterNode::onPostUpdate()
 				p.a0 = randomF( _effectRes->_colA.startMin, _effectRes->_colA.startMax );
 				
 				// Update arrays
-				_parPositions[i * 3 + 0] = _absTrans.c[3][0];
-				_parPositions[i * 3 + 1] = _absTrans.c[3][1];
-				_parPositions[i * 3 + 2] = _absTrans.c[3][2];
+				_parPositions[i * 3 + 0] = _absTrans.c[3][0] - motionVec.x * curStep;
+				_parPositions[i * 3 + 1] = _absTrans.c[3][1] - motionVec.y * curStep;
+				_parPositions[i * 3 + 2] = _absTrans.c[3][2] - motionVec.z * curStep;
 				_parSizesANDRotations[i * 2 + 0] = p.size0;
 				_parSizesANDRotations[i * 2 + 1] = randomF( 0, 360 );
 				_parColors[i * 4 + 0] = p.r0;
@@ -598,8 +628,10 @@ void EmitterNode::onPostUpdate()
 				_parColors[i * 4 + 3] = p.a0;
 
 				// Update emitter
-				_emissionAccum -= 1;
-				if( _emissionAccum < 0 ) _emissionAccum = 0;
+				_emissionAccum -= 1.f;
+				if( _emissionAccum < 0 ) _emissionAccum = 0.f;
+
+				curStep += stepWidth;
 			}
 		}
 		
@@ -611,6 +643,7 @@ void EmitterNode::onPostUpdate()
 			
 			float moveVel = p.moveVel0 * (1.0f + (_effectRes->_moveVel.endRate - 1.0f) * fac);
 			float rotVel = p.rotVel0 * (1.0f + (_effectRes->_rotVel.endRate - 1.0f) * fac);
+			float drag = p.drag0 * (1.0f + (_effectRes->_drag.endRate - 1.0f) * fac);
 			_parSizesANDRotations[i * 2 + 0] = p.size0 * (1.0f + (_effectRes->_size.endRate - 1.0f) * fac);
 			_parColors[i * 4 + 0] = p.r0 * (1.0f + (_effectRes->_colR.endRate - 1.0f) * fac);
 			_parColors[i * 4 + 1] = p.g0 * (1.0f + (_effectRes->_colG.endRate - 1.0f) * fac);
@@ -618,10 +651,10 @@ void EmitterNode::onPostUpdate()
 			_parColors[i * 4 + 3] = p.a0 * (1.0f + (_effectRes->_colA.endRate - 1.0f) * fac);
 
 			// Update particle position and rotation
-			_parPositions[i * 3 + 0] += (p.dir.x * moveVel + _force.x) * _timeDelta;
-			_parPositions[i * 3 + 1] += (p.dir.y * moveVel + _force.y) * _timeDelta;
-			_parPositions[i * 3 + 2] += (p.dir.z * moveVel + _force.z) * _timeDelta;
-			_parSizesANDRotations[i * 2+ 1] +=  rotVel * _timeDelta;
+			_parPositions[i * 3 + 0] += (p.dir.x * moveVel + p.dragVec.x * drag + _force.x) * _timeDelta;
+			_parPositions[i * 3 + 1] += (p.dir.y * moveVel + p.dragVec.y * drag + _force.y) * _timeDelta;
+			_parPositions[i * 3 + 2] += (p.dir.z * moveVel + p.dragVec.z * drag + _force.z) * _timeDelta;
+			_parSizesANDRotations[i * 2 + 1] +=  rotVel * _timeDelta;
 
 			// Decrease lifetime
 			p.life -= _timeDelta;
@@ -652,4 +685,5 @@ void EmitterNode::onPostUpdate()
 	_bBox.max = bBMax;
 
 	_timeDelta = 0;
+	_prevAbsTrans = _absTrans;
 }

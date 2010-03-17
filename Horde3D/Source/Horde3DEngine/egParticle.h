@@ -41,7 +41,8 @@ struct ParticleEffectResData
 		PartLifeMaxF,
 		ChanStartMinF,
 		ChanStartMaxF,
-		ChanEndRateF
+		ChanEndRateF,
+		ChanDragElem    // TODO: Move behind ChanRotVelElem
 	};
 };
 
@@ -64,7 +65,7 @@ class ParticleEffectResource : public Resource
 private:
 
 	float            _lifeMin, _lifeMax;
-	ParticleChannel  _moveVel, _rotVel;
+	ParticleChannel  _moveVel, _rotVel, _drag;
 	ParticleChannel  _size;
 	ParticleChannel  _colR, _colG, _colB, _colA;
 
@@ -137,11 +138,11 @@ struct EmitterNodeTpl : public SceneNodeTpl
 struct ParticleData
 {
 	float   life, maxLife;
-	Vec3f   dir;
+	Vec3f   dir, dragVec;
 	uint32  respawnCounter;
 
 	// Start values
-	float  moveVel0, rotVel0;
+	float  moveVel0, rotVel0, drag0;
 	float  size0;
 	float  r0, g0, b0, a0;
 };
@@ -155,6 +156,7 @@ protected:
 	// Emitter data
 	float                    _timeDelta;
 	float                    _emissionAccum;
+	Matrix4f                 _prevAbsTrans;
 	
 	// Emitter params
 	PMaterialResource        _materialRes;

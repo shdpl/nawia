@@ -382,7 +382,8 @@ struct H3DPartEffRes
 		PartLifeMaxF,
 		ChanStartMinF,
 		ChanStartMaxF,
-		ChanEndRateF
+		ChanEndRateF,
+		ChanDragElem
 	};
 };
 
