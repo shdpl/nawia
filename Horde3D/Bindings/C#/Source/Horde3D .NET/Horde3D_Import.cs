@@ -126,22 +126,22 @@ namespace Horde3DNET
         internal static extern int h3dFindResElem(int res, int elem, int param, string value );
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
-        internal static extern int h3dGetResParamI(int res, int param);
+        internal static extern int h3dGetResParamI(int res, int elem, int elemIdx, int param);
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]        
-        internal static extern void h3dSetResParamI(int res, int param, int value);
+        internal static extern void h3dSetResParamI(int res, int elem, int elemIdx, int param, int value);
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
-        internal static extern float h3dGetResParamF(int res, int param);
+        internal static extern float h3dGetResParamF(int res, int elem, int elemIdx, int param, int compIdx);
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]        
-        internal static extern void h3dSetResParamF(int res, int param, float value);
+        internal static extern void h3dSetResParamF(int res, int elem, int elemIdx, int param, int compIdx, float value);
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
-        internal static extern IntPtr h3dGetResParamStr(int res, int param);
+        internal static extern IntPtr h3dGetResParamStr(int res, int elem, int elemIdx, int param);
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
-        internal static extern void h3dSetResParamStr(int res, int param, string value);
+        internal static extern void h3dSetResParamStr(int res, int elem, int elemIdx, int param, string value);
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
         internal static extern IntPtr h3dMapResStream(int res, int elem, int elemIdx, int stream, [MarshalAs(UnmanagedType.U1)]bool read, [MarshalAs(UnmanagedType.U1)]bool write);

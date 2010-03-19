@@ -179,6 +179,7 @@ namespace Horde3DNET.Utils
         /// <summary>
         /// This utility function takes normalized window coordinates (ranging from 0 to 1 with the origin being the bottom left corner of the window) and returns the scene node which is visible at that location. The function is especially useful for selecting objects by clicking on them. Currently picking is only working for Meshes.
         /// </summary>
+        /// <param name="node">Camera node used for picking</param>
         /// <param name="nwx">normalized window x coordinate</param>
         /// <param name="nwy">normalized window y coordinate</param>
         /// <returns>handle of picked node or 0 if no node was hit</returns>

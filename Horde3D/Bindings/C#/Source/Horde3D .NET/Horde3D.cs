@@ -35,6 +35,7 @@ namespace Horde3DNET
             TrilinearFiltering,
             MaxAnisotropy,
             TexCompression,
+            SRGBLinearization,
             LoadTextures,
             FastAnimation,
             ShadowMapSize,
@@ -219,6 +220,7 @@ namespace Horde3DNET
             RadiusF,
             FovF,
             ColorF3,
+            ColorMultiplierF,
             ShadowMapCountI,
             ShadowSplitLambdaF,
             ShadowMapBiasF,
@@ -503,6 +505,25 @@ namespace Horde3DNET
         }
 
         /// <summary>
+        /// Finds a resource element with the specified property value.        
+        /// </summary>
+        /// <remarks>This function searches in a specified resource for the first element of the specified type that has the property with the specified name set to the specified search value.  If such element is found, its index is returned, otherwise the function returns -1.  All string comparisons done for the search are case-sensitive.</remarks>
+        /// <param name="type">the resource to be accessed</param>
+        /// <param name="elem">	element type</param>
+        /// <param name="param">parameter name</param>
+        /// <param name="value">parameter value to be searched for</param>
+        /// <returns></returns>
+        public static int findResourceElem(int type, int elem, int param, string value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("name", Resources.StringNullExceptionString);
+            }
+
+            return (int)NativeMethodsEngine.h3dFindResElem(type, elem, param, value);
+        }
+
+        /// <summary>
         /// This function tries to add a resource of a specified type and name to the resource manager. 
         /// If a resource of the same type and name is already found, the handle to the existing resource is returned instead of creating a new one.
         /// </summary>
@@ -629,9 +650,9 @@ namespace Horde3DNET
         /// <param name="res">handle to the resource to be accessed</param>
         /// <param name="param">parameter to be accessed</param>
         /// <returns>value of the parameter</returns>
-        public static int getResParamI(int res, int param)
+        public static int getResParamI(int res, int elem, int elemIdx, int param)
         {
-            return NativeMethodsEngine.h3dGetResParamI(res, param);
+            return NativeMethodsEngine.h3dGetResParamI(res, elem, elemIdx, param);
         }
 
         /// <summary>
@@ -640,11 +661,13 @@ namespace Horde3DNET
         /// This function sets a specified property of the specified resource to a specified value.
         /// The property must be of the type int.
         /// <param name="res">handle to the node to be modified</param>
+        /// <param name="elem">element type</param>
+        /// <param name="elemIdx">index of element</param>
         /// <param name="param">parameter to be modified</param>
         /// <param name="value">new value for the specified parameter</param>        
-        public static void setResParamI(int res, int param, int value)
+        public static void setResParamI(int res, int elem, int elemIdx, int param, int value)
         {
-            NativeMethodsEngine.h3dSetResParamI(res, param, value);
+            NativeMethodsEngine.h3dSetResParamI(res, elem, elemIdx, param, value);
         }
 
         /// <summary>
@@ -655,9 +678,9 @@ namespace Horde3DNET
         /// <param name="res">handle to the resource to be accessed</param>
         /// <param name="param">parameter to be accessed</param>
         /// <returns>value of the parameter</returns>
-        public static float getResParamF(int res, int param)
+        public static float getResParamF(int res, int elem, int elemIdx, int param, int compIdx)
         {
-            return NativeMethodsEngine.h3dGetResParamF(res, param);
+            return NativeMethodsEngine.h3dGetResParamF(res, elem, elemIdx, param, compIdx);
         }
 
         /// <summary>
@@ -666,11 +689,14 @@ namespace Horde3DNET
         /// This function sets a specified property of the specified resource to a specified value.
         /// The property must be of the type float.
         /// <param name="res">handle to the node to be modified</param>
+        /// <param name="elem">element type</param>
+        /// <param name="elemIdx">index of element</param>
+        /// <param name="compIdx">component of the parameter to be accessed</param>
         /// <param name="param">parameter to be modified</param>
         /// <param name="value">new value for the specified parameter</param>        
-        public static void setResParamF(int res, int param, float value)
+        public static void setResParamF(int res, int elem, int elemIdx, int param, int compIdx, float value)
         {
-            NativeMethodsEngine.h3dSetResParamF(res, param, value);
+            NativeMethodsEngine.h3dSetResParamF(res, elem, elemIdx, param, compIdx, value);
         }
 
         /// <summary>
@@ -682,9 +708,9 @@ namespace Horde3DNET
         /// <param name="res">handle to the resource to be accessed</param>
         /// <param name="param">parameter to be accessed</param>
         /// <returns>value of the property or empty string if no such property exists</returns>
-        public static string getResParamStr(int res, int param)
+        public static string getResParamStr(int res, int elem, int elemIdx, int param)
         {
-            return Marshal.PtrToStringAnsi(NativeMethodsEngine.h3dGetResParamStr(res, param));
+            return Marshal.PtrToStringAnsi(NativeMethodsEngine.h3dGetResParamStr(res, elem, elemIdx, param));
         }
 
         /// <summary>
@@ -695,9 +721,9 @@ namespace Horde3DNET
         /// <param name="res">handle to the node to be modified</param>
         /// <param name="param">parameter to be modified</param>
         /// <param name="value">new value for the specified parameter</param>
-        public static void setResParamStr(int res, int param, string value)
+        public static void setResParamStr(int res, int elem, int elemIdx, int param, string value)
         {
-            NativeMethodsEngine.h3dSetResParamStr(res, param, value);
+            NativeMethodsEngine.h3dSetResParamStr(res, elem, elemIdx, param, value);
         }
 
         /// <summary>
