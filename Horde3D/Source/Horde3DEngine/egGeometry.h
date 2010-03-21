@@ -40,6 +40,13 @@ struct GeometryResData
 
 // =================================================================================================
 
+struct VertexDataTan
+{
+	Vec3f  normal;
+	Vec3f  tangent;
+	float  handedness;
+};
+
 struct VertexDataStatic		// Vertex data that is usally static
 {
 	float  u0, v0;
@@ -59,7 +66,7 @@ struct MorphDiff
 {
 	uint32  vertIndex;
 	Vec3f   posDiff;
-	Vec3f   normDiff, tanDiff, bitanDiff;
+	Vec3f   normDiff, tanDiff;
 };
 
 
@@ -83,7 +90,7 @@ private:
 	bool                        _16BitIndices;
 	char                        *_indexData;
 	Vec3f                       *_vertPosData;
-	Vec3f                       *_vertTanData;
+	VertexDataTan               *_vertTanData;
 	VertexDataStatic            *_vertStaticData;
 	
 	std::vector< Joint >        _joints;
@@ -120,7 +127,7 @@ public:
 	uint32 getVertCount() { return _vertCount; }
 	char *getIndexData() { return _indexData; }
 	Vec3f *getVertPosData() { return _vertPosData; }
-	Vec3f *getVertTanData() { return _vertTanData; }
+	VertexDataTan *getVertTanData() { return _vertTanData; }
 	VertexDataStatic *getVertStaticData() { return _vertStaticData; }
 	uint32 getPosVBuf() { return _posVBuf; }
 	uint32 getTanVBuf() { return _tanVBuf; }

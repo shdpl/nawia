@@ -350,12 +350,12 @@ bool ModelNode::updateGeometry()
 	
 	// Reset vertices to base data
 	memcpy( _geometryRes->getVertPosData(), _baseGeoRes->getVertPosData(),
-			_geometryRes->_vertCount * sizeof( Vec3f ) );
+	        _geometryRes->_vertCount * sizeof( Vec3f ) );
 	memcpy( _geometryRes->getVertTanData(), _baseGeoRes->getVertTanData(),
-			_geometryRes->_vertCount * sizeof( Vec3f ) * 3 );
+	        _geometryRes->_vertCount * sizeof( VertexDataTan ) );
 
 	Vec3f *posData = _geometryRes->getVertPosData();
-	Vec3f *tanData = _geometryRes->getVertTanData();
+	VertexDataTan *tanData = _geometryRes->getVertTanData();
 	VertexDataStatic *staticData = _geometryRes->getVertStaticData();
 
 	if( _morpherUsed )
@@ -373,9 +373,8 @@ bool ModelNode::updateGeometry()
 					MorphDiff &md = mt.diffs[j];
 					
 					posData[md.vertIndex] += md.posDiff * weight;
-					tanData[md.vertIndex*3+0] += md.tanDiff * weight;
-					tanData[md.vertIndex*3+1] += md.bitanDiff * weight;
-					tanData[md.vertIndex*3+2] += md.normDiff * weight;
+					tanData[md.vertIndex].normal += md.normDiff * weight;
+					tanData[md.vertIndex].tangent += md.tanDiff * weight;
 				}
 			}
 		}
@@ -417,9 +416,8 @@ bool ModelNode::updateGeometry()
 			// Skin tangent space basis
 			// Note: We skip the normalization of the tangent space basis for performance reasons;
 			//       the error is usually not huge and should be hardly noticable
-			tanData[i*3+0] = skinningMat.mult33Vec( tanData[i*3+0] ); //.normalized();
-			tanData[i*3+1] = skinningMat.mult33Vec( tanData[i*3+1] ); //.normalized();
-			tanData[i*3+2] = skinningMat.mult33Vec( tanData[i*3+2] ); //.normalized();
+			tanData[i].normal = skinningMat.mult33Vec( tanData[i].normal ); //.normalized();
+			tanData[i].tangent = skinningMat.mult33Vec( tanData[i].tangent ); //.normalized();
 		}
 
 		//timer->setEnabled( false );
@@ -429,9 +427,8 @@ bool ModelNode::updateGeometry()
 		// Renormalize tangent space basis
 		for( uint32 i = 0, s = _geometryRes->getVertCount(); i < s; ++i )
 		{
-			tanData[i*3+0].normalize();
-			tanData[i*3+1].normalize();
-			tanData[i*3+2].normalize();
+			tanData[i].normal.normalize();
+			tanData[i].tangent.normalize();
 		}
 	}
 

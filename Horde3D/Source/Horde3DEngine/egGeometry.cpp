@@ -63,11 +63,11 @@ Resource *GeometryResource::clone()
 	// Make a deep copy of the data
 	res->_indexData = new char[_indexCount * (_16BitIndices ? 2 : 4)];
 	res->_vertPosData = new Vec3f[_vertCount];
-	res->_vertTanData = new Vec3f[_vertCount * 3];
+	res->_vertTanData = new VertexDataTan[_vertCount];
 	res->_vertStaticData = new VertexDataStatic[_vertCount];
 	memcpy( res->_indexData, _indexData, _indexCount * (_16BitIndices ? 2 : 4) );
 	memcpy( res->_vertPosData, _vertPosData, _vertCount * sizeof( Vec3f ) );
-	memcpy( res->_vertTanData, _vertTanData, _vertCount * sizeof( Vec3f ) * 3 );
+	memcpy( res->_vertTanData, _vertTanData, _vertCount * sizeof( VertexDataTan ) );
 	memcpy( res->_vertStaticData, _vertStaticData, _vertCount * sizeof( VertexDataStatic ) );
 	res->_indexBuf = Modules::renderer().cloneBuffer( _indexBuf );
 	res->_posVBuf = Modules::renderer().cloneBuffer( _posVBuf );
@@ -188,12 +188,13 @@ bool GeometryResource::load( const char *data, int size )
 
 	_vertCount = streamSize;
 	_vertPosData = new Vec3f[_vertCount];
-	_vertTanData = new Vec3f[_vertCount * 3];
+	_vertTanData = new VertexDataTan[_vertCount];
 	_vertStaticData = new VertexDataStatic[_vertCount];
+	Vec3f *bitangents = new Vec3f[_vertCount];
 
 	// Init with default data
 	memset( _vertPosData, 0, _vertCount * sizeof( Vec3f ) );
-	memset( _vertTanData, 0, _vertCount * sizeof( Vec3f ) * 3 );
+	memset( _vertTanData, 0, _vertCount * sizeof( VertexDataTan ) );
 	memset( _vertStaticData, 0, _vertCount * sizeof( VertexDataStatic ) );
 	for( uint32 i = 0; i < _vertCount; ++i ) _vertStaticData[i].weightVec[0] = 1;
 
@@ -220,27 +221,27 @@ bool GeometryResource::load( const char *data, int size )
 			if( streamElemSize != 6 ) return raiseError( "Invalid normal base stream" );
 			for( uint32 j = 0; j < streamSize; ++j )
 			{
-				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j*3+2].x = sh / 32767.0f;
-				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j*3+2].y = sh / 32767.0f;
-				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j*3+2].z = sh / 32767.0f;
+				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j].normal.x = sh / 32767.0f;
+				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j].normal.y = sh / 32767.0f;
+				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j].normal.z = sh / 32767.0f;
 			}
 			break;
 		case 2:		// Tangent
 			if( streamElemSize != 6 ) return raiseError( "Invalid tangent base stream" );
 			for( uint32 j = 0; j < streamSize; ++j )
 			{
-				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j*3+0].x = sh / 32767.0f;
-				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j*3+0].y = sh / 32767.0f;
-				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j*3+0].z = sh / 32767.0f;
+				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j].tangent.x = sh / 32767.0f;
+				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j].tangent.y = sh / 32767.0f;
+				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j].tangent.z = sh / 32767.0f;
 			}
 			break;
 		case 3:		// Bitangent
 			if( streamElemSize != 6 ) return raiseError( "Invalid bitangent base stream" );
 			for( uint32 j = 0; j < streamSize; ++j )
 			{
-				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j*3+1].x = sh / 32767.0f;
-				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j*3+1].y = sh / 32767.0f;
-				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); _vertTanData[j*3+1].z = sh / 32767.0f;
+				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); bitangents[j].x = sh / 32767.0f;
+				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); bitangents[j].y = sh / 32767.0f;
+				memcpy( &sh, pData, sizeof( short ) ); pData += sizeof( short ); bitangents[j].z = sh / 32767.0f;
 			}
 			break;
 		case 4:		// Joint indices
@@ -285,6 +286,13 @@ bool GeometryResource::load( const char *data, int size )
 			continue;
 		}
 	}
+
+	// Prepare bitangent data (TODO: Should be done in ColladaConv)
+	for( uint32 i = 0; i < _vertCount; ++i )
+	{
+		_vertTanData[i].handedness = _vertTanData[i].normal.cross( _vertTanData[i].tangent ).dot( bitangents[i] ) < 0 ? -1.0f : 1.0f;
+	}
+	delete[] bitangents;
 		
 	// Load triangle indices
 	memcpy( &count, pData, sizeof( uint32 ) ); pData += sizeof( uint32 );
@@ -372,12 +380,9 @@ bool GeometryResource::load( const char *data, int size )
 				break;
 			case 3:		// Bitangent
 				if( streamElemSize != 12 ) return raiseError( "Invalid bitangent morph stream" );
-				for( uint32 k = 0; k < streamSize; ++k )
-				{
-					memcpy( &mt.diffs[k].bitanDiff.x, pData, sizeof( float ) ); pData += sizeof( float );
-					memcpy( &mt.diffs[k].bitanDiff.y, pData, sizeof( float ) ); pData += sizeof( float );
-					memcpy( &mt.diffs[k].bitanDiff.z, pData, sizeof( float ) ); pData += sizeof( float );
-				}
+				
+				// Skip data (TODO: remove from format)
+				pData += streamSize * sizeof( float ) * 3;
 				break;
 			default:
 				pData += streamElemSize * streamSize;
@@ -432,7 +437,7 @@ bool GeometryResource::load( const char *data, int size )
 		_posVBuf = Modules::renderer().createVertexBuffer(
 			_vertCount * sizeof( Vec3f ), _vertPosData );
 		_tanVBuf = Modules::renderer().createVertexBuffer(
-			_vertCount * sizeof( Vec3f ) * 3, _vertTanData );
+			_vertCount * sizeof( VertexDataTan ), _vertTanData );
 		_staticVBuf = Modules::renderer().createVertexBuffer(
 			_vertCount * sizeof( VertexDataStatic ), _vertStaticData );
 	}
@@ -521,7 +526,7 @@ void GeometryResource::unmapStream()
 			break;
 		case GeometryResData::GeoVertTanStream:
 			if( _vertTanData != 0x0 )
-				Modules::renderer().updateBufferData( _tanVBuf, 0, _vertCount * sizeof( Vec3f ) * 3, _vertTanData );
+				Modules::renderer().updateBufferData( _tanVBuf, 0, _vertCount * sizeof( VertexDataTan ), _vertTanData );
 			break;
 		case GeometryResData::GeoVertStaticStream:
 			if( _vertStaticData != 0x0 )
@@ -545,6 +550,6 @@ void GeometryResource::updateDynamicVertData()
 	if( _vertTanData != 0x0 )
 	{
 		Modules::renderer().updateBufferData(
-			_tanVBuf, 0, _vertCount * sizeof( Vec3f ) * 3, _vertTanData );
+			_tanVBuf, 0, _vertCount * sizeof( VertexDataTan ), _vertTanData );
 	}
 }

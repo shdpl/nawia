@@ -85,7 +85,7 @@ attribute vec2 texCoords0;
 attribute vec3 normal;
 
 #ifdef _F02_NormalMapping
-	attribute vec3 tangent, bitangent;
+	attribute vec4 tangent;
 #endif
 
 varying vec4 pos, vsPos;
@@ -110,21 +110,20 @@ void main( void )
 	
 	// Calculate normal
 #ifdef _F01_Skinning
-	vec3 _normal = calcWorldVec( skinVec( normal, skinningMatVec ) );
+	vec3 _normal = normalize( calcWorldVec( skinVec( normal, skinningMatVec ) ) );
 #else
-	vec3 _normal = calcWorldVec( normal );
+	vec3 _normal = normalize( calcWorldVec( normal ) );
 #endif
 
 	// Calculate tangent and bitangent
 #ifdef _F02_NormalMapping
 	#ifdef _F01_Skinning
-		vec3 _tangent = calcWorldVec( skinVec( tangent, skinningMatVec ) );
-		vec3 _bitangent = calcWorldVec( skinVec( bitangent, skinningMatVec ) );
+		vec3 _tangent = normalize( calcWorldVec( skinVec( tangent.xyz, skinningMatVec ) ) );
 	#else
-		vec3 _tangent = calcWorldVec( tangent );
-		vec3 _bitangent = calcWorldVec( bitangent );
+		vec3 _tangent = normalize( calcWorldVec( tangent.xyz ) );
 	#endif
 	
+	vec3 _bitangent = cross( _normal, _tangent ) * tangent.w;
 	tsbMat = calcTanToWorldMat( _tangent, _bitangent, _normal );
 #else
 	tsbNormal = _normal;

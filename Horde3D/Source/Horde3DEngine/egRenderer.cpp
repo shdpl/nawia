@@ -101,15 +101,14 @@ bool Renderer::init()
 	_vlPosOnly = createVertexLayout( 1 );
 	setVertexLayoutElem( _vlPosOnly, 0, "vertPos", 0, 3, 0 );
 	
-	_vlModel = createVertexLayout( 8 );
+	_vlModel = createVertexLayout( 7 );
 	setVertexLayoutElem( _vlModel, 0, "vertPos", 0, 3, 0 );
-	setVertexLayoutElem( _vlModel, 1, "tangent", 1, 3, 0 );
-	setVertexLayoutElem( _vlModel, 2, "bitangent", 2, 3, 0 );
-	setVertexLayoutElem( _vlModel, 3, "normal", 3, 3, 0 );
-	setVertexLayoutElem( _vlModel, 4, "joints", 4, 4, 8 );
-	setVertexLayoutElem( _vlModel, 5, "weights", 4, 4, 24 );
-	setVertexLayoutElem( _vlModel, 6, "texCoords0", 4, 2, 0 );
-	setVertexLayoutElem( _vlModel, 7, "texCoords1", 4, 2, 40 );
+	setVertexLayoutElem( _vlModel, 1, "normal", 1, 3, 0 );
+	setVertexLayoutElem( _vlModel, 2, "tangent", 2, 4, 0 );
+	setVertexLayoutElem( _vlModel, 3, "joints", 3, 4, 8 );
+	setVertexLayoutElem( _vlModel, 4, "weights", 3, 4, 24 );
+	setVertexLayoutElem( _vlModel, 5, "texCoords0", 3, 2, 0 );
+	setVertexLayoutElem( _vlModel, 6, "texCoords1", 3, 2, 40 );
 
 	_vlParticle = createVertexLayout( 4 );
 	setVertexLayoutElem( _vlParticle, 0, "vertPos", 0, 3, 0 );
@@ -1570,10 +1569,9 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			uint32 staticVBuf = curGeoRes->getStaticVBuf();
 			
 			Modules::renderer().bindVertexBuffer( 0, posVBuf, 0, sizeof( Vec3f ) );
-			Modules::renderer().bindVertexBuffer( 1, tanVBuf, sizeof( Vec3f ) * 0, sizeof( Vec3f ) * 3 );
-			Modules::renderer().bindVertexBuffer( 2, tanVBuf, sizeof( Vec3f ) * 1, sizeof( Vec3f ) * 3 );
-			Modules::renderer().bindVertexBuffer( 3, tanVBuf, sizeof( Vec3f ) * 2, sizeof( Vec3f ) * 3 );
-			Modules::renderer().bindVertexBuffer( 4, staticVBuf, 0, sizeof( VertexDataStatic ) );
+			Modules::renderer().bindVertexBuffer( 1, tanVBuf, 0, sizeof( VertexDataTan ) );
+			Modules::renderer().bindVertexBuffer( 2, tanVBuf, sizeof( Vec3f ), sizeof( VertexDataTan ) );
+			Modules::renderer().bindVertexBuffer( 3, staticVBuf, 0, sizeof( VertexDataStatic ) );
 		}
 		
 		// Sort meshes

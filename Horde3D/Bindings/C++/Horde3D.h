@@ -227,10 +227,9 @@ struct H3DGeoRes
 		GeoIndices16I        - Flag indicating whether index data is 16 or 32 bit [read-only]
 		GeoIndexStream       - Triangle index data (uint16 or uint32, depending on flag)
 		GeoVertPosStream     - Vertex position data (float x, y, z)
-		GeoVertTanStream     - Vertex tangent frame (TBN) data
-		                       (float tx, ty, tz, bx, by, bz, nx, ny, nz)
+		GeoVertTanStream     - Vertex tangent frame data (float nx, ny, nz, tx, ty, tz, tw)
 		GeoVertStaticStream  - Vertex static attribute data (float u0, v0,
-		                       float4 jointIndices, float4 jointWeights, float u1, v1)
+		                         float4 jointIndices, float4 jointWeights, float u1, v1)
 	*/
 	enum List
 	{

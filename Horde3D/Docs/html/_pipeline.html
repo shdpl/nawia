@@ -609,19 +609,15 @@ rendering emitters.
     </tr>
 	<tr>
         <td><b>uniform vec4 lightPos</b></td>
-        <td>position of the light source in xyz-components and radius in w-component</td>
+        <td>position of the light source in xyz components and radius in w</td>
     </tr>
     <tr>
-        <td><b>uniform vec3 lightDir</b></td>
-        <td>direction vector of the light source</td>
+        <td><b>uniform vec4 lightDir</b></td>
+        <td>direction vector of the light source in xyz components and cosine of light FOV in w (for spotlights)</td>
     </tr>
     <tr>
         <td><b>uniform vec3 lightColor</b></td>
         <td>(diffuse) color of the light source</td>
-    </tr>
-    <tr>
-        <td><b>uniform float lightCosCutoff</b></td>
-        <td>cosine of the light's field of view (FOV) presumed it is a spotlight</td>
     </tr>
     <tr>
         <td><b>uniform vec4 shadowSplitDists</b></td>
@@ -684,12 +680,8 @@ rendering emitters.
         <td>normal vector of vertex</td>
     </tr>
     <tr>
-        <td><b>attribute vec3 tangent</b></td>
-        <td>tangent vector of vertex</td>
-    </tr>
-    <tr>
-        <td><b>attribute vec3 bitangent</b></td>
-        <td>bitangent vector of vertex</td>
+        <td><b>attribute vec4 tangent</b></td>
+        <td>tangent vector of vertex in xyz; handedness multiplicator (1.0, -1.0) of bitangent in w</td>
     </tr>
     <tr>
         <td><b>attribute vec4 joints</b></td>
