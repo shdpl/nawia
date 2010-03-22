@@ -18,6 +18,94 @@
 #include "utDebug.h"
 
 
+// =================================================================================================
+// GPUTimer
+// =================================================================================================
+
+GPUTimer::GPUTimer() : _numQueries( 0 ),  _queryFrame( 0 ), _time( 0 ), _activeQuery( false )
+{
+}
+
+
+GPUTimer::~GPUTimer()
+{
+	if( !_queryPool.empty() )
+		glDeleteQueries( (uint32)_queryPool.size(), &_queryPool[0] );
+}
+
+
+void GPUTimer::beginQuery( uint32 frameID )
+{
+	if( !glExt::EXT_timer_query || _activeQuery ) return;
+	
+	if( _queryFrame != frameID )
+	{
+		if( !updateResults() ) return;
+
+		_queryFrame = frameID;
+		_numQueries = 0;
+	}
+	
+	// Create new query object if necessary
+	uint32 queryObj;
+	if( _numQueries++ == _queryPool.size() )
+	{
+		glGenQueries( 1, &queryObj );
+		_queryPool.push_back( queryObj );
+	}
+	else
+	{
+		queryObj = _queryPool[_numQueries - 1];
+	}
+	
+	_activeQuery = true;
+	glBeginQuery( GL_TIME_ELAPSED_EXT, queryObj );
+}
+
+
+void GPUTimer::endQuery()
+{
+	if( _activeQuery )
+	{	
+		glEndQuery( GL_TIME_ELAPSED_EXT );
+		_activeQuery = false;
+	}
+}
+
+
+bool GPUTimer::updateResults()
+{
+	if( !glExt::EXT_timer_query ) return false;
+	
+	if( _numQueries == 0 )
+	{
+		_time = 0;
+		return true;
+	}
+	
+	// Make sure that last query is available
+	GLint available;
+	glGetQueryObjectiv( _queryPool[_numQueries - 1], GL_QUERY_RESULT_AVAILABLE, &available );
+	if( !available ) return false;
+	
+	//  Accumulate time
+	double time = 0;
+	GLuint64EXT timeElapsed = 0, timeAccum = 0;
+	for( uint32 i = 0; i < _numQueries; ++i )
+	{
+		glGetQueryObjectui64vEXT( _queryPool[i], GL_QUERY_RESULT, &timeElapsed );
+		timeAccum += timeElapsed;
+	}
+	
+	_time = (float)((double)timeAccum / 1000000.0);
+	return true;
+}
+
+
+// =================================================================================================
+// RendererBase
+// =================================================================================================
+
 RendererBase::RendererBase()
 {
 	_vpWidth = 320; _vpHeight = 240;

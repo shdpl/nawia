@@ -62,14 +62,14 @@ void Modules::installExtensions()
 
 bool Modules::init()
 {
-	// Create modules
+	// Create modules (order is important because of dependencies)
 	if( _extensionManager == 0x0 ) _extensionManager = new ExtensionManager();
 	if( _engineLog == 0x0 ) _engineLog = new EngineLog();
 	if( _engineConfig == 0x0 ) _engineConfig = new EngineConfig();
 	if( _sceneManager == 0x0 ) _sceneManager = new SceneManager();
-	if( _statManager == 0x0 ) _statManager = new StatManager();
 	if( _resourceManager == 0x0 ) _resourceManager = new ResourceManager();
 	if( _renderer == 0x0 ) _renderer = new Renderer();
+	if( _statManager == 0x0 ) _statManager = new StatManager();
 
 	// Init modules
 	if( !renderer().init() ) return false;

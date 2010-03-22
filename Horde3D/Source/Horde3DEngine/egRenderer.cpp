@@ -41,7 +41,7 @@ Renderer::Renderer() : RendererBase()
 {
 	_scratchBuf = 0x0;
 	_scratchBufSize = 0;
-	_frameID = 0;
+	_frameID = 1;
 	_defShadowMap = 0;
 	_particleVBO = 0;
 	_curCamera = 0x0;
@@ -1872,8 +1872,6 @@ void Renderer::render( CameraNode *camNode )
 {
 	_curCamera = camNode;
 	if( _curCamera == 0x0 ) return;
-
-	++_frameID;
 	
 	if( Modules::config().debugViewMode || _curCamera->_pipelineRes == 0x0 )
 	{
@@ -1980,6 +1978,8 @@ void Renderer::render( CameraNode *camNode )
 
 void Renderer::finalizeFrame()
 {
+	++_frameID;
+	
 	// Reset frame timer
 	Timer *timer = Modules::stats().getTimer( EngineStats::FrameTime );
 	ASSERT( timer != 0x0 );
