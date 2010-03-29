@@ -199,8 +199,8 @@ class App(object):
 				self._mainloopRenderOverlays(w, dt)
 				self._mainloopRender(w, dt)
 
+				h3d.finalizeFrame()
 				w.flip()
-			h3d.finalizeFrame()
 
 			h3d.utils.dumpMessages()
 
