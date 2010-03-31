@@ -297,12 +297,11 @@ public:
 		E_SET_MOVE_ANIM,		/// Change one of the move animations. @data = pair<string, string>: tag, name of animation
 		E_SET_CROWD_TAG,		/// Sets the current crowd sim tag of a particle, so it starts wandering around if the tag > 0
 		E_SET_CROWD_IGNORE_FORCES, /// The crowd particle will ignore forces if the particle is not moving
-		IK_COMPUTE,				/// Computes the IK with the given data and applies it to the chain
-		IK_GAZE,				/// Computes and applies a gaze action
-		IK_INIT_ANIM,			/// Initializes an IK animation
-		IK_SET_RESTRICT,		/// Sets the value of the DOFR flag
-		IK_SET_OPTIMIZE,		/// Sets the value of the IKMO flag
-		IK_SET_ZLOCK,			/// Sets the value of the z_lock flag
+		IK_SOLVE,				/// Computes the IK with the given data and applies it to the chain
+		IK_SOLVEANIM,			/// Computes the IK with the given data and generates a keyframe animation of the chain transformation
+		IK_GAZE,				/// Computes and applies a gaze action to the designated model (agent)
+		IK_SETPARAMI,			/// Sets an IK parameter (IK_Param) of type integer
+		IK_SETPARAMF,			/// Sets an IK parameter (IK_Param) of type float
 		GB_ON_OFF,				/// activates/deactivates character's gaze behaviour
 		GB_CONTROL_ON_OFF,		/// activates/deactivates direct control of character via arrow keys
 		GB_SEARCH_ON_OFF,		/// activates/deactivates character's searching behaviour
@@ -353,6 +352,8 @@ public:
 		E_GET_ANIM_LENGTH,		/// Get the length of an animation in seconds (using all frames and default speed).
 		EM_GET_MOOD_PAD,		/// gets the current mood from the Emotion component as PAD values (using Vec3f)
 		D_CURRENT_SENTENCE,		/// get current sentence from Dialogue components
+		IK_GETPARAMI,			/// Gets an IK parameter (IK_Param) of type integer
+		IK_GETPARAMF,			/// Gets an IK parameter (IK_Param) of type float
 		
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
@@ -1052,25 +1053,45 @@ public:
 class IKData : public GameEventData
 {
 public:
-	//Contructor for gaze data
-	IKData(float TargetX, float TargetY, float TargetZ, bool MoveLEye, bool MoveREye, bool MoveNeck, int Head_pitch, bool IsTest = false )
+	///Contructor for gaze data
+	IKData(float TargetX, float TargetY, float TargetZ, bool MoveLEye, bool MoveREye, bool MoveHead, int Head_pitch, bool Simulate = false )
 		: GameEventData(CUSTOM), endEffektorName(0), stopName(0), 
-		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), moveLEye(MoveLEye), moveREye(MoveREye), moveNeck(MoveNeck), 
-		  head_pitch(Head_pitch), result(1), isTest(IsTest)
+		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), moveLEye(MoveLEye), moveREye(MoveREye), moveHead(MoveHead), 
+		  head_pitch(Head_pitch), result(-1), simulate(Simulate)
 	{
 		m_data.ptr = this;
 	}
-	//Contrcutor for ik data
-	IKData(const char* EndEffektorName,	const char* StopName, float TargetX, float TargetY, float TargetZ, bool IsTest = false )
+	///Contrcutor for ik data
+	IKData(const char* EndEffektorName,	const char* StopName, float TargetX, float TargetY, float TargetZ, bool Simulate = false )
 		: GameEventData(CUSTOM), endEffektorName(EndEffektorName), stopName(StopName), 
-		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), moveLEye(false), moveREye(false), moveNeck(false), 
-		  head_pitch(0), result(1), isTest(IsTest)
+		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), result(-1), simulate(Simulate)
+	{
+		m_data.ptr = this;
+	}
+	///Contrcutor for ik anim data
+	IKData(const char* EndEffektorName,	const char* StopName, float TargetX, float TargetY, float TargetZ, int Stage )
+		: GameEventData(CUSTOM), endEffektorName(EndEffektorName), stopName(StopName), 
+		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), result(-1), stage(Stage)
+	{
+		m_data.ptr = this;
+	}
+
+	///Contrcutor for ik param data (look up parameters in IK_Param)
+	IKData( int IK_Parameter, int value )
+		: GameEventData(CUSTOM), ikparam(IK_Parameter), ikparam_valuei(value)
+	{
+		m_data.ptr = this;
+	}
+	///Contrcutor for ik param data (look up parameters in IK_Param)
+	IKData( int IK_Parameter, float value )
+		: GameEventData(CUSTOM), ikparam(IK_Parameter), ikparam_valuef(value)
 	{
 		m_data.ptr = this;
 	}
 
 	IKData(const IKData& copy) : GameEventData(CUSTOM), targetX(copy.targetX), targetY(copy.targetY), targetZ(copy.targetZ), 
-								result(copy.result), isTest(copy.isTest)
+		result(copy.result), simulate(copy.simulate), stage(copy.stage), ikparam(copy.ikparam),
+		ikparam_valuei(copy.ikparam_valuei), ikparam_valuef(copy.ikparam_valuef)
 	{
 		m_data.ptr = this;
 		m_owner = true;
@@ -1101,13 +1122,13 @@ public:
 		return new IKData(*this);
 	}
 
-	const char* endEffektorName;
-	const char* stopName;
+	const char* endEffektorName;	const char* stopName;
 	float targetX, targetY, targetZ;
-	bool moveLEye, moveREye, moveNeck;
-	int head_pitch;
+	bool moveLEye, moveREye, moveHead;	int head_pitch;
+	bool simulate;
+	int stage;
 	int result;
-	bool isTest;
+	int ikparam;	float ikparam_valuef;	int ikparam_valuei;
 };
 
 class Vec3fData : public GameEventData
