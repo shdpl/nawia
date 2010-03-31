@@ -1055,22 +1055,22 @@ class IKData : public GameEventData
 public:
 	///Contructor for gaze data
 	IKData(float TargetX, float TargetY, float TargetZ, bool MoveLEye, bool MoveREye, bool MoveHead, int Head_pitch, bool Simulate = false )
-		: GameEventData(CUSTOM), endEffektorName(0), stopName(0), 
+		: GameEventData(CUSTOM), endEffectorName(0), stopName(0), 
 		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), moveLEye(MoveLEye), moveREye(MoveREye), moveHead(MoveHead), 
 		  head_pitch(Head_pitch), result(-1), simulate(Simulate)
 	{
 		m_data.ptr = this;
 	}
 	///Contrcutor for ik data
-	IKData(const char* EndEffektorName,	const char* StopName, float TargetX, float TargetY, float TargetZ, bool Simulate = false )
-		: GameEventData(CUSTOM), endEffektorName(EndEffektorName), stopName(StopName), 
+	IKData(const char* EndEffectorName,	const char* StopName, float TargetX, float TargetY, float TargetZ, bool Simulate = false )
+		: GameEventData(CUSTOM), endEffectorName(EndEffectorName), stopName(StopName), 
 		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), result(-1), simulate(Simulate)
 	{
 		m_data.ptr = this;
 	}
 	///Contrcutor for ik anim data
-	IKData(const char* EndEffektorName,	const char* StopName, float TargetX, float TargetY, float TargetZ, int Stage )
-		: GameEventData(CUSTOM), endEffektorName(EndEffektorName), stopName(StopName), 
+	IKData(const char* EndEffectorName,	const char* StopName, float TargetX, float TargetY, float TargetZ, int Stage )
+		: GameEventData(CUSTOM), endEffectorName(EndEffectorName), stopName(StopName), 
 		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), result(-1), stage(Stage)
 	{
 		m_data.ptr = this;
@@ -1078,13 +1078,13 @@ public:
 
 	///Contrcutor for ik param data (look up parameters in IK_Param)
 	IKData( int IK_Parameter, int value )
-		: GameEventData(CUSTOM), ikparam(IK_Parameter), ikparam_valuei(value)
+		: GameEventData(CUSTOM), endEffectorName(0), stopName(0), ikparam(IK_Parameter), ikparam_valuei(value)
 	{
 		m_data.ptr = this;
 	}
 	///Contrcutor for ik param data (look up parameters in IK_Param)
 	IKData( int IK_Parameter, float value )
-		: GameEventData(CUSTOM), ikparam(IK_Parameter), ikparam_valuef(value)
+		: GameEventData(CUSTOM), endEffectorName(0), stopName(0), ikparam(IK_Parameter), ikparam_valuef(value)
 	{
 		m_data.ptr = this;
 	}
@@ -1096,23 +1096,33 @@ public:
 		m_data.ptr = this;
 		m_owner = true;
 		
-		const size_t lenEEName = copy.endEffektorName ? strlen(copy.endEffektorName) : 0;
-		endEffektorName = new char[lenEEName + 1];
-		memcpy( (char*) endEffektorName, copy.endEffektorName, lenEEName );
-		const_cast<char*>(endEffektorName)[lenEEName] = '\0';
+		if(copy.endEffectorName != 0)
+		{
+			const size_t lenEEName = copy.endEffectorName ? strlen(copy.endEffectorName) : 0;
+			endEffectorName = new char[lenEEName + 1];
+			memcpy( (char*) endEffectorName, copy.endEffectorName, lenEEName );
+			const_cast<char*>(endEffectorName)[lenEEName] = '\0';
+		}
+		else
+			endEffectorName = 0;
 
-		const size_t lenStopName = copy.stopName ? strlen(copy.stopName) : 0;
-		stopName = new char[lenStopName + 1];
-		memcpy( (char*) stopName, copy.stopName, lenStopName );
-		const_cast<char*>(stopName)[lenStopName] = '\0';
+		if(copy.stopName != 0)
+		{
+			const size_t lenStopName = copy.stopName ? strlen(copy.stopName) : 0;
+			stopName = new char[lenStopName + 1];
+			memcpy( (char*) stopName, copy.stopName, lenStopName );
+			const_cast<char*>(stopName)[lenStopName] = '\0';
+		}
+		else
+			stopName = 0;
 	}
 
 	~IKData()
 	{
 		if (m_owner)
 		{
-			delete[] endEffektorName;
-			delete[] stopName;
+			if(endEffectorName != 0)	delete[] endEffectorName;
+			if(stopName != 0)			delete[] stopName;
 		}
 	}
 
@@ -1122,7 +1132,7 @@ public:
 		return new IKData(*this);
 	}
 
-	const char* endEffektorName;	const char* stopName;
+	const char* endEffectorName;	const char* stopName;
 	float targetX, targetY, targetZ;
 	bool moveLEye, moveREye, moveHead;	int head_pitch;
 	bool simulate;
