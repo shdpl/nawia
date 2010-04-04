@@ -79,13 +79,14 @@ context AMBIENT
 	#include "shaders/utilityLib/vertSkinning.glsl"
 #endif
 
-uniform vec3 viewer;
+uniform mat4 viewProjMat;
+uniform vec3 viewerPos;
 attribute vec3 vertPos;
 attribute vec2 texCoords0;
 attribute vec3 normal;
 
 #ifdef _F02_NormalMapping
-	attribute vec3 tangent, bitangent;
+	attribute vec4 tangent;
 #endif
 
 varying vec4 pos, vsPos;
@@ -110,21 +111,20 @@ void main( void )
 	
 	// Calculate normal
 #ifdef _F01_Skinning
-	vec3 _normal = calcWorldVec( skinVec( normal, skinningMatVec ) );
+	vec3 _normal = normalize( calcWorldVec( skinVec( normal, skinningMatVec ) ) );
 #else
-	vec3 _normal = calcWorldVec( normal );
+	vec3 _normal = normalize( calcWorldVec( normal ) );
 #endif
 
 	// Calculate tangent and bitangent
 #ifdef _F02_NormalMapping
 	#ifdef _F01_Skinning
-		vec3 _tangent = calcWorldVec( skinVec( tangent, skinningMatVec ) );
-		vec3 _bitangent = calcWorldVec( skinVec( bitangent, skinningMatVec ) );
+		vec3 _tangent = normalize( calcWorldVec( skinVec( tangent.xyz, skinningMatVec ) ) );
 	#else
-		vec3 _tangent = calcWorldVec( tangent );
-		vec3 _bitangent = calcWorldVec( bitangent );
+		vec3 _tangent = normalize( calcWorldVec( tangent.xyz ) );
 	#endif
 	
+	vec3 _bitangent = cross( _normal, _tangent ) * tangent.w;
 	tsbMat = calcTanToWorldMat( _tangent, _bitangent, _normal );
 #else
 	tsbNormal = _normal;
@@ -141,12 +141,12 @@ void main( void )
 
 	// Calculate tangent space eye vector
 #ifdef _F03_ParallaxMapping
-	eyeTS = calcTanVec( viewer - pos.xyz, _tangent, _bitangent, _normal );
+	eyeTS = calcTanVec( viewerPos - pos.xyz, _tangent, _bitangent, _normal );
 #endif
 	
 	// Calculate texture coordinates and clip space position
 	texCoords = texCoords0;
-	gl_Position = gl_ModelViewProjectionMatrix * pos;
+	gl_Position = viewProjMat * pos;
 }
 
 
@@ -232,6 +232,7 @@ void main( void )
 #include "shaders/utilityLib/vertCommon.glsl"
 #include "shaders/utilityLib/vertSkinning.glsl"
 
+uniform mat4 viewProjMat;
 uniform vec4 lightPos;
 attribute vec3 vertPos;
 varying float dist;
@@ -254,7 +255,7 @@ void main( void )
 #endif
 
 	dist = length( lightPos.xyz - pos.xyz ) / lightPos.w;
-	gl_Position = gl_ModelViewProjectionMatrix * pos;
+	gl_Position = viewProjMat * pos;
 }
 	
 	
@@ -425,7 +426,7 @@ void main( void )
 	gl_FragColor.rgb = albedo.rgb * textureCube( ambientMap, normal ).rgb;
 	
 #ifdef _F04_EnvMapping
-	vec3 refl = textureCube( envMap, reflect( pos.xyz - viewer, normalize( normal ) ) ).rgb;
+	vec3 refl = textureCube( envMap, reflect( pos.xyz - viewerPos, normalize( normal ) ) ).rgb;
 	gl_FragColor.rgb = refl * 1.5;
 #endif
 }

@@ -9,7 +9,7 @@
 //
 // *************************************************************************************************
 
-uniform 	vec3 viewer;
+uniform 	vec3 viewerPos;
 uniform 	vec4 lightPos;
 uniform 	vec4 lightDir;
 uniform 	vec3 lightColor;
@@ -70,7 +70,7 @@ vec3 calcPhongSpotLight( const vec3 pos, const vec3 normal, const vec3 albedo, c
 		float shadowFac = PCF( projShadow );
 		
 		// Specular contribution
-		vec3 eye = normalize( viewer - pos );
+		vec3 eye = normalize( viewerPos - pos );
 		vec3 refl = reflect( -light, normal );
 		float spec = pow( clamp( dot( refl, eye ), 0.0, 1.0 ), specExp ) * specMask;
 		col += lightColor * spec * shadowFac;

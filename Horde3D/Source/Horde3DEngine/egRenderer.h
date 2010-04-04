@@ -112,6 +112,8 @@ protected:
 	
 	unsigned char                      *_scratchBuf;
 	uint32                             _scratchBufSize;
+
+	Matrix4f                           _viewMat, _viewMatInv, _projMat, _viewProjMat;
 	
 	std::vector< PipeSamplerBinding >  _pipeSamplerBindings;
 	std::vector< char >                _occSets;  // Actually bool
@@ -128,7 +130,7 @@ protected:
 	MaterialResource                   *_curMatRes;
 	ShaderCombination                  *_curShader;
 	RenderTarget                       *_curRenderTarget;
-	uint32                             _curUpdateStamp;
+	uint32                             _curShaderUpdateStamp;
 	
 	float                              _splitPlanes[5];
 	Matrix4f                           _lightMats[4];
@@ -147,7 +149,7 @@ protected:
 	static bool meshMaterialOrder( MeshNode *e1, MeshNode *e2 )
 		{ return e1->getMaterialRes() < e2->getMaterialRes(); }
 	
-	void setupViewMatrices( CameraNode *cam );
+	void setupViewMatrices( const Matrix4f &viewMat, const Matrix4f &projMat );
 	
 	void createPrimitives();
 	
@@ -191,6 +193,7 @@ public:
 	bool createShaderComb( const char *vertexShader, const char *fragmentShader, ShaderCombination &sc );
 	void releaseShaderComb( ShaderCombination &sc );
 	void setShaderComb( ShaderCombination *sc );
+	void commitGeneralUniforms();
 	bool setMaterial( MaterialResource *materialRes, const std::string &shaderContext );
 	
 	bool createShadowRB( uint32 width, uint32 height );

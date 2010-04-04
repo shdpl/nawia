@@ -141,14 +141,14 @@ struct PipelineStage
 
 struct RenderTarget
 {
-	std::string                id;
-	uint32                     numColBufs;
-	RenderBufferFormats::List  format;
-	uint32                     width, height;
-	uint32                     samples;
-	float                      scale;  // Scale factor for FB width and height
-	bool                       hasDepthBuf;
-	uint32                     rendBuf;
+	std::string           id;
+	uint32                numColBufs;
+	TextureFormats::List  format;
+	uint32                width, height;
+	uint32                samples;
+	float                 scale;  // Scale factor for FB width and height
+	bool                  hasDepthBuf;
+	uint32                rendBuf;
 
 	RenderTarget()
 	{
@@ -170,7 +170,7 @@ private:
 	const std::string parseStage( XMLNode &node, PipelineStage &stage );
 
 	void addRenderTarget( const std::string &id, bool depthBuffer, uint32 numBuffers,
-	                      RenderBufferFormats::List format, uint32 samples,
+	                      TextureFormats::List format, uint32 samples,
 	                      uint32 width, uint32 height, float scale );
 	RenderTarget *findRenderTarget( const std::string &id );
 	bool createRenderTargets();

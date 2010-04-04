@@ -24,10 +24,11 @@ using namespace std;
 
 
 const char *vsDefColor =
+	"uniform mat4 viewProjMat;\n"
 	"uniform mat4 worldMat;\n"
 	"attribute vec3 vertPos;\n"
 	"void main() {\n"
-	"	gl_Position = gl_ModelViewProjectionMatrix * worldMat * vec4( vertPos, 1.0 );\n"
+	"	gl_Position = viewProjMat * worldMat * vec4( vertPos, 1.0 );\n"
 	"}\n";
 
 const char *fsDefColor =
@@ -49,7 +50,7 @@ Renderer::Renderer() : RendererBase()
 	_curMatRes = 0x0;
 	_curShader = 0x0;
 	_curRenderTarget = 0x0;
-	_curUpdateStamp = 1;
+	_curShaderUpdateStamp = 1;
 }
 
 
@@ -186,12 +187,17 @@ void Renderer::resize( int x, int y, int width, int height )
 // Misc Helper Functions
 // =================================================================================================
 
-void Renderer::setupViewMatrices( CameraNode *cam )
+void Renderer::setupViewMatrices( const Matrix4f &viewMat, const Matrix4f &projMat )
 {
-	glMatrixMode( GL_PROJECTION );
-	glLoadMatrixf( cam->getProjMat().x );
-	glMatrixMode( GL_MODELVIEW );
-	glLoadMatrixf( cam->getViewMat().x );
+	// Note: The viewing matrices should be set before a material is set, otherwise the general
+	//       uniforms need to be commited manually
+	
+	_viewMat = viewMat;
+	_viewMatInv = viewMat.inverted();
+	_projMat = projMat;
+	_viewProjMat = projMat * viewMat;
+
+	++_curShaderUpdateStamp;
 }
 
 
@@ -329,12 +335,23 @@ bool Renderer::createShaderComb( const char *vertexShader, const char *fragmentS
 	int loc = glGetUniformLocation( shdObj, "shadowMap" );
 	if( loc >= 0 ) glUniform1i( loc, 12 );
 
-	// Get uniform locations
+	// Misc general uniforms
 	sc.uni_frameBufSize = glGetUniformLocation( shdObj, "frameBufSize" );
+	
+	// View/projection uniforms
+	sc.uni_viewMat = glGetUniformLocation( shdObj, "viewMat" );
+	sc.uni_viewMatInv = glGetUniformLocation( shdObj, "viewMatInv" );
+	sc.uni_projMat = glGetUniformLocation( shdObj, "projMat" );
+	sc.uni_viewProjMat = glGetUniformLocation( shdObj, "viewProjMat" );
+	sc.uni_viewerPos = glGetUniformLocation( shdObj, "viewerPos" );
+	
+	// Per-instance uniforms
 	sc.uni_worldMat = glGetUniformLocation( shdObj, "worldMat" );
 	sc.uni_worldNormalMat = glGetUniformLocation( shdObj, "worldNormalMat" );
 	sc.uni_nodeId = glGetUniformLocation( shdObj, "nodeId" );
-	sc.uni_viewer = glGetUniformLocation( shdObj, "viewer" );
+	sc.uni_skinMatRows = glGetUniformLocation( shdObj, "skinMatRows[0]" );
+	
+	// Lighting uniforms
 	sc.uni_lightPos = glGetUniformLocation( shdObj, "lightPos" );
 	sc.uni_lightDir = glGetUniformLocation( shdObj, "lightDir" );
 	sc.uni_lightColor = glGetUniformLocation( shdObj, "lightColor" );
@@ -342,11 +359,14 @@ bool Renderer::createShaderComb( const char *vertexShader, const char *fragmentS
 	sc.uni_shadowMats = glGetUniformLocation( shdObj, "shadowMats" );
 	sc.uni_shadowMapSize = glGetUniformLocation( shdObj, "shadowMapSize" );
 	sc.uni_shadowBias = glGetUniformLocation( shdObj, "shadowBias" );
-	sc.uni_skinMatRows = glGetUniformLocation( shdObj, "skinMatRows[0]" );
+	
+	// Particle-specific uniforms
 	sc.uni_parCorners = glGetUniformLocation( shdObj, "parCorners" );
 	sc.uni_parPosArray = glGetUniformLocation( shdObj, "parPosArray" );
 	sc.uni_parSizeAndRotArray = glGetUniformLocation( shdObj, "parSizeAndRotArray" );
 	sc.uni_parColorArray = glGetUniformLocation( shdObj, "parColorArray" );
+	
+	// Overlay-specific uniforms
 	sc.uni_olayColor = glGetUniformLocation( shdObj, "olayColor" );
 
 	return true;
@@ -365,6 +385,67 @@ void Renderer::setShaderComb( ShaderCombination *sc )
 	else bindShader( sc->shaderObj );
 
 	_curShader = sc;
+}
+
+
+void Renderer::commitGeneralUniforms()
+{
+	ASSERT( _curShader != 0x0 );
+
+	// Note: Make sure that all functions which modify one of the following params increase the stamp
+	if( _curShader->lastUpdateStamp != _curShaderUpdateStamp )
+	{
+		if( _curShader->uni_frameBufSize >= 0 )
+			glUniform2f( _curShader->uni_frameBufSize, (float)_fbWidth, (float)_fbHeight );
+		
+		// Viewer params
+		if( _curShader->uni_viewMat >= 0 )
+			glUniformMatrix4fv( _curShader->uni_viewMat, 1, false, _viewMat.x );
+		
+		if( _curShader->uni_viewMatInv >= 0 )
+			glUniformMatrix4fv( _curShader->uni_viewMatInv, 1, false, _viewMatInv.x );
+		
+		if( _curShader->uni_projMat >= 0 )
+			glUniformMatrix4fv( _curShader->uni_projMat, 1, false, _projMat.x );
+		
+		if( _curShader->uni_viewProjMat >= 0 )
+			glUniformMatrix4fv( _curShader->uni_viewProjMat, 1, false, _viewProjMat.x );
+		
+		if( _curShader->uni_viewerPos >= 0 )
+			glUniform3fv( _curShader->uni_viewerPos, 1, &_viewMatInv.x[12] );
+		
+		// Light params
+		if( _curLight != 0x0 )
+		{
+			if( _curShader->uni_lightPos >= 0 )
+				glUniform4f( _curShader->uni_lightPos, _curLight->_absPos.x, _curLight->_absPos.y,
+				             _curLight->_absPos.z, _curLight->_radius );
+			
+			if( _curShader->uni_lightDir >= 0 )
+				glUniform4f( _curShader->uni_lightDir, _curLight->_spotDir.x, _curLight->_spotDir.y,
+				             _curLight->_spotDir.z, cosf( degToRad( _curLight->_fov / 2.0f ) ) );
+			
+			if( _curShader->uni_lightColor >= 0 )
+			{
+				Vec3f col = _curLight->_diffuseCol * _curLight->_diffuseColMult;
+				glUniform3fv( _curShader->uni_lightColor, 1, &col.x );
+			}
+			
+			if( _curShader->uni_shadowSplitDists >= 0 )
+				glUniform4fv( _curShader->uni_shadowSplitDists, 1, &_splitPlanes[1] );
+
+			if( _curShader->uni_shadowMats >= 0 )
+				glUniformMatrix4fv( _curShader->uni_shadowMats, 4, false, &_lightMats[0].x[0] );
+			
+			if( _curShader->uni_shadowMapSize >= 0 )
+				glUniform1f( _curShader->uni_shadowMapSize, (float)Modules::config().shadowMapSize );
+			
+			if( _curShader->uni_shadowBias >= 0 )
+				glUniform1f( _curShader->uni_shadowBias, _curLight->_shadowMapBias );
+		}
+
+		_curShader->lastUpdateStamp = _curShaderUpdateStamp;
+	}
 }
 
 
@@ -474,55 +555,12 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 	}
 	
 	// Setup standard shader uniforms
-	// Note: Make sure that all functions which modify one of the following params increase stamp
-	if( _curShader->lastUpdateStamp != _curUpdateStamp )
-	{
-		if( _curShader->uni_frameBufSize >= 0 )
-				glUniform2f( _curShader->uni_frameBufSize, (float)_fbWidth, (float)_fbHeight );
-		
-		if( _curCamera != 0x0 )	 // Viewer params
-		{
-			if( _curShader->uni_viewer >= 0 )
-				glUniform3fv( _curShader->uni_viewer, 1, &_curCamera->_absTrans.x[12] );
-		}
-		if( _curLight != 0x0 )	// Light params
-		{
-			if( _curShader->uni_lightPos >= 0 )
-				glUniform4f( _curShader->uni_lightPos, _curLight->_absPos.x, _curLight->_absPos.y,
-							 _curLight->_absPos.z, _curLight->_radius );
-			
-			if( _curShader->uni_lightDir >= 0 )
-				glUniform4f( _curShader->uni_lightDir, _curLight->_spotDir.x, _curLight->_spotDir.y,
-				             _curLight->_spotDir.z, cosf( degToRad( _curLight->_fov / 2.0f ) ) );
-			
-			if( _curShader->uni_lightColor >= 0 )
-			{
-				Vec3f col = _curLight->_diffuseCol * _curLight->_diffuseColMult;
-				glUniform3fv( _curShader->uni_lightColor, 1, &col.x );
-			}
-			
-			if( _curShader->uni_shadowSplitDists >= 0 )
-				glUniform4fv( _curShader->uni_shadowSplitDists, 1, &_splitPlanes[1] );
-
-			if( _curShader->uni_shadowMats >= 0 )
-				glUniformMatrix4fv( _curShader->uni_shadowMats, 4, false, &_lightMats[0].x[0] );
-			
-			if( _curShader->uni_shadowMapSize >= 0 )
-				glUniform1f( _curShader->uni_shadowMapSize,
-							 (float)Modules::config().shadowMapSize );
-			if( _curShader->uni_shadowBias >= 0 )
-				glUniform1f( _curShader->uni_shadowBias, _curLight->_shadowMapBias );
-		}
-
-		_curShader->lastUpdateStamp = _curUpdateStamp;
-	}
+	commitGeneralUniforms();
 
 	// Setup texture samplers
 	for( size_t i = 0, s = shaderRes->_samplers.size(); i < s; ++i )
 	{
 		if( _curShader->customSamplers[i] < 0 ) continue;
-		
-		glActiveTexture( GL_TEXTURE0 + shaderRes->_samplers[i].texUnit );
 		
 		ShaderSampler &sampler = shaderRes->_samplers[i];
 		TextureResource *texRes = 0x0;
@@ -559,8 +597,7 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 				}
 				else if( texRes->getRBObject() != _curRendBuf )
 				{
-					glActiveTexture( GL_TEXTURE0 + shaderRes->_samplers[i].texUnit );
-					glBindTexture( GL_TEXTURE_2D, getRenderBufferTex( texRes->getRBObject(), 0 ) );
+					bindTexture( shaderRes->_samplers[i].texUnit, getRenderBufferTex( texRes->getRBObject(), 0 ) );
 				}
 				else  // Trying to bind active render buffer as texture
 				{
@@ -584,9 +621,8 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 				{
 					target = GL_TEXTURE_2D;
 					mips = false;
-					glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
 
-					glBindTexture( GL_TEXTURE_2D, getRenderBufferTex(
+					bindTexture( shaderRes->_samplers[i].texUnit, getRenderBufferTex(
 						_pipeSamplerBindings[j].rbObj, _pipeSamplerBindings[j].bufIndex ) );
 					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
 
@@ -652,7 +688,6 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 			glTexParameteri( target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1 );
 		}
 	}
-	glActiveTexture( GL_TEXTURE0 );
 
 	// Set custom uniforms
 	for( size_t i = 0, s = shaderRes->_uniforms.size(); i < s; ++i )
@@ -745,7 +780,7 @@ bool Renderer::setMaterial( MaterialResource *materialRes, const string &shaderC
 
 bool Renderer::createShadowRB( uint32 width, uint32 height )
 {
-	_shadowRB = createRenderBuffer( width, height, RenderBufferFormats::RGBA8, true, 0, 0 );
+	_shadowRB = createRenderBuffer( width, height, TextureFormats::BGRA8, true, 0, 0 );
 	
 	return _shadowRB != 0;
 }
@@ -760,10 +795,8 @@ void Renderer::releaseShadowRB()
 void Renderer::setupShadowMap( bool noShadows )
 {
 	// Bind shadow map
-	glActiveTexture( GL_TEXTURE12 );
-
 	if( !noShadows && _curLight->_shadowMapCount > 0 )
-		glBindTexture( GL_TEXTURE_2D, getRenderBufferTex( _shadowRB, 32 ) );
+		bindTexture( 12, getRenderBufferTex( _shadowRB, 32 ) );
 	else
 		bindTexture( 12, _defShadowMap );
 
@@ -776,8 +809,6 @@ void Renderer::setupShadowMap( bool noShadows )
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
-	
-	glActiveTexture( GL_TEXTURE0 );
 }
 
 
@@ -871,7 +902,7 @@ Matrix4f Renderer::calcLightMat( const Frustum &frustum )
 
 void Renderer::updateShadowMap()
 {
-	if( _curLight == 0x0 || _curCamera == 0x0 ) return;
+	if( _curLight == 0x0 ) return;
 	
 	uint32 _prevRendBuf = _curRendBuf;
 	setRenderBuffer( _shadowRB );
@@ -929,8 +960,6 @@ void Renderer::updateShadowMap()
 	// Prepare shadow map rendering
 	glEnable( GL_DEPTH_TEST );
 	//glCullFace( GL_FRONT );	// Front face culling reduces artefacts but produces more "peter-panning"
-	glMatrixMode( GL_MODELVIEW );
-	glLoadMatrixf( _curLight->getViewMat().x );
 	
 	// Build split frustums and render shadow maps
 	for( uint32 i = 0; i < numMaps; ++i )
@@ -954,8 +983,7 @@ void Renderer::updateShadowMap()
 		
 		// Build light projection matrix
 		_lightMats[i] = calcLightMat( frustum );
-		glMatrixMode( GL_PROJECTION );
-		glLoadMatrixf( &_lightMats[i].x[0] );
+		setupViewMatrices( _curLight->getViewMat(), _lightMats[i] );
 		
 		// Frustum Culling
 		frustum.buildViewFrustum( _curLight->getViewMat(), _lightMats[i] );
@@ -1004,7 +1032,6 @@ void Renderer::updateShadowMap()
 
 	// ********************************************************************************************
 
-	glMatrixMode( GL_MODELVIEW );
 	glCullFace( GL_BACK );
 		
 	setRenderBuffer( _prevRendBuf );
@@ -1052,6 +1079,7 @@ void Renderer::drawOccProxies( uint32 list )
 	glDepthMask( GL_FALSE );
 	
 	setShaderComb( &Modules::renderer()._defColorShader );
+	commitGeneralUniforms();
 	bindVertexBuffer( 0, _vbCube, 0, 12 );
 	bindIndexBuffer( _ibCube );
 	applyVertexLayout( _vlPosOnly );
@@ -1100,12 +1128,8 @@ void Renderer::clearOverlays()
 void Renderer::drawOverlays( const string &shaderContext )
 {
 	setMaterial( 0x0, "" );
-	++_curUpdateStamp;
 	
-	glMatrixMode( GL_PROJECTION );
-	glLoadMatrixf( Matrix4f::OrthoMat( 0, 1, 1, 0, -1, 1 ).x );
-	glMatrixMode( GL_MODELVIEW );
-	glLoadMatrixf( Matrix4f().x );
+	setupViewMatrices( Matrix4f(), Matrix4f::OrthoMat( 0, 1, 1, 0, -1, 1 ) );
 	
 	for( int i = 0; i < 8; ++i )
 	{
@@ -1140,14 +1164,6 @@ void Renderer::bindPipeBuffer( uint32 rbObj, const string &sampler, uint32 bufIn
 	{
 		// Clear buffer bindings
 		_pipeSamplerBindings.resize( 0 );
-
-		// Make sure all render buffers are unbound
-		for( uint32 i = 0; i < 12; ++i )
-		{
-			glActiveTexture( GL_TEXTURE0 + i );
-			glBindTexture( GL_TEXTURE_2D, 0 );
-		}
-		glActiveTexture( GL_TEXTURE0 );
 	}
 	else
 	{
@@ -1227,17 +1243,10 @@ void Renderer::drawFSQuad( Resource *matRes, const string &shaderContext )
 	
 	// Reset current material
 	setMaterial( 0x0, "" );
-	++_curUpdateStamp;
 
-	if( !setMaterial( (MaterialResource *)matRes, shaderContext ) ) return;
+	setupViewMatrices( _curCamera->getViewMat(), Matrix4f::OrthoMat( 0, 1, 0, 1, -1, 1 ) );
 	
-	glMatrixMode( GL_PROJECTION );
-	glLoadMatrixf( Matrix4f::OrthoMat( 0, 1, 0, 1, -1, 1 ).x );
-	glMatrixMode( GL_MODELVIEW );
-	if( _curCamera != 0x0 )
-		glLoadMatrixf( _curCamera->getViewMat().x );
-	else
-		glLoadMatrixf( Matrix4f().x );
+	if( !setMaterial( (MaterialResource *)matRes, shaderContext ) ) return;
 
 	bindVertexBuffer( 0, _vbFSPoly, 0, 12 );
 	bindIndexBuffer( 0 );
@@ -1250,14 +1259,9 @@ void Renderer::drawFSQuad( Resource *matRes, const string &shaderContext )
 void Renderer::drawGeometry( const string &shaderContext, const string &theClass,
                              RenderingOrder::List order, int occSet )
 {
-	if( _curCamera == 0x0 ) return;
-	
-	++_curUpdateStamp;
-	
 	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, order, false, true );
 	
-	setupViewMatrices( _curCamera );
-	
+	setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
 	drawRenderables( shaderContext, theClass, false, &_curCamera->getFrustum(), 0x0, order, occSet );
 }
 
@@ -1265,21 +1269,16 @@ void Renderer::drawGeometry( const string &shaderContext, const string &theClass
 void Renderer::drawLightGeometry( const string shaderContext, const string &theClass,
                                   bool noShadows, RenderingOrder::List order, int occSet )
 {
-	if( _curCamera == 0x0 ) return;
-	
 	string context = shaderContext;
 	
 	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None, true, false );
 	
 	for( size_t i = 0, s = Modules::sceneMan().getLightQueue().size(); i < s; ++i )
 	{
-		++_curUpdateStamp;
 		_curLight = (LightNode *)Modules::sceneMan().getLightQueue()[i];
 
 		// Check if light is not visible
 		if( _curCamera->getFrustum().cullFrustum( _curLight->getFrustum() ) ) continue;
-
-		setupViewMatrices( _curCamera );
 
 		// Check if light is occluded
 		if( occSet >= 0 )
@@ -1341,37 +1340,34 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 		// Render
 		Modules::sceneMan().updateQueues( _curCamera->getFrustum(), &_curLight->getFrustum(),
 		                                  RenderingOrder::None, false, true );
-		setupViewMatrices( _curCamera );
+		setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
 		drawRenderables( context, theClass, false, &_curCamera->getFrustum(),
 		                 &_curLight->getFrustum(), order, occSet );
 		Modules().stats().incStat( EngineStats::LightPassCount, 1 );
 
 		// Reset
 		glDisable( GL_SCISSOR_TEST );
-		glActiveTexture( GL_TEXTURE12 );
-		glBindTexture( GL_TEXTURE_2D, 0 );
-		glActiveTexture( GL_TEXTURE0 );
 	}
 
 	_curLight = 0x0;
 
 	// Draw occlusion proxies
 	if( occSet >= 0 )
+	{
+		setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
 		Modules::renderer().drawOccProxies( 1 );
+	}
 }
 
 
 void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int occSet )
 {
-	if( _curCamera == 0x0 ) return;
-	
 	string context = shaderContext;
 	
 	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None, true, false );
 	
 	for( size_t i = 0, s = Modules::sceneMan().getLightQueue().size(); i < s; ++i )
 	{
-		++_curUpdateStamp;
 		_curLight = (LightNode *)Modules::sceneMan().getLightQueue()[i];
 		
 		// Check if light is not visible
@@ -1421,7 +1417,7 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 
 		if( shaderContext == "" ) context = _curLight->_lightingContext;
 
-		setupViewMatrices( _curCamera );
+		setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
 		setMaterial( 0x0, "" );		// Reset material
 		if( !setMaterial( _curLight->_materialRes, context ) ) continue;
 
@@ -1443,9 +1439,6 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 		// Reset
 		glEnable( GL_DEPTH_TEST );
 		glCullFace( GL_BACK );
-		glActiveTexture( GL_TEXTURE12 );
-		glBindTexture( GL_TEXTURE_2D, 0 );
-		glActiveTexture( GL_TEXTURE0 );
 	}
 
 	_curLight = 0x0;
@@ -1453,7 +1446,7 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 	// Draw occlusion proxies
 	if( occSet >= 0 )
 	{
-		setupViewMatrices( _curCamera );
+		setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
 		Modules::renderer().drawOccProxies( 1 );
 	}
 }
@@ -1467,6 +1460,8 @@ void Renderer::drawRenderables( const string &shaderContext, const string &theCl
                                 const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order,
                                 int occSet )
 {
+	ASSERT( _curCamera != 0x0 );
+	
 	if( Modules::config().wireframeMode && !Modules::config().debugViewMode )
 	{
 		glDisable( GL_CULL_FACE );
@@ -1629,6 +1624,7 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			else
 			{
 				Modules::renderer().setShaderComb( &Modules::renderer()._defColorShader );
+				Modules::renderer().commitGeneralUniforms();
 				
 				Vec4f color;
 				if( curLod == 0 ) color = Vec4f( 0.5f, 0.75f, 1, 1 );
@@ -1991,8 +1987,6 @@ void Renderer::finalizeFrame()
 
 void Renderer::renderDebugView()
 {
-	if( _curCamera == 0x0 ) return;
-	
 	setRenderBuffer( 0 );
 	setMaterial( 0x0, "" );
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -2001,15 +1995,16 @@ void Renderer::renderDebugView()
 	glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
 	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None, true, true );
-	setupViewMatrices( _curCamera );
 
 	// Draw renderable nodes as wireframe
+	setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
 	drawRenderables( "", "", true, &_curCamera->getFrustum(), 0x0, RenderingOrder::None, -1 );
 
 	// Draw bounding boxes
 	glDisable( GL_CULL_FACE );
 	setMaterial( 0x0, "" );
 	setShaderComb( &_defColorShader );
+	commitGeneralUniforms();
 	glUniformMatrix4fv( _defColorShader.uni_worldMat, 1, false, &Matrix4f().x[0] );
 	glUniform4f( Modules::renderer()._defColShader_color, 0.4f, 0.4f, 0.4f, 1 );
 	for( uint32 i = 0, s = (uint32)Modules::sceneMan().getRenderableQueue().size(); i < s; ++i )

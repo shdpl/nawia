@@ -190,7 +190,7 @@ bool RendererBase::init()
 
 	// Find supported depth format (some old ATI cards only support 16 bit depth for FBOs)
 	_depthFormat = GL_DEPTH_COMPONENT24;
-	uint32 testBuf = createRenderBuffer( 32, 32, RenderBufferFormats::RGBA8, true, 1, 0 ); 
+	uint32 testBuf = createRenderBuffer( 32, 32, TextureFormats::BGRA8, true, 1, 0 ); 
 	if( testBuf == 0 )
 	{	
 		_depthFormat = GL_DEPTH_COMPONENT16;
@@ -250,10 +250,6 @@ void RendererBase::releaseBuffer( uint32 bufObj )
 	if( bufObj == 0 ) return;
 	
 	RBBuffer &buf = _buffers.getRef( bufObj );
-	
-	glBindBuffer( buf.type, buf.glObj );
-	glBufferData( buf.type, 0, 0x0, GL_STATIC_DRAW );
-	glBindBuffer( buf.type, 0 );
 	glDeleteBuffers( 1, &buf.glObj );
 
 	_bufferMem -= buf.size;
@@ -362,7 +358,37 @@ uint32 RendererBase::createTexture( TextureTypes::List type, int width, int heig
 	tex.width = width;
 	tex.height = height;
 	tex.sRGB = sRGB && Modules::config().sRGBLinearization;
+	
+	switch( format )
+	{
+	case TextureFormats::BGRA8:
+		tex.glFmt = tex.sRGB ? GL_SRGB8_ALPHA8_EXT : GL_RGBA8;
+		break;
+	case TextureFormats::DXT1:
+		tex.glFmt = tex.sRGB ? GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT : GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+		break;
+	case TextureFormats::DXT3:
+		tex.glFmt = tex.sRGB ? GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT : GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+		break;
+	case TextureFormats::DXT5:
+		tex.glFmt = tex.sRGB ? GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT : GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		break;
+	case TextureFormats::RGBA16F:
+		tex.glFmt = GL_RGBA16F_ARB;
+		break;
+	case TextureFormats::RGBA32F:
+		tex.glFmt = GL_RGBA32F_ARB;
+		break;
+	case TextureFormats::DEPTH:
+		tex.glFmt = _depthFormat;
+		break;
+	default:
+		ASSERT( 0 );
+		break;
+	};
+	
 	glGenTextures( 1, &tex.glObj );
+	glActiveTexture( GL_TEXTURE15 );
 	glBindTexture( tex.type, tex.glObj );
 	
 	if( genMips )
@@ -371,6 +397,8 @@ uint32 RendererBase::createTexture( TextureTypes::List type, int width, int heig
 		glTexParameteri( tex.type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 	else
 		glTexParameteri( tex.type, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+	bindTexture( 15, 0 );
 
 	// Calculate memory requirements
 	tex.memSize = calcTextureSize( format, width, height );
@@ -387,53 +415,35 @@ void RendererBase::uploadTextureData( uint32 texObj, int slice, int mipLevel, co
 	const RBTexture &tex = _textures.getRef( texObj );
 	TextureFormats::List format = tex.format;
 
-	glBindTexture( tex.type, tex.glObj );
+	bindTexture( 15, texObj );
 	
-	int internalFormat = 0, inputFormat = 0, inputType = GL_UNSIGNED_BYTE;
+	int inputFormat = GL_BGRA, inputType = GL_UNSIGNED_BYTE;
 	int target = tex.type == TextureTypes::TexCube ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 	if( target == GL_TEXTURE_CUBE_MAP ) target = GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice;
-
+	
 	switch( format )
 	{
-	case TextureFormats::BGRA8:
-		internalFormat = tex.sRGB ? GL_SRGB8_ALPHA8_EXT : GL_RGBA8;
-		inputFormat = GL_BGRA;
-		break;
-	case TextureFormats::DXT1:
-		internalFormat = tex.sRGB ? GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT : GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-		break;
-	case TextureFormats::DXT3:
-		internalFormat = tex.sRGB ? GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT : GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-		break;
-	case TextureFormats::DXT5:
-		internalFormat = tex.sRGB ? GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT : GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-		break;
 	case TextureFormats::RGBA16F:
-		internalFormat = GL_RGBA16F_ARB;
 		inputFormat = GL_RGBA;
 		inputType = GL_FLOAT;
 		break;
 	case TextureFormats::RGBA32F:
-		internalFormat = GL_RGBA32F_ARB;
 		inputFormat = GL_RGBA;
 		inputType = GL_FLOAT;
 		break;
 	case TextureFormats::DEPTH:
-		internalFormat = _depthFormat;
 		inputFormat = GL_DEPTH_COMPONENT;
 		inputType = GL_FLOAT;
-	default:
-		break;
 	};
 	
 	// Calculate size of next mipmap using "floor" convention
 	int width = std::max( tex.width >> mipLevel, 1 ), height = std::max( tex.height >> mipLevel, 1 );
 	
 	if( format == TextureFormats::DXT1 || format == TextureFormats::DXT3 || format == TextureFormats::DXT5 )
-		glCompressedTexImage2D( target, mipLevel, internalFormat, width, height, 0,
+		glCompressedTexImage2D( target, mipLevel, tex.glFmt, width, height, 0,
 		                        calcTextureSize( format, width, height ), pixels );	
 	else
-		glTexImage2D( target, mipLevel, internalFormat, width, height, 0, inputFormat, inputType, pixels );
+		glTexImage2D( target, mipLevel, tex.glFmt, width, height, 0, inputFormat, inputType, pixels );
 }
 
 
@@ -442,14 +452,6 @@ void RendererBase::releaseTexture( uint32 texObj )
 	if( texObj == 0 ) return;
 	
 	const RBTexture &tex = _textures.getRef( texObj );
-	
-	glBindTexture( tex.type, tex.glObj );
-
-	int target = tex.type == TextureTypes::TexCube ? GL_TEXTURE_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D;
-	for( int i = 0; i < (target == GL_TEXTURE_2D ? 1 : 6); ++i )
-		glTexImage2D( target + i, 0, GL_RGB8, 0, 0, 0, GL_RGB, GL_UNSIGNED_BYTE, 0x0 );
-
-	glBindTexture( tex.type, 0 );
 	glDeleteTextures( 1, &tex.glObj );
 
 	_textureMem -= tex.memSize;
@@ -461,7 +463,7 @@ void RendererBase::updateTextureData( uint32 texObj, int slice, int mipLevel, co
 {
 	const RBTexture &tex = _textures.getRef( texObj );
 	
-	glBindTexture( tex.type, tex.glObj );
+	bindTexture( 15, texObj );
 	glTexParameteri( tex.type, GL_GENERATE_MIPMAP, GL_FALSE );
 	
 	uploadTextureData( texObj, slice, mipLevel, pixels );
@@ -476,7 +478,7 @@ bool RendererBase::getTextureData( uint32 texObj, int slice, int mipLevel, void 
 	if( target == GL_TEXTURE_CUBE_MAP ) target = GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice;
 	
 	int fmt, type, compressed = 0;
-	glBindTexture( tex.type, tex.glObj );
+	bindTexture( 15, texObj );
 
 	switch( tex.format )
 	{
@@ -509,6 +511,8 @@ bool RendererBase::getTextureData( uint32 texObj, int slice, int mipLevel, void 
 
 void RendererBase::bindTexture( uint32 unit, uint32 texObj )
 {
+	ASSERT( unit < 16 );
+	
 	glActiveTexture( GL_TEXTURE0 + unit );
 	
 	if( texObj == 0 )
@@ -519,9 +523,10 @@ void RendererBase::bindTexture( uint32 unit, uint32 texObj )
 	else
 	{
 		const RBTexture &tex = _textures.getRef( texObj );
-		glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
 		glBindTexture( tex.type, tex.glObj );
 	}
+
+	_texSlots[unit].texObj = texObj;
 }
 
 
@@ -712,10 +717,10 @@ bool RendererBase::setShaderVar1i( uint32 shdObj, const char *var, int value )
 // Renderbuffers
 // =================================================================================================
 
-uint32 RendererBase::createRenderBuffer( uint32 width, uint32 height, RenderBufferFormats::List format,
+uint32 RendererBase::createRenderBuffer( uint32 width, uint32 height, TextureFormats::List format,
                                          bool depth, uint32 numColBufs, uint32 samples )
 {
-	if( (format == RenderBufferFormats::RGBA16F || format == RenderBufferFormats::RGBA32F) &&
+	if( (format == TextureFormats::RGBA16F || format == TextureFormats::RGBA32F) &&
 		!_caps[RenderCaps::Tex_Float] )
 	{
 		return 0;
@@ -748,22 +753,17 @@ uint32 RendererBase::createRenderBuffer( uint32 width, uint32 height, RenderBuff
 	if( numColBufs > 0 )
 	{
 		// Attach color buffers
-		uint32 glFormat = 0;
-		if( format == RenderBufferFormats::RGBA8 ) glFormat = GL_RGBA8;
-		else if( format == RenderBufferFormats::RGBA16F ) glFormat = GL_RGBA16F_ARB;
-		else if( format == RenderBufferFormats::RGBA32F ) glFormat = GL_RGBA32F_ARB;
-
 		for( uint32 j = 0; j < numColBufs; ++j )
 		{
 			glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, rb.fbo );
 			// Create a color texture
-			glGenTextures( 1, &rb.colTexs[j] );
-			glBindTexture( GL_TEXTURE_2D, rb.colTexs[j] );
-			glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			glTexImage2D( GL_TEXTURE_2D, 0, glFormat, rb.width, rb.height, 0, GL_RGBA, GL_FLOAT, 0x0 );
+			uint32 texObj = createTexture( TextureTypes::Tex2D, rb.width, rb.height, format, false, false, false, false );
+			ASSERT( texObj != 0 );
+			uploadTextureData( texObj, 0, 0, 0x0 );
+			rb.colTexs[j] = texObj;
+			RBTexture &tex = _textures.getRef( texObj );
 			// Attach the texture
-			glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + j, GL_TEXTURE_2D, rb.colTexs[j], 0 );
+			glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + j, GL_TEXTURE_2D, tex.glObj, 0 );
 
 			if( samples > 0 )
 			{
@@ -771,8 +771,7 @@ uint32 RendererBase::createRenderBuffer( uint32 width, uint32 height, RenderBuff
 				// Create a multisampled renderbuffer
 				glGenRenderbuffersEXT( 1, &rb.colBufs[j] );
 				glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, rb.colBufs[j] );
-				glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT, rb.samples,
-				                                     glFormat, rb.width, rb.height );
+				glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT, rb.samples, tex.glFmt, rb.width, rb.height );
 				// Attach the renderbuffer
 				glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + j,
 				                              GL_RENDERBUFFER_EXT, rb.colBufs[j] );
@@ -809,14 +808,14 @@ uint32 RendererBase::createRenderBuffer( uint32 width, uint32 height, RenderBuff
 	{
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, rb.fbo );
 		// Create a depth texture
-		glGenTextures( 1, &rb.depthTex );
-		glBindTexture( GL_TEXTURE_2D, rb.depthTex );
-		glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		uint32 texObj = createTexture( TextureTypes::Tex2D, rb.width, rb.height, TextureFormats::DEPTH, false, false, false, false );
+		ASSERT( texObj != 0 );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
-		glTexImage2D( GL_TEXTURE_2D, 0, _depthFormat, rb.width, rb.height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0x0 );
+		uploadTextureData( texObj, 0, 0, 0x0 );
+		rb.depthTex = texObj;
+		RBTexture &tex = _textures.getRef( texObj );
 		// Attach the texture
-		glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, rb.depthTex, 0 );
+		glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, tex.glObj, 0 );
 
 		if( samples > 0 )
 		{
@@ -824,8 +823,7 @@ uint32 RendererBase::createRenderBuffer( uint32 width, uint32 height, RenderBuff
 			// Create a multisampled renderbuffer
 			glGenRenderbuffersEXT( 1, &rb.depthBuf );
 			glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, rb.depthBuf );
-			glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT, rb.samples,
-			                                     _depthFormat, rb.width, rb.height );
+			glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT, rb.samples, tex.format, rb.width, rb.height );
 			// Attach the renderbuffer
 			glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
 			                              GL_RENDERBUFFER_EXT, rb.depthBuf );
@@ -865,13 +863,13 @@ void RendererBase::releaseRenderBuffer( uint32 rbObj )
 	
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 	
-	if( rb.depthTex != 0 ) glDeleteTextures( 1, &rb.depthTex );
+	if( rb.depthTex != 0 ) releaseTexture( rb.depthTex );
 	if( rb.depthBuf != 0 ) glDeleteRenderbuffersEXT( 1, &rb.depthBuf );
 	rb.depthTex = rb.depthBuf = 0;
 		
 	for( uint32 i = 0; i < 4; ++i )
 	{
-		if( rb.colTexs[i] != 0 ) glDeleteTextures( 1, &rb.colTexs[i] );
+		if( rb.colTexs[i] != 0 ) releaseTexture( rb.colTexs[i] );
 		if( rb.colBufs[i] != 0 ) glDeleteRenderbuffersEXT( 1, &rb.colBufs[i] );
 		rb.colTexs[i] = rb.colBufs[i] = 0;
 	}
@@ -943,6 +941,9 @@ void RendererBase::setRenderBuffer( uint32 rbObj )
 	}
 	else
 	{
+		// Unbind all textures to make sure that no FBO attachment is bound any more
+		for( uint32 i = 0; i < 16; ++i ) bindTexture( i, 0 );
+		
 		RBRenderBuffer &rb = _rendBufs.getRef( rbObj );
 
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, rb.fboMS != 0 ? rb.fboMS : rb.fbo );

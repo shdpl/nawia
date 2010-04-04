@@ -204,6 +204,7 @@ AnimResEntity *AnimationResource::findEntity( uint32 nameId )
 // Animation Controller
 // =================================================================================================
 
+// TODO: Verify that name collisions are very unlikely
 uint32 AnimationController::hashName( const char *name )
 {
 	uint32 hash = 0;

@@ -9,11 +9,10 @@
 //
 // *************************************************************************************************
 
-uniform 	vec3 viewer;
+uniform 	vec3 viewerPos;
 uniform 	vec4 lightPos;
-uniform 	vec3 lightDir;
+uniform 	vec4 lightDir;
 uniform 	vec3 lightColor;
-uniform 	float lightCosCutoff;
 uniform 	sampler2DShadow shadowMap;
 uniform 	vec4 shadowSplitDists;
 uniform 	mat4 shadowMats[4];
@@ -47,8 +46,8 @@ vec3 calcPhongSpotLight( const vec3 pos, const vec3 normal, const vec3 albedo, c
 	light = normalize( light );
 	
 	// Spotlight falloff
-	float angle = dot( lightDir, -light );
-	att *= clamp( (angle - lightCosCutoff) / 0.2, 0.0, 1.0 );
+	float angle = dot( lightDir.xyz, -light );
+	att *= clamp( (angle - lightDir.w) / 0.2, 0.0, 1.0 );
 		
 	// Lambert diffuse contribution
 	float ndotl = dot( normal, light );
@@ -71,7 +70,7 @@ vec3 calcPhongSpotLight( const vec3 pos, const vec3 normal, const vec3 albedo, c
 		float shadowFac = PCF( projShadow );
 		
 		// Specular contribution
-		vec3 eye = normalize( viewer - pos );
+		vec3 eye = normalize( viewerPos - pos );
 		vec3 refl = reflect( -light, normal );
 		float spec = pow( clamp( dot( refl, eye ), 0.0, 1.0 ), specExp ) * specMask;
 		col += lightColor * spec * shadowFac;

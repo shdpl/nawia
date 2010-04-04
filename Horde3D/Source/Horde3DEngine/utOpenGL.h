@@ -903,13 +903,9 @@ extern PFNGLUNIFORMMATRIX4X3FVPROC glUniformMatrix4x3fv;
 // Deprecated functionality (that is still required by the renderer)
 // =================================================================================================
 
-#define GL_MODELVIEW                      0x1700
-#define GL_PROJECTION                     0x1701
 #define GL_QUADS                          0x0007
 #define GL_GENERATE_MIPMAP                0x8191
 
-GLAPI void GLAPIENTRY glMatrixMode (GLenum mode);
-GLAPI void GLAPIENTRY glLoadMatrixf (const GLfloat *m);
 GLAPI void GLAPIENTRY glBegin (GLenum mode);
 GLAPI void GLAPIENTRY glEnd (void);
 GLAPI void GLAPIENTRY glVertex3f (GLfloat x, GLfloat y, GLfloat z);

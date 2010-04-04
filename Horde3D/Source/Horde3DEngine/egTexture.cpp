@@ -118,11 +118,6 @@ TextureResource::TextureResource( const string &name, uint32 width, uint32 heigh
 	
 	if( flags & ResourceFlags::TexRenderable )
 	{
-		RenderBufferFormats::List rbFmt = RenderBufferFormats::RGBA8;
-		if( _texFormat == TextureFormats::RGBA16F ) rbFmt = RenderBufferFormats::RGBA16F;
-		else if( _texFormat == TextureFormats::RGBA32F ) rbFmt = RenderBufferFormats::RGBA32F;
-		else _texFormat = TextureFormats::BGRA8;
-		
 		_flags &= ~ResourceFlags::TexCubemap;
 		_flags &= ~ResourceFlags::TexSRGB;
 		_flags &= ResourceFlags::NoTexCompression;
@@ -131,7 +126,7 @@ TextureResource::TextureResource( const string &name, uint32 width, uint32 heigh
 		_texType = TextureTypes::Tex2D;
 		_sRGB = false;
 		_hasMipMaps= false;
-		_rbObj = Modules::renderer().createRenderBuffer( width, height, rbFmt, false, 1, 0 ); 
+		_rbObj = Modules::renderer().createRenderBuffer( width, height, fmt, false, 1, 0 ); 
 		_texObject = Modules::renderer().getRenderBufferTex( _rbObj, 0 );
 	}
 	else

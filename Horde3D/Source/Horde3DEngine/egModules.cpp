@@ -30,6 +30,8 @@
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	#include "Terrain/Source/extension.h"
 	#pragma comment( lib, "Extension_Terrain.lib" )
+	#include "Sound/Source/sound_extension.h"
+	#pragma comment( lib, "Extension_Sound.lib" )
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endif
 
@@ -55,6 +57,7 @@ void Modules::installExtensions()
 #else
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++	
 	extMan().installExtension( new Horde3DTerrain::ExtTerrain() );
+	extMan().installExtension( new Horde3DSound::ExtSound() );
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endif
 }

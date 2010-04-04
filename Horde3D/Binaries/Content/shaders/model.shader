@@ -79,7 +79,8 @@ context AMBIENT
 	#include "shaders/utilityLib/vertSkinning.glsl"
 #endif
 
-uniform vec3 viewer;
+uniform mat4 viewProjMat;
+uniform vec3 viewerPos;
 attribute vec3 vertPos;
 attribute vec2 texCoords0;
 attribute vec3 normal;
@@ -140,12 +141,12 @@ void main( void )
 
 	// Calculate tangent space eye vector
 #ifdef _F03_ParallaxMapping
-	eyeTS = calcTanVec( viewer - pos.xyz, _tangent, _bitangent, _normal );
+	eyeTS = calcTanVec( viewerPos - pos.xyz, _tangent, _bitangent, _normal );
 #endif
 	
 	// Calculate texture coordinates and clip space position
 	texCoords = texCoords0;
-	gl_Position = gl_ModelViewProjectionMatrix * pos;
+	gl_Position = viewProjMat * pos;
 }
 
 
@@ -231,6 +232,7 @@ void main( void )
 #include "shaders/utilityLib/vertCommon.glsl"
 #include "shaders/utilityLib/vertSkinning.glsl"
 
+uniform mat4 viewProjMat;
 uniform vec4 lightPos;
 attribute vec3 vertPos;
 varying float dist;
@@ -253,7 +255,7 @@ void main( void )
 #endif
 
 	dist = length( lightPos.xyz - pos.xyz ) / lightPos.w;
-	gl_Position = gl_ModelViewProjectionMatrix * pos;
+	gl_Position = viewProjMat * pos;
 }
 	
 	
@@ -424,7 +426,7 @@ void main( void )
 	gl_FragColor.rgb = albedo.rgb * textureCube( ambientMap, normal ).rgb;
 	
 #ifdef _F04_EnvMapping
-	vec3 refl = textureCube( envMap, reflect( pos.xyz - viewer, normalize( normal ) ) ).rgb;
+	vec3 refl = textureCube( envMap, reflect( pos.xyz - viewerPos, normalize( normal ) ) ).rgb;
 	gl_FragColor.rgb = refl * 1.5;
 #endif
 }

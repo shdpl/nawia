@@ -123,6 +123,8 @@ struct RBVertBufSlot
 	uint32  vbObj;
 	uint32  offset;
 	uint32  stride;
+
+	RBVertBufSlot() : vbObj( 0 ), offset( 0 ), stride( 0 ) {}
 };
 
 
@@ -156,6 +158,7 @@ struct TextureFormats
 struct RBTexture
 {
 	uint32                glObj;
+	uint32                glFmt;
 	int                   type;
 	TextureFormats::List  format;
 	int                   width, height;
@@ -163,19 +166,16 @@ struct RBTexture
 	bool                  sRGB;
 };
 
+struct RBTexSlot
+{
+	uint32  texObj;
+
+	RBTexSlot() : texObj( 0 ) {}
+};
+
 
 // Render buffers
 // =========================================================
-
-struct RenderBufferFormats
-{
-	enum List
-	{
-		RGBA8,
-		RGBA16F,
-		RGBA32F
-	};
-};
 
 struct RBRenderBuffer
 {
@@ -235,6 +235,7 @@ protected:
 	uint32        _textureMem, _bufferMem;
 
 	RBVertBufSlot                _vertBufSlots[16];
+	RBTexSlot                    _texSlots[16];
 	RBObjects< RBBuffer >        _buffers;
 	RBObjects< RBTexture >       _textures;
 	RBObjects< RBRenderBuffer >  _rendBufs;
@@ -284,7 +285,7 @@ public:
 	std::string &getShaderLog() { return _shaderLog; }
 
 	// Renderbuffers
-	uint32 createRenderBuffer( uint32 width, uint32 height, RenderBufferFormats::List format,
+	uint32 createRenderBuffer( uint32 width, uint32 height, TextureFormats::List format,
 	                           bool depth, uint32 numColBufs, uint32 samples );
 	void releaseRenderBuffer( uint32 rbObj );
 	uint32 getRenderBufferTex( uint32 rbObj, uint32 bufIndex );

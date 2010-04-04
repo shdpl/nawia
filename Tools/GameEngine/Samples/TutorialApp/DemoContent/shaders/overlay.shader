@@ -15,12 +15,13 @@ context OVERLAY
 
 [[VS_OVERLAY]]
 
+uniform mat4 projMat;
 varying vec2 texCoords;
 
 void main( void )
 {
 	texCoords = vec2( gl_MultiTexCoord0.s, -gl_MultiTexCoord0.t ); 
-	gl_Position = gl_ProjectionMatrix * gl_Vertex;
+	gl_Position = projMat * gl_Vertex;
 }
 
 

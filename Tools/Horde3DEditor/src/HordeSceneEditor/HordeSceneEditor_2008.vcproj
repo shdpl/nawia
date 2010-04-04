@@ -65,7 +65,6 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib QtXmld4.lib QtSqld4.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib EditorLibd.lib QPropertyEditord.lib QXmlTreed.lib Luad.lib opengl32.lib glu32.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.exe"
-				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)/lib&quot;;&quot;$(QTDIR)/lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"

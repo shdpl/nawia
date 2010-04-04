@@ -56,25 +56,28 @@ context COPY_DEPTH
 
 [[VS_FSQUAD]]
 
+uniform mat4 projMat;
 attribute vec3 vertPos;
 varying vec2 texCoords;
 				
 void main( void )
 {
 	texCoords = vertPos.xy; 
-	gl_Position = gl_ProjectionMatrix * vec4( vertPos, 1 );
+	gl_Position = projMat * vec4( vertPos, 1 );
 }
 
 
 [[VS_VOLUME]]
 
+uniform mat4 viewProjMat;
+uniform mat4 worldMat;
 attribute vec3 vertPos;
-varying vec2 fragCoord;
+varying vec4 vpos;
 				
 void main( void )
 {
-	gl_Position = gl_ProjectionMatrix * vec4( vertPos, 1 );
-	fragCoord = gl_Position.xy * 0.5 + 0.5;
+	vpos = viewProjMat * worldMat * vec4( vertPos, 1 );
+	gl_Position = vpos;
 }
 
 
@@ -107,13 +110,16 @@ void main( void )
 #include "shaders/utilityLib/fragLighting.glsl"
 #include "shaders/utilityLib/fragDeferredRead.glsl"
 
-varying vec2 fragCoord;
+uniform mat4 viewMat;
+varying vec4 vpos;
 
 void main( void )
 {
+	vec2 fragCoord = (vpos.xy / vpos.w) * 0.5 + 0.5;
+	
 	if( getMatID( fragCoord ) == 1.0 )	// Standard phong material
 	{
-		float vsPos = (gl_ModelViewMatrix * vec4( getPos( fragCoord ), 1.0 )).z;
+		float vsPos = (viewMat * vec4( getPos( fragCoord ), 1.0 )).z;
 		
 		gl_FragColor.rgb =
 			calcPhongSpotLight( getPos( fragCoord ), getNormal( fragCoord ),

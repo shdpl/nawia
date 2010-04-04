@@ -41,6 +41,7 @@ context AMBIENT
 
 #include "shaders/utilityLib/vertCommon.glsl"
 
+uniform mat4 viewProjMat;
 uniform vec4 terBlockParams;
 attribute vec3 vertPos;
 attribute float terHeight;
@@ -56,7 +57,7 @@ void main( void )
 	vsPos = calcViewPos( pos );
 						
 	texCoords = vec2( newPos.x, newPos.z );
-	gl_Position = gl_ModelViewProjectionMatrix * pos;
+	gl_Position = viewProjMat * pos;
 }
 
 
@@ -92,6 +93,7 @@ void main( void )
 
 #include "shaders/utilityLib/vertCommon.glsl"
 
+uniform mat4 viewProjMat;
 uniform vec4 lightPos;
 uniform vec4 terBlockParams;
 attribute vec3 vertPos;
@@ -106,7 +108,7 @@ void main( void )
 	vec4 pos = calcWorldPos( newPos );
 	dist = length( lightPos.xyz - pos.xyz ) / lightPos.w;
 						
-	gl_Position = gl_ModelViewProjectionMatrix * pos;
+	gl_Position = viewProjMat * pos;
 }
 
 

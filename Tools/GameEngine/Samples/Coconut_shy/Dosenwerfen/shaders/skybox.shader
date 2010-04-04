@@ -25,16 +25,17 @@ context AMBIENT
 
 #include "shaders/utilityLib/vertCommon.glsl"
 
-uniform vec3 viewer;
+uniform mat4 viewProjMat;
+uniform vec3 viewerPos;
 attribute vec3 vertPos;
 varying vec3 viewVec;
 
 void main(void)
 {
 	vec4 pos = calcWorldPos( vec4( vertPos, 1.0 ) );
-	viewVec = pos.xyz - viewer;
+	viewVec = pos.xyz - viewerPos;
 	
-	gl_Position = gl_ModelViewProjectionMatrix * pos;
+	gl_Position = viewProjMat * pos;
 }
 				
 

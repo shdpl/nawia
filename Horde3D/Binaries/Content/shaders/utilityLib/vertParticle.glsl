@@ -9,13 +9,14 @@
 //
 // *************************************************************************************************
 
-uniform 	vec3 parCorners[4];
-uniform 	vec3 parPosArray[64];
-uniform 	vec2 parSizeAndRotArray[64];
-uniform 	vec4 parColorArray[64];
+uniform mat4 viewMat;
+uniform vec3 parCorners[4];
+uniform vec3 parPosArray[64];
+uniform vec2 parSizeAndRotArray[64];
+uniform vec4 parColorArray[64];
 
-attribute 	float parCornerIdx;
-attribute 	float parIdx;
+attribute float parCornerIdx;
+attribute float parIdx;
 
 
 vec4 getParticleColor()
@@ -36,7 +37,7 @@ vec4 calcParticleViewPos( const vec3 pos )
 						s,  c, 0, 0,
 						0,  0, 1, 0,
 						0,  0, 0, 1 );
-	vec4 mid = gl_ModelViewMatrix * vec4( parPosArray[int( parIdx )], 1 );
-	vec4 pos2 = gl_ModelViewMatrix * vec4( pos1, 1 );
+	vec4 mid = viewMat * vec4( parPosArray[int( parIdx )], 1 );
+	vec4 pos2 = viewMat * vec4( pos1, 1 );
 	return rotMat * (pos2 - mid) + mid;
 }

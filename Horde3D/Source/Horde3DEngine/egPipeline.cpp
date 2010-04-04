@@ -250,7 +250,7 @@ const string PipelineResource::parseStage( XMLNode &node, PipelineStage &stage )
 
 
 void PipelineResource::addRenderTarget( const string &id, bool depthBuf, uint32 numColBufs,
-										RenderBufferFormats::List format, uint32 samples,
+										TextureFormats::List format, uint32 samples,
 										uint32 width, uint32 height, float scale )
 {
 	RenderTarget rt;
@@ -347,15 +347,15 @@ bool PipelineResource::load( const char *data, int size )
 			if( node2.getAttribute( "numColBufs" ) == 0x0 ) return raiseError( "Missing RenderTarget attribute 'numColBufs'" );
 			uint32 numBuffers = atoi( node2.getAttribute( "numColBufs" ) );
 			
-			RenderBufferFormats::List format = RenderBufferFormats::RGBA8;
+			TextureFormats::List format = TextureFormats::BGRA8;
 			if( node2.getAttribute( "format" ) != 0x0 )
 			{
 				if( _stricmp( node2.getAttribute( "format" ), "RGBA8" ) == 0 )
-					format = RenderBufferFormats::RGBA8;
+					format = TextureFormats::BGRA8;
 				else if( _stricmp( node2.getAttribute( "format" ), "RGBA16F" ) == 0 )
-					format = RenderBufferFormats::RGBA16F;
+					format = TextureFormats::RGBA16F;
 				else if( _stricmp( node2.getAttribute( "format" ), "RGBA32F" ) == 0 )
-					format = RenderBufferFormats::RGBA32F;
+					format = TextureFormats::RGBA32F;
 				else return raiseError( "Unknown RenderTarget format" );
 			}
 
