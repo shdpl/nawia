@@ -25,12 +25,13 @@ using namespace std;
 namespace Horde3DTerrain
 {
 	const char *vsTerrainDebugView =
+		"uniform mat4 viewProjMat;\n"
 		"uniform mat4 worldMat;\n"
 		"uniform vec4 terBlockParams;\n"
 		"attribute vec3 vertPos;\n"
 		"attribute float terHeight;\n"
 		"void main() {\n"
-		"	gl_Position = gl_ModelViewProjectionMatrix * worldMat *"
+		"	gl_Position = viewProjMat * worldMat *"
 		"		vec4( vertPos.x * terBlockParams.z + terBlockParams.x, terHeight, "
 		"			  vertPos.z * terBlockParams.z + terBlockParams.y, 1.0 );\n"
 		"}";
@@ -240,8 +241,6 @@ namespace Horde3DTerrain
 		CameraNode *curCam = Modules::renderer().getCurCamera();
 		if( curCam == 0x0 ) return;
 
-		Modules::renderer().setMaterial( 0x0, "" );
-
 		// Loop through terrain queue
 		for( uint32 i = 0, s = (uint32)Modules::sceneMan().getRenderableQueue().size(); i < s; ++i )
 		{
@@ -257,6 +256,7 @@ namespace Horde3DTerrain
 			else
 			{
 				Modules::renderer().setShaderComb( &debugViewShader );
+				Modules::renderer().commitGeneralUniforms();
 				int loc = glGetUniformLocation( debugViewShader.shaderObj, "color" );
 				glUniform4f( loc, 0.5f, 0.75f, 1, 1 );
 			}

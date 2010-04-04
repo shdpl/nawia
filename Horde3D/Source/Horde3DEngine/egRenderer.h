@@ -127,11 +127,11 @@ protected:
 	MaterialResource                   *_curStageMatLink;
 	CameraNode                         *_curCamera;
 	LightNode                          *_curLight;
-	MaterialResource                   *_curMatRes;
 	ShaderCombination                  *_curShader;
 	RenderTarget                       *_curRenderTarget;
 	uint32                             _curShaderUpdateStamp;
 	
+	float                              _smSize;
 	float                              _splitPlanes[5];
 	Matrix4f                           _lightMats[4];
 

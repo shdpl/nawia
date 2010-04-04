@@ -47,10 +47,10 @@ Renderer::Renderer() : RendererBase()
 	_particleVBO = 0;
 	_curCamera = 0x0;
 	_curLight = 0x0;
-	_curMatRes = 0x0;
 	_curShader = 0x0;
 	_curRenderTarget = 0x0;
 	_curShaderUpdateStamp = 1;
+	_smSize = 0;
 }
 
 
@@ -135,11 +135,8 @@ bool Renderer::init()
 	}
 
 	// Create default shadow map
-	float shadowTex[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-	_defShadowMap = createTexture( TextureTypes::Tex2D, 8, 8, TextureFormats::DEPTH, false, false, false, false );
+	float shadowTex[16] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+	_defShadowMap = createTexture( TextureTypes::Tex2D, 4, 4, TextureFormats::DEPTH, false, false, false, false );
 	uploadTextureData( _defShadowMap, 0, 0, shadowTex );
 
 	// Create particle geometry array
@@ -381,10 +378,13 @@ void Renderer::releaseShaderComb( ShaderCombination &sc )
 
 void Renderer::setShaderComb( ShaderCombination *sc )
 {
-	if( sc == 0x0 ) bindShader( 0 );
-	else bindShader( sc->shaderObj );
+	if( _curShader != sc )
+	{
+		if( sc == 0x0 ) bindShader( 0 );
+		else bindShader( sc->shaderObj );
 
-	_curShader = sc;
+		_curShader = sc;
+	}
 }
 
 
@@ -438,7 +438,7 @@ void Renderer::commitGeneralUniforms()
 				glUniformMatrix4fv( _curShader->uni_shadowMats, 4, false, &_lightMats[0].x[0] );
 			
 			if( _curShader->uni_shadowMapSize >= 0 )
-				glUniform1f( _curShader->uni_shadowMapSize, (float)Modules::config().shadowMapSize );
+				glUniform1f( _curShader->uni_shadowMapSize, _smSize );
 			
 			if( _curShader->uni_shadowBias >= 0 )
 				glUniform1f( _curShader->uni_shadowBias, _curLight->_shadowMapBias );
@@ -471,6 +471,9 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		ShaderCombination *sc = shaderRes->getCombination( *context, materialRes->_combMask );
 		if( sc != _curShader ) setShaderComb( sc );
 		if( _curShader == 0x0 || _curShaderObj == 0 ) return false;
+
+		// Setup standard shader uniforms
+		commitGeneralUniforms();
 
 		// Configure depth mask
 		if( context->writeDepth ) glDepthMask( GL_TRUE );
@@ -553,9 +556,6 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		else
 			glDisable( GL_SAMPLE_ALPHA_TO_COVERAGE );
 	}
-	
-	// Setup standard shader uniforms
-	commitGeneralUniforms();
 
 	// Setup texture samplers
 	for( size_t i = 0, s = shaderRes->_samplers.size(); i < s; ++i )
@@ -749,7 +749,6 @@ bool Renderer::setMaterial( MaterialResource *materialRes, const string &shaderC
 {
 	if( materialRes == 0x0 )
 	{	
-		_curMatRes = 0x0;
 		setShaderComb( 0x0 );
 		glDisable( GL_BLEND );
 		glDisable( GL_SAMPLE_ALPHA_TO_COVERAGE );
@@ -758,19 +757,14 @@ bool Renderer::setMaterial( MaterialResource *materialRes, const string &shaderC
 		glDepthMask( GL_TRUE );
 		return false;
 	}
-	else if( _curShader != 0x0 && materialRes == _curMatRes ) return true;
-		
-	_curMatRes = materialRes;
-	
-	bool result = setMaterialRec( materialRes, shaderContext, 0x0 );
 
-	if( !result )
+	if( !setMaterialRec( materialRes, shaderContext, 0x0 ) )
 	{
-		_curMatRes = 0x0;
 		_curShader = 0x0;
+		return false;
 	}
 
-	return result;
+	return true;
 }
 
 
@@ -796,9 +790,15 @@ void Renderer::setupShadowMap( bool noShadows )
 {
 	// Bind shadow map
 	if( !noShadows && _curLight->_shadowMapCount > 0 )
+	{
 		bindTexture( 12, getRenderBufferTex( _shadowRB, 32 ) );
+		_smSize = (float)Modules::config().shadowMapSize;
+	}
 	else
+	{
 		bindTexture( 12, _defShadowMap );
+		_smSize = 4;
+	}
 
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1 );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
@@ -1127,7 +1127,7 @@ void Renderer::clearOverlays()
 
 void Renderer::drawOverlays( const string &shaderContext )
 {
-	setMaterial( 0x0, "" );
+	MaterialResource *curMatRes = 0x0;
 	
 	setupViewMatrices( Matrix4f(), Matrix4f::OrthoMat( 0, 1, 1, 0, -1, 1 ) );
 	
@@ -1139,7 +1139,11 @@ void Renderer::drawOverlays( const string &shaderContext )
 
 			Overlay &overlay = _overlays[j];
 
-			if( !setMaterial( overlay.materialRes, shaderContext ) ) continue;
+			if( curMatRes != overlay.materialRes )
+			{
+				if( !setMaterial( overlay.materialRes, shaderContext ) ) continue;
+				curMatRes = overlay.materialRes;
+			}
 			if( _curShader->uni_olayColor >= 0 )
 				glUniform4fv( _curShader->uni_olayColor, 1, &overlay.colR );
 			
@@ -1240,9 +1244,6 @@ void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
 void Renderer::drawFSQuad( Resource *matRes, const string &shaderContext )
 {
 	if( matRes == 0x0 || matRes->getType() != ResourceTypes::Material ) return;
-	
-	// Reset current material
-	setMaterial( 0x0, "" );
 
 	setupViewMatrices( _curCamera->getViewMat(), Matrix4f::OrthoMat( 0, 1, 0, 1, -1, 1 ) );
 	
@@ -1362,6 +1363,7 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 
 void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int occSet )
 {
+	MaterialResource *curMatRes = 0x0;
 	string context = shaderContext;
 	
 	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None, true, false );
@@ -1418,8 +1420,16 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 		if( shaderContext == "" ) context = _curLight->_lightingContext;
 
 		setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
-		setMaterial( 0x0, "" );		// Reset material
-		if( !setMaterial( _curLight->_materialRes, context ) ) continue;
+
+		if( curMatRes != _curLight->_materialRes )
+		{
+			if( !setMaterial( _curLight->_materialRes, context ) ) continue;
+			curMatRes = _curLight->_materialRes;
+		}
+		else
+		{
+			commitGeneralUniforms();
+		}
 
 		glCullFace( GL_FRONT );
 		glDisable( GL_DEPTH_TEST );
@@ -1500,8 +1510,7 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 		camPos = Modules::renderer().getCurCamera()->getAbsPos();
 	
 	GeometryResource *curGeoRes = 0x0;
-
-	Modules::renderer().setMaterial( 0x0, "" );
+	MaterialResource *curMatRes = 0x0;
 
 	// Loop over model queue
 	for( size_t i = 0, s = Modules::sceneMan().getRenderableQueue().size(); i < s; ++i )
@@ -1550,10 +1559,10 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 		}
 		
 		// Bind geometry
+		GeometryResource *prevGeoRes = curGeoRes;
 		if( curGeoRes != modelNode->getGeometryResource() )
 		{
 			curGeoRes = modelNode->getGeometryResource();
-			Modules::renderer().setMaterial( 0x0, "" );
 		
 			// Indices
 			Modules::renderer().bindIndexBuffer( curGeoRes->getIndexBuf() );
@@ -1619,7 +1628,11 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 				if( !meshNode->getMaterialRes()->isOfClass( theClass ) ) continue;
 				
 				// Set material
-				if( !Modules::renderer().setMaterial( meshNode->getMaterialRes(), shaderContext ) ) continue;
+				if( curMatRes != meshNode->getMaterialRes() )
+				{
+					if( !Modules::renderer().setMaterial( meshNode->getMaterialRes(), shaderContext ) ) continue;
+					curMatRes = meshNode->getMaterialRes();
+				}
 			}
 			else
 			{
@@ -1676,7 +1689,7 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			}
 
 			// Apply vertex layout
-			if( curShader != prevShader )
+			if( curShader != prevShader || curGeoRes != prevGeoRes )
 			{
 				if( !Modules::renderer().applyVertexLayout( Modules::renderer()._vlModel ) )
 				{
@@ -1713,9 +1726,9 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 {
 	if( frust1 == 0x0 || Modules::renderer().getCurCamera() == 0x0 ) return;
 	if( debugView ) return;  // Don't render particles in debug view
-	
-	Modules::renderer().setMaterial( 0x0, "" );
 
+	MaterialResource *curMatRes = 0x0;
+	
 	// Calculate right and up vectors for camera alignment
 	Matrix4f mat = Modules::renderer().getCurCamera()->getViewMat();
 	Vec3f right = Vec3f( mat.x[0], mat.x[4], mat.x[8] );
@@ -1775,7 +1788,11 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 		}
 		
 		// Set material
-		if( !Modules::renderer().setMaterial( emitter->_materialRes, shaderContext ) ) continue;
+		if( curMatRes != emitter->_materialRes )
+		{
+			if( !Modules::renderer().setMaterial( emitter->_materialRes, shaderContext ) ) continue;
+			curMatRes = emitter->_materialRes;
+		}
 
 		// Set vertex layout
 		if( !Modules::renderer().applyVertexLayout( Modules::renderer()._vlParticle ) ) continue;

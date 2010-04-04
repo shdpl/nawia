@@ -1045,6 +1045,10 @@ uint32 RendererBase::getQueryResult( uint32 queryObj )
 }
 
 
+// =================================================================================================
+// Vertex declarations
+// =================================================================================================
+
 uint32 RendererBase::createVertexLayout( uint32 elemCount )
 {
 	RBVertexLayout vl;
