@@ -155,7 +155,7 @@ class MatRes(object):
 	MatLinkI = 404
 	MatShaderI = 405
 	SampNameStr = 406
-	SampTexStr = 407
+	SampTexResI = 407
 	UnifNameStr = 408
 	UnifValueF4 = 409
 __all__.append('MatRes')
