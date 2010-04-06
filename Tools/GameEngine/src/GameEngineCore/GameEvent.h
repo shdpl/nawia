@@ -386,6 +386,8 @@ public:
 		NV_GAZING_STOP,			/// informs agent that he is no longer being gazed at
 		NV_SPEAKING_STOPPED,	/// tells dialogue partner to stop listening 
 		EM_MOOD_CHANGED,		/// informs an agent that the emotion was updated (sending new mood as Vec3f)
+		SP_RHEME_START,			/// rheme started
+		SP_THEME_START,			/// theme started
 
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
