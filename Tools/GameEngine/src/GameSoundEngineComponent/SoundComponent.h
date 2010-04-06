@@ -71,6 +71,8 @@ public:
 	
 private:
 	void addPhonem(const XMLNode* phonem);
+	void addTheme(const XMLNode* theme);
+	void addRheme(const XMLNode* rheme);
 	void startVisemes();
 	void stopVisemes();
 	void resetPreviousViseme();

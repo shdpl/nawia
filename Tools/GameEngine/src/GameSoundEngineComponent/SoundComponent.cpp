@@ -204,7 +204,25 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 }
 
 void SoundComponent::update()
-{
+{		
+		if(m_isSpeaking && m_visemes[m_visemeIndex].m_index == 100)
+		{
+			GameEvent theme(GameEvent::SP_THEME_START, NULL, NULL);
+			GameEngine::sendEvent( m_owner->worldId() , &theme );
+
+			m_visemeIndex++;
+			update();
+		}
+
+		if(m_isSpeaking && m_visemes[m_visemeIndex].m_index == 101)
+		{
+			GameEvent rheme(GameEvent::SP_RHEME_START, NULL, NULL);
+			GameEngine::sendEvent( m_owner->worldId() , &rheme );
+
+			m_visemeIndex++;
+			update();
+		}
+
 	float deltaT = 1.0f / (GameEngine::timeStamp() - m_lastTimeStamp);
 	m_velX = (m_x - m_tx) * deltaT;
 	m_velY = (m_y - m_ty) * deltaT;
@@ -214,7 +232,7 @@ void SoundComponent::update()
 
 	if( m_sourceID != 0 && m_stream)
 		SoundResourceManager::instance()->updateBuffer(m_sourceID, m_resourceID);
-	
+
 	// update visemes
 	if( !m_visemes.empty() && m_isSpeaking)
 	{
@@ -455,7 +473,16 @@ bool SoundComponent::setPhonemesFile(const char* fileName)
 						else GameLog::errorMessage("Bad childnode in phonem file %s\n", fileName);
 					}
 
-				} else GameLog::errorMessage("Bad childnode in phonem file %s\n", fileName);
+				}
+				else if ( _stricmp(child.getName(),"theme")==0  )
+				{
+					addTheme(&child);
+				}
+				else if ( _stricmp(child.getName(),"rheme")==0  )
+				{
+					addRheme(&child);
+				}
+				else GameLog::errorMessage("Bad childnode in phonem file %s\n", fileName);
 			}				
 		}
 	}
@@ -518,6 +545,24 @@ void SoundComponent::addPhonem(const XMLNode* phonem)
 	m_visemes.push_back(vis);
 }
 
+void SoundComponent::addTheme(const XMLNode* phonem)
+{
+	int start = static_cast<int>(atoi(phonem->getAttribute("start","0")));
+	int end = static_cast<int>(atoi(phonem->getAttribute("end","0")));
+
+	Viseme vis = Viseme(start, end, 100);
+	m_visemes.push_back(vis);
+}
+
+void SoundComponent::addRheme(const XMLNode* phonem)
+{
+	int start = static_cast<int>(atoi(phonem->getAttribute("start","0")));
+	int end = static_cast<int>(atoi(phonem->getAttribute("end","0")));
+
+	Viseme vis = Viseme(start, end, 101);
+	m_visemes.push_back(vis);
+}
+
 void SoundComponent::startVisemes()
 {
 	if( !m_visemes.empty() )
@@ -525,6 +570,23 @@ void SoundComponent::startVisemes()
 		m_startTimestamp = GameEngine::timeStamp();
 		// printf("Starting viseme at %d", m_startTimestamp);
 		m_visemeIndex = 0;
+
+		if(m_visemes[m_visemeIndex].m_index == 100)
+		{
+			GameEvent theme(GameEvent::SP_THEME_START, NULL, NULL);
+			GameEngine::sendEvent( m_owner->worldId() , &theme );
+
+			m_visemeIndex = 1;
+		}
+
+		if(m_visemes[m_visemeIndex].m_index == 101)
+		{
+			GameEvent rheme(GameEvent::SP_RHEME_START, NULL, NULL);
+			GameEngine::sendEvent( m_owner->worldId() , &rheme );
+
+			m_visemeIndex = 1;
+		}
+
 		m_curViseme = m_visemes[m_visemeIndex].m_index;
 		m_visemeChanged = true;
 		resetPreviousViseme();
