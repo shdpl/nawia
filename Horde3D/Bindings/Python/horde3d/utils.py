@@ -93,9 +93,9 @@ __all__.append('pickNode')
 
 _showText = h3dutils.h3dutShowText
 _showText.restype = None
-_showText.argtypes = [c_char_p, c_float, c_float, c_float, c_float, c_float, c_float, c_int, c_int]
-def showText(text, x, y, size, r, g, b, fontMaterialRes, layer):
-	return _showText(text, c_float(x), c_float(y), c_float(size), c_float(r), c_float(g), c_float(b), fontMaterialRes, layer)
+_showText.argtypes = [c_char_p, c_float, c_float, c_float, c_float, c_float, c_float, c_int]
+def showText(text, x, y, size, r, g, b, fontMaterialRes):
+	return _showText(text, c_float(x), c_float(y), c_float(size), c_float(r), c_float(g), c_float(b), fontMaterialRes)
 __all__.append('showText')
 
 

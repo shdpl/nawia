@@ -391,31 +391,27 @@ def getStat(param, reset):
 __all__.append('getStat')
 
 
-_showOverlay = h3d.h3dShowOverlay
-_showOverlay.restype = None
-_showOverlay.argtypes = [
-		c_float, c_float, c_float, c_float,
-		c_float, c_float, c_float, c_float,
-		c_float, c_float, c_float, c_float,
-		c_float, c_float, c_float, c_float,
+_showOverlays = h3d.h3dShowOverlays
+_showOverlays.restype = None
+_showOverlays.argtypes = [
+		POINTER(c_float), c_int,
 		c_float, c_float, c_float, c_float,
 		c_int, c_int]
-def showOverlay(
-		x_tl, y_tl, u_tl, v_tl,
-		x_bl, y_bl, u_bl, v_bl,
-		x_br, y_br, u_br, v_br,
-		x_tr, y_tr, u_tr, v_tr,
+def showOverlays(
+		verts,
 		r, g, b, a,
-		materialRes, layer):
-	return _showOverlay(
-			c_float(x_tl), c_float(y_tl), c_float(u_tl), c_float(v_tl),
-			c_float(x_bl), c_float(y_bl), c_float(u_bl), c_float(v_bl),
-			c_float(x_br), c_float(y_br), c_float(u_br), c_float(v_br),
-			c_float(x_tr), c_float(y_tr), c_float(u_tr), c_float(v_tr),
+		materialRes, flags):
+
+	cVerts = (c_float * len(verts))()
+	for i in range(len(verts)):
+		cVerts[i] = verts[i]
+
+	return _showOverlays(
+			byref(cVerts), c_int(len(verts)),
 			c_float(r), c_float(g), c_float(b), c_float(a),
-			materialRes, layer
+			materialRes, flags
 			)
-__all__.append('showOverlay')
+__all__.append('showOverlays')
 
 
 clearOverlays = h3d.h3dClearOverlays
