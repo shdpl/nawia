@@ -200,7 +200,7 @@ class KnightApp(app.App):
         if self._showStats:
             h3d.utils.showFrameStats(self._h3dres.fontMat, self._h3dres.panelMat, self._statMode) # self._fps + 0.0001)
             if self._statMode:
-                h3d.utils.showText('Weight: %0.2f' % (self._weight), 0.03, 0.24, 0.026, 1, 1, 1, self._h3dres.fontMat, 5)
+                h3d.utils.showText('Weight: %0.2f' % (self._weight), 0.03, 0.24, 0.026, 1, 1, 1, self._h3dres.fontMat)
 
 
 def main():

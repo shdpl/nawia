@@ -218,10 +218,15 @@ class App(object):
 
 	def _mainloopRenderOverlays(self, w, dt):
 		h3d.clearOverlays()
-		## h3d.utils.showText('%s' % (self._fpsString), 0, 0.95, 0.03, 0, self._h3dres.fontMaterial)
-		h3d.showOverlay(0.75, 0.8, 0, 1, 0.75, 1, 0, 0,
-						1, 1, 1, 0, 1, 0.8, 1, 1,
-						1, 1, 1, 1, self._h3dres.logoMat, 7)
+
+		x = w.width / float(w.height)
+		verts = [
+			x - 0.4, 0.8, 0.0, 1.0,
+			x - 0.4, 1.0, 0.0, 0.0,
+			x, 1.0, 1.0, 0.0,
+			x, 0.8, 1.0, 1.0,
+		]
+		h3d.showOverlays(verts, 1, 1, 1, 1, self._h3dres.logoMat, 0)
 
 
 	def _mainloopRender(self, w, dt):

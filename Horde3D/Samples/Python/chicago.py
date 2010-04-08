@@ -192,9 +192,9 @@ class ChicagoApp(app.App):
                     text = "Pipeline(F6): forward"
                 else:
                     text = "Pipeline(F6): deferred"
-                h3d.utils.showText(text, 0.03, 0.24, 0.026, 1, 1, 1, self._h3dres.fontMat, 5)
+                h3d.utils.showText(text, 0.03, 0.24, 0.026, 1, 1, 1, self._h3dres.fontMat)
                 text = "Sims(F1/2): %d, Range(F3/4): %d" % (len(self._crowdSim.particles), self._crowdSim._range)
-                h3d.utils.showText(text, 0.03, 0.28, 0.026, 1, 1, 1, self._h3dres.fontMat, 5)
+                h3d.utils.showText(text, 0.03, 0.28, 0.026, 1, 1, 1, self._h3dres.fontMat)
 
 class CrowdSim(object):    
     def __init__(self):
