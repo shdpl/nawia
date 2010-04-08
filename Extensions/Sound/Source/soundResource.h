@@ -38,7 +38,8 @@
 	{
 		enum List
 		{
-			SamplingRate = 20000,
+			SoundElem = 20000,
+			SamplingRate,
 			BitDepth,
 			Channels,
 			BitRate,

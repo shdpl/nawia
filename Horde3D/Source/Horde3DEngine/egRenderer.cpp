@@ -60,11 +60,13 @@ Renderer::~Renderer()
 	releaseTexture( _defShadowMap );
 	releaseBuffer( _particleVBO );
 	releaseVertexLayout( _vlPosOnly );
+	releaseVertexLayout( _vlOverlay );
 	releaseVertexLayout( _vlModel );
 	releaseVertexLayout( _vlParticle );
 	Modules::renderer().releaseShaderComb( _defColorShader );
 
 	delete[] _scratchBuf;
+	delete[] _overlayVerts;
 }
 
 
@@ -101,6 +103,10 @@ bool Renderer::init()
 	// Create vertex layouts
 	_vlPosOnly = createVertexLayout( 1 );
 	setVertexLayoutElem( _vlPosOnly, 0, "vertPos", 0, 3, 0 );
+
+	_vlOverlay = createVertexLayout( 2 );
+	setVertexLayoutElem( _vlOverlay, 0, "vertPos", 0, 2, 0 );
+	setVertexLayoutElem( _vlOverlay, 1, "texCoords0", 0, 2, 8 );
 	
 	_vlModel = createVertexLayout( 7 );
 	setVertexLayoutElem( _vlModel, 0, "vertPos", 0, 3, 0 );
@@ -154,10 +160,11 @@ bool Renderer::init()
 		parVerts[i * 4 + 3] = v3; parVerts[i * 4 + 3].index = (float)i;
 
 	}
-	_particleVBO = Modules::renderer().createVertexBuffer(
-		ParticlesPerBatch * 4 * sizeof( ParticleVert ), (float *)parVerts );
+	_particleVBO = createVertexBuffer( ParticlesPerBatch * 4 * sizeof( ParticleVert ), (float *)parVerts );
 
-	_overlays.reserve( 100 );
+	_overlayBatches.reserve( 64 );
+	_overlayVerts = new OverlayVert[MaxNumOverlayVerts];
+	_overlayVB = createVertexBuffer( MaxNumOverlayVerts * sizeof( OverlayVert ), 0x0 );
 
 	// Create unit primitives
 	createPrimitives();
@@ -1113,47 +1120,75 @@ void Renderer::drawOccProxies( uint32 list )
 // Overlays
 // =================================================================================================
 
-void Renderer::showOverlay( const Overlay &overlay )
+void Renderer::showOverlays( const float *verts, uint32 vertCount, float *colRGBA,
+                             MaterialResource *matRes, int flags )
 {
-	_overlays.push_back( overlay );
+	uint32 numOverlayVerts = 0;
+	if( !_overlayBatches.empty() )
+		numOverlayVerts = _overlayBatches.back().firstVert + _overlayBatches.back().vertCount;
+	
+	if( numOverlayVerts + vertCount > MaxNumOverlayVerts ) return;
+
+	memcpy( &_overlayVerts[numOverlayVerts], verts, vertCount * sizeof( OverlayVert ) );
+	
+	// Check if previous batch can be extended
+	if( !_overlayBatches.empty() )
+	{
+		OverlayBatch &prevBatch = _overlayBatches.back();
+		if( matRes == prevBatch.materialRes && flags == prevBatch.flags &&
+			memcmp( colRGBA, prevBatch.colRGBA, 4 * sizeof( float ) ) == 0 )
+		{
+			prevBatch.vertCount += vertCount;
+			return;
+		}
+	}
+	
+	// Create new batch
+	_overlayBatches.push_back( OverlayBatch( numOverlayVerts, vertCount, colRGBA, matRes, flags ) );
 }
 
 
 void Renderer::clearOverlays()
 {
-	_overlays.resize( 0 );
+	_overlayBatches.resize( 0 );
 }
 
 
 void Renderer::drawOverlays( const string &shaderContext )
 {
+	uint32 numOverlayVerts = 0;
+	if( !_overlayBatches.empty() )
+		numOverlayVerts = _overlayBatches.back().firstVert + _overlayBatches.back().vertCount;
+	
+	if( numOverlayVerts == 0 ) return;
+	
+	// Upload overlay vertices
+	updateBufferData( _overlayVB, 0, MaxNumOverlayVerts * sizeof( OverlayVert ), _overlayVerts );
+
+	bindVertexBuffer( 0, _overlayVB, 0, sizeof( OverlayVert ) );
+	bindIndexBuffer( 0 );
+
+	float aspect = (float)_vpWidth / (float)_vpHeight;
+	setupViewMatrices( Matrix4f(), Matrix4f::OrthoMat( 0, aspect, 1, 0, -1, 1 ) );
+	
 	MaterialResource *curMatRes = 0x0;
 	
-	setupViewMatrices( Matrix4f(), Matrix4f::OrthoMat( 0, 1, 1, 0, -1, 1 ) );
-	
-	for( int i = 0; i < 8; ++i )
+	for( size_t i = 0, s = _overlayBatches.size(); i < s; ++i )
 	{
-		for( uint32 j = 0; j < _overlays.size(); ++j )
+		OverlayBatch &ob = _overlayBatches[i];
+		
+		if( curMatRes != ob.materialRes )
 		{
-			if( _overlays[j].layer != i ) continue;
-
-			Overlay &overlay = _overlays[j];
-
-			if( curMatRes != overlay.materialRes )
-			{
-				if( !setMaterial( overlay.materialRes, shaderContext ) ) continue;
-				curMatRes = overlay.materialRes;
-			}
-			if( _curShader->uni_olayColor >= 0 )
-				glUniform4fv( _curShader->uni_olayColor, 1, &overlay.colR );
-			
-			glBegin( GL_QUADS );
-			glTexCoord2fv( &overlay.u_tl ); glVertex3f( overlay.x_tl, overlay.y_tl, 1 );
-			glTexCoord2fv( &overlay.u_bl ); glVertex3f( overlay.x_bl, overlay.y_bl, 1 );
-			glTexCoord2fv( &overlay.u_br ); glVertex3f( overlay.x_br, overlay.y_br, 1 );
-			glTexCoord2fv( &overlay.u_tr ); glVertex3f( overlay.x_tr, overlay.y_tr, 1 );
-			glEnd();
+			if( !setMaterial( ob.materialRes, shaderContext ) ) continue;
+			applyVertexLayout( _vlOverlay );
+			curMatRes = ob.materialRes;
 		}
+		
+		if( _curShader->uni_olayColor >= 0 )
+			glUniform4fv( _curShader->uni_olayColor, 1, ob.colRGBA );
+		
+		// Draw batch
+		glDrawArrays( GL_QUADS, ob.firstVert, ob.vertCount );
 	}
 }
 

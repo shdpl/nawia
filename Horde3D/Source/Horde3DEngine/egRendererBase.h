@@ -306,6 +306,12 @@ public:
 	                          uint32 vbSlot, uint32 size, uint32 offset );
 	void releaseVertexLayout( uint32 vlObj );
 	bool applyVertexLayout( uint32 vlObj );
+
+
+	int getViewportX() { return _vpX; }
+	int getViewportY() { return _vpY; }
+	int getViewportWidth() { return _vpWidth; }
+	int getViewportHeight() { return _vpHeight; }
 };
 
 #endif // _egRendererBase_H_

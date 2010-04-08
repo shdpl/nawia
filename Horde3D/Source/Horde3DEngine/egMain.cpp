@@ -139,6 +139,20 @@ DLLEXP void h3dSetupViewport( int x, int y, int width, int height, bool resizeBu
 }
 
 
+DLLEXP float h3dGetViewportParams( int *x, int *y, int *width, int *height )
+{
+	int vpWidth = Modules::renderer().getViewportWidth();
+	int vpHeight = Modules::renderer().getViewportHeight();
+
+	if( width != 0x0 ) *width = vpWidth;
+	if( height != 0x0 ) *height = vpHeight;
+	if( x != 0x0 ) *x = Modules::renderer().getViewportX();
+	if( y != 0x0 ) *y = Modules::renderer().getViewportY();
+	
+	return (float)vpWidth / (float)vpHeight;
+}
+
+
 DLLEXP void h3dClear()
 {
 	Modules::sceneMan().removeNode( Modules::sceneMan().getRootNode() );
@@ -184,20 +198,14 @@ DLLEXP float h3dGetStat( EngineStats::List param, bool reset )
 }
 
 
-DLLEXP void h3dShowOverlay( float x_tl, float y_tl, float u_tl, float v_tl,
-                            float x_bl, float y_bl, float u_bl, float v_bl,
-                            float x_br, float y_br, float u_br, float v_br,
-                            float x_tr, float y_tr, float u_tr, float v_tr,
-                            float colR, float colG, float colB, float colA,
-                            ResHandle materialRes, int layer )
+DLLEXP void h3dShowOverlays( const float *verts, int vertCount, float colR, float colG,
+                             float colB, float colA, uint32 materialRes, int flags )
 {
-	Resource *res = Modules::resMan().resolveResHandle( materialRes ); 
-	VALIDATE_RES_TYPE( res, ResourceTypes::Material, "h3dShowOverlay", EMPTY );
+	Resource *resObj = Modules::resMan().resolveResHandle( materialRes ); 
+	VALIDATE_RES_TYPE( resObj, ResourceTypes::Material, "h3dShowOverlays", EMPTY );
 
-	Modules::renderer().showOverlay(
-		Overlay( x_tl, y_tl, u_tl, v_tl, x_bl, y_bl, u_bl, v_bl,
-		         x_br, y_br, u_br, v_br, x_tr, y_tr, u_tr, v_tr,
-		         colR, colG, colB, colA, (MaterialResource *)res, layer ) );
+	float rgba[4] = { colR, colG, colB, colA };
+	Modules::renderer().showOverlays( verts, (uint32)vertCount, rgba, (MaterialResource *)resObj, flags );
 }
 
 

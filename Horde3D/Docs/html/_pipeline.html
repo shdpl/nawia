@@ -552,10 +552,15 @@ context OVERLAY
 <b>[[VS_OVERLAY]]</b>
 <i>// ============================================================================</i>
 
+uniform mat4 projMat;
+attribute vec2 vertPos;
+attribute vec2 texCoords0;
+varying vec2 texCoords;
+
 void main( void )
 {
-    gl_TexCoord[0] = gl_MultiTexCoord0;
-    gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;    
+    texCoords = vec2( texCoords0.s, -texCoords0.t ); 
+    gl_Position = projMat * vec4( vertPos.x, vertPos.y, 1, 1 );
 }
 
 
@@ -564,10 +569,11 @@ void main( void )
 
 uniform vec4 brightness;
 uniform sampler2D albedoMap;
+varying vec2 texCoords;
 
 void main( void )
 {
-    vec4 albedo = texture2D( albedoMap, gl_TexCoord[0].st );
+    vec4 albedo = texture2D( albedoMap, texCoords );
 	
 <b>#ifdef _F07_BrightMult</b>
     albedo *= brightness.a;
@@ -579,7 +585,7 @@ void main( void )
 </div>
 <br /><br /><br />
 
-<h2>Predefined GLSL attributes and uniforms</h2>
+<h2>Predefined GLSL uniforms and attributes</h2>
 <p>
 Horde defines some standard uniforms and attributes which can be used by shaders. The engine automatically detects
 which input data is required and binds it to the shader programs.
@@ -591,20 +597,28 @@ rendering emitters.
 <h3>General vector/matrix uniforms</h3>
 <div class="syntaxbox">
 <table>
-    <tr>
-        <td><b>uniform mat4 worldMat</b></td>
-        <td>matrix used for transforming vertex positions of currently rendered mesh to world space</td>
-    </tr>
-    <tr>
-        <td><b>uniform mat3 worldNormalMat</b></td>
-        <td>matrix used for transforming tangent space basis of currently rendered mesh to world space</td>
+     <tr>
+        <td><b>uniform vec2 frameBufSize</b></td>
+        <td>dimensions (width and height) of the currently active frame buffer</td>
     </tr>
 	<tr>
-        <td><b>uniform float nodeId</b></td>
-        <td>identifier value of currently rendered node (default value is node handle)</td>
+        <td><b>uniform mat4 viewMat</b></td>
+        <td>viewing matrix</td>
     </tr>
-    <tr>
-        <td><b>uniform vec3 viewer</b></td>
+	<tr>
+        <td><b>uniform mat4 viewMatInv</b></td>
+        <td>inverse viewing matrix</td>
+    </tr>
+	<tr>
+        <td><b>uniform mat4 projMat</b></td>
+        <td>projection matrix</td>
+    </tr>
+	<tr>
+        <td><b>uniform mat4 viewProjMat</b></td>
+        <td>premultiplied view and projection matrix</td>
+    </tr>
+	<tr>
+        <td><b>uniform vec3 viewerPos</b></td>
         <td>position of the viewer (virtual camera)</td>
     </tr>
 	<tr>
@@ -635,18 +649,9 @@ rendering emitters.
         <td><b>uniform float shadowBias</b></td>
         <td>bias used for shadow mapping to reduce precision issues</td>
     </tr>
-    <tr>
-        <td><b>uniform vec4 skinMatRows[75*3]</b></td>
-        <td>first three rows of skinning matrices for skeletal animation; fourth row is always <i>(0, 0, 0, 1)</i></td>
-    </tr>
-    <tr>
-        <td><b>uniform vec2 frameBufSize</b></td>
-        <td>dimensions (width and height) of the currently active frame buffer</td>
-    </tr>
 </table>
 </div>
 <br /><br/>
-
 
 <h3>General sampler uniforms</h3>
 <div class="syntaxbox">
@@ -659,42 +664,29 @@ rendering emitters.
 </div>
 <br/><br/>
 
-
-<h3>General vertex attributes</h3>
+<h3>Per-instance vector/matrix uniforms</h3>
 <div class="syntaxbox">
 <table>
+	<tr>
+        <td><b>uniform mat4 worldMat</b></td>
+        <td>matrix used for transforming vertex positions of currently rendered mesh to world space</td>
+    </tr>
     <tr>
-        <td><b>attribute vec3 vertPos</b></td>
-        <td>vertex position</td>
+        <td><b>uniform mat3 worldNormalMat</b></td>
+        <td>matrix used for transforming tangent space basis of currently rendered mesh to world space</td>
     </tr>
 	<tr>
-        <td><b>attribute vec2 texCoords0</b></td>
-        <td>first set of texture mapping coordinates</td>
+        <td><b>uniform float nodeId</b></td>
+        <td>identifier value of currently rendered node (default value is node handle)</td>
     </tr>
-    <tr>
-        <td><b>attribute vec2 texCoords1</b></td>
-        <td>second set of texture mapping coordinates</td>
-    </tr>
-    <tr>
-        <td><b>attribute vec3 normal</b></td>
-        <td>normal vector of vertex</td>
-    </tr>
-    <tr>
-        <td><b>attribute vec4 tangent</b></td>
-        <td>tangent vector of vertex in xyz; handedness multiplicator (1.0, -1.0) of bitangent in w</td>
-    </tr>
-    <tr>
-        <td><b>attribute vec4 joints</b></td>
-        <td>four joint indices referencing to skinning matrices</td>
-    </tr>
-    <tr>
-        <td><b>attribute vec4 weights</b></td>
-        <td>four vertex weights for the four joint indices</td>
+	<tr>
+        <td><b>uniform vec4 skinMatRows[75*3]</b></td>
+        <td>first three rows of skinning matrices for skeletal animation;
+			fourth row is always <i>(0, 0, 0, 1)</i>; only available for models</td>
     </tr>
 </table>
 </div>
-<br/><br/>
-
+<br /><br/>
 
 <h3>Overlay specific vector/matrix uniforms</h3>
 <div class="syntaxbox">
@@ -731,6 +723,47 @@ rendering emitters.
 </div>
 <br /><br/>
 
+<h3>General vertex attributes</h3>
+<div class="syntaxbox">
+<table>
+    <tr>
+        <td><b>attribute vec3 vertPos</b></td>
+        <td>vertex position</td>
+    </tr>
+	<tr>
+        <td><b>attribute vec2 texCoords0</b></td>
+        <td>first set of texture mapping coordinates</td>
+    </tr>
+</table>
+</div>
+<br/><br/>
+
+<h3>Model specific vertex attributes</h3>
+<div class="syntaxbox">
+<table>
+    <tr>
+        <td><b>attribute vec2 texCoords1</b></td>
+        <td>second set of texture mapping coordinates</td>
+    </tr>
+    <tr>
+        <td><b>attribute vec3 normal</b></td>
+        <td>normal vector of vertex</td>
+    </tr>
+    <tr>
+        <td><b>attribute vec4 tangent</b></td>
+        <td>tangent vector of vertex in xyz; handedness multiplicator (1.0, -1.0) of bitangent in w</td>
+    </tr>
+    <tr>
+        <td><b>attribute vec4 joints</b></td>
+        <td>four joint indices referencing to skinning matrices</td>
+    </tr>
+    <tr>
+        <td><b>attribute vec4 weights</b></td>
+        <td>four vertex weights for the four joint indices</td>
+    </tr>
+</table>
+</div>
+<br/><br/>
 
 <h3>Particle specific vertex attributes</h3>
 <div class="syntaxbox">
@@ -747,14 +780,13 @@ rendering emitters.
 </div>
 <br/><br/>
 
-<h3>Other data available in vertex shader</h3>
-<p>
-The vertex position is usually available through the attribute <b>vertPos</b>. An exception are overlays and
-fullscreen quads for which the vertex position is stored in the built-in attribute <b>gl_Vertex</b>.
-The camera transformation is stored in the modelview matrix (<b>gl_ModelViewMatrix</b>) and the projection
-matrix in <b>gl_ProjectionMatrix</b>. The camera transformation is also available when rendering a fullscreen
-quad (e.g. for post-processing effects). All overlays have their texture coordinates stored in
-<b>gl_MultiTexCoord0</b>.
+<h3>Remarks</h3>
+<ul>
+<li>The vertex position is usually available in the vec3 attribute <b>vertPos</b>. An exception are overlays
+    where the position has just 2 components (x and y).</li>
+<li>The camera transformation is stored in <b>viewMat</b>. It is also available when rendering a fullscreen
+    quad (useful for some post-processing effects).</li>
+</ul>
 <br /><br />
 
 <div id="copy">Copyright &copy; 2006-2009 Nicolas Schulz</div>

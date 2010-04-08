@@ -710,6 +710,25 @@ DLL void h3dRelease();
 */
 DLL void h3dSetupViewport( int x, int y, int width, int height, bool resizeBuffers );
 
+/* Function: h3dGetViewportParams
+		Gets the current viewport parameters.
+	
+	Details:
+		This function returns the aspect ratio (width divided by height) of the current viewport and
+		writes the other viewport parameters to the specified variables. If a specific parameter is not
+		of interest, NULL can be passed as argument.
+
+	Parameters:
+		x       - pointer to variable where x-position will be stored (can be NULL)
+		y       - pointer to variable where y-position will be stored (can be NULL)
+		width   - pointer to variable where viewport width will be stored (can be NULL)
+		height  - pointer to variable where viewport height will be stored (can be NULL)
+		
+	Returns:
+		viewport aspect ratio
+*/
+DLL float h3dGetViewportParams( int *x, int *y, int *width, int *height );
+
 /* Function: h3dRender
 		Main rendering function.
 	
@@ -820,43 +839,40 @@ DLL bool h3dSetOption( H3DOptions::List param, float value );
 */
 DLL float h3dGetStat( H3DStats::List param, bool reset );
 
-/* Function: h3dShowOverlay
-		Shows an overlay on the screen.
+/* Function: h3dShowOverlays
+		Displays overlays on the screen.
 	
 	Details:
-		This function displays an overlay with a specified material at a specified position on the screen.
-		An overlay is a 2D image that can be used to render 2D GUI elements. The coordinate system
-		used has its origin (0, 0) at the top-left corner of the screen and its maximum (1, 1) at
-		the bottom-right corner. Texture coordinates are using a system where the coordinates (0, 0)
-		correspond to the lower left corner of the image.
-		Overlays can have different layers which describe the order in which they are drawn. Overlays with
-		smaller layer numbers are drawn before overlays with higher layer numbers.
-		Note that the overlays have to be removed manually using the function clearOverlays.
+		This function displays one or more overlays with a specified material and color.
+		An overlay is a screen-space quad that can be used to render 2D GUI elements. The overlay coordinate
+		system has its origin (0, 0) at the top-left corner of the screen and its maximum (aspect, 1)
+		at the bottom-right corner. As the x coordinate of the maximum corresponds to the aspect ratio
+		of the viewport, the size of overlays can always be the same, even when different screen formats
+		(standard 4:3, widescreen 16:9, etc.) are used. Texture coordinates are using a system where the
+		coordinates (0, 0) correspond to the lower left corner of the image.
+		Overlays are drawn in the order in which they are pushed using this function. Overlays with
+		the same state will be batched together, so it can make sense to group overlays that have the
+		same material, color and flags in order to achieve best performance.
+		Note that the overlays have to be removed manually using the function h3dClearOverlays.
 	
 	Parameters:
-		x_tl, y_tl, u_tl, v_tl  - position and texture coordinates of the top-left corner
-		x_bl, y_bl, u_bl, v_bl  - position and texture coordinates of the bottom-left corner
-		x_br, y_br, u_br, v_br  - position and texture coordinates of the bottom-right corner
-		x_tr, y_tr, u_tr, v_tr  - position and texture coordinates of the top-right corner
-		colR, colG, colB, colA  - color of the overlay that is set for the material's shader
+		verts                   - vertex data (x, y, u, v), interpreted as quads
+		vertCount               - number of vertices (must be multiple of 4)
+		colR, colG, colB, colA  - color (and transparency) of overlays
 		materialRes             - material resource used for rendering
-		layer                   - layer index of the overlay (Values: from 0 to 7)
+		flags                   - overlay flags (reserved for future use)
 		
 	Returns:
 		nothing
 */
-DLL void h3dShowOverlay( float x_tl, float y_tl, float u_tl, float v_tl,
-                         float x_bl, float y_bl, float u_bl, float v_bl,
-                         float x_br, float y_br, float u_br, float v_br,
-                         float x_tr, float y_tr, float u_tr, float v_tr,
-                         float colR, float colG, float colB, float colA,
-                         H3DRes materialRes, int layer );
+DLL void h3dShowOverlays( const float *verts, int vertCount, float colR, float colG, float colB,
+                          float colA, H3DRes materialRes, int flags );
 
 /* Function: h3dClearOverlays
 		Removes all overlays.
 	
 	Details:
-		This function removes all overlays that were added usig showOverlay.
+		This function removes all overlays that were added with h3dShowOverlays.
 	
 	Parameters:
 		none

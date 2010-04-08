@@ -200,13 +200,17 @@
 	
 	float SoundResource::getElemParamF( int elem, int elemIdx, int param, int compIdx )
 	{
-		switch( param )
+		if( elem == SoundResParams::SoundElem )
 		{
-		case SoundResParams::Runtime:
-			return _soundInfo.runtime;
-		default:
-			return Resource::getElemParamF( elem, elemIdx, param, compIdx );
+			switch( param )
+			{
+			case SoundResParams::Runtime:
+				return _soundInfo.runtime;
+			default:
+				return Resource::getElemParamF( elem, elemIdx, param, compIdx );
+			}
 		}
+		return Resource::getElemParamF( elem, elemIdx, param, compIdx );
 	}
 
 

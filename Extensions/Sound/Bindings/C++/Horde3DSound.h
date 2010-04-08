@@ -90,6 +90,7 @@ struct H3DSoundResParams
 	/*	Enum: SoundResParams
 			The available Sound resource parameters.
 
+		SoundElem       - Base element
 		SamplingRate	- Sampling rate in Hz [type: int, read-only]
 		BitDepth		- Bit-depth of the sound [type: int, read-only]
 		Channels		- Number of channels [type: int, read-only]
@@ -98,7 +99,8 @@ struct H3DSoundResParams
 	*/
 	enum List
 	{
-		SamplingRate = 20000,
+		SoundElem = 20000,
+		SamplingRate,
 		BitDepth,
 		Channels,
 		BitRate,

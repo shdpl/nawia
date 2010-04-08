@@ -371,12 +371,13 @@ DLLEXP bool h3dutDumpMessages()
 
 
 DLLEXP void h3dutShowText( const char *text, float x, float y, float size, float colR,
-                           float colG, float colB, H3DRes fontMaterialRes, int layer )
+                           float colG, float colB, H3DRes fontMaterialRes )
 {
 	if( text == 0x0 ) return;
 	
-	int pos = 0;
-	float width = size;
+	float ovFontVerts[64 * 16];
+	float *p = ovFontVerts;
+	float pos = 0;
 	
 	do
 	{
@@ -385,13 +386,15 @@ DLLEXP void h3dutShowText( const char *text, float x, float y, float size, float
 		float u0 = 0.0625f * (ch % 16);
 		float v0 = 1.0f - 0.0625f * (ch / 16);
 
-		h3dShowOverlay( x + width * 0.5f * pos, y, u0, v0,
-		                x + width * 0.5f * pos, y + size, u0, v0 - 0.0625f,
-		                x + width * 0.5f * pos + width, y + size, u0 + 0.0625f, v0 - 0.0625f,
-		                x + width * 0.5f * pos + width, y, u0 + 0.0625f, v0,
-		                colR, colG, colB, 1, fontMaterialRes, layer );
-		++pos;
-	} while( *text );
+		*p++ = x + size * 0.5f * pos;         *p++ = y;         *p++ = u0;            *p++ = v0;
+		*p++ = x + size * 0.5f * pos,         *p++ = y + size;  *p++ = u0;            *p++ = v0 - 0.0625f;
+		*p++ = x + size * 0.5f * pos + size;  *p++ = y + size;  *p++ = u0 + 0.0625f;  *p++ = v0 - 0.0625f;
+		*p++ = x + size * 0.5f * pos + size;  *p++ = y;         *p++ = u0 + 0.0625f;  *p++ = v0;
+		
+		pos += 1.f;
+	} while( *text && pos < 64 );
+
+	h3dShowOverlays( ovFontVerts, (int)pos * 4, colR, colG, colB, 1.f, fontMaterialRes, 0 );
 }
 
 
@@ -409,18 +412,18 @@ void beginInfoBox( float x, float y, float width, int numRows, const char *title
 	infoBox.row = 0;
 	
 	// Title bar
-	h3dShowOverlay( x, y, 0, 1, x, y + barHeight, 0, 0,
-	                x + width, y + barHeight, 1, 0, x + width, y, 1, 1,
-	                0.15f, 0.23f, 0.31f, 0.8f, boxMaterialRes, 6 );
+	float ovTitleVerts[] = { x, y, 0, 1, x, y + barHeight, 0, 0,
+	                         x + width, y + barHeight, 1, 0, x + width, y, 1, 1 };
+	h3dShowOverlays( ovTitleVerts, 4,  0.15f, 0.23f, 0.31f, 0.8f, boxMaterialRes, 0 );
 
 	// Title text
-	h3dutShowText( title, x + 0.005f, y + 0.005f, fontSize, 0.7f, 0.85f, 0.95f, fontMaterialRes, 7 );
+	h3dutShowText( title, x + 0.005f, y + 0.005f, fontSize, 0.7f, 0.85f, 0.95f, fontMaterialRes );
 
 	// Body
 	float yy = y + barHeight;
-	h3dShowOverlay( x, yy, 0, 1, x, yy + bodyHeight, 0, 0,
-	                x + width, yy + bodyHeight, 1, 0, x + width, yy, 1, 1,
-	                0.12f, 0.12f, 0.12f, 0.5f, boxMaterialRes, 6 );
+	float ovBodyVerts[] = { x, yy, 0, 1, x, yy + bodyHeight, 0, 0,
+	                        x + width, yy + bodyHeight, 1, 0, x + width, yy, 1, 1 };
+	h3dShowOverlays( ovBodyVerts, 4, 0.12f, 0.12f, 0.12f, 0.5f, boxMaterialRes, 0 );
 }
 
 
@@ -432,11 +435,11 @@ void addInfoBoxRow( const char *column1, const char *column2 )
 	float y = infoBox.y_row0 + infoBox.row++ * 0.035f;
 
 	// First column
-	h3dutShowText( column1, x + 0.005f, y, fontSize, 1, 1, 1, infoBox.fontMatRes, 7 );
+	h3dutShowText( column1, x + 0.005f, y, fontSize, 1, 1, 1, infoBox.fontMatRes );
 
 	// Second column
 	x = infoBox.x + infoBox.width - ((strlen( column2 ) - 1) * fontWidth + fontSize);
-	h3dutShowText( column2, x - 0.005f, y, fontSize, 1, 1, 1, infoBox.fontMatRes, 7 );
+	h3dutShowText( column2, x - 0.005f, y, fontSize, 1, 1, 1, infoBox.fontMatRes );
 }
 
 

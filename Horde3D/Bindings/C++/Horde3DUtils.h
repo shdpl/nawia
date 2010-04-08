@@ -258,7 +258,7 @@ DLL H3DNode h3dutPickNode( H3DNode cameraNode, float nwx, float nwy );
 	Details:
 		This utility function uses overlays to display a text string at a specified position on the screen.
 		The font texture of the specified font material has to be a regular 16x16 grid containing all
-		ASCII characters in row-major order. The layer corresponds to the layer parameter of overlays.
+		ASCII characters in row-major order.
 	
 	Parameters:
 		text              - text string to be displayed
@@ -267,13 +267,12 @@ DLL H3DNode h3dutPickNode( H3DNode cameraNode, float nwx, float nwy );
 		size              - size (scale) factor of the font
 		colR, colG, colB  - font color
 		fontMaterialRes   - font material resource used for rendering
-		layer             - layer index of the font overlays
 		
 	Returns:
 		nothing
 */
-DLL void h3dutShowText( const char *text, float x, float y, float size, float colR,
-                        float colG, float colB, H3DRes fontMaterialRes, int layer );
+DLL void h3dutShowText( const char *text, float x, float y, float size,
+                        float colR, float colG, float colB, H3DRes fontMaterialRes );
 
 /* Function: h3dutShowFrameStats
 		Shows frame statistics on the screen.

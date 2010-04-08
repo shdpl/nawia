@@ -212,8 +212,9 @@ void Application::mainLoop( float timeSinceLastFrame )
 	}
 
 	// Show logo
-	h3dShowOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0, 1, 1, 1, 0, 1, 0.8f, 1, 1,
-	                1, 1, 1, 1, _logoMatRes, 7 );
+	const float ww = h3dGetViewportParams( 0x0, 0x0, 0x0, 0x0 );
+	const float ovLogo[] = { ww-0.4f, 0.8f, 0, 1,  ww-0.4f, 1, 0, 0,  ww, 1, 1, 0,  ww, 0.8f, 1, 1 };
+	h3dShowOverlays( ovLogo, 4, 1.f, 1.f, 1.f, 1.f, _logoMatRes, 0 );
 
 	// Render scene
 	h3dRender( _cam );
@@ -424,16 +425,16 @@ void Application::displaySoundInfo()
 	std::stringstream text;
 
 	text.str( "" );
-	text << std::fixed << std::setprecision( 2 ) << h3dGetNodeParamF( _sound1, H3DSoundNodeParams::Offset, 0 ) << " / " << h3dGetResParamF( _soundRes, H3DSoundResParams::Runtime, 0, 0, 0 );
-	h3dutShowText( text.str().c_str(), 0.03f, 0.43f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
-
+	text << std::fixed << std::setprecision( 2 ) << h3dGetNodeParamF( _sound1, H3DSoundNodeParams::Offset, 0 ) << " / " << h3dGetResParamF( _soundRes, H3DSoundResParams::SoundElem, 0, H3DSoundResParams::Runtime, 0 );
+	h3dutShowText( text.str().c_str(), 0.03f, 0.43f, 0.026f, 1, 1, 1, _fontMatRes );
+	
 	text.str( "" );
 	text << "Volume: " << (int)( _soundVolume * 100 ) << "%";
-	h3dutShowText( text.str().c_str(), 0.03f, 0.46f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+	h3dutShowText( text.str().c_str(), 0.03f, 0.46f, 0.026f, 1, 1, 1, _fontMatRes );
 
 	text.str( "" );
 	text << std::fixed << std::setprecision( 2 ) << "Pitch: " << _soundPitch;
-	h3dutShowText( text.str().c_str(), 0.03f, 0.49f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+	h3dutShowText( text.str().c_str(), 0.03f, 0.49f, 0.026f, 1, 1, 1, _fontMatRes );
 
 	text.str( "" );
 	text << "Loop: ";
@@ -443,7 +444,7 @@ void Application::displaySoundInfo()
 	else
 		text << "no";
 
-	h3dutShowText( text.str().c_str(), 0.03f, 0.52f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+	h3dutShowText( text.str().c_str(), 0.03f, 0.52f, 0.026f, 1, 1, 1, _fontMatRes );
 
 	text.str( "" );
 	text << "Distance model: ";
@@ -473,5 +474,5 @@ void Application::displaySoundInfo()
 		break;
 	}
 
-	h3dutShowText( text.str().c_str(), 0.03f, 0.55f, 0.026f, 1, 1, 1, _fontMatRes, 5 );
+	h3dutShowText( text.str().c_str(), 0.03f, 0.55f, 0.026f, 1, 1, 1, _fontMatRes );
 }

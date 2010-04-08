@@ -118,8 +118,9 @@ void Application::mainLoop( float fps )
 	h3dutShowFrameStats( _fontMatRes, _panelMatRes, _statMode );
 
 	// Show logo
-	h3dShowOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0, 1, 1, 1, 0, 1, 0.8f, 1, 1,
-	                1, 1, 1, 1, _logoMatRes, 7 );
+	const float ww = h3dGetViewportParams( 0x0, 0x0, 0x0, 0x0 );
+	const float ovLogo[] = { ww-0.4f, 0.8f, 0, 1,  ww-0.4f, 1, 0, 0,  ww, 1, 1, 0,  ww, 0.8f, 1, 1 };
+	h3dShowOverlays( ovLogo, 4, 1.f, 1.f, 1.f, 1.f, _logoMatRes, 0 );
 	
 	// Render scene
 	h3dRender( _cam );
