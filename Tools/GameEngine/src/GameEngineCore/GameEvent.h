@@ -320,8 +320,9 @@ public:
 		EM_OWN_CONTEXT,			/// add new context information to mood calculation(using EmotionData)
 		D_INIT_SPEAKERS,		/// initialize speakers 
 		D_START_DIALOGUE,		/// start playing the parsed dialogue
-		E_CHARACTER_ACTION,		/// character performs an action
-		E_REPORT_SUCCESS,		/// reports whether a character action was succesfull
+		CC_CHARACTER_ACTION,	/// character performs an action, snt from BTcomp to CharControl
+		CC_REPORT_COMPLETION,	/// reports whether a character action was succesfull, or failed
+		BT_ACTIVATE_ON_OFF,		/// activates, or deactivates the BTComponent
 		
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
@@ -354,6 +355,7 @@ public:
 		D_CURRENT_SENTENCE,		/// get current sentence from Dialogue components
 		IK_GETPARAMI,			/// Gets an IK parameter (IK_Param) of type integer
 		IK_GETPARAMF,			/// Gets an IK parameter (IK_Param) of type float
+		CC_CHECK_CONDITION,		/// Gets sensory input for AI/BT
 		
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
@@ -995,6 +997,45 @@ public:
 
 	}
 
+};
+
+class CheckCondition : public GameEventData
+{
+	
+public:
+	CheckCondition(const char* condition, bool conditionValue) : GameEventData(CUSTOM), Condition(condition), ConditionValue(conditionValue)
+	{
+		m_data.ptr = this;
+	}
+
+
+	CheckCondition(const CheckCondition& copy) : GameEventData(CUSTOM), ConditionValue(copy.ConditionValue)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+		
+		const size_t lenAction = copy.Condition ? strlen(copy.Condition) : 0;
+		Condition = new char[lenAction + 1];
+		memcpy( (char*) Condition, copy.Condition, lenAction );
+		const_cast<char*>(Condition)[lenAction] = '\0';
+	}
+
+	
+	~CheckCondition()
+	{
+		if( m_owner )
+		{
+			delete[] Condition;
+		}
+	}
+
+	const char* Condition;
+	bool ConditionValue;
+	
+	GameEventData* clone() const
+	{
+		return new CheckCondition(*this);
+	}
 };
 
 class Attach : public GameEventData
