@@ -407,7 +407,7 @@ def showOverlays(
 		cVerts[i] = verts[i]
 
 	return _showOverlays(
-			byref(cVerts), c_int(len(verts)),
+			cast(byref(cVerts), POINTER(c_float)), c_int(len(verts) // 4),
 			c_float(r), c_float(g), c_float(b), c_float(a),
 			materialRes, flags
 			)
