@@ -56,7 +56,17 @@ except:
 try:
 	h3d = cdll.LoadLibrary('libHorde3D.so')
 except OSError:
-	h3d = cdll.LoadLibrary('Horde3D.dll')
+	try:
+		h3d = cdll.LoadLibrary('Horde3D.dll')
+	except OSError:
+		print '---------------------------------------------------'
+		print '---            Horde3D Python Wrapper           ---'
+		print '---                                             ---'
+		print '--- could not find libHorde3D.so or Horde3D.dll ---'
+		print '--- check the search path for library files!    ---'
+		print '--- or modify horde3d/__init__.py               ---'
+		print '---------------------------------------------------'
+		raise
 
 
 RootNode = 1
