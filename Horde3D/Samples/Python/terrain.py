@@ -81,11 +81,11 @@ class TerrainApp(app.App):
         return w
 
     def _h3dEngineOptions(self):
-        h3d.setOption(h3d.EngineOptions.LoadTextures, 1)
-        h3d.setOption(h3d.EngineOptions.TexCompression, 0)
-        h3d.setOption(h3d.EngineOptions.MaxAnisotropy, 4)
-        h3d.setOption(h3d.EngineOptions.ShadowMapSize, 2048)
-        h3d.setOption(h3d.EngineOptions.FastAnimation, 1)
+        h3d.setOption(h3d.Options.LoadTextures, 1)
+        h3d.setOption(h3d.Options.TexCompression, 0)
+        h3d.setOption(h3d.Options.MaxAnisotropy, 4)
+        h3d.setOption(h3d.Options.ShadowMapSize, 2048)
+        h3d.setOption(h3d.Options.FastAnimation, 1)
 
     def _h3dAddResources(self):
         class H3DRes:
@@ -95,14 +95,14 @@ class TerrainApp(app.App):
         self._h3dres = h3dres
 
         # Pipelines
-        h3dres.forwardPipe = h3d.addResource(h3d.ResourceTypes.Pipeline, "pipelines/forward.pipeline.xml", 0)
+        h3dres.forwardPipe = h3d.addResource(h3d.ResTypes.Pipeline, "pipelines/forward.pipeline.xml", 0)
         # Overlays
-        h3dres.fontMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/font.material.xml", 0)
-        h3dres.panelMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/panel.material.xml", 0)
-        h3dres.logoMat = h3d.addResource(h3d.ResourceTypes.Material, "overlays/logo.material.xml", 0)
+        h3dres.fontMat = h3d.addResource(h3d.ResTypes.Material, "overlays/font.material.xml", 0)
+        h3dres.panelMat = h3d.addResource(h3d.ResTypes.Material, "overlays/panel.material.xml", 0)
+        h3dres.logoMat = h3d.addResource(h3d.ResTypes.Material, "overlays/logo.material.xml", 0)
         # Terrain
-        h3dres.terrain = h3d.addResource(h3d.ResourceTypes.SceneGraph, "terrains/terrain1/terrain1.scene.xml", 0)
-        h3dres.matRes = h3d.findResource(h3d.ResourceTypes.Material, "terrains/terrain1/terrain1.material.xml" );
+        h3dres.terrain = h3d.addResource(h3d.ResTypes.SceneGraph, "terrains/terrain1/terrain1.scene.xml", 0)
+        h3dres.matRes = h3d.findResource(h3d.ResTypes.Material, "terrains/terrain1/terrain1.material.xml" );
         
     def _h3dSetupScene(self):
         h3dres = self._h3dres
@@ -116,8 +116,8 @@ class TerrainApp(app.App):
 
         for w in self._windows:
             h3d.setNodeTransform(w.camera, self._x, self._y, self._z, self._rx, self._ry, 0, 1, 1, 1)
-            h3d.setOption(h3d.EngineOptions.DebugViewMode, float(self._debugViewMode))
-            h3d.setOption(h3d.EngineOptions.WireframeMode, float(self._wireframeMode))
+            h3d.setOption(h3d.Options.DebugViewMode, float(self._debugViewMode))
+            h3d.setOption(h3d.Options.WireframeMode, float(self._wireframeMode))
 
             key = pyglet.window.key
             curVel = self._velocity * dt
