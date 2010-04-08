@@ -263,7 +263,7 @@ namespace Horde3D
 		Returns:
 		nothing
 		*/
-		int  lua_showOverlay( lua_State *L )			
+		int  lua_showOverlays( lua_State *L )			
 		{
 			float x_ll = static_cast<float>(luaL_checknumber(L,1));
 			float y_ll = static_cast<float>(luaL_checknumber(L,2));
@@ -287,7 +287,7 @@ namespace Horde3D
 			float colA = static_cast<float>(luaL_checknumber(L,20));
 			H3DRes material = luaL_checkint(L, 20);
 			int layer = luaL_checkint(L, 22);
-			h3dShowOverlay(x_ll, y_ll, u_ll, v_ll, x_lr, y_lr, u_lr, v_lr, x_ur, y_ur, u_ur, v_ur, x_ul, y_ul, u_ul, v_ul, colR, colG, colB, colA, material, layer);
+			//h3dShowOverlays(x_ll, y_ll, u_ll, v_ll, x_lr, y_lr, u_lr, v_lr, x_ur, y_ur, u_ur, v_ur, x_ul, y_ul, u_ul, v_ul, colR, colG, colB, colA, material, layer);
 			return 0;
 		}
 
@@ -1808,7 +1808,7 @@ namespace Horde3D
 			{"getMessage", lua_getMessage},
 			{"getOption", lua_getOption},
 			{"setOption", lua_setOption},
-			{"showOverlay", lua_showOverlay},			
+			{"showOverlays", lua_showOverlays},			
 			{"clearOverlays", lua_clearOverlays},
 			{"getResType", lua_getResType},			
 			{"findResource", lua_findResource},
