@@ -100,7 +100,7 @@ struct DaeTriGroup
 		if( primType < 0 ) return false;
 		
 		int vertexOffset = 0, normOffset = -1, texCoordOffset[4] = { -1, -1, -1, -1 };
-		unsigned int numInputs = 0;
+		int inputsPerVert = 0;
 		
 		// Find the base mapping channel with the lowest set-id
 		int baseChannel = 999999;
@@ -129,11 +129,13 @@ struct DaeTriGroup
 		node1 = primitiveNode.getChildNode( "input", nodeItr1 );
 		while( !node1.isEmpty() )
 		{
-			++numInputs;
+			int offset = atoi( node1.getAttribute( "offset", "0" ) );
+			if( offset >= inputsPerVert )
+				inputsPerVert = offset + 1;
 			
 			if( strcmp( node1.getAttribute( "semantic", "" ), "VERTEX" ) == 0 )
 			{
-				vertexOffset = atoi( node1.getAttribute( "offset", "0" ) );
+				vertexOffset = offset;
 				vSourceId = node1.getAttribute( "source", "" );
 				removeGate( vSourceId );
 				if( vSourceId == "" ) return false;
@@ -149,14 +151,14 @@ struct DaeTriGroup
 				
 				if( set >= 0 && set < 4 )
 				{
-					texCoordOffset[set] = atoi( node1.getAttribute( "offset", "0" ) );
+					texCoordOffset[set] = offset;
 					texSourceId[set] = node1.getAttribute( "source", "" );
 					removeGate( texSourceId[set] );
 				}
 			}
 			if( strcmp( node1.getAttribute( "semantic", "" ), "NORMAL" ) == 0 )
 			{
-				normOffset = atoi( node1.getAttribute( "offset", "0" ) );
+				normOffset = offset;
 				normSourceId = node1.getAttribute( "source", "" );
 				removeGate( normSourceId );
 			}
@@ -184,27 +186,27 @@ struct DaeTriGroup
 			if( s == 0x0 ) return false;
 			
 			unsigned int  ui, pos = 0;
-			unsigned int  inputCnt = 0, vertCnt = 0;
+			unsigned int  curInput = 0, vertCnt = 0;
 			IndexEntry    indexEntry;
 			IndexEntry    firstIndex, lastIndex;
 			
 			while( parseUInt( s, pos, ui ) )
 			{
 				// No else-if since offset sharing is possible
-				if( (int)inputCnt == vertexOffset )
+				if( (int)curInput == vertexOffset )
 					indexEntry.posIndex = ui;
-				if( (int)inputCnt == normOffset )
+				if( (int)curInput == normOffset )
 					indexEntry.normIndex = (int)ui;
-				if( (int)inputCnt == texCoordOffset[0] )	
+				if( (int)curInput == texCoordOffset[0] )
 					indexEntry.texIndex[0] = (int)ui;
-				if( (int)inputCnt == texCoordOffset[1] )	
+				if( (int)curInput == texCoordOffset[1] )
 					indexEntry.texIndex[1] = (int)ui;
-				if( (int)inputCnt == texCoordOffset[2] )	
+				if( (int)curInput == texCoordOffset[2] )
 					indexEntry.texIndex[2] = (int)ui;
-				if( (int)inputCnt == texCoordOffset[3] )	
+				if( (int)curInput == texCoordOffset[3] )
 					indexEntry.texIndex[3] = (int)ui;
 
-				if( ++inputCnt == numInputs )
+				if( ++curInput == inputsPerVert )
 				{
 					if( primType == tPolylist && vertCnt == numVerts )
 					{
@@ -229,7 +231,7 @@ struct DaeTriGroup
 
 					indices.push_back( indexEntry );
 					lastIndex = indexEntry;
-					inputCnt = 0;
+					curInput = 0;
 					++vertCnt;
 				}
 			}

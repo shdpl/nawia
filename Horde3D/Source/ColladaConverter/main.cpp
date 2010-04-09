@@ -117,15 +117,15 @@ void printHelp()
 	log( "ColladaConv input [optional arguments]" );
 	log( "" );
 	log( "input             asset file or directory to be processed" );
-	log( "/type model|anim  asset type to be processed (default: geo)" );
-	log( "/base path        base path where the repository root is located" );
-	log( "/dest path        existing destination path where output is written" );
-	log( "/noGeoOpt         disable geometry optimization" );
-	log( "/overwriteMats    force update of existing materials" );
-	log( "/lodDist1 dist    distance for LOD1" );
-	log( "/lodDist2 dist    distance for LOD2" );
-	log( "/lodDist3 dist    distance for LOD3" );
-	log( "/lodDist4 dist    distance for LOD4" );
+	log( "-type model|anim  asset type to be processed (default: model)" );
+	log( "-base path        base path where the repository root is located" );
+	log( "-dest path        existing destination path where output is written" );
+	log( "-noGeoOpt         disable geometry optimization" );
+	log( "-overwriteMats    force update of existing materials" );
+	log( "-lodDist1 dist    distance for LOD1" );
+	log( "-lodDist2 dist    distance for LOD2" );
+	log( "-lodDist3 dist    distance for LOD3" );
+	log( "-lodDist4 dist    distance for LOD4" );
 }
 
 
@@ -151,7 +151,7 @@ int main( int argc, char **argv )
 	float lodDists[4] = { 10, 20, 40, 80 };
 	
 	// Make sure that first argument ist not an option
-	if( argv[1][0] == '/' )
+	if( argv[1][0] == '-' )
 	{
 		log( "Missing input file or dir; use . for repository root" );
 		return 1;
@@ -160,35 +160,35 @@ int main( int argc, char **argv )
 	// Check optional arguments
 	for( int i = 2; i < argc; ++i )
 	{
-		if( _stricmp( argv[i], "/type" ) == 0 && argc > i + 1 )
+		if( _stricmp( argv[i], "-type" ) == 0 && argc > i + 1 )
 		{
 			if( _stricmp( argv[++i], "model" ) == 0 ) assetType = AssetTypes::Model;
 			else if( _stricmp( argv[i], "anim" ) == 0 ) assetType = AssetTypes::Animation;
 			else assetType = AssetTypes::Unknown;
 		}
-		else if( _stricmp( argv[i], "/base" ) == 0 && argc > i + 1 )
+		else if( _stricmp( argv[i], "-base" ) == 0 && argc > i + 1 )
 		{
 			basePath = cleanPath( argv[++i] ) + "/";
 		}
-		else if( _stricmp( argv[i], "/dest" ) == 0 && argc > i + 1 )
+		else if( _stricmp( argv[i], "-dest" ) == 0 && argc > i + 1 )
 		{
 			outPath = cleanPath( argv[++i] ) + "/";
 		}
-		else if( _stricmp( argv[i], "/noGeoOpt" ) == 0 )
+		else if( _stricmp( argv[i], "-noGeoOpt" ) == 0 )
 		{
 			geoOpt = false;
 		}
-		else if( _stricmp( argv[i], "/overwriteMats" ) == 0 )
+		else if( _stricmp( argv[i], "-overwriteMats" ) == 0 )
 		{
 			overwriteMats = true;
 		}
-		else if( (_stricmp( argv[i], "/lodDist1" ) == 0 || _stricmp( argv[i], "/lodDist2" ) == 0 ||
-		          _stricmp( argv[i], "/lodDist3" ) == 0 || _stricmp( argv[i], "/lodDist4" ) == 0) && argc > i + 1 )
+		else if( (_stricmp( argv[i], "-lodDist1" ) == 0 || _stricmp( argv[i], "-lodDist2" ) == 0 ||
+		          _stricmp( argv[i], "-lodDist3" ) == 0 || _stricmp( argv[i], "-lodDist4" ) == 0) && argc > i + 1 )
 		{
 			int index = 0;
-			if( _stricmp( argv[i], "/lodDist2" ) == 0 ) index = 1;
-			else if( _stricmp( argv[i], "/lodDist3" ) == 0 ) index = 2;
-			else if( _stricmp( argv[i], "/lodDist4" ) == 0 ) index = 3;
+			if( _stricmp( argv[i], "-lodDist2" ) == 0 ) index = 1;
+			else if( _stricmp( argv[i], "-lodDist3" ) == 0 ) index = 2;
+			else if( _stricmp( argv[i], "-lodDist4" ) == 0 ) index = 3;
 			
 			lodDists[index] = (float)atof( argv[++i] );
 		}
