@@ -33,6 +33,8 @@ namespace glExt
 }
 
 
+namespace h3dGL
+{
 // GL 1.2
 PFNGLBLENDCOLORPROC glBlendColor = 0x0;
 PFNGLBLENDEQUATIONPROC glBlendEquation = 0x0;
@@ -177,6 +179,7 @@ PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC glRenderbufferStorageMultisampleEXT =
 // GL_EXT_timer_query
 PFNGLGETQUERYOBJECTI64VEXTPROC glGetQueryObjecti64vEXT = 0x0;
 PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64vEXT = 0x0;
+}  // namespace h3dGL
 
 
 bool isExtensionSupported( string extString )

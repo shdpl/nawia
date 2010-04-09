@@ -60,7 +60,6 @@ namespace glExt
 
 bool initOpenGLExtensions();
 
-extern "C" {
 
 // =================================================================================================
 // OpenGL 2.1 functionality that has not been deprecated by GL3
@@ -314,6 +313,8 @@ typedef uint64          GLuint64EXT;
 #define GL_PROXY_TEXTURE_1D               0x8063
 #define GL_PROXY_TEXTURE_2D               0x8064
 
+extern "C"
+{
 GLAPI void GLAPIENTRY glBindTexture (GLenum target, GLuint texture);
 GLAPI void GLAPIENTRY glBlendFunc (GLenum sfactor, GLenum dfactor);
 GLAPI void GLAPIENTRY glClear (GLbitfield mask);
@@ -376,10 +377,13 @@ GLAPI void GLAPIENTRY glTexParameteriv (GLenum target, GLenum pname, const GLint
 GLAPI void GLAPIENTRY glTexSubImage1D (GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const GLvoid *pixels);
 GLAPI void GLAPIENTRY glTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
 GLAPI void GLAPIENTRY glViewport (GLint x, GLint y, GLsizei width, GLsizei height);
+}  // extern "C"
 
 #endif  // GL_VERSION_1_1
 
 
+namespace h3dGL
+{
 // GL 1.2
 #ifndef GL_VERSION_1_2
 #define GL_VERSION_1_2 1
@@ -897,15 +901,18 @@ extern PFNGLUNIFORMMATRIX3X4FVPROC glUniformMatrix3x4fv;
 extern PFNGLUNIFORMMATRIX4X3FVPROC glUniformMatrix4x3fv;
 
 #endif  // GL_VERSION_2_1
+}  // namespace h3dGL
 
 
 // =================================================================================================
-// Deprecated functionality (that is still required by the renderer)
+// Deprecated OpenGL 1.1 functionality (that is still required by the renderer)
 // =================================================================================================
 
 #define GL_QUADS                          0x0007
 #define GL_GENERATE_MIPMAP                0x8191
 
+extern "C"
+{
 GLAPI void GLAPIENTRY glBegin (GLenum mode);
 GLAPI void GLAPIENTRY glEnd (void);
 GLAPI void GLAPIENTRY glVertex3f (GLfloat x, GLfloat y, GLfloat z);
@@ -913,12 +920,15 @@ GLAPI void GLAPIENTRY glVertex3fv (const GLfloat *v);
 GLAPI void GLAPIENTRY glTexCoord2f (GLfloat s, GLfloat t);
 GLAPI void GLAPIENTRY glTexCoord2fv (const GLfloat *v);
 GLAPI void GLAPIENTRY glColor4f (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+}
 
 
 // =================================================================================================
 // Extensions
 // =================================================================================================
 
+namespace h3dGL
+{
 // EXT_framebuffer_object
 #ifndef GL_EXT_framebuffer_object
 #define GL_EXT_framebuffer_object 1
@@ -1132,7 +1142,8 @@ extern PFNGLGETQUERYOBJECTI64VEXTPROC glGetQueryObjecti64vEXT;
 extern PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64vEXT;
 
 #endif
+}  // namespace h3dGL
 
-}  // extern "C"
+using namespace h3dGL;
 
 #endif // _utOpenGL_H_
