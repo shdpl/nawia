@@ -202,26 +202,28 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 		}
 	}
 }
-
+/*
 void SoundComponent::update()
 {		
-		if(m_isSpeaking && m_visemes[m_visemeIndex].m_index == 100)
-		{
-			GameEvent theme(GameEvent::SP_THEME_START, NULL, NULL);
-			GameEngine::sendEvent( m_owner->worldId() , &theme );
+	if(m_isSpeaking && m_visemes[m_visemeIndex].m_index == 100)
+	{
+		GameEvent theme(GameEvent::SP_THEME_START, NULL, NULL);
+		GameEngine::sendEvent( m_owner->worldId() , &theme );
 
-			m_visemeIndex++;
-			update();
-		}
+		m_visemeIndex++;
+		m_curViseme = m_visemes[m_visemeIndex].m_index;
+		update();
+	}
 
-		if(m_isSpeaking && m_visemes[m_visemeIndex].m_index == 101)
-		{
-			GameEvent rheme(GameEvent::SP_RHEME_START, NULL, NULL);
-			GameEngine::sendEvent( m_owner->worldId() , &rheme );
+	if(m_isSpeaking && m_visemes[m_visemeIndex].m_index == 101)
+	{
+		GameEvent rheme(GameEvent::SP_RHEME_START, NULL, NULL);
+		GameEngine::sendEvent( m_owner->worldId() , &rheme );
 
-			m_visemeIndex++;
-			update();
-		}
+		m_visemeIndex++;
+		m_curViseme = m_visemes[m_visemeIndex].m_index;
+		update();
+	}
 
 	float deltaT = 1.0f / (GameEngine::timeStamp() - m_lastTimeStamp);
 	m_velX = (m_x - m_tx) * deltaT;
@@ -265,7 +267,7 @@ void SoundComponent::update()
 			}
 			else
 			{
-				float val = minf( m_visemeBlendFacPrev, maxf( 1.0f - m_visemeBlendFac, 0.0f ) );
+				float val = minf( m_visemeBlendFacPrev, maxf( 1.0f - m_visemeBlendFacPrev, 0.0f ) );
 				if (val <= 0.0f )
 					resetPreviousViseme();
 				else
@@ -312,6 +314,79 @@ void SoundComponent::update()
 			if( m_visemeIndex == m_visemes.size() )
 			{	
 				// Stop visemes
+				stopVisemes();
+				if( m_loop )
+				{
+					//..and start them again if sound loops
+					startVisemes();
+				}
+			}
+			if( m_isSpeaking ) m_curViseme = m_visemes[m_visemeIndex].m_index;
+		}
+	}
+} */
+
+void SoundComponent::update()
+{
+	if(m_isSpeaking && m_visemes[m_visemeIndex].m_index == 100)
+	{
+		GameEvent theme(GameEvent::SP_THEME_START, NULL, NULL);
+		GameEngine::sendEvent( m_owner->worldId() , &theme );
+
+		m_visemeIndex++;
+		m_curViseme = m_visemes[m_visemeIndex].m_index;
+		update();
+	}
+
+	if(m_isSpeaking && m_visemes[m_visemeIndex].m_index == 101)
+	{
+		GameEvent rheme(GameEvent::SP_RHEME_START, NULL, NULL);
+		GameEngine::sendEvent( m_owner->worldId() , &rheme );
+
+		m_visemeIndex++;
+		m_curViseme = m_visemes[m_visemeIndex].m_index;
+		update();
+	}
+
+	float deltaT = 1.0f / (GameEngine::timeStamp() - m_lastTimeStamp);
+	m_velX = (m_x - m_tx) * deltaT;
+	m_velY = (m_y - m_ty) * deltaT;
+	m_velZ = (m_z - m_tz) * deltaT;
+	m_tx = m_x; m_ty = m_y; m_tz = m_z;
+	m_lastTimeStamp = GameEngine::timeStamp();
+
+	if( m_sourceID != 0 && m_stream)
+		SoundResourceManager::instance()->updateBuffer(m_sourceID, m_resourceID);
+
+	// update visemes
+	if( !m_visemes.empty() && m_isSpeaking)
+	{
+		// Calculate interpolation
+		//float step = (1.0f / GameEngine::FPS() * 1000) / (m_visemes[m_visemeIndex].m_duration);
+
+		// Calc current viseme
+		int time = (int)( ( GameEngine::timeStamp() - m_startTimestamp ) * 1000 );
+		float timef = ( GameEngine::timeStamp() - m_startTimestamp ) * 1000;
+		int durTime = (int) ( m_visemes[m_visemeIndex].m_start + m_visemes[m_visemeIndex].m_duration );
+
+		m_visemeBlendFac = 1 - (m_visemes[m_visemeIndex].m_end - timef) / m_visemes[m_visemeIndex].m_duration + 0.6f;
+
+		if( m_visemeBlendFac > 1.0f)
+			m_visemeBlendFac = 1.0f;
+		if( m_visemeBlendFac < 0.6f)
+			m_visemeBlendFac = 0.6f;
+		setViseme( visemeMapping[m_curViseme], m_visemeBlendFac / 2.0f );
+
+		//printf("Visemetime: %d", time);
+		if( m_visemes[m_visemeIndex].m_end < time )
+		{
+			m_visemeChanged = true;
+			m_visemeIndex++;
+			// End of text 	
+			if( m_visemeIndex == m_visemes.size() )
+			{	
+				// Stop visemes
+				setViseme( visemeMapping[m_curViseme], 0.0f );
 				stopVisemes();
 				if( m_loop )
 				{
@@ -574,7 +649,7 @@ void SoundComponent::startVisemes()
 		if(m_visemes[m_visemeIndex].m_index == 100)
 		{
 			GameEvent theme(GameEvent::SP_THEME_START, NULL, NULL);
-			GameEngine::sendEvent( m_owner->worldId() , &theme );
+			GameEngine::sendEvent( m_owner->worldId(), &theme );
 
 			m_visemeIndex = 1;
 		}
@@ -582,7 +657,7 @@ void SoundComponent::startVisemes()
 		if(m_visemes[m_visemeIndex].m_index == 101)
 		{
 			GameEvent rheme(GameEvent::SP_RHEME_START, NULL, NULL);
-			GameEngine::sendEvent( m_owner->worldId() , &rheme );
+			GameEngine::sendEvent( m_owner->worldId(), &rheme );
 
 			m_visemeIndex = 1;
 		}
