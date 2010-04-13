@@ -1112,9 +1112,10 @@ public:
 		m_data.ptr = this;
 	}
 	///Contrcutor for ik anim data
-	IKData(const char* EndEffectorName,	const char* StopName, float TargetX, float TargetY, float TargetZ, int Stage )
+	IKData(const char* EndEffectorName,	const char* StopName, float TargetX, float TargetY, float TargetZ, int AnimStage, float AnimWeight, float AnimSpeed )
 		: GameEventData(CUSTOM), endEffectorName(EndEffectorName), stopName(StopName), 
-		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), result(-1), stage(Stage)
+		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), result(-1), 
+		  animStage(AnimStage), animSpeed(AnimSpeed), animWeight(AnimWeight)
 	{
 		m_data.ptr = this;
 	}
@@ -1133,8 +1134,9 @@ public:
 	}
 
 	IKData(const IKData& copy) : GameEventData(CUSTOM), targetX(copy.targetX), targetY(copy.targetY), targetZ(copy.targetZ), 
-		result(copy.result), simulate(copy.simulate), stage(copy.stage), ikparam(copy.ikparam),
-		ikparam_valuei(copy.ikparam_valuei), ikparam_valuef(copy.ikparam_valuef)
+		result(copy.result), simulate(copy.simulate), ikparam(copy.ikparam),
+		ikparam_valuei(copy.ikparam_valuei), ikparam_valuef(copy.ikparam_valuef),
+		animStage(copy.animStage), animWeight(copy.animWeight), animSpeed(copy.animSpeed)
 	{
 		m_data.ptr = this;
 		m_owner = true;
@@ -1179,7 +1181,7 @@ public:
 	float targetX, targetY, targetZ;
 	bool moveLEye, moveREye, moveHead;	int head_pitch;
 	bool simulate;
-	int stage;
+	int animStage;		float animSpeed;		float animWeight;
 	int result;
 	int ikparam;	float ikparam_valuef;	int ikparam_valuei;
 };
