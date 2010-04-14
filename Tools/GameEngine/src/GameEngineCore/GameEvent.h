@@ -298,7 +298,8 @@ public:
 		E_SET_CROWD_TAG,		/// Sets the current crowd sim tag of a particle, so it starts wandering around if the tag > 0
 		E_SET_CROWD_IGNORE_FORCES, /// The crowd particle will ignore forces if the particle is not moving
 		IK_SOLVE,				/// Computes the IK with the given data and applies it to the chain
-		IK_SOLVEANIM,			/// Computes the IK with the given data and generates a keyframe animation of the chain transformation
+		IK_CREATEIKANIM,		/// Computes the IK with the given data, generates a keyframe animation of the chain transformation and stores the anim resource in data->result
+		IK_PLAYIKANIM,			/// Plays a previously generated IKAnim
 		IK_GAZE,				/// Computes and applies a gaze action to the designated model (agent)
 		IK_SETPARAMI,			/// Sets an IK parameter (IK_Param) of type integer
 		IK_SETPARAMF,			/// Sets an IK parameter (IK_Param) of type float
@@ -1093,10 +1094,17 @@ public:
 	}
 };
 
+/**
+ * \brief Container for parameters of the IK component
+ * 
+ * @author Ionut Damian
+ * @date  April 2010
+ * 
+ */ 
 class IKData : public GameEventData
 {
 public:
-	///Contructor for gaze data
+	///Constructor for gaze data
 	IKData(float TargetX, float TargetY, float TargetZ, bool MoveLEye, bool MoveREye, bool MoveHead, int Head_pitch, bool Simulate = false )
 		: GameEventData(CUSTOM), endEffectorName(0), stopName(0), 
 		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), moveLEye(MoveLEye), moveREye(MoveREye), moveHead(MoveHead), 
@@ -1104,29 +1112,28 @@ public:
 	{
 		m_data.ptr = this;
 	}
-	///Contrcutor for ik data
+	///Constructor for ik data
 	IKData(const char* EndEffectorName,	const char* StopName, float TargetX, float TargetY, float TargetZ, bool Simulate = false )
 		: GameEventData(CUSTOM), endEffectorName(EndEffectorName), stopName(StopName), 
 		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), result(-1), simulate(Simulate)
 	{
 		m_data.ptr = this;
 	}
-	///Contrcutor for ik anim data
-	IKData(const char* EndEffectorName,	const char* StopName, float TargetX, float TargetY, float TargetZ, int AnimStage, float AnimWeight, float AnimSpeed )
-		: GameEventData(CUSTOM), endEffectorName(EndEffectorName), stopName(StopName), 
-		  targetX(TargetX), targetY(TargetY), targetZ(TargetZ), result(-1), 
+	///Constructor for ik anim data
+	IKData( int AnimStage, float AnimWeight, float AnimSpeed )
+		: GameEventData(CUSTOM), result(-1), 
 		  animStage(AnimStage), animSpeed(AnimSpeed), animWeight(AnimWeight)
 	{
 		m_data.ptr = this;
 	}
 
-	///Contrcutor for ik param data (look up parameters in IK_Param)
+	///Constructor for ik param data (look up parameters in IK_Param)
 	IKData( int IK_Parameter, int value )
 		: GameEventData(CUSTOM), endEffectorName(0), stopName(0), ikparam(IK_Parameter), ikparam_valuei(value)
 	{
 		m_data.ptr = this;
 	}
-	///Contrcutor for ik param data (look up parameters in IK_Param)
+	///Constructor for ik param data (look up parameters in IK_Param)
 	IKData( int IK_Parameter, float value )
 		: GameEventData(CUSTOM), endEffectorName(0), stopName(0), ikparam(IK_Parameter), ikparam_valuef(value)
 	{
