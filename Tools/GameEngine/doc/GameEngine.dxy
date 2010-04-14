@@ -98,8 +98,9 @@ INPUT                  = ../src/GameEngineCore \
                          ../src/GameAnimationComponent \
                          ../src/GameBulletPhysicsComponent \
                          ../src/GameSapiComponent \
-                         ../src/GameCollisionComponent \
-                         ../src/GameSoundEngineComponent
+						 ../src/GameCollisionComponent \
+                         ../src/GameSoundEngineComponent \
+						 ../src/GameIKComponent \
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
