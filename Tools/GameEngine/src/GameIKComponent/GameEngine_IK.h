@@ -46,6 +46,7 @@ struct IK_Param
 		CCDMaxIterations_I,				///< number of CCD iterations before giving up (default: 100)
 		CCDTwistJointManipulation_I,	///< flag for looking after "Twist Joints" (joints parallel to normal joints which need to be rotated simultaneously, ex: forearm-twist-joint) (default: 0)
 		NumAnimFrames_I,				///< number of frames of the IK animation (default 512)
+
 		CCDMaxDistError_F,				///< allowed deviation from target, expressed as distance between target and actual vector
 		CCDRotJitterTolerance_F,		///< allowed jitter tolerance when rotating the ik chain, expressed in cos of angle (default 0.00001)
 		H3DAVersion_F,					///< current version of Horde3D Animation
@@ -84,9 +85,10 @@ namespace GameEngine
 {
 	/** \addtogroup GameIKComponent
 	 * 
-	 * The IKComponent solves the IK Problem using the Cyclic Coordinate Descent (CCD Method). After solving the IK,
-	 * this component either applies it to the scenegraph or generates an keyframe animation with IKAnim with the two chain positions. \n
-	 * It also houses the Gaze Algorithm, a specialized CCD Algorithm, which moves the heads of humanoids in a gaze-like fashion
+	 * The IKComponent solves the inverse kinematic using the Cyclic Coordinate Descent (CCD) method. After solving the IK,
+	 * this component either applies it to the scenegraph or generates a keyframe animation with the two chain positions ( IKAnim ). \n
+	 * It also houses the Gaze Algorithm, a specialized CCD Algorithm, which generates a gaze like movement with the head and eyes
+	 * of humanoids.
 	 *
 	 * @author Ionut Damian
 	 * @{

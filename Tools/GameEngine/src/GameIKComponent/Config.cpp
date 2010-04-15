@@ -51,37 +51,37 @@ void Config::useDefault()
 
 int Config::getParamI(IK_Param::List p)
 {	
-	int offset = 0;
-	if(( p > IK_NumParamI + offset )||( p < offset ))
+	int index = p;
+	if(index >= IK_NumParamI || index < 0) //check array bounding
 		return -1;
 
-	return m_paramI[p]; 
+	return m_paramI[index]; 
 }
 
 void Config::setParamI(IK_Param::List p, int value)
 {	
-	int offset = 0;
-	if(( p > IK_NumParamI + offset )||( p < offset ))
+	int index = p;
+	if(index >= IK_NumParamI || index < 0) //check array bounding
 		return;
 
-	m_paramI[p] = value;
+	m_paramI[index] = value;
 }
 
 float Config::getParamF(IK_Param::List p)
 {	
-	int offset = IK_NumParamI;
-	if(( p > IK_NumParamF + offset )||( p < offset ))
+	int index = p - IK_NumParamI;
+	if(index >= IK_NumParamF || index < 0) //check array bounding
 		return -1;
 
-	return m_paramF[p - offset]; 
+	return m_paramF[index]; 
 }
 
 void Config::setParamF(IK_Param::List p, float value)
 {	
-	int offset = IK_NumParamI;
-	if(( p > IK_NumParamF + offset )||( p < offset ))
+	int index = p - IK_NumParamI;
+	if(index >= IK_NumParamF || index < 0) //check array bounding
 		return;
 
-	m_paramF[p - offset] = value;
+	m_paramF[index] = value;
 }
 

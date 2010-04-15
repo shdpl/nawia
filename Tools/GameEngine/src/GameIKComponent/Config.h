@@ -29,7 +29,7 @@
 //Definitions
 //#define IK_DEBUG
 #define IK_NumParamI 6
-#define IK_NumParamF 6
+#define IK_NumParamF 7
 //////////////////////////////////////////////
 
 /**
