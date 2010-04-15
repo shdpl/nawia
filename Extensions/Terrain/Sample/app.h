@@ -31,7 +31,8 @@ private:
 	float        _curFPS;
 
 	int          _statMode;
-	bool         _freeze, _debugViewMode, _wireframeMode;
+	int          _freezeMode;
+	bool         _debugViewMode, _wireframeMode;
 	
 	// Engine objects
 	H3DRes       _fontMatRes, _panelMatRes, _logoMatRes;

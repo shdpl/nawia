@@ -24,8 +24,8 @@
 #include "app.h"
 
 // Configuration
-const int appWidth = 800;
-const int appHeight = 600;
+const int appWidth = 1024;
+const int appHeight = 576;
 static bool fullScreen = false;
 static int benchmarkLength = 600;
 
@@ -88,15 +88,19 @@ void keyPressListener( int key, int action )
 				glfwGetDesktopMode( &mode );
 				
 				float aspect = mode.Width / (float)mode.Height;
-				if( (int)(aspect * 100) == 133 || (int)(aspect * 100) == 125 )	// Standard
+				if( (int)(aspect * 100) == 133 || (int)(aspect * 100) == 125 )  // Standard
 				{
 					width = 1280; height = 1024;
 				}
-				else if( (int)(aspect * 100) == 160 )							// Widescreen
+				else if( (int)(aspect * 100) == 177 )                           // Widescreen 16:9
+				{
+					width = 1280; height = 720;
+				}
+				else if( (int)(aspect * 100) == 160 )                           // Widescreen 16:10
 				{
 					width = 1280; height = 800;
 				}
-				else															// Unknown
+				else                                                            // Unknown
 				{
 					// Use desktop resolution
 					width = mode.Width; height = mode.Height;
@@ -203,7 +207,7 @@ int main( int argc, char** argv )
 		{
 			double t = glfwGetTime();
 			fps = frames / (float)(t - t0);
-			if( fps < 1 ) fps = 30;  // Handle breakpoints
+			if( fps < 5 ) fps = 30;  // Handle breakpoints
 			frames = 0;
 			t0 = t;
 		}

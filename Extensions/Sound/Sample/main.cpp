@@ -19,8 +19,8 @@
 
 // Configuration
 const char caption[] = "Sound - Horde3D Sample";
-const int appWidth = 800;
-const int appHeight = 600;
+const int appWidth = 1024;
+const int appHeight = 576;
 bool fullScreen = false;
 
 
@@ -85,9 +85,24 @@ void keyPressListener( int key, int action )
 				GLFWvidmode mode;
 				glfwGetDesktopMode( &mode );
 
-				// Use desktop resolution
-				width = mode.Width;
-				height = mode.Height;
+				float aspect = mode.Width / (float)mode.Height;
+				if( (int)(aspect * 100) == 133 || (int)(aspect * 100) == 125 )  // Standard
+				{
+					width = 1280; height = 1024;
+				}
+				else if( (int)(aspect * 100) == 177 )                           // Widescreen 16:9
+				{
+					width = 1280; height = 720;
+				}
+				else if( (int)(aspect * 100) == 160 )                           // Widescreen 16:10
+				{
+					width = 1280; height = 800;
+				}
+				else                                                            // Unknown
+				{
+					// Use desktop resolution
+					width = mode.Width; height = mode.Height;
+				}
 			}
 
 			if( !setupWindow( width, height, fullScreen ) )
