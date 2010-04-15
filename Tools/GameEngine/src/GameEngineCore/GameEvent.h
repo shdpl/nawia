@@ -322,6 +322,7 @@ public:
 		D_INIT_SPEAKERS,		/// initialize speakers 
 		D_START_DIALOGUE,		/// start playing the parsed dialogue
 		CC_CHARACTER_ACTION,	/// character performs an action, snt from BTcomp to CharControl
+		CC_ABORT_ACTION,		/// to abort an action that is performed
 		CC_REPORT_COMPLETION,	/// reports whether a character action was succesfull, or failed
 		BT_ACTIVATE_ON_OFF,		/// activates, or deactivates the BTComponent
 		
@@ -887,6 +888,38 @@ public:
 
 	}
 
+};
+
+class IdData : public GameEventData
+{
+
+public:
+	IdData(int id) : GameEventData(CUSTOM), Id(id)
+	{
+		m_data.ptr = this;
+	}
+
+
+
+	IdData(const IdData& copy) : GameEventData(CUSTOM), Id(copy.Id)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+	}
+	
+	~IdData()
+	{
+		if( m_owner )
+		{
+		}
+	}
+
+	int Id;
+	
+	GameEventData* clone() const
+	{
+		return new IdData(*this);
+	}
 };
 
 class GoTo : public GameEventData
