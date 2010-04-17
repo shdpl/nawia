@@ -987,7 +987,7 @@ class CharacterAction : public GameEventData
 {
 
 public:
-	CharacterAction(const char* action, const char* parameters, int id ) : GameEventData(CUSTOM), Action(action), Parameters(parameters), Id(id) 
+	CharacterAction(const char* action, const char* parameters, unsigned int id ) : GameEventData(CUSTOM), Action(action), Parameters(parameters), Id(id) 
 	{
 		m_data.ptr = this;
 	}
@@ -1021,7 +1021,7 @@ public:
 
 	const char* Action;
 	const char* Parameters;
-	int Id;
+	unsigned int Id;
 	
 
 
@@ -1037,7 +1037,7 @@ class CheckCondition : public GameEventData
 {
 	
 public:
-	CheckCondition(const char* condition, bool conditionValue) : GameEventData(CUSTOM), Condition(condition), ConditionValue(conditionValue)
+	CheckCondition(const char* condition, const char* parameters, bool conditionValue) : GameEventData(CUSTOM), Condition(condition), Parameters(parameters), ConditionValue(conditionValue)
 	{
 		m_data.ptr = this;
 	}
@@ -1052,6 +1052,11 @@ public:
 		Condition = new char[lenAction + 1];
 		memcpy( (char*) Condition, copy.Condition, lenAction );
 		const_cast<char*>(Condition)[lenAction] = '\0';
+		
+		const size_t lenParameters = copy.Parameters ? strlen(copy.Parameters) : 0;
+		Parameters = new char[lenParameters + 1];
+		memcpy( (char*) Parameters, copy.Parameters, lenParameters );
+		const_cast<char*>(Parameters)[lenParameters] = '\0';
 	}
 
 	
@@ -1060,10 +1065,12 @@ public:
 		if( m_owner )
 		{
 			delete[] Condition;
+			delete[] Parameters;
 		}
 	}
 
 	const char* Condition;
+	const char* Parameters;
 	bool ConditionValue;
 	
 	GameEventData* clone() const
