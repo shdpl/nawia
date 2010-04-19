@@ -44,7 +44,7 @@ Application::Application( const string &appDir )
 	_freezeMode = 0; _debugViewMode = false; _wireframeMode = false;
 	_cam = 0;
 
-	_contentDir = appDir + "../Content" + "|" + "../../../Extensions/Terrain/Sample/Content";
+	_contentDir = appDir + "../Content" + "|" + appDir + "../../../Extensions/Terrain/Sample/Content";
 }
 
 
@@ -169,7 +169,7 @@ void Application::keyStateHandler()
 	if( _keys[265] && !_prevKeys[265] )  // F8
 		_wireframeMode = !_wireframeMode;
 	
-	if( _keys[266] && !_prevKeys[266] )  // F9
+	if( _keys[263] && !_prevKeys[263] )  // F6
 	{
 		_statMode += 1;
 		if( _statMode > H3DUTMaxStatMode ) _statMode = 0;

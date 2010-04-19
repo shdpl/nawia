@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        init.c
 // Platform:    Any
-// API version: 2.6
+// API version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -48,11 +48,14 @@ GLFWAPI int GLFWAPIENTRY glfwInit( void )
         return GL_TRUE;
     }
 
+    memset( &_glfwLibrary, 0, sizeof( _glfwLibrary ) );
+    memset( &_glfwWin, 0, sizeof( _glfwWin ) );
+
     // Window is not yet opened
-    _glfwWin.Opened = GL_FALSE;
+    _glfwWin.opened = GL_FALSE;
 
     // Default enable/disable settings
-    _glfwWin.SysKeysDisabled = GL_FALSE;
+    _glfwWin.sysKeysDisabled = GL_FALSE;
 
     // Clear window hints
     _glfwClearWindowHints();

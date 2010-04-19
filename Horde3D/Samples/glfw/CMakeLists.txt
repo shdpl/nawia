@@ -50,18 +50,36 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	include_directories(./lib ./lib/macosx)
-	set(GLFW_SOURCES
-		${GLFW_SOURCES}
-		lib/macosx/macosx_enable.c
-		lib/macosx/macosx_fullscreen.c
-		lib/macosx/macosx_glext.c
-		lib/macosx/macosx_init.c
-		lib/macosx/macosx_joystick.c
-		lib/macosx/macosx_thread.c
-		lib/macosx/macosx_time.c
-		lib/macosx/macosx_window.c
-		)
+	FIND_LIBRARY(COCOA_LIBRARY Cocoa)
+	FIND_LIBRARY(APPLICATION_SERVICES_LIBRARY ApplicationServices)
+	FIND_LIBRARY(AGL_LIBRARY AGL)
+	IF(COCOA_LIBRARY)
+		include_directories(./lib ./lib/cocoa)
+		set(GLFW_SOURCES
+			${GLFW_SOURCES}
+			lib/cocoa/cocoa_enable.m
+			lib/cocoa/cocoa_fullscreen.m
+			lib/cocoa/cocoa_glext.m
+			lib/cocoa/cocoa_init.m
+			lib/cocoa/cocoa_joystick.m
+			lib/cocoa/cocoa_thread.c
+			lib/cocoa/cocoa_time.m
+			lib/cocoa/cocoa_window.m
+			)
+	ELSE(COCOA_LIBRARY)
+		include_directories(./lib ./lib/carbon)
+		set(GLFW_SOURCES
+			${GLFW_SOURCES}
+			lib/carbon/carbon_enable.c
+			lib/carbon/carbon_fullscreen.c
+			lib/carbon/carbon_glext.c
+			lib/carbon/carbon_init.c
+			lib/carbon/carbon_joystick.c
+			lib/carbon/carbon_thread.c
+			lib/carbon/carbon_time.c
+			lib/carbon/carbon_window.c
+			)
+	ENDIF(COCOA_LIBRARY)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 

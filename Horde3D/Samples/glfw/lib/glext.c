@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        glext.c
 // Platform:    Any
-// API version: 2.6
+// API version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -36,12 +36,58 @@
 //************************************************************************
 
 //========================================================================
+// Parses the OpenGL version string and extracts the version number
+//========================================================================
+
+void _glfwParseGLVersion( int *major, int *minor, int *rev )
+{
+    GLuint _major, _minor = 0, _rev = 0;
+    const GLubyte *version;
+    const GLubyte *ptr;
+
+    // Get OpenGL version string
+    version = glGetString( GL_VERSION );
+    if( !version )
+    {
+        return;
+    }
+
+    // Parse string
+    ptr = version;
+    for( _major = 0; *ptr >= '0' && *ptr <= '9'; ptr ++ )
+    {
+        _major = 10*_major + (*ptr - '0');
+    }
+    if( *ptr == '.' )
+    {
+        ptr ++;
+        for( _minor = 0; *ptr >= '0' && *ptr <= '9'; ptr ++ )
+        {
+            _minor = 10*_minor + (*ptr - '0');
+        }
+        if( *ptr == '.' )
+        {
+            ptr ++;
+            for( _rev = 0; *ptr >= '0' && *ptr <= '9'; ptr ++ )
+            {
+                _rev = 10*_rev + (*ptr - '0');
+            }
+        }
+    }
+
+    // Return parsed values
+    *major = _major;
+    *minor = _minor;
+    *rev = _rev;
+}
+
+//========================================================================
 // _glfwStringInExtensionString() - Check if a string can be found in an
 // OpenGL extension string
 //========================================================================
 
 int _glfwStringInExtensionString( const char *string,
-    const GLubyte *extensions )
+                                  const GLubyte *extensions )
 {
     const GLubyte *start;
     GLubyte *where, *terminator;
@@ -85,10 +131,10 @@ int _glfwStringInExtensionString( const char *string,
 GLFWAPI int GLFWAPIENTRY glfwExtensionSupported( const char *extension )
 {
     const GLubyte *extensions;
-    GLubyte       *where;
+    GLubyte *where;
 
     // Is GLFW initialized?
-    if( !_glfwInitialized || !_glfwWin.Opened )
+    if( !_glfwInitialized || !_glfwWin.opened )
     {
         return GL_FALSE;
     }
@@ -101,7 +147,7 @@ GLFWAPI int GLFWAPIENTRY glfwExtensionSupported( const char *extension )
     }
 
     // Check if extension is in the standard OpenGL extensions string
-    extensions = (GLubyte *) glGetString( GL_EXTENSIONS );
+    extensions = glGetString( GL_EXTENSIONS );
     if( extensions != NULL )
     {
         if( _glfwStringInExtensionString( extension, extensions ) )
@@ -128,7 +174,7 @@ GLFWAPI int GLFWAPIENTRY glfwExtensionSupported( const char *extension )
 GLFWAPI void * GLFWAPIENTRY glfwGetProcAddress( const char *procname )
 {
     // Is GLFW initialized?
-    if( !_glfwInitialized || !_glfwWin.Opened )
+    if( !_glfwInitialized || !_glfwWin.opened )
     {
         return NULL;
     }
@@ -138,64 +184,28 @@ GLFWAPI void * GLFWAPIENTRY glfwGetProcAddress( const char *procname )
 
 
 //========================================================================
-// glfwGetGLVersion() - Get OpenGL version
+// Returns the OpenGL version
 //========================================================================
 
-GLFWAPI void GLFWAPIENTRY glfwGetGLVersion( int *major, int *minor,
-    int *rev )
+GLFWAPI void GLFWAPIENTRY glfwGetGLVersion( int *major, int *minor, int *rev )
 {
-    GLuint _major, _minor = 0, _rev = 0;
-    const GLubyte *version;
-    GLubyte *ptr;
-
     // Is GLFW initialized?
-    if( !_glfwInitialized || !_glfwWin.Opened )
+    if( !_glfwInitialized || !_glfwWin.opened )
     {
         return;
     }
 
-    // Get OpenGL version string
-    version = glGetString( GL_VERSION );
-    if( !version )
-    {
-        return;
-    }
-
-    // Parse string
-    ptr = (GLubyte*) version;
-    for( _major = 0; *ptr >= '0' && *ptr <= '9'; ptr ++ )
-    {
-        _major = 10*_major + (*ptr - '0');
-    }
-    if( *ptr == '.' )
-    {
-        ptr ++;
-        for( _minor = 0; *ptr >= '0' && *ptr <= '9'; ptr ++ )
-        {
-            _minor = 10*_minor + (*ptr - '0');
-        }
-        if( *ptr == '.' )
-        {
-            ptr ++;
-            for( _rev = 0; *ptr >= '0' && *ptr <= '9'; ptr ++ )
-            {
-                _rev = 10*_rev + (*ptr - '0');
-            }
-        }
-    }
-
-    // Return parsed values
     if( major != NULL )
     {
-        *major = _major;
+        *major = _glfwWin.glMajor;
     }
     if( minor != NULL )
     {
-        *minor = _minor;
+        *minor = _glfwWin.glMinor;
     }
     if( rev != NULL )
     {
-        *rev = _rev;
+        *rev = _glfwWin.glRevision;
     }
 }
 

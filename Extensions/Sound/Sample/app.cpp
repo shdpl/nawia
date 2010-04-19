@@ -324,7 +324,7 @@ void Application::keyPressEvent( int key )
 		_wireframeMode = !_wireframeMode;
 		h3dSetOption( H3DOptions::WireframeMode, _wireframeMode ? 1.0f : 0.0f );
 		break;
-	case GLFW_KEY_F9:
+	case GLFW_KEY_F6:
 		_statMode += 1;
 
 		if( _statMode > H3DUTMaxStatMode )

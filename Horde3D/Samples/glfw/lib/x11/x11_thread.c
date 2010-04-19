@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        x11_thread.c
 // Platform:    X11 (Unix)
-// API version: 2.6
+// API version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -505,3 +505,4 @@ int _glfwPlatformGetNumberOfProcessors( void )
     _glfw_numprocessors( n );
     return n;
 }
+

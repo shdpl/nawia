@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        x11_glext.c
 // Platform:    X11 (Unix)
-// API version: 2.6
+// API version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -31,6 +31,27 @@
 #include "internal.h"
 
 
+void (*glXGetProcAddress(const GLubyte *procName))();
+void (*glXGetProcAddressARB(const GLubyte *procName))();
+void (*glXGetProcAddressEXT(const GLubyte *procName))();
+
+// We support four different ways for getting addresses for GL/GLX
+// extension functions: glXGetProcAddress, glXGetProcAddressARB,
+// glXGetProcAddressEXT, and dlsym
+#if   defined( _GLFW_HAS_GLXGETPROCADDRESSARB )
+ #define _glfw_glXGetProcAddress(x) glXGetProcAddressARB(x)
+#elif defined( _GLFW_HAS_GLXGETPROCADDRESS )
+ #define _glfw_glXGetProcAddress(x) glXGetProcAddress(x)
+#elif defined( _GLFW_HAS_GLXGETPROCADDRESSEXT )
+ #define _glfw_glXGetProcAddress(x) glXGetProcAddressEXT(x)
+#elif defined( _GLFW_HAS_DLOPEN )
+ #define _glfw_glXGetProcAddress(x) dlsym(_glfwLibs.libGL,x)
+ #define _GLFW_DLOPEN_LIBGL
+#else
+#define _glfw_glXGetProcAddress(x) NULL
+#endif
+
+
 //************************************************************************
 //****               Platform implementation functions                ****
 //************************************************************************
@@ -44,8 +65,8 @@ int _glfwPlatformExtensionSupported( const char *extension )
     const GLubyte *extensions;
 
     // Get list of GLX extensions
-    extensions = (const GLubyte*) glXQueryExtensionsString( _glfwLibrary.Dpy,
-                                                            _glfwWin.Scrn );
+    extensions = (const GLubyte*) glXQueryExtensionsString( _glfwLibrary.display,
+                                                            _glfwWin.screen );
     if( extensions != NULL )
     {
         if( _glfwStringInExtensionString( extension, extensions ) )

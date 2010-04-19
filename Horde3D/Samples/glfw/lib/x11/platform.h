@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        platform.h
 // Platform:    X11 (Unix)
-// API version: 2.6
+// API version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -44,12 +44,18 @@
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
 #include <GL/glx.h>
-#include "../glfw.h"
+#include "../../include/GL/glfw.h"
 
 // Do we have pthread support?
 #ifdef _GLFW_HAS_PTHREAD
  #include <pthread.h>
  #include <sched.h>
+#endif
+
+// We need declarations for GLX version 1.3 or above even if the server doesn't
+// support version 1.3
+#ifndef GLX_VERSION_1_3
+ #error "GLX header version 1.3 or above is required"
 #endif
 
 // With XFree86, we can use the XF86VidMode extension
@@ -113,28 +119,74 @@
 
 #endif
 
-void (*glXGetProcAddress(const GLubyte *procName))();
-void (*glXGetProcAddressARB(const GLubyte *procName))();
-void (*glXGetProcAddressEXT(const GLubyte *procName))();
+// Pointer length integer
+// One day, this will most likely move into glfw.h
+typedef intptr_t GLFWintptr;
 
-// We support four different ways for getting addresses for GL/GLX
-// extension functions: glXGetProcAddress, glXGetProcAddressARB,
-// glXGetProcAddressEXT, and dlsym
-#if   defined( _GLFW_HAS_GLXGETPROCADDRESSARB )
- #define _glfw_glXGetProcAddress(x) glXGetProcAddressARB(x)
-#elif defined( _GLFW_HAS_GLXGETPROCADDRESS )
- #define _glfw_glXGetProcAddress(x) glXGetProcAddress(x)
-#elif defined( _GLFW_HAS_GLXGETPROCADDRESSEXT )
- #define _glfw_glXGetProcAddress(x) glXGetProcAddressEXT(x)
-#elif defined( _GLFW_HAS_DLOPEN )
- #define _glfw_glXGetProcAddress(x) dlsym(_glfwLibs.libGL,x)
- #define _GLFW_DLOPEN_LIBGL
-#else
-#define _glfw_glXGetProcAddress(x) NULL
-#endif
 
-// glXSwapIntervalSGI typedef (X11 buffer-swap interval control)
-typedef int ( * GLXSWAPINTERVALSGI_T) (int interval);
+#ifndef GLX_SGI_swap_control
+
+// Function signature for GLX_SGI_swap_control
+typedef int ( * PFNGLXSWAPINTERVALSGIPROC) (int interval);
+
+#endif /*GLX_SGI_swap_control*/
+
+
+#ifndef GLX_SGIX_fbconfig
+
+/* Type definitions for GLX_SGIX_fbconfig */
+typedef XID GLXFBConfigIDSGIX;
+typedef struct __GLXFBConfigRec *GLXFBConfigSGIX;
+
+/* Function signatures for GLX_SGIX_fbconfig */
+typedef int ( * PFNGLXGETFBCONFIGATTRIBSGIXPROC) (Display *dpy, GLXFBConfigSGIX config, int attribute, int *value);
+typedef GLXFBConfigSGIX * ( * PFNGLXCHOOSEFBCONFIGSGIXPROC) (Display *dpy, int screen, int *attrib_list, int *nelements);
+typedef GLXContext ( * PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC) (Display *dpy, GLXFBConfigSGIX config, int render_type, GLXContext share_list, Bool direct);
+typedef XVisualInfo * ( * PFNGLXGETVISUALFROMFBCONFIGSGIXPROC) (Display *dpy, GLXFBConfigSGIX config);
+
+/* Tokens for GLX_SGIX_fbconfig */
+#define GLX_WINDOW_BIT_SGIX                0x00000001
+#define GLX_PIXMAP_BIT_SGIX                0x00000002
+#define GLX_RGBA_BIT_SGIX                  0x00000001
+#define GLX_COLOR_INDEX_BIT_SGIX           0x00000002
+#define GLX_DRAWABLE_TYPE_SGIX             0x8010
+#define GLX_RENDER_TYPE_SGIX               0x8011
+#define GLX_X_RENDERABLE_SGIX              0x8012
+#define GLX_FBCONFIG_ID_SGIX               0x8013
+#define GLX_RGBA_TYPE_SGIX                 0x8014
+#define GLX_COLOR_INDEX_TYPE_SGIX          0x8015
+#define GLX_SCREEN_EXT                     0x800C
+
+#endif /*GLX_SGIX_fbconfig*/
+
+
+#ifndef GLX_ARB_create_context
+
+/* Tokens for glXCreateContextAttribsARB attributes */
+#define GLX_CONTEXT_MAJOR_VERSION_ARB           0x2091
+#define GLX_CONTEXT_MINOR_VERSION_ARB           0x2092
+#define GLX_CONTEXT_FLAGS_ARB                   0x2094
+
+/* Bits for WGL_CONTEXT_FLAGS_ARB */
+#define GLX_CONTEXT_DEBUG_BIT_ARB               0x0001
+#define GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB  0x0002
+
+/* Prototype for glXCreateContextAttribs */
+typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)( Display *display, GLXFBConfig config, GLXContext share_context, Bool direct, const int *attrib_list);
+
+#endif /*GLX_ARB_create_context*/
+
+
+#ifndef GLX_ARB_create_context_profile
+
+/* Tokens for glXCreateContextAttribsARB attributes */
+#define GLX_CONTEXT_PROFILE_MASK_ARB            0x9126
+
+/* BIts for GLX_CONTEXT_PROFILE_MASK_ARB */
+#define GLX_CONTEXT_CORE_PROFILE_BIT_ARB        0x00000001
+#define GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
+
+#endif /*GLX_ARB_create_context_profile*/
 
 
 //========================================================================
@@ -151,91 +203,105 @@ struct _GLFWwin_struct {
 // ========= PLATFORM INDEPENDENT MANDATORY PART =========================
 
     // User callback functions
-    GLFWwindowsizefun    WindowSizeCallback;
-    GLFWwindowclosefun   WindowCloseCallback;
-    GLFWwindowrefreshfun WindowRefreshCallback;
-    GLFWmousebuttonfun   MouseButtonCallback;
-    GLFWmouseposfun      MousePosCallback;
-    GLFWmousewheelfun    MouseWheelCallback;
-    GLFWkeyfun           KeyCallback;
-    GLFWcharfun          CharCallback;
+    GLFWwindowsizefun    windowSizeCallback;
+    GLFWwindowclosefun   windowCloseCallback;
+    GLFWwindowrefreshfun windowRefreshCallback;
+    GLFWmousebuttonfun   mouseButtonCallback;
+    GLFWmouseposfun      mousePosCallback;
+    GLFWmousewheelfun    mouseWheelCallback;
+    GLFWkeyfun           keyCallback;
+    GLFWcharfun          charCallback;
 
     // User selected window settings
-    int       Fullscreen;      // Fullscreen flag
-    int       MouseLock;       // Mouse-lock flag
-    int       AutoPollEvents;  // Auto polling flag
-    int       SysKeysDisabled; // System keys disabled flag
-    int       WindowNoResize;  // Resize- and maximize gadgets disabled flag
+    int       fullscreen;      // Fullscreen flag
+    int       mouseLock;       // Mouse-lock flag
+    int       autoPollEvents;  // Auto polling flag
+    int       sysKeysDisabled; // System keys disabled flag
+    int       windowNoResize;  // Resize- and maximize gadgets disabled flag
+    int       refreshRate;     // Vertical monitor refresh rate
 
     // Window status & parameters
-    int       Opened;          // Flag telling if window is opened or not
-    int       Active;          // Application active flag
-    int       Iconified;       // Window iconified flag
-    int       Width, Height;   // Window width and heigth
-    int       Accelerated;     // GL_TRUE if window is HW accelerated
-    int       RedBits;
-    int       GreenBits;
-    int       BlueBits;
-    int       AlphaBits;
-    int       DepthBits;
-    int       StencilBits;
-    int       AccumRedBits;
-    int       AccumGreenBits;
-    int       AccumBlueBits;
-    int       AccumAlphaBits;
-    int       AuxBuffers;
-    int       Stereo;
-    int       RefreshRate;     // Vertical monitor refresh rate
-    int       Samples;
+    int       opened;          // Flag telling if window is opened or not
+    int       active;          // Application active flag
+    int       iconified;       // Window iconified flag
+    int       width, height;   // Window width and heigth
+    int       accelerated;     // GL_TRUE if window is HW accelerated
 
-    // Extensions & OpenGL version
-    int       Has_GL_SGIS_generate_mipmap;
-    int       Has_GL_ARB_texture_non_power_of_two;
-    int       GLVerMajor,GLVerMinor;
+    // Framebuffer attributes
+    int       redBits;
+    int       greenBits;
+    int       blueBits;
+    int       alphaBits;
+    int       depthBits;
+    int       stencilBits;
+    int       accumRedBits;
+    int       accumGreenBits;
+    int       accumBlueBits;
+    int       accumAlphaBits;
+    int       auxBuffers;
+    int       stereo;
+    int       samples;
+
+    // OpenGL extensions and context attributes
+    int       has_GL_SGIS_generate_mipmap;
+    int       has_GL_ARB_texture_non_power_of_two;
+    int       glMajor, glMinor, glRevision;
+    int       glForward, glDebug, glProfile;
 
 
 // ========= PLATFORM SPECIFIC PART ======================================
 
     // Platform specific window resources
-    Window      Win;             // Window
-    int         Scrn;            // Screen ID
-    XVisualInfo *VI;             // Visual
-    GLXContext  CX;              // OpenGL rendering context
-    Atom        WMDeleteWindow;  // For WM close detection
-    Atom        WMPing;          // For WM ping response
-    XSizeHints  *Hints;          // WM size hints
+    Colormap      colormap;        // Window colormap:
+    Window        window;          // Window
+    int           screen;          // Screen ID
+    XVisualInfo  *visual;          // Visual
+    GLXFBConfigID fbconfigID;      // ID of the selected GLXFBConfig
+    GLXContext    context;         // OpenGL rendering context
+    Atom          WMDeleteWindow;  // For WM close detection
+    Atom          WMPing;          // For WM ping response
 
-    // Platform specific extensions
-    GLXSWAPINTERVALSGI_T SwapInterval;
+    // GLX extensions
+    PFNGLXSWAPINTERVALSGIPROC             SwapIntervalSGI;
+    PFNGLXGETFBCONFIGATTRIBSGIXPROC       GetFBConfigAttribSGIX;
+    PFNGLXCHOOSEFBCONFIGSGIXPROC          ChooseFBConfigSGIX;
+    PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC CreateContextWithConfigSGIX;
+    PFNGLXGETVISUALFROMFBCONFIGSGIXPROC   GetVisualFromFBConfigSGIX;
+    PFNGLXCREATECONTEXTATTRIBSARBPROC     CreateContextAttribsARB;
+    GLboolean   has_GLX_SGIX_fbconfig;
+    GLboolean   has_GLX_SGI_swap_control;
+    GLboolean   has_GLX_ARB_multisample;
+    GLboolean   has_GLX_ARB_create_context;
+    GLboolean   has_GLX_ARB_create_context_profile;
 
     // Various platform specific internal variables
-    int         OverrideRedirect; // True if window is OverrideRedirect
-    int         KeyboardGrabbed; // True if keyboard is currently grabbed
-    int         PointerGrabbed;  // True if pointer is currently grabbed
-    int         PointerHidden;   // True if pointer is currently hidden
-    int         MapNotifyCount;  // Used for during processing
-    int         FocusInCount;    // Used for during processing
+    int         overrideRedirect; // True if window is OverrideRedirect
+    int         keyboardGrabbed; // True if keyboard is currently grabbed
+    int         pointerGrabbed;  // True if pointer is currently grabbed
+    int         pointerHidden;   // True if pointer is currently hidden
+    int         mapNotifyCount;  // Used for during processing
+    int         focusInCount;    // Used for during processing
 
     // Screensaver data
     struct {
-	int     Changed;
-	int     Timeout;
-	int     Interval;
-	int     Blanking;
-	int     Exposure;
+        int     changed;
+        int     timeout;
+        int     interval;
+        int     blanking;
+        int     exposure;
     } Saver;
 
     // Fullscreen data
     struct {
-	int     ModeChanged;
+        int     modeChanged;
 #if defined( _GLFW_HAS_XF86VIDMODE )
-	XF86VidModeModeInfo OldMode;
+        XF86VidModeModeInfo oldMode;
 #endif
 #if defined( _GLFW_HAS_XRANDR )
-        SizeID   OldSizeID;
-	int      OldWidth;
-	int      OldHeight;
-	Rotation OldRotation;
+        SizeID   oldSizeID;
+        int      oldWidth;
+        int      oldHeight;
+        Rotation oldRotation;
 #endif
     } FS;
 };
@@ -278,33 +344,39 @@ GLFWGLOBAL struct {
 //------------------------------------------------------------------------
 GLFWGLOBAL struct {
 
+// ========= PLATFORM INDEPENDENT MANDATORY PART =========================
+
+    // Window opening hints
+    _GLFWhints      hints;
+
 // ========= PLATFORM SPECIFIC PART ======================================
 
-    Display     *Dpy;
-    int         NumScreens;
-    int         DefaultScreen;
+    Display        *display;
+
+    // Server-side GLX version
+    int             glxMajor, glxMinor;
 
     struct {
-	int	Available;
-	int     EventBase;
-	int     ErrorBase;
+        int         available;
+        int         eventBase;
+        int         errorBase;
     } XF86VidMode;
 
     struct {
-	int	Available;
-	int     EventBase;
-	int     ErrorBase;
+        int         available;
+        int         eventBase;
+        int         errorBase;
     } XRandR;
 
     // Timer data
     struct {
-	double       Resolution;
-	long long    t0;
+        double      resolution;
+        long long   t0;
     } Timer;
 
 #if defined(_GLFW_DLOPEN_LIBGL)
     struct {
-	void        *libGL;          // dlopen handle for libGL.so
+        void       *libGL;  // dlopen handle for libGL.so
     } Libs;
 #endif
 } _glfwLibrary;
@@ -400,9 +472,6 @@ void _glfwInitTimer( void );
 int  _glfwGetClosestVideoMode( int screen, int *width, int *height, int *rate );
 void _glfwSetVideoModeMODE( int screen, int mode, int rate );
 void _glfwSetVideoMode( int screen, int *width, int *height, int *rate );
-
-// Cursor handling
-Cursor _glfwCreateNULLCursor( Display *display, Window root );
 
 // Joystick input
 void _glfwInitJoysticks( void );

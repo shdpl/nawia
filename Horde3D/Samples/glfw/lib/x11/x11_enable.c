@@ -2,7 +2,7 @@
 // GLFW - An OpenGL framework
 // File:        x11_enable.c
 // Platform:    X11 (Unix)
-// API version: 2.6
+// API version: 2.7
 // WWW:         http://glfw.sourceforge.net
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Camilla Berglund
@@ -36,8 +36,7 @@
 //************************************************************************
 
 //========================================================================
-// _glfwPlatformEnableSystemKeys() - Enable system keys
-// _glfwPlatformDisableSystemKeys() - Disable system keys
+// Enable system keys
 //========================================================================
 
 void _glfwPlatformEnableSystemKeys( void )
@@ -45,7 +44,12 @@ void _glfwPlatformEnableSystemKeys( void )
     // Not supported under X11 (yet)
 }
 
+//========================================================================
+// Disable system keys
+//========================================================================
+
 void _glfwPlatformDisableSystemKeys( void )
 {
     // Not supported under X11 (yet)
 }
+
