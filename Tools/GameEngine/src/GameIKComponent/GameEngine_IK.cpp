@@ -25,7 +25,6 @@
 #include <GameEngine/GameEntity.h>
 #include <GameEngine/GameWorld.h>
 #include <GameEngine/GameModules.h>
-#include <GameEngine/GameEngine_Animations.h>
 
 #include "IKComponent.h"
 
