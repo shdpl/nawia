@@ -266,6 +266,16 @@ StatManager::StatManager()
 	_statLightPassCount = 0;
 
 	_frameTime = 0;
+
+	_defLightsGPUTimer = new GPUTimer();
+	_particleGPUTimer = new GPUTimer();
+}
+
+
+StatManager::~StatManager()
+{
+	delete _defLightsGPUTimer;
+	delete _particleGPUTimer;
 }
 
 
@@ -295,9 +305,21 @@ float StatManager::getStat( int param, bool reset )
 		value = _animTimer.getElapsedTimeMS();
 		if( reset ) _animTimer.reset();
 		return value;
-	case EngineStats::CustomTime:
-		value = _customTimer.getElapsedTimeMS();
-		if( reset ) _customTimer.reset();
+	case EngineStats::GeoUpdateTime:
+		value = _geoUpdateTimer.getElapsedTimeMS();
+		if( reset ) _geoUpdateTimer.reset();
+		return value;
+	case EngineStats::ParticleSimTime:
+		value = _particleSimTimer.getElapsedTimeMS();
+		if( reset ) _particleSimTimer.reset();
+		return value;
+	case EngineStats::DefLightsGPUTime:
+		value = _defLightsGPUTimer->getTimeMS();
+		if( reset ) _defLightsGPUTimer->reset();
+		return value;
+	case EngineStats::ParticleGPUTime:
+		value = _particleGPUTimer->getTimeMS();
+		if( reset ) _particleGPUTimer->reset();
 		return value;
 	case EngineStats::TextureVMem:
 		return (Modules::renderer().getTextureMem() / 1024) / 1024.0f;
@@ -338,8 +360,24 @@ Timer *StatManager::getTimer( int param )
 		return &_frameTimer;
 	case EngineStats::AnimationTime:
 		return &_animTimer;
-	case EngineStats::CustomTime:
-		return &_customTimer;
+	case EngineStats::GeoUpdateTime:
+		return &_geoUpdateTimer;
+	case EngineStats::ParticleSimTime:
+		return &_particleSimTimer;
+	default:
+		return 0x0;
+	}
+}
+
+
+GPUTimer *StatManager::getGPUTimer( int param )
+{
+	switch( param )
+	{
+	case EngineStats::DefLightsGPUTime:
+		return _defLightsGPUTimer;
+	case EngineStats::ParticleGPUTime:
+		return _particleGPUTimer;
 	default:
 		return 0x0;
 	}

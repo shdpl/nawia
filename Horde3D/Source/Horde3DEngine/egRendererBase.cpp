@@ -24,6 +24,7 @@
 
 GPUTimer::GPUTimer() : _numQueries( 0 ),  _queryFrame( 0 ), _time( 0 ), _activeQuery( false )
 {
+	reset();
 }
 
 
@@ -36,7 +37,8 @@ GPUTimer::~GPUTimer()
 
 void GPUTimer::beginQuery( uint32 frameID )
 {
-	if( !glExt::EXT_timer_query || _activeQuery ) return;
+	if( !glExt::ARB_timer_query ) return;
+	ASSERT( !_activeQuery );
 	
 	if( _queryFrame != frameID )
 	{
@@ -46,20 +48,21 @@ void GPUTimer::beginQuery( uint32 frameID )
 		_numQueries = 0;
 	}
 	
-	// Create new query object if necessary
-	uint32 queryObj;
-	if( _numQueries++ == _queryPool.size() )
+	// Create new query pair if necessary
+	uint32 queryObjs[2];
+	if( _numQueries++ * 2 == _queryPool.size() )
 	{
-		glGenQueries( 1, &queryObj );
-		_queryPool.push_back( queryObj );
+		glGenQueries( 2, queryObjs );
+		_queryPool.push_back( queryObjs[0] );
+		_queryPool.push_back( queryObjs[1] );
 	}
 	else
 	{
-		queryObj = _queryPool[_numQueries - 1];
+		queryObjs[0] = _queryPool[(_numQueries - 1) * 2];
 	}
 	
 	_activeQuery = true;
-	glBeginQuery( GL_TIME_ELAPSED_EXT, queryObj );
+	 glQueryCounter( queryObjs[0], GL_TIMESTAMP );
 }
 
 
@@ -67,7 +70,7 @@ void GPUTimer::endQuery()
 {
 	if( _activeQuery )
 	{	
-		glEndQuery( GL_TIME_ELAPSED_EXT );
+		glQueryCounter( _queryPool[_numQueries * 2 - 1], GL_TIMESTAMP );
 		_activeQuery = false;
 	}
 }
@@ -75,7 +78,7 @@ void GPUTimer::endQuery()
 
 bool GPUTimer::updateResults()
 {
-	if( !glExt::EXT_timer_query ) return false;
+	if( !glExt::ARB_timer_query ) return false;
 	
 	if( _numQueries == 0 )
 	{
@@ -85,20 +88,27 @@ bool GPUTimer::updateResults()
 	
 	// Make sure that last query is available
 	GLint available;
-	glGetQueryObjectiv( _queryPool[_numQueries - 1], GL_QUERY_RESULT_AVAILABLE, &available );
+	glGetQueryObjectiv( _queryPool[_numQueries * 2 - 1], GL_QUERY_RESULT_AVAILABLE, &available );
 	if( !available ) return false;
 	
 	//  Accumulate time
 	double time = 0;
-	GLuint64EXT timeElapsed = 0, timeAccum = 0;
+	GLuint64 timeStart = 0, timeEnd = 0, timeAccum = 0;
 	for( uint32 i = 0; i < _numQueries; ++i )
 	{
-		glGetQueryObjectui64vEXT( _queryPool[i], GL_QUERY_RESULT, &timeElapsed );
-		timeAccum += timeElapsed;
+		glGetQueryObjectui64v( _queryPool[i * 2], GL_QUERY_RESULT, &timeStart );
+		glGetQueryObjectui64v( _queryPool[i * 2 + 1], GL_QUERY_RESULT, &timeEnd );
+		timeAccum += timeEnd - timeStart;
 	}
 	
 	_time = (float)((double)timeAccum / 1000000.0);
 	return true;
+}
+
+
+void GPUTimer::reset()
+{
+	_time = glExt::ARB_timer_query ? 0.f : -1.f;
 }
 
 

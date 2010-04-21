@@ -19,6 +19,7 @@
 #include <cstdarg>
 #include "utTimer.h"
 
+class GPUTimer;
 
 // =================================================================================================
 // Engine Config
@@ -136,7 +137,10 @@ struct EngineStats
 		LightPassCount,
 		FrameTime,
 		AnimationTime,
-		CustomTime,
+		GeoUpdateTime,
+		ParticleSimTime,
+		DefLightsGPUTime,
+		ParticleGPUTime,
 		TextureVMem,
 		GeometryVMem
 	};
@@ -148,22 +152,28 @@ class StatManager
 {
 protected:
 
-	uint32  _statTriCount;
-	uint32  _statBatchCount;
-	uint32  _statLightPassCount;
+	uint32    _statTriCount;
+	uint32    _statBatchCount;
+	uint32    _statLightPassCount;
 
-	Timer   _frameTimer;
-	Timer   _animTimer;
-	Timer   _customTimer;
-	float   _frameTime;
+	Timer     _frameTimer;
+	Timer     _animTimer;
+	Timer     _geoUpdateTimer;
+	Timer     _particleSimTimer;
+	float     _frameTime;
+
+	GPUTimer  *_defLightsGPUTimer;
+	GPUTimer  *_particleGPUTimer;
 
 public:
 
 	StatManager();
+	~StatManager();
 	
 	float getStat( int param, bool reset );
 	void incStat( int param, float value );
 	Timer *getTimer( int param );
+	GPUTimer *getGPUTimer( int param );
 
 	friend class ProfSample;
 };

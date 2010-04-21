@@ -53,7 +53,7 @@ namespace glExt
 	extern bool EXT_texture_sRGB;
 	extern bool ARB_texture_float;
 	extern bool ARB_texture_non_power_of_two;
-	extern bool EXT_timer_query;
+	extern bool ARB_timer_query;
 
 	extern int  majorVersion, minorVersion;
 }
@@ -84,9 +84,9 @@ typedef float           GLclampf;
 typedef double          GLdouble;
 typedef double          GLclampd;
 typedef void            GLvoid;
-// EXT_timer_query
-typedef int64           GLint64EXT;
-typedef uint64          GLuint64EXT;
+// ARB_timer_query
+typedef int64           GLint64;
+typedef uint64          GLuint64;
 
 
 #define GL_FALSE                          0
@@ -1130,16 +1130,19 @@ extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC glRenderbufferStorageMultisamp
 #endif
 
 
-// EXT_timer_query
-#ifndef GL_EXT_timer_query
-#define GL_EXT_timer_query 1
+// ARB_timer_query
+#ifndef GL_ARB_timer_query
+#define GL_ARB_timer_query 1
 
-#define GL_TIME_ELAPSED_EXT  0x88BF
+#define GL_TIME_ELAPSED  0x88BF
+#define GL_TIMESTAMP     0x8E28
 
-typedef void (GLAPIENTRYP PFNGLGETQUERYOBJECTI64VEXTPROC) (GLuint id, GLenum pname, GLint64EXT *params);
-typedef void (GLAPIENTRYP PFNGLGETQUERYOBJECTUI64VEXTPROC) (GLuint id, GLenum pname, GLuint64EXT *params);
-extern PFNGLGETQUERYOBJECTI64VEXTPROC glGetQueryObjecti64vEXT;
-extern PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64vEXT;
+typedef void (GLAPIENTRYP PFNGLQUERYCOUNTERPROC) (GLuint id, GLenum target);
+typedef void (GLAPIENTRYP PFNGLGETQUERYOBJECTI64VPROC) (GLuint id, GLenum pname, GLint64 *params);
+typedef void (GLAPIENTRYP PFNGLGETQUERYOBJECTUI64VPROC) (GLuint id, GLenum pname, GLuint64 *params);
+extern PFNGLQUERYCOUNTERPROC glQueryCounter; 
+extern PFNGLGETQUERYOBJECTI64VPROC glGetQueryObjecti64v;
+extern PFNGLGETQUERYOBJECTUI64VPROC glGetQueryObjectui64v;
 
 #endif
 }  // namespace h3dGL

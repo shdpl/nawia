@@ -401,7 +401,7 @@ DLLEXP void h3dutShowText( const char *text, float x, float y, float size, float
 void beginInfoBox( float x, float y, float width, int numRows, const char *title,
                    H3DRes fontMaterialRes, H3DRes boxMaterialRes )
 {
-	float fontSize = 0.028f;
+	float fontSize = 0.03f;
 	float barHeight = fontSize + 0.01f;
 	float bodyHeight = numRows * 0.035f + 0.005f;
 	
@@ -429,7 +429,7 @@ void beginInfoBox( float x, float y, float width, int numRows, const char *title
 
 void addInfoBoxRow( const char *column1, const char *column2 )
 {
-	float fontSize = 0.026f;
+	float fontSize = 0.028f;
 	float fontWidth = fontSize * 0.5f;
 	float x = infoBox.x;
 	float y = infoBox.y_row0 + infoBox.row++ * 0.035f;
@@ -450,33 +450,40 @@ DLLEXP void h3dutShowFrameStats( H3DRes fontMaterialRes, H3DRes boxMaterialRes, 
 	static float timer = 100;
 	static float fps = 30;
 	static float frameTime = 0;
-	static float customTime = 0;
 	static float animTime = 0;
+	static float geoUpdateTime = 0;
+	static float particleSimTime = 0;
+	static float defLightsGPUTime = 0;
+	static float particleGPUTime = 0;
 
 	// Calculate FPS
 	float curFrameTime = h3dGetStat( H3DStats::FrameTime, true );
 	curFPS = 1000.0f / curFrameTime;
 	
 	timer += curFrameTime / 1000.0f;
-	if( timer > 0.8f )
+	if( timer > 0.7f )
 	{	
 		fps = curFPS;
 		frameTime = curFrameTime;
-		customTime = h3dGetStat( H3DStats::CustomTime, true );
 		animTime = h3dGetStat( H3DStats::AnimationTime, true );
+		geoUpdateTime = h3dGetStat( H3DStats::GeoUpdateTime, true );
+		particleSimTime = h3dGetStat( H3DStats::ParticleSimTime, true );
+		defLightsGPUTime = h3dGetStat( H3DStats::DefLightsGPUTime, true );
+		particleGPUTime = h3dGetStat( H3DStats::ParticleGPUTime, true );
 		timer = 0;
 	}
 	else
 	{
-		// Reset counters
-		h3dGetStat( H3DStats::CustomTime, true );
+		// Reset accumulative counters
 		h3dGetStat( H3DStats::AnimationTime, true );
+		h3dGetStat( H3DStats::GeoUpdateTime, true );
+		h3dGetStat( H3DStats::ParticleSimTime, true );
 	}
 	
 	if( mode > 0 )
 	{
 		// InfoBox
-		beginInfoBox( 0.03f, 0.03f, 0.3f, 4, "Frame Stats", fontMaterialRes, boxMaterialRes );
+		beginInfoBox( 0.03f, 0.03f, 0.32f, 4, "Frame Stats", fontMaterialRes, boxMaterialRes );
 		
 		// FPS
 		text.str( "" );
@@ -501,26 +508,8 @@ DLLEXP void h3dutShowFrameStats( H3DRes fontMaterialRes, H3DRes boxMaterialRes, 
 
 	if( mode > 1 )
 	{
-		// CPU time
-		beginInfoBox( 0.03f, 0.3f, 0.3f, 3, "CPU Time", fontMaterialRes, boxMaterialRes );
-		
-		// Frame time
-		text.str( "" );
-		text << frameTime << "ms";
-		addInfoBoxRow( "Frame Total", text.str().c_str() );
-		
-		// Animation time
-		text.str( "" );
-		text << animTime << "ms";
-		addInfoBoxRow( "Animation", text.str().c_str() );
-		
-		// Custom time
-		text.str( "" );
-		text << customTime << "ms";
-		addInfoBoxRow( "Custom", text.str().c_str() );
-
 		// Video memory
-		beginInfoBox( 0.03f, 0.5f, 0.3f, 2, "VMem", fontMaterialRes, boxMaterialRes );
+		beginInfoBox( 0.03f, 0.30f, 0.32f, 2, "VMem", fontMaterialRes, boxMaterialRes );
 		
 		// Textures
 		text.str( "" );
@@ -531,6 +520,42 @@ DLLEXP void h3dutShowFrameStats( H3DRes fontMaterialRes, H3DRes boxMaterialRes, 
 		text.str( "" );
 		text << h3dGetStat( H3DStats::GeometryVMem, false ) << "mb";
 		addInfoBoxRow( "Geometry", text.str().c_str() );
+		
+		// CPU time
+		beginInfoBox( 0.03f, 0.44f, 0.32f, 4, "CPU Time", fontMaterialRes, boxMaterialRes );
+		
+		// Frame time
+		text.str( "" );
+		text << frameTime << "ms";
+		addInfoBoxRow( "Frame Total", text.str().c_str() );
+		
+		// Animation
+		text.str( "" );
+		text << animTime << "ms";
+		addInfoBoxRow( "Animation", text.str().c_str() );
+
+		// Geometry updates
+		text.str( "" );
+		text << geoUpdateTime << "ms";
+		addInfoBoxRow( "Geo Updates", text.str().c_str() );
+
+		// Particle simulation
+		text.str( "" );
+		text << particleSimTime << "ms";
+		addInfoBoxRow( "Particles", text.str().c_str() );
+
+		// GPU time
+		beginInfoBox( 0.03f, 0.65f, 0.32f, 2, "GPU Time", fontMaterialRes, boxMaterialRes );
+
+		// Deferred lights
+		text.str( "" );
+		text << defLightsGPUTime << "ms";
+		addInfoBoxRow( "Def Lights", text.str().c_str() );
+
+		// Particles
+		text.str( "" );
+		text << particleGPUTime << "ms";
+		addInfoBoxRow( "Particles", text.str().c_str() );
 	}
 }
 

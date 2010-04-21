@@ -911,7 +911,7 @@ void Renderer::updateShadowMap()
 {
 	if( _curLight == 0x0 ) return;
 	
-	uint32 _prevRendBuf = _curRendBuf;
+	uint32 prevRendBuf = _curRendBuf;
 	setRenderBuffer( _shadowRB );
 	
 	glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
@@ -1041,7 +1041,7 @@ void Renderer::updateShadowMap()
 
 	glCullFace( GL_BACK );
 		
-	setRenderBuffer( _prevRendBuf );
+	setRenderBuffer( prevRendBuf );
 	glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 }
 
@@ -1403,6 +1403,9 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 	
 	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None, true, false );
 	
+	GPUTimer *timer = Modules::stats().getGPUTimer( EngineStats::DefLightsGPUTime );
+	if( Modules::config().gatherTimeStats ) timer->beginQuery( _frameID );
+	
 	for( size_t i = 0, s = Modules::sceneMan().getLightQueue().size(); i < s; ++i )
 	{
 		_curLight = (LightNode *)Modules::sceneMan().getLightQueue()[i];
@@ -1448,9 +1451,17 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 		}
 		
 		// Update shadow map
-		if( !noShadows && _curLight->_shadowMapCount > 0 ) updateShadowMap();
-		
-		setupShadowMap( noShadows );
+		if( !noShadows && _curLight->_shadowMapCount > 0 )
+		{	
+			timer->endQuery();
+			updateShadowMap();
+			setupShadowMap( false );
+			if( Modules::config().gatherTimeStats ) timer->beginQuery( _frameID );
+		}
+		else
+		{
+			setupShadowMap( true );
+		}
 
 		if( shaderContext == "" ) context = _curLight->_lightingContext;
 
@@ -1487,6 +1498,8 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 	}
 
 	_curLight = 0x0;
+
+	timer->endQuery();
 
 	// Draw occlusion proxies
 	if( occSet >= 0 )
@@ -1773,6 +1786,9 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
                                 right.x + up.x,  right.y + up.y,  right.z + up.z,
 							   -right.x + up.x, -right.y + up.y, -right.z + up.z };
 
+	GPUTimer *timer = Modules::stats().getGPUTimer( EngineStats::ParticleGPUTime );
+	if( Modules::config().gatherTimeStats ) timer->beginQuery( Modules::renderer().getFrameID() );
+
 	// Bind particle geometry
 	Modules::renderer().bindVertexBuffer( 0, Modules::renderer().getParticleVBO(), 0, sizeof( ParticleVert ) );
 
@@ -1903,6 +1919,8 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 		if( queryObj )
 			Modules::renderer().endQuery( queryObj );
 	}
+
+	timer->endQuery();
 
 	// Draw occlusion proxies
 	if( occSet >= 0 )

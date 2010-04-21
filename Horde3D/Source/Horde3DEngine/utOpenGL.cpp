@@ -27,7 +27,7 @@ namespace glExt
 	bool EXT_texture_sRGB = false;
 	bool ARB_texture_float = false;
 	bool ARB_texture_non_power_of_two = false;
-	bool EXT_timer_query = false;
+	bool ARB_timer_query = false;
 
 	int	majorVersion = 1, minorVersion = 1;
 }
@@ -176,9 +176,10 @@ PFNGLBLITFRAMEBUFFEREXTPROC glBlitFramebufferEXT = 0x0;
 // GL_EXT_framebuffer_multisample
 PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC glRenderbufferStorageMultisampleEXT = 0x0;
 
-// GL_EXT_timer_query
-PFNGLGETQUERYOBJECTI64VEXTPROC glGetQueryObjecti64vEXT = 0x0;
-PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64vEXT = 0x0;
+// GL_ARB_timer_query
+PFNGLQUERYCOUNTERPROC glQueryCounter = 0x0;
+PFNGLGETQUERYOBJECTI64VPROC glGetQueryObjecti64v = 0x0;
+PFNGLGETQUERYOBJECTUI64VPROC glGetQueryObjectui64v = 0x0;
 }  // namespace h3dGL
 
 
@@ -401,11 +402,12 @@ bool initOpenGLExtensions()
 		r &= (glRenderbufferStorageMultisampleEXT = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC) platGetProcAddress( "glRenderbufferStorageMultisampleEXT" )) != 0x0;
 	}
 
-	glExt::EXT_timer_query = isExtensionSupported( "GL_EXT_timer_query" );
-	if( glExt::EXT_timer_query )
+	glExt::ARB_timer_query = isExtensionSupported( "GL_ARB_timer_query" );
+	if( glExt::ARB_timer_query )
 	{
-		r &= (glGetQueryObjecti64vEXT = (PFNGLGETQUERYOBJECTI64VEXTPROC) platGetProcAddress( "glGetQueryObjecti64vEXT" )) != 0x0;
-		r &= (glGetQueryObjectui64vEXT = (PFNGLGETQUERYOBJECTUI64VEXTPROC) platGetProcAddress( "glGetQueryObjectui64vEXT" )) != 0x0;
+		r &= (glQueryCounter = (PFNGLQUERYCOUNTERPROC) platGetProcAddress( "glQueryCounter" )) != 0x0;
+		r &= (glGetQueryObjecti64v = (PFNGLGETQUERYOBJECTI64VPROC) platGetProcAddress( "glGetQueryObjecti64v" )) != 0x0;
+		r &= (glGetQueryObjectui64v = (PFNGLGETQUERYOBJECTUI64VPROC) platGetProcAddress( "glGetQueryObjectui64v" )) != 0x0;
 	}
 
 	return r;

@@ -110,14 +110,17 @@ struct H3DStats
 	/* Enum: H3DStats
 			The available engine statistic parameters.
 		
-		TriCount        - Number of triangles that were pushed to the renderer
-		BatchCount      - Number of batches (draw calls)
-		LightPassCount  - Number of lighting passes
-		FrameTime       - Time in ms between two h3dFinalizeFrame calls
-		AnimationTime   - CPU time in ms spent for animation
-		CustomTime      - Value of custom timer (useful for profiling engine functions)
-		TextureVMem     - Estimated amount of video memory used by textures (in Mb)
-		GeometryVMem    - Estimated amount of video memory used by geometry (in Mb)
+		TriCount          - Number of triangles that were pushed to the renderer
+		BatchCount        - Number of batches (draw calls)
+		LightPassCount    - Number of lighting passes
+		FrameTime         - Time in ms between two h3dFinalizeFrame calls
+		AnimationTime     - CPU time in ms spent for animation
+		GeoUpdateTime     - CPU time in ms spent for software skinning and morphing
+		ParticleSimTime   - CPU time in ms spent for particle simulation and updates
+		DefLightsGPUTime  - GPU time in ms spent for drawing deferred light volumes
+		ParticleGPUTime   - GPU time in ms spent for drawing particles
+		TextureVMem       - Estimated amount of video memory used by textures (in Mb)
+		GeometryVMem      - Estimated amount of video memory used by geometry (in Mb)
 	*/
 	enum List
 	{
@@ -126,7 +129,10 @@ struct H3DStats
 		LightPassCount,
 		FrameTime,
 		AnimationTime,
-		CustomTime,
+		GeoUpdateTime,
+		ParticleSimTime,
+		DefLightsGPUTime,
+		ParticleGPUTime,
 		TextureVMem,
 		GeometryVMem
 	};

@@ -14,6 +14,7 @@
 #include "egMaterial.h"
 #include "egModules.h"
 #include "egRenderer.h"
+#include "egCom.h"
 
 #include "utDebug.h"
 
@@ -348,6 +349,9 @@ bool ModelNode::updateGeometry()
 	if( _geometryRes == 0x0 || _geometryRes->getVertPosData() == 0x0 ||
 		_geometryRes->getVertTanData() == 0x0 || _geometryRes->getVertStaticData() == 0x0 ) return false;
 	
+	Timer *timer = Modules::stats().getTimer( EngineStats::GeoUpdateTime );
+	if( Modules::config().gatherTimeStats ) timer->setEnabled( true );
+	
 	// Reset vertices to base data
 	memcpy( _geometryRes->getVertPosData(), _baseGeoRes->getVertPosData(),
 	        _geometryRes->_vertCount * sizeof( Vec3f ) );
@@ -382,9 +386,6 @@ bool ModelNode::updateGeometry()
 
 	if( _skinningDirty )
 	{
-		//Timer *timer = Modules::stats().getTimer( EngineStats::CustomTime );
-		//timer->setEnabled( true );
-		
 		Matrix4f skinningMat;
 		Vec4f *rows = &_skinMatRows[0];
 
@@ -419,8 +420,6 @@ bool ModelNode::updateGeometry()
 			tanData[i].normal = skinningMat.mult33Vec( tanData[i].normal ); //.normalized();
 			tanData[i].tangent = skinningMat.mult33Vec( tanData[i].tangent ); //.normalized();
 		}
-
-		//timer->setEnabled( false );
 	}
 	else if( _morpherUsed )
 	{
@@ -437,6 +436,8 @@ bool ModelNode::updateGeometry()
 	
 	// Upload geometry
 	_geometryRes->updateDynamicVertData();
+
+	timer->setEnabled( false );
 
 	return true;
 }

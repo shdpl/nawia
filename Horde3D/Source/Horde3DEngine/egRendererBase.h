@@ -42,6 +42,7 @@ public:
 	void endQuery();
 	bool updateResults();
 	
+	void reset();
 	float getTimeMS() { return _time; }
 };
 
