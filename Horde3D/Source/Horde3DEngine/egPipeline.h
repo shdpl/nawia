@@ -154,6 +154,7 @@ struct RenderTarget
 	{
 		hasDepthBuf = false;
 		numColBufs = 0;
+		rendBuf = 0;
 	}
 };
 

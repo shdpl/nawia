@@ -308,8 +308,8 @@ void PipelineResource::releaseRenderTargets()
 	for( uint32 i = 0; i < _renderTargets.size(); ++i )
 	{
 		RenderTarget &rt = _renderTargets[i];
-		
-		Modules::renderer().releaseRenderBuffer( rt.rendBuf );
+		if (rt.rendBuf)
+			Modules::renderer().releaseRenderBuffer( rt.rendBuf );
 	}
 }
 

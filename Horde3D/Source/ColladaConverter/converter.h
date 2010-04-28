@@ -15,7 +15,7 @@
 
 #include "daeMain.h"
 #include "utMath.h"
-
+#include <string.h> // memset
 
 struct Joint;
 
@@ -67,6 +67,7 @@ struct SceneNode
 
 	SceneNode()
 	{
+		memset(name, 0, sizeof(name));
 		daeNode = 0x0;
 		daeInstance = 0x0;
 		parent = 0x0;
@@ -117,6 +118,11 @@ struct MorphTarget
 {
 	char                      name[256];
 	std::vector< MorphDiff >  diffs;
+
+	MorphTarget()
+	{
+		memset(name, 0, sizeof(name));
+	}
 };
 
 
