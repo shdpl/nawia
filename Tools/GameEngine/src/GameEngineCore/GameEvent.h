@@ -890,38 +890,6 @@ public:
 
 };
 
-class IdData : public GameEventData
-{
-
-public:
-	IdData(int id) : GameEventData(CUSTOM), Id(id)
-	{
-		m_data.ptr = this;
-	}
-
-
-
-	IdData(const IdData& copy) : GameEventData(CUSTOM), Id(copy.Id)
-	{
-		m_data.ptr = this;
-		m_owner = true;
-	}
-	
-	~IdData()
-	{
-		if( m_owner )
-		{
-		}
-	}
-
-	int Id;
-	
-	GameEventData* clone() const
-	{
-		return new IdData(*this);
-	}
-};
-
 class GoTo : public GameEventData
 {
 
