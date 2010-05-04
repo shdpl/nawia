@@ -1005,7 +1005,7 @@ class CheckCondition : public GameEventData
 {
 	
 public:
-	CheckCondition(const char* condition, const char* parameters, bool conditionValue) : GameEventData(CUSTOM), Condition(condition), Parameters(parameters), ConditionValue(conditionValue)
+	CheckCondition(const char* condition, const char* parameters) : GameEventData(CUSTOM), Condition(condition), Parameters(parameters)
 	{
 		m_data.ptr = this;
 	}
