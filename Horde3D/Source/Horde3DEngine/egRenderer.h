@@ -151,7 +151,7 @@ protected:
 	bool setMaterialRec( MaterialResource *materialRes, const std::string &shaderContext, ShaderResource *shaderRes );
 	
 	void setupShadowMap( bool noShadows );
-	Matrix4f calcLightMat( const Frustum &frustum );
+	Matrix4f calcCropMatrix( const Frustum &frustSlice, const Matrix4f &lightViewProjMat );
 	void updateShadowMap();
 
 	void drawOverlays( const std::string &shaderContext );

@@ -819,35 +819,28 @@ void Renderer::setupShadowMap( bool noShadows )
 }
 
 
-Matrix4f Renderer::calcLightMat( const Frustum &frustum )
+Matrix4f Renderer::calcCropMatrix( const Frustum &frustSlice, const Matrix4f &lightViewProjMat )
 {
-	// Find bounding box of visible geometry
-	Modules::sceneMan().updateQueues( frustum, 0x0, RenderingOrder::None, false, true );
-	BoundingBox bBox;
+	// Find AABB of scene objects in slice
+	Modules::sceneMan().updateQueues( frustSlice, 0x0, RenderingOrder::None, false, true );
+	BoundingBox aabb;
 	for( size_t j = 0, s = Modules::sceneMan().getRenderableQueue().size(); j < s; ++j )
 	{
-		bBox.makeUnion( Modules::sceneMan().getRenderableQueue()[j].node->getBBox() ); 
+		aabb.makeUnion( Modules::sceneMan().getRenderableQueue()[j].node->getBBox() );
 	}
-	
-	// Calculate light matrix
-	float ymax = _curCamera->_frustNear * tan( degToRad( _curLight->_fov / 2 ) );
-	float xmax = ymax * 1.0f;  // ymax * aspect
-	Matrix4f projMat = Matrix4f::PerspectiveMat( -xmax, xmax, -ymax, ymax,
-	                                             _curCamera->_frustNear, _curLight->_radius );
-	Matrix4f lightMat = projMat * _curLight->getViewMat();
 
-	// Get frustum and bounding box extents in post-projective space
 	float frustMinX =  Math::MaxFloat, bbMinX =  Math::MaxFloat;
-    float frustMinY =  Math::MaxFloat, bbMinY =  Math::MaxFloat;
+	float frustMinY =  Math::MaxFloat, bbMinY =  Math::MaxFloat;
 	float frustMinZ =  Math::MaxFloat, bbMinZ =  Math::MaxFloat;
 	float frustMaxX = -Math::MaxFloat, bbMaxX = -Math::MaxFloat;
-    float frustMaxY = -Math::MaxFloat, bbMaxY = -Math::MaxFloat;
+	float frustMaxY = -Math::MaxFloat, bbMaxY = -Math::MaxFloat;
 	float frustMaxZ = -Math::MaxFloat, bbMaxZ = -Math::MaxFloat;
 	
+	// Get frustum and scene AABB extents in post-projective space
 	for( uint32 i = 0; i < 8; ++i )
 	{
-		// Frustum
-		Vec4f v1 = lightMat * Vec4f( frustum.getCorner( i ) );
+		// Frustum slice
+		Vec4f v1 = lightViewProjMat * Vec4f( frustSlice.getCorner( i ) );
 		v1.w = fabs( v1.w );	// Use absolute value to reduce problems with back projection when v1.w < 0
 		v1.x /= v1.w; v1.y /= v1.w; v1.z /= v1.w;
 
@@ -858,8 +851,8 @@ Matrix4f Renderer::calcLightMat( const Frustum &frustum )
 		if( v1.y > frustMaxY ) frustMaxY = v1.y;
 		if( v1.z > frustMaxZ ) frustMaxZ = v1.z;
 
-		// Bounding box
-		v1 = lightMat * Vec4f( bBox.getCorner( i ) );
+		// Scene AABB
+		v1 = lightViewProjMat * Vec4f( aabb.getCorner( i ) );
 		v1.w = fabs( v1.w );
 		v1.x /= v1.w; v1.y /= v1.w; v1.z /= v1.w;
 
@@ -871,39 +864,30 @@ Matrix4f Renderer::calcLightMat( const Frustum &frustum )
 		if( v1.z > bbMaxZ ) bbMaxZ = v1.z;
 	}
 
-	// Combine frustum and bounding box
-	float minX = maxf( frustMinX, bbMinX );
-	float minY = maxf( frustMinY, bbMinY );
-	float minZ = minf( frustMinZ, bbMinZ );
-	float maxX = minf( frustMaxX, bbMaxX );
-	float maxY = minf( frustMaxY, bbMaxY );
-	float maxZ = minf( frustMaxZ, bbMaxZ );
-	
-	// Clamp the min and max values to post projection range [-1, 1]
-	minX = clamp( minX, -1, 1 );
-	minY = clamp( minY, -1, 1 );
-	minZ = clamp( minZ, -1, 1 );
-	maxX = clamp( maxX, -1, 1 );
-	maxY = clamp( maxY, -1, 1 );
-	maxZ = clamp( maxZ, -1, 1 );
+	// Merge frustum and AABB bounds and clamp to post-projective range [-1, 1]
+	float minX = clamp( maxf( frustMinX, bbMinX ), -1, 1 );
+	float minY = clamp( maxf( frustMinY, bbMinY ), -1, 1 );
+	float minZ = clamp( minf( frustMinZ, bbMinZ ), -1, 1 );
+	float maxX = clamp( minf( frustMaxX, bbMaxX ), -1, 1 );
+	float maxY = clamp( minf( frustMaxY, bbMaxY ), -1, 1 );
+	float maxZ = clamp( minf( frustMaxZ, bbMaxZ ), -1, 1 );
 
-	// Zoom in current split and create appropriate matrix
-	Matrix4f cropView;
+	// Zoom-in slice to make better use of available shadow map space
 	float scaleX = 2.0f / (maxX - minX);
 	float scaleY = 2.0f / (maxY - minY);
+	float scaleZ = 2.0f / (maxZ - minZ);
+
 	float offsetX = -0.5f * (maxX + minX) * scaleX;
 	float offsetY = -0.5f * (maxY + minY) * scaleY;
-	float scaleZ = 1.0f / (maxZ - minZ);
-	float offsetZ = -minZ * scaleZ;
+	float offsetZ = -0.5f * (maxZ + minZ) * scaleZ;
 
-	cropView.x[0] = scaleX;
-	cropView.x[5] = scaleY;
-	cropView.x[10] = scaleZ;
-	cropView.x[12] = offsetX;
-	cropView.x[13] = offsetY;
-	cropView.x[14] = offsetZ;
+	// Build final matrix
+	float cropMat[16] = { scaleX, 0, 0, 0,
+	                      0, scaleY, 0, 0,
+	                      0, 0, scaleZ, 0,
+	                      offsetX, offsetY, offsetZ, 1 };
 
-	return cropView * projMat;
+	return Matrix4f( cropMat );
 }
 
 
@@ -917,61 +901,61 @@ void Renderer::updateShadowMap()
 	glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
 	glDepthMask( GL_TRUE );
 	glClearDepth( 1.0f );
-    glClear( GL_DEPTH_BUFFER_BIT );
+	glClear( GL_DEPTH_BUFFER_BIT );
 
 	// ********************************************************************************************
 	// Cascaded Shadow Maps
 	// ********************************************************************************************
-
-	Frustum frustum;
 	
-	// Find bounding box of lit geometry
-	Modules::sceneMan().updateQueues( _curLight->getFrustum(), 0x0, RenderingOrder::None, false, true );
-	BoundingBox bBox;
+	// Find AABB of lit geometry
+	BoundingBox aabb;
+	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), &_curLight->getFrustum(),
+	                                  RenderingOrder::None, false, true );
 	for( size_t j = 0, s = Modules::sceneMan().getRenderableQueue().size(); j < s; ++j )
 	{
-		bBox.makeUnion( Modules::sceneMan().getRenderableQueue()[j].node->getBBox() ); 
+		aabb.makeUnion( Modules::sceneMan().getRenderableQueue()[j].node->getBBox() ); 
 	}
-	// Adjust camera planes
+
+	// Find depth range of lit geometry
 	float minDist = Math::MaxFloat, maxDist = 0.0f;
 	for( uint32 i = 0; i < 8; ++i )
 	{
-		float dist = -(_curCamera->getViewMat() * bBox.getCorner( i )).z;
+		float dist = -(_curCamera->getViewMat() * aabb.getCorner( i )).z;
 		if( dist < minDist ) minDist = dist;
 		if( dist > maxDist ) maxDist = dist;
 	}
 
-	// Don't adjust near plane; this means less precision if scene is far away from viewer
-	// but that shouldn't be too noticeable and brings better performance since the nearer
-	// split volumes are empty
+	// Don't adjust near plane; this means less precision if scene is far away from viewer but that
+	// shouldn't be too noticeable and brings better performance since the nearer split volumes are empty
 	minDist = _curCamera->_frustNear;
 	
 	// Calculate split distances using PSSM scheme
 	const float nearDist = maxf( minDist, _curCamera->_frustNear );
-	const float farDist = maxf( maxDist, minDist + 1 );
+	const float farDist = maxf( maxDist, minDist + 0.01f );
 	const uint32 numMaps = _curLight->_shadowMapCount;
-	const float t = _curLight->_shadowSplitLambda;
+	const float lambda = _curLight->_shadowSplitLambda;
 	
 	_splitPlanes[0] = nearDist;
 	_splitPlanes[numMaps] = farDist;
-
-	for( uint32 i = 1; i < numMaps; i++ )
+	
+	for( uint32 i = 1; i < numMaps; ++i )
 	{
-		float f = i / (float)numMaps;
-		float log = nearDist * pow( farDist / nearDist, f );
-		float uni = nearDist + (farDist - nearDist) * f;
+		float f = (float)i / numMaps;
+		float logDist = nearDist * pow( farDist / nearDist, f );
+		float uniformDist = nearDist + (farDist - nearDist) * f;
 		
-		_splitPlanes[i] = t * log + (1 - t) * uni;
+		_splitPlanes[i] = (1 - lambda) * uniformDist + lambda * logDist;  // Lerp
 	}
 	
 	// Prepare shadow map rendering
 	glEnable( GL_DEPTH_TEST );
 	//glCullFace( GL_FRONT );	// Front face culling reduces artefacts but produces more "peter-panning"
 	
-	// Build split frustums and render shadow maps
+	// Split viewing frustum into slices and render shadow maps
+	Frustum frustum;
 	for( uint32 i = 0; i < numMaps; ++i )
 	{
-		// Build split frustum
+		// Create frustum slice
 		if( !_curCamera->_orthographic )
 		{
 			float newLeft = _curCamera->_frustLeft * _splitPlanes[i] / _curCamera->_frustNear;
@@ -988,58 +972,53 @@ void Renderer::updateShadowMap()
 			                         -_splitPlanes[i], -_splitPlanes[i + 1] );
 		}
 		
-		// Build light projection matrix
-		_lightMats[i] = calcLightMat( frustum );
-		setupViewMatrices( _curLight->getViewMat(), _lightMats[i] );
+		// Get light projection matrix
+		float ymax = _curCamera->_frustNear * tan( degToRad( _curLight->_fov / 2 ) );
+		float xmax = ymax * 1.0f;  // ymax * aspect
+		Matrix4f lightProjMat = Matrix4f::PerspectiveMat(
+			-xmax, xmax, -ymax, ymax, _curCamera->_frustNear, _curLight->_radius );
 		
-		// Frustum Culling
-		frustum.buildViewFrustum( _curLight->getViewMat(), _lightMats[i] );
+		// Build optimized light projection matrix
+		Matrix4f lightViewProjMat = lightProjMat * _curLight->getViewMat();
+		lightProjMat = calcCropMatrix( frustum, lightViewProjMat ) * lightProjMat;
+		
+		// Generate render queue with shadow casters for current slice
+		frustum.buildViewFrustum( _curLight->getViewMat(), lightProjMat );
 		Modules::sceneMan().updateQueues( frustum, 0x0, RenderingOrder::None, false, true );
 		
-		_lightMats[i] = _lightMats[i] * _curLight->getViewMat();
-
+		// Create texture atlas if several splits are enabled
 		if( numMaps > 1 )
 		{
-			// Select quadrant of shadow map atlas
-			const int sh = Modules::config().shadowMapSize / 2;
-			if( i == 0 ) glViewport( 0, 0, sh, sh );
-			else if( i == 1 ) glViewport( sh, 0, sh, sh );
-			else if( i == 2 ) glViewport( sh, sh, sh, sh );
-			else if( i == 3 ) glViewport( 0, sh, sh, sh );
-		}
-		else
-		{
-			const int sh = Modules::config().shadowMapSize;
-			glViewport( 0, 0, sh, sh );
+			const int hsm = Modules::config().shadowMapSize / 2;
+			const int scissorXY[8] = { 0, 0,  hsm, 0,  hsm, hsm,  0, hsm };
+			const float transXY[8] = { -0.5f, -0.5f,  0.5f, -0.5f,  0.5f, 0.5f,  -0.5f, 0.5f };
+			
+			glEnable( GL_SCISSOR_TEST );
+
+			// Select quadrant of shadow map
+			lightProjMat.scale( 0.5f, 0.5f, 1.0f );
+			lightProjMat.translate( transXY[i * 2], transXY[i * 2 + 1], 0.0f );
+			glScissor( scissorXY[i * 2], scissorXY[i * 2 + 1], hsm, hsm );
 		}
 	
+		_lightMats[i] = lightProjMat * _curLight->getViewMat();
+		setupViewMatrices( _curLight->getViewMat(), lightProjMat );
+		
 		// Render
-		drawRenderables( _curLight->_shadowContext, "", false, &_curLight->getFrustum(), 0x0,
-		                 RenderingOrder::None, -1 );
+		drawRenderables( _curLight->_shadowContext, "", false, &frustum, 0x0, RenderingOrder::None, -1 );
 	}
 
-	// Setup light matrices for rendering:
-	if( numMaps > 1 )
+	// Map from post-projective space [-1,1] to texture space [0,1]
+	for( uint32 i = 0; i < numMaps; ++i )
 	{
-		// Map from [-1,1] to [0,1] and select appropriate quadrant of shadow map
-		_lightMats[0].scale( 0.25f, 0.25f, 0 );
-		_lightMats[0].translate( 0.25f, 0.25f, 0 );
-		_lightMats[1].scale( 0.25f, 0.25f, 0 );
-		_lightMats[1].translate( 0.75f, 0.25f, 0 );
-		_lightMats[2].scale( 0.25f, 0.25f, 0 );
-		_lightMats[2].translate( 0.75f, 0.75f, 0 );
-		_lightMats[3].scale( 0.25f, 0.25f, 0 );
-		_lightMats[3].translate( 0.25f, 0.75f, 0 );
-	}
-	else
-	{
-		_lightMats[0].scale( 0.5f, 0.5f, 0 );
-		_lightMats[0].translate( 0.5f, 0.5f, 0 );
+		_lightMats[i].scale( 0.5f, 0.5f, 1.0f );
+		_lightMats[i].translate( 0.5f, 0.5f, 0.0f );
 	}
 
 	// ********************************************************************************************
 
 	glCullFace( GL_BACK );
+	glDisable( GL_SCISSOR_TEST );
 		
 	setRenderBuffer( prevRendBuf );
 	glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
@@ -1375,7 +1354,7 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 		
 		// Render
 		Modules::sceneMan().updateQueues( _curCamera->getFrustum(), &_curLight->getFrustum(),
-		                                  RenderingOrder::None, false, true );
+		                                  order, false, true );
 		setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
 		drawRenderables( context, theClass, false, &_curCamera->getFrustum(),
 		                 &_curLight->getFrustum(), order, occSet );
