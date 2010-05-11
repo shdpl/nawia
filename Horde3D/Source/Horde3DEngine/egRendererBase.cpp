@@ -133,7 +133,6 @@ RendererBase::~RendererBase()
 void RendererBase::initStates()
 {
 	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-	glDisable( GL_MULTISAMPLE );
 }
 
 
@@ -833,7 +832,7 @@ uint32 RendererBase::createRenderBuffer( uint32 width, uint32 height, TextureFor
 			// Create a multisampled renderbuffer
 			glGenRenderbuffersEXT( 1, &rb.depthBuf );
 			glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, rb.depthBuf );
-			glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT, rb.samples, tex.format, rb.width, rb.height );
+			glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT, rb.samples, _depthFormat, rb.width, rb.height );
 			// Attach the renderbuffer
 			glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
 			                              GL_RENDERBUFFER_EXT, rb.depthBuf );
@@ -910,26 +909,35 @@ void RendererBase::resolveRenderBuffer( uint32 rbObj )
 	
 	glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, rb.fboMS );
 	glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, rb.fbo );
-	glViewport( 0, 0, rb.width, rb.height );
 
-	if( rb.depthBuf != 0 )
-	{
-		glReadBuffer( GL_NONE );
-		glDrawBuffer( GL_NONE );
-		glBlitFramebufferEXT( 0, 0, rb.width, rb.height, 0, 0, rb.width, rb.height,
-							  GL_DEPTH_BUFFER_BIT, GL_NEAREST );
-	}
-
+	bool depthResolved = false;
 	for( uint32 i = 0; i < RBRenderBuffer::MaxColorAttachmentCount; ++i )
 	{
 		if( rb.colBufs[i] != 0 )
 		{
 			glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
 			glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
-			glBlitFramebufferEXT( 0, 0, rb.width, rb.height, 0, 0, rb.width, rb.height,
-								  GL_COLOR_BUFFER_BIT, GL_NEAREST );
+			
+			int mask = GL_COLOR_BUFFER_BIT;
+			if( !depthResolved && rb.depthBuf != 0 )
+			{
+				mask |= GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+				depthResolved = true;
+			}
+			glBlitFramebufferEXT( 0, 0, rb.width, rb.height, 0, 0, rb.width, rb.height, mask, GL_NEAREST );
 		}
 	}
+
+	if( !depthResolved && rb.depthBuf != 0 )
+	{
+		glReadBuffer( GL_NONE );
+		glDrawBuffer( GL_NONE );
+		glBlitFramebufferEXT( 0, 0, rb.width, rb.height, 0, 0, rb.width, rb.height,
+							  GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST );
+	}
+
+	glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, 0 );
+	glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, 0 );
 }
 
 
@@ -948,6 +956,7 @@ void RendererBase::setRenderBuffer( uint32 rbObj )
 		glViewport( _vpX, _vpY, _vpWidth, _vpHeight );
 		_fbWidth = _vpWidth + _vpX;
 		_fbHeight = _vpHeight + _vpY;
+		glDisable( GL_MULTISAMPLE );
 	}
 	else
 	{
@@ -961,6 +970,9 @@ void RendererBase::setRenderBuffer( uint32 rbObj )
 		glViewport( 0, 0, rb.width, rb.height );
 		_fbWidth = rb.width;
 		_fbHeight = rb.height;
+
+		if( rb.fboMS != 0 ) glEnable( GL_MULTISAMPLE );
+		else glDisable( GL_MULTISAMPLE );
 	}
 }
 
