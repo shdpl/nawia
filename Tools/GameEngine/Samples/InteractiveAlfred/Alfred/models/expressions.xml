@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<Expression>
+
+    <FacialExpression name="neutral">
+        <PAD p="0.0" a="0.0" d="0.0" />
+    </FacialExpression>
+
+    <FacialExpression name="joy">
+        <PAD p="0.5" a="0.42" d="0.23" />    
+        <AU id="6" value="1" />
+        <AU id="12" value="0.8" />
+        <AU id="20" value="0.2" />
+        <AU id="27" value="0.1" />        
+    </FacialExpression>
+
+    <FacialExpression name="sadness">
+        <AU id="1" value="1" />
+        <AU id="4" value="1" />
+        <AU id="7" value="1" />
+        <AU id="11" value="1" />
+        <AU id="15" value="0.1" />
+        <AU id="17" value="1" />
+    </FacialExpression>
+
+    <FacialExpression name="fear">
+        <PAD p="-0.64" a="0.6" d="0.43" />
+        <AU id="1" value="0.5" />
+        <AU id="2" value="1" />
+        <AU id="4" value="0.5" />
+        <AU id="5" value="0.8" />
+        <AU id="20" value="0.5" />
+    </FacialExpression>
+<!--
+    <FacialExpression name="surprise">
+        <AU id="1" value="0.5" />
+        <AU id="2" value="1" />
+        <AU id="5" value="1" />
+        <AU id="27" value="0.6" />
+    </FacialExpression>
+-->
+    <FacialExpression name="distress">
+        <PAD p="-0.5" a="0.62" d="0.38" />    
+        <AU id="1" value="1" />
+        <AU id="4" value="0.7" />
+        <AU id="7" value="0.7" />
+        <AU id="11" value="1" />
+    </FacialExpression>
+<!--
+    <FacialExpression name="disgust">
+        <AU id="9" value="0.9" />
+        <AU id="10" value="0.1" />
+        <AU id="17" value="0.7" />
+    </FacialExpression>
+-->    
+    <FacialExpression name="anger">
+        <PAD p="-0.51" a="0.5" d="0.25" />    
+        <AU id="4" value="0.9" />
+        <AU id="5" value="1" />
+        <AU id="7" value="0.9" />
+    </FacialExpression>
+<!--
+    <FacialExpression name="11">
+        <AU id="4" value="1" />
+        <AU id="5" value="0.3333333" />
+        <AU id="7" value="1" />
+        <AU id="10" value="0.5555556" />
+        <AU id="25" value="1" />
+    </FacialExpression>
+
+    <FacialExpression name="12">
+        <AU id="1" value="0.8421053" />
+        <AU id="2" value="1" />
+        <AU id="6" value="0.7836257" />
+        <AU id="12" value="0.8947368" />
+        <AU id="43" value="0.2865497" />
+    </FacialExpression>
+
+    <FacialExpression name="13">
+        <AU id="1" value="1" />
+        <AU id="2" value="0.7251462" />
+        <AU id="4" value="0.7134503" />
+        <AU id="5" value="0.4561403" />
+    </FacialExpression>
+
+    <FacialExpression name="21">
+        <AU id="1" value="0.9005848" />
+        <AU id="4" value="0.6444445" />
+        <AU id="14" value="0.6432748" />
+        <AU id="15" value="0.368421" />
+    </FacialExpression>
+
+    <FacialExpression name="22">
+        <AU id="6" value="0.6608187" />
+        <AU id="10" value="0.4736842" />
+        <AU id="12" value="1" />
+        <AU id="16" value="0.4327485" />
+        <AU id="20" value="0.251462" />
+    </FacialExpression>
+
+    <FacialExpression name="23">
+        <AU id="6" value="0.8654971" />
+        <AU id="17" value="0.5497076" />
+        <AU id="20" value="0.3508772" />
+        <AU id="24" value="0.502924" />
+    </FacialExpression>
+
+    <FacialExpression name="31">
+        <AU id="4" value="0.6023392" />
+        <AU id="5" value="0.5263158" />
+        <AU id="7" value="0.7660819" />
+        <AU id="10" value="0.6608187" />
+        <AU id="22" value="0.1988304" />
+        <AU id="27" value="0.2046784" />
+    </FacialExpression>
+
+    <FacialExpression name="32">
+        <AU id="4" value="0.9590643" />
+        <AU id="7" value="1" />
+        <AU id="9" value="1" />
+        <AU id="17" value="0.7543859" />
+        <AU id="43" value="0.4327485" />
+    </FacialExpression>
+
+    <FacialExpression name="33">
+        <AU id="1" value="0.8362573" />
+        <AU id="2" value="0.4795322" />
+        <AU id="4" value="0.4385965" />
+        <AU id="5" value="0.7660819" />
+        <AU id="20" value="0.5730994" />
+        <AU id="27" value="0.5847953" />
+    </FacialExpression>
+-->
+</Expression>

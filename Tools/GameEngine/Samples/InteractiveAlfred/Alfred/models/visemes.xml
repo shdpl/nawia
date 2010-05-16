@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?> 
+
+<Visemes>
+
+    <Viseme name="ae_ax_ah_aa_ao_er_ay">
+        <AU id="10" value="0.1520468" />
+        <AU id="20" value="0.3988304" />
+        <AU id="27" value="0.748538" />
+    </Viseme>
+    
+    <Viseme name="ey_eh_uh">
+        <AU id="18" value="0.3333333" />
+        <AU id="27" value="0.6491229" />
+    </Viseme>
+
+    <Viseme name="aw_y_iy_ih_ix_h_k_g_ng">
+        <AU id="10" value="0.1169591" />
+        <AU id="25" value="1" />
+        <AU id="27" value="0.3625731" />
+    </Viseme>
+    
+    <Viseme name="w_uw">
+        <AU id="18" value="0.4690059" />
+        <AU id="27" value="0.4736842" />
+    </Viseme>
+
+    <Viseme name="ow">
+        <AU id="18" value="0.1754386" />
+        <AU id="27" value="0.5263158" />
+    </Viseme>
+
+    <Viseme name="oy">
+        <AU id="10" value="0.245614" />
+        <AU id="18" value="0.2163743" />
+        <AU id="27" value="0.5614035" />
+    </Viseme>
+
+    <Viseme name="r">
+        <AU id="10" value="0.2502924" />
+        <AU id="20" value="0.04093567" />
+        <AU id="25" value="0.8304093" />
+        <AU id="27" value="0.1871345" />
+    </Viseme>
+
+    <Viseme name="l">
+        <AU id="10" value="0.251462" />
+        <AU id="20" value="0.1766082" />
+        <AU id="25" value="0.4912281" />
+        <AU id="27" value="0.1871345" />
+    </Viseme>
+
+    <Viseme name="s_z_t_d_n">
+        <AU id="10" value="0.4304093" />
+        <AU id="12" value="0.2222222" />
+        <AU id="20" value="0.2690058" />
+        <AU id="25" value="1" />
+    </Viseme>
+
+    <Viseme name="sh_ch_jh_zh">
+        <AU id="10" value="0.4736842" />
+        <AU id="16" value="0.2690058" />
+        <AU id="18" value="0.4853801" />
+        <AU id="25" value="1" />
+    </Viseme>
+
+    <Viseme name="th_dh">
+        <AU id="10" value="0.3859649" />
+        <AU id="16" value="0.04327485" />
+        <AU id="25" value="0.8128655" />
+        <AU id="27" value="0.2163743" />
+    </Viseme>
+
+    <Viseme name="f_v">
+        <AU id="10" value="0.7368421" />
+        <AU id="23" value="0.128655" />
+        <AU id="25" value="0.3508772" />
+    </Viseme>
+
+    <Viseme name="p_b_m">
+        <AU id="24" value="0.4502924" />
+    </Viseme>
+
+</Visemes>
