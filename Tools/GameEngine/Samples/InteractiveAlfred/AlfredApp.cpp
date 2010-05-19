@@ -55,10 +55,10 @@ bool AlfredApp::init(const char *fileName)
 void AlfredApp::keyHandler()
 {		
 
-	if( m_keys[49] )  // 1
+	if( m_keys['1'] )
 	{	
 		// ...
-		m_keys[49] = 0;
+		m_keys['1'] = 0;
 	}
 
 	m_running = m_keys[27] == 0;

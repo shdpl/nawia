@@ -1,0 +1,106 @@
+<PhonemeTimings audiofile="test.wav" >
+	<phn start="0" end="90" value="x" />
+	<theme start="0" end="790" />
+	<word start="90" end="240" value="It" >
+		<phn start="90" end="165" value="IH" />
+		<phn start="165" end="240" value="t" />
+	</word>
+	<word start="240" end="570" value="seems" >
+		<phn start="240" end="322" value="s" />
+		<phn start="322" end="405" value="IY" />
+		<phn start="405" end="487" value="m" />
+		<phn start="487" end="570" value="z" />
+	</word>
+	<word start="570" end="790" value="that" >
+		<phn start="570" end="630" value="DH" />
+		<phn start="630" end="730" value="AE" />
+		<phn start="730" end="790" value="t" />
+	</word>
+	<rheme start="790" end="1450" />
+	<word start="790" end="1050" value="Bond" >
+		<phn start="790" end="871" value="b" />
+		<phn start="871" end="952" value="AH" />
+		<phn start="952" end="1001" value="n" />
+		<phn start="1001" end="1050" value="d" />
+	</word>
+	<word start="1050" end="1450" value="Street" >
+		<phn start="1050" end="1120" value="s" />
+		<phn start="1120" end="1191" value="t" />
+		<phn start="1191" end="1308" value="r" />
+		<phn start="1308" end="1379" value="IY" />
+		<phn start="1379" end="1450" value="t" />
+	</word>
+	<theme start="1450" end="4250" />
+	<word start="1450" end="1590" value="is" >
+		<phn start="1450" end="1520" value="IH" />
+		<phn start="1520" end="1590" value="z" />
+	</word>
+	<word start="1590" end="1720" value="the" >
+		<phn start="1590" end="1655" value="DH" />
+		<phn start="1655" end="1720" value="IY" />
+	</word>
+	<word start="1720" end="2020" value="only" >
+		<phn start="1720" end="1825" value="OW" />
+		<phn start="1825" end="1878" value="n" />
+		<phn start="1878" end="1967" value="l" />
+		<phn start="1967" end="2020" value="IY" />
+	</word>
+	<word start="2020" end="2620" value="restaurant" >
+		<phn start="2020" end="2113" value="r" />
+		<phn start="2113" end="2207" value="EH" />
+		<phn start="2207" end="2263" value="s" />
+		<phn start="2263" end="2320" value="t" />
+		<phn start="2320" end="2413" value="AH" />
+		<phn start="2413" end="2507" value="AH" />
+		<phn start="2507" end="2563" value="n" />
+		<phn start="2563" end="2620" value="t" />
+	</word>
+	<word start="2620" end="2760" value="with" >
+		<phn start="2620" end="2683" value="w" />
+		<phn start="2683" end="2721" value="IH" />
+		<phn start="2721" end="2760" value="DH" />
+	</word>
+	<word start="2760" end="3190" value="friendly" >
+		<phn start="2760" end="2807" value="f" />
+		<phn start="2807" end="2887" value="r" />
+		<phn start="2887" end="2967" value="EH" />
+		<phn start="2967" end="3014" value="n" />
+		<phn start="3014" end="3062" value="d" />
+		<phn start="3062" end="3142" value="l" />
+		<phn start="3142" end="3190" value="IY" />
+	</word>
+	<word start="3190" end="3540" value="staff" >
+		<phn start="3190" end="3265" value="s" />
+		<phn start="3265" end="3340" value="t" />
+		<phn start="3340" end="3465" value="AE" />
+		<phn start="3465" end="3540" value="f" />
+	</word>
+	<word start="3540" end="3710" value="that" >
+		<phn start="3540" end="3586" value="DH" />
+		<phn start="3586" end="3663" value="AH" />
+		<phn start="3663" end="3710" value="t" />
+	</word>
+	<word start="3710" end="3820" value="is" >
+		<phn start="3710" end="3765" value="IH" />
+		<phn start="3765" end="3820" value="z" />
+	</word>
+	<word start="3820" end="3990" value="any" >
+		<phn start="3820" end="3897" value="EH" />
+		<phn start="3897" end="3943" value="n" />
+		<phn start="3943" end="3990" value="IY" />
+	</word>
+	<word start="3990" end="4250" value="good" >
+		<phn start="3990" end="4055" value="g" />
+		<phn start="4055" end="4185" value="UH" />
+		<phn start="4185" end="4250" value="d" />
+	</word>
+
+	<!--anno-text
+	It seems that Bond Street is the only restaurant with friendly staff that is any good.
+	-->
+	
+	<!--
+	<TH>It seems that</TH> <RH>Bond Street</RH> <TH>is the only restaurant with friendly staff that is any good</TH>.
+	-->
+
+</PhonemeTimings>
