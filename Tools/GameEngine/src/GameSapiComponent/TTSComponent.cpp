@@ -435,11 +435,19 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 			}
 		case SPEI_WORD_BOUNDARY:
 			{
-#ifdef PRINT_WORDS
 				ULONG start, end;
 				start = e.InputWordPos();
 				end = e.InputWordLen();
-
+				if (start < obj->m_currentSentence.size())
+				{
+					wstring wstr(obj->m_currentSentence.substr(start, end));
+					char *str = new char[255];
+					sprintf(str, "%ls", wstr.c_str());
+					GameEvent event(GameEvent::SP_SPOKEN_WORD, &GameEventData(str), obj);
+					if (obj->m_owner->checkEvent(&event))
+						obj->m_owner->executeEvent(&event);			
+				}
+#ifdef PRINT_WORDS
 				if (start < obj->m_currentSentence.size())
 					std::wcout << GameEngine::timeStamp()-obj->m_startSpeaking << ": " << obj->m_currentSentence.substr(start, end) << std::endl;
 #endif

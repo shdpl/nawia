@@ -392,6 +392,7 @@ public:
 		EM_MOOD_CHANGED,		/// informs an agent that the emotion was updated (sending new mood as Vec3f)
 		SP_RHEME_START,			/// rheme started
 		SP_THEME_START,			/// theme started
+		SP_SPOKEN_WORD,			/// contains currently spoken word
 
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
