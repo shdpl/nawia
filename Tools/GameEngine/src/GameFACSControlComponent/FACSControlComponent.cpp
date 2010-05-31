@@ -79,7 +79,7 @@ void FACSControlComponent::executeEvent(GameEvent *event)
 		case GameEvent::E_SPEAKING_STOPPED:
 		{
 			//10, 12, 16, 18, 20, 23, 24, 25, 27
-			setFacialExpression( m_currentExpression, 0.4f, 0.2f );
+			setFacialExpression( m_currentExpression, 1.0f, 0.5f );
 			break;
 		}
 	}
