@@ -337,6 +337,7 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 		if (m_useDistanceModel)
 			calcVolumeFromDistance();
 
+		
 		// Try to find text as tag
 		SentenceIterator iter = m_sentences.find(string(text));
 		if (iter != m_sentences.end())
