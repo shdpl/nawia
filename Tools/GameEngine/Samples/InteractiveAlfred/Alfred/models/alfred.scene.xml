@@ -1,20 +1,58 @@
 <!DOCTYPE HordeSceneGraph>
-<Group name="Alfred" >
-    <Camera pipeline="pipelines\forward.pipeline.xml" topPlane="0.0254897" bottomPlane="-0.0254897" tx="0" ty="5" sx="1" tz="15" rx="-5" sy="1" leftPlane="-0.0339862" ry="0" sz="1" rz="0" farPlane="1000" name="Camera" rightPlane="0.0339862" nearPlane="0.1" >
-        <Attachment type="GameEngine" name="Camera" >
-            <!-- <SoundListener/> -->
-        </Attachment>
+<Group name="AlfredAndXavier" >
+    <Camera pipeline="pipelines\forward.pipeline.xml" topPlane="0.0254897" bottomPlane="-0.0254897" tx="0" ty="5" sx="1" tz="15" rx="-5" sy="1" leftPlane="-0.0339862" ry="0" sz="1" rz="0" farPlane="1000" name="Camera" rightPlane="0.0339862" nearPlane="0.1">
+      <Attachment type="GameEngine" name="camera"  >
+        <SoundListener/>
+      </Attachment>
     </Camera>
-    <Light material="materials/light.material.xml" radius="100" col_G="0.96" shadowMapCount="0" tx="0" ty="12" tz="25" rx="-14" fov="70" lightingContext="LIGHTING" ry="0" rz="0" shadowMapBias="0.01" name="light1" col_R="0.96" shadowSplitLambda="0" shadowContext="SHADOWMAP" col_B="0.96" />
-    <Reference tx="0" sx="1" ty="0" sy="1" tz="0" rx="0" sceneGraph="models\alfred\alfred_model.scene.xml" sz="1" ry="180" rz="0" name="Alfred" >
+    <Light material="materials/light.material.xml" radius="100" col_G="0.96" shadowMapCount="0" tx="0" ty="12" tz="20" rx="-14" fov="70" lightingContext="LIGHTING" ry="0" rz="0" shadowMapBias="0.01" name="light1" col_R="0.96" shadowSplitLambda="0" shadowContext="SHADOWMAP" col_B="0.96" />
+ 
+  <!-- Xavier-->
+  <!--
+   <Reference tx="3" sx="1" ty="0" sy="1" tz="-25" rx="0" sceneGraph="models\alfred\alfred_model.scene.xml" sz="1" ry="140" rz="10" name="Xavier" >
+    <Attachment type="GameEngine" name="Alfred" >
+      <IK reye="Bone_Auge_R" leye="Bone_Auge_L" neck="Bone_Head" file="models\alfred\alfred_model.scene.xml"/>
+      <Sapi voice="Crystal16" visemefile="models\visemes.xml" useDistanceModel="1"/>
+      <Sound3D/>
+      <MorphtargetAnimation/>
+      <FACSControl file="models\expressions.xml" />
+      <ScenePlayer port="5555" host="127.0.0.1"/>
+    </Attachment>
+  </Reference>
+  <Reference tx="3" sx="1.05" ty="0" sy="1" tz="-25" rx="0" sceneGraph="models\alfred\anzug.scene.xml" sz="1.05" ry="160" rz="10" name="XavierSuit" />
+  -->
+  <!-- Alfred-->
+  <Reference tx="-2" sx="1" ty="0" sy="1" tz="0" rx="0" sceneGraph="models\alfred\alfred_model.scene.xml" sz="1" ry="180" rz="0" name="Alfred" >
         <Attachment type="GameEngine" name="Alfred" >
-            <IK reye="Bone_Auge_R" leye="Bone_Auge_L" file="models\alfred\alfred_model.scene.xml" neck="Bone_Head" />
-            <!-- <Socket protocol="UDP" port="5554" address="127.0.0.1" type="server" /> -->
-            <Sapi voice="Microsoft Anna" visemefile="models\visemes.xml" />
+            <IK reye="Bone_Auge_R" leye="Bone_Auge_L" neck="Bone_Head" file="models\alfred\alfred_model.scene.xml"/>
+            <Sapi voice="Mike16" visemefile="models\visemes.xml" useDistanceModel="1"/>
+            <Sound3D/>
             <MorphtargetAnimation/>
             <FACSControl file="models\expressions.xml" />
-			<!-- <Sound3D phonemes="test.phonemes.xml" loop="0" visemefile="models\visemes.xml" file="test.wav" gain="1" /> -->
+            <ScenePlayer port="5554" host="127.0.0.1"/>
         </Attachment>
     </Reference>
-    <Reference tx="0" sx="1.05" ty="0" sy="1" tz="0" rx="0" sceneGraph="models\alfred\anzug.scene.xml" sz="1.05" ry="180" rz="0" name="Suit" />
+  <Reference tx="-2" sx="1.05" ty="0" sy="1" tz="0" rx="0" sceneGraph="models\alfred\anzug.scene.xml" sz="1.05" ry="180" rz="0" name="AlfredSuit" />
+  <!-- Woman -->
+  <Reference sceneGraph="models/female01/female01.scene.xml" sx="0.25" sy="0.25" sz="0.25" tx="4" ty="0" tz="-5" rx="0" ry="0" rz="0" name="Xantippe" >
+    <Attachment type="GameEngine" name="Crystall" >
+      <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female01/female01.scene.xml" neck="Bip01_Head" />
+      <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+      <Sapi voice="Crystal16"/>
+      <ScenePlayer port="5555" host="127.0.0.1"/>
+      <Sound3D/>
+      <AgentAction WalkAnimFile="female_walk.anim" IdleAnimFile="female_german_idle.anim" >
+        <BufferZone radius="3.6" />
+        <BufferZone radius="1.2" />
+        <BufferZone radius="0.45" />
+        <Orientation name="L" />
+        <Orientation name="C" />
+        <Orientation name="H" />
+        <Orientation name="V" />
+        <Orientation name="I" />
+        <Orientation name="N" />
+      </AgentAction>
+    </Attachment>
+  </Reference>
+  
 </Group>

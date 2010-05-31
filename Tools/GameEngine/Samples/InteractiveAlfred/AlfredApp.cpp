@@ -4,6 +4,7 @@
 #include "AlfredApp.h"
 
 #include "GameEngine/GameEngine.h"
+#include "GameEngine/GameEvent.h"
 #include "GameEngine/GameEngine_Animations.h"
 #include "GameEngine/GameEngine_FACSControl.h"
 #include "GameEngine/GameEngine_IK.h"
@@ -57,8 +58,20 @@ void AlfredApp::keyHandler()
 
 	if( m_keys['1'] )
 	{	
-		// ...
+		//Property facs_property("anger", 1.0);
+		//		GameEvent action_event( GameEvent::FACS_SET_EXPRESSION, facs_property, this );
+		//		GameEngine::sendEvent( GameEngine::entityWorldID("Alfred"), &action_event );
+		GameEngine::setFacialExpression(GameEngine::entityWorldID("Alfred"), "anger");
 		m_keys['1'] = 0;
+	}
+
+	if( m_keys['2'] )
+	{	
+		//Property facs_property("anger", 1.0);
+		//		GameEvent action_event( GameEvent::FACS_SET_EXPRESSION, facs_property, this );
+		//		GameEngine::sendEvent( GameEngine::entityWorldID("Alfred"), &action_event );
+		GameEngine::speak(GameEngine::entityWorldID("Alfred"), "This is a little testoa");
+		m_keys['2'] = 0;
 	}
 
 	m_running = m_keys[27] == 0;

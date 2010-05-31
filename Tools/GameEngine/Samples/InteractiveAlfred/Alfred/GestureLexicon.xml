@@ -1,0 +1,466 @@
+<GestureLexicon>
+	<Gesture>
+		<ID>0001</ID>
+		<Name>Stand_up</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_aufstehn.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_aufstehn.anim</Filename>
+		<Function>
+			<IPA>ShowsSolidarity</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>InfluenceOnFuture</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>10</StrokeStart>
+			<StrokeEnd>62</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0002</ID>
+		<Name>Eat_1</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_essen.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_essen.anim</Filename>
+		<Function>
+			<IPA>GivesOpinion</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>Statement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>13</StrokeStart>
+			<StrokeEnd>80</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0003</ID>
+		<Name>Eat_2</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_essen_2.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_essen_2.anim</Filename>
+		<Function>
+			<IPA>GivesOpinion</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>Statement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>13</StrokeStart>
+			<StrokeEnd>69</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0004</ID>
+		<Name>Go_away</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_geh_weg.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_geh_weg.anim</Filename>
+		<Function>
+			<IPA>ShowsAntagonism</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>InfluenceOnFuture</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>12</StrokeStart>
+			<StrokeEnd>77</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0005</ID>
+		<Name>Gesture_1</Name>
+		<CorpusName>VP01-1-1</CorpusName>
+		<Speech>"Well I just got there and uhm, I just went straight in there."</Speech>
+		<Context>Subject in German Small Talk conversation talking about a night club in Munich.</Context>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_geste_01.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_geste_01.anim</Filename>
+		<Function>
+			<McNeil>iconic</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>8</StrokeStart>
+			<StrokeEnd>163</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0006</ID>
+		<Name>Gesture_2</Name>
+		<CorpusName>VP02-1-1</CorpusName>
+		<Speech>"I uhm work here, you know."</Speech>
+		<Context>Subject in German Small Talk conversation was asked about his work situation.</Context>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_geste_02.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_geste_02.anim</Filename>
+		<Function>
+			<McNeil>beat</McNeil>
+			<DAMSL>answer</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>8</StrokeStart>
+			<StrokeEnd>150</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0007</ID>
+		<Name>Gesture_4</Name>
+		<CorpusName>VP05-1-1</CorpusName>
+		<Speech>"And what else? What do we do here? What did they say? Negotiation?"</Speech>
+		<Context>Subject in German Small Talk conversation wondering about the experimental setting?</Context>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_geste_04.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_geste_04.anim</Filename>
+		<Function>
+			<McNeil>deictic</McNeil>
+			<DAMSL>info-request</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>8</StrokeStart>
+			<StrokeEnd>139</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0008</ID>
+		<Name>Gesture_5</Name>
+		<CorpusName>VP05-1-2</CorpusName>
+		<Speech>"Brings you further sure. Experience and so on. But..."</Speech>
+		<Context>Subject in German Small Talk conversation talking about a side job in his field of studies.</Context>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_geste_05.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_geste_05.anim</Filename>
+		<Function>
+			<McNeil>beat</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>8</StrokeStart>
+			<StrokeEnd>141</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0009</ID>
+		<Name>Gesture_6</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_geste_06_teil1.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_geste_06_teil1.anim</Filename>
+		<Function>
+			<IPA>Corpus</IPA>
+			<McNeil>Corpus</McNeil>
+			<DAMSL>Corpus</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>8</StrokeStart>
+			<StrokeEnd>131</StrokeEnd>
+		</Form>
+	</Gesture>
+
+	<Gesture>
+		<ID>0010</ID>
+		<Name>Me</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_ich.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_ich.anim</Filename>
+		<Function>
+			<IPA>GivesOpinion</IPA>
+			<McNeil>Adaptor</McNeil>
+			<DAMSL>Statement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>8</StrokeStart>
+			<StrokeEnd>41</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0011</ID>
+		<Name>Come_over_here</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_komm_her.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_komm_her.anim</Filename>
+		<Function>
+			<IPA>Agrees</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>Statement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>7</StrokeStart>
+			<StrokeEnd>57</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0012</ID>
+		<Name>Tasty</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_lecker.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_lecker.anim</Filename>
+		<Function>
+			<IPA>ShowsSolidarity</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>Statement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>11</StrokeStart>
+			<StrokeEnd>75</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0013</ID>
+		<Name>Becking_1</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_begruessen_01.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_begruessen_01.anim</Filename>
+		<Function>
+			<IPA>ShowsSolidarity</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>InfluenceOnFuture</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>10</StrokeStart>
+			<StrokeEnd>72</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0014</ID>
+		<Name>Becking_2</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_begruessen_02.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_begruessen_02.anim</Filename>
+		<Function>
+			<IPA>ShowsSolidarity</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>InfluenceOnFuture</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>10</StrokeStart>
+			<StrokeEnd>72</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0015</ID>
+		<Name>Becking_3</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_begruessen_03.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_begruessen_03.anim</Filename>
+		<Function>
+			<IPA>ShowsSolidarity</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>InfluenceOnFuture</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>10</StrokeStart>
+			<StrokeEnd>72</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0016</ID>
+		<Name>No</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_nein.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_nein.anim</Filename>
+		<Function>
+			<IPA>ShowsAntagonism</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>Disagreement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>12</StrokeStart>
+			<StrokeEnd>75</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0017</ID>
+		<Name>Windscreen_wiper</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_scheibenwischer.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_scheibenwischer.anim</Filename>
+		<Function>
+			<IPA>Disagrees</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>Disagreement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>12</StrokeStart>
+			<StrokeEnd>64</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0018</ID>
+		<Name>Drink</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_trinken.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_trinken.anim</Filename>
+		<Function>
+			<IPA>ShowsTensionRelease</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>InfluenceOnFuture</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>11</StrokeStart>
+			<StrokeEnd>84</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0019</ID>
+		<Name>Watch</Name>
+		<Filename gender="female" culture="german">Gesten\Deutsch\Female\Anim\char_female_deutsch_uhr.anim</Filename>
+		<Filename gender="male" culture="german">Gesten\Deutsch\Male\Anim\char_male_deutsch_uhr.anim</Filename>
+		<Function>
+			<IPA>ShowsTension</IPA>
+			<McNeil>Emblem</McNeil>
+			<DAMSL>InfluenceOnFuture</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>13</StrokeStart>
+			<StrokeEnd>64</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0020</ID>
+		<Name>Gesture_10</Name>
+		<CorpusName>M_4_S_1-1</CorpusName>
+		<Speech>"For us, well in the cafeteria there is; cash you know is not valid there"</Speech>
+		<Context>Subject in Japanese Small Talk conversation talking about his life at university.</Context>
+		<Filename gender="female" culture="japan">Gesten\Japan\Female\Anim\char_female_japan_arme_unten_zusammen_zu_geste_10.anim</Filename>
+		<Filename gender="male" culture="japan">Gesten\Japan\Male\Anim\char_male_japan_arme_unten_zusammen_zu_geste_10.anim</Filename>
+		<Function>´
+			<McNeil>iconic</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>17</StrokeStart>
+			<StrokeEnd>127</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0021</ID>
+		<Name>Gesture_12</Name>
+		<CorpusName>M_15_S_1-1</CorpusName>
+		<Speech>"It's not far, erh it stands in this main campus, but"</Speech>
+		<Context>Subject in Japanese Small Talk conversation talking about the location of his faculty.</Context>
+		<Filename gender="female" culture="japan">Gesten\Japan\Female\Anim\char_female_japan_arme_unten_zusammen_zu_geste_12.anim</Filename>
+		<Filename gender="male" culture="japan">Gesten\Japan\Male\Anim\char_male_japan_arme_unten_zusammen_zu_geste_12.anim</Filename>
+		<Function>
+			<McNeil>iconic</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>14</StrokeStart>
+			<StrokeEnd>117</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0022</ID>
+		<Name>Gesture_13</Name>
+		<CorpusName>M_19_S_1-1</CorpusName>
+		<Speech>"In the department of education, generally, the fields are divided into three parts: pedagogy, politics of the education and psychology."</Speech>
+		<Context>Subject in Japanese Small Talk conversation talking his study subject.</Context>
+		<Filename gender="female" culture="japan">Gesten\Japan\Female\Anim\char_female_japan_arme_unten_zusammen_zu_geste_13.anim</Filename>
+		<Filename gender="male" culture="japan">Gesten\Japan\Male\Anim\char_male_japan_arme_unten_zusammen_zu_geste_13.anim</Filename>
+		<Function>
+			<McNeil>beat</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>20</StrokeStart>
+			<StrokeEnd>286</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0023</ID>
+		<Name>Gesture_14</Name>
+		<CorpusName>M_19_S_1-2</CorpusName>
+		<Speech>"Though it's okay for the exam for the cognative Psychology, for the clinical Psychology there's a great competition to enter to the faculty."</Speech>
+		<Context>Subject in Japanese Small Talk conversation talking about his study subject.</Context>
+		<Filename gender="female" culture="japan">Gesten\Japan\Female\Anim\char_female_japan_arme_unten_zusammen_zu_geste_14.anim</Filename>
+		<Filename gender="male" culture="japan">Gesten\Japan\Male\Anim\char_male_japan_arme_unten_zusammen_zu_geste_14.anim</Filename>
+		<Function>
+			<McNeil>statement</McNeil>
+			<DAMSL>metaphoric</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>19</StrokeStart>
+			<StrokeEnd>237</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0024</ID>
+		<Name>Gesture_15</Name>
+		<CorpusName>F_31_S_1-1</CorpusName>
+		<Speech>"That German guy was telling about more and more prize money."</Speech>
+		<Context>Subject in Japanese Small Talk conversation talking about the experimental setting.</Context>
+		<Filename gender="female" culture="japan">Gesten\Japan\Female\Anim\char_female_japan_arme_unten_zusammen_zu_geste_15.anim</Filename>
+		<Filename gender="male" culture="japan">Gesten\Japan\Male\Anim\char_male_japan_arme_unten_zusammen_zu_geste_15.anim</Filename>
+		<Function>
+			<McNeil>deictic</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>4</StrokeStart>
+			<StrokeEnd>96</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0025</ID>
+		<Name>Gesture_16</Name>
+		<CorpusName>F_32_S_1-1</CorpusName>
+		<Speech>"Are you an undergraduate student?"</Speech>
+		<Context>Subject in Japanese Small Talk conversation talking about their studies.</Context>
+		<Filename gender="female" culture="japan">Gesten\Japan\Female\Anim\char_female_japan_arme_unten_zusammen_zu_geste_16.anim</Filename>
+		<Filename gender="male" culture="japan">Gesten\Japan\Male\Anim\char_male_japan_arme_unten_zusammen_zu_geste_16.anim</Filename>
+		<Function>
+			<McNeil>deictic</McNeil>
+			<DAMSL>info-request</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>13</StrokeStart>
+			<StrokeEnd>117</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0026</ID>
+		<Name>Gesture_17</Name>
+		<CorpusName>F_32_S_1-2</CorpusName>
+		<Speech>"Well, I take a class around the new educational psychology."</Speech>
+		<Context>Subject in Japanese Small Talk conversation talking about their studies.</Context>
+		<Filename gender="female" culture="japan">Gesten\Japan\Female\Anim\char_female_japan_arme_unten_zusammen_zu_geste_17.anim</Filename>
+		<Filename gender="male" culture="japan">Gesten\Japan\Male\Anim\char_male_japan_arme_unten_zusammen_zu_geste_17.anim</Filename>
+		<Function>
+			<McNeil>metaphoric</McNeil>
+			<DAMSL>answer</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>15</StrokeStart>
+			<StrokeEnd>125</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0027</ID>
+		<Name>Gesture_18</Name>
+		<CorpusName>F_32_S_1-3</CorpusName>
+		<Speech>"Well, aren't you ??? at Wednesday..." (interrupted)</Speech>
+		<Context>Subject in Japanese Small Talk conversation talking about their studies.</Context>
+		<Filename gender="female" culture="japan">Gesten\Japan\Female\Anim\char_female_japan_arme_unten_zusammen_zu_geste_18.anim</Filename>
+		<Filename gender="male" culture="japan">Gesten\Japan\Male\Anim\char_male_japan_arme_unten_zusammen_zu_geste_18.anim</Filename>
+		<Function>
+			<McNeil>deictic</McNeil>
+			<DAMSL>info-request</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>8</StrokeStart>
+			<StrokeEnd>114</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0028</ID>
+		<Name>Gesture_19</Name>
+		<CorpusName>F_32_S_1-4</CorpusName>
+		<Speech>"There isn't anybody who could be asked, because there's few people around here."</Speech>
+		<Context>Subject in Japanese Small Talk conversation talking about getting lost on their way to the experiment..</Context>
+		<Filename gender="female" culture="japan">Gesten\Japan\Female\Anim\char_female_japan_arme_unten_zusammen_zu_geste_19.anim</Filename>
+		<Filename gender="male" culture="japan">Gesten\Japan\Male\Anim\char_male_japan_arme_unten_zusammen_zu_geste_19.anim</Filename>
+		<Function>
+			<McNeil>deictic</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>11</StrokeStart>
+			<StrokeEnd>99</StrokeEnd>
+		</Form>
+	</Gesture>
+	<Gesture>
+		<ID>0029</ID>
+		<Name>Gesture_20</Name>
+		<CorpusName>F_33_S_1-1</CorpusName>
+		<Speech>not available</Speech>
+		<Context>not available</Context>
+		<Filename gender="female" culture="japan">Gesten\Japan\Female\Anim\char_female_japan_arme_unten_zusammen_zu_geste_20.anim</Filename>
+		<Filename gender="male" culture="japan">Gesten\Japan\Male\Anim\char_male_japan_arme_unten_zusammen_zu_geste_20.anim</Filename>
+		<Function>
+			<McNeil></McNeil>
+			<DAMSL></DAMSL>
+		</Function>
+		<Form>
+			<StrokeStart>14</StrokeStart>
+			<StrokeEnd>55</StrokeEnd>
+		</Form>
+	</Gesture>
+</GestureLexicon>
