@@ -1,4 +1,0 @@
-<!DOCTYPE SceneConfiguration>
-<Configuration>
-    <SceneGraph path="models/alfred.scene.xml" />
-</Configuration>
