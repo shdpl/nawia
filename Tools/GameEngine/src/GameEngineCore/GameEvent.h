@@ -379,6 +379,7 @@ public:
 		E_KEY_PRESS,			/// A key has been pressed
 		E_ANIM_STOPPED,			/// Indicates that an animation has stopped
 		E_SPEAKING_STOPPED,		/// Speak a sentence is finished
+		E_SPEAKING_STARTED,		/// Speak a sentence is finished
 		E_COLLISION,			/// A collision occured
 		E_ACTIVE_CAM_CHANGE,	/// Global event: the current active camera has changed, @data: the cams worldID
 		E_WITNESS_ACTION,		/// Witness an action
@@ -393,6 +394,7 @@ public:
 		SP_RHEME_START,			/// rheme started
 		SP_THEME_START,			/// theme started
 		SP_SPOKEN_WORD,			/// contains currently spoken word
+		SP_BOOKMARK,
 
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
