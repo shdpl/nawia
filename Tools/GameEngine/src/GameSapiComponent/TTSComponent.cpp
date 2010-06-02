@@ -125,8 +125,9 @@ bool TTSComponent::init()
 	if( FAILED( CoCreateInstance( CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&m_pVoice ) ) ) 
 		return false;
 
-	// TODO Add interests for word boundary
-	if( FAILED( m_pVoice->SetInterest( SPFEI( SPEI_VISEME ) | SPFEI( SPEI_END_INPUT_STREAM ) | SPFEI( SPEI_WORD_BOUNDARY ), SPFEI( SPEI_VISEME ) | SPFEI( SPEI_END_INPUT_STREAM ) | SPFEI( SPEI_WORD_BOUNDARY ) ) ) ) 
+	if( FAILED( m_pVoice->SetInterest( 
+		SPFEI( SPEI_VISEME ) | SPFEI( SPEI_END_INPUT_STREAM ) | SPFEI(SPEI_START_INPUT_STREAM) | SPFEI(SPEI_SENTENCE_BOUNDARY) | SPFEI( SPEI_WORD_BOUNDARY ) | SPFEI( SPEI_TTS_BOOKMARK ),
+		SPFEI( SPEI_VISEME ) | SPFEI( SPEI_END_INPUT_STREAM ) | SPFEI(SPEI_START_INPUT_STREAM) | SPFEI(SPEI_SENTENCE_BOUNDARY) | SPFEI( SPEI_WORD_BOUNDARY ) | SPFEI( SPEI_TTS_BOOKMARK ) ) ) ) 
 		return false;
 
 
@@ -367,7 +368,7 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 					//ULONG numSkipped = 0;
 					//m_pVoice->Skip(L"SENTENCE", 100, &numSkipped);
 					m_currentSentence = unicodestr;
-					m_pVoice->Speak( unicodestr, SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
+					m_pVoice->Speak( unicodestr, SPF_ASYNC | SPF_PURGEBEFORESPEAK | SPF_IS_XML, NULL );
 					m_startSpeaking = GameEngine::currentTimeStamp();
 					m_sentenceID = sentenceID;
 					m_isSpeaking = true;
@@ -425,13 +426,39 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 					obj->calcVolumeFromDistance();
 				break;
 			}
-		case SPEI_END_INPUT_STREAM:
+		case SPEI_TTS_BOOKMARK:
 			{
-				GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(obj->m_sentenceID), obj);
+				const WCHAR * name = e.BookmarkName();
+				char * value = new char[255];
+				sprintf_s(value, 255, "%ls", name);
+				// Send event
+				GameEvent event(GameEvent::SP_BOOKMARK, &GameEventData(value), obj);
 				if (obj->m_owner->checkEvent(&event))
 					obj->m_owner->executeEvent(&event);			
-				obj->m_sentenceID = -1;
+				break;
+			}
+
+		case SPEI_END_INPUT_STREAM:
+			{
+				char * sentence = new char[255];
+				sprintf_s(sentence, 255, "%ls", obj->m_currentSentence.c_str());
+				// Send event
+				GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(sentence), obj);
+				if (obj->m_owner->checkEvent(&event))
+					obj->m_owner->executeEvent(&event);			
+				//obj->m_sentenceID = -1;
+				// TODO: Konsistenz für m_isSpeaking
 				obj->m_isSpeaking = false;
+				break;
+			}
+		case SPEI_START_INPUT_STREAM:
+			{
+				char * sentence = new char[255];
+				sprintf_s(sentence, 255, "%ls", obj->m_currentSentence.c_str());
+				// Send event
+				GameEvent event(GameEvent::E_SPEAKING_STARTED, &GameEventData(sentence), obj);
+				if (obj->m_owner->checkEvent(&event))
+					obj->m_owner->executeEvent(&event);			
 				break;
 			}
 		case SPEI_WORD_BOUNDARY:
@@ -442,9 +469,10 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 				if (start < obj->m_currentSentence.size())
 				{
 					wstring wstr(obj->m_currentSentence.substr(start, end));
-					char *str = new char[255];
-					sprintf(str, "%ls", wstr.c_str());
-					GameEvent event(GameEvent::SP_SPOKEN_WORD, &GameEventData(str), obj);
+					char * word = new char[255];
+					sprintf_s(word, 255, "%ls", wstr.c_str());
+					// Send event
+					GameEvent event(GameEvent::SP_SPOKEN_WORD, &GameEventData(word), obj);
 					if (obj->m_owner->checkEvent(&event))
 						obj->m_owner->executeEvent(&event);			
 				}
