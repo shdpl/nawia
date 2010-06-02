@@ -136,6 +136,7 @@ void IKComponent::executeEvent(GameEvent *event)
 			IKData* data = static_cast<IKData*>(event->data());
 			data->ikparam_valuef = Config::getParamF((IK_Param::List)data->ikparam);
 		}
+
 		break;
 	}
 }
