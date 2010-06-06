@@ -349,6 +349,7 @@ public:
 		E_MESH_DATA,			/// Copies the mesh parameters of a mesh representation in Horde3D to the provided MeshData struct within the event
 		E_GET_ACTIVE_CAM,		/// Global event: get the currently active camera entity world id
 		E_GET_PROPERTY,			/// Gets a property
+		E_GET_INTERACTION_POS,	/// Gets the interaction position
 		E_GET_SOUND_DISTANCE,	/// Get the distance of the current sound node to the active listener. @data pointer to float
 		E_GET_VISIBILITY,		/// Returns whether the current entity is visible by the active cam
 		E_GET_SCENEGRAPH_ID,	/// Returns the entity's scenegraph id (hordeID)
