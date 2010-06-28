@@ -80,6 +80,7 @@ DEFAULT_SHADER_NAME = 'skinning.shader'
 
 # GUI buttons :
 fileButton = Draw.Create('')
+baseButton = Draw.Create('')
 shaderButton = Draw.Create('')
 textureButton = Draw.Create('')
 materialButton = Draw.Create('')
@@ -96,12 +97,13 @@ exportButton = Draw.Create('')
 exitButton = Draw.Create('')
 
 def updateRegistry():
-	global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
+	global fileButton, baseButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
 	global exportMaterialsButton, exportAnimationsButton, exportGeometryButton, exportSceneButton
 	global consoleWarningsButton
 
 	hordeReg = {}
 	hordeReg['path'] = fileButton.val
+	hordeReg['base'] = baseButton.val
 	hordeReg['shader'] = shaderButton.val
 	hordeReg['texSub'] = textureButton.val
 	hordeReg['matPath'] = materialButton.val
@@ -117,7 +119,7 @@ def updateRegistry():
 	Blender.Registry.SetKey('horde', hordeReg, True)
 
 def draw():
-	global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
+	global fileButton, baseButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
 	global exportMaterialsButton, exportAnimationsButton, exportGeometryButton, exportSceneButton
 	global consoleWarningsButton
 
@@ -136,9 +138,12 @@ def draw():
 	glRasterPos2d(8, 83)
 
 	# Text entry buttons :
-	Draw.Label('Export filename:', 10, size[1]/2+100, 100, 20)
-	fileButton = Draw.String('', EVENT_BUTTONCHANGE, 210, size[1]/2+100, 400, 20, fileButton.val, 255, 'Filename')
-	Draw.Button('...', EVENT_BROWSE, 610, size[1]/2+100, 30, 20)
+	Draw.Label('Export filename:', 10, size[1]/2+140, 100, 20)
+	fileButton = Draw.String('', EVENT_BUTTONCHANGE, 210, size[1]/2+140, 400, 20, fileButton.val, 255, 'Filename')
+	Draw.Button('...', EVENT_BROWSE, 610, size[1]/2+140, 30, 20)
+
+	Draw.Label('Base path:', 10, size[1]/2+100, 200, 20)
+	baseButton = Draw.String('', EVENT_BUTTONCHANGE, 210, size[1]/2+100, 200, 20, baseButton.val, 255, 'Base path')
 
 	Draw.Label('Shader:', 10, size[1]/2+60, 100, 20)
 	shaderButton = Draw.String('', EVENT_BUTTONCHANGE, 210, size[1]/2+60, 200, 20, shaderButton.val, 255, 'Shader')
@@ -179,7 +184,7 @@ def event(evt, val):
 		Draw.Exit()
 
 def bevent(evt):
-	global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
+	global fileButton, baseButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
 	global exportMaterialsButton, exportAnimationsButton, exportGeometryButton, exportSceneButton
 	global consoleWarningsButton
 	global EVENT_NOEVENT, EVENT_EXPORT, EVENT_EXIT, EVENT_BROWSE, EVENT_BUTTONCHANGE
@@ -201,7 +206,7 @@ def bevent(evt):
 
 		startTime = Blender.sys.time()
 
-		success = Export(fileButton.val, shaderButton.val, textureButton.val,
+		success = Export(fileButton.val, baseButton.val, shaderButton.val, textureButton.val,
 						texPathButton.val, materialButton.val, animationButton.val,
 						exportMaterialsButton.val, exportAnimationsButton.val,
 						exportGeometryButton.val, exportSceneButton.val)
@@ -231,7 +236,7 @@ def FileSelected(file):
 
 def main():
 	if not _ERROR:
-		global fileButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
+		global fileButton, baseButton, shaderButton, textureButton, materialButton, animationButton, texPathButton
 		global exportMaterialsButton, exportAnimationsButton, exportGeometryButton, exportSceneButton
 		global consoleWarningsButton
 
@@ -243,6 +248,8 @@ def main():
 		# - text entry buttons :
 		if not 'path' in hordeReg:
 			hordeReg['path']       = Blender.sys.dirname(Blender.sys.progname) + Blender.sys.sep + DEFAULT_SCENE_NAME
+		if not 'base' in hordeReg:
+			hordeReg['base'] = '..'
 		if not 'shader' in hordeReg:
 			hordeReg['shader']     = DEFAULT_SHADER_NAME
 		if not 'texSub' in hordeReg:
@@ -267,6 +274,7 @@ def main():
 			hordeReg['consoleWarnings'] = 1
 
 		fileButton.val      = hordeReg['path']
+		baseButton.val      = hordeReg['base']
 		shaderButton.val    = hordeReg['shader']
 		textureButton.val   = hordeReg['texSub']
 		materialButton.val  = hordeReg['matPath']
@@ -293,7 +301,7 @@ main()
 ######################################################
 # Export Main
 ######################################################
-def Export(path, defShader, texturesub, texPath, matPath, animPath, exportMat, exportAnim, exportGeo, exportScene):
+def Export(path, basePath, defShader, texturesub, texPath, matPath, animPath, exportMat, exportAnim, exportGeo, exportScene):
 
 	# Show the wait cursor in blender and stop editing mode
 	Blender.Window.WaitCursor(1)
@@ -310,6 +318,7 @@ def Export(path, defShader, texturesub, texPath, matPath, animPath, exportMat, e
 		texSubPath = texturesub + Blender.sys.sep
 
 	# Get absolute pathes
+	basePath = os.path.realpath(os.path.join(dir, basePath)) + Blender.sys.sep
 	if texPath != '':
 		texPath = dir+texPath+Blender.sys.sep+texSubPath
 	if matPath != '':
@@ -339,7 +348,7 @@ def Export(path, defShader, texturesub, texPath, matPath, animPath, exportMat, e
 	# Get current scene and objects
 	scn = Blender.Scene.GetCurrent()
 
-	converter = Converter(path, texSubPath, texPath, matPath, animPath)
+	converter = Converter(path, basePath, texSubPath, texPath, matPath, animPath)
 
 	print "Converting model..."
 	if converter.convertModel( scn ) == False:
@@ -444,7 +453,7 @@ class HordeJoint():
 		self.name  = name
 		self.parent = parent
 		self.children = []
-		self.frames = []
+		self.frames = {}
 		self.matAbs = matAbs
 		self.matRel = matRel
 		self.invBindMat = Matrix(matAbs).invert()
@@ -470,7 +479,7 @@ class MorphTarget():
 ######################################################
 class Converter():
 
-	def __init__(self, path, sub, texPath, matPath, animPath):
+	def __init__(self, path, basePath, sub, texPath, matPath, animPath):
 		self.__vertices = []
 		self.__meshes = []
 		self.__joints = []
@@ -482,12 +491,13 @@ class Converter():
 		self.__bObjects = []
 		self.__materials = {}
 		self.__filePath = path
+		self.__basePath = basePath
 		self.__texSubPath = sub
 		self.__texPath = texPath
 		self.__matPath = matPath
 		self.__animPath = animPath
 		self.__images = []
-		self.__AdditionalJointMat = Matrix()
+		#self.__AdditionalJointMat = Matrix()
 
 	def convertModel(self, scn):
 		##################
@@ -501,12 +511,6 @@ class Converter():
 
 		self.__bObjects = list(scn.objects)
 
-		# Get additional joint matrix
-		for obj in self.__bObjects:
-			if obj.getParent() != None and obj.getParent().getType() == 'Armature':
-				self.__AdditionalJointMat = Matrix(obj.mat).invert()
-				break
-
 		# Get Joints
 		jCount = 0
 		for obj in self.__bObjects:
@@ -516,10 +520,10 @@ class Converter():
 				# Get Bones
 				for bone in arm.bones.values():
 					# Get joint bind pose
-					matAbs = bone.matrix['ARMATURESPACE'] * obj.mat * self.__AdditionalJointMat
+					matAbs = bone.matrix['ARMATURESPACE'] * obj.mat
 					if bone.hasParent():
 						parent = bone.parent.name
-						parentMat = bone.parent.matrix['ARMATURESPACE'] * obj.mat * self.__AdditionalJointMat
+						parentMat = bone.parent.matrix['ARMATURESPACE'] * obj.mat
 						matRel = matAbs * parentMat.invert()
 					else:
 						parent = ''
@@ -774,7 +778,7 @@ class Converter():
 					found = False
 					pindex = t.vertexToPosIndex.get(vert.index, -1)
 					pi = 0
-					vertCo = Vector(vert.co)
+					vertCo = Vector(vert.co) * newMesh.matRel
 
 					if pindex != -1:
 						pi = 1
@@ -864,40 +868,51 @@ class Converter():
 	def processFrames(self, context):
 		print "  Processing animations..."
 
-		frames = xrange(context.startFrame(), context.endFrame()+1)
-		self.__frameCount = len(frames)
-
 		jointAnims = False
 
 		# Joint animation
 		if len(self.__joints) > 0:
 			for obj in self.__bObjects:
 				if obj.getType() == 'Armature':
-					pose = obj.getPose()
-					for frame in frames:
-						obj.evaluatePose(frame)
-						for pbone in pose.bones.values():
-							# Get Bones
-							for joint in self.__joints:
-								if joint.name == pbone.name:
-									matAbs = pbone.poseMatrix * obj.mat * self.__AdditionalJointMat
-									if pbone.parent != None:
-										parentMat = pbone.parent.poseMatrix * obj.mat * self.__AdditionalJointMat
-										matRel = matAbs * parentMat.invert()
-									else:
-										matRel = Matrix(matAbs)
-									joint.frames.append(matRel)
-									# Set the joint matrices to first frame
-									if frame == context.startFrame():
-										joint.invBindMat = Matrix(matAbs).invert()
-										joint.matAbs = matAbs
-										joint.matRel = Matrix(matRel)
-									jointAnims = True
-									break
+					for (actionName, action) in Blender.Armature.NLA.GetActions().iteritems():
+						if len(action.getFrameNumbers()) == 0:
+							continue
+						action.setActive(obj)
+						
+						startFrame = min(action.getFrameNumbers())
+						endFrame = max(action.getFrameNumbers())
+						frames = xrange(startFrame, endFrame + 1)
+						
+						for frame in frames:
+							obj.evaluatePose(frame)
+							pose = obj.getPose()
+							for pbone in pose.bones.values():
+								# Get Bones
+								for joint in self.__joints:
+									if joint.name == pbone.name:
+										if not joint.frames.has_key(actionName):
+											joint.frames[actionName] = []
+										matAbs = pbone.poseMatrix * obj.mat 
+										
+										if pbone.parent != None:
+											parentMat = pbone.parent.poseMatrix * obj.mat
+											matRel = matAbs * parentMat.invert()
+										else:
+											matRel = Matrix(matAbs)
+										joint.frames[actionName].append(matRel)
+										# Set the joint matrices to first frame
+										if frame == startFrame:
+											joint.invBindMat = Matrix(matAbs).invert()
+											joint.matAbs = matAbs
+											joint.matRel = Matrix(matRel)
+										jointAnims = True
+										break
 
 		# Mesh animation
 		# (only if there are no joint animations)
 		if not jointAnims:
+			frames = xrange(context.startFrame(), context.endFrame()+1)
+			self.__frameCount = len(frames)
 			for frame in frames:
 				Blender.Set('curframe', frame)
 
@@ -1048,7 +1063,7 @@ class Converter():
 		if exportScene:
 
 			# Write model header
-			sceneFile.write('<Model name="%s" geometry="%s.geo">\n' % (fileName, fileName) )
+			sceneFile.write('<Model name="%s" geometry="%s.geo">\n' % (fileName, os.path.relpath(fileName, self.__basePath) ) )
 
 			# Write morph target names as comment
 			if len(self.__morphTargets) > 0:
@@ -1285,12 +1300,12 @@ class Converter():
 
 
 	def writeMesh( self, sceneFile, mesh, fileName, numTabs):
-		s = roundSize(mesh.matRel.scalePart())
-		r = roundVec(mesh.matRel.toEuler())
-		t = roundVec(mesh.matRel.translationPart())
+		s = Vector(1,1,1)#roundSize(mesh.matRel.scalePart())
+		r = Vector(0,0,0)#roundVec(mesh.matRel.toEuler())
+		t = Vector(0,0,0)#roundVec(mesh.matRel.translationPart())
 		mat = ' '
 		if mesh.material != None:
-			mat = fileName+'/'+self.__materials[mesh.material]['name']+".material.xml"
+			mat = os.path.relpath(self.__matPath + fileName+'/'+self.__materials[mesh.material]['name']+".material.xml", self.__basePath)
 		else:
 			printWarning("no material found for mesh: "+mesh.name)
 
@@ -1368,7 +1383,7 @@ class Converter():
 			matFile.write('<Material>\n')
 			matFile.write('\t<Shader source="%s" />\n\n' % defShader)
 			for tex in self.__materials[mat]['textures']:
-				matFile.write('\t<Sampler name="albedoMap" map="%s" />\n' % tex[1])
+				matFile.write('\t<Sampler name="albedoMap" map="%s" />\n' % os.path.relpath(self.__texPath + tex[1], self.__basePath))
 			if self.__materials[mat]['uniform'] != None:
 				color = tuple(self.__materials[mat]['uniform'])
 				name = [self.__materials[mat]['name']+'col']
@@ -1385,66 +1400,104 @@ class Converter():
 				os.makedirs(self.__animPath)
 			os.chdir(self.__animPath)
 		except:
-			print "Can't change directory: "+self.__animPath
+			print "Can't change directory: %s" % self.__animPath
 			return False
-		try:
-			animFile = open(fileName+".anim", "wb")
-		except:
-			print "Error creating file: %s.anim" % fileName
-			return False
+		
+		actions = Blender.Armature.NLA.GetActions()
+		
+		if len(actions) != 0:
+			try:
+				if not Blender.sys.exists(fileName):
+					os.makedirs(fileName)
+				os.chdir(fileName)
+			except:
+				print "Can't change directory: " % \
+				      os.path.join(self.__animPath, fileName)
+		
+		jointAnims = False
 
-		# Write anim header
-		animFile.write('H3DA')
-		version = struct.pack('i', 2)
-		animFile.write(version)
-
-		# Write number of animated joints and meshes , number of frames
-		animFile.write( struct.pack('i', self.__animCount) )
-		animFile.write( struct.pack('i', self.__frameCount) )
-
-		# write Animation data
-		for joint in self.__joints:
-			if len(joint.frames) > 0:
-				animFile.write(str256(joint.name))
-
-				for frame in joint.frames:
-					s = roundSize(frame.scalePart())
-					t = roundVec(frame.translationPart())
-					r = roundQuat(frame.toQuat())
-					animFile.write( struct.pack('f', r.x))
-					animFile.write( struct.pack('f', r.y))
-					animFile.write( struct.pack('f', r.z))
-					animFile.write( struct.pack('f', r.w))
-					animFile.write( struct.pack('f', t.x))
-					animFile.write( struct.pack('f', t.y))
-					animFile.write( struct.pack('f', t.z))
-					animFile.write( struct.pack('f', s.x))
-					animFile.write( struct.pack('f', s.y))
-					animFile.write( struct.pack('f', s.z))
-
-		for mesh in self.__meshes:
-			if len(mesh.frames) > 0:
-				animFile.write(str256(mesh.name))
-
-				for frame in mesh.frames:
-					s = roundSize(frame.scalePart())
-					t = roundVec(frame.translationPart())
-					r = roundQuat(frame.toQuat())
-					animFile.write( struct.pack('f', r.x))
-					animFile.write( struct.pack('f', r.y))
-					animFile.write( struct.pack('f', r.z))
-					animFile.write( struct.pack('f', r.w))
-					animFile.write( struct.pack('f', t.x))
-					animFile.write( struct.pack('f', t.y))
-					animFile.write( struct.pack('f', t.z))
-					animFile.write( struct.pack('f', s.x))
-					animFile.write( struct.pack('f', s.y))
-					animFile.write( struct.pack('f', s.z))
-
-		# Close anim file
-		animFile.close()
-
+		for actionName, action in actions.iteritems():
+			if len(action.getFrameNumbers()) == 0:
+				# empty action
+				continue
+			try:
+				animFile = open(actionName+".anim", "wb")
+			except:
+				print "Error creating file: %s.anim" % actionName
+				return False
+			
+			# Write anim header
+			animFile.write('H3DA')
+			version = struct.pack('i', 2)
+			animFile.write(version)
+			
+			frameCount = max(action.getFrameNumbers()) - min(action.getFrameNumbers()) + 1
+			
+			# Write number of animated joints and meshes , number of frames
+			animFile.write( struct.pack('i', self.__animCount) )
+			animFile.write( struct.pack('i', frameCount) )
+			
+			# write Animation data
+			for joint in self.__joints:
+				if len(joint.frames[actionName]) > 0:
+					jointAnims = True
+					animFile.write(str256(joint.name))
+					
+					for frame in joint.frames[actionName]:
+						s = roundSize(frame.scalePart())
+						t = roundVec(frame.translationPart())
+						r = roundQuat(frame.toQuat())
+						animFile.write( struct.pack('f', r.x))
+						animFile.write( struct.pack('f', r.y))
+						animFile.write( struct.pack('f', r.z))
+						animFile.write( struct.pack('f', r.w))
+						animFile.write( struct.pack('f', t.x))
+						animFile.write( struct.pack('f', t.y))
+						animFile.write( struct.pack('f', t.z))
+						animFile.write( struct.pack('f', s.x))
+						animFile.write( struct.pack('f', s.y))
+						animFile.write( struct.pack('f', s.z))
+	
+			# Close anim file
+			animFile.close()
+			
 		os.chdir(Blender.sys.dirname(self.__filePath))
+		os.chdir(self.__animPath)
+		
+		if not jointAnims:
+			try:
+				animFile = open(fileName+".anim", "wb")
+			except:
+				print "Error creating file: %s.anim" % actionName
+				return False
+			
+			animFile.write('H3DA')
+			version = struct.pack('i', 2)
+			animFile.write(version)
+		
+			# Write number of animated joints and meshes , number of frames
+			animFile.write( struct.pack('i', self.__animCount) )
+			animFile.write( struct.pack('i', self.__frameCount) )			
+			
+			for mesh in self.__meshes:
+				if len(mesh.frames) > 0:
+					animFile.write(str256(mesh.name))
+		
+					for frame in mesh.frames:
+						s = roundSize(frame.scalePart())
+						t = roundVec(frame.translationPart())
+						r = roundQuat(frame.toQuat())
+						animFile.write( struct.pack('f', r.x))
+						animFile.write( struct.pack('f', r.y))
+						animFile.write( struct.pack('f', r.z))
+						animFile.write( struct.pack('f', r.w))
+						animFile.write( struct.pack('f', t.x))
+						animFile.write( struct.pack('f', t.y))
+						animFile.write( struct.pack('f', t.z))
+						animFile.write( struct.pack('f', s.x))
+						animFile.write( struct.pack('f', s.y))
+						animFile.write( struct.pack('f', s.z))
+	
 		return True
 
 
