@@ -333,10 +333,10 @@ bool GeometryResource::load( const char *data, int size )
 		mt.name = name;
 		
 		// Read vertex indices
-		uint32 streamSize;
-		memcpy( &streamSize, pData, sizeof( uint32 ) ); pData += sizeof( uint32 );
-		mt.diffs.resize( streamSize );
-		for( uint32 j = 0; j < streamSize; ++j )
+		uint32 morphStreamSize;
+		memcpy( &morphStreamSize, pData, sizeof( uint32 ) ); pData += sizeof( uint32 );
+		mt.diffs.resize( morphStreamSize );
+		for( uint32 j = 0; j < morphStreamSize; ++j )
 		{
 			memcpy( &mt.diffs[j].vertIndex, pData, sizeof( uint32 ) ); pData += sizeof( uint32 );
 		}
@@ -353,7 +353,7 @@ bool GeometryResource::load( const char *data, int size )
 			{
 			case 0:		// Position
 				if( streamElemSize != 12 ) return raiseError( "Invalid position morph stream" );
-				for( uint32 k = 0; k < streamSize; ++k )
+				for( uint32 k = 0; k < morphStreamSize; ++k )
 				{
 					memcpy( &mt.diffs[k].posDiff.x, pData, sizeof( float ) ); pData += sizeof( float );
 					memcpy( &mt.diffs[k].posDiff.y, pData, sizeof( float ) ); pData += sizeof( float );
@@ -362,7 +362,7 @@ bool GeometryResource::load( const char *data, int size )
 				break;
 			case 1:		// Normal
 				if( streamElemSize != 12 ) return raiseError( "Invalid normal morph stream" );
-				for( uint32 k = 0; k < streamSize; ++k )
+				for( uint32 k = 0; k < morphStreamSize; ++k )
 				{
 					memcpy( &mt.diffs[k].normDiff.x, pData, sizeof( float ) ); pData += sizeof( float );
 					memcpy( &mt.diffs[k].normDiff.y, pData, sizeof( float ) ); pData += sizeof( float );
@@ -371,7 +371,7 @@ bool GeometryResource::load( const char *data, int size )
 				break;
 			case 2:		// Tangent
 				if( streamElemSize != 12 ) return raiseError( "Invalid tangent morph stream" );
-				for( uint32 k = 0; k < streamSize; ++k )
+				for( uint32 k = 0; k < morphStreamSize; ++k )
 				{
 					memcpy( &mt.diffs[k].tanDiff.x, pData, sizeof( float ) ); pData += sizeof( float );
 					memcpy( &mt.diffs[k].tanDiff.y, pData, sizeof( float ) ); pData += sizeof( float );
@@ -382,10 +382,10 @@ bool GeometryResource::load( const char *data, int size )
 				if( streamElemSize != 12 ) return raiseError( "Invalid bitangent morph stream" );
 				
 				// Skip data (TODO: remove from format)
-				pData += streamSize * sizeof( float ) * 3;
+				pData += morphStreamSize * sizeof( float ) * 3;
 				break;
 			default:
-				pData += streamElemSize * streamSize;
+				pData += streamElemSize * morphStreamSize;
 				Modules::log().writeWarning( "Geometry resource '%s': Ignoring unsupported vertex morph stream", _name.c_str() );
 				continue;
 			}

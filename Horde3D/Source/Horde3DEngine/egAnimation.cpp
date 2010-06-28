@@ -300,12 +300,12 @@ void AnimationController::updateActiveList()
 	_activeStages.resize( 0 );
 	
 	// Create list of active blend stages that is sorted by layers (higher layers first)
-	for( uint32 i = 0, s = (uint32)_animStages.size(); i < s; ++i )
+	for( uint32 i = 0, si = (uint32)_animStages.size(); i < si; ++i )
 	{
 		if( _animStages[i].anim != 0x0 && !_animStages[i].additive )
 		{
 			bool inserted = false;
-			for( uint32 j = 0, s = (uint32)_activeStages.size(); j < s; ++j )
+			for( uint32 j = 0, sj = (uint32)_activeStages.size(); j < sj; ++j )
 			{
 				if( _animStages[i].layer >= _animStages[_activeStages[j]].layer )
 				{
@@ -388,7 +388,7 @@ bool AnimationController::animate()
 	if( Modules::config().gatherTimeStats ) timer->setEnabled( true );
 	
 	// Animate
-	for( size_t i = 0, s = _nodeList.size(); i < s; ++i )
+	for( size_t i = 0, si = _nodeList.size(); i < si; ++i )
 	{
 		// Ignore animation if node transformation was set manually
 		if( _nodeList[i].node->getANIgnoreAnimRef() )
@@ -416,7 +416,7 @@ bool AnimationController::animate()
 		float layerWeightSum = 0.0f, remainingWeight = 1.0f;
 		int prevLayer = 0;
 
-		for( size_t j = 0, s = _activeStages.size(); j < s; ++j )
+		for( size_t j = 0, sj = _activeStages.size(); j < sj; ++j )
 		{
 			uint32 stageIdx = _activeStages[j];
 			const AnimStage &curStage = _animStages[stageIdx];
@@ -428,7 +428,7 @@ bool AnimationController::animate()
 				
 				// Find layer weight sum
 				layerWeightSum = curStage.weight;
-				for( size_t k = j + 1, s = _activeStages.size(); k < s; ++k )
+				for( size_t k = j + 1, sk = _activeStages.size(); k < sk; ++k )
 				{
 					if( _animStages[_activeStages[k]].layer == curStage.layer )
 						layerWeightSum += _animStages[_activeStages[k]].weight;

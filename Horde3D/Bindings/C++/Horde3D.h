@@ -1351,33 +1351,34 @@ DLL void h3dSetShaderPreambles( const char *vertPreamble, const char *fragPreamb
 */
 DLL bool h3dSetMaterialUniform( H3DRes materialRes, const char *name, float a, float b, float c, float d );
 
-/* Function: h3dGetPipelineRenderTargetData
-		Reads the pixel data of a pipeline render target buffer.
+/* Function: h3dGetRenderTargetData
+		Reads back the pixel data of a render target buffer.
 	
 	Details:
-		This function reads the pixels of the specified buffer of the specified render target from the specified
-		pipeline resource and stores it in the specified float array. To calculate the size required for the array this
-		function can be called with a NULL pointer for dataBuffer and pointers to variables where the width,
-		height and number of (color) components (e.g. 4 for RGBA or 1 for depth) will be stored.
-		The function is not intended to be used for real-time scene rendering but rather as a tool for debugging.
-		For more information about the render buffers please refer to the Pipeline documentation.
-	
+		This function reads back the pixels of a specified render target. If no pipeline resource is specified,
+		the color data of the backbuffer is read back as BGRA8. Otherwise, the specified buffer of the
+		specified render target is read back and stored in dataBuffer as RGBA float values.
+		To compute the required size of the output buffer to which the data is written, the function can be called
+		with a NULL pointer for dataBuffer and pointers to variables where the buffer width, height and bytes per pixel
+		will be stored.
+		As this function has a considerable performance overhead, it is only intended for debugging purposes and screenshots.
+		For more information about the render buffers, refer to the Pipeline documentation.
+		
 	Parameters:
-		pipelineRes  - handle to pipeline resource
-		targetName   - unique name of render target to access
-		bufIndex     - index of buffer to be accessed
+		pipelineRes  - handle to pipeline resource (0 for backbuffer)
+		targetName   - name of render target to be accessed (ignored for backbuffer)
+		bufIndex     - index of buffer to be accessed (32 for depth buffer)
 		width        - pointer to variable where the width of the buffer will be stored (can be NULL)
 		height       - pointer to variable where the height of the buffer will be stored (can be NULL)
 		compCount    - pointer to variable where the number of components will be stored (can be NULL)
-		dataBuffer   - pointer to float array where the pixel data will be stored (can be NULL)
+		dataBuffer   - pointer to array where the pixel data will be stored (can be NULL)
 		bufferSize   - size of dataBuffer array in bytes
 		
 	Returns:
 		true if render target could be found, otherwise false
 */
-DLL bool h3dGetPipelineRenderTargetData( H3DRes pipelineRes, const char *targetName,
-                                         int bufIndex, int *width, int *height, int *compCount,
-                                         float *dataBuffer, int bufferSize );
+DLL bool h3dGetRenderTargetData( H3DRes pipelineRes, const char *targetName, int bufIndex,
+                                 int *width, int *height, int *compCount, void *dataBuffer, int bufferSize );
 
 
 /* Group: General scene graph functions */

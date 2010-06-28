@@ -130,7 +130,7 @@ bool Modules::init()
 		"$TexCube", 32, 32, TextureFormats::BGRA8, ResourceFlags::TexCubemap | ResourceFlags::NoTexMipmaps );
 	for( uint32 i = 0; i < 6; ++i )
 	{
-		void *image = texCubeRes->mapStream( TextureResData::ImageElem, i, TextureResData::ImgPixelStream, false, true );
+		image = texCubeRes->mapStream( TextureResData::ImageElem, i, TextureResData::ImgPixelStream, false, true );
 		ASSERT( image != 0x0 );
 		for( uint32 j = 0; j < 32*32; ++j ) ((uint32 *)image)[j] = 0xff000000;
 		texCubeRes->unmapStream();

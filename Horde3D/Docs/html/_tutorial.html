@@ -25,6 +25,9 @@ that is done we can finally get to the engine related part.
 
 <div class="memdoc">
 <pre>
+#include &lt;Horde3D.h&gt;
+#include &lt;Horde3DUtils.h&gt;
+
 <b>H3DNode</b> model = 0, cam = 0;
 
 <b>void</b> initGame( <b>int</b> winWidth, <b>int</b> winHeight )
@@ -51,7 +54,7 @@ that is done we can finally get to the engine related part.
     <b>H3DNode</b> light = h3dAddLightNode( H3DRootNode, <em>"Light1"</em>, 0, <em>"LIGHTING"</em>, <em>"SHADOWMAP"</em> );
     <i>// Set light position and radius</i>
     h3dSetNodeTransform( light, 0, 20, 0, 0, 0, 0, 1, 1, 1 );
-    h3dSetNodeParamF( light, H3DLight::RadiusF, 50.0f );
+    h3dSetNodeParamF( light, H3DLight::RadiusF, 0, 50.0f );
 	
     <i>// Add camera</i>
     <b>H3DNode</b> cam = h3dAddCameraNode( H3DRootNode, <em>"Camera"</em>, pipeRes );

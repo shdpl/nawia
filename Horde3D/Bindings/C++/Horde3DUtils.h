@@ -196,8 +196,8 @@ DLL bool h3dutLoadResourcesFromDisk( const char *contentDir );
 	
 	Parameters:
 		pixels   - pointer to pixel source data in BGR(A) format from which TGA-image is constructed;
-		           memory layout: pixel with position (x, y) in image (origin of image is upper left
-		           corner) has memory location (y * width + x) * (bpp / 8) in pixels-array  
+		           memory layout: pixel with position (x, y) in image (origin of image is lower left
+		           corner) has memory location (y * width + x) * (bpp / 8) in pixels array
 		width    - width of source image
 		height   - height of source image
 		bpp      - color bit depth of source data (valid values: 24, 32)
@@ -209,6 +209,22 @@ DLL bool h3dutLoadResourcesFromDisk( const char *contentDir );
 */
 DLL bool h3dutCreateTGAImage( const unsigned char *pixels, int width, int height, int bpp,
                               char **outData, int *outSize );
+
+/*	Group: Utils */
+/* Function: h3dutScreenshot
+		Writes the content of the backbuffer to a tga file.
+	
+	Details:
+		This function reads back the content of the backbuffer and writes it to a tga file with the
+		specified filename and path.
+	
+	Parameters:
+		filename  - filename and path of the output tga file
+		
+	Returns:
+		true if the file could be written, otherwise false
+*/
+DLL bool h3dutScreenshot( const char *filename );
 
 
 /*	Group: Scene graph */

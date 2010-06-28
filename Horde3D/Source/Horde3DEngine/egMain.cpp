@@ -438,15 +438,22 @@ DLLEXP bool h3dSetMaterialUniform( ResHandle materialRes, const char *name, floa
 }
 
 
-DLLEXP bool h3dGetPipelineRenderTargetData( ResHandle pipelineRes, const char *targetName,
-                                            int bufIndex, int *width, int *height, int *compCount,
-                                            float *dataBuffer, int bufferSize )
+DLLEXP bool h3dGetRenderTargetData( ResHandle pipelineRes, const char *targetName, int bufIndex,
+                                    int *width, int *height, int *compCount, float *dataBuffer, int bufferSize )
 {
-	Resource *resObj = Modules::resMan().resolveResHandle( pipelineRes );
-	VALIDATE_RES_TYPE( resObj, ResourceTypes::Pipeline, "h3dGetPipelineRenderTargetData", false );
-	
-	return ((PipelineResource *)resObj)->getRenderTargetData( safeStr( targetName, 0 ), bufIndex,
-		width, height, compCount, dataBuffer, bufferSize );
+	if( pipelineRes != 0 )
+	{
+		Resource *resObj = Modules::resMan().resolveResHandle( pipelineRes );
+		VALIDATE_RES_TYPE( resObj, ResourceTypes::Pipeline, "h3dGetRenderTargetData", false );
+		
+		return ((PipelineResource *)resObj)->getRenderTargetData( safeStr( targetName, 0 ), bufIndex,
+			width, height, compCount, dataBuffer, bufferSize );
+	}
+	else
+	{
+		return Modules::renderer().getRenderBufferData( 0, bufIndex, width, height,
+		                                                compCount, dataBuffer, bufferSize );
+	}
 }
 
 

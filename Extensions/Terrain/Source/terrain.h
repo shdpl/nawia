@@ -106,7 +106,7 @@ namespace Horde3DTerrain
 		                                    float maxU, float maxV, int level, float scale);
 		void createGeometryVertices( float lodThreshold, float minU, float minV,
 		                             float maxU, float maxV, int level, float scale, 
-		                             float *&vertData, unsigned int *&indexData, uint32 &index );
+		                             float *&vertData, unsigned int *&indexData, uint32 &indexOffset );
 
 	public:
 

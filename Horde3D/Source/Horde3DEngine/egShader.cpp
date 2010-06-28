@@ -439,14 +439,16 @@ bool ShaderResource::parseFXSection( char *data )
 	{
 		if( *p == '/' && *(p+1) == '/' )
 		{
-			while( *p != '\n' && *p != '\r' )
+			while( *p && *p != '\n' && *p != '\r' )
 				*p++ = ' ';
+			if( *p == '\0' ) break;
 		}
 		else if( *p == '/' && *(p+1) == '*' )
 		{
 			*p++ = ' '; *p++ = ' ';
-			while( *p != '*' && *(p+1) != '/' )
+			while( *p && (*p != '*' || *(p+1) != '/') )
 				*p++ = ' ';
+			if( *p == '\0' ) return raiseError( "FX: Expected */" );
 			*p++ = ' '; *p++ = ' ';
 		}
 		++p;
@@ -603,15 +605,22 @@ bool ShaderResource::parseFXSection( char *data )
 					else if( tok.checkToken( "false" ) ) context.writeDepth = false;
 					else return raiseError( "FX: invalid bool value", tok.getLine() );
 				}
+				else if( tok.checkToken( "ZEnable" ) )
+				{
+					if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
+					if( tok.checkToken( "true" ) ) context.depthTest = true;
+					else if( tok.checkToken( "false" ) ) context.depthTest = false;
+					else return raiseError( "FX: invalid bool value", tok.getLine() );
+				}
 				else if( tok.checkToken( "ZFunc" ) )
 				{
 					if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
-					if( tok.checkToken( "LessEqual" ) ) context.depthTest = TestModes::LessEqual;
-					else if( tok.checkToken( "Always" ) ) context.depthTest = TestModes::Always;
-					else if( tok.checkToken( "Equal" ) ) context.depthTest = TestModes::Equal;
-					else if( tok.checkToken( "Less" ) ) context.depthTest = TestModes::Less;
-					else if( tok.checkToken( "Greater" ) ) context.depthTest = TestModes::Greater;
-					else if( tok.checkToken( "GreaterEqual" ) ) context.depthTest = TestModes::GreaterEqual;
+					if( tok.checkToken( "LessEqual" ) ) context.depthFunc = TestModes::LessEqual;
+					else if( tok.checkToken( "Always" ) ) context.depthFunc = TestModes::Always;
+					else if( tok.checkToken( "Equal" ) ) context.depthFunc = TestModes::Equal;
+					else if( tok.checkToken( "Less" ) ) context.depthFunc = TestModes::Less;
+					else if( tok.checkToken( "Greater" ) ) context.depthFunc = TestModes::Greater;
+					else if( tok.checkToken( "GreaterEqual" ) ) context.depthFunc = TestModes::GreaterEqual;
 					else return raiseError( "FX: invalid enum value", tok.getLine() );
 				}
 				else if( tok.checkToken( "BlendMode" ) )

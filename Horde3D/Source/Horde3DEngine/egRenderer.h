@@ -27,6 +27,7 @@ struct ShaderContext;
 
 const uint32 MaxNumOverlayVerts = 2048;
 const uint32 ParticlesPerBatch = 64;	// Warning: The GPU must have enough registers
+const uint32 QuadIndexBufCount = MaxNumOverlayVerts * 6;
 
 extern const char *vsDefColor;
 extern const char *fsDefColor;
@@ -118,6 +119,7 @@ protected:
 	uint32                             _shadowRB;
 	uint32                             _frameID;
 	uint32                             _defShadowMap;
+	uint32                             _quadIdxBuf;
 	uint32                             _particleVBO;
 	MaterialResource                   *_curStageMatLink;
 	CameraNode                         *_curCamera;
@@ -217,6 +219,7 @@ public:
 	uint32 getVPHeight() { return _vpHeight; }
 	ShaderCombination *getCurShader() { return _curShader; }
 	CameraNode *getCurCamera() { return _curCamera; }
+	uint32 getQuadIdxBuf() { return _quadIdxBuf; }
 	uint32 getParticleVBO() { return _particleVBO; }
 };
 

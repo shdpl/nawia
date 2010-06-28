@@ -165,6 +165,7 @@ struct RBTexture
 	int                   width, height;
 	int                   memSize;
 	bool                  sRGB;
+	bool                  genMips;
 };
 
 struct RBTexSlot
@@ -292,7 +293,7 @@ public:
 	uint32 getRenderBufferTex( uint32 rbObj, uint32 bufIndex );
 	void setRenderBuffer( uint32 rbObj );
 	bool getRenderBufferData( uint32 rbObj, int bufIndex, int *width, int *height,
-	                          int *compCount, float *dataBuffer, int bufferSize );
+	                          int *compCount, void *dataBuffer, int bufferSize );
 
 	// Queries
 	uint32 createOcclusionQuery();

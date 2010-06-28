@@ -10,6 +10,7 @@
 //
 // *************************************************************************************************
 
+#define _CRT_SECURE_NO_DEPRECATE
 #include "Horde3D.h"
 #include "utPlatform.h"
 #include "utMath.h"
@@ -589,7 +590,7 @@ DLLEXP bool h3dutCreateTGAImage( const unsigned char *pixels, int width, int hei
 	c = 2;      memcpy( data, &c, 1 ); data += 1;  // imageType
 	s = 0;      memcpy( data, &s, 2 ); data += 2;  // colmapStart
 	s = 0;      memcpy( data, &s, 2 ); data += 2;  // colmapLength
-	c = 16;     memcpy( data, &c, 1 ); data += 1;  // colmapBits
+	c = 0;      memcpy( data, &c, 1 ); data += 1;  // colmapBits
 	s = 0;      memcpy( data, &s, 2 ); data += 2;  // x
 	s = 0;      memcpy( data, &s, 2 ); data += 2;  // y
 	s = width;  memcpy( data, &s, 2 ); data += 2;  // width
@@ -677,6 +678,35 @@ DLLEXP H3DNode h3dutPickNode( H3DNode cameraNode, float nwx, float nwy )
 			return 0;
 	}
 
+}
+
+
+DLLEXP bool h3dutScreenshot( const char *filename )
+{
+	if( filename == 0x0 ) return false;
+	
+	int width, height;
+	h3dGetRenderTargetData( 0, "", 0, &width, &height, 0x0, 0x0, 0 );
+
+	unsigned char *pixels = new unsigned char[width * height * 4];
+	h3dGetRenderTargetData( 0, "", 0, 0x0, 0x0, 0x0, pixels, width * height * 4 );
+	
+	char *image;
+	int imageSize;
+	h3dutCreateTGAImage( pixels, width, height, 32, &image, &imageSize );
+
+	size_t bytesWritten = 0;
+	FILE *f = fopen( filename, "wb" );
+	if( f )
+	{
+		bytesWritten = fwrite( image, 1, imageSize, f );
+		fclose( f );
+	}
+
+	delete[] pixels;
+	h3dutFreeMem( &image );
+
+	return bytesWritten == width * height * 4 + 18;
 }
 
 

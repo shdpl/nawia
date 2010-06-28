@@ -792,7 +792,7 @@ namespace Horde3DTerrain
 
 
 	void TerrainNode::createGeometryVertices( float lodThreshold, float minU, float minV, float maxU,
-		float maxV, int level, float scale, float *&vertData, unsigned int *&indexData, uint32& index )
+		float maxV, int level, float scale, float *&vertData, unsigned int *&indexData, uint32 &indexOffset )
 	{
 		const float halfU = (minU + maxU) / 2.0f;
 		const float halfV = (minV + maxV) / 2.0f;
@@ -840,16 +840,16 @@ namespace Horde3DTerrain
 			{
 				for( uint32 u = 0; u < size - 1; ++u )
 				{
-					*indexData++ = index + v * size + u;
-					*indexData++ = index + (v + 1) * size + u;
-					*indexData++ = index + (v + 1) * size + u + 1;
+					*indexData++ = indexOffset + v * size + u;
+					*indexData++ = indexOffset + (v + 1) * size + u;
+					*indexData++ = indexOffset + (v + 1) * size + u + 1;
 
-					*indexData++ = index + v * size + u;
-					*indexData++ = index + (v + 1) * size + u + 1;
-					*indexData++ = index + v * size + u + 1;
+					*indexData++ = indexOffset + v * size + u;
+					*indexData++ = indexOffset + (v + 1) * size + u + 1;
+					*indexData++ = indexOffset + v * size + u + 1;
 				}
 			}
-			index += size * size;
+			indexOffset += size * size;
 		}
 		else 
 		{
@@ -866,7 +866,7 @@ namespace Horde3DTerrain
 			for( uint32 i = 0; i < 4; ++i )
 			{
 				createGeometryVertices( lodThreshold, blocks[i].x, blocks[i].y, blocks[i].z, blocks[i].w,
-				                        level + 1, scale, vertData, indexData, index);
+				                        level + 1, scale, vertData, indexData, indexOffset );
 			}
 		}
 	}

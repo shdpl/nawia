@@ -908,9 +908,6 @@ extern PFNGLUNIFORMMATRIX4X3FVPROC glUniformMatrix4x3fv;
 // Deprecated OpenGL 1.1 functionality (that is still required by the renderer)
 // =================================================================================================
 
-#define GL_QUADS                          0x0007
-#define GL_GENERATE_MIPMAP                0x8191
-
 extern "C"
 {
 GLAPI void GLAPIENTRY glBegin (GLenum mode);

@@ -100,7 +100,7 @@ struct TestModes
 {
 	enum List
 	{
-		Always,  // Same as disabled
+		Always,
 		Equal,
 		Less,
 		LessEqual,
@@ -174,8 +174,9 @@ struct ShaderContext
 	
 	// RenderConfig
 	BlendModes::List                  blendMode;
-	TestModes::List                   depthTest;
+	TestModes::List                   depthFunc;
 	CullModes::List                   cullMode;
+	bool                              depthTest;
 	bool                              writeDepth;
 	bool                              alphaToCoverage;
 	
@@ -186,8 +187,8 @@ struct ShaderContext
 
 
 	ShaderContext() :
-		blendMode( BlendModes::Replace ), depthTest( TestModes::LessEqual ),
-		cullMode( CullModes::Back ), writeDepth( true ), alphaToCoverage( false ),
+		blendMode( BlendModes::Replace ), depthFunc( TestModes::LessEqual ),
+		cullMode( CullModes::Back ), depthTest( true ), writeDepth( true ), alphaToCoverage( false ),
 		vertCodeIdx( -1 ), fragCodeIdx( -1 ), compiled( false )
 	{
 	}

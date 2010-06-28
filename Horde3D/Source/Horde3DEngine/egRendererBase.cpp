@@ -155,7 +155,7 @@ bool RendererBase::init()
 	}
 
 	// Check that OpenGL 2.0 is available
-	if( glExt::majorVersion < 2 || glExt::minorVersion < 0 )
+	if( glExt::majorVersion * 10 + glExt::minorVersion < 20 )
 	{
 		Modules::log().writeError( "OpenGL 2.0 not available" );
 		failed = true;
@@ -367,6 +367,7 @@ uint32 RendererBase::createTexture( TextureTypes::List type, int width, int heig
 	tex.width = width;
 	tex.height = height;
 	tex.sRGB = sRGB && Modules::config().sRGBLinearization;
+	tex.genMips = genMips;
 	
 	switch( format )
 	{
@@ -400,8 +401,6 @@ uint32 RendererBase::createTexture( TextureTypes::List type, int width, int heig
 	glActiveTexture( GL_TEXTURE15 );
 	glBindTexture( tex.type, tex.glObj );
 	
-	if( genMips )
-		glTexParameteri( tex.type, GL_GENERATE_MIPMAP, GL_TRUE );
 	if( hasMips || genMips )
 		glTexParameteri( tex.type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 	else
@@ -453,6 +452,12 @@ void RendererBase::uploadTextureData( uint32 texObj, int slice, int mipLevel, co
 		                        calcTextureSize( format, width, height ), pixels );	
 	else
 		glTexImage2D( target, mipLevel, tex.glFmt, width, height, 0, inputFormat, inputType, pixels );
+
+	if( tex.genMips )
+	{
+		target = tex.type == TextureTypes::TexCube ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+		glGenerateMipmapEXT( target );
+	}
 }
 
 
@@ -473,8 +478,6 @@ void RendererBase::updateTextureData( uint32 texObj, int slice, int mipLevel, co
 	const RBTexture &tex = _textures.getRef( texObj );
 	
 	bindTexture( 15, texObj );
-	glTexParameteri( tex.type, GL_GENERATE_MIPMAP, GL_FALSE );
-	
 	uploadTextureData( texObj, slice, mipLevel, pixels );
 }
 
@@ -620,7 +623,7 @@ bool RendererBase::linkShader( uint32 shaderId )
 	{
 		infoLog = new char[infologLength];
 		glGetProgramInfoLog( shaderId, infologLength, &charsWritten, infoLog );
-		_shaderLog = _shaderLog + "[Linking] " + "<pre>\n" + infoLog + "</pre>";
+		_shaderLog = _shaderLog + "[Linking]\n" + infoLog;
 		delete[] infoLog; infoLog = 0x0;
 	}
 	
@@ -876,7 +879,7 @@ void RendererBase::releaseRenderBuffer( uint32 rbObj )
 	if( rb.depthBuf != 0 ) glDeleteRenderbuffersEXT( 1, &rb.depthBuf );
 	rb.depthTex = rb.depthBuf = 0;
 		
-	for( uint32 i = 0; i < 4; ++i )
+	for( uint32 i = 0; i < RBRenderBuffer::MaxColorAttachmentCount; ++i )
 	{
 		if( rb.colTexs[i] != 0 ) releaseTexture( rb.colTexs[i] );
 		if( rb.colBufs[i] != 0 ) glDeleteRenderbuffersEXT( 1, &rb.colBufs[i] );
@@ -895,7 +898,7 @@ uint32 RendererBase::getRenderBufferTex( uint32 rbObj, uint32 bufIndex )
 {
 	RBRenderBuffer &rb = _rendBufs.getRef( rbObj );
 	
-	if( bufIndex < 4 ) return rb.colTexs[bufIndex];
+	if( bufIndex < RBRenderBuffer::MaxColorAttachmentCount ) return rb.colTexs[bufIndex];
 	else if( bufIndex == 32 ) return rb.depthTex;
 	else return 0;
 }
@@ -978,9 +981,13 @@ void RendererBase::setRenderBuffer( uint32 rbObj )
 
 
 bool RendererBase::getRenderBufferData( uint32 rbObj, int bufIndex, int *width, int *height,
-                                        int *compCount, float *dataBuffer, int bufferSize )
+                                        int *compCount, void *dataBuffer, int bufferSize )
 {
 	int x, y, w, h;
+	int format = GL_RGBA;
+	int type = GL_FLOAT;
+
+	glPixelStorei( GL_PACK_ALIGNMENT, 4 );
 	
 	if( rbObj == 0 )
 	{
@@ -992,6 +999,8 @@ bool RendererBase::getRenderBufferData( uint32 rbObj, int bufIndex, int *width, 
 
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 		if( bufIndex != 32 ) glReadBuffer( GL_BACK_LEFT );
+		format = GL_BGRA;
+		type = GL_UNSIGNED_BYTE;
 	}
 	else
 	{
@@ -1001,7 +1010,8 @@ bool RendererBase::getRenderBufferData( uint32 rbObj, int bufIndex, int *width, 
 		if( bufIndex == 32 && rb.depthBuf == 0 ) return false;
 		if( bufIndex != 32 )
 		{
-			if( (unsigned)bufIndex > 3 || rb.colBufs[bufIndex] == 0 ) return false;
+			if( (unsigned)bufIndex >= RBRenderBuffer::MaxColorAttachmentCount || rb.colBufs[bufIndex] == 0 )
+				return false;
 		}
 		if( width != 0x0 ) *width = rb.width;
 		if( height != 0x0 ) *height = rb.height;
@@ -1011,17 +1021,21 @@ bool RendererBase::getRenderBufferData( uint32 rbObj, int bufIndex, int *width, 
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, rb.fbo );
 		if( bufIndex != 32 ) glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + bufIndex );
 	}
+
+	if( bufIndex == 32 )
+	{	
+		format = GL_DEPTH_COMPONENT;
+		type = GL_FLOAT;
+	}
 	
 	int comps = (bufIndex == 32 ? 1 : 4);
 	if( compCount != 0x0 ) *compCount = comps;
 	
 	if( dataBuffer == 0x0 ) return true;
-	if( bufferSize < w * h * comps * (signed)sizeof( float ) ) return false;
+	if( bufferSize < w * h * comps * (type == GL_FLOAT ? 4 : 1) ) return false;
 	
 	glFinish();
-	int format = GL_RGBA;
-	if( bufIndex == 32 ) format = GL_DEPTH_COMPONENT;
-	glReadPixels( x, y, w, h, format, GL_FLOAT, dataBuffer );
+	glReadPixels( x, y, w, h, format, type, dataBuffer );
 	
 	return true;
 }
@@ -1102,9 +1116,9 @@ void RendererBase::releaseVertexLayout( uint32 vlObj )
 bool RendererBase::applyVertexLayout( uint32 vlObj )
 {
 	// Notes:
-	// Vertex layouts contain shader-specific data.
-	// Vertex layouts need to be applied after the desired shader has been bound and all required
-	// vertex buffers were bound!
+	// - Vertex layouts contain shader-specific data
+	// - Vertex layouts need to be applied after the desired shader has been bound and all required
+	//   vertex buffers were bound
 	
 	static int maxVertexAttribs = 0;
 	if( maxVertexAttribs == 0 )
@@ -1133,11 +1147,11 @@ bool RendererBase::applyVertexLayout( uint32 vlObj )
 		if( attribIndex >= 0 )
 		{
 			ASSERT( _buffers.getRef( _vertBufSlots[elem.vbSlot].vbObj ).glObj != 0 &&
-					_buffers.getRef( _vertBufSlots[elem.vbSlot].vbObj ).type == GL_ARRAY_BUFFER );
+			        _buffers.getRef( _vertBufSlots[elem.vbSlot].vbObj ).type == GL_ARRAY_BUFFER );
 			
 			glBindBuffer( GL_ARRAY_BUFFER, _buffers.getRef( _vertBufSlots[elem.vbSlot].vbObj ).glObj );
 			glVertexAttribPointer( attribIndex, elem.size, GL_FLOAT, GL_FALSE,
-								   vbSlot.stride, (char *)0 + vbSlot.offset + elem.offset );
+			                       vbSlot.stride, (char *)0 + vbSlot.offset + elem.offset );
 			glEnableVertexAttribArray( attribIndex );
 		}
 	}

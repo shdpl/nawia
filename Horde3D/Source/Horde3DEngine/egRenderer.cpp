@@ -44,6 +44,7 @@ Renderer::Renderer() : RendererBase()
 	_scratchBufSize = 0;
 	_frameID = 1;
 	_defShadowMap = 0;
+	_quadIdxBuf = 0;
 	_particleVBO = 0;
 	_curCamera = 0x0;
 	_curLight = 0x0;
@@ -145,22 +146,32 @@ bool Renderer::init()
 	_defShadowMap = createTexture( TextureTypes::Tex2D, 4, 4, TextureFormats::DEPTH, false, false, false, false );
 	uploadTextureData( _defShadowMap, 0, 0, shadowTex );
 
+	// Create index buffer used for drawing quads
+	uint16 *quadIndices = new uint16[QuadIndexBufCount];
+	for( uint32 i = 0; i < QuadIndexBufCount / 6; ++i )
+	{
+		quadIndices[i*6+0] = i * 4 + 0; quadIndices[i*6+1] = i * 4 + 1; quadIndices[i*6+2] = i * 4 + 2;
+		quadIndices[i*6+3] = i * 4 + 2; quadIndices[i*6+4] = i * 4 + 3; quadIndices[i*6+5] = i * 4 + 0;
+	}
+	_quadIdxBuf = createIndexBuffer( QuadIndexBufCount * sizeof( uint16 ), quadIndices );
+	delete[] quadIndices; quadIndices = 0x0;
+	
 	// Create particle geometry array
 	ParticleVert v0( 0, 0, 0 );
 	ParticleVert v1( 1, 0, 1 );
 	ParticleVert v2( 1, 1, 2 );
 	ParticleVert v3( 0, 1, 3 );
 	
-	ParticleVert parVerts[ParticlesPerBatch * 4];
+	ParticleVert *parVerts = new ParticleVert[ParticlesPerBatch * 4];
 	for( uint32 i = 0; i < ParticlesPerBatch; ++i )
 	{
 		parVerts[i * 4 + 0] = v0; parVerts[i * 4 + 0].index = (float)i;
 		parVerts[i * 4 + 1] = v1; parVerts[i * 4 + 1].index = (float)i;
 		parVerts[i * 4 + 2] = v2; parVerts[i * 4 + 2].index = (float)i;
 		parVerts[i * 4 + 3] = v3; parVerts[i * 4 + 3].index = (float)i;
-
 	}
 	_particleVBO = createVertexBuffer( ParticlesPerBatch * 4 * sizeof( ParticleVert ), (float *)parVerts );
+	delete[] parVerts; parVerts = 0x0;
 
 	_overlayBatches.reserve( 64 );
 	_overlayVerts = new OverlayVert[MaxNumOverlayVerts];
@@ -530,31 +541,35 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		}
 
 		// Configure depth test
-		switch( context->depthTest )
+		if( context->depthTest )
 		{
-		case TestModes::LessEqual:
 			glEnable( GL_DEPTH_TEST );
-			glDepthFunc( GL_LEQUAL );
-			break;
-		case TestModes::Equal:
-			glEnable( GL_DEPTH_TEST );
-			glDepthFunc( GL_EQUAL );
-			break;
-		case TestModes::Always:
+			
+			switch( context->depthFunc )
+			{
+			case TestModes::LessEqual:
+				glDepthFunc( GL_LEQUAL );
+				break;
+			case TestModes::Equal:
+				glDepthFunc( GL_EQUAL );
+				break;
+			case TestModes::Always:
+				glDepthFunc( GL_ALWAYS );
+				break;
+			case TestModes::Less:
+				glDepthFunc( GL_LESS );
+				break;
+			case TestModes::Greater:
+				glDepthFunc( GL_GREATER );
+				break;
+			case TestModes::GreaterEqual:
+				glDepthFunc( GL_GEQUAL );
+				break;
+			}
+		}
+		else
+		{
 			glDisable( GL_DEPTH_TEST );
-			break;
-		case TestModes::Less:
-			glEnable( GL_DEPTH_TEST );
-			glDepthFunc( GL_LESS );
-			break;
-		case TestModes::Greater:
-			glEnable( GL_DEPTH_TEST );
-			glDepthFunc( GL_GREATER );
-			break;
-		case TestModes::GreaterEqual:
-			glEnable( GL_DEPTH_TEST );
-			glDepthFunc( GL_GEQUAL );
-			break;
 		}
 
 		// Configure alpha-to-coverage
@@ -565,7 +580,7 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 	}
 
 	// Setup texture samplers
-	for( size_t i = 0, s = shaderRes->_samplers.size(); i < s; ++i )
+	for( size_t i = 0, si = shaderRes->_samplers.size(); i < si; ++i )
 	{
 		if( _curShader->customSamplers[i] < 0 ) continue;
 		
@@ -578,7 +593,7 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		if( firstRec) texRes = sampler.defTex;
 		
 		// Find sampler in material
-		for( size_t j = 0, s = materialRes->_samplers.size(); j < s; ++j )
+		for( size_t j = 0, sj = materialRes->_samplers.size(); j < sj; ++j )
 		{
 			if( materialRes->_samplers[j].name == sampler.id )
 			{
@@ -622,7 +637,7 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		// Find sampler in pipeline
 		if( firstRec )
 		{
-			for( size_t j = 0, s = _pipeSamplerBindings.size(); j < s; ++j )
+			for( size_t j = 0, sj = _pipeSamplerBindings.size(); j < sj; ++j )
 			{
 				if( strcmp( _pipeSamplerBindings[j].sampler, sampler.id.c_str() ) == 0 )
 				{
@@ -697,14 +712,14 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 	}
 
 	// Set custom uniforms
-	for( size_t i = 0, s = shaderRes->_uniforms.size(); i < s; ++i )
+	for( size_t i = 0, si = shaderRes->_uniforms.size(); i < si; ++i )
 	{
 		if( _curShader->customUniforms[i] < 0 ) continue;
 		
 		float *unifData = 0x0;
 
 		// Find uniform in material
-		for( size_t j = 0, s = materialRes->_uniforms.size(); j < s; ++j )
+		for( size_t j = 0, sj = materialRes->_uniforms.size(); j < sj; ++j )
 		{
 			MatUniform &matUniform = materialRes->_uniforms[j];
 			
@@ -1145,7 +1160,8 @@ void Renderer::drawOverlays( const string &shaderContext )
 	updateBufferData( _overlayVB, 0, MaxNumOverlayVerts * sizeof( OverlayVert ), _overlayVerts );
 
 	bindVertexBuffer( 0, _overlayVB, 0, sizeof( OverlayVert ) );
-	bindIndexBuffer( 0 );
+	bindIndexBuffer( _quadIdxBuf );
+	ASSERT( QuadIndexBufCount >= MaxNumOverlayVerts * 6 );
 
 	float aspect = (float)_vpWidth / (float)_vpHeight;
 	setupViewMatrices( Matrix4f(), Matrix4f::OrthoMat( 0, aspect, 1, 0, -1, 1 ) );
@@ -1167,7 +1183,8 @@ void Renderer::drawOverlays( const string &shaderContext )
 			glUniform4fv( _curShader->uni_olayColor, 1, ob.colRGBA );
 		
 		// Draw batch
-		glDrawArrays( GL_QUADS, ob.firstVert, ob.vertCount );
+		glDrawElements( GL_TRIANGLES, ob.vertCount / 4 * 6, GL_UNSIGNED_SHORT,
+		                (char *)0 + ob.firstVert / 4 * 6 * sizeof( uint16 ) );
 	}
 }
 
@@ -1538,9 +1555,10 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 	
 	GeometryResource *curGeoRes = 0x0;
 	MaterialResource *curMatRes = 0x0;
+	bool applyVertexLayout = true;
 
 	// Loop over model queue
-	for( size_t i = 0, s = Modules::sceneMan().getRenderableQueue().size(); i < s; ++i )
+	for( size_t i = 0, si = Modules::sceneMan().getRenderableQueue().size(); i < si; ++i )
 	{
 		if( Modules::sceneMan().getRenderableQueue()[i].type != SceneNodeTypes::Model ) continue;
 		
@@ -1586,10 +1604,10 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 		}
 		
 		// Bind geometry
-		GeometryResource *prevGeoRes = curGeoRes;
 		if( curGeoRes != modelNode->getGeometryResource() )
 		{
 			curGeoRes = modelNode->getGeometryResource();
+			ASSERT( curGeoRes != 0x0 );
 		
 			// Indices
 			Modules::renderer().bindIndexBuffer( curGeoRes->getIndexBuf() );
@@ -1603,12 +1621,14 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			Modules::renderer().bindVertexBuffer( 1, tanVBuf, 0, sizeof( VertexDataTan ) );
 			Modules::renderer().bindVertexBuffer( 2, tanVBuf, sizeof( Vec3f ), sizeof( VertexDataTan ) );
 			Modules::renderer().bindVertexBuffer( 3, staticVBuf, 0, sizeof( VertexDataStatic ) );
+
+			applyVertexLayout = true;
 		}
 		
 		// Sort meshes
 		if( ( order == RenderingOrder::FrontToBack || order == RenderingOrder::BackToFront ) && frust1 != 0x0 )
 		{
-			for( size_t j = 0, s = modelNode->_meshList.size(); j < s; ++j )
+			for( size_t j = 0, sj = modelNode->_meshList.size(); j < sj; ++j )
 			{
 				MeshNode *meshNode = (MeshNode *)modelNode->_meshList[j];
 
@@ -1631,7 +1651,7 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 		if( queryObj )
 			Modules::renderer().beginQuery( queryObj );
 		
-		for( size_t j = 0, s = modelNode->_meshList.size(); j < s; ++j )
+		for( size_t j = 0, sj = modelNode->_meshList.size(); j < sj; ++j )
 		{
 			MeshNode *meshNode = (MeshNode *)modelNode->_meshList[j];
 
@@ -1657,7 +1677,11 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 				// Set material
 				if( curMatRes != meshNode->getMaterialRes() )
 				{
-					if( !Modules::renderer().setMaterial( meshNode->getMaterialRes(), shaderContext ) ) continue;
+					if( !Modules::renderer().setMaterial( meshNode->getMaterialRes(), shaderContext ) )
+					{	
+						curMatRes = 0x0;
+						continue;
+					}
 					curMatRes = meshNode->getMaterialRes();
 				}
 			}
@@ -1681,6 +1705,9 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 
 			ShaderCombination *curShader = Modules::renderer().getCurShader();
 
+			if( curShader != prevShader )
+				applyVertexLayout = true;
+			
 			if( modelChanged || curShader != prevShader )
 			{
 				// Skeleton
@@ -1716,13 +1743,14 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			}
 
 			// Apply vertex layout
-			if( curShader != prevShader || curGeoRes != prevGeoRes )
+			if( applyVertexLayout )
 			{
 				if( !Modules::renderer().applyVertexLayout( Modules::renderer()._vlModel ) )
 				{
 					Modules::renderer().setShaderComb( 0x0 );
 					continue;
 				}
+				applyVertexLayout = false;
 			}
 
 			// Render
@@ -1770,6 +1798,8 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 
 	// Bind particle geometry
 	Modules::renderer().bindVertexBuffer( 0, Modules::renderer().getParticleVBO(), 0, sizeof( ParticleVert ) );
+	Modules::renderer().bindIndexBuffer( Modules::renderer().getQuadIdxBuf() );
+	ASSERT( QuadIndexBufCount >= ParticlesPerBatch * 6 );
 
 	// Loop through emitter queue
 	for( uint32 i = 0; i < Modules::sceneMan().getRenderableQueue().size(); ++i )
@@ -1858,7 +1888,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 			if( curShader->uni_parColorArray >= 0 )
 				glUniform4fv( curShader->uni_parColorArray, ParticlesPerBatch, (float *)emitter->_parColors + j*ParticlesPerBatch*4 );
 
-			glDrawArrays( GL_QUADS, 0, ParticlesPerBatch * 4 );
+			glDrawElements( GL_TRIANGLES, ParticlesPerBatch * 6, GL_UNSIGNED_SHORT, (char *)0 );
 			Modules::stats().incStat( EngineStats::BatchCount, 1 );
 			Modules::stats().incStat( EngineStats::TriCount, ParticlesPerBatch * 2.0f );
 		}
@@ -1889,7 +1919,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 				if( curShader->uni_parColorArray >= 0 )
 					glUniform4fv( curShader->uni_parColorArray, count, (float *)emitter->_parColors + offset*4 );
 				
-				glDrawArrays( GL_QUADS, 0, count * 4 );
+				glDrawElements( GL_TRIANGLES, count * 6, GL_UNSIGNED_SHORT, (char *)0 );
 				Modules::stats().incStat( EngineStats::BatchCount, 1 );
 				Modules::stats().incStat( EngineStats::TriCount, count * 2.0f );
 			}
@@ -2069,7 +2099,7 @@ void Renderer::renderDebugView()
 	glUniform4f( Modules::renderer()._defColShader_color, 1.0f, 0, 0, 1 );
 	glLineWidth( 2.0f );
 	glPointSize( 5.0f );
-	for( uint32 i = 0, s = (uint32)Modules::sceneMan().getRenderableQueue().size(); i < s; ++i )
+	for( uint32 i = 0, si = (uint32)Modules::sceneMan().getRenderableQueue().size(); i < si; ++i )
 	{
 		SceneNode *sn = Modules::sceneMan().getRenderableQueue()[i].node;
 		
@@ -2077,7 +2107,7 @@ void Renderer::renderDebugView()
 		{
 			ModelNode *model = (ModelNode *)sn;
 
-			for( uint32 j = 0, s = (uint32)model->_jointList.size(); j < s; ++j )
+			for( uint32 j = 0, sj = (uint32)model->_jointList.size(); j < sj; ++j )
 			{
 				if( model->_jointList[j]->_parent->getType() != SceneNodeTypes::Model )
 				{

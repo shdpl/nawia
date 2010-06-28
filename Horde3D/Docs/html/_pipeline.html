@@ -499,6 +499,7 @@ highlighted as bold. Alternative values are separated by a slash.
 	<tr><td>VertexShader <b>= compile GLSL</b> <i>codesection</i> <b>;</b></td></tr>
 	<tr><td>PixelShader <b>= compile GLSL</b> <i>codesection</i> <b>;</b></td></tr>
 	<tr><td>[ ZWriteEnable <b>=</b> false / <b>true</b> <b>;</b> ]</td></tr>
+	<tr><td>[ ZEnable <b>=</b> <b>true</b> / false <b>;</b> ]</td></tr>
 	<tr><td>[ ZFunc <b>=</b> Always / Equal / Less / <b>LessEqual</b> / Greater / GreaterEqual <b>;</b> ]</td></tr>
 	<tr><td>[ BlendMode <b>=</b> <b>Replace</b> / Blend / Add / AddBlended / Mult <b>;</b> ]</td></tr>
 	<tr><td>[ CullMode <b>=</b> <b>Back</b> / Front / None <b>;</b> ]</td></tr>
@@ -510,8 +511,7 @@ highlighted as bold. Alternative values are separated by a slash.
 <br />
 <b>Remarks:</b><br />
 <ul>
-<li>Shaders reference a code section that must be defined in the same fx file</li>
-<li>The depth test can de disabled by setting ZFunc to Always</li>
+<li>Shaders reference a code section that must be defined in the same FX file</li>
 </ul>
 <br />
 
