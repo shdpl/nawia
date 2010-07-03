@@ -315,6 +315,8 @@ public:
 
 		NV_SAY_SENTENCE,		/// sentence to create speaking behavior for
 		NV_HEAR_SENTENCE,		/// sentence to create listening behavior for
+		NV_HEAD_ANGLES,			/// manual gaze target for the head (using Vec3f)
+		NV_EYE_ANGLES,			/// manual gaze target for the eyes (using Vec3f)
 		EM_SET_EMOTION,			/// set mood to a specific emotion, e.g. at the beginning of a dialogue (using string) 
 		EM_OWN_EMOTION,			/// emotional input for a character (using EmotionData)
 		//EM_OBSERVE_EMOTION,		/// react to other characters' emotion (using EmotionData)
