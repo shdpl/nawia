@@ -328,6 +328,8 @@ public:
 		CC_REPORT_COMPLETION,	/// reports whether a character action was succesfull, or failed
 		BT_ACTIVATE_ON_OFF,		/// activates, or deactivates the BTComponent
 		
+		NM_CHANGED,				/// navmesh changed
+		
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
 		 * 1. GET EVENTS:
