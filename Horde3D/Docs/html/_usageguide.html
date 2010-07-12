@@ -294,7 +294,7 @@ weights. For example that means, if there are two animations both with weight 1.
 will contribute 50% to the final animation. If the sum of the blend weights of a single layer is smaller than 1.0,
 the remainder is propagated to the lower layers. So if there are two layers 1 and 0 and if the two animations on
 layer 1 have a weight sum of 0.6, the remaining weight of 0.4 is available for the animations on layer 0.
-<br />
+<br /><br />
 As an example, we can consider a character that plays a weighted combination of walk and run cycles on a single
 layer, depending on the walking speed of the player. We want to replace thr resulting animation with a shoot animation
 when the player hits a button. Doing this is very easy using the layer system: we just need to add the shoot animation
@@ -314,7 +314,7 @@ to combine the animations at run-time in the engine. The difference to animation
 animations are usually independent and acting on different parts of the body. So the animations should not be
 blended but rather both be played with full intensity at the same time. For realizing this, Horde3D provides two
 ways.
-<br />
+<br /><br />
 The first is to define a start node from which the animation system begins to apply the animation. Joints
 that are above the start node in the skeletal hierarchy are ignored and thus not animated. As an example, imagine
 a character that should play two animations at the same time, a walking and a waving animation. To get full intensity
@@ -323,13 +323,14 @@ animation solely affects the lower body. The wave animation does not need a star
 skeleton. Now the priority concept of the layers can do the trick. If the walk animation is on a lower layer than
 the wave animation, the weight sum of the lower body is already 1.0 and the wave animation will only affect the
 upper body and ignore the lower part.
-<br />
-The other simpler way to realize mixing is using additive animations. When a stage is additive, the engine calculates
-the transformation delta of the current frame to the first frame in the animation resource and adds this difference
-to the transformation of the joints, independent of the stage's weight. For the just mentioned example this would
-mean that the character can simply have the walk animation applied to the whole body. The wave animation can be
-configured to be additive so that solely the movements of the hand are applied. When done correctly, the result is
-a walking and waving character.
+<br /><br />
+Another more intuitive way to realize mixing is using additive animations. When a stage is additive, the engine
+calculates the transformation delta of the current frame to the first frame in the animation resource and adds
+this difference to the transformation of the joints. The blend weight factor makes it possible to apply only a
+percentage of the difference animation. For the just mentioned example, using additive animations means that
+the character can simply have the walk animation applied to the whole body. The wave animation can be configured
+to be additive so that solely the movement of the hand is applied. When done correctly, the result is a walking
+and waving character.
 <br /><br />
 <i><b>Applying procedural animations</b></i>
 <br />

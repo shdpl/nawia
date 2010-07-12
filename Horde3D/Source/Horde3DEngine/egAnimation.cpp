@@ -478,12 +478,15 @@ bool AnimationController::animate()
 					{
 						// Add the difference to the first frame of the animation
 						Frame &firstFrame = animEnt->frames[0];
-					
-						nodeRotQuat *= firstFrame.rotQuat.inverted() * rotQuat;
-						nodeTransVec += transVec - firstFrame.transVec;
-						nodeScaleVec.x *= 1 / firstFrame.scaleVec.x * scaleVec.x;
-						nodeScaleVec.y *= 1 / firstFrame.scaleVec.y * scaleVec.y;
-						nodeScaleVec.z *= 1 / firstFrame.scaleVec.z * scaleVec.z;
+						float w = curStage.weight;
+
+						Quaternion fullRotQuat = nodeRotQuat * (firstFrame.rotQuat.inverted() * rotQuat);
+						nodeRotQuat = nodeRotQuat.nlerp( fullRotQuat, w );
+						nodeTransVec += (transVec - firstFrame.transVec) * w;
+						Vec3f fullScaleVec( nodeScaleVec.x * (scaleVec.x / firstFrame.scaleVec.x),
+						                    nodeScaleVec.y * (scaleVec.y / firstFrame.scaleVec.y),
+						                    nodeScaleVec.z * (scaleVec.z / firstFrame.scaleVec.z) );
+						nodeScaleVec = nodeScaleVec.lerp( fullScaleVec, w );
 					}
 				}
 				else

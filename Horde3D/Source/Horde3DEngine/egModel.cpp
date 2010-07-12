@@ -162,7 +162,7 @@ bool ModelNode::setMorphParam( const string &targetName, float weight )
 			result = true;
 		}
 
-		if( _morphers[i].weight > 0 ) _morpherUsed = true;
+		if( _morphers[i].weight != 0 ) _morpherUsed = true;
 	}
 
 	markDirty();

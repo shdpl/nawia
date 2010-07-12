@@ -1861,9 +1861,9 @@ DLL H3DNode h3dAddModelNode( H3DNode parent, const char *name, H3DRes geometryRe
 		
 		A simple way to do animation mixing is using additive animations. If a stage is configured to be
 		additive, the engine calculates the difference between the current frame and the first frame in the
-		animation and adds this delta to the current transformation of the joints or meshes. Additive animations
-		ignore the weight and layer settings. They are only applied by the engine if a non-additive animation
-		is assigned to the model as well.
+		animation and adds this delta, scaled by the weight factor, to the current transformation of the joints
+		or meshes. Additive animations completely ignore the layer settings. They are only applied by the engine
+		if a non-additive animation is assigned to the model as well.
 	
 	Parameters:
 		modelNode     - handle to the Model node to be modified
