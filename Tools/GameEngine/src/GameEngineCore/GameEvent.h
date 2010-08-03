@@ -400,6 +400,8 @@ public:
 		SP_THEME_START,			/// theme started
 		SP_SPOKEN_WORD,			/// contains currently spoken word
 		SP_BOOKMARK,
+		SP_TTS_PAUSE,
+		SP_TTS_RESUME,
 
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
