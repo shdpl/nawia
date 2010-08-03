@@ -101,6 +101,8 @@ m_curViseme(0), m_prevViseme(0), m_visemeChanged(false), m_visemeBlendFacPrev(1.
 m_isSpeaking(false), m_FACSmapping(false), m_useDistanceModel(false), m_dist(0), m_rollOff(1.0f)
 {
 	owner->addListener(GameEvent::E_SPEAK, this);
+	owner->addListener(GameEvent::SP_TTS_PAUSE, this);
+	owner->addListener(GameEvent::SP_TTS_RESUME, this);
 	owner->addListener(GameEvent::E_SET_VOICE, this);
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	TTSManager::instance()->addComponent(this);
@@ -134,6 +136,11 @@ bool TTSComponent::init()
 	if( FAILED( m_pVoice->SetNotifyCallbackFunction( sapiEvent, (WPARAM) this, 0 ) ) ) 
 		return false;
 
+	
+	printf("Setting alert boundary of TTS Voice");
+	if( FAILED( m_pVoice->SetAlertBoundary( SPEI_VISEME ) ) ) 
+		return false;
+	
 	return true;
 }
 
@@ -215,6 +222,16 @@ void TTSComponent::executeEvent(GameEvent *event)
 		break;
 	case GameEvent::E_SET_VOICE:
 		setVoice(static_cast<const char*>(event->data()));
+		break;
+	case GameEvent::SP_TTS_PAUSE:
+		//printf("Received Pause Command from ScenePlayer"); 
+		m_pVoice->Pause();
+		//setVoice(static_cast<const char*>(event->data()));
+		break;
+	case GameEvent::SP_TTS_RESUME:
+		//printf("Received Pause Command from ScenePlayer"); 
+		m_pVoice->Resume();
+		//setVoice(static_cast<const char*>(event->data()));
 		break;
 	}
 }
@@ -461,6 +478,7 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 					obj->m_owner->executeEvent(&event);			
 				break;
 			}
+		/*
 		case SPEI_WORD_BOUNDARY:
 			{
 				ULONG start, end;
@@ -483,6 +501,7 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 
 				break;
 			}
+		*/
 		}
 	}
 }
