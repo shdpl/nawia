@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="GameEnginePlugIn"
 	ProjectGUID="{AE98057C-AD68-4F66-A78D-FD0E7D62AC73}"
 	RootNamespace="GameEnginePlugIn"
@@ -125,7 +125,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(GAMEENGINEPLUGIN)&quot;;&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)..\HordeSceneEditorCore&quot;;&quot;$(SolutionDir)include\SAPI&quot;;&quot;$(ProjectDir)..\..\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)..\HordeSceneEditorCore&quot;;&quot;$(SolutionDir)include\SAPI&quot;;&quot;$(ProjectDir)..\..\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UNICODE;QT_LARGEFILE_SUPPORT;QT_DLL;QT_PLUGIN;QT_NO_DEBUG;QT_THREAD_SUPPORT"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -205,7 +205,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(GAMEENGINEPLUGIN)&quot;;&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)..\HordeSceneEditorCore&quot;;&quot;$(SolutionDir)include\SAPI&quot;;&quot;$(ProjectDir)..\..\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)..\HordeSceneEditorCore&quot;;&quot;$(SolutionDir)include\SAPI&quot;;&quot;$(ProjectDir)..\..\include&quot;"
 				PreprocessorDefinitions="_DEBUG;MEMORYCHECK;_WINDOWS;QT_LARGEFILE_SUPPORT;QT_DLL;QT_PLUGIN;QT_THREAD_SUPPORT;WIN32"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
