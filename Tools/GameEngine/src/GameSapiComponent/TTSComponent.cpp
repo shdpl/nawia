@@ -137,7 +137,7 @@ bool TTSComponent::init()
 		return false;
 
 	
-	printf("Setting alert boundary of TTS Voice");
+	//Setting alert boundary of TTS Voice
 	if( FAILED( m_pVoice->SetAlertBoundary( SPEI_VISEME ) ) ) 
 		return false;
 	
