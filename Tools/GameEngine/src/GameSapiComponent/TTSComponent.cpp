@@ -346,6 +346,7 @@ bool TTSComponent::setVoice(const char* voice)
 
 void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 {
+	printf("TTSComponent::speak(%s, %d)", text, sentenceID);
 	if( !m_pVoice )
 	{
 		GameLog::errorMessage("No voice initialized");
