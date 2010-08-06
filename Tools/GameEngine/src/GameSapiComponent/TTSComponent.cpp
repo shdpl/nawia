@@ -28,9 +28,9 @@
 using namespace std;
 
 // Uncomment to print words that are spoken
-//#define PRINT_WORDS
+//#define PRINT_INFO
 
-#ifdef PRINT_WORDS
+#ifdef PRINT_INFO
 #include <iostream>
 #endif
 
@@ -346,7 +346,9 @@ bool TTSComponent::setVoice(const char* voice)
 
 void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 {
+#ifdef PRINT_INFO
 	printf("TTSComponent::speak(%s, %d)", text, sentenceID);
+#endif
 	if( !m_pVoice )
 	{
 		GameLog::errorMessage("No voice initialized");
@@ -495,7 +497,7 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 					if (obj->m_owner->checkEvent(&event))
 						obj->m_owner->executeEvent(&event);			
 				}
-#ifdef PRINT_WORDS
+#ifdef PRINT_INFO
 				if (start < obj->m_currentSentence.size())
 					std::wcout << GameEngine::timeStamp()-obj->m_startSpeaking << ": " << obj->m_currentSentence.substr(start, end) << std::endl;
 #endif
