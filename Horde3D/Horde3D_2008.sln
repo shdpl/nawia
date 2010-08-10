@@ -10,12 +10,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Collada Converter", "Source
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Horde3D Engine", "Source\Horde3DEngine\Horde3D Engine_2008.vcproj", "{1D558D7D-DA57-4908-BCFC-902054FE6B63}"
 	ProjectSection(ProjectDependencies) = postProject
+		{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6} = {7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}
 		{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D} = {AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D}
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD} = {572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Horde3D Utils", "Source\Horde3DUtils\Horde3D Utils_2008.vcproj", "{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "Dependencies\Source\glfw\glfw_2008.vcproj", "{2A423B83-D582-49BA-A45F-E27148099850}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "Samples\glfw\glfw_2008.vcproj", "{2A423B83-D582-49BA-A45F-E27148099850}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sample Chicago", "Samples\Chicago\Sample Chicago_2008.vcproj", "{CF13B766-1AF4-4D3F-A58D-BCFAC38BC92F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -30,6 +32,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sample Knight", "Samples\Kn
 		{2A423B83-D582-49BA-A45F-E27148099850} = {2A423B83-D582-49BA-A45F-E27148099850}
 		{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D} = {AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Extension_Terrain", "..\Extensions\Terrain\Source\Extension Terrain_2008.vcproj", "{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Extension_Sound", "..\Extensions\Sound\Source\Extension_Sound_2008.vcproj", "{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +67,14 @@ Global
 		{DB8D0FC2-250F-4D18-850F-78FF9CBE74A7}.Debug|Win32.Build.0 = Debug|Win32
 		{DB8D0FC2-250F-4D18-850F-78FF9CBE74A7}.Release|Win32.ActiveCfg = Release|Win32
 		{DB8D0FC2-250F-4D18-850F-78FF9CBE74A7}.Release|Win32.Build.0 = Release|Win32
+		{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}.Debug|Win32.Build.0 = Debug|Win32
+		{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}.Release|Win32.ActiveCfg = Release|Win32
+		{7D7F9530-C61A-4BF2-B1C8-DE9D369880B6}.Release|Win32.Build.0 = Release|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Debug|Win32.Build.0 = Debug|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Release|Win32.ActiveCfg = Release|Win32
+		{572DA8BF-33EA-4950-AA4C-D5A4C4C8E6BD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
