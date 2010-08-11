@@ -36,6 +36,9 @@
 
 #include "SceneGraph.h"
 
+// Uncomment to support visibility request only for the first camera set
+//#define IGNORE_CAM_CHANGE_FOR_VISIBILITY
+
 GameComponent* SceneGraphComponent::createComponent( GameEntity* owner )
 {
 	return new SceneGraphComponent( owner );
@@ -549,8 +552,15 @@ bool SceneGraphComponent::getVisibility()
 {
 	if (m_visibilityFlag == 0)
 	{
+#ifdef IGNORE_CAM_CHANGE_FOR_VISIBILITY
+		static unsigned int camID = SceneGraphManager::instance()->getActiveCam();
+		bool occCulling = SceneGraphManager::instance()->getActiveCam() == camID;
+		if (h3dCheckNodeVisibility(hordeId(), camID, occCulling, false)!= -1)
+			m_visibilityFlag = 1;
+#else
 		if (h3dCheckNodeVisibility(hordeId(), SceneGraphManager::instance()->getActiveCam(), true, false) != -1)
 			m_visibilityFlag = 1;
+#endif
 		else
 			m_visibilityFlag = 2;
 	}
