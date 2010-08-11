@@ -66,6 +66,7 @@ SceneGraphComponent::SceneGraphComponent( GameEntity* owner) : GameComponent(own
 	owner->addListener(GameEvent::E_SET_ENABLED, this);
 	owner->addListener(GameEvent::E_GET_ACTIVE_CAM, this);
 	owner->addListener(GameEvent::E_GET_VISIBILITY, this);
+	owner->addListener(GameEvent::E_GET_PROJECTION_MATRIX, this);
 	owner->addListener(GameEvent::E_GET_SCENEGRAPH_ID, this);
 	//printf("ID added %d\n", hordeID);
 	SceneGraphManager::instance()->addComponent( this );
@@ -166,6 +167,12 @@ void SceneGraphComponent::executeEvent(GameEvent *event)
 			bool* visible = static_cast<bool*>(event->data());
 			if (visible)
 				*visible = getVisibility();
+		}
+		break;
+	case GameEvent::E_GET_PROJECTION_MATRIX:
+		{
+			float* mat = static_cast<float*>(event->data());
+			SceneGraphManager::instance()->getCameraProjectionMatrix(mat);
 		}
 		break;
 	case GameEvent::E_GET_ACTIVE_CAM:

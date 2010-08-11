@@ -88,6 +88,12 @@ public:
 
 	int findEntity( int hordeID );
 
+	/**
+	* Returns the current camera projection matrix
+	* @param matrix pointer to float[16], where the matrix is copied to
+	*/
+	void getCameraProjectionMatrix(float* matrix);
+
 private:
 	SceneGraphManager();
 	~SceneGraphManager() {}
@@ -98,6 +104,9 @@ private:
 	int									m_nextCam;
 	std::vector<SceneGraphComponent*>	m_sceneGraphComponents;	
 	std::stack<int>						m_newSceneNodes;
+
+	// The current camera projection matrix from horde
+	float								m_cameraProjMat[16];
 
 };
 

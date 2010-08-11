@@ -66,7 +66,7 @@ void SceneGraphManager::release()
 
 SceneGraphManager::SceneGraphManager() : GameComponentManager(), m_activeCam(0), m_nextCam(0)
 {
-
+	memset(m_cameraProjMat, 0, sizeof(m_cameraProjMat));
 }
 
 
@@ -97,10 +97,9 @@ void SceneGraphManager::render()
 		if (cameraTrans)
 		{
 			Matrix4f transMat(cameraTrans);
-			float cameraProjMat[16];
-			h3dGetCameraProjMat(m_activeCam, cameraProjMat);
+			h3dGetCameraProjMat(m_activeCam, m_cameraProjMat);
 			glMatrixMode(GL_PROJECTION);		
-			glLoadMatrixf(cameraProjMat);
+			glLoadMatrixf(m_cameraProjMat);
 			glMatrixMode(GL_MODELVIEW);		
 			glLoadMatrixf(transMat.inverted().x);
 		}
@@ -217,4 +216,12 @@ int SceneGraphManager::findEntity( int hordeID )
 void SceneGraphManager::setActiveCam(int cameraID)
 {
 	m_nextCam = cameraID;
+}
+
+void SceneGraphManager::getCameraProjectionMatrix(float* matrix)
+{
+	if (matrix)
+	{
+		memcpy(matrix, m_cameraProjMat, sizeof(float) * 16);
+	}
 }
