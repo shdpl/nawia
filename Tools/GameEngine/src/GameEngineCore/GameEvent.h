@@ -356,6 +356,7 @@ public:
 		E_GET_INTERACTION_POS,	/// Gets the interaction position
 		E_GET_SOUND_DISTANCE,	/// Get the distance of the current sound node to the active listener. @data pointer to float
 		E_GET_VISIBILITY,		/// Returns whether the current entity is visible by the active cam
+		E_GET_PROJECTION_MATRIX,/// Returns the current camera projection matrix @data pointer to float[16] for the matrix
 		E_GET_SCENEGRAPH_ID,	/// Returns the entity's scenegraph id (hordeID)
 		E_GET_ANIM_LENGTH,		/// Get the length of an animation in seconds (using all frames and default speed).
 		EM_GET_MOOD_PAD,		/// gets the current mood from the Emotion component as PAD values (using Vec3f)
