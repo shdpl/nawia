@@ -12,6 +12,7 @@
 
 #include "optimizer.h"
 #include "converter.h"
+#include "utPlatform.h"
 #include <list>
 #include <algorithm>
 
@@ -133,6 +134,7 @@ void MeshOptimizer::optimizeIndexOrder( TriGroup &triGroup, vector< Vertex > &ve
 				++itr2;
 			}
 		}
+		ASSERT( bestFace != 0x0 );
 		
 		// Process vertices of best face
 		for( unsigned int i = 0; i < 3; ++i )

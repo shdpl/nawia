@@ -183,6 +183,9 @@ bool Renderer::init()
 	// Init scratch buffer with some default size
 	useScratchBuf( 4 * 1024*1024 );
 
+	// Reset states
+	finishRendering();
+
 	// Start frame timer
 	Timer *timer = Modules::stats().getTimer( EngineStats::FrameTime );
 	ASSERT( timer != 0x0 );
@@ -1452,6 +1455,7 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 			timer->endQuery();
 			updateShadowMap();
 			setupShadowMap( false );
+			curMatRes = 0x0;
 			if( Modules::config().gatherTimeStats ) timer->beginQuery( _frameID );
 		}
 		else
@@ -2160,6 +2164,7 @@ void Renderer::finishRendering()
 	setMaterial( 0x0, "" );
 	applyVertexLayout( 0 );
 	bindIndexBuffer( 0 );
+	glBindBuffer( GL_ARRAY_BUFFER, 0 );
 	
 	//ASSERT( glGetError() == GL_NO_ERROR );
 }

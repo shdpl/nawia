@@ -56,9 +56,14 @@ typedef unsigned long long uint64;
 
 // Runtime assertion
 #if defined( _DEBUG )
-#	define ASSERT( exp ) assert( exp )
+#	define ASSERT( exp ) assert( exp );
 #else
 #	define ASSERT( exp )
+#endif
+
+// Support for MSVC static code analysis
+#if defined( _MSC_VER ) && defined( _PREFAST_ )
+#	define ASSERT( exp ) __analysis_assume( exp );
 #endif
 
 // Static compile-time assertion

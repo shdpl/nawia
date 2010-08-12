@@ -24,13 +24,13 @@ struct DaeSource
 	std::string                 id;
 	std::vector< float >        floatArray;
 	std::vector< std::string >  stringArray;
-	unsigned int                elemsPerEntry;
+	unsigned int                paramsPerItem;
 
 
 	bool parse( const XMLNode &sourceNode )
 	{
 		bool isFloatArray = true;
-		elemsPerEntry = 1;
+		paramsPerItem = 1;
 		
 		id = sourceNode.getAttribute( "id", "" );
 		if( id == "" ) return false;
@@ -45,35 +45,43 @@ struct DaeSource
 		}
 		int count = atoi( arrayNode.getAttribute( "count", "0" ) );
 		
-		// Check accessor
-		int numEntries = count;
-		XMLNode node1 = sourceNode.getChildNode( "technique_common" );
-		if( !node1.isEmpty() )
+		if( count > 0 )
 		{
-			XMLNode node2 = node1.getChildNode( "accessor" );
-			if( !node2.isEmpty() )
-				numEntries = atoi( node2.getAttribute( "count", "0" ) );
-		}
-
-		elemsPerEntry = count / numEntries;
-
-		// Parse data
-		unsigned int pos = 0;
-		char *s = (char *)arrayNode.getText();
-		if( s == 0x0 ) return false;
-		for( int i = 0; i < count; ++i )
-		{
-			if( isFloatArray )
+			// Check accessor
+			int numItems = count;
+			XMLNode node1 = sourceNode.getChildNode( "technique_common" );
+			if( !node1.isEmpty() )
 			{
-				float f;
-				parseFloat( s, pos, f );
-				floatArray.push_back( f );
+				XMLNode node2 = node1.getChildNode( "accessor" );
+				if( !node2.isEmpty() )
+					numItems = atoi( node2.getAttribute( "count", "0" ) );
 			}
+
+			paramsPerItem = count / numItems;
+
+			// Parse data
+			std::string name;
+			char *str = (char *)arrayNode.getText();
+			if( str == 0x0 ) return false;
+			
+			if( isFloatArray )
+				floatArray.reserve( count );
 			else
+				stringArray.reserve( count );
+			
+			for( int i = 0; i < count; ++i )
 			{
-				std::string name;
-				parseString( s, pos, name );
-				stringArray.push_back( name );
+				if( isFloatArray )
+				{
+					float f;
+					parseFloat( str, f );
+					floatArray.push_back( f );
+				}
+				else
+				{
+					parseString( str, name );
+					stringArray.push_back( name );
+				}
 			}
 		}
 

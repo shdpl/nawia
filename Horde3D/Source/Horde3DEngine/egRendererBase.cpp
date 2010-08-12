@@ -118,7 +118,7 @@ void GPUTimer::reset()
 
 RendererBase::RendererBase()
 {
-	_vpWidth = 320; _vpHeight = 240;
+	_vpX = 0; _vpY = 0; _vpWidth = 320; _vpHeight = 240;
 	_curShaderObj = 0;
 	_curRendBuf = 0; _outputBufferIndex = 0;
 	_textureMem = 0; _bufferMem = 0;
@@ -233,6 +233,7 @@ uint32 RendererBase::createVertexBuffer( uint32 size, void *data )
 	glGenBuffers( 1, &buf.glObj );
 	glBindBuffer( buf.type, buf.glObj );
 	glBufferData( buf.type, size, data, GL_DYNAMIC_DRAW );
+	glBindBuffer( buf.type, 0 );
 	
 	_bufferMem += size;
 	return _buffers.add( buf );
@@ -248,6 +249,7 @@ uint32 RendererBase::createIndexBuffer( uint32 size, void *data )
 	glGenBuffers( 1, &buf.glObj );
 	glBindBuffer( buf.type, buf.glObj );
 	glBufferData( buf.type, size, data, GL_DYNAMIC_DRAW );
+	glBindBuffer( buf.type, 0 );
 	
 	_bufferMem += size;
 	return _buffers.add( buf );

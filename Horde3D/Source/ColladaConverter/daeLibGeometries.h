@@ -169,12 +169,12 @@ struct DaeTriGroup
 		matId = primitiveNode.getAttribute( "material", "" );
 		
 		// Get vertex counts for polylists
-		char *vcount = 0x0;
-		unsigned int vcpos = 0, numVerts = 0;
+		char *vcountStr = 0x0;
+		unsigned int numVerts = 0;
 		if( primType == tPolylist )
 		{	
 			if( primitiveNode.getChildNode( "vcount" ).isEmpty() ) return false;
-			vcount = (char *)primitiveNode.getChildNode( "vcount" ).getText();
+			vcountStr = (char *)primitiveNode.getChildNode( "vcount" ).getText();
 		}
 
 		// Parse actual primitive data
@@ -182,36 +182,37 @@ struct DaeTriGroup
 		node1 = primitiveNode.getChildNode( "p", nodeItr1 );
 		while( !node1.isEmpty() )
 		{
-			char *s = (char *)node1.getText();
-			if( s == 0x0 ) return false;
+			char *str = (char *)node1.getText();
+			if( str == 0x0 ) return false;
 			
-			unsigned int  ui, pos = 0;
+			int           si;
 			unsigned int  curInput = 0, vertCnt = 0;
 			IndexEntry    indexEntry;
 			IndexEntry    firstIndex, lastIndex;
 			
-			while( parseUInt( s, pos, ui ) )
+			while( parseInt( str, si ) )
 			{
 				// No else-if since offset sharing is possible
 				if( (int)curInput == vertexOffset )
-					indexEntry.posIndex = ui;
+					indexEntry.posIndex = (unsigned)si;
 				if( (int)curInput == normOffset )
-					indexEntry.normIndex = (int)ui;
+					indexEntry.normIndex = si;
 				if( (int)curInput == texCoordOffset[0] )
-					indexEntry.texIndex[0] = (int)ui;
+					indexEntry.texIndex[0] = si;
 				if( (int)curInput == texCoordOffset[1] )
-					indexEntry.texIndex[1] = (int)ui;
+					indexEntry.texIndex[1] = si;
 				if( (int)curInput == texCoordOffset[2] )
-					indexEntry.texIndex[2] = (int)ui;
+					indexEntry.texIndex[2] = si;
 				if( (int)curInput == texCoordOffset[3] )
-					indexEntry.texIndex[3] = (int)ui;
+					indexEntry.texIndex[3] = si;
 
 				if( ++curInput == inputsPerVert )
 				{
 					if( primType == tPolylist && vertCnt == numVerts )
 					{
 						vertCnt = 0;
-						parseUInt( vcount, vcpos, numVerts );
+						parseInt( vcountStr, si );
+						numVerts = (unsigned)si;
 					}
 					
 					if( primType == tPolygons || primType == tPolylist )
@@ -249,9 +250,9 @@ struct DaeTriGroup
 		
 		// Assume the float buffer has at least 3 values per element
 		DaeSource *source = vSource->posSource;
-		v.x = source->floatArray[posIndex * source->elemsPerEntry + 0];
-		v.y = source->floatArray[posIndex * source->elemsPerEntry + 1];
-		v.z = source->floatArray[posIndex * source->elemsPerEntry + 2];
+		v.x = source->floatArray[posIndex * source->paramsPerItem + 0];
+		v.y = source->floatArray[posIndex * source->paramsPerItem + 1];
+		v.z = source->floatArray[posIndex * source->paramsPerItem + 2];
 		
 		return v;
 	}
@@ -264,9 +265,9 @@ struct DaeTriGroup
 		if( source != 0x0 && normIndex >= 0 )
 		{
 			// Assume the float buffer has at least 3 values per element
-			v.x = source->floatArray[normIndex * source->elemsPerEntry + 0];
-			v.y = source->floatArray[normIndex * source->elemsPerEntry + 1];
-			v.z = source->floatArray[normIndex * source->elemsPerEntry + 2];
+			v.x = source->floatArray[normIndex * source->paramsPerItem + 0];
+			v.y = source->floatArray[normIndex * source->paramsPerItem + 1];
+			v.z = source->floatArray[normIndex * source->paramsPerItem + 2];
 		}
 		
 		return v;
@@ -282,11 +283,11 @@ struct DaeTriGroup
 			if( source != 0x0 && texIndex >= 0 )
 			{
 				// Assume the float buffer has at least 2 values per element
-				v.x = source->floatArray[texIndex * source->elemsPerEntry + 0];
-				v.y = source->floatArray[texIndex * source->elemsPerEntry + 1];
+				v.x = source->floatArray[texIndex * source->paramsPerItem + 0];
+				v.y = source->floatArray[texIndex * source->paramsPerItem + 1];
 				
-				if( source->elemsPerEntry >= 3 )
-					v.z = source->floatArray[texIndex * source->elemsPerEntry + 2];
+				if( source->paramsPerItem >= 3 )
+					v.z = source->floatArray[texIndex * source->paramsPerItem + 2];
 			}
 		}
 		
@@ -419,9 +420,9 @@ struct DaeGeometry
 		
 		// Assume the float buffer has at least 3 values per element
 		DaeSource *source = vsources[0].posSource;
-		v.x = source->floatArray[posIndex * source->elemsPerEntry + 0];
-		v.y = source->floatArray[posIndex * source->elemsPerEntry + 1];
-		v.z = source->floatArray[posIndex * source->elemsPerEntry + 2];
+		v.x = source->floatArray[posIndex * source->paramsPerItem + 0];
+		v.y = source->floatArray[posIndex * source->paramsPerItem + 1];
+		v.z = source->floatArray[posIndex * source->paramsPerItem + 2];
 		
 		return v;
 	}

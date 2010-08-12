@@ -23,6 +23,8 @@
 #	include <windows.h>
 #	include <direct.h>
 #else
+#   include <unistd.h>
+#   define _chdir chdir
 #	include <sys/stat.h>
 #	include <dirent.h>
 #endif
@@ -203,6 +205,13 @@ int main( int argc, char **argv )
 	// Check whether input is single file or directory and create asset input list
 	if( input.length() > 4 && _stricmp( input.c_str() + (input.length() - 4), ".dae" ) == 0 )
 	{
+		// Check if it's an absolute path
+		if( input[0] == '/' || input[1] == ':' || input[0] == '\\' )
+		{
+			int index = input.find_last_of( "\\/" );
+			_chdir( input.substr( 0, index ).c_str() );
+			input = input.substr( index + 1, input.length() - index );
+		}
 		assetList.push_back ( input );
 	}
 	else

@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(GAMEENGINEPLUGIN)&quot;;&quot;$(SolutionDir)/include&quot;;&quot;$(ProjectDir)..\HordeSceneEditorCore&quot;;&quot;$(SolutionDir)include\SAPI&quot;;&quot;$(ProjectDir)..\..\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)/include&quot;;&quot;$(GAMEENGINEPLUGIN)&quot;;&quot;$(SolutionDir)include&quot;;&quot;$(ProjectDir)..\HordeSceneEditorCore&quot;;&quot;$(SolutionDir)include\SAPI&quot;;&quot;$(ProjectDir)..\..\include&quot;"
 				PreprocessorDefinitions="_DEBUG;_WINDOWS;QT_LARGEFILE_SUPPORT;QT_DLL;QT_PLUGIN;QT_THREAD_SUPPORT;WIN32"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

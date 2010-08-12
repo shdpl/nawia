@@ -293,8 +293,8 @@ SceneNode *Converter::processNode( DaeNode &node, SceneNode *parentNode,
 				oNode2->daeInstance = &node.instances[validInsts[i]];
 				oNode2->parent = oNode;
 				oNode2->children.clear();
-				for( unsigned int i = 0; i < oNode2->frames.size(); ++i )
-					oNode2->frames[i] = Matrix4f();
+				for( unsigned int j = 0; j < oNode2->frames.size(); ++j )
+					oNode2->frames[j] = Matrix4f();
 			}
 		}
 	}
@@ -542,7 +542,7 @@ void Converter::processMeshes( bool optimize )
 
 			// Add indices and vertices
 			oTriGroup.numPosIndices = (unsigned int)iTriGroup.vSource->posSource->floatArray.size() /
-			                          iTriGroup.vSource->posSource->elemsPerEntry;
+			                          iTriGroup.vSource->posSource->paramsPerItem;
 			oTriGroup.posIndexToVertices = new vector< unsigned int >[oTriGroup.numPosIndices];
 			
 			for( unsigned int k = 0; k < iTriGroup.indices.size(); ++k )
@@ -877,7 +877,7 @@ bool Converter::writeGeometry( const string &assetPath, const string &assetName 
 	FILE *f = fopen( fileName.c_str(), "wb" );
 	if( f == 0x0 )
 	{	
-		log( "Failed to write .geo file" );
+		log( "Failed to write " + fileName + " file" );
 		return false;
 	}
 
@@ -1191,7 +1191,7 @@ bool Converter::writeSceneGraph( const string &assetPath, const string &assetNam
 	outf.open( (_outPath + assetPath + assetName + ".scene.xml").c_str(), ios::out );
 	if( !outf.good() )
 	{
-		log( "Failed to write .scene file" );
+		log( "Failed to write " + _outPath + assetPath + assetName + ".scene file" );
 		return false;
 	}
 	
@@ -1355,7 +1355,7 @@ bool Converter::writeAnimation( const string &assetPath, const string &assetName
 	FILE *f = fopen( (_outPath + assetPath + assetName + ".anim").c_str(), "wb" );
 	if( f == 0x0 )
 	{
-		log( "Failed writing .anim file" );
+		log( "Failed writing " + _outPath + assetPath + assetName + ".anim file" );
 		return false;
 	}
 

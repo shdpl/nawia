@@ -75,13 +75,12 @@ struct DaeSkin
 		XMLNode node2 = node1.getChildNode( "bind_shape_matrix" );
 		if( node2.isEmpty() ) return false;
 
-		unsigned int pos = 0;
-		char *s = (char *)node2.getText();
-		if( s == 0x0 ) return false;
+		char *str = (char *)node2.getText();
+		if( str == 0x0 ) return false;
 		for( int i = 0; i < 16; ++i )
 		{
 			float f;
-			parseFloat( s, pos, f );
+			parseFloat( str, f );
 			bindShapeMat[i] = f;
 		}
 		
@@ -155,16 +154,15 @@ struct DaeSkin
 		}
 
 		node3 = node2.getChildNode( "vcount" );
-		pos = 0;
-		s = (char *)node3.getText();
-		if( s == 0x0 ) return false;
+		str = (char *)node3.getText();
+		if( str == 0x0 ) return false;
 		for( int i = 0; i < count; ++i )
 		{
-			unsigned int ui;
-			parseUInt( s, pos, ui );
+			int si;
+			parseInt( str, si );
 
 			DaeVertWeights vertWeight;
-			for( unsigned int j = 0; j < ui; ++j )
+			for( unsigned int j = 0; j < (unsigned)si; ++j )
 			{
 				vertWeight.push_back( DaeWeight() );
 			}
@@ -173,9 +171,8 @@ struct DaeSkin
 		}
 
 		node3 = node2.getChildNode( "v" );
-		pos = 0;
-		s = (char *)node3.getText();
-		if( s == 0x0 ) return false;
+		str = (char *)node3.getText();
+		if( str == 0x0 ) return false;
 		for( int i = 0; i < count; ++i )
 		{
 			for( unsigned int j = 0; j < vertWeights[i].size(); ++j )
@@ -183,7 +180,7 @@ struct DaeSkin
 				for( unsigned int k = 0; k < numInputs; ++k )
 				{
 					int si;
-					parseInt( s, pos, si );
+					parseInt( str, si );
 
 					if( k == jointOffset ) vertWeights[i][j].joint = si;
 					if( k == weightOffset ) vertWeights[i][j].weight = si;

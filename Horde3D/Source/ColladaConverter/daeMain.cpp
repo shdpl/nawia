@@ -27,11 +27,19 @@ ColladaDocument::ColladaDocument()
 bool ColladaDocument::parseFile( const string &fileName )
 {
 	// Parse Collada file
-	XMLNode rootNode = XMLNode::parseFile( fileName.c_str(), "COLLADA" );
+	XMLResults results;
+	XMLNode rootNode = XMLNode::parseFile( fileName.c_str(), "COLLADA", &results );
 	if( rootNode.isEmpty() )
 	{	
-		log( "Error: File not found or invalid Collada document" );
-		return false;
+		switch( results.error )
+		{
+		case eXMLErrorFileNotFound:
+			log( "Error: File not found '" + fileName + "'" );
+			return false;
+		default:
+			log( XMLNode::getError( results.error ) );
+			return false;
+		}
 	}
 
 	if( strcmp( rootNode.getAttribute( "version", "" ), "1.4.0") != 0 &&

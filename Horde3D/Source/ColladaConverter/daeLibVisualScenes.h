@@ -73,13 +73,12 @@ struct DaeNode
 			{
 				trans.type = DaeTransformation::MATRIX;
 
-				unsigned int pos = 0;
-				char *s = (char *)node1.getText();
-				if( s == 0x0 ) return false;
+				char *str = (char *)node1.getText();
+				if( str == 0x0 ) return false;
 				for( int i = 0; i < 16; ++i )
 				{
 					float f;
-					parseFloat( s, pos, f );
+					parseFloat( str, f );
 					trans.values[i] = f;
 				}
 
@@ -90,12 +89,11 @@ struct DaeNode
 			{
 				trans.type = DaeTransformation::TRANSLATION;
 
-				unsigned int pos = 0;
-				char *s = (char *)node1.getText();
-				if( s == 0x0 ) continue;
-				parseFloat( s, pos, trans.values[0] );
-				parseFloat( s, pos, trans.values[1] );
-				parseFloat( s, pos, trans.values[2] );
+				char *str = (char *)node1.getText();
+				if( str == 0x0 ) continue;
+				parseFloat( str, trans.values[0] );
+				parseFloat( str, trans.values[1] );
+				parseFloat( str, trans.values[2] );
 
 				memcpy( trans.animValues, trans.values, 16 * sizeof( float ) );
 				transStack.push_back( trans );
@@ -104,13 +102,12 @@ struct DaeNode
 			{
 				trans.type = DaeTransformation::ROTATION;
 
-				unsigned int pos = 0;
-				char *s = (char *)node1.getText();
-				if( s == 0x0 ) continue;
-				parseFloat( s, pos, trans.values[0] );
-				parseFloat( s, pos, trans.values[1] );
-				parseFloat( s, pos, trans.values[2] );
-				parseFloat( s, pos, trans.values[3] );
+				char *str = (char *)node1.getText();
+				if( str == 0x0 ) continue;
+				parseFloat( str, trans.values[0] );
+				parseFloat( str, trans.values[1] );
+				parseFloat( str, trans.values[2] );
+				parseFloat( str, trans.values[3] );
 
 				memcpy( trans.animValues, trans.values, 16 * sizeof( float ) );
 				transStack.push_back( trans );
@@ -119,12 +116,11 @@ struct DaeNode
 			{
 				trans.type = DaeTransformation::SCALE;
 
-				unsigned int pos = 0;
-				char *s = (char *)node1.getText();
-				if( s == 0x0 ) continue;
-				parseFloat( s, pos, trans.values[0] );
-				parseFloat( s, pos, trans.values[1] );
-				parseFloat( s, pos, trans.values[2] );
+				char *str = (char *)node1.getText();
+				if( str == 0x0 ) continue;
+				parseFloat( str, trans.values[0] );
+				parseFloat( str, trans.values[1] );
+				parseFloat( str, trans.values[2] );
 
 				memcpy( trans.animValues, trans.values, 16 * sizeof( float ) );
 				transStack.push_back( trans );

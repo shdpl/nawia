@@ -648,6 +648,8 @@ namespace Horde3DNET
         /// This function returns a specified property of the specified resource.
 		/// The property must be of the type int.
         /// <param name="res">handle to the resource to be accessed</param>
+        /// <param name="elem">element type</param>
+        /// <param name="elemIdx">index of element</param>
         /// <param name="param">parameter to be accessed</param>
         /// <returns>value of the parameter</returns>
         public static int getResParamI(int res, int elem, int elemIdx, int param)
@@ -675,8 +677,11 @@ namespace Horde3DNET
         /// </summary>
         /// This function returns a specified property of the specified resource.
         /// The property must be of the type float.
-        /// <param name="res">handle to the resource to be accessed</param>
+        /// <param name="res">handle to the resource to be accessed</param>        
+        /// <param name="elem">element type</param>
+        /// <param name="elemIdx">index of element</param>
         /// <param name="param">parameter to be accessed</param>
+        /// <param name="compIdx">component of the parameter to be accessed</param>
         /// <returns>value of the parameter</returns>
         public static float getResParamF(int res, int elem, int elemIdx, int param, int compIdx)
         {
@@ -706,6 +711,8 @@ namespace Horde3DNET
         /// The property must be of the type string (const char *).
         ///         
         /// <param name="res">handle to the resource to be accessed</param>
+        /// <param name="elem">element type</param>
+        /// <param name="elemIdx">index of element</param>       
         /// <param name="param">parameter to be accessed</param>
         /// <returns>value of the property or empty string if no such property exists</returns>
         public static string getResParamStr(int res, int elem, int elemIdx, int param)
@@ -719,6 +726,8 @@ namespace Horde3DNET
         /// This function sets a specified property of the specified resource to a specified value.
         /// The property must be of the type string (const char *).
         /// <param name="res">handle to the node to be modified</param>
+        /// <param name="elem">element type</param>
+        /// <param name="elemIdx">index of element</param>
         /// <param name="param">parameter to be modified</param>
         /// <param name="value">new value for the specified parameter</param>
         public static void setResParamStr(int res, int elem, int elemIdx, int param, string value)
