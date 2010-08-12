@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="8,00"
 	Name="GameSceneGraphComponent"
 	ProjectGUID="{7B21D090-9A12-4E86-8E65-9AAEA2B72AB4}"
 	RootNamespace="GameSceneGraphComponent"
