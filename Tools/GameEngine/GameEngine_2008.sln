@@ -143,7 +143,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameFACSControlComponent", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DemoApp", "Samples\TutorialApp\DemoApplication_2008.vcproj", "{51F1EE2A-3989-4B3C-86FE-2F8462D60E31}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlfredTutorial", "Samples\AlfredTutorial\AlfredTutorial_2008.vcproj", "{18723977-B38C-4260-9668-9033F3E3BA22}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlfredTutorial", "Samples\InteractiveAlfred\InteractiveAlfred_2008.vcproj", "{18723977-B38C-4260-9668-9033F3E3BA22}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DB488001-8E98-4724-9787-72DA137C4E47} = {DB488001-8E98-4724-9787-72DA137C4E47}
 		{F606E654-0F08-4B81-8388-5A903BBA07E9} = {F606E654-0F08-4B81-8388-5A903BBA07E9}
