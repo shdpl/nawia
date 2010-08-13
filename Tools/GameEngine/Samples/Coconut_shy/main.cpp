@@ -13,7 +13,6 @@ const char* sceneFile = 0;
 bool setupWindow( int, int, bool );
 static bool running;
 static double t0;
-static int mx0, my0;
 static DemoApp *app;
 
 #ifdef MEMORYCHECK
@@ -82,12 +81,17 @@ void mouseMoveListener( int x, int y )
 {
 	if( !running )
 	{
-		mx0 = x; my0 = y;
 		return;
 	}
 
-	app->mouseMoved( (float)(x - mx0), (float)(my0 - y) );
-	mx0 = x; my0 = y;
+	app->mouseMoved( (float)x, (float)y );
+}
+
+void  mouseButtonListener(int button, int action)
+{
+	if( !running )	return;
+
+	app->mouseClick(button, action);
 }
 
 
@@ -109,6 +113,7 @@ bool setupWindow( int width, int height, bool fullscreen )
 	glfwSetWindowCloseCallback( windowCloseListener );
 	glfwSetKeyCallback( keyPressListener );
 	glfwSetMousePosCallback( mouseMoveListener );
+	glfwSetMouseButtonCallback( mouseButtonListener );
 	
 	return true;
 }
@@ -149,7 +154,7 @@ int main(int argc, char** argv)
 	}
 	app->resize( appWidth, appHeight );
 
-	glfwDisable( GLFW_MOUSE_CURSOR );
+	//glfwDisable( GLFW_MOUSE_CURSOR );
 
 	int frames = 0;
 	float fps = 30.0f;
