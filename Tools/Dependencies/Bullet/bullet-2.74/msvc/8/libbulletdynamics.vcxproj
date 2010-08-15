@@ -139,7 +139,7 @@
       <AssemblerListingLocation>..\..\out\release8\build\libbulletdynamics\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\release8\build\libbulletdynamics\</ObjectFileName>
       <ProgramDataBaseFileName>..\..\out\release8\build\libbulletdynamics\bulletdynamics.pdb</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
@@ -178,7 +178,7 @@
       <AssemblerListingLocation>..\..\out\release_dll8\build\libbulletdynamics\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\release_dll8\build\libbulletdynamics\</ObjectFileName>
       <ProgramDataBaseFileName>..\..\out\release_dll8\build\libbulletdynamics\bulletdynamics.pdb</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
@@ -211,7 +211,7 @@
       <AssemblerListingLocation>..\..\out\release_dbl8\build\libbulletdynamics\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\release_dbl8\build\libbulletdynamics\</ObjectFileName>
       <ProgramDataBaseFileName>..\..\out\release_dbl8\build\libbulletdynamics\bulletdynamics.pdb</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>Default</CompileAs>
     </ClCompile>
@@ -247,7 +247,7 @@
       <AssemblerListingLocation>..\..\out\debug8\build\libbulletdynamics\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug8\build\libbulletdynamics\</ObjectFileName>
       <ProgramDataBaseFileName>..\..\out\debug8\build\libbulletdynamics\bulletdynamics.pdb</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
@@ -285,7 +285,7 @@
       <AssemblerListingLocation>..\..\out\debug_dll8\build\libbulletdynamics\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug_dll8\build\libbulletdynamics\</ObjectFileName>
       <ProgramDataBaseFileName>..\..\out\debug_dll8\build\libbulletdynamics\bulletdynamics.pdb</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
@@ -322,7 +322,7 @@
       <AssemblerListingLocation>..\..\out\debug_dbl8\build\libbulletdynamics\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug_dbl8\build\libbulletdynamics\</ObjectFileName>
       <ProgramDataBaseFileName>..\..\out\debug_dbl8\build\libbulletdynamics\bulletdynamics.pdb</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
