@@ -118,7 +118,10 @@ private:
 	 * e.g. if the ComponentID is 'Horde3D' and such a component already exists in a GameEntity
 	 * instance, loading another Horde3D component will result in replacing the existing one.
 	 */
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	ComponentID		m_componentID;
+#pragma warning( pop )
 
 };
 

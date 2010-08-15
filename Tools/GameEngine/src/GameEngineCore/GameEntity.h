@@ -168,9 +168,12 @@ private:
 
 	/// Private data of the entity
 	GameEntityPrivate*			m_privateData;
-	
+
+#pragma warning( push )
+#pragma warning( disable : 4251 )
 	/// Unique ID for the entity within the GameWorld
 	EntityID					m_id;
+#pragma warning( pop )
 
 	/// Index for the entity within the GameWorld
 	unsigned int				m_worldId;
