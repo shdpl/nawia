@@ -25,11 +25,11 @@ float PCF( const vec4 projShadow )
 	
 	float offset = 1.0 / shadowMapSize;
 	
-	vec4 shadow = shadow2D( shadowMap, projShadow.stp );
-	shadow += shadow2D( shadowMap, projShadow.stp + vec3( -0.866 * offset,  0.5 * offset, 0.0 ) );
-	shadow += shadow2D( shadowMap, projShadow.stp + vec3( -0.866 * offset, -0.5 * offset, 0.0 ) );
-	shadow += shadow2D( shadowMap, projShadow.stp + vec3(  0.866 * offset, -0.5 * offset, 0.0 ) );
-	shadow += shadow2D( shadowMap, projShadow.stp + vec3(  0.866 * offset,  0.5 * offset, 0.0 ) );
+	vec4 shadow = shadow2D( shadowMap, projShadow.xyz );
+	shadow += shadow2D( shadowMap, projShadow.xyz + vec3( -0.866 * offset,  0.5 * offset, 0.0 ) );
+	shadow += shadow2D( shadowMap, projShadow.xyz + vec3( -0.866 * offset, -0.5 * offset, 0.0 ) );
+	shadow += shadow2D( shadowMap, projShadow.xyz + vec3(  0.866 * offset, -0.5 * offset, 0.0 ) );
+	shadow += shadow2D( shadowMap, projShadow.xyz + vec3(  0.866 * offset,  0.5 * offset, 0.0 ) );
 	
 	return shadow.r / 5.0;
 }
@@ -39,43 +39,47 @@ vec3 calcPhongSpotLight( const vec3 pos, const vec3 normal, const vec3 albedo, c
 						 const float specExp, const float viewDist, const float ambientIntensity )
 {
 	vec3 light = lightPos.xyz - pos;
+	float lightLen = length( light );
+	light /= lightLen;
 	
 	// Distance attenuation
-	float lightDist = length( light ) / lightPos.w;
-	float att = max( 1.0 - lightDist * lightDist, 0.0 );
-	light = normalize( light );
+	float lightDepth = lightLen / lightPos.w;
+	float att = max( 1.0 - lightDepth * lightDepth, 0.0 );
 	
 	// Spotlight falloff
 	float angle = dot( lightDir.xyz, -light );
 	att *= clamp( (angle - lightDir.w) / 0.2, 0.0, 1.0 );
 		
 	// Lambert diffuse contribution
-	float ndotl = dot( normal, light );
-	float diffuse = max( ndotl, 0.0 );
+	float diffuse = max( dot( normal, light ), 0.0 );
 	
 	// Diffuse color
 	vec3 col = albedo * lightColor * diffuse;
 	
 	// Shadow
-	if( ndotl > 0.0 && att > 0.0 )
+	if( diffuse * att > 0.0 )
 	{	
-		vec4 projShadow = shadowMats[3] * vec4( pos, 1.0 );
-		if( viewDist < shadowSplitDists.x ) projShadow = shadowMats[0] * vec4( pos, 1.0 );
-		else if( viewDist < shadowSplitDists.y ) projShadow = shadowMats[1] * vec4( pos, 1.0 );
-		else if( viewDist < shadowSplitDists.z ) projShadow = shadowMats[2] * vec4( pos, 1.0 );
-		
-		projShadow.z = lightDist;
-		projShadow.xy /= projShadow.w;
-		
-		float shadowFac = PCF( projShadow );
+		float shadowTerm = 1.0;
+		if( shadowMapSize > 4.0 )  // No shadow mapping if default shadow map is bound
+		{
+			vec4 projShadow = shadowMats[3] * vec4( pos, 1.0 );
+			if( viewDist < shadowSplitDists.x ) projShadow = shadowMats[0] * vec4( pos, 1.0 );
+			else if( viewDist < shadowSplitDists.y ) projShadow = shadowMats[1] * vec4( pos, 1.0 );
+			else if( viewDist < shadowSplitDists.z ) projShadow = shadowMats[2] * vec4( pos, 1.0 );
+			
+			projShadow.z = lightDepth;
+			projShadow.xy /= projShadow.w;
+			
+			shadowTerm = PCF( projShadow );
+		}
 		
 		// Specular contribution
 		vec3 eye = normalize( viewerPos - pos );
 		vec3 refl = reflect( -light, normal );
 		float spec = pow( clamp( dot( refl, eye ), 0.0, 1.0 ), specExp ) * specMask;
-		col += lightColor * spec * shadowFac;
+		col += lightColor * spec * shadowTerm;
 		
-		col *= max( shadowFac, ambientIntensity );
+		col *= max( shadowTerm, ambientIntensity );
 	}
 	
 	return col * att;
