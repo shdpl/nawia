@@ -81,8 +81,7 @@
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(TargetPath)" "$(ProjectDir)../../Binaries/Win32" /y
-xcopy "$(TargetDir)$(RootNamespace)_vc8.lib" "$(ProjectDir)../../Bindings/C++" /y
+      <Command>xcopy "$(TargetDir)$(RootNamespace)_vc8.lib" "$(ProjectDir)../../Bindings/C++" /y
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -113,8 +112,7 @@ xcopy "$(TargetDir)$(RootNamespace)_vc8.lib" "$(ProjectDir)../../Bindings/C++" /
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(TargetPath)" "$(ProjectDir)../../Binaries/Win32" /y
-xcopy "$(TargetDir)$(RootNamespace)_vc8.lib" "$(ProjectDir)../../Bindings/C++" /y
+      <Command>xcopy "$(TargetDir)$(RootNamespace)_vc8.lib" "$(ProjectDir)../../Bindings/C++" /y
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -178,10 +176,18 @@ xcopy "$(TargetDir)$(RootNamespace)_vc8.lib" "$(ProjectDir)../../Bindings/C++" /
     <ProjectReference Include="..\..\..\Extensions\Sound\Source\Extension_Sound.vcxproj">
       <Project>{572da8bf-33ea-4950-aa4c-d5a4c4c8e6bd}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>true</Private>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Extensions\Terrain\Source\Extension Terrain.vcxproj">
       <Project>{7d7f9530-c61a-4bf2-b1c8-de9d369880b6}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>true</Private>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
