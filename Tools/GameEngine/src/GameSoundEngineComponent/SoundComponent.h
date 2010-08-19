@@ -41,6 +41,19 @@ class SoundComponent : public GameComponent
 public:
 	static const float OFF;
 
+	/**
+	 * Includes the viseme timings
+	 */
+	struct Viseme
+	{
+		Viseme::Viseme(int start, int end, int index) : m_start(start), m_end(end), m_index(index)
+		{
+			m_duration = end-start;
+		}
+		int m_start, m_end, m_duration;
+		int m_index;
+	};
+
 	static GameComponent* createComponent( GameEntity* owner );
 
 	SoundComponent(GameEntity *owner);
@@ -66,30 +79,17 @@ public:
 	void setMaxDist(const float maxDist);
 	void setRefDist(const float value);
 	bool setSoundFile(const char* fileName, bool oggStream = true);
-	bool setPhonemesFile(const char* fileName);
+	bool loadPhonemesFile(const char* fileName, std::vector<SoundComponent::Viseme>* container = 0x0);
 	inline float getDistanceToListener();
 	
 private:
-	void addPhonem(const XMLNode* phonem);
-	void addTheme(const XMLNode* theme);
-	void addRheme(const XMLNode* rheme);
+	void addPhonem(const XMLNode* phonem, std::vector<SoundComponent::Viseme>* container = 0x0);
+	void addTheme(const XMLNode* theme, std::vector<SoundComponent::Viseme>* container = 0x0);
+	void addRheme(const XMLNode* rheme, std::vector<SoundComponent::Viseme>* container = 0x0);
 	void startVisemes();
 	void stopVisemes();
 	void resetPreviousViseme();
 	void setViseme( const std::string viseme, const float weight );
-
-	/**
-	 * Includes the viseme timings
-	 */
-	struct Viseme
-	{
-		Viseme::Viseme(int start, int end, int index) : m_start(start), m_end(end), m_index(index)
-		{
-			m_duration = end-start;
-		}
-		int m_start, m_end, m_duration;
-		int m_index;
-	};
 
 	unsigned int		*m_buffer;
 	unsigned int		m_sourceID;
@@ -127,6 +127,9 @@ private:
 	// Soundfiles loaded from xml, stored by tag
 	typedef std::map<std::string, std::vector<int>>::iterator SoundFileIterator;
 	std::map<std::string, std::vector<int>> m_taggedSoundFiles;
+	// And the related phoneme files
+	typedef std::map<std::string, std::vector<Viseme>>::iterator VisemeIterator;
+	std::map<std::string, std::vector<Viseme>> m_taggedVisemes;
 };
 
 

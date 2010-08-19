@@ -131,7 +131,7 @@ void SoundComponent::executeEvent(GameEvent *event)
 		setSoundFile(static_cast<const char*>(event->data()));
 		break;
 	case GameEvent::E_SET_PHONEMES_FILE:
-		setPhonemesFile(static_cast<const char*>(event->data()));
+		loadPhonemesFile(static_cast<const char*>(event->data()));
 		break;
 	case GameEvent::E_SET_TRANSFORMATION:
 		{
@@ -182,7 +182,7 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 	setPitch(static_cast<float>(atof(description->getAttribute("pitch", "1.0"))));
 	setRollOff(static_cast<float>(atof(description->getAttribute("rolloff", "1.0"))));	
 	if( description->getAttribute("phonemes") )
-		setPhonemesFile(description->getAttribute("phonemes"));
+		loadPhonemesFile(description->getAttribute("phonemes"));
 
 	const char* visemefile = description->getAttribute( "visemefile" );
 	if( visemefile != 0 )
@@ -217,10 +217,17 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 		if (fileName)
 		{
 			// preload sound file
-			// TODO get phonemes
 			int resourceID = SoundResourceManager::instance()->addResource(fileName, true);
 			if (resourceID  != 0)
 				m_taggedSoundFiles[tag].push_back(resourceID);
+			const char* phonemesfile = sentenceNode.getAttribute("phonemes");
+			// And phonemes
+			if (phonemesfile)
+			{
+				std::vector<SoundComponent::Viseme> visemes;
+				loadPhonemesFile(phonemesfile, &visemes);
+				m_taggedVisemes[tag] = visemes;
+			}
 		}
 	}
 	if (childCount > 0)
@@ -502,6 +509,13 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 		// This seems to be a tag, so play the sound file directly
 		std::vector<int>& soundFiles = iter->second;
 		m_resourceID = soundFiles[ rand() % soundFiles.size()];
+		VisemeIterator iter2 = m_taggedVisemes.find(fileName);
+		if (iter2 != m_taggedVisemes.end())
+		{
+			// Stop old Visemes
+			stopVisemes();
+			m_visemes = iter2->second;
+		}
 	}
 	else
 		m_resourceID = SoundResourceManager::instance()->addResource(fileName, !oggStream);
@@ -544,7 +558,7 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 	return false;
 }
 
-bool SoundComponent::setPhonemesFile(const char* fileName)
+bool SoundComponent::loadPhonemesFile(const char* fileName, std::vector<SoundComponent::Viseme>* container /*= 0x0*/)
 {
 	// Stop old Visemes
 	stopVisemes();
@@ -572,14 +586,14 @@ bool SoundComponent::setPhonemesFile(const char* fileName)
 			for (int i = 0; i < childs; ++i)
 			{
 				XMLNode child(phonems.getChildNode(i));
-				if(_stricmp(child.getName(),"phn")==0  ) addPhonem(&child);
+				if(_stricmp(child.getName(),"phn")==0  ) addPhonem(&child, container);
 				else if( _stricmp(child.getName(),"word")==0  )
 				{
 					int wordChilds = child.nChildNode();
 					for (int j = 0; j < wordChilds; ++j)
 					{
 						XMLNode wordChild(child.getChildNode(j));
-						if( _stricmp(wordChild.getName(),"phn")==0  ) addPhonem(&wordChild);
+						if( _stricmp(wordChild.getName(),"phn")==0  ) addPhonem(&wordChild, container);
 						else GameLog::errorMessage("Bad childnode in phonem file %s\n", fileName);
 					}
 
@@ -604,7 +618,7 @@ bool SoundComponent::setPhonemesFile(const char* fileName)
 	return true;
 }
 
-void SoundComponent::addPhonem(const XMLNode* phonem)
+void SoundComponent::addPhonem(const XMLNode* phonem, std::vector<SoundComponent::Viseme>* container /*= 0x0*/)
 {
 	int start = static_cast<int>(atoi(phonem->getAttribute("start","0")));
 	int end = static_cast<int>(atoi(phonem->getAttribute("end","0")));
@@ -652,25 +666,34 @@ void SoundComponent::addPhonem(const XMLNode* phonem)
 		_stricmp(phonem->getAttribute("value",""), "m")==0 ) index=21;
 	
 	Viseme vis = Viseme(start, end, index);
-	m_visemes.push_back(vis);
+	if (container)
+		container->push_back(vis);
+	else
+		m_visemes.push_back(vis);
 }
 
-void SoundComponent::addTheme(const XMLNode* phonem)
+void SoundComponent::addTheme(const XMLNode* phonem, std::vector<SoundComponent::Viseme>* container /*= 0x0*/)
 {
 	int start = static_cast<int>(atoi(phonem->getAttribute("start","0")));
 	int end = static_cast<int>(atoi(phonem->getAttribute("end","0")));
 
 	Viseme vis = Viseme(start, end, 100);
-	m_visemes.push_back(vis);
+	if (container)
+		container->push_back(vis);
+	else
+		m_visemes.push_back(vis);
 }
 
-void SoundComponent::addRheme(const XMLNode* phonem)
+void SoundComponent::addRheme(const XMLNode* phonem, std::vector<SoundComponent::Viseme>* container /*= 0x0*/)
 {
 	int start = static_cast<int>(atoi(phonem->getAttribute("start","0")));
 	int end = static_cast<int>(atoi(phonem->getAttribute("end","0")));
 
 	Viseme vis = Viseme(start, end, 101);
-	m_visemes.push_back(vis);
+	if (container)
+		container->push_back(vis);
+	else
+		m_visemes.push_back(vis);
 }
 
 void SoundComponent::startVisemes()
