@@ -35,6 +35,8 @@
 
 #include <string>
 
+#include <time.h>
+
 using namespace std;
 
 #define sq(x) (x)*(x)
@@ -164,11 +166,14 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 	m_y = m_ty = trans.x[13];
 	m_z = m_tz = trans.x[14];
 	m_lastTimeStamp = GameEngine::timeStamp();
+
+	// stream attribute currently only has influence on ogg files
+	bool oggStream = _stricmp(description->getAttribute("stream", "1"),"true")==0 || _stricmp(description->getAttribute("stream", "1"),"1")==0;
 	
 	// To set the gain correctly at loading
 	// You should not change the following order
 	if (file)
-		setSoundFile(file);
+		setSoundFile(file, oggStream);
 	setGain(static_cast<float>(atof(description->getAttribute("gain", "0.5"))));
 	setLoop(_stricmp(description->getAttribute("loop", "false"),"true")==0 || _stricmp(description->getAttribute("loop", "false"),"1")==0);
 
@@ -201,6 +206,25 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 			m_FACSvisemes[name] = auValues;
 		}
 	}
+
+	int childCount = description->nChildNode("SoundFile");
+	for (int i = 0; i < childCount; ++i)
+	{
+		const XMLNode& sentenceNode = description->getChildNode("SoundFile", i);
+		string tag(sentenceNode.getAttribute("tag", "random"));
+
+		const char* fileName = sentenceNode.getAttribute("file");
+		if (fileName)
+		{
+			// preload sound file
+			// TODO get phonemes
+			int resourceID = SoundResourceManager::instance()->addResource(fileName, true);
+			if (resourceID  != 0)
+				m_taggedSoundFiles[tag].push_back(resourceID);
+		}
+	}
+	if (childCount > 0)
+		srand((unsigned int) time(0x0));
 }
 /*
 void SoundComponent::update()
@@ -457,7 +481,7 @@ void SoundComponent::setRefDist(const float value)
 	m_reference_dist = value;
 }
 
-bool SoundComponent::setSoundFile(const char* fileName)
+bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*/)
 {
 	unsigned int oldRes = m_resourceID;
 	bool oldStream = m_stream;
@@ -471,7 +495,18 @@ bool SoundComponent::setSoundFile(const char* fileName)
 		m_sourceID = 0;
 	}
 
-	if ((m_resourceID = SoundResourceManager::instance()->addResource(fileName)) != 0)
+	// Check for tagged sound files
+	SoundFileIterator iter = m_taggedSoundFiles.find(string(fileName));
+	if (iter != m_taggedSoundFiles.end())
+	{
+		// This seems to be a tag, so play the sound file directly
+		std::vector<int>& soundFiles = iter->second;
+		m_resourceID = soundFiles[ rand() % soundFiles.size()];
+	}
+	else
+		m_resourceID = SoundResourceManager::instance()->addResource(fileName, !oggStream);
+
+	if (m_resourceID != 0)
 	{
 		int newBufferCount = SoundResourceManager::instance()->getBufferCount(m_resourceID);
 		if (m_bufferCount != newBufferCount)

@@ -76,7 +76,7 @@ void SoundResourceManager::setResourceDirectory(const char* directory)
 		m_directory+="/";
 }
 
-unsigned int SoundResourceManager::addResource(const char* filename)
+unsigned int SoundResourceManager::addResource(const char* filename, bool forceNoStream /*= false*/)
 {
 	if (!filename) return 0;
 
@@ -125,11 +125,11 @@ unsigned int SoundResourceManager::addResource(const char* filename)
 	{
 		case SRESFT_OGG:
 			int OggFileID;
-			if ((i = loadOgg(filename, soundfile.buffers, SOUNDRESOURCE_NUMBUFFERS, &OggFileID))>0)
+			if ((i = loadOgg(filename, soundfile.buffers, forceNoStream ? 1 : SOUNDRESOURCE_NUMBUFFERS, &OggFileID, forceNoStream))>0)
 			{
 				soundfile.filename = filename;
 				soundfile.numBuffers = i;
-				soundfile.stream=true;
+				soundfile.stream=!forceNoStream;
 				soundfile.oggID=OggFileID;
 				soundfile.refCount = 1;
 				if( resourceID == 0)
@@ -193,10 +193,6 @@ void SoundResourceManager::releaseUnusedResources()
 		{
 			if( !iter->stream )
 			{
-				if (iter->fileType==SRESFT_OGG)
-				{
-					m_oggLoader->DeleteOggFile(iter->oggID);
-				}
 				alDeleteBuffers(iter->numBuffers, iter->buffers);
 			}
 			m_files.erase(iter);
@@ -342,7 +338,7 @@ bool SoundResourceManager::loadWaveToBuffer(const char *szWaveFile, unsigned int
 	return success;
 }
 
-int SoundResourceManager::loadOgg(const char *szOggFile, unsigned int * uiBuffer, int bufferCount , int *pOggFileID)
+int SoundResourceManager::loadOgg(const char *szOggFile, unsigned int * uiBuffer, int bufferCount , int *pOggFileID, bool forceNoStream /*= false*/)
 {
 	std::string completeFilename = m_directory;	
 	completeFilename+=szOggFile;
@@ -350,14 +346,61 @@ int SoundResourceManager::loadOgg(const char *szOggFile, unsigned int * uiBuffer
 	// create ALBuffer
 	alGenBuffers(bufferCount,  uiBuffer );
 
-	// load ogg file
-	if (!loadOggToBuffer(completeFilename.c_str(), uiBuffer, bufferCount, pOggFileID))
+	if (forceNoStream)
+	{
+		if (!loadCompleteOggToBuffer(completeFilename.c_str(), uiBuffer, pOggFileID))
+		{
+			GameLog::errorMessage( "Failed to load %s", szOggFile );
+			alDeleteBuffers(bufferCount, uiBuffer);
+			return 0;
+		}
+	}
+	// load ogg file as stream
+	else if (!loadOggToBuffer(completeFilename.c_str(), uiBuffer, bufferCount, pOggFileID))
 	{
 		GameLog::errorMessage( "Failed to load %s", szOggFile );
 		alDeleteBuffers(bufferCount, uiBuffer);
 		return 0;
 	}
 	return bufferCount;
+}
+
+bool SoundResourceManager::loadCompleteOggToBuffer(const char *szOggFile, unsigned int * uiBufferID, int *pOggFileID)
+{
+	bool success = false;
+	unsigned long	ulBytesWritten = 0;	
+
+	if (SUCCEEDED(m_oggLoader->LoadOggFile(szOggFile, pOggFileID)))
+	{
+		alGetError();
+		// Fill the Buffer with decoded audio data from the OggVorbis file
+		ulBytesWritten = m_oggLoader->DecodeOggVorbis(*pOggFileID);
+		std::vector<std::pair<char*, unsigned long>> m_dataVector;
+		unsigned long completeSize = 0;
+		while (ulBytesWritten)
+		{
+			char* temp = new char[ulBytesWritten];
+			memcpy(temp, m_oggLoader->getDecodeBuffer(*pOggFileID), ulBytesWritten);
+			m_dataVector.push_back(std::pair<char*, unsigned long>(temp, ulBytesWritten));
+			completeSize += ulBytesWritten;
+			ulBytesWritten = m_oggLoader->DecodeOggVorbis(*pOggFileID);
+		}
+		char* buffer = new char[completeSize];
+		unsigned long offset = 0;
+		for (unsigned int i = 0; i < m_dataVector.size(); i++)
+		{
+			memcpy(buffer + offset, m_dataVector[i].first, m_dataVector[i].second);
+			delete[] m_dataVector[i].first;
+			offset += m_dataVector[i].second;
+		}
+		alBufferData(*uiBufferID, m_oggLoader->getFormat(*pOggFileID), buffer, completeSize, m_oggLoader->getFrequency(*pOggFileID));
+		delete[] buffer;
+		m_oggLoader->DeleteOggFile(*pOggFileID);	
+		if (alGetError() == AL_NO_ERROR)
+				success = true;
+	}
+
+	return success;
 }
 
 bool SoundResourceManager::loadOggToBuffer(const char *szOggFile, unsigned int * uiBuffer, int bufferCount, int *pOggFileID)

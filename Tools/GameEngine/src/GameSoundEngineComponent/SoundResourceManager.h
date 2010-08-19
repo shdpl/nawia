@@ -42,13 +42,17 @@ public:
 
 	void setResourceDirectory(const char* directory);
 	const char* getResourceDirectory() {return m_directory.c_str();}
-	unsigned int addResource(const char* filename);
+	unsigned int addResource(const char* filename, bool forceNoStream = false);
 	int removeResource(unsigned int resourceID);
 	unsigned int * getBuffer(unsigned int resourceID);
 	int getBufferCount(unsigned int resourceID);
 	bool isStream(unsigned int resourceID);
 	void updateBuffer(unsigned int uiSource, unsigned int resourceID);
+
+	// This function would release all sound resources that are not currently playing
+	// It is currently not used. Notice that using it would destroy all tagged, preloaded sound files.
 	void releaseUnusedResources();
+	
 	const char* getResourceFileName(unsigned int resourceID);
 	void reloadResource(unsigned int resourceID);
 
@@ -67,8 +71,9 @@ protected:
 	int loadWave(const char *szWaveFile, unsigned int * uiBuffer, int bufferCount );
 	bool loadWaveToBuffer(const char *szWaveFile, unsigned int * uiBufferID, int bufferCount );
 
-	int loadOgg(const char *szOggFile, unsigned int * uiBuffer, int bufferCount, int *pOggFileID);
+	int loadOgg(const char *szOggFile, unsigned int * uiBuffer, int bufferCount, int *pOggFileID, bool forceNoStream = false);
 	bool loadOggToBuffer(const char *szOggFile, unsigned int * uiBufferID, int bufferCount, int *pOggFileID);
+	bool loadCompleteOggToBuffer(const char *szOggFile, unsigned int * uiBufferID, int *pOggFileID);
 
 	/// Resource directory for sound files
 	std::string				 m_directory;

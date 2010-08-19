@@ -65,7 +65,7 @@ public:
 	void setRollOff(const float value);
 	void setMaxDist(const float maxDist);
 	void setRefDist(const float value);
-	bool setSoundFile(const char* fileName);
+	bool setSoundFile(const char* fileName, bool oggStream = true);
 	bool setPhonemesFile(const char* fileName);
 	inline float getDistanceToListener();
 	
@@ -123,6 +123,10 @@ private:
 	std::map<std::string, std::map<int, float>> m_FACSvisemes;
 	std::string			m_curFACSViseme;
 	float				m_curFACSWeight;
+
+	// Soundfiles loaded from xml, stored by tag
+	typedef std::map<std::string, std::vector<int>>::iterator SoundFileIterator;
+	std::map<std::string, std::vector<int>> m_taggedSoundFiles;
 };
 
 
