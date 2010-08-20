@@ -177,6 +177,9 @@ private:
 	// Current lod value
 	int m_lod;
 
+	// Offset for the rotation to calculate the direction we are walking to
+	float m_rotationOffset;
+
 };
 
 

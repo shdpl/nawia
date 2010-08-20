@@ -42,7 +42,7 @@ GameComponent* MoveAnimComponent::createComponent( GameEntity* owner )
 MoveAnimComponent::MoveAnimComponent(GameEntity *owner) : GameComponent(owner, "MoveAnimComponent"), 
 	m_oldPos(0,0,0), m_newPos(0, 0, 0), m_moveAnim(0), m_moveBackAnim(0), m_moveLeftAnim(0),
 	m_moveRightAnim(0),	m_speed(1.0f), m_activeAnim(0), m_idle(false), m_idleAnimCount(0), m_idleTime(0),
-	m_randSeed(false), m_LODToStopAnim(999), m_lod(-1)
+	m_randSeed(false), m_LODToStopAnim(999), m_lod(-1), m_rotationOffset(0)
 {
 	for( int i=0; i< 5; ++i )
 		m_idleAnim[i] = 0x0;
@@ -134,6 +134,10 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 	if (m_LODToStopAnim == 9999)
 		m_owner->removeListener(GameEvent::E_AILOD_CHANGE, this);
 
+	// Rotation offset of 180° is standard, as most characters are modeled looking towards the user from the screen
+	// But walking forward is meant to be walking "into" the screen
+	m_rotationOffset = (float) atof(description->getAttribute("rotationOffset", "180"));
+
 
 	// Play animation on stage 10 to not disturb other animations on this model
 	if( _stricmp(move, "") != 0 )
@@ -204,8 +208,8 @@ void MoveAnimComponent::update(float fps)
 		if( speed >= 0.0005f )
 		{	
 			AnimationSetup* nextAnim = 0x0;
-			// Direction in radiants = angle of walking direction - y-rotation of the object
-			float direction = atan2( -dist.x, -dist.z ) - m_rotation.y;
+			// Direction in radiants = angle of walking direction - (y-rotation of the object + rotation offset)
+			float direction = atan2( -dist.x, -dist.z ) - (m_rotation.y + degToRad(m_rotationOffset));
 			
 			// Normalize direction angle to [-PI, +PI]
 			// To get less if cases
