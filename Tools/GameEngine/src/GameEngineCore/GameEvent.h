@@ -403,6 +403,7 @@ public:
 		SP_BOOKMARK,
 		SP_TTS_PAUSE,
 		SP_TTS_RESUME,
+		SP_TTS_SKIP,			///Skip the next n sentences. If n is negative, the speech will skip backwards.
 
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
