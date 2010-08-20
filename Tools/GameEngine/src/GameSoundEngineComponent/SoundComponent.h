@@ -89,7 +89,7 @@ private:
 	void startVisemes();
 	void stopVisemes();
 	void resetPreviousViseme();
-	void setViseme( const std::string viseme, const float weight );
+	void setViseme( const std::string& viseme, const float weight );
 
 	unsigned int		*m_buffer;
 	unsigned int		m_sourceID;
@@ -112,11 +112,11 @@ private:
 	float				m_reference_dist;
 	bool				m_loop;
 
+	// Viseme variables
 	float				m_startTimestamp;
 	std::vector<Viseme>	m_visemes;
-	bool				m_visemeChanged;
 	int					m_prevViseme, m_curViseme, m_visemeIndex;
-	float				m_visemeBlendFac, m_visemeBlendFacPrev;
+	float				m_visemeBlendFac;
 	bool				m_isSpeaking;
 
 	bool				m_FACSmapping;
