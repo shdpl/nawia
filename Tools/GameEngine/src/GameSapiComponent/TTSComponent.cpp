@@ -103,6 +103,7 @@ m_isSpeaking(false), m_FACSmapping(false), m_useDistanceModel(false), m_dist(0),
 	owner->addListener(GameEvent::E_SPEAK, this);
 	owner->addListener(GameEvent::SP_TTS_PAUSE, this);
 	owner->addListener(GameEvent::SP_TTS_RESUME, this);
+	owner->addListener(GameEvent::SP_TTS_SKIP, this);
 	owner->addListener(GameEvent::E_SET_VOICE, this);
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	TTSManager::instance()->addComponent(this);
@@ -227,6 +228,14 @@ void TTSComponent::executeEvent(GameEvent *event)
 		//printf("Received Pause Command from ScenePlayer"); 
 		m_pVoice->Pause();
 		//setVoice(static_cast<const char*>(event->data()));
+		break;
+
+	case GameEvent::SP_TTS_SKIP:
+	{
+		HRESULT hr = S_FALSE;	
+		int number = *static_cast<int*>(event->data());
+		hr = m_pVoice->Skip(L"SENTENCE",number,0);
+	}
 		break;
 	case GameEvent::SP_TTS_RESUME:
 		//printf("Received Pause Command from ScenePlayer"); 
