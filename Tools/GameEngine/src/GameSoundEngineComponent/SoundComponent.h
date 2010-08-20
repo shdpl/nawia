@@ -97,11 +97,11 @@ private:
 	unsigned int		m_resourceID;
 	bool				m_stream;
 	/// Current position of sound 
-	float				m_x, m_y, m_z;
-	/// Temp position to calculate velocity
-	float				m_tx, m_ty, m_tz;
+	float				m_pos[3];
+	/// old position to calculate velocity
+	float				m_oldPos[3];
 	float				m_lastTimeStamp;
-	float				m_velX, m_velY, m_velZ;
+	float				m_vel[3];
 	float				m_pitch;
 	float				m_maxDist;
 	/// current gain of the sound file

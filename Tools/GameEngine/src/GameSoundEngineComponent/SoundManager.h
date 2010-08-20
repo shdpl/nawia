@@ -86,6 +86,8 @@ private:
 	
 	void DisplayALError(const char *szText, int errorcode);
 
+	void updateALProperties(SoundComponent* node);
+
 
 	/// Vector for Sound objects
 	std::vector<SoundComponent*> m_soundNodes;

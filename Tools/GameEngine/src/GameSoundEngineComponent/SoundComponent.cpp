@@ -136,13 +136,13 @@ void SoundComponent::executeEvent(GameEvent *event)
 	case GameEvent::E_SET_TRANSFORMATION:
 		{
 			const float* absTrans = static_cast<const float*>(event->data());
-			m_x = absTrans[12]; m_y = absTrans[13]; m_z = absTrans[14];
+			m_pos[0] = absTrans[12]; m_pos[1] = absTrans[13]; m_pos[2] = absTrans[14];
 		}
 		break;
 	case GameEvent::E_SET_TRANSLATION:
 		{
 			 Vec3f* pos = static_cast<Vec3f*>(event->data());
-			 m_x = pos->x; m_y = pos->y; m_z = pos->z;
+			 m_pos[0] = pos->x; m_pos[1] = pos->y; m_pos[2] = pos->z;
 		}
 		break;
 	case GameEvent::E_GET_SOUND_DISTANCE:
@@ -162,9 +162,9 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 
 	Matrix4f trans;
 	m_owner->executeEvent(&GameEvent(GameEvent::E_TRANSFORMATION, &GameEventData( (float*) trans.x, 16 ), this));
-	m_x = m_tx = trans.x[12];
-	m_y = m_ty = trans.x[13];
-	m_z = m_tz = trans.x[14];
+	m_pos[0] = m_oldPos[0] = trans.x[12];
+	m_pos[1] = m_oldPos[1] = trans.x[13];
+	m_pos[2] = m_oldPos[2] = trans.x[14];
 	m_lastTimeStamp = GameEngine::timeStamp();
 
 	// stream attribute currently only has influence on ogg files
@@ -381,10 +381,12 @@ void SoundComponent::update()
 	}
 
 	float deltaT = 1.0f / (GameEngine::timeStamp() - m_lastTimeStamp);
-	m_velX = (m_x - m_tx) * deltaT;
-	m_velY = (m_y - m_ty) * deltaT;
-	m_velZ = (m_z - m_tz) * deltaT;
-	m_tx = m_x; m_ty = m_y; m_tz = m_z;
+	m_vel[0] = (m_pos[0] - m_oldPos[0]) * deltaT;
+	m_vel[1] = (m_pos[1] - m_oldPos[1]) * deltaT;
+	m_vel[2] = (m_pos[2] - m_oldPos[2]) * deltaT;
+	m_oldPos[0] = m_pos[0];
+	m_oldPos[1] = m_pos[1];
+	m_oldPos[2] = m_pos[2];
 	m_lastTimeStamp = GameEngine::timeStamp();
 
 	if( m_sourceID != 0 && m_stream)
@@ -843,9 +845,9 @@ float SoundComponent::getDistanceToListener()
 	SoundListenerComponent* listener = SoundManager::instance()->activeListener();
 	if (listener)
 		return sqrtf(
-			sq(m_x - listener->m_listenerPos[0]) + 
-			sq(m_y - listener->m_listenerPos[1]) + 
-			sq(m_z - listener->m_listenerPos[2]));
+			sq(m_pos[0] - listener->m_listenerPos[0]) + 
+			sq(m_pos[1] - listener->m_listenerPos[1]) + 
+			sq(m_pos[2] - listener->m_listenerPos[2]));
 
 	return 0.0f;
 }

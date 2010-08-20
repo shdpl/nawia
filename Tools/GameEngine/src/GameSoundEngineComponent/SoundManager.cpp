@@ -172,9 +172,9 @@ void SoundManager::run()
 
 		// calculate distance between listener and sound node
 		float dist = sqrtf((
-			sq(node->m_x - m_activeListener->m_listenerPos[0]) + 
-			sq(node->m_y - m_activeListener->m_listenerPos[1]) + 
-			sq(node->m_z - m_activeListener->m_listenerPos[2])));	
+			sq(node->m_pos[0] - m_activeListener->m_listenerPos[0]) + 
+			sq(node->m_pos[1] - m_activeListener->m_listenerPos[1]) + 
+			sq(node->m_pos[2] - m_activeListener->m_listenerPos[2])));	
 
 		//printf("posofsound %f %f %f\n",(*nodeIter)->m_pos.x,(*nodeIter)->m_pos.y,(*nodeIter)->m_pos.z );
 		// check if there are sounds not playing but with allocated source
@@ -222,20 +222,8 @@ void SoundManager::run()
 			playingSounds.push_back(node); // Push to vector for playing 
 		else // Already playing
 		{
-			ALfloat pos[3] = {node->m_x, node->m_y, node->m_z};
-			ALfloat vel[3] = {node->m_velX, node->m_velY, node->m_velZ};
-			alSourcef (node->m_sourceID, AL_PITCH,				node->m_pitch);
-			// alSourcef (sourceID, AL_MIN_GAIN,			0.0);
-			// alSourcef (sourceID, AL_MAX_GAIN,			1.0	);
-			alSourcef (node->m_sourceID, AL_GAIN,				node->m_gain);
-			alSourcefv(node->m_sourceID, AL_POSITION,			pos);
-			alSourcefv(node->m_sourceID, AL_VELOCITY,			vel);
-			alSourcei (node->m_sourceID, AL_LOOPING,			node->m_loop ? AL_TRUE : AL_FALSE);
-			alSourcef (node->m_sourceID, AL_MAX_DISTANCE,		node->m_maxDist);
-			alSourcef (node->m_sourceID, AL_ROLLOFF_FACTOR,		node->m_rollOff);
-			alSourcef (node->m_sourceID, AL_REFERENCE_DISTANCE,	node->m_reference_dist);
-			//printf("soundparam pos: %f %f %f\n", pos[0], pos[1] , pos[2]);
-			//printf("soundparam: id %i gain %f maxdist %f\n", node->m_sourceID, node->m_gain, node->m_maxDist);
+			// only update properties
+			updateALProperties(node);
 		}
 	}
 	// Check for sounds playing, but with a priority less than the nodes in playingSounds
@@ -263,16 +251,18 @@ void SoundManager::run()
 	{
 
 		SoundComponent* const node = *iter;
-		ALfloat pos[3] = {node->m_x, node->m_y, node->m_z};
-		ALfloat vel[3] = {node->m_velX, node->m_velY, node->m_velZ};
 		const unsigned int sourceID = m_sourcesAvailable.back();
 		m_sourcesAvailable.pop_back();
+
+		// Set source
+		node->m_sourceID = sourceID; 
 		
 		//start Viseme playback
 		node->startVisemes();
 		
 		ALenum error_code = AL_NO_ERROR;
-		node->m_sourceID = sourceID; 
+		alGetError();
+
 		if (node->m_stream)
 		{
 			alSourceQueueBuffers(sourceID, node->m_bufferCount, node->m_buffer);
@@ -289,23 +279,32 @@ void SoundManager::run()
 			DisplayALError("Error assigning buffer: ", error_code);
 
 		//set properties
-		alSourcei (sourceID, AL_SOURCE_RELATIVE,    AL_FALSE);
-		alSourcef (sourceID, AL_PITCH,				node->m_pitch);
-		// alSourcef (sourceID, AL_MIN_GAIN,			0.0);
-		// alSourcef (sourceID, AL_MAX_GAIN,			1.0	);
-		alSourcef (sourceID, AL_GAIN,				node->m_gain);
-		alSourcefv(sourceID, AL_POSITION,			pos);
-		alSourcefv(sourceID, AL_VELOCITY,			vel);
-		alSourcei (sourceID, AL_LOOPING,			node->m_loop ? AL_TRUE : AL_FALSE);
-		alSourcef (sourceID, AL_MAX_DISTANCE,		node->m_maxDist);				
-		alSourcef (sourceID, AL_ROLLOFF_FACTOR,		node->m_rollOff);
-		alSourcef (sourceID, AL_REFERENCE_DISTANCE,	node->m_reference_dist);
+		updateALProperties(node);
+
+		// And start playing
 		alSourcePlay(sourceID);		
 		if ( (error_code = alGetError()) != AL_NO_ERROR)
 			DisplayALError("Error starting sound: ", error_code);
 		//printf("soundparam pos: %f %f %f\n", pos[0], pos[1] , pos[2]);
 		//printf("soundparam: id %i gain %f maxdist %f\n", sourceID, node->m_gain, node->m_maxDist);
 	}
+}
+
+void SoundManager::updateALProperties(SoundComponent* node)
+{
+	alSourcei (node->m_sourceID, AL_SOURCE_RELATIVE,    AL_FALSE);
+	alSourcef (node->m_sourceID, AL_PITCH,				node->m_pitch);
+	// alSourcef (sourceID, AL_MIN_GAIN,			0.0);
+	// alSourcef (sourceID, AL_MAX_GAIN,			1.0	);
+	alSourcef (node->m_sourceID, AL_GAIN,				node->m_gain);
+	alSourcefv(node->m_sourceID, AL_POSITION,			node->m_pos);
+	alSourcefv(node->m_sourceID, AL_VELOCITY,			node->m_vel);
+	alSourcei (node->m_sourceID, AL_LOOPING,			node->m_loop ? AL_TRUE : AL_FALSE);
+	alSourcef (node->m_sourceID, AL_MAX_DISTANCE,		node->m_maxDist);
+	alSourcef (node->m_sourceID, AL_ROLLOFF_FACTOR,		node->m_rollOff);
+	alSourcef (node->m_sourceID, AL_REFERENCE_DISTANCE,	node->m_reference_dist);
+	//printf("soundparam pos: %f %f %f\n", node->m_pos[0], node->m_pos[1] , node->m_pos[2]);
+	//printf("soundparam: id %i gain %f maxdist %f\n", node->m_sourceID, node->m_gain, node->m_maxDist);
 }
 
 void SoundManager::addComponent(SoundComponent* sound)
