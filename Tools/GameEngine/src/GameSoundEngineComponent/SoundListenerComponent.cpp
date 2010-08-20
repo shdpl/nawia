@@ -43,6 +43,7 @@ m_gain(1.0f), m_initialGain(1.0f)
 	owner->addListener(GameEvent::E_SET_ENABLED, this);
 	owner->addListener(GameEvent::E_SET_SOUND_GAIN, this);	
 	owner->addListener(GameEvent::E_SET_TRANSFORMATION, this);
+	owner->addListener(GameEvent::E_SET_TRANSLATION, this);
 
 	// Position of the CAM (Listener).
 	m_listenerPos[0] = 0.0;
@@ -89,6 +90,14 @@ void SoundListenerComponent::executeEvent(GameEvent *event)
 			m_listenerPos[0] = absTrans[12]; 
 			m_listenerPos[1] = absTrans[13]; 
 			m_listenerPos[2] = absTrans[14];
+		}
+		break;
+	case GameEvent::E_SET_TRANSLATION:
+		{
+			Vec3f* pos = static_cast<Vec3f*>(event->data());
+			m_listenerPos[0] = pos->x;
+			m_listenerPos[1] = pos->y;
+			m_listenerPos[2] = pos->z;
 		}
 		break;
 	}

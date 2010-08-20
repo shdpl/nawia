@@ -116,7 +116,7 @@ private:
 	float				m_startTimestamp;
 	std::vector<Viseme>	m_visemes;
 	int					m_prevViseme, m_curViseme, m_visemeIndex;
-	float				m_visemeBlendFac;
+	float				m_visemeBlendFac, m_visemeBlendFacPrev;
 	bool				m_isSpeaking;
 
 	bool				m_FACSmapping;

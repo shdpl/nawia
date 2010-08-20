@@ -87,7 +87,7 @@ GameComponent* SoundComponent::createComponent( GameEntity* owner )
 
 SoundComponent::SoundComponent(GameEntity *owner) : GameComponent(owner, "Sound3D"), m_buffer(NULL), 
 m_lastTimeStamp(0), m_sourceID(0), m_startTimestamp(0.0f), m_curViseme(0),
-m_prevViseme(0), m_visemeBlendFac(1.0f), m_visemeIndex(-1), m_isSpeaking(false),
+m_prevViseme(0), m_visemeBlendFacPrev(1.0f), m_visemeBlendFac(1.0f), m_visemeIndex(-1), m_isSpeaking(false),
 m_bufferCount(0), m_resourceID(0), m_stream(false), m_gain(0.0f), m_initialGain(0.0f), m_FACSmapping(false)
 {
 	owner->addListener(GameEvent::E_SET_ENABLED, this);
@@ -398,32 +398,65 @@ void SoundComponent::update()
 
 		// Calc current viseme
 		int time = (int)( ( GameEngine::timeStamp() - m_startTimestamp ) * 1000 );
-		float timef = ( GameEngine::timeStamp() - m_startTimestamp ) * 1000;
-		int durTime = (int) ( m_visemes[m_visemeIndex].m_start + m_visemes[m_visemeIndex].m_duration );
-
-		// TODO: Evaluate a better way of calculating the blend factor
-		// TODO:  This gives values between 0.6 and 1.6, why?
-		m_visemeBlendFac = 1 - (m_visemes[m_visemeIndex].m_end - timef) / m_visemes[m_visemeIndex].m_duration + 0.6f;
-		// TODO: And this reduces it again to values  between 0.3 and 0.5, huh?!!!
-		m_visemeBlendFac = clamp(m_visemeBlendFac, 0.6f, 1.0f) / 2.0f;
-		// TODO: i think this should become 1.0 in the end...
-		static const float blendMax = 0.5f;
-
-		setViseme( visemeMapping[m_curViseme], m_visemeBlendFac);
-		if (!m_FACSmapping)
+		float passedPercent;
+		if (m_visemes[m_visemeIndex].m_duration > 250)
+			// normal blending
+			passedPercent = clamp(float(time - m_visemes[m_visemeIndex].m_start) / float(m_visemes[m_visemeIndex].m_duration), 0, 1.0f);
+		else
+			// Only 250 ms, so too sort for full blending => only partly blend in
+			// => previous viseme will be completely blended out and current viseme only blended in half
+			passedPercent = clamp(float(time - m_visemes[m_visemeIndex].m_start) / float(m_visemes[m_visemeIndex].m_duration * 4.0f), 0, 1.0f);
+		
+		bool changedBlending = false;
+		if (passedPercent < 0.5f)
 		{
-			if( blendMax - m_visemeBlendFac <= Math::Epsilon )
-				// Reset previous viseme if current is fully blended
-				resetPreviousViseme();
-			else
-				// Set previous viseme to opposit of current
-				// TODO --> currently values between 0 and 0.2, ???
-				setViseme( visemeMapping[m_prevViseme], blendMax - m_visemeBlendFac);
+			// blend current viseme in until 0.5 of time passed
+			m_visemeBlendFac =  passedPercent * 2.0f;
+			// blend previous viseme out until 0.25 of time has passed
+			m_visemeBlendFacPrev = clamp((1.0f - passedPercent * 4.0f), 0, 1.0f);
+			changedBlending = true;
+		}
+		else if (passedPercent >= 0.5f && passedPercent <= 0.75f && m_visemeBlendFac < 1.0f)
+		{
+			m_visemeBlendFac = 1.0f;
+			resetPreviousViseme();
+			changedBlending = true;
+		}
+		else if (passedPercent > 0.75f)
+		{
+			// blend out current viseme to the half value
+			m_visemeBlendFac = ((1.0f - passedPercent)  * 2.0f) + 0.5f;
+			resetPreviousViseme();
+			changedBlending = true;
+		}
+
+		//m_visemeBlendFac = 1 - (m_visemes[m_visemeIndex].m_end - (float)time) / m_visemes[m_visemeIndex].m_duration + 0.6f;
+		//m_visemeBlendFac = clamp(m_visemeBlendFac, 0.6f, 1.0f) / 2.0f;
+
+		if (m_FACSmapping)
+			setViseme( visemeMapping[m_curViseme], m_visemeBlendFac);
+		else
+		{
+			if (changedBlending)
+			{
+				// Set new morphtarget values for current viseme
+				MorphTarget morphTargetData(visemeMapping[m_curViseme], m_visemeBlendFac);
+				GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
+				if (m_owner->checkEvent(&event))
+					m_owner->executeEvent(&event);
+				// And the previous one
+				MorphTarget morphTargetData2(visemeMapping[m_prevViseme], m_visemeBlendFacPrev);
+				GameEvent event2(GameEvent::E_MORPH_TARGET, &morphTargetData2, this);		
+				if (m_owner->checkEvent(&event2))
+					m_owner->executeEvent(&event2);
+			}
 		}
 
 		//printf("Visemetime: %d", time);
 		if( m_visemes[m_visemeIndex].m_end < time )
 		{
+			// Reset the old viseme
+			resetPreviousViseme();
 			m_visemeIndex++;
 			// End of text 	
 			if( m_visemeIndex == m_visemes.size() )
@@ -437,7 +470,7 @@ void SoundComponent::update()
 					startVisemes();
 				}
 			}
-			else if( m_isSpeaking )
+			else
 			{
 				m_prevViseme = m_curViseme;
 				m_curViseme = m_visemes[m_visemeIndex].m_index;
@@ -506,6 +539,9 @@ void SoundComponent::setRefDist(const float value)
 
 bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*/)
 {
+	// Stop old Visemes
+	stopVisemes();
+
 	unsigned int oldRes = m_resourceID;
 	bool oldStream = m_stream;
 	// Old stream can be removed anyway
@@ -528,8 +564,6 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 		VisemeIterator iter2 = m_taggedVisemes.find(fileName);
 		if (iter2 != m_taggedVisemes.end())
 		{
-			// Stop old Visemes
-			stopVisemes();
 			m_visemes = iter2->second;
 		}
 	}
@@ -753,9 +787,29 @@ void SoundComponent::stopVisemes()
 		m_curViseme = 0;
 		m_visemeIndex = -1;
 		resetPreviousViseme();
-		//Set Silence viseme
-		if( !m_FACSmapping )
+		if( m_FACSmapping && m_curViseme)
 		{
+			setViseme( visemeMapping[m_curViseme], 0);
+		}
+		else
+		{
+			if (m_curViseme)
+			{
+				// Set new morphtarget values for current viseme
+				MorphTarget morphTargetData(visemeMapping[m_curViseme], 0);
+				GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
+				if (m_owner->checkEvent(&event))
+					m_owner->executeEvent(&event);
+			}
+			if (m_prevViseme)
+			{				
+				// And the previous one
+				MorphTarget morphTargetData(visemeMapping[m_prevViseme], 0);
+				GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
+				if (m_owner->checkEvent(&event))
+					m_owner->executeEvent(&event);
+			}
+			//Set Silence viseme
 			MorphTarget morphTargetData(visemeMapping[0], 1.0);
 			GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
 			if (m_owner->checkEvent(&event))
@@ -769,8 +823,17 @@ void SoundComponent::resetPreviousViseme()
 {
 	if( m_prevViseme != 0 )
 	{
-		setViseme( visemeMapping[m_prevViseme], 0 );
+		if (m_FACSmapping)
+			setViseme( visemeMapping[m_prevViseme], 0 );
+		else
+		{
+			MorphTarget morphTargetData2(visemeMapping[m_prevViseme], 0);
+			GameEvent event2(GameEvent::E_MORPH_TARGET, &morphTargetData2, this);		
+			if (m_owner->checkEvent(&event2))
+				m_owner->executeEvent(&event2);
+		}
 		m_prevViseme = 0;
+		m_visemeBlendFacPrev = 0;
 		//printf("Reseted prev viseme\n");
 	}
 }
@@ -868,13 +931,5 @@ void SoundComponent::setViseme( const string& viseme, const float weight )
 
 		m_curFACSViseme = viseme;
 		m_curFACSWeight = weight;
-	}
-	else
-	{
-		// And set new one
-		MorphTarget morphTargetData(viseme.c_str(), weight);
-		GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
-		if (m_owner->checkEvent(&event))
-			m_owner->executeEvent(&event);
 	}
 }
