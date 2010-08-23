@@ -436,7 +436,7 @@ void KeyframeAnimComponent::loadFromXml(const XMLNode* description)
 			return;
 		}
 		std::string path = h3dutGetResourcePath(H3DResTypes::Animation);		
-		if ( path[path.size()-1] != '\\' && path[path.size()-1] != '/' )
+		if ( path.size() > 0 && path[path.size()-1] != '\\' && path[path.size()-1] != '/' )
 			path += '/';
 		// Open resource file
 		std::ifstream inf( (path + file).c_str(), std::ios::binary );
