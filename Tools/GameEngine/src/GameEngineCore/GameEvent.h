@@ -400,6 +400,9 @@ public:
 		SP_RHEME_START,			/// rheme started
 		SP_THEME_START,			/// theme started
 		SP_SPOKEN_WORD,			/// contains currently spoken word
+		E_SOUND_STOPPED,		/// the sound of the entity has stopped playing
+
+		// TODO: move the following events to the right category
 		SP_BOOKMARK,
 		SP_TTS_PAUSE,
 		SP_TTS_RESUME,
