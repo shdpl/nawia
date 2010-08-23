@@ -464,7 +464,6 @@ void SoundComponent::update()
 			if( m_visemeIndex == m_visemes.size() )
 			{	
 				// Stop visemes
-				setViseme( visemeMapping[m_curViseme], 0.0f );
 				stopVisemes();
 				if( m_loop )
 				{
@@ -785,9 +784,6 @@ void SoundComponent::stopVisemes()
 {
 	if( !m_visemes.empty() )
 	{
-		m_startTimestamp = 0.0f;
-		m_curViseme = 0;
-		m_visemeIndex = -1;
 		resetPreviousViseme();
 		if( m_FACSmapping && m_curViseme)
 		{
@@ -812,11 +808,14 @@ void SoundComponent::stopVisemes()
 					m_owner->executeEvent(&event);
 			}
 			//Set Silence viseme
-			MorphTarget morphTargetData(visemeMapping[0], 1.0);
+			/*MorphTarget morphTargetData(visemeMapping[0], 1.0);
 			GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
 			if (m_owner->checkEvent(&event))
-				m_owner->executeEvent(&event);
+				m_owner->executeEvent(&event);*/
 		}
+		m_startTimestamp = 0.0f;
+		m_curViseme = 0;
+		m_visemeIndex = -1;
 		m_isSpeaking = false;
 	}
 }

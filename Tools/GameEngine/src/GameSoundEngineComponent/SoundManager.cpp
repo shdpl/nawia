@@ -180,23 +180,10 @@ void SoundManager::run()
 		// check if there are sounds not playing but with allocated source
 		if (node->m_sourceID != 0)
 		{
-			if( node->m_gain == SoundComponent::OFF ) // if gain has been set to zero during the last update iteration...
+			if( node->m_gain == SoundComponent::OFF // if gain has been set to zero during the last update iteration...
+				|| node->m_maxDist < dist) // or if the node is playing but out of scope
 			{
 				stopSound(node); // ...stop the sound
-				
-				//stop Viseme playback
-				node->stopVisemes();
-
-				node->m_sourceID = 0;
-			}
-			// if the node is playing but out of scope
-			if ( node->m_maxDist < dist )	
-			{
-				stopSound(node); // ...stop the sound
-				//stop Viseme playback
-				node->stopVisemes();
-
-				node->m_sourceID = 0;
 			}
 			ALenum state = AL_STOPPED;
 			if( node->m_sourceID != 0 )
@@ -235,11 +222,7 @@ void SoundManager::run()
 		{
 			// ...stop the sound
 			stopSound(node);
-			node->m_sourceID = 0;
 			node->m_gain = SoundComponent::OFF;
-
-			//stop Viseme playback
-			node->stopVisemes();
 		}
 	}
 
@@ -353,7 +336,13 @@ void SoundManager::stopSound(SoundComponent* sound)
 
 	// And send event about the stopped sound
 	GameEvent event(GameEvent::E_SOUND_STOPPED, 0x0, sound);
-	sound->m_owner->executeEvent(&event);	
+	sound->m_owner->executeEvent(&event);
+
+	//stop Viseme playback
+	sound->stopVisemes();
+
+	// reset source
+	sound->m_sourceID = 0;
 }
 
 void SoundManager::DisplayALError(const char *szText, int errorcode)
