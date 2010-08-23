@@ -550,7 +550,7 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 	if( oldStream )
 	{
 		if( m_sourceID != 0 )
-			SoundManager::instance()->stopSoundSource( m_sourceID );
+			SoundManager::instance()->stopSound( this );
 		if( oldRes != 0 )
 			SoundResourceManager::instance()->removeResource(oldRes);
 		m_sourceID = 0;
@@ -597,7 +597,7 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 			// Stop old sound if different
 			else {
 				if (m_sourceID != 0)
-					SoundManager::instance()->stopSoundSource( m_sourceID );
+					SoundManager::instance()->stopSound(this);
 				if (oldRes != 0)
 					SoundResourceManager::instance()->removeResource(oldRes);
 				m_sourceID = 0;

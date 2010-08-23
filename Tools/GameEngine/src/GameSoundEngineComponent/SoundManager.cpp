@@ -182,7 +182,7 @@ void SoundManager::run()
 		{
 			if( node->m_gain == SoundComponent::OFF ) // if gain has been set to zero during the last update iteration...
 			{
-				stopSoundSource(node->m_sourceID ); // ...stop the sound
+				stopSound(node); // ...stop the sound
 				
 				//stop Viseme playback
 				node->stopVisemes();
@@ -192,7 +192,7 @@ void SoundManager::run()
 			// if the node is playing but out of scope
 			if ( node->m_maxDist < dist )	
 			{
-				stopSoundSource(node->m_sourceID); // ...stop the sound
+				stopSound(node); // ...stop the sound
 				//stop Viseme playback
 				node->stopVisemes();
 
@@ -234,7 +234,7 @@ void SoundManager::run()
 		if (node->m_sourceID != 0)
 		{
 			// ...stop the sound
-			stopSoundSource(node->m_sourceID );
+			stopSound(node);
 			node->m_sourceID = 0;
 			node->m_gain = SoundComponent::OFF;
 
@@ -321,7 +321,7 @@ void SoundManager::removeComponent(SoundComponent* sound)
 	{
 		if( sound->m_sourceID != 0 )
 		{
-			stopSoundSource( sound->m_sourceID );
+			stopSound(sound);
 			sound->m_sourceID = 0;
 			sound->m_gain = SoundComponent::OFF;
 		}
@@ -329,26 +329,31 @@ void SoundManager::removeComponent(SoundComponent* sound)
 	}
 }
 
-void SoundManager::stopSoundSource( unsigned int sourceID )
+void SoundManager::stopSound(SoundComponent* sound)
 {
+	// Free open al source
 	ALenum error_code = AL_NO_ERROR;
-	alSourceStop(sourceID);
+	alSourceStop(sound->m_sourceID);
 	if ( (error_code = alGetError()) != AL_NO_ERROR)
 			DisplayALError("Error stopping sound: ", error_code);
 
 	int queued;
-	alGetSourcei(sourceID, AL_BUFFERS_QUEUED, &queued);	    
+	alGetSourcei(sound->m_sourceID, AL_BUFFERS_QUEUED, &queued);	    
 	while(queued--)
 	{
 		ALuint buffer;   
-		alSourceUnqueueBuffers(sourceID, 1, &buffer);
+		alSourceUnqueueBuffers(sound->m_sourceID, 1, &buffer);
 		if ( (error_code = alGetError()) != AL_NO_ERROR)
 			DisplayALError("Error unqueuing Buffer: ", error_code);
 	}
-	alSourcei( sourceID, AL_BUFFER,	AL_NONE );
+	alSourcei( sound->m_sourceID, AL_BUFFER,	AL_NONE );
 	if ( (error_code = alGetError()) != AL_NO_ERROR)
 			DisplayALError("Error releasing Buffer: ", error_code);
-	m_sourcesAvailable.push_back(sourceID);
+	m_sourcesAvailable.push_back(sound->m_sourceID);
+
+	// And send event about the stopped sound
+	GameEvent event(GameEvent::E_SOUND_STOPPED, 0x0, sound);
+	sound->m_owner->executeEvent(&event);	
 }
 
 void SoundManager::DisplayALError(const char *szText, int errorcode)

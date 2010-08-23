@@ -76,7 +76,10 @@ public:
 
 	SoundListenerComponent* activeListener() { return m_activeListener; }
 
-	void stopSoundSource( unsigned int sourceID );
+	/**
+	 * Stop a sound and free the openal source
+	  */
+	void stopSound(SoundComponent* sound);
 
 private:
 	static SoundManager*		 m_instance;
