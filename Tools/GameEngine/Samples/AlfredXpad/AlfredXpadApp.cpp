@@ -167,7 +167,6 @@ void AlfredXpadApp::mouseMoved(float x, float y)
 
 void AlfredXpadApp::render()
 {
-	h3dClearOverlays();
 	keyHandler();
 
 	parseAU();
@@ -181,7 +180,6 @@ void AlfredXpadApp::render()
 
 	GameEngine::update();
 
-	h3dClearOverlays();
 	h3dutDumpMessages();
 }
 
