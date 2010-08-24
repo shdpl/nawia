@@ -89,7 +89,6 @@ void AlfredApp::mouseMoved(float x, float y)
 
 void AlfredApp::render()
 {
-	h3dClearOverlays();
 	keyHandler();
 
 	GameEngine::update();
