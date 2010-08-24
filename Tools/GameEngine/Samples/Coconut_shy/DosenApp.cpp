@@ -155,7 +155,6 @@ void DemoApp::render()
 	}
 
 	GameEngine::update();
-	h3dClearOverlays();
 	h3dutDumpMessages();
 	// Get data from eye tracker
 	//const char* data = 0;
