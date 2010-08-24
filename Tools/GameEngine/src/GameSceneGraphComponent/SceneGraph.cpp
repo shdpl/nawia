@@ -90,6 +90,9 @@ void SceneGraphManager::render()
 	{
 		h3dRender(m_activeCam);				
 		h3dFinalizeFrame();
+		// Clear last rendered overlays --> If you want to keep them, you need to redraw them every frame!
+		// But needed to be able to draw overlay in the other components
+		h3dClearOverlays();
 
 		// Reset OpenGL camera so other components can render their content too
 		const float* cameraTrans = 0; 
