@@ -35,7 +35,6 @@ void DemoApp::mouseMoved(float x, float y)
 
 void DemoApp::render()
 {
-	h3dClearOverlays();
 	keyHandler();
 	
 	GameEngine::update();
