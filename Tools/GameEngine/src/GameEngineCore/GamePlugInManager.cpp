@@ -41,8 +41,10 @@ GamePlugInManager::~GamePlugInManager()
 
 bool GamePlugInManager::init()
 {
+	// Get executable path
 	char path[260];			
-	if( GameLog::GetExecutablePath( path, sizeof(path)-1 ) <= 0 ) return false;
+	if( GameLog::GetExecutablePath( path, sizeof(path)-1 ) <= 0 )
+		return false;
 
 	if (path[strlen(path)-1]!='\\' && path[strlen(path)-1]!='/')
 	{
@@ -50,19 +52,30 @@ bool GamePlugInManager::init()
 		path[strlen(path)+1] = '\0';
 	}
 
-	std::string plugincfg = path;
+	// Choose filename
+	std::string plugincfg;
 #ifdef _DEBUG
-	plugincfg += "plugin_debug.cfg";
+	plugincfg = "plugin_debug.cfg";
 #else
-	plugincfg += "plugin.cfg";
+	plugincfg = "plugin.cfg";
 #endif
 
+	// First try to find the config file in our working directory
 	std::ifstream config(plugincfg.c_str());
 	if( !config )
 	{
+		// Alternatively search in the executable path
+		plugincfg = path + plugincfg;
+		config.open(plugincfg.c_str());
+	}
+	if( !config )
+	{
+		// Didn't find config in any of the paths
 		GameLog::errorMessage("Error opening plugin file %s", plugincfg.c_str());
 		return false;
 	}
+
+	// Now load plugins as named in the cfg file
 	char dllname[128];			
 	while ( config.getline(dllname, sizeof(dllname)) )
 	{
