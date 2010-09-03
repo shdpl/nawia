@@ -489,8 +489,7 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 				if (obj->m_owner->checkEvent(&event))
 					obj->m_owner->executeEvent(&event);			
 				break;
-			}
-		/*
+			}		
 		case SPEI_WORD_BOUNDARY:
 			{
 				ULONG start, end;
@@ -513,7 +512,7 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 
 				break;
 			}
-		*/
+		
 		}
 	}
 }
