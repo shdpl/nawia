@@ -64,6 +64,8 @@ bool GamePlugInManager::init()
 	std::ifstream config(plugincfg.c_str());
 	if( !config )
 	{
+		// Clear old error flags (only necessary before VS 2010)
+		config.clear();
 		// Alternatively search in the executable path
 		plugincfg = path + plugincfg;
 		config.open(plugincfg.c_str());
