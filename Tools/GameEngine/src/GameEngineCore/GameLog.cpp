@@ -79,7 +79,7 @@ namespace GameLog
 	/// Start time when loading the application
 	__int32					start = GetTickCount();
 	/// Name of the current log file
-	string					currentLog = "GameEngineLog";	
+	string					currentLog = "_GameEngineLog";	
 
 	bool initLog(const string& name)
 	{
