@@ -2,7 +2,7 @@
 //
 // GameEngine of the University of Augsburg
 // --------------------------------------
-// Copyright (C) 2010 Ionut Damian
+// Copyright (C) 2007 Volker Wiendl
 // 
 // This file is part of the GameEngine developed at the 
 // Lab for Multimedia Concepts and Applications of the University of Augsburg
