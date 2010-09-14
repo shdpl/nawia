@@ -55,9 +55,9 @@ private:
 	DOFRestrictions m_dofr;
 
 	///the absolute (world) transformation matrix of this joint
-	Matrix4f m_transf_abs;
+	Horde3D::Matrix4f m_transf_abs;
 	///the relative (local) transformation matrix of this joint
-	Matrix4f m_transf_rel;
+	Horde3D::Matrix4f m_transf_rel;
 
 	///constructor 1
 	Joint(H3DNode model, const char* name);	
@@ -83,22 +83,22 @@ public:
 	void setDOFR(DOFRestrictions* dofr);
 
 	///get translation in joint's coordinate system (relative)
-	Vec3f getTranslation();
+	Horde3D::Vec3f getTranslation();
 	///get rotation in joint's coordinate system (relative)
-	Vec3f getRotation();
+	Horde3D::Vec3f getRotation();
 	///get scale in joint's coordinate system (relative)
-	Vec3f getScale();
+	Horde3D::Vec3f getScale();
 	///get transformation matrix in joint's coordinate system (relative)
-	Matrix4f* getRelTransf();
+	Horde3D::Matrix4f* getRelTransf();
 
 	///get translation in absoulte coordinate system (world cs)
-	Vec3f getAbsTranslation();
+	Horde3D::Vec3f getAbsTranslation();
 	///get roatation in absoulte coordinate system (world cs)
-	Vec3f getAbsRotation();
+	Horde3D::Vec3f getAbsRotation();
 	///get scale in absoulte coordinate system (world cs)
-	Vec3f getAbsScale();
+	Horde3D::Vec3f getAbsScale();
 	///get transformation matrix in absoulte coordinate system (world cs)
-	Matrix4f* getAbsTransf();
+	Horde3D::Matrix4f* getAbsTransf();
 
 	///returns the parent of the joint as defined in the scenegraph
 	Joint* getParent();

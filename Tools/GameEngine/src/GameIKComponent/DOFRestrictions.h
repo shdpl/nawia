@@ -76,7 +76,7 @@ public:
 	DOFRestrictions operator=( DOFRestrictions rhs );
 
 	///applies the restrictions on the rotation vector "rot"
-	bool apply(Vec3f* rot, AxisLock *alock);	
+	bool apply(Horde3D::Vec3f* rot, AxisLock *alock);	
 
 	float getDampingValue();
 

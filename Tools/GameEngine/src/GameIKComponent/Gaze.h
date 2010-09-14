@@ -38,7 +38,7 @@ public:
 	Gaze(Joint* head, Joint* lefteye, Joint* righteye );
 	~Gaze();
 	///sets the target for this Gaze object
-	void setTarget(Vec3f target);
+	void setTarget(Horde3D::Vec3f target);
 	///sets the head pitch of this Gaze object
 	void setHeadpitch(int head_pitch);
 
@@ -80,7 +80,7 @@ private:
 	bool moveEye(Joint *eye, Joint *aux_eye, bool simulate);
 
 	///computes the rotation needed for the head ot face towards m_target
-	bool computeHeadRotation(Vec3f *out_axis, float *out_angleRad);
+	bool computeHeadRotation(Horde3D::Vec3f *out_axis, float *out_angleRad);
 
 	/**
 	 * generates a model node based on a minimal geometry resource and attaches it to the joint eye

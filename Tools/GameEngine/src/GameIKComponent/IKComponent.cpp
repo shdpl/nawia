@@ -93,7 +93,7 @@ void IKComponent::executeEvent(GameEvent *event)
 				data->result = -1;
 			else
 			{
-				m_anim = new IKAnim( Joint::getInstance(hordeID, data->endEffectorName), Joint::getInstance(hordeID, data->stopName), Vec3f(data->targetX, data->targetY, data->targetZ) );
+				m_anim = new IKAnim( Joint::getInstance(hordeID, data->endEffectorName), Joint::getInstance(hordeID, data->stopName), Horde3D::Vec3f(data->targetX, data->targetY, data->targetZ) );
 				data->result = m_anim->getResource();
 			}
 		}
@@ -206,19 +206,19 @@ void IKComponent::update()
 
 int IKComponent::animIK(unsigned int modelHandle, const char* endEffectorName, const char* stopName, float targetX, float targetY, float targetZ, int stage, float weight, float speed)
 {
-	m_anim = new IKAnim( Joint::getInstance(modelHandle, endEffectorName), Joint::getInstance(modelHandle, stopName), Vec3f(targetX, targetY, targetZ) );
+	m_anim = new IKAnim( Joint::getInstance(modelHandle, endEffectorName), Joint::getInstance(modelHandle, stopName), Horde3D::Vec3f(targetX, targetY, targetZ) );
 	return m_anim->play(hordeID, stage, weight, speed);
 }
 
 int IKComponent::useIK(unsigned int modelHandle, const char* endEffectorName, const char* stopName, float targetX, float targetY, float targetZ)
 {
-	CCD aCCD( Joint::getInstance(modelHandle, endEffectorName), Joint::getInstance(modelHandle, stopName), Vec3f(targetX, targetY, targetZ) );
+	CCD aCCD( Joint::getInstance(modelHandle, endEffectorName), Joint::getInstance(modelHandle, stopName), Horde3D::Vec3f(targetX, targetY, targetZ) );
 	return aCCD.execute();
 }
 
 int IKComponent::gaze(unsigned int modelHandle, float targetX, float targetY, float targetZ, bool moveLEye, bool moveREye, bool moveNeck, int head_pitch, bool isTest )
 {
-	m_gaze->setTarget(Vec3f(targetX, targetY, targetZ));
+	m_gaze->setTarget(Horde3D::Vec3f(targetX, targetY, targetZ));
 	m_gaze->setHeadpitch(head_pitch);
 	
 	return (int)m_gaze->execute(moveNeck, moveLEye, moveREye, isTest);

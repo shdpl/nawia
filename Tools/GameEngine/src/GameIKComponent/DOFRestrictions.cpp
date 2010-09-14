@@ -113,7 +113,7 @@ DOFRestrictions DOFRestrictions::operator=( DOFRestrictions rhs )
 	return *this;
 }
 
-bool DOFRestrictions::apply(Vec3f *rot, AxisLock *alock)
+bool DOFRestrictions::apply(Horde3D::Vec3f *rot, AxisLock *alock)
 {
 	bool clean = true;
 	if(alock == 0)

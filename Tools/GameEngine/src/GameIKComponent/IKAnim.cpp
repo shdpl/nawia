@@ -29,7 +29,7 @@
 #include <time.h>
 #include <sstream>
 
-IKAnim::IKAnim(Joint *endEffector, Joint *chainEnd, Vec3f target) 
+IKAnim::IKAnim(Joint *endEffector, Joint *chainEnd, Horde3D::Vec3f target) 
 : m_ccd(endEffector,chainEnd,target), m_chain(0)
 {	
 	//intializations
@@ -41,10 +41,10 @@ IKAnim::IKAnim(Joint *endEffector, Joint *chainEnd, Vec3f target)
 	m_ccd.buildIKChain();
 	m_chain = m_ccd.getIKChain();
 
-	Matrix4f **frame_transf;
-	frame_transf = new Matrix4f * [m_numFrames];
+	Horde3D::Matrix4f **frame_transf;
+	frame_transf = new Horde3D::Matrix4f * [m_numFrames];
 	for(unsigned int i=0; i< m_numFrames; i++)
-		frame_transf[i] = new Matrix4f[m_chain->size()];
+		frame_transf[i] = new Horde3D::Matrix4f[m_chain->size()];
 
 	//SAVING the information for the start frame
 	for(unsigned int k=0; k<m_chain->size(); k++)
@@ -78,7 +78,7 @@ IKAnim::IKAnim(Joint *endEffector, Joint *chainEnd, Vec3f target)
 		for(unsigned int j=0; j<m_chain->size(); j++)
 		{
 			t = (float)i/(m_numFrames -1.0f);
-			frame_transf[i][j] = Matrix4f( (frame_transf[0][j] * (1.0f - t)) + (frame_transf[m_numFrames-1][j] * t) ); //morphing: xt = A*(1-t) + B*t
+			frame_transf[i][j] = Horde3D::Matrix4f( (frame_transf[0][j] * (1.0f - t)) + (frame_transf[m_numFrames-1][j] * t) ); //morphing: xt = A*(1-t) + B*t
 		}
 	}
 
@@ -128,9 +128,9 @@ void IKAnim::update()
 	}
 }
 
-bool IKAnim::createAnimation(Matrix4f ***frame_transf)
+bool IKAnim::createAnimation(Horde3D::Matrix4f ***frame_transf)
 {
-	Vec3f p,r,s;
+	Horde3D::Vec3f p,r,s;
 	int version = (int)Config::getParamF(IK_Param::H3DAVersion_F);
 	int numNodes = m_chain->size();
 	int numFrames = m_numFrames;
@@ -156,7 +156,7 @@ bool IKAnim::createAnimation(Matrix4f ***frame_transf)
 		for(int j=0; j< numFrames; j++)
 		{
 			(*frame_transf)[j][i].decompose( p, r, s );
-			Quaternion rotQ( r.x, r.y, r.z );
+			Horde3D::Quaternion rotQ( r.x, r.y, r.z );
 
 			memcpy( animData + animDataSize, &rotQ.x, sizeof( float ) ); animDataSize += sizeof( float );
 			memcpy( animData + animDataSize, &rotQ.y, sizeof( float ) ); animDataSize += sizeof( float );

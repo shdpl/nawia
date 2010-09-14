@@ -96,52 +96,52 @@ void Joint::update()
 
 	h3dGetNodeTransMats( m_horde_id, &rel, &abs );
 
-	m_transf_rel = Matrix4f(rel);
-	m_transf_abs = Matrix4f(abs);
+	m_transf_rel = Horde3D::Matrix4f(rel);
+	m_transf_abs = Horde3D::Matrix4f(abs);
 }
 
-Vec3f Joint::getAbsTranslation()
+Horde3D::Vec3f Joint::getAbsTranslation()
 {
-	return Vec3f( m_transf_abs.x[12], m_transf_abs.x[13], m_transf_abs.x[14] );
+	return Horde3D::Vec3f( m_transf_abs.x[12], m_transf_abs.x[13], m_transf_abs.x[14] );
 }
 
-Vec3f Joint::getAbsRotation()
+Horde3D::Vec3f Joint::getAbsRotation()
 {
-	Vec3f p,r,s;
+	Horde3D::Vec3f p,r,s;
 	m_transf_abs.decompose(p,r,s);
 	
 	return r;
 }
 
-Vec3f Joint::getAbsScale()
+Horde3D::Vec3f Joint::getAbsScale()
 {	
 	return m_transf_abs.getScale();
 }
 
-Matrix4f* Joint::getAbsTransf()
+Horde3D::Matrix4f* Joint::getAbsTransf()
 {
 	return &m_transf_abs;
 }
 
-Vec3f Joint::getTranslation()
+Horde3D::Vec3f Joint::getTranslation()
 {
-	return Vec3f( m_transf_rel.x[12], m_transf_rel.x[13], m_transf_rel.x[14] );
+	return Horde3D::Vec3f( m_transf_rel.x[12], m_transf_rel.x[13], m_transf_rel.x[14] );
 }
 
-Vec3f Joint::getRotation()
+Horde3D::Vec3f Joint::getRotation()
 {
-	Vec3f p,r,s;
+	Horde3D::Vec3f p,r,s;
 	m_transf_rel.decompose(p,r,s);
 	
 	return r;
 }
 
-Vec3f Joint::getScale()
+Horde3D::Vec3f Joint::getScale()
 {	
 	return m_transf_rel.getScale();
 }
 
-Matrix4f* Joint::getRelTransf()
+Horde3D::Matrix4f* Joint::getRelTransf()
 {
 	return &m_transf_rel;
 }

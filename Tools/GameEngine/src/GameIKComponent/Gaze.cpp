@@ -26,7 +26,7 @@
 Gaze::Gaze(Joint *head, Joint *lefteye, Joint *righteye) : 
 m_head(head), m_leye(lefteye), m_reye(righteye), m_aux_leye(0), m_aux_reye(0), m_headpitch(0), m_targetIsSet(false), m_gazeaux_res(0)
 {
-	Vec3f p,r,s;
+	Horde3D::Vec3f p,r,s;
 
 	//clear rotations
 	lefteye->update();
@@ -90,7 +90,7 @@ Gaze::~Gaze()
 	h3dRemoveNode( m_aux_reye->getHordeID() );
 }
 
-void Gaze::setTarget(Vec3f target)
+void Gaze::setTarget(Horde3D::Vec3f target)
 {	
 	m_target = target;
 	m_targetIsSet = true;
@@ -129,13 +129,13 @@ bool Gaze::moveHead(bool simulate)
 {
 	bool result = true;	
 	float angle;
-	Vec3f axis;
+	Horde3D::Vec3f axis;
 	AxisLock lock(false, false, (Config::getParamI(IK_Param::UseZLock_I) == 0) ? false : true);
 
 	//clear head rotation
 	m_head->update();
-	Vec3f s = m_head->getScale();
-	Vec3f p = m_head->getTranslation();
+	Horde3D::Vec3f s = m_head->getScale();
+	Horde3D::Vec3f p = m_head->getTranslation();
 	h3dSetNodeTransform( m_head->getHordeID(), 
 		p.x,p.y,p.z, 
 		0,0,0,
@@ -155,13 +155,13 @@ bool Gaze::moveEye(Joint *eye, Joint *aux_eye, bool simulate)
 {
 	bool result = true;
 	float angle;
-	Vec3f axis;
+	Horde3D::Vec3f axis;
 	AxisLock lock(true, false, false);
 		
 	//clear eye rotation
 	eye->update();
-	Vec3f s = eye->getScale();
-	Vec3f p = eye->getTranslation();
+	Horde3D::Vec3f s = eye->getScale();
+	Horde3D::Vec3f p = eye->getTranslation();
 	h3dSetNodeTransform( eye->getHordeID(), 
 		p.x,p.y,p.z, 
 		Config::getParamF(IK_Param::DfltEyeRotX_F), Config::getParamF(IK_Param::DfltEyeRotY_F), Config::getParamF(IK_Param::DfltEyeRotZ_F),
@@ -178,12 +178,12 @@ bool Gaze::moveEye(Joint *eye, Joint *aux_eye, bool simulate)
 	return result;
 }
 
-bool Gaze::computeHeadRotation( Vec3f *out_axis, float *out_angleRad)
+bool Gaze::computeHeadRotation( Horde3D::Vec3f *out_axis, float *out_angleRad)
 {
 	//Saving the current eye transformation
-	Vec3f p,r,s;
+	Horde3D::Vec3f p,r,s;
 	m_leye->update();
-	Matrix4f eyeTransf( m_leye->getRelTransf()->x );
+	Horde3D::Matrix4f eyeTransf( m_leye->getRelTransf()->x );
 	eyeTransf.decompose( p, r, s );
 
 	//Computing the head pitch
@@ -204,7 +204,7 @@ bool Gaze::computeHeadRotation( Vec3f *out_axis, float *out_angleRad)
 		1, 1, 1);
 
 	m_aux_leye->update();
-	Vec3f endPos = m_aux_leye->getAbsTranslation();
+	Horde3D::Vec3f endPos = m_aux_leye->getAbsTranslation();
 	
 	//Second, we have to align the eye's coordinate system with the neck's coordinate system
 	//Therfor we eliminate all rotations from the eye's coordinate system
@@ -215,8 +215,8 @@ bool Gaze::computeHeadRotation( Vec3f *out_axis, float *out_angleRad)
 
 	m_leye->update();
 	//We create the 2 vectors and normalize them
-	Vec3f targetVec = m_leye->getAbsTransf()->inverted() * m_target;
-	Vec3f currentVec = m_leye->getAbsTransf()->inverted() * endPos;
+	Horde3D::Vec3f targetVec = m_leye->getAbsTransf()->inverted() * m_target;
+	Horde3D::Vec3f currentVec = m_leye->getAbsTransf()->inverted() * endPos;
 
 	targetVec = targetVec.normalized();
 	currentVec = currentVec.normalized();

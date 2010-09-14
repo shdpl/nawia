@@ -26,7 +26,7 @@
 CCD::CCD() : m_endEffector(0), m_chainEnd(0), m_itCnt(0)
 {}
 
-CCD::CCD(Joint* endEffector, Joint* chainEnd, Vec3f target) : m_endEffector(endEffector), m_chainEnd(chainEnd), m_target(target), m_itCnt(0)
+CCD::CCD(Joint* endEffector, Joint* chainEnd, Horde3D::Vec3f target) : m_endEffector(endEffector), m_chainEnd(chainEnd), m_target(target), m_itCnt(0)
 {}
 
 IK_CCDResult::List CCD::execute()
@@ -51,11 +51,11 @@ IK_CCDResult::List CCD::execute()
 			current->setDOFR(DOFRestrictions::STANDARD_JOINT); //set default dofr
 				
 		float angle;
-		Vec3f axis;
+		Horde3D::Vec3f axis;
 		if(computeRotation(current, &axis, &angle))
 		{
 			//Damping - limits rotation to a predefined maximum value (damp value)
-			angle = dampAngle( angle, degToRad(current->getDOFR()->getDampingValue()) );
+			angle = dampAngle( angle, Horde3D::degToRad(current->getDOFR()->getDampingValue()) );
 			
 			applyRotation(current, axis, angle, 0, (Config::getParamI(IK_Param::CCDTwistJointManipulation_I) == 0) ? false : true );
 			rotPerIt++;
@@ -91,12 +91,12 @@ IK_CCDResult::List CCD::execute()
 		 || current->getHordeID() == m_chainEnd->getHordeID() )
 		{
 			m_endEffector->update();
-			Vec3f endPos = m_endEffector->getAbsTranslation();
+			Horde3D::Vec3f endPos = m_endEffector->getAbsTranslation();
 						
 			// Get vectors in coordinate system of current joint
 			current->update();
-			Vec3f targetVec = current->getAbsTransf()->inverted() * m_target;
-			Vec3f currentVec = current->getAbsTransf()->inverted() * endPos;
+			Horde3D::Vec3f targetVec = current->getAbsTransf()->inverted() * m_target;
+			Horde3D::Vec3f currentVec = current->getAbsTransf()->inverted() * endPos;
 			
 			targetVec = targetVec.normalized();
 			currentVec = currentVec.normalized();
@@ -134,16 +134,16 @@ IK_CCDResult::List CCD::execute()
 	return IK_CCDResult::REACHED_MAX_ITERATIONS;
 }
 
-bool CCD::computeRotation(Joint *j, Vec3f *out_axis, float *out_angleRad)
+bool CCD::computeRotation(Joint *j, Horde3D::Vec3f *out_axis, float *out_angleRad)
 {
 	//Saving the data for the new end effektor position
 	m_endEffector->update();
-	Vec3f endPos = m_endEffector->getAbsTranslation();
+	Horde3D::Vec3f endPos = m_endEffector->getAbsTranslation();
 	
 	j->update();
 	// Get vectors in coordinate system of current joint
-	Vec3f targetVec = j->getAbsTransf()->inverted() * m_target;
-	Vec3f currentVec = j->getAbsTransf()->inverted() * endPos;
+	Horde3D::Vec3f targetVec = j->getAbsTransf()->inverted() * m_target;
+	Horde3D::Vec3f currentVec = j->getAbsTransf()->inverted() * endPos;
 	
 	targetVec = targetVec.normalized();
 	currentVec = currentVec.normalized();
@@ -164,28 +164,28 @@ bool CCD::computeRotation(Joint *j, Vec3f *out_axis, float *out_angleRad)
 	return false;
 }
 
-bool CCD::applyRotation(Joint *j, Vec3f axis, float angle_rad, AxisLock *axis_lock, bool check_twistj)
+bool CCD::applyRotation(Joint *j, Horde3D::Vec3f axis, float angle_rad, AxisLock *axis_lock, bool check_twistj)
 {
 	bool result = true;
-	Vec3f p,r,s;
+	Horde3D::Vec3f p,r,s;
 
-	//convert rotation to Quaternion
-	Quaternion req_rotQ = getQuat( axis, angle_rad );
+	//convert rotation to Horde3D::Quaternion
+	Horde3D::Quaternion req_rotQ = getQuat( axis, angle_rad );
 	normalizeQuat(&req_rotQ);
 	
 	//apply rotation on a local matrix
 	j->update();
-	Matrix4f qmat( req_rotQ );
-	Matrix4f newTransf = *(j->getRelTransf()) * qmat; 
+	Horde3D::Matrix4f qmat( req_rotQ );
+	Horde3D::Matrix4f newTransf = *(j->getRelTransf()) * qmat; 
 	newTransf.decompose( p, r, s );
 
 
 	//h3dSetNodeTransMat( j->getHordeID(), newTransf.x );
 		
 	//convert to degrees
-	r.x = radToDeg( r.x );
-	r.y = radToDeg( r.y );
-	r.z = radToDeg( r.z );
+	r.x = Horde3D::radToDeg( r.x );
+	r.y = Horde3D::radToDeg( r.y );
+	r.z = Horde3D::radToDeg( r.z );
 
 	if(j->getHordeID() == 22)
 		printf("eye - rad: %.2f - eul: %.2f, %.2f, %.2f\n",angle_rad, r.x, r.y, r.z);
@@ -224,20 +224,20 @@ bool CCD::applyRotation(Joint *j, Vec3f axis, float angle_rad, AxisLock *axis_lo
 	return result;
 }
 
-bool CCD::simulateRotation(Joint *j, Vec3f axis, float angle_rad, AxisLock *axis_lock)
+bool CCD::simulateRotation(Joint *j, Horde3D::Vec3f axis, float angle_rad, AxisLock *axis_lock)
 {
 	bool result = true;
-	Vec3f p,r,s;
-	Quaternion req_rotQ = getQuat( axis, angle_rad );	
+	Horde3D::Vec3f p,r,s;
+	Horde3D::Quaternion req_rotQ = getQuat( axis, angle_rad );	
 
 	j->update();
-	Matrix4f jointRelMat = *(j->getRelTransf()) * Matrix4f( req_rotQ );
+	Horde3D::Matrix4f jointRelMat = *(j->getRelTransf()) * Horde3D::Matrix4f( req_rotQ );
 	jointRelMat.decompose( p, r, s );
 
 	//convert to degrees
-	r.x = radToDeg( r.x );
-	r.y = radToDeg( r.y );
-	r.z = radToDeg( r.z );
+	r.x = Horde3D::radToDeg( r.x );
+	r.y = Horde3D::radToDeg( r.y );
+	r.z = Horde3D::radToDeg( r.z );
 
 	//DOFRestrictions
 	if( Config::getParamI(IK_Param::UseDofr_I) > 0 )
@@ -290,21 +290,21 @@ float CCD::dampAngle(float angle_rad, float dampValue_rad)
 	return angle_rad;
 }
 
-Quaternion CCD::getQuat(Vec3f axis, float angle_rad)
+Horde3D::Quaternion CCD::getQuat(Horde3D::Vec3f axis, float angle_rad)
 {
-	//Creating a rotation quaternion
+	//Creating a rotation Horde3D::Quaternion
 	axis = axis * sinf( angle_rad/2.0f );
-	Quaternion q( axis.x, axis.y, axis.z, cosf( angle_rad/2.0f ) );
+	Horde3D::Quaternion q( axis.x, axis.y, axis.z, cosf( angle_rad/2.0f ) );
 
 	return q;
 }
 
-float CCD::getQuatLength2(Quaternion *q)
+float CCD::getQuatLength2(Horde3D::Quaternion *q)
 {
 	return (q->x * q->x)+(q->y * q->y)+(q->z * q->z)+(q->w * q->w);
 }
 
-bool CCD::normalizeQuat(Quaternion *q)
+bool CCD::normalizeQuat(Horde3D::Quaternion *q)
 {
 	float len = getQuatLength2(q);
 	if(len < 0.99999f || len > 1.00001f)
@@ -357,7 +357,7 @@ Joint* CCD::findParallelJoint(Joint *j, const char *name1, const char *name2)
 	return p;
 }
 
-float CCD::vecDistance(Vec3f &a, Vec3f &b) 
+float CCD::vecDistance(Horde3D::Vec3f &a, Horde3D::Vec3f &b) 
 {
 	float angle = acosf( a.normalized().dot(b.normalized()) );
 	/*The maximum distance between two vectors is when they are perpendicular to each other

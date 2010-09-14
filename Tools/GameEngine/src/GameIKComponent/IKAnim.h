@@ -34,7 +34,7 @@
 class IKAnim
 {
 public:
-	IKAnim(Joint* endEffector, Joint* chainEnd, Vec3f target);
+	IKAnim(Joint* endEffector, Joint* chainEnd, Horde3D::Vec3f target);
 	///starts the animation
 	int play(unsigned int model_h3d, int stage, float weight, float speed);
 
@@ -45,7 +45,7 @@ public:
 
 private:
 	///creates a horde3d animation resource using the data provided in the frame_transf matrices
-	bool createAnimation(Matrix4f ***frame_transf);
+	bool createAnimation(Horde3D::Matrix4f ***frame_transf);
 
 	///the ccd instance used to solve the IK
 	CCD m_ccd;
