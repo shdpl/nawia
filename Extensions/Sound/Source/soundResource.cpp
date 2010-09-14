@@ -27,6 +27,8 @@
 #include "soundResource.h"
 #include "manager.h"
 
+namespace Horde3D
+{
 	Resource *SoundResource::factoryFunc( const std::string &name, int flags )
 	{
 		return new SoundResource( name, flags );
@@ -218,3 +220,4 @@
 	{
 		return _buffer;
 	}
+}

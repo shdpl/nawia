@@ -29,7 +29,7 @@
 
 namespace Horde3DSound
 {
-	class ExtSound : public IExtension
+	class ExtSound : public Horde3D::IExtension
 	{
 	public:
 		virtual const char *getName();

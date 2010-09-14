@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -15,10 +15,13 @@
 #include "egModules.h"
 #include "egCom.h"
 #include "egRenderer.h"
-#include "utXMLParser.h"
+#include "utXML.h"
 #include "utPlatform.h"
 
 #include "utDebug.h"
+
+
+namespace Horde3D {
 
 using namespace std;
 
@@ -108,18 +111,15 @@ bool ParticleEffectResource::raiseError( const string &msg, int line )
 bool ParticleEffectResource::load( const char *data, int size )
 {
 	if( !Resource::load( data, size ) ) return false;
-	if( data[size - 1] != '\0' )
-	{	
-		return raiseError( "Data block not NULL-terminated" );
-	}
 
-	// Parse particle effect
-	XMLResults res;
-	XMLNode rootNode = XMLNode::parseString( data, "ParticleEffect", &res );
-	if( res.error != eXMLErrorNone )
-	{
-		return raiseError( XMLNode::getError( res.error ), res.nLine );
-	}
+	XMLDoc doc;
+	doc.parseBuffer( data, size );
+	if( doc.hasError() )
+		return raiseError( "XML parsing error" );
+
+	XMLNode rootNode = doc.getRootNode();
+	if( strcmp( rootNode.getName(), "ParticleEffect" ) != 0 )
+		return raiseError( "Not a particle effect resource file" );
 	
 	if( rootNode.getAttribute( "lifeMin" ) == 0x0 ) return raiseError( "Missing ParticleConfig attribute 'lifeMin'" );
 	if( rootNode.getAttribute( "lifeMax" ) == 0x0 ) return raiseError( "Missing ParticleConfig attribute 'lifeMax'" );
@@ -127,8 +127,7 @@ bool ParticleEffectResource::load( const char *data, int size )
 	_lifeMin = (float)atof( rootNode.getAttribute( "lifeMin" ) );
 	_lifeMax = (float)atof( rootNode.getAttribute( "lifeMax" ) );
 
-	int nodeItr1 = 0;
-	XMLNode node1 = rootNode.getChildNode( "ChannelOverLife", nodeItr1 );
+	XMLNode node1 = rootNode.getFirstChild( "ChannelOverLife" );
 	while( !node1.isEmpty() )
 	{
 		if( node1.getAttribute( "channel" ) != 0x0 )
@@ -145,7 +144,7 @@ bool ParticleEffectResource::load( const char *data, int size )
 		else
 			return raiseError( "Missing ChannelOverLife attribute 'channel'" );
 		
-		node1 = rootNode.getChildNode( "ChannelOverLife", ++nodeItr1 );
+		node1 = node1.getNextSibling( "ChannelOverLife" );
 	}
 	
 	return true;
@@ -692,3 +691,5 @@ void EmitterNode::onPostUpdate()
 
 	timer->setEnabled( false );
 }
+
+}  // namespace

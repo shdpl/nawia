@@ -142,11 +142,11 @@ namespace Horde3DNET.Samples.ChicagoNET
                 Horde3DUtils.showFrameStats(_fontMatRes, _panelMatRes, _statMode);
             }
             
-            // Show logo
-            h3d.showOverlay(0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0, 1, 1, 1, 0, 1, 0.8f, 1, 1,
-                1, 1, 1, 1, _logoMatRes, 7);
-
-
+            // Show logo            
+            int x, y, width, height;
+	        float ww = h3d.getViewportParams( out x, out y, out width, out height );
+            float[] ovLogo = new float[] { ww - 0.4f, 0.8f, 0, 1, ww - 0.4f, 1, 0, 0, ww, 1, 1, 0, ww, 0.8f, 1, 1 };
+            h3d.showOverlays(ovLogo, 4, 1, 1, 1, 1, _logoMatRes, 0);
 
             // Render scene
             h3d.render(_cam);

@@ -512,15 +512,18 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
  		else // Rotate Camera
 			cameraNavigationUpdate(0, 0, 0, diffX * (m_navSpeed / 50), diffY * (m_navSpeed / 50));
 	}
-	// Move object
-	else if (m_transformationMode == MoveObject)
-		translateObject(event->x(), (height() - event->y()));
-	// Rotate Object
-	else if (m_transformationMode == RotateObject)
-		rotateObject(event->x(), height() - event->y());
-	// Scale Object
-	else if (m_transformationMode == ScaleObject)
-		scaleObject(event->x(), height() - event->y());
+	else if( m_currentNode )
+	{
+		// Move object
+		if (m_transformationMode == MoveObject)
+			translateObject(event->x(), (height() - event->y()));
+		// Rotate Object
+		else if (m_transformationMode == RotateObject)
+			rotateObject(event->x(), height() - event->y());
+		// Scale Object
+		else if (m_transformationMode == ScaleObject)
+			scaleObject(event->x(), height() - event->y());
+	}
 	event->accept();
 }
 

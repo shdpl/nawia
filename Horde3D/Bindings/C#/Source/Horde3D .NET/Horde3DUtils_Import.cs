@@ -69,7 +69,7 @@ namespace Horde3DNET.Utils
         [DllImport(UTILS_DLL), SuppressUnmanagedCodeSecurity]
         internal static extern void h3dutShowText(string text, float x, float y, float size,
                                              float colR, float colG, float colB,
-                                             int fontMatRes, int layer);
+                                             int fontMatRes );
 
         [DllImport(UTILS_DLL), SuppressUnmanagedCodeSecurity]
         internal static extern void h3dutShowFrameStats(int fontMaterialRes, int panelMaterialRes, int mode);

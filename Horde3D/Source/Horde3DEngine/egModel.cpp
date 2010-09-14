@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -18,6 +18,9 @@
 
 #include "utDebug.h"
 
+
+namespace Horde3D {
+
 using namespace std;
 
 
@@ -28,8 +31,6 @@ ModelNode::ModelNode( const ModelNodeTpl &modelTpl ) :
 	_softwareSkinning( modelTpl.softwareSkinning ), _skinningDirty( false ),
 	_nodeListDirty( false ), _morpherUsed( false ), _morpherDirty( false )
 {
-	_renderable = true;
-	
 	if( _geometryRes != 0x0 )
 		setParamI( ModelNodeParams::GeoResI, _geometryRes->getHandle() );
 }
@@ -37,12 +38,8 @@ ModelNode::ModelNode( const ModelNodeTpl &modelTpl ) :
 
 ModelNode::~ModelNode()
 {
-	_geometryRes = 0x0; _baseGeoRes = 0x0;
-	for( uint32 i = 0; i < _occQueries.size(); ++i )
-	{
-		if( _occQueries[i] != 0 )
-			Modules::renderer().releaseQuery( _occQueries[i] );
-	}
+	_geometryRes = 0x0;
+	_baseGeoRes = 0x0;
 }
 
 
@@ -520,3 +517,5 @@ void ModelNode::onFinishedUpdate()
 	// Update geometry for morphers or software skinning
 	updateGeometry();
 }
+
+}  // namespace

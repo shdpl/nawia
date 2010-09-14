@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -18,7 +18,10 @@
 #include <string>
 #include <vector>
 
-struct XMLNode;
+
+namespace Horde3D {
+
+class XMLNode;
 
 
 // =================================================================================================
@@ -196,7 +199,7 @@ public:
 	const char *getElemParamStr( int elem, int elemIdx, int param );
 
 	bool getRenderTargetData( const std::string &target, int bufIndex, int *width, int *height,
-	                          int *compCount, float *dataBuffer, int bufferSize );
+	                          int *compCount, void *dataBuffer, int bufferSize );
 
 	friend class ResourceManager;
 	friend class Renderer;
@@ -204,4 +207,5 @@ public:
 
 typedef SmartResPtr< PipelineResource > PPipelineResource;
 
+}
 #endif // _egPipeline_H_

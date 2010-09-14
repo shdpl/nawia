@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -20,6 +20,8 @@
 #include <vector>
 #include <map>
 
+
+namespace Horde3D {
 
 // =================================================================================================
 // GPUTimer
@@ -48,13 +50,14 @@ public:
 
 
 // =================================================================================================
-// Base Renderer
+// Render Device Interface
 // =================================================================================================
 
+// ---------------------------------------------------------
 // General
-// =========================================================
+// ---------------------------------------------------------
 
-template< class T > class RBObjects
+template< class T > class RDIObjects
 {
 private:
 	std::vector< T >       _objects;
@@ -93,7 +96,7 @@ public:
 		return _objects[handle - 1];
 	}
 
-	friend class RendererBase;
+	friend class RenderDeviceInterface;
 };
 
 
@@ -109,28 +112,32 @@ struct RenderCaps
 };
 
 
+// ---------------------------------------------------------
 // Buffers
-// =========================================================
+// ---------------------------------------------------------
 
-struct RBBuffer
+struct RDIBuffer
 {
 	uint32  type;
 	uint32  glObj;
 	uint32  size;
 };
 
-struct RBVertBufSlot
+struct RDIVertBufSlot
 {
 	uint32  vbObj;
 	uint32  offset;
 	uint32  stride;
 
-	RBVertBufSlot() : vbObj( 0 ), offset( 0 ), stride( 0 ) {}
+	RDIVertBufSlot() : vbObj( 0 ), offset( 0 ), stride( 0 ) {}
+	RDIVertBufSlot( uint32 vbObj, uint32 offset, uint32 stride ) :
+		vbObj( vbObj ), offset( offset ), stride( stride ) {}
 };
 
 
+// ---------------------------------------------------------
 // Textures
-// =========================================================
+// ---------------------------------------------------------
 
 struct TextureTypes
 {
@@ -156,7 +163,7 @@ struct TextureFormats
 	};
 };
 
-struct RBTexture
+struct RDITexture
 {
 	uint32                glObj;
 	uint32                glFmt;
@@ -168,18 +175,19 @@ struct RBTexture
 	bool                  genMips;
 };
 
-struct RBTexSlot
+struct RDITexSlot
 {
 	uint32  texObj;
 
-	RBTexSlot() : texObj( 0 ) {}
+	RDITexSlot() : texObj( 0 ) {}
 };
 
 
+// ---------------------------------------------------------
 // Render buffers
-// =========================================================
+// ---------------------------------------------------------
 
-struct RBRenderBuffer
+struct RDIRenderBuffer
 {
 	static const uint32 MaxColorAttachmentCount = 4;
 
@@ -190,17 +198,18 @@ struct RBRenderBuffer
 	uint32  depthTex, colTexs[MaxColorAttachmentCount];
 	uint32  depthBuf, colBufs[MaxColorAttachmentCount];  // Used for multisampling
 
-	RBRenderBuffer() : fbo( 0 ), fboMS( 0 ), width( 0 ), height( 0 ), depthTex( 0 ), depthBuf( 0 )
+	RDIRenderBuffer() : fbo( 0 ), fboMS( 0 ), width( 0 ), height( 0 ), depthTex( 0 ), depthBuf( 0 )
 	{
 		for( uint32 i = 0; i < MaxColorAttachmentCount; ++i ) colTexs[i] = colBufs[i] = 0;
 	}
 };
 
 
+// ---------------------------------------------------------
 // Vertex layout
-// =========================================================
+// ---------------------------------------------------------
 
-struct RBVertLayoutElem
+struct RDIVertLayoutElem
 {
 	std::string  semanticName;
 	uint32       vbSlot;
@@ -208,21 +217,38 @@ struct RBVertLayoutElem
 	uint32       offset;
 };
 
-struct RBVertexLayout
+struct RDIVertexLayout
 {
 	struct ShaderData
 	{
 		std::vector< char >  elemAttribIndices;
 	};
 	
-	std::vector< RBVertLayoutElem >  elems;
+	std::vector< RDIVertLayoutElem >  elems;
 	std::map< uint32, ShaderData >   shaderData;
 };
 
 
+// ---------------------------------------------------------
+// Draw calls
+// ---------------------------------------------------------
+
+enum RDIIndexFormat
+{
+	IDXFMT_16 = GL_UNSIGNED_SHORT,
+	IDXFMT_32 = GL_UNSIGNED_INT
+};
+
+enum RDIPrimType
+{
+	PRIM_TRILIST = GL_TRIANGLES,
+	PRIM_TRISTRIP = GL_TRIANGLE_STRIP
+};
+
 // =================================================================================================
 
-class RendererBase
+
+class RenderDeviceInterface
 {
 protected:
 
@@ -230,41 +256,50 @@ protected:
 	uint32        _depthFormat;
 	int           _vpX, _vpY, _vpWidth, _vpHeight;
 	int           _fbWidth, _fbHeight;
-	uint32        _curShaderObj;
 	std::string   _shaderLog;
 	uint32        _curRendBuf;
 	int           _outputBufferIndex;  // Left and right eye for stereo rendering
 	uint32        _textureMem, _bufferMem;
 
-	RBVertBufSlot                _vertBufSlots[16];
-	RBTexSlot                    _texSlots[16];
-	RBObjects< RBBuffer >        _buffers;
-	RBObjects< RBTexture >       _textures;
-	RBObjects< RBRenderBuffer >  _rendBufs;
-	RBObjects< RBVertexLayout >  _vertexLayouts;
+	RDIObjects< RDIBuffer >        _buffers;
+	RDIObjects< RDITexture >       _textures;
+	RDIObjects< RDIRenderBuffer >  _rendBufs;
+	RDIObjects< RDIVertexLayout >  _vertexLayouts;
+
+	RDIVertBufSlot    _vertBufSlots[16];
+	RDITexSlot        _texSlots[16];
+	uint32            _curShaderObj;
+	uint32            _curVertLayout, _newVertLayout;
+	uint32            _curIndexBuf, _newIndexBuf;
+	uint32            _indexFormat;
+	bool              _vertLayoutDirty;
 	
 	uint32 loadShader( const char *vertexShader, const char *fragmentShader );
 	bool linkShader( uint32 shaderId );
 	void resolveRenderBuffer( uint32 rbObj );
 
+	bool applyVertexLayout();
+
 public:
 	
-	RendererBase();
-	virtual ~RendererBase();
+	RenderDeviceInterface();
+	virtual ~RenderDeviceInterface();
 	
 	// Rendering functions
 	void initStates();
 	virtual bool init();
 	virtual void resize( int x, int y, int width, int height );
 	
+// -----------------------------------------------------------------------------
+// Resources
+// -----------------------------------------------------------------------------
+
 	// Buffers
 	uint32 createVertexBuffer( uint32 size, void *data );
 	uint32 createIndexBuffer( uint32 size, void *data );
 	void releaseBuffer( uint32 bufObj );
 	void updateBufferData( uint32 bufObj, uint32 offset, uint32 size, void *data );
 	uint32 cloneBuffer( uint32 bufObj );
-	void bindVertexBuffer( uint32 slot, uint32 vbObj, uint32 offset, uint32 stride );
-	void bindIndexBuffer( uint32 bufObj );
 	uint32 getBufferMem() { return _bufferMem; }
 
 	// Textures
@@ -307,8 +342,30 @@ public:
 	void setVertexLayoutElem( uint32 vlObj, uint32 slot, const char *semanticName,
 	                          uint32 vbSlot, uint32 size, uint32 offset );
 	void releaseVertexLayout( uint32 vlObj );
-	bool applyVertexLayout( uint32 vlObj );
 
+// -----------------------------------------------------------------------------
+// Commands
+// -----------------------------------------------------------------------------
+	
+	void setIndexBuffer( uint32 bufObj, RDIIndexFormat idxFmt )
+		{ _indexFormat = (uint32)idxFmt; _newIndexBuf = bufObj; }
+	void setVertexBuffer( uint32 slot, uint32 vbObj, uint32 offset, uint32 stride )
+		{ ASSERT( slot < 16 ); _vertBufSlots[slot] = RDIVertBufSlot( vbObj, offset, stride );
+	      _vertLayoutDirty = true; }
+	void setVertexLayout( uint32 vlObj )
+		{ _newVertLayout = vlObj; }
+
+	bool commitStates();
+	void resetStates();
+	
+	// Draw calls
+	void draw( RDIPrimType primType, uint32 firstVert, uint32 numVerts );
+	void drawIndexed( RDIPrimType primType, uint32 firstIndex, uint32 numIndices,
+	                  uint32 firstVert, uint32 numVerts );
+
+// -----------------------------------------------------------------------------
+// Misc
+// -----------------------------------------------------------------------------
 
 	int getViewportX() { return _vpX; }
 	int getViewportY() { return _vpY; }
@@ -316,4 +373,5 @@ public:
 	int getViewportHeight() { return _vpHeight; }
 };
 
+}
 #endif // _egRendererBase_H_

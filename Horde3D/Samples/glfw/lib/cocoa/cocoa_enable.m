@@ -1,11 +1,10 @@
 //========================================================================
 // GLFW - An OpenGL framework
-// File:        macosx_enable.m
-// Platform:    Mac OS X
+// Platform:    Cocoa/NSOpenGL
 // API Version: 2.7
-// WWW:         http://glfw.sourceforge.net
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
-// Copyright (c) 2002-2006 Camilla Berglund
+// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -46,7 +45,7 @@ void _glfwPlatformEnableSystemKeys( void )
 void _glfwPlatformDisableSystemKeys( void )
 {
     // This is checked in macosx_window.m; we take no action here
-    // I don't think it's really possible to disable stuff like Exposé
+    // I don't think it's really possible to disable stuff like ExposÃ©
     // except in full-screen mode.
 }
 

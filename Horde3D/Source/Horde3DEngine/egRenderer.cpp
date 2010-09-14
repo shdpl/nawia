@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -19,6 +19,9 @@
 #include "egCom.h"
 
 #include "utDebug.h"
+
+
+namespace Horde3D {
 
 using namespace std;
 
@@ -38,7 +41,7 @@ const char *fsDefColor =
 	"}\n";
 
 
-Renderer::Renderer() : RendererBase()
+Renderer::Renderer() : RenderDeviceInterface()
 {
 	_scratchBuf = 0x0;
 	_scratchBufSize = 0;
@@ -91,7 +94,7 @@ unsigned char *Renderer::useScratchBuf( uint32 minSize )
 bool Renderer::init()
 {
 	// Init backend
-	if( !RendererBase::init() ) return false;
+	if( !RenderDeviceInterface::init() ) return false;
 
 	// Check capabilities
 	if( !_caps[RenderCaps::Tex_Float] )
@@ -197,7 +200,7 @@ bool Renderer::init()
 
 void Renderer::resize( int x, int y, int width, int height )
 {
-	RendererBase::resize( x, y, width, height );
+	RenderDeviceInterface::resize( x, y, width, height );
 }
 
 
@@ -297,11 +300,11 @@ void Renderer::drawAABB( const Vec3f &bbMin, const Vec3f &bbMax )
 		Matrix4f::ScaleMat( bbMax.x - bbMin.x, bbMax.y - bbMin.y, bbMax.z - bbMin.z );
 	glUniformMatrix4fv( _curShader->uni_worldMat, 1, false, &mat.x[0] );
 	
-	bindVertexBuffer( 0, _vbCube, 0, 12 );
-	bindIndexBuffer( _ibCube );
-	applyVertexLayout( _vlPosOnly );
+	setVertexBuffer( 0, _vbCube, 0, 12 );
+	setIndexBuffer( _ibCube, IDXFMT_16 );
+	setVertexLayout( _vlPosOnly );
 
-	glDrawElements( GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (char *)0 );
+	drawIndexed( PRIM_TRILIST, 0, 36, 0, 24 );
 }
 
 
@@ -313,11 +316,11 @@ void Renderer::drawSphere( const Vec3f &pos, float radius )
 	               Matrix4f::ScaleMat( radius, radius, radius );
 	glUniformMatrix4fv( _curShader->uni_worldMat, 1, false, &mat.x[0] );
 	
-	bindVertexBuffer( 0, _vbSphere, 0, 12 );
-	bindIndexBuffer( _ibSphere );
-	applyVertexLayout( _vlPosOnly );
+	setVertexBuffer( 0, _vbSphere, 0, 12 );
+	setIndexBuffer( _ibSphere, IDXFMT_16 );
+	setVertexLayout( _vlPosOnly );
 
-	glDrawElements( GL_TRIANGLES, 128 * 3, GL_UNSIGNED_SHORT, (char *)0 );
+	drawIndexed( PRIM_TRILIST, 0, 128 * 3, 0, 126 );
 }
 
 
@@ -328,11 +331,11 @@ void Renderer::drawCone( float height, float radius, const Matrix4f &transMat )
 	Matrix4f mat = transMat * Matrix4f::ScaleMat( radius, radius, height );
 	glUniformMatrix4fv( _curShader->uni_worldMat, 1, false, &mat.x[0] );
 	
-	bindVertexBuffer( 0, _vbCone, 0, 12 );
-	bindIndexBuffer( _ibCone );
-	applyVertexLayout( _vlPosOnly );
+	setVertexBuffer( 0, _vbCone, 0, 12 );
+	setIndexBuffer( _ibCone, IDXFMT_16 );
+	setVertexLayout( _vlPosOnly );
 
-	glDrawElements( GL_TRIANGLES, 22 * 3, GL_UNSIGNED_SHORT, (char *)0 );
+	drawIndexed( PRIM_TRILIST, 0, 22 * 3, 0, 39 );
 }
 
 
@@ -343,7 +346,7 @@ void Renderer::drawCone( float height, float radius, const Matrix4f &transMat )
 bool Renderer::createShaderComb( const char *vertexShader, const char *fragmentShader, ShaderCombination &sc )
 {
 	// Create shader program
-	uint32 shdObj = RendererBase::createShader( vertexShader, fragmentShader );
+	uint32 shdObj = createShader( vertexShader, fragmentShader );
 	if( shdObj == 0 ) return false;
 	
 	sc.shaderObj = shdObj;
@@ -393,7 +396,7 @@ bool Renderer::createShaderComb( const char *vertexShader, const char *fragmentS
 
 void Renderer::releaseShaderComb( ShaderCombination &sc )
 {
-	RendererBase::releaseShader( sc.shaderObj );
+	releaseShader( sc.shaderObj );
 }
 
 
@@ -1084,9 +1087,9 @@ void Renderer::drawOccProxies( uint32 list )
 	
 	setShaderComb( &Modules::renderer()._defColorShader );
 	commitGeneralUniforms();
-	bindVertexBuffer( 0, _vbCube, 0, 12 );
-	bindIndexBuffer( _ibCube );
-	applyVertexLayout( _vlPosOnly );
+	setVertexBuffer( 0, _vbCube, 0, 12 );
+	setIndexBuffer( _ibCube, IDXFMT_16 );
+	setVertexLayout( _vlPosOnly );
 
 	// Draw occlusion proxies
 	for( size_t i = 0, s = _occProxies[list].size(); i < s; ++i )
@@ -1100,7 +1103,7 @@ void Renderer::drawOccProxies( uint32 list )
 		glUniformMatrix4fv( _curShader->uni_worldMat, 1, false, &mat.x[0] );
 
 		// Draw AABB
-		glDrawElements( GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (char *)0 );
+		drawIndexed( PRIM_TRILIST, 0, 36, 0, 24 );
 
 		endQuery( proxy.queryObj );
 	}
@@ -1162,8 +1165,8 @@ void Renderer::drawOverlays( const string &shaderContext )
 	// Upload overlay vertices
 	updateBufferData( _overlayVB, 0, MaxNumOverlayVerts * sizeof( OverlayVert ), _overlayVerts );
 
-	bindVertexBuffer( 0, _overlayVB, 0, sizeof( OverlayVert ) );
-	bindIndexBuffer( _quadIdxBuf );
+	setVertexBuffer( 0, _overlayVB, 0, sizeof( OverlayVert ) );
+	setIndexBuffer( _quadIdxBuf, IDXFMT_16 );
 	ASSERT( QuadIndexBufCount >= MaxNumOverlayVerts * 6 );
 
 	float aspect = (float)_vpWidth / (float)_vpHeight;
@@ -1178,7 +1181,7 @@ void Renderer::drawOverlays( const string &shaderContext )
 		if( curMatRes != ob.materialRes )
 		{
 			if( !setMaterial( ob.materialRes, shaderContext ) ) continue;
-			applyVertexLayout( _vlOverlay );
+			setVertexLayout( _vlOverlay );
 			curMatRes = ob.materialRes;
 		}
 		
@@ -1186,8 +1189,7 @@ void Renderer::drawOverlays( const string &shaderContext )
 			glUniform4fv( _curShader->uni_olayColor, 1, ob.colRGBA );
 		
 		// Draw batch
-		glDrawElements( GL_TRIANGLES, ob.vertCount / 4 * 6, GL_UNSIGNED_SHORT,
-		                (char *)0 + ob.firstVert / 4 * 6 * sizeof( uint16 ) );
+		drawIndexed( PRIM_TRILIST, ob.firstVert * 6/4, ob.vertCount * 6/4, ob.firstVert, ob.vertCount );
 	}
 }
 
@@ -1242,7 +1244,7 @@ void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
 		// Store state of glDrawBuffers
 		for( uint32 i = 0; i < 4; ++i ) glGetIntegerv( GL_DRAW_BUFFER0 + i, (int *)&prevBuffers[i] );
 		
-		RBRenderBuffer &rb = _rendBufs.getRef( _curRendBuf );
+		RDIRenderBuffer &rb = _rendBufs.getRef( _curRendBuf );
 		uint32 buffers[4], cnt = 0;
 
 		if( depth && rb.depthTex != 0 ) mask |= GL_DEPTH_BUFFER_BIT;
@@ -1283,11 +1285,11 @@ void Renderer::drawFSQuad( Resource *matRes, const string &shaderContext )
 	
 	if( !setMaterial( (MaterialResource *)matRes, shaderContext ) ) return;
 
-	bindVertexBuffer( 0, _vbFSPoly, 0, 12 );
-	bindIndexBuffer( 0 );
-	applyVertexLayout( _vlPosOnly );
+	setVertexBuffer( 0, _vbFSPoly, 0, 12 );
+	setIndexBuffer( 0, IDXFMT_16 );
+	setVertexLayout( _vlPosOnly );
 
-	glDrawArrays( GL_TRIANGLES, 0, 3 );
+	draw( PRIM_TRILIST, 0, 3 );
 }
 
 
@@ -1547,62 +1549,63 @@ void Renderer::drawRenderables( const string &shaderContext, const string &theCl
 }
 
 
-void Renderer::drawModels( const string &shaderContext, const string &theClass, bool debugView,
+void Renderer::drawMeshes( const string &shaderContext, const string &theClass, bool debugView,
                            const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order,
                            int occSet )
 {
 	if( frust1 == 0x0 ) return;
-
-	Vec3f camPos( frust1->getOrigin() );
-	if( Modules::renderer().getCurCamera() != 0x0 )
-		camPos = Modules::renderer().getCurCamera()->getAbsPos();
 	
 	GeometryResource *curGeoRes = 0x0;
 	MaterialResource *curMatRes = 0x0;
-	bool applyVertexLayout = true;
 
-	// Loop over model queue
+	// Loop over mesh queue
 	for( size_t i = 0, si = Modules::sceneMan().getRenderableQueue().size(); i < si; ++i )
 	{
-		if( Modules::sceneMan().getRenderableQueue()[i].type != SceneNodeTypes::Model ) continue;
+		if( Modules::sceneMan().getRenderableQueue()[i].type != SceneNodeTypes::Mesh ) continue;
 		
-		ModelNode *modelNode = (ModelNode *)Modules::sceneMan().getRenderableQueue()[i].node;
-		if( modelNode->getGeometryResource() == 0x0 ) continue;
-
+		MeshNode *meshNode = (MeshNode *)Modules::sceneMan().getRenderableQueue()[i].node;
+		ModelNode *modelNode = meshNode->getParentModel();
+		
+		// Check that mesh is valid
+		if( modelNode->getGeometryResource() == 0x0 )
+			continue;
+		if( meshNode->getBatchStart() + meshNode->getBatchCount() > modelNode->getGeometryResource()->_indexCount )
+			continue;
+		
 		bool modelChanged = true;
 		uint32 queryObj = 0;
 
 		// Occlusion culling
 		if( occSet >= 0 )
 		{
-			if( occSet > (int)modelNode->_occQueries.size() - 1 )
+			if( occSet > (int)meshNode->_occQueries.size() - 1 )
 			{
-				modelNode->_occQueries.resize( occSet + 1, 0 );
-				modelNode->_lastVisited.resize( occSet + 1, 0 );
+				meshNode->_occQueries.resize( occSet + 1, 0 );
+				meshNode->_lastVisited.resize( occSet + 1, 0 );
 			}
-			if( modelNode->_occQueries[occSet] == 0 )
+			if( meshNode->_occQueries[occSet] == 0 )
 			{
 				queryObj = Modules::renderer().createOcclusionQuery();
-				modelNode->_occQueries[occSet] = queryObj;
-				modelNode->_lastVisited[occSet] = 0;
+				meshNode->_occQueries[occSet] = queryObj;
+				meshNode->_lastVisited[occSet] = 0;
 			}
 			else
 			{
-				if( modelNode->_lastVisited[occSet] != Modules::renderer().getFrameID() )
+				if( meshNode->_lastVisited[occSet] != Modules::renderer().getFrameID() )
 				{
-					modelNode->_lastVisited[occSet] = Modules::renderer().getFrameID();
+					meshNode->_lastVisited[occSet] = Modules::renderer().getFrameID();
 				
 					// Check query result (viewer must be outside of bounding box)
-					if( nearestDistToAABB( frust1->getOrigin(), modelNode->getBBox().min,
-					                       modelNode->getBBox().max ) > 0 &&
-						Modules::renderer().getQueryResult( modelNode->_occQueries[occSet] ) < 1 )
+					if( nearestDistToAABB( frust1->getOrigin(), meshNode->getBBox().min,
+					                       meshNode->getBBox().max ) > 0 &&
+						Modules::renderer().getQueryResult( meshNode->_occQueries[occSet] ) < 1 )
 					{
-						Modules::renderer().pushOccProxy( 0, modelNode->getBBox().min, modelNode->getBBox().max,
-						                                  modelNode->_occQueries[occSet] );
+						Modules::renderer().pushOccProxy( 0, meshNode->getBBox().min, meshNode->getBBox().max,
+						                                  meshNode->_occQueries[occSet] );
 						continue;
 					}
 					else
-						queryObj = modelNode->_occQueries[occSet];
+						queryObj = meshNode->_occQueries[occSet];
 				}
 			}
 		}
@@ -1614,158 +1617,102 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 			ASSERT( curGeoRes != 0x0 );
 		
 			// Indices
-			Modules::renderer().bindIndexBuffer( curGeoRes->getIndexBuf() );
+			Modules::renderer().setIndexBuffer( curGeoRes->getIndexBuf(),
+			                                    curGeoRes->_16BitIndices ? IDXFMT_16 : IDXFMT_32 );
 
 			// Vertices
 			uint32 posVBuf = curGeoRes->getPosVBuf();
 			uint32 tanVBuf = curGeoRes->getTanVBuf();
 			uint32 staticVBuf = curGeoRes->getStaticVBuf();
 			
-			Modules::renderer().bindVertexBuffer( 0, posVBuf, 0, sizeof( Vec3f ) );
-			Modules::renderer().bindVertexBuffer( 1, tanVBuf, 0, sizeof( VertexDataTan ) );
-			Modules::renderer().bindVertexBuffer( 2, tanVBuf, sizeof( Vec3f ), sizeof( VertexDataTan ) );
-			Modules::renderer().bindVertexBuffer( 3, staticVBuf, 0, sizeof( VertexDataStatic ) );
-
-			applyVertexLayout = true;
+			Modules::renderer().setVertexBuffer( 0, posVBuf, 0, sizeof( Vec3f ) );
+			Modules::renderer().setVertexBuffer( 1, tanVBuf, 0, sizeof( VertexDataTan ) );
+			Modules::renderer().setVertexBuffer( 2, tanVBuf, sizeof( Vec3f ), sizeof( VertexDataTan ) );
+			Modules::renderer().setVertexBuffer( 3, staticVBuf, 0, sizeof( VertexDataStatic ) );
 		}
-		
-		// Sort meshes
-		if( ( order == RenderingOrder::FrontToBack || order == RenderingOrder::BackToFront ) && frust1 != 0x0 )
-		{
-			for( size_t j = 0, sj = modelNode->_meshList.size(); j < sj; ++j )
-			{
-				MeshNode *meshNode = (MeshNode *)modelNode->_meshList[j];
 
-				meshNode->tmpSortValue = nearestDistToAABB( frust1->getOrigin(),
-					meshNode->_bBox.min, meshNode->_bBox.max );
+		Modules::renderer().setVertexLayout( Modules::renderer()._vlModel );
+		
+		ShaderCombination *prevShader = Modules::renderer().getCurShader();
+		
+		if( !debugView )
+		{
+			if( !meshNode->getMaterialRes()->isOfClass( theClass ) ) continue;
+			
+			// Set material
+			if( curMatRes != meshNode->getMaterialRes() )
+			{
+				if( !Modules::renderer().setMaterial( meshNode->getMaterialRes(), shaderContext ) )
+				{	
+					curMatRes = 0x0;
+					continue;
+				}
+				curMatRes = meshNode->getMaterialRes();
 			}
 		}
+		else
+		{
+			Modules::renderer().setShaderComb( &Modules::renderer()._defColorShader );
+			Modules::renderer().commitGeneralUniforms();
+			
+			uint32 curLod = meshNode->getLodLevel();
+			Vec4f color;
+			if( curLod == 0 ) color = Vec4f( 0.5f, 0.75f, 1, 1 );
+			else if( curLod == 1 ) color = Vec4f( 0.25f, 0.75, 0.75f, 1 );
+			else if( curLod == 2 ) color = Vec4f( 0.25f, 0.75, 0.5f, 1 );
+			else if( curLod == 3 ) color = Vec4f( 0.5f, 0.5f, 0.25f, 1 );
+			else color = Vec4f( 0.75f, 0.5, 0.25f, 1 );
 
-		if( order == RenderingOrder::FrontToBack )
-			std::sort( modelNode->_meshList.begin(), modelNode->_meshList.end(), nodeFrontToBackOrder );
-		else if( order == RenderingOrder::BackToFront )
-			std::sort( modelNode->_meshList.begin(), modelNode->_meshList.end(), nodeBackToFrontOrder );
-		else if( order == RenderingOrder::StateChanges )
-			// Sort meshes by material to minimize state changes
-			std::sort( modelNode->_meshList.begin(), modelNode->_meshList.end(), meshMaterialOrder );
+			// Darken models with skeleton so that bones are more noticable
+			if( !modelNode->_jointList.empty() ) color = color * 0.3f;
+
+			glUniform4fv( Modules::renderer()._defColShader_color, 1, &color.x );
+		}
+
+		ShaderCombination *curShader = Modules::renderer().getCurShader();
 		
-		// LOD
-		uint32 curLod = modelNode->calcLodLevel( camPos );
-		
+		if( modelChanged || curShader != prevShader )
+		{
+			// Skeleton
+			if( curShader->uni_skinMatRows >= 0 && !modelNode->_skinMatRows.empty() )
+			{
+				// Note:	OpenGL 2.1 supports mat4x3 but it is internally realized as mat4 on most
+				//			hardware so it would require 4 instead of 3 uniform slots per joint
+				
+				glUniform4fv( curShader->uni_skinMatRows, (int)modelNode->_skinMatRows.size(),
+				              (float *)&modelNode->_skinMatRows[0] );
+			}
+
+			modelChanged = false;
+		}
+
+		// World transformation
+		if( curShader->uni_worldMat >= 0 )
+		{
+			glUniformMatrix4fv( curShader->uni_worldMat, 1, false, &meshNode->_absTrans.x[0] );
+		}
+		if( curShader->uni_worldNormalMat >= 0 )
+		{
+			// TODO: Optimize this
+			Matrix4f normalMat4 = meshNode->_absTrans.inverted().transposed();
+			float normalMat[9] = { normalMat4.x[0], normalMat4.x[1], normalMat4.x[2],
+			                       normalMat4.x[4], normalMat4.x[5], normalMat4.x[6],
+			                       normalMat4.x[8], normalMat4.x[9], normalMat4.x[10] };
+			glUniformMatrix3fv( curShader->uni_worldNormalMat, 1, false, normalMat );
+		}
+		if( curShader->uni_nodeId >= 0 )
+		{
+			glUniform1f( curShader->uni_nodeId, (float)meshNode->getHandle() );
+		}
+
 		if( queryObj )
 			Modules::renderer().beginQuery( queryObj );
 		
-		for( size_t j = 0, sj = modelNode->_meshList.size(); j < sj; ++j )
-		{
-			MeshNode *meshNode = (MeshNode *)modelNode->_meshList[j];
-
-			if( !meshNode->_active || meshNode->getLodLevel() != curLod ) continue;
-
-			// Frustum culling for meshes
-			if( (frust1 != 0x0 && frust1->cullBox( meshNode->_bBox )) ||
-			    (frust2 != 0x0 && frust2->cullBox( meshNode->_bBox )) )
-			{
-				continue;
-			}
-			
-			// Check that mesh is valid
-			if( meshNode->getBatchStart() + meshNode->getBatchCount() > curGeoRes->_indexCount )
-				continue;
-			
-			ShaderCombination *prevShader = Modules::renderer().getCurShader();
-			
-			if( !debugView )
-			{
-				if( !meshNode->getMaterialRes()->isOfClass( theClass ) ) continue;
-				
-				// Set material
-				if( curMatRes != meshNode->getMaterialRes() )
-				{
-					if( !Modules::renderer().setMaterial( meshNode->getMaterialRes(), shaderContext ) )
-					{	
-						curMatRes = 0x0;
-						continue;
-					}
-					curMatRes = meshNode->getMaterialRes();
-				}
-			}
-			else
-			{
-				Modules::renderer().setShaderComb( &Modules::renderer()._defColorShader );
-				Modules::renderer().commitGeneralUniforms();
-				
-				Vec4f color;
-				if( curLod == 0 ) color = Vec4f( 0.5f, 0.75f, 1, 1 );
-				else if( curLod == 1 ) color = Vec4f( 0.25f, 0.75, 0.75f, 1 );
-				else if( curLod == 2 ) color = Vec4f( 0.25f, 0.75, 0.5f, 1 );
-				else if( curLod == 3 ) color = Vec4f( 0.5f, 0.5f, 0.25f, 1 );
-				else color = Vec4f( 0.75f, 0.5, 0.25f, 1 );
-
-				// Darken models with skeleton so that bones are more noticable
-				if( !modelNode->_jointList.empty() ) color = color * 0.3f;
-
-				glUniform4fv( Modules::renderer()._defColShader_color, 1, &color.x );
-			}
-
-			ShaderCombination *curShader = Modules::renderer().getCurShader();
-
-			if( curShader != prevShader )
-				applyVertexLayout = true;
-			
-			if( modelChanged || curShader != prevShader )
-			{
-				// Skeleton
-				if( curShader->uni_skinMatRows >= 0 && !modelNode->_skinMatRows.empty() )
-				{
-					// Note:	OpenGL 2.1 supports mat4x3 but it is internally realized as mat4 on most
-					//			hardware so it would require 4 instead of 3 uniform slots per joint
-					
-					glUniform4fv( curShader->uni_skinMatRows, (int)modelNode->_skinMatRows.size(),
-					              (float *)&modelNode->_skinMatRows[0] );
-				}
-
-				modelChanged = false;
-			}
-
-			// World transformation
-			if( curShader->uni_worldMat >= 0 )
-			{
-				glUniformMatrix4fv( curShader->uni_worldMat, 1, false, &meshNode->_absTrans.x[0] );
-			}
-			if( curShader->uni_worldNormalMat >= 0 )
-			{
-				// TODO: Optimize this
-				Matrix4f normalMat4 = meshNode->_absTrans.inverted().transposed();
-				float normalMat[9] = { normalMat4.x[0], normalMat4.x[1], normalMat4.x[2],
-				                       normalMat4.x[4], normalMat4.x[5], normalMat4.x[6],
-				                       normalMat4.x[8], normalMat4.x[9], normalMat4.x[10] };
-				glUniformMatrix3fv( curShader->uni_worldNormalMat, 1, false, normalMat );
-			}
-			if( curShader->uni_nodeId >= 0 )
-			{
-				glUniform1f( curShader->uni_nodeId, (float)meshNode->getHandle() );
-			}
-
-			// Apply vertex layout
-			if( applyVertexLayout )
-			{
-				if( !Modules::renderer().applyVertexLayout( Modules::renderer()._vlModel ) )
-				{
-					Modules::renderer().setShaderComb( 0x0 );
-					continue;
-				}
-				applyVertexLayout = false;
-			}
-
-			// Render
-			glDrawRangeElements( GL_TRIANGLES, meshNode->getVertRStart(), meshNode->getVertREnd(),
-			                     meshNode->getBatchCount(), 
-			                     curGeoRes->_16BitIndices ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT,
-			                     (char *)0 + meshNode->getBatchStart() *
-			                     (curGeoRes->_16BitIndices ? sizeof( short ) : sizeof( int )) );
-			Modules::stats().incStat( EngineStats::BatchCount, 1 );
-			Modules::stats().incStat( EngineStats::TriCount, meshNode->getBatchCount() / 3.0f );
-		}
+		// Render
+		Modules::renderer().drawIndexed( PRIM_TRILIST, meshNode->getBatchStart(), meshNode->getBatchCount(),
+		                                 meshNode->getVertRStart(), meshNode->getVertREnd() );
+		Modules::stats().incStat( EngineStats::BatchCount, 1 );
+		Modules::stats().incStat( EngineStats::TriCount, meshNode->getBatchCount() / 3.0f );
 
 		if( queryObj )
 			Modules::renderer().endQuery( queryObj );
@@ -1775,7 +1722,7 @@ void Renderer::drawModels( const string &shaderContext, const string &theClass, 
 	if( occSet >= 0 )
 		Modules::renderer().drawOccProxies( 0 );
 
-	Modules::renderer().applyVertexLayout( 0 );
+	Modules::renderer().setVertexLayout( 0 );
 }
 
 
@@ -1801,8 +1748,8 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 	if( Modules::config().gatherTimeStats ) timer->beginQuery( Modules::renderer().getFrameID() );
 
 	// Bind particle geometry
-	Modules::renderer().bindVertexBuffer( 0, Modules::renderer().getParticleVBO(), 0, sizeof( ParticleVert ) );
-	Modules::renderer().bindIndexBuffer( Modules::renderer().getQuadIdxBuf() );
+	Modules::renderer().setVertexBuffer( 0, Modules::renderer().getParticleVBO(), 0, sizeof( ParticleVert ) );
+	Modules::renderer().setIndexBuffer( Modules::renderer().getQuadIdxBuf(), IDXFMT_16 );
 	ASSERT( QuadIndexBufCount >= ParticlesPerBatch * 6 );
 
 	// Loop through emitter queue
@@ -1859,7 +1806,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 		}
 
 		// Set vertex layout
-		if( !Modules::renderer().applyVertexLayout( Modules::renderer()._vlParticle ) ) continue;
+		Modules::renderer().setVertexLayout( Modules::renderer()._vlParticle );
 		
 		if( queryObj )
 			Modules::renderer().beginQuery( queryObj );
@@ -1892,7 +1839,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 			if( curShader->uni_parColorArray >= 0 )
 				glUniform4fv( curShader->uni_parColorArray, ParticlesPerBatch, (float *)emitter->_parColors + j*ParticlesPerBatch*4 );
 
-			glDrawElements( GL_TRIANGLES, ParticlesPerBatch * 6, GL_UNSIGNED_SHORT, (char *)0 );
+			Modules::renderer().drawIndexed( PRIM_TRILIST, 0, ParticlesPerBatch * 6, 0, ParticlesPerBatch * 4 );
 			Modules::stats().incStat( EngineStats::BatchCount, 1 );
 			Modules::stats().incStat( EngineStats::TriCount, ParticlesPerBatch * 2.0f );
 		}
@@ -1923,7 +1870,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 				if( curShader->uni_parColorArray >= 0 )
 					glUniform4fv( curShader->uni_parColorArray, count, (float *)emitter->_parColors + offset*4 );
 				
-				glDrawElements( GL_TRIANGLES, count * 6, GL_UNSIGNED_SHORT, (char *)0 );
+				Modules::renderer().drawIndexed( PRIM_TRILIST, 0, count * 6, 0, count * 4 );
 				Modules::stats().incStat( EngineStats::BatchCount, 1 );
 				Modules::stats().incStat( EngineStats::TriCount, count * 2.0f );
 			}
@@ -1939,7 +1886,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 	if( occSet >= 0 )
 		Modules::renderer().drawOccProxies( 0 );
 	
-	Modules::renderer().applyVertexLayout( 0 );
+	Modules::renderer().setVertexLayout( 0 );
 }
 
 
@@ -2098,7 +2045,7 @@ void Renderer::renderDebugView()
 	}
 	glEnable( GL_CULL_FACE );
 
-	// Draw skeleton
+	/*// Draw skeleton
 	glUniformMatrix4fv( _defColorShader.uni_worldMat, 1, false, &Matrix4f().x[0] );
 	glUniform4f( Modules::renderer()._defColShader_color, 1.0f, 0, 0, 1 );
 	glLineWidth( 2.0f );
@@ -2131,7 +2078,7 @@ void Renderer::renderDebugView()
 		}
 	}
 	glLineWidth( 1.0f );
-	glPointSize( 1.0f );
+	glPointSize( 1.0f );*/
 
 	// Draw light volumes
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
@@ -2162,9 +2109,10 @@ void Renderer::finishRendering()
 {
 	setRenderBuffer( 0 );
 	setMaterial( 0x0, "" );
-	applyVertexLayout( 0 );
-	bindIndexBuffer( 0 );
+	resetStates();
 	glBindBuffer( GL_ARRAY_BUFFER, 0 );
 	
 	//ASSERT( glGetError() == GL_NO_ERROR );
 }
+
+}  // namespace

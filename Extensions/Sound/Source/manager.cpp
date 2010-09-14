@@ -37,6 +37,8 @@
 
 #include "manager.h"
 
+namespace Horde3D
+{
 	SoundManager SoundManager::_instance;
 
 	void SoundManager::init()
@@ -298,3 +300,4 @@
 
 		return true;
 	}
+}

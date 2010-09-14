@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -15,9 +15,12 @@
 #include "egModules.h"
 #include "egCom.h"
 #include "utPlatform.h"
-#include "utXMLParser.h"
+#include "utXML.h"
 
 #include "utDebug.h"
+
+
+namespace Horde3D {
 
 using namespace std;
 
@@ -84,18 +87,15 @@ bool MaterialResource::raiseError( const string &msg, int line )
 bool MaterialResource::load( const char *data, int size )
 {
 	if( !Resource::load( data, size ) ) return false;
-	if( data[size - 1] != '\0' )
-	{	
-		return raiseError( "Data block not NULL-terminated" );
-	}
+	
+	XMLDoc doc;
+	doc.parseBuffer( data, size );
+	if( doc.hasError() )
+		return raiseError( "XML parsing error" );
 
-	// Parse material
-	XMLResults res;
-	XMLNode rootNode = XMLNode::parseString( data, "Material", &res );
-	if( res.error != eXMLErrorNone )
-	{
-		return raiseError( XMLNode::getError( res.error ), res.nLine );
-	}
+	XMLNode rootNode = doc.getRootNode();
+	if( strcmp( rootNode.getName(), "Material" ) != 0 )
+		return raiseError( "Not a material resource file" );
 
 	// Class
     _class = rootNode.getAttribute( "class", "" );
@@ -111,19 +111,18 @@ bool MaterialResource::load( const char *data, int size )
 	}
 
 	// Shader Flags
-	int nodeItr1 = 0;
-	XMLNode node1 = rootNode.getChildNode( "ShaderFlag", nodeItr1 );
+	XMLNode node1 = rootNode.getFirstChild( "ShaderFlag" );
 	while( !node1.isEmpty() )
 	{
 		if( node1.getAttribute( "name" ) == 0x0 ) return raiseError( "Missing ShaderFlag attribute 'name'" );
 		
 		_shaderFlags.push_back( node1.getAttribute( "name" ) );
 		
-		node1 = rootNode.getChildNode( "ShaderFlag", ++nodeItr1 );
+		node1 = node1.getNextSibling( "ShaderFlag" );
 	}
     
     // Shader
-	node1 = rootNode.getChildNode( "Shader" );
+	node1 = rootNode.getFirstChild( "Shader" );
 	if( !node1.isEmpty() )
 	{
 		if( node1.getAttribute( "source" ) == 0x0 ) return raiseError( "Missing Shader attribute 'source'" );
@@ -137,8 +136,7 @@ bool MaterialResource::load( const char *data, int size )
 	}
 
 	// Texture samplers
-	nodeItr1 = 0;
-	node1 = rootNode.getChildNode( "Sampler", nodeItr1 );
+	node1 = rootNode.getFirstChild( "Sampler" );
 	while( !node1.isEmpty() )
 	{
 		if( node1.getAttribute( "name" ) == 0x0 ) return raiseError( "Missing Sampler attribute 'name'" );
@@ -170,12 +168,11 @@ bool MaterialResource::load( const char *data, int size )
 		
 		_samplers.push_back( sampler );
 		
-		node1 = rootNode.getChildNode( "Sampler", ++nodeItr1 );
+		node1 = node1.getNextSibling( "Sampler" );
 	}
 		
 	// Vector uniforms
-	nodeItr1 = 0;
-	node1 = rootNode.getChildNode( "Uniform", nodeItr1 );
+	node1 = rootNode.getFirstChild( "Uniform" );
 	while( !node1.isEmpty() )
 	{
 		if( node1.getAttribute( "name" ) == 0x0 ) return raiseError( "Missing Uniform attribute 'name'" );
@@ -190,7 +187,7 @@ bool MaterialResource::load( const char *data, int size )
 
 		_uniforms.push_back( uniform );
 
-		node1 = rootNode.getChildNode( "Uniform", ++nodeItr1 );
+		node1 = node1.getNextSibling( "Uniform" );
 	}
 	
 	return true;
@@ -459,3 +456,5 @@ void MaterialResource::setElemParamStr( int elem, int elemIdx, int param, const 
 	
 	Resource::setElemParamStr( elem, elemIdx, param, value );
 }
+
+}  // namespace

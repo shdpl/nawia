@@ -32,6 +32,9 @@
 
 #include "decode.h"
 
+namespace Horde3D
+{
+
 	const int RST_SoundResource = 200;
 
 	struct SoundResParams
@@ -72,5 +75,7 @@
 	};
 
 	typedef SmartResPtr< SoundResource > PSoundResource;
+
+}
 
 #endif // _Horde3DSound_soundResource_H_

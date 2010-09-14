@@ -47,7 +47,10 @@ namespace Horde3DNET
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
         internal static extern void h3dSetupViewport(int x, int y, int width, int height, [MarshalAs(UnmanagedType.U1)]bool resizeBuffers);
-        
+
+        [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
+        internal static extern float h3dGetViewportParams(out int x, out int y, out int width, out int height);        
+
         //horde3d 1.0
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]        
         internal static extern void h3dRender(int node);
@@ -76,12 +79,7 @@ namespace Horde3DNET
         internal static extern float h3dGetStat(int param, [MarshalAs(UnmanagedType.U1)]bool reset);
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
-        internal static extern void h3dShowOverlay(float x_ll, float y_ll, float u_ll, float v_ll,
-						                      float x_lr, float y_lr, float u_lr, float v_lr,
-						                      float x_ur, float y_ur, float u_ur, float v_ur,
-						                      float x_ul, float y_ul, float u_ul, float v_ul,
-                                              float colR, float colG, float colB, float colA,
-						                      int material, int layer );
+        internal static extern void h3dShowOverlays(float[] verts, int vertCount, float colR, float colG, float colB, float colA, int material, int flags );
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
         internal static extern void h3dClearOverlays();
@@ -220,7 +218,7 @@ namespace Horde3DNET
         internal static extern void h3dSetNodeParamI(int node, int param, int value);
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
-        internal static extern float h3dGetNodeParamF(int node, int param);
+        internal static extern float h3dGetNodeParamF(int node, int param, int compIdx);
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]        
         internal static extern void h3dSetNodeParamF(int node, int param, int compIdx, float value);

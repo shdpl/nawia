@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -11,7 +11,7 @@
 // *************************************************************************************************
 
 #include "daeMain.h"
-#include "utXMLParser.h"
+#include "utXML.h"
 #include "utils.h"
 
 using namespace std;
@@ -27,19 +27,24 @@ ColladaDocument::ColladaDocument()
 bool ColladaDocument::parseFile( const string &fileName )
 {
 	// Parse Collada file
-	XMLResults results;
-	XMLNode rootNode = XMLNode::parseFile( fileName.c_str(), "COLLADA", &results );
-	if( rootNode.isEmpty() )
-	{	
-		switch( results.error )
-		{
-		case eXMLErrorFileNotFound:
-			log( "Error: File not found '" + fileName + "'" );
-			return false;
-		default:
-			log( XMLNode::getError( results.error ) );
-			return false;
-		}
+	XMLDoc doc;
+	if( !doc.parseFile( fileName.c_str() ) )
+	{
+		log( "Error: file not found" );
+		return false;
+	}
+
+	if( doc.hasError() )
+	{
+		log( "Error: XML parsing error" );
+		return false;
+	}
+	
+	XMLNode rootNode = doc.getRootNode();
+	if( strcmp( rootNode.getName(), "COLLADA" ) != 0 )
+	{
+		log( "Error: not a COLLADA document" );
+		return false;
 	}
 
 	if( strcmp( rootNode.getAttribute( "version", "" ), "1.4.0") != 0 &&
@@ -50,10 +55,10 @@ bool ColladaDocument::parseFile( const string &fileName )
 	}
 
 	// Parse asset
-	XMLNode node1 = rootNode.getChildNode( "asset" );
+	XMLNode node1 = rootNode.getFirstChild( "asset" );
 	if( !node1.isEmpty() )
 	{
-		XMLNode node2 = node1.getChildNode( "up_axis" );
+		XMLNode node2 = node1.getFirstChild( "up_axis" );
 		if( !node2.isEmpty() && node2.getText() != 0x0 )
 		{
 			if( strcmp( node2.getText(), "Y_UP" ) == 0 ) y_up = true;
@@ -104,10 +109,10 @@ bool ColladaDocument::parseFile( const string &fileName )
 
 	// Visual scene instance
 	bool foundScene = false;
-	node1 = rootNode.getChildNode( "scene" );
+	node1 = rootNode.getFirstChild( "scene" );
 	if( !node1.isEmpty() )
 	{
-		XMLNode node2 = node1.getChildNode( "instance_visual_scene" );
+		XMLNode node2 = node1.getFirstChild( "instance_visual_scene" );
 		if( !node2.isEmpty() )
 		{
 			string sceneId = node2.getAttribute( "url", "" );
@@ -115,7 +120,8 @@ bool ColladaDocument::parseFile( const string &fileName )
 			scene = libVisScenes.findVisualScene( sceneId );
 			if( scene != 0x0 ) foundScene = true;
 
-			if( !node2.getChildNode( "instance_visual_scene", 1 ).isEmpty() )
+			node2.getFirstChild( "instance_visual_scene" );
+			if( !node2.getNextSibling( "instance_visual_scene" ).isEmpty() )
 				log( "Warning: Found more than one scene instance; ignoring following instances" );
 		}
 	}

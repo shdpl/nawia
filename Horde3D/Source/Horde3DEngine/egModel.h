@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -21,6 +21,8 @@
 #include "egMaterial.h"
 #include "utMath.h"
 
+
+namespace Horde3D {
 
 // =================================================================================================
 // Model Node
@@ -84,9 +86,6 @@ protected:
 	bool                          _softwareSkinning, _skinningDirty;
 	bool                          _nodeListDirty;  // An animatable node has been attached to model
 	bool                          _morpherUsed, _morpherDirty;
-	
-	std::vector< uint32 >         _occQueries;
-	std::vector< uint32 >         _lastVisited;
 
 	ModelNode( const ModelNodeTpl &modelTpl );
 	void recreateNodeListRec( SceneNode *node, bool firstCall );
@@ -130,4 +129,5 @@ public:
 	friend class Renderer;
 };
 
+}
 #endif // _egModel_H_

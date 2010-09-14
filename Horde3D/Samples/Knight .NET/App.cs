@@ -179,14 +179,14 @@ namespace Horde3DNET.Samples.KnightNET
                 Horde3DUtils.showFrameStats( _fontMatRes, _panelMatRes, _statMode );		        
 
                 string text = string.Format("Weight: {0:F2}", _weight);
-                Horde3DUtils.showText(text, 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes, 5);
+                Horde3DUtils.showText(text, 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes );
             }
 
             // Show logo            
-            h3d.showOverlay(0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
-                            1, 1, 1, 0, 1, 0.8f, 1, 1,
-                            1, 1, 1, 1, _logoMatRes, 7);
-
+            int x, y, width, height;
+            float ww = h3d.getViewportParams(out x, out y, out width, out height);
+            float[] ovLogo = new float[] { ww - 0.4f, 0.8f, 0, 1, ww - 0.4f, 1, 0, 0, ww, 1, 1, 0, ww, 0.8f, 1, 1 };
+            h3d.showOverlays(ovLogo, 4, 1, 1, 1, 1, _logoMatRes, 0);
 
             // Render scene
             h3d.render( _cam );//horde3D 1.0

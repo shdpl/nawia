@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -17,6 +17,9 @@
 #include "egScene.h"
 #include "egAnimation.h"
 #include "utMath.h"
+
+
+namespace Horde3D {
 
 class MaterialResource;
 class ModelNode;
@@ -71,7 +74,11 @@ protected:
 	BoundingBox         _localBBox;
 	bool                _ignoreAnim;
 
+	std::vector< uint32 >  _occQueries;
+	std::vector< uint32 >  _lastVisited;
+
 	MeshNode( const MeshNodeTpl &meshTpl );
+	~MeshNode();
 
 public:
 
@@ -99,9 +106,12 @@ public:
 	uint32 getVertRStart() { return _vertRStart; }
 	uint32 getVertREnd() { return _vertREnd; }
 	uint32 getLodLevel() { return _lodLevel; }
+	ModelNode *getParentModel() { return _parentModel; }
 
+	friend class SceneManager;
 	friend class SceneNode;
 	friend class ModelNode;
+	friend class Renderer;
 };
 
 
@@ -165,4 +175,5 @@ public:
 	friend class ModelNode;
 };
 
+}
 #endif // _egAnimatables_H_

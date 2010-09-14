@@ -29,6 +29,8 @@
 
 #include "egScene.h"
 
+namespace Horde3D
+{
 	const int SNT_ListenerNode = 201;
 
 	struct ListenerNodeParams
@@ -69,8 +71,8 @@
 	public:
 		~ListenerNode();
 
-		static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
-		static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
+		static Horde3D::SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
+		static Horde3D::SceneNode *factoryFunc( const Horde3D::SceneNodeTpl &nodeTpl );
 
 		float getParamF( int param, int compIdx );
 		void setParamF( int param, int compIdx, float value );
@@ -82,6 +84,6 @@
 
 		void updatePositionAndOrientation();
 	};
-
+}
 
 #endif // _Horde3DSound_listener_H_

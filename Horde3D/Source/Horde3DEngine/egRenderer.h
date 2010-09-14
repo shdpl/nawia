@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -19,6 +19,9 @@
 #include "egModel.h"
 #include <vector>
 #include <algorithm>
+
+
+namespace Horde3D {
 
 class MaterialResource;
 class LightNode;
@@ -99,7 +102,7 @@ struct PipeSamplerBinding
 };
 
 
-class Renderer : public RendererBase
+class Renderer : public RenderDeviceInterface
 {
 protected:
 	
@@ -138,13 +141,6 @@ protected:
 	
 	uint32                             _vbCube, _ibCube, _vbSphere, _ibSphere;
 	uint32                             _vbCone, _ibCone, _vbFSPoly;
-
-	static bool nodeFrontToBackOrder( MeshNode *e1, MeshNode *e2 )
-		{ return e1->tmpSortValue < e2->tmpSortValue; }
-	static bool nodeBackToFrontOrder( MeshNode *e1, MeshNode *e2 )
-		{ return e1->tmpSortValue > e2->tmpSortValue; }
-	static bool meshMaterialOrder( MeshNode *e1, MeshNode *e2 )
-		{ return e1->getMaterialRes() < e2->getMaterialRes(); }
 	
 	void setupViewMatrices( const Matrix4f &viewMat, const Matrix4f &projMat );
 	
@@ -206,7 +202,7 @@ public:
 	                   MaterialResource *matRes, int flags );
 	void clearOverlays();
 	
-	static void drawModels( const std::string &shaderContext, const std::string &theClass, bool debugView,
+	static void drawMeshes( const std::string &shaderContext, const std::string &theClass, bool debugView,
 		const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order, int occSet );
 	static void drawParticles( const std::string &shaderContext, const std::string &theClass, bool debugView,
 		const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order, int occSet );
@@ -223,4 +219,5 @@ public:
 	uint32 getParticleVBO() { return _particleVBO; }
 };
 
+}
 #endif // _egRenderer_H_

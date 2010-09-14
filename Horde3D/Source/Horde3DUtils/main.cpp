@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -34,12 +34,15 @@
 #include <fstream>
 #include <iomanip>
 
+using namespace Horde3D;
 using namespace std;
 
 #ifdef __MINGW32__
 #undef PLATFORM_WIN
 #endif
 
+
+namespace Horde3DUtils {
 
 struct InfoBox
 {
@@ -82,10 +85,14 @@ string cleanPath( string path )
 	return path;
 }
 
+}  // namespace
+
 
 // =================================================================================================
 // Exported API functions
 // =================================================================================================
+
+using namespace Horde3DUtils;
 
 // TODO: Make OpenGL functions platform independent
 
@@ -688,12 +695,25 @@ DLLEXP bool h3dutScreenshot( const char *filename )
 	int width, height;
 	h3dGetRenderTargetData( 0, "", 0, &width, &height, 0x0, 0x0, 0 );
 
-	unsigned char *pixels = new unsigned char[width * height * 4];
-	h3dGetRenderTargetData( 0, "", 0, 0x0, 0x0, 0x0, pixels, width * height * 4 );
+	float *pixelsF = new float[width * height * 4];
+	h3dGetRenderTargetData( 0, "", 0, 0x0, 0x0, 0x0, pixelsF, width * height * 16 );
+	
+	// Convert to BGR8
+	unsigned char *pixels = new unsigned char[width * height * 3];
+	for( int y = 0; y < height; ++y )
+	{
+		for( int x = 0; x < width; ++x )
+		{
+			pixels[(y * width + x) * 3 + 0] = ftoi_r( clamp( pixelsF[(y * width + x) * 4 + 2], 0.f, 1.f ) * 255.f );
+			pixels[(y * width + x) * 3 + 1] = ftoi_r( clamp( pixelsF[(y * width + x) * 4 + 1], 0.f, 1.f ) * 255.f );
+			pixels[(y * width + x) * 3 + 2] = ftoi_r( clamp( pixelsF[(y * width + x) * 4 + 0], 0.f, 1.f ) * 255.f );
+		}
+	}
+	delete[] pixelsF;
 	
 	char *image;
 	int imageSize;
-	h3dutCreateTGAImage( pixels, width, height, 32, &image, &imageSize );
+	h3dutCreateTGAImage( pixels, width, height, 24, &image, &imageSize );
 
 	size_t bytesWritten = 0;
 	FILE *f = fopen( filename, "wb" );
@@ -706,7 +726,7 @@ DLLEXP bool h3dutScreenshot( const char *filename )
 	delete[] pixels;
 	h3dutFreeMem( &image );
 
-	return bytesWritten == width * height * 4 + 18;
+	return bytesWritten == width * height * 3 + 18;
 }
 
 

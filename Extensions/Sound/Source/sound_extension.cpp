@@ -56,6 +56,8 @@ std::string safeStr( const char *str )
 		return "";
 }
 
+using namespace Horde3D;
+
 namespace Horde3DSound
 {
 

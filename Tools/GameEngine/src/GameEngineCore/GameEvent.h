@@ -34,6 +34,7 @@ class GameEntity;
 #include <stdlib.h>
 #include <map>
 
+using namespace Horde3D;
 /** \addtogroup GameEngineCore
  * @{
  */

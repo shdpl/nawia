@@ -19,7 +19,7 @@
 		</Stage>
 		
 		<Stage id="Translucent">
-			<DrawGeometry context="TRANSLUCENT" class="Translucent" />
+			<DrawGeometry context="TRANSLUCENT" class="Translucent" order="BACK_TO_FRONT" />
 		</Stage>
 		
 		<!-- HDR post processing -->

@@ -146,7 +146,7 @@
 	{
 		if( !_initialized )
 		{
-			Modules::log().writeError( "Trying to decode sound using an uninitialized wave decoder" );
+			Horde3D::Modules::log().writeError( "Trying to decode sound using an uninitialized wave decoder" );
 			return 0;
 		}
 

@@ -2,7 +2,7 @@
 //
 // Horde3D Terrain Extension
 // --------------------------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz and Volker Wiendl
+// Copyright (C) 2006-2011 Nicolas Schulz and Volker Wiendl
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -19,11 +19,13 @@
 
 #include "utDebug.h"
 
-using namespace std;
-
 
 namespace Horde3DTerrain
 {
+	using namespace Horde3D;
+	using namespace std;
+
+	
 	const char *vsTerrainDebugView =
 		"uniform mat4 viewProjMat;\n"
 		"uniform mat4 worldMat;\n"
@@ -196,7 +198,7 @@ namespace Horde3DTerrain
 			Modules::renderer().updateBufferData(
 				terrain->_vertexBuffer, terrain->getVertexCount() * sizeof( float ) * 3,
 				terrain->getVertexCount() * sizeof( float ), terrain->_heightArray );
-			glDrawElements( GL_TRIANGLE_STRIP, terrain->getIndexCount(), GL_UNSIGNED_SHORT, (char *)0 );
+			Modules::renderer().drawIndexed( PRIM_TRISTRIP, 0, terrain->getIndexCount(), 0, terrain->getVertexCount() );
 			Modules::stats().incStat( EngineStats::BatchCount, 1 );
 			Modules::stats().incStat( EngineStats::TriCount, (terrain->_blockSize - 1) * (terrain->_blockSize - 1) * 2.0f );
 		}
@@ -267,10 +269,10 @@ namespace Horde3DTerrain
 			localCamPos = terrain->_absTrans.inverted() * localCamPos;
 			
 			// Bind geometry and apply vertex layout
-			Modules::renderer().bindIndexBuffer( terrain->_indexBuffer );
-			Modules::renderer().bindVertexBuffer( 0, terrain->_vertexBuffer, 0, 12 );
-			Modules::renderer().bindVertexBuffer( 1, terrain->_vertexBuffer, terrain->getVertexCount() * 12, 4 );
-			if( !Modules::renderer().applyVertexLayout( vlTerrain ) ) continue;
+			Modules::renderer().setIndexBuffer( terrain->_indexBuffer, IDXFMT_16 );
+			Modules::renderer().setVertexBuffer( 0, terrain->_vertexBuffer, 0, 12 );
+			Modules::renderer().setVertexBuffer( 1, terrain->_vertexBuffer, terrain->getVertexCount() * 12, 4 );
+			Modules::renderer().setVertexLayout( vlTerrain );
 		
 			// Set uniforms
 			ShaderCombination *curShader = Modules::renderer().getCurShader();
@@ -293,7 +295,7 @@ namespace Horde3DTerrain
 
 			drawTerrainBlock( terrain, 0.0f, 0.0f, 1.0f, 1.0f, 0, 1.0f, localCamPos, frust1, frust2, uni_terBlockParams );
 
-			Modules::renderer().applyVertexLayout( 0 );
+			Modules::renderer().setVertexLayout( 0 );
 		}
 	}
 

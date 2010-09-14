@@ -7,7 +7,7 @@
 			<DrawGeometry context="AMBIENT" class="~Translucent" />
 			<DoForwardLightLoop class="~Translucent" />
 			
-			<DrawGeometry context="TRANSLUCENT" class="Translucent" />
+			<DrawGeometry context="TRANSLUCENT" class="Translucent" order="BACK_TO_FRONT" />
 		</Stage>
 		
 		<Stage id="Overlays">

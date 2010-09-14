@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -13,8 +13,12 @@
 #include "egModel.h"
 #include "egMaterial.h"
 #include "egModules.h"
+#include "egRenderer.h"
 
 #include "utDebug.h"
+
+
+namespace Horde3D {
 
 using namespace std;
 
@@ -29,6 +33,21 @@ MeshNode::MeshNode( const MeshNodeTpl &meshTpl ) :
 	_vertRStart( meshTpl.vertRStart ), _vertREnd( meshTpl.vertREnd ), _lodLevel( meshTpl.lodLevel ),
 	_parentModel( 0x0 ), _ignoreAnim( false )
 {
+	_renderable = true;
+	
+	if( _materialRes != 0x0 )
+		_sortKey = (float)_materialRes->getHandle();
+}
+
+
+MeshNode::~MeshNode()
+{
+	_materialRes = 0x0;
+	for( uint32 i = 0; i < _occQueries.size(); ++i )
+	{
+		if( _occQueries[i] != 0 )
+			Modules::renderer().releaseQuery( _occQueries[i] );
+	}
 }
 
 
@@ -135,9 +154,14 @@ void MeshNode::setParamI( int param, int value )
 	case MeshNodeParams::MatResI:
 		res = Modules::resMan().resolveResHandle( value );
 		if( res != 0x0 && res->getType() == ResourceTypes::Material )
+		{
 			_materialRes = (MaterialResource *)res;
+			_sortKey = (float)_materialRes->getHandle();
+		}
 		else
+		{
 			Modules::setError( "Invalid handle in h3dSetNodeParamI for H3DMesh::MatResI" );
+		}
 		return;
 	case MeshNodeParams::LodLevelI:
 		_lodLevel = value;
@@ -327,3 +351,5 @@ void JointNode::onDetach( SceneNode &/*parentNode*/ )
 {
 	if( _parentModel != 0x0 ) _parentModel->markNodeListDirty();
 }
+
+}  // namespace

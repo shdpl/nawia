@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -103,6 +103,9 @@
 #include <memory.h>
 #include <assert.h>
 #include <stdarg.h>
+
+
+namespace Horde3D {
 
 #ifndef _MSC_VER
   #ifdef __cplusplus
@@ -3639,3 +3642,4 @@ int stbi_write_tga(char const *filename, int x, int y, int comp, void *data)
 
 #endif // STBI_HEADER_FILE_ONLY
 
+}  // namespace

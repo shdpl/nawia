@@ -28,7 +28,6 @@
 
 #include <Horde3D/Horde3D.h>
 
-class Vec3f;
 
 /**
  * \brief Horde3D scene graph representation for entities

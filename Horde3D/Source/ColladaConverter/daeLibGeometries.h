@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -13,12 +13,14 @@
 #ifndef _daeLibGeometries_H_
 #define _daeLibGeometries_H_
 
-#include "utXMLParser.h"
+#include "utXML.h"
 #include "daeCommon.h"
 #include "utils.h"
 #include "utMath.h"
 #include <string>
 #include <vector>
+
+using namespace Horde3D;
 
 
 struct DaeVSource
@@ -33,8 +35,7 @@ struct DaeVSource
 		id = verticesNode.getAttribute( "id", "" );
 		if( id == "" ) return false;
 		
-		int nodeItr1 = 0;
-		XMLNode node1 = verticesNode.getChildNode( "input", nodeItr1 );
+		XMLNode node1 = verticesNode.getFirstChild( "input" );
 		while( !node1.isEmpty() )
 		{
 			if( strcmp( node1.getAttribute( "semantic", "" ), "POSITION" ) == 0 )
@@ -44,7 +45,7 @@ struct DaeVSource
 				return true;
 			}
 			
-			node1 = verticesNode.getChildNode( "input", ++nodeItr1 );
+			node1 = node1.getNextSibling( "input" );
 		}
 		
 		return false;
@@ -104,8 +105,7 @@ struct DaeTriGroup
 		
 		// Find the base mapping channel with the lowest set-id
 		int baseChannel = 999999;
-		int nodeItr1 = 0;
-		XMLNode node1 = primitiveNode.getChildNode( "input", nodeItr1 );
+		XMLNode node1 = primitiveNode.getFirstChild( "input" );
 		while( !node1.isEmpty() )
 		{
 			if( strcmp( node1.getAttribute( "semantic", "" ), "TEXCOORD" ) == 0 )
@@ -121,12 +121,11 @@ struct DaeTriGroup
 					break;
 				}
 			}
-			node1 = primitiveNode.getChildNode( "input", ++nodeItr1 );
+			node1 = node1.getNextSibling( "input" );
 		}
 		
 		// Parse input mapping
-		nodeItr1 = 0;
-		node1 = primitiveNode.getChildNode( "input", nodeItr1 );
+		node1 = primitiveNode.getFirstChild( "input" );
 		while( !node1.isEmpty() )
 		{
 			int offset = atoi( node1.getAttribute( "offset", "0" ) );
@@ -163,7 +162,7 @@ struct DaeTriGroup
 				removeGate( normSourceId );
 			}
 			
-			node1 = primitiveNode.getChildNode( "input", ++nodeItr1 );
+			node1 = node1.getNextSibling( "input" );
 		}
 
 		matId = primitiveNode.getAttribute( "material", "" );
@@ -173,13 +172,12 @@ struct DaeTriGroup
 		unsigned int numVerts = 0;
 		if( primType == tPolylist )
 		{	
-			if( primitiveNode.getChildNode( "vcount" ).isEmpty() ) return false;
-			vcountStr = (char *)primitiveNode.getChildNode( "vcount" ).getText();
+			if( primitiveNode.getFirstChild( "vcount" ).isEmpty() ) return false;
+			vcountStr = (char *)primitiveNode.getFirstChild( "vcount" ).getText();
 		}
 
 		// Parse actual primitive data
-		nodeItr1 = 0;
-		node1 = primitiveNode.getChildNode( "p", nodeItr1 );
+		node1 = primitiveNode.getFirstChild( "p" );
 		while( !node1.isEmpty() )
 		{
 			char *str = (char *)node1.getText();
@@ -237,7 +235,7 @@ struct DaeTriGroup
 				}
 			}
 
-			node1 = primitiveNode.getChildNode( "p", ++nodeItr1 );
+			node1 = node1.getNextSibling( "p" );
 		}
 
 		return true;
@@ -333,7 +331,7 @@ struct DaeGeometry
 
 	bool parse( const XMLNode &geometryNode )
 	{
-		XMLNode node1 = geometryNode.getChildNode( "mesh" );
+		XMLNode node1 = geometryNode.getFirstChild( "mesh" );
 		if( node1.isEmpty() )
 		{	
 			log( "Warning: Ignoring unsupported geometry '" +
@@ -347,19 +345,17 @@ struct DaeGeometry
 		name = geometryNode.getAttribute( "name", "" );
 
 		// Parse sources
-		int nodeItr2 = 0;
-		XMLNode node2 = node1.getChildNode( "source", nodeItr2 );
+		XMLNode node2 = node1.getFirstChild( "source" );
 		while( !node2.isEmpty() )
 		{
 			sources.push_back( DaeSource() );
 			if( !sources.back().parse( node2 ) ) sources.pop_back();
 			
-			node2 = node1.getChildNode( "source", ++nodeItr2 );
+			node2 = node2.getNextSibling( "source" );
 		}
 
 		// Parse vertex data
-		nodeItr2 = 0;
-		node2 = node1.getChildNode( "vertices", nodeItr2 );
+		node2 = node1.getFirstChild( "vertices" );
 		while( !node2.isEmpty() )
 		{
 			vsources.push_back( DaeVSource() );
@@ -370,12 +366,11 @@ struct DaeGeometry
 			}
 			else vsources.pop_back();
 			
-			node2 = node1.getChildNode( "vertices", ++nodeItr2 );
+			node2 = node2.getNextSibling( "vertices" );
 		}
 
 		// Parse primitives
-		nodeItr2 = 0;
-		node2 = node1.getChildNode( nodeItr2 );
+		node2 = node1.getFirstChild();
 		while( !node2.isEmpty() )
 		{
 			if( strcmp( node2.getName(), "triangles" ) == 0 ||
@@ -407,7 +402,7 @@ struct DaeGeometry
 				else triGroups.pop_back();
 			}
 			
-			node2 = node1.getChildNode( ++nodeItr2 );
+			node2 = node2.getNextSibling();
 		}
 
 		return true;
@@ -457,18 +452,17 @@ public:
 	
 	bool parse( const XMLNode &rootNode )
 	{
-		XMLNode node1 = rootNode.getChildNode( "library_geometries" );
+		XMLNode node1 = rootNode.getFirstChild( "library_geometries" );
 		if( node1.isEmpty() ) return true;
 
-		int nodeItr2 = 0;
-		XMLNode node2 = node1.getChildNode( "geometry", nodeItr2 );
+		XMLNode node2 = node1.getFirstChild( "geometry" );
 		while( !node2.isEmpty() )
 		{
 			DaeGeometry *geometry = new DaeGeometry();
 			if( geometry->parse( node2 ) ) geometries.push_back( geometry );
 			else delete geometry;
 
-			node2 = node1.getChildNode( "geometry", ++nodeItr2 );
+			node2 = node2.getNextSibling( "geometry" );
 		}
 		
 		return true;

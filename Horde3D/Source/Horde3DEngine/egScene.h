@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -18,6 +18,9 @@
 #include "egPrimitives.h"
 #include "egPipeline.h"
 #include <map>
+
+
+namespace Horde3D {
 
 struct SceneNodeTpl;
 class CameraNode;
@@ -87,6 +90,7 @@ protected:
 	int                         _type;
 	NodeHandle                  _handle;
 	uint32                      _sgHandle;  // Spatial graph handle
+	float                       _sortKey;
 	bool                        _dirty;  // Does the node need to be updated?
 	bool                        _transformed;
 	bool                        _renderable;
@@ -107,8 +111,6 @@ protected:
 	virtual void onDetach( SceneNode &parentNode ) {}  // Called when node is detached from parent
 
 public:
-
-	float                       tmpSortValue;
 	
 	SceneNode( const SceneNodeTpl &tpl );
 	virtual ~SceneNode();
@@ -186,13 +188,14 @@ public:
 // Spatial Graph
 // =================================================================================================
 
-struct RendQueueEntry
+struct RendQueueItem
 {
 	SceneNode  *node;
 	int        type;  // Type is stored explicitly for better cache efficiency when iterating over list
+	float      sortKey;
 
-	RendQueueEntry() {}
-	RendQueueEntry( int type, SceneNode *node ) : node( node ), type( type ) {}
+	RendQueueItem() {}
+	RendQueueItem( int type, float sortKey, SceneNode *node ) : node( node ), type( type ), sortKey( sortKey ) {}
 };
 
 class SpatialGraph
@@ -201,12 +204,7 @@ protected:
 	std::vector< SceneNode * >     _nodes;		// Renderable nodes and lights
 	std::vector< uint32 >          _freeList;
 	std::vector< SceneNode * >     _lightQueue;
-	std::vector< RendQueueEntry >  _renderableQueue;
-
-	static bool frontToBackOrder( RendQueueEntry n1, RendQueueEntry n2 )
-		{ return n1.node->tmpSortValue < n2.node->tmpSortValue; }
-	static bool backToFrontOrder( RendQueueEntry n1, RendQueueEntry n2 )
-		{ return n1.node->tmpSortValue > n2.node->tmpSortValue; }
+	std::vector< RendQueueItem >   _renderableQueue;
 
 public:
 	SpatialGraph();
@@ -219,7 +217,7 @@ public:
 	                   RenderingOrder::List order, bool lightQueue, bool renderQueue );
 
 	std::vector< SceneNode * > &getLightQueue() { return _lightQueue; }
-	std::vector< RendQueueEntry > &getRenderableQueue() { return _renderableQueue; }
+	std::vector< RendQueueItem > &getRenderableQueue() { return _renderableQueue; }
 };
 
 
@@ -302,7 +300,7 @@ public:
 	SceneNode &getRootNode() { return *_nodes[0]; }
 	SceneNode &getDefCamNode() { return *_nodes[1]; }
 	std::vector< SceneNode * > &getLightQueue() { return _spatialGraph->getLightQueue(); }
-	std::vector< RendQueueEntry > &getRenderableQueue() { return _spatialGraph->getRenderableQueue(); }
+	std::vector< RendQueueItem > &getRenderableQueue() { return _spatialGraph->getRenderableQueue(); }
 	
 	SceneNode *resolveNodeHandle( NodeHandle handle )
 		{ return (handle != 0 && (unsigned)(handle - 1) < _nodes.size()) ? _nodes[handle - 1] : 0x0; }
@@ -310,4 +308,5 @@ public:
 	friend class Renderer;
 };
 
+}
 #endif // _egScene_H_

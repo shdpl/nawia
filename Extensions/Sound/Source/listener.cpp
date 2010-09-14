@@ -30,6 +30,8 @@
 #include "listener.h"
 #include "manager.h"
 
+namespace Horde3D
+{
 	ListenerNode::ListenerNode( const ListenerNodeTpl &listenerTpl ) :
 		SceneNode( listenerTpl ),
 		_gain( listenerTpl.gain ),
@@ -208,3 +210,4 @@
 
 		alListenerfv( AL_ORIENTATION, orientation );
 	}
+}

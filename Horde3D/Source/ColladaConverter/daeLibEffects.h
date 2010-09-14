@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -13,10 +13,12 @@
 #ifndef _daeLibEffects_H_
 #define _daeLibEffects_H_
 
-#include "utXMLParser.h"
+#include "utXML.h"
 #include "daeLibImages.h"
 #include <string>
 #include <vector>
+
+using namespace Horde3D;
 
 
 struct DaeEffect
@@ -39,21 +41,21 @@ struct DaeEffect
 		if( id == "" ) return false;
 		name = effectNode.getAttribute( "name", "" );
 
-		XMLNode node1 = effectNode.getChildNode( "profile_COMMON" );
+		XMLNode node1 = effectNode.getFirstChild( "profile_COMMON" );
 		if( node1.isEmpty() ) return true;
 
-		XMLNode node2 = node1.getChildNode( "technique" );
+		XMLNode node2 = node1.getFirstChild( "technique" );
 		if( node2.isEmpty() ) return true;
 
-		XMLNode node3 = node2.getChildNode( "phong" );
-		if( node3.isEmpty() ) node3 = node2.getChildNode( "blinn" );
-		if( node3.isEmpty() ) node3 = node2.getChildNode( "lambert" );
+		XMLNode node3 = node2.getFirstChild( "phong" );
+		if( node3.isEmpty() ) node3 = node2.getFirstChild( "blinn" );
+		if( node3.isEmpty() ) node3 = node2.getFirstChild( "lambert" );
 		if( node3.isEmpty() ) return true;
 
-		XMLNode node4 = node3.getChildNode( "diffuse" );
+		XMLNode node4 = node3.getFirstChild( "diffuse" );
 		if( node4.isEmpty() ) return true;
 
-		XMLNode node5 = node4.getChildNode( "texture" );
+		XMLNode node5 = node4.getFirstChild( "texture" );
 		if( node5.isEmpty() ) return true;
 
 		std::string samplerId = node5.getAttribute( "texture", "" );
@@ -61,7 +63,7 @@ struct DaeEffect
 
 		// This is a hack to support files that don't completely respect the COLLADA standard
 		// and use the texture image directly instead of sampler2D
-		if( node1.getChildNode( "newparam" ).isEmpty() )
+		if( node1.getFirstChild( "newparam" ).isEmpty() )
 		{
 			diffuseMapId = samplerId;
 			return true;
@@ -69,17 +71,16 @@ struct DaeEffect
 		
 		// Find sampler
 		std::string surfaceId;
-		int nodeItr2 = 0;
-		node2 = node1.getChildNode( "newparam", nodeItr2 );
+		node2 = node1.getFirstChild( "newparam" );
 		while( !node2.isEmpty() )
 		{
 			if( node2.getAttribute( "sid" ) != 0x0 &&
 				strcmp( node2.getAttribute( "sid" ), samplerId.c_str() ) == 0 )
 			{
-				node3 = node2.getChildNode( "sampler2D" );
+				node3 = node2.getFirstChild( "sampler2D" );
 				if( node3.isEmpty() ) return true;
 
-				node4 = node3.getChildNode( "source" );
+				node4 = node3.getFirstChild( "source" );
 				if( node4.isEmpty() ) return true;
 
 				if( node4.getText() != 0x0 )
@@ -88,23 +89,22 @@ struct DaeEffect
 				break;
 			}
 			
-			node2 = node1.getChildNode( "newparam", ++nodeItr2 );
+			node2 = node2.getNextSibling( "newparam" );
 		}
 
 		// Find surface
-		nodeItr2 = 0;
-		node2 = node1.getChildNode( "newparam", nodeItr2 );
+		node2 = node1.getFirstChild( "newparam" );
 		while( !node2.isEmpty() )
 		{
 			if( node2.getAttribute( "sid" ) != 0x0 &&
 				strcmp( node2.getAttribute( "sid" ), surfaceId.c_str() ) == 0 )
 			{
-				node3 = node2.getChildNode( "surface" );
+				node3 = node2.getFirstChild( "surface" );
 				if( node3.isEmpty() || node3.getAttribute( "type" ) == 0x0 ) return true;
 
 				if( strcmp( node3.getAttribute( "type" ), "2D" ) == 0 )
 				{
-					node4 = node3.getChildNode( "init_from" );
+					node4 = node3.getFirstChild( "init_from" );
 					if( node4.isEmpty() ) return true;
 
 					if( node4.getText() != 0x0 )
@@ -114,7 +114,7 @@ struct DaeEffect
 				break;
 			}
 			
-			node2 = node1.getChildNode( "newparam", ++nodeItr2 );
+			node2 = node2.getNextSibling( "newparam" );
 		}
 		
 		return true;
@@ -148,18 +148,17 @@ struct DaeLibEffects
 
 	bool parse( const XMLNode &rootNode )
 	{
-		XMLNode node1 = rootNode.getChildNode( "library_effects" );
+		XMLNode node1 = rootNode.getFirstChild( "library_effects" );
 		if( node1.isEmpty() ) return true;
 
-		int nodeItr2 = 0;
-		XMLNode node2 = node1.getChildNode( "effect", nodeItr2 );
+		XMLNode node2 = node1.getFirstChild( "effect" );
 		while( !node2.isEmpty() )
 		{
 			DaeEffect *effect = new DaeEffect();
 			if( effect->parse( node2 ) ) effects.push_back( effect );
 			else delete effect;
 
-			node2 = node1.getChildNode( "effect", ++nodeItr2 );
+			node2 = node2.getNextSibling( "effect" );
 		}
 		
 		return true;

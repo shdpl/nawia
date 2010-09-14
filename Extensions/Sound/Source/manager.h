@@ -33,7 +33,8 @@
 #include "decode.h"
 #include "listener.h"
 
-
+namespace Horde3D
+{
 	class SoundManager
 	{
 	private:
@@ -76,6 +77,6 @@
 	protected:
 		SoundManager() { }
 	};
-
+}
 
 #endif // _Horde3DSound_manager_H_

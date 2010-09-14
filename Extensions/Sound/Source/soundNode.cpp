@@ -29,6 +29,8 @@
 #include "soundNode.h"
 #include "manager.h"
 
+namespace Horde3D
+{
 	SoundNode::SoundNode( const SoundNodeTpl &soundTpl ) :
 		SceneNode( soundTpl ),
 		_soundRes( soundTpl.soundRes )
@@ -387,3 +389,4 @@
 	{
 		alSourceRewind( _source );
 	}
+}

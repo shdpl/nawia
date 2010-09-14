@@ -411,6 +411,10 @@ void HordeSceneEditor::sceneCreated()
 			m_renderTimer->start(m_miscToolBar->m_fpsSettings->value() > 0 ? 1000/m_miscToolBar->m_fpsSettings->value() : 0);
 			m_glWidget->setFocus(Qt::ActiveWindowFocusReason);
 			m_cameraToolBar->setActiveCamera(m_sceneFile->activeCam());
+			// Hacky workaround for rendering bug in empty scenes (probably some initialization issues in case no geometry is drawn)
+			m_glWidget->enableDebugView( true );	
+			m_glWidget->updateGL();
+			m_glWidget->enableDebugView( false );
 		}
 		else
 		{

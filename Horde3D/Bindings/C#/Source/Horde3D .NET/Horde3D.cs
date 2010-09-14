@@ -28,6 +28,30 @@ namespace Horde3DNET
             get { return _rootNode; }
         }
 
+        /// <summary>
+        /// Enum: H3DOptions
+        ///       The available engine option parameters.        		
+        ///   MaxLogLevel         - Defines the maximum log level; only messages which are smaller or equal to this value
+        ///                         (hence more important) are published in the message queue. (Default: 4)
+        ///   MaxNumMessages      - Defines the maximum number of messages that can be stored in the message queue (Default: 512)
+        ///   TrilinearFiltering  - Enables or disables trilinear filtering for textures. (Values: 0, 1; Default: 1)
+        ///   MaxAnisotropy       - Sets the maximum quality for anisotropic filtering. (Values: 1, 2, 4, 8; Default: 1)
+        ///   TexCompression      - Enables or disables texture compression; only affects textures that are
+        ///                         loaded after setting the option. (Values: 0, 1; Default: 0)
+        ///   SRGBLinearization   - Eanbles or disables gamma-to-linear-space conversion of input textures that are tagged as sRGB (Values: 0, 1; Default: 0)
+        ///   LoadTextures        - Enables or disables loading of textures referenced by materials; this can be useful to reduce
+        ///                         loading times for testing. (Values: 0, 1; Default: 1)
+        ///   FastAnimation       - Disables or enables inter-frame interpolation for animations. (Values: 0, 1; Default: 1)
+        ///   ShadowMapSize       - Sets the size of the shadow map buffer (Values: 128, 256, 512, 1024, 2048; Default: 1024)
+        ///   SampleCount         - Maximum number of samples used for multisampled render targets; only affects pipelines
+        ///                         that are loaded after setting the option. (Values: 0, 2, 4, 8, 16; Default: 0)
+        ///   WireframeMode       - Enables or disables wireframe rendering
+        ///   DebugViewMode       - Enables or disables debug view where geometry is rendered in wireframe without shaders and
+        ///                         lights are visualized using their screen space bounding box. (Values: 0, 1; Default: 0)
+        ///   DumpFailedShaders   - Enables or disables storing of shader code that failed to compile in a text file; this can be
+        ///                         useful in combination with the line numbers given back by the shader compiler. (Values: 0, 1; Default: 0)
+        ///   GatherTimeStats     - Enables or disables gathering of time stats that are useful for profiling (Values: 0, 1; Default: 1)
+        /// </summary>
         public enum H3DOptions
         {
             MaxLogLevel = 1,
@@ -46,17 +70,51 @@ namespace Horde3DNET
             GatherTimeStats
         }
 
+       /// <summary>
+       /// Enum: H3DStats
+       ///        The available engine statistic parameters.
+       /// 		
+       ///    TriCount          - Number of triangles that were pushed to the renderer
+       ///    BatchCount        - Number of batches (draw calls)
+       ///    LightPassCount    - Number of lighting passes
+       ///    FrameTime         - Time in ms between two h3dFinalizeFrame calls
+       ///    AnimationTime     - CPU time in ms spent for animation
+       ///    GeoUpdateTime     - CPU time in ms spent for software skinning and morphing
+       ///    ParticleSimTime   - CPU time in ms spent for particle simulation and updates
+       ///    DefLightsGPUTime  - GPU time in ms spent for drawing deferred light volumes
+       ///    ParticleGPUTime   - GPU time in ms spent for drawing particles
+       ///    TextureVMem       - Estimated amount of video memory used by textures (in Mb)
+       ///    GeometryVMem      - Estimated amount of video memory used by geometry (in Mb)
+       /// </summary>
         public enum H3DStats
         {
             TriCount = 100,
             BatchCount,
             LightPassCount,
             FrameTime,
-            CustomTime,
+            AnimationTime,
+            GeoUpdateTime,
+            ParticleSimTime,
+            DefLightsGPUTime,
+            ParticleGPUTime,
             TextureVMem,
             GeometryVMem
         }
 
+        /// <summary>
+        /// Enum: H3DResTypes
+        ///           The available resource types.        		
+        ///       Undefined       - An undefined resource, returned by getResourceType in case of error
+        ///       SceneGraph      - Scene graph subtree stored in XML format
+        ///       Geometry        - Geometrical data containing bones, vertices and triangles
+        ///       Animation       - Animation data
+        ///       Material        - Material script
+        ///       Code            - Text block containing shader source code
+        ///       Shader          - Shader program
+        ///       Texture         - Texture map
+        ///       ParticleEffect  - Particle configuration
+        ///       Pipeline        - Rendering pipeline
+        /// </summary>
         public enum H3DResTypes
         {
             Undefined = 0,
@@ -71,17 +129,42 @@ namespace Horde3DNET
             Pipeline
         }
 
-        // Flags
+        /// <summary>
+        /// Enum: H3DResFlags
+        ///        The available flags used when adding a resource.
+        			
+        /// NoQuery           - Excludes resource from being listed by queryUnloadedResource function.
+        /// NoTexCompression  - Disables texture compression for Texture resource.
+        /// NoTexMipmaps      - Disables generation of mipmaps for Texture resource.
+        /// TexCubemap        - Sets Texture resource to be a cubemap.
+        /// TexDynamic        - Enables more efficient updates of Texture resource streams.
+        /// TexRenderable     - Makes Texture resource usable as render target.
+        /// TexSRGB           - Indicates that Texture resource is in sRGB color space and should be converted
+        ///                    to linear space when being sampled.
+        /// </summary>
         public enum H3DResFlags
         {
-            NoQuery = 1, //horde3d 1.0
-            NoTexCompression = 2, //horde3d 1.0
-            NoTexMipmaps = 4, //horde3d 1.0
-            TexCubeMap = 8,
+            NoQuery = 1,
+            NoTexCompression = 2,
+            NoTexMipmaps = 4,
+            TexCubemap = 8,
             TexDynamic = 16,
-            TexRenderable = 32
+            TexRenderable = 32,
+            TexSRGB = 64
         }
 
+        /// <summary>
+        /// Enum: H3DFormats
+		///     The available resource stream formats.
+			
+		/// Unknown      - Unknown format
+        /// TEX_BGRA8    - 8-bit BGRA texture
+        /// TEX_DXT1     - DXT1 compressed texture
+        /// TEX_DXT3     - DXT3 compressed texture
+        /// TEX_DXT5     - DXT5 compressed texture
+        /// TEX_RGBA16F  - Half float RGBA texture
+        /// TEX_RGBA32F  - Float RGBA texture
+        /// </summary>
         public enum H3DFormats
         {
             Unknown = 0,
@@ -93,8 +176,22 @@ namespace Horde3DNET
             TEX_RGBA32F
         }
 
+        /// <summary>
+        /// Enum: H3DGeoRes
+        ///           The available Geometry resource accessors.
+        		
+        ///       GeometryElem         - Base element
+        ///       GeoIndexCountI       - Number of indices [read-only]
+        ///       GeoVertexCountI      - Number of vertices [read-only]
+        ///       GeoIndices16I        - Flag indicating whether index data is 16 or 32 bit [read-only]
+        ///       GeoIndexStream       - Triangle index data (uint16 or uint32, depending on flag)
+        ///       GeoVertPosStream     - Vertex position data (float x, y, z)
+        ///       GeoVertTanStream     - Vertex tangent frame data (float nx, ny, nz, tx, ty, tz, tw)
+        ///       GeoVertStaticStream  - Vertex static attribute data (float u0, v0,
+        ///                                float4 jointIndices, float4 jointWeights, float u1, v1)
+        /// </summary>
         public enum H3DGeoRes
-        {            
+        {
             GeometryElem = 200,
             GeoIndexCountI,
             GeoVertexCountI,
@@ -105,12 +202,32 @@ namespace Horde3DNET
             GeoVertStaticStream
         }
 
+        /// Enum: H3DAnimRes
+        ///     The available Animation resource accessors.	  		
+        /// EntityElem      - Stored animation entities (joints and meshes)
+        /// EntFrameCountI  - Number of frames stored for a specific entity [read-only]
+        ///
         public enum H3DAnimRes
         {
             EntityElem = 300,
             EntFrameCountI
         }
 
+        /// <summary>
+        /// Enum: H3DMatRes
+        ///       The available Material resource accessors.
+
+        ///   MaterialElem  - Base element
+        ///   SamplerElem   - Sampler element
+        ///   UniformElem   - Uniform element
+        ///   MatClassStr   - Material class
+        ///   MatLinkI      - Material resource that is linked to this material
+        ///   MatShaderI    - Shader resource
+        ///   SampNameStr   - Name of sampler [read-only]
+        ///   SampTexResI   - Texture resource bound to sampler
+        ///   UnifNameStr   - Name of uniform [read-only]
+        ///   UnifValueF4   - Value of uniform (a, b, c, d)
+        /// </summary>
         public enum H3DMatRes
         {
             MaterialElem = 400,
@@ -125,6 +242,19 @@ namespace Horde3DNET
             UnifValueF4
         }
 
+        /// <summary>
+        /// Enum: H3DShaderRes
+        ///       The available Shader resource accessors.
+
+        ///   ContextElem     - Context element 
+        ///   SamplerElem     - Sampler element
+        ///   UniformElem     - Uniform element
+        ///   ContNameStr     - Name of context [read-only]
+        ///   SampNameStr     - Name of sampler [read-only]
+        ///   UnifNameStr     - Name of uniform [read-only]
+        ///   UnifSizeI       - Size (number of components) of uniform [read-only]
+        ///   UnifDefValueF4  - Default value of uniform (a, b, c, d)
+        /// </summary>
         public enum H3DShaderRes
         {
             ContextElem = 600,
@@ -133,9 +263,28 @@ namespace Horde3DNET
             ContNameStr,
             SampNameStr,
             UnifNameStr,
+            UnifSizeI,
             UnifDefValueF4
         }
 
+        /// <summary>
+        /// Enum: H3DTexRes
+        ///           The available Texture resource accessors.
+
+        ///       TextureElem     - Base element
+        ///       ImageElem       - Subresources of the texture. A texture consists, depending on the type,
+        ///                         of a number of equally sized slices which again can have a fixed number
+        ///                         of mipmaps. Each image element represents the base image of a slice or
+        ///                         a single mipmap level of the corresponding slice.
+        ///       TexFormatI      - Texture format [read-only]
+        ///       TexSliceCountI  - Number of slices (1 for 2D texture and 6 for cubemap) [read-only]
+        ///       ImgWidthI       - Image width [read-only]
+        ///       ImgHeightI      - Image height [read-only]
+        ///       ImgPixelStream  - Pixel data of an image. The data layout matches the layout specified
+        ///                         by the texture format with the exception that half-float is converted
+        ///                         to float. The first element in the data array corresponds to the lower
+        ///                         left corner.
+       /// </summary>
         public enum H3DTexRes
         {
             TextureElem = 700,
@@ -147,6 +296,25 @@ namespace Horde3DNET
             ImgPixelStream
         }
 
+
+        /// <summary>
+        ///  Enum: H3DPartEffRes
+        ///            The available ParticleEffect resource accessors.
+
+        ///        ParticleElem     - General particle configuration
+        ///        ChanMoveVelElem  - Velocity channel
+        ///        ChanRotVelElem   - Angular velocity channel
+        ///        ChanSizeElem     - Size channel
+        ///        ChanColRElem     - Red color component channel
+        ///        ChanColGElem     - Green color component channel
+        ///        ChanColBElem     - Blue color component channel
+        ///        ChanColAElem     - Alpha channel
+        ///        PartLifeMinF     - Minimum value of random life time (in seconds)
+        ///        PartLifeMaxF     - Maximum value of random life time (in seconds)
+        ///        ChanStartMinF    - Minimum for selecting initial random value of channel
+        ///        ChanStartMaxF    - Maximum for selecting initial random value of channel
+        ///        ChanEndRateF     - Remaining percentage of initial value when particle is dying
+        /// </summary>
         public enum H3DPartEffRes
         {
             ParticleElem = 800,
@@ -161,9 +329,18 @@ namespace Horde3DNET
             PartLifeMaxF,
             ChanStartMinF,
             ChanStartMaxF,
-            ChanEndRateF
+            ChanEndRateF,
+            ChanDragElem
         }
 
+        /// <summary>
+        /// Enum: H3DPipeRes
+        ///       The available Pipeline resource accessors.
+
+        ///   StageElem         - Pipeline stage
+        ///   StageNameStr      - Name of stage [read-only]
+        ///   StageActivationI  - Flag indicating whether stage is active
+        /// </summary>
         public enum H3DPipeRes
         {
             StageElem = 900,
@@ -171,6 +348,19 @@ namespace Horde3DNET
             StageActivationI
         }
 
+        /// <summary>
+        /// Enum: H3DNodeTypes
+        ///    The available scene node types.
+
+        /// Undefined  - An undefined node type, returned by getNodeType in case of error
+        /// Group      - Group of different scene nodes
+        /// Model      - 3D model with optional skeleton
+        /// Mesh       - Subgroup of a model with triangles of one material
+        /// Joint      - Joint for skeletal animation
+        /// Light      - Light source
+        /// Camera     - Camera giving view on scene
+        /// Emitter    - Particle system emitter
+        /// </summary>
         public enum H3DNodeTypes
         {
             Undefined = 0,
@@ -183,12 +373,35 @@ namespace Horde3DNET
             Emitter
         }
 
+        /// <summary>
+        ///	Enum: H3DNodeParams
+        ///        The available scene node parameters.
+
+        /// NameStr        - Name of the scene node
+        /// AttachmentStr  - Optional application-specific meta data for a node encapsulated
+        ///                     in an 'Attachment' XML string
+        /// </summary>
         public enum H3DNodeParams
         {
             Name = 1,
             AttachmentString
         }
 
+        /// <summary>
+        /// Enum: H3DModel
+        ///    The available Model node parameters
+
+        /// GeoResI      - Geometry resource used for the model
+        /// SWSkinningI  - Enables or disables software skinning (default: 0)
+        /// LodDist1F    - Distance to camera from which on LOD1 is used (default: infinite)
+        ///               (must be a positive value larger than 0.0)
+        /// LodDist2F    - Distance to camera from which on LOD2 is used
+        ///                (may not be smaller than LodDist1) (default: infinite)
+        /// LodDist3F    - Distance to camera from which on LOD3 is used
+        ///               (may not be smaller than LodDist2) (default: infinite)
+        /// LodDist4F    - Distance to camera from which on LOD4 is used
+        ///               (may not be smaller than LodDist3) (default: infinite)
+        /// </summary>
         public enum H3DModel
         {
             GeoResI = 200,
@@ -199,6 +412,18 @@ namespace Horde3DNET
             LodDist4F
         }
 
+        /// <summary>
+        /// Enum: H3DMesh
+        ///    The available Mesh node parameters.
+
+        /// MatResI      - Material resource used for the mesh
+        /// BatchStartI  - First triangle index of mesh in Geometry resource of parent Model node [read-only]
+        /// BatchCountI  - Number of triangle indices used for drawing mesh [read-only]
+        /// VertRStartI  - First vertex in Geometry resource of parent Model node [read-only]
+        /// VertREndI    - Last vertex in Geometry resource of parent Model node [read-only]
+        /// LodLevelI    - LOD level of Mesh; the mesh is only rendered if its LOD level corresponds to
+        ///                the model's current LOD level which is calculated based on the LOD distances (default: 0)
+        /// </summary>
         public enum H3DMesh
         {
             MatResI = 300,
@@ -209,11 +434,32 @@ namespace Horde3DNET
             LodLevelI
         }
 
+        /// <summary>
+        /// Enum: H3DJoint
+        ///    The available Joint node parameters.
+
+        /// JointIndexI  - Index of joint in Geometry resource of parent Model node [read-only]
+        /// </summary>
         public enum H3DJoint
         {
             JointIndex = 400
         }
 
+        /// <summary>
+        /// Enum: H3DLight
+        ///    The available Light node parameters.
+
+        /// MatResI             - Material resource used for the light
+        /// RadiusF             - Radius of influence (default: 100.0)
+        /// FovF                - Field of view (FOV) angle (default: 90.0)
+        /// ColorF3             - Diffuse color RGB (default: 1.0, 1.0, 1.0)
+        /// ColorMultiplierF    - Diffuse color multiplier for altering intensity, mainly useful for HDR (default: 1.0)
+        /// ShadowMapCountI     - Number of shadow maps used for light source (values: 0, 1, 2, 3, 4; default: 0)]
+        /// ShadowSplitLambdaF  - Constant determining segmentation of view frustum for Parallel Split Shadow Maps (default: 0.5)
+        /// ShadowMapBiasF      - Bias value for shadow mapping to reduce shadow acne (default: 0.005)
+        /// LightingContextStr  - Name of shader context used for computing lighting
+        /// ShadowContextStr    - Name of shader context used for generating shadow map
+        /// </summary>
         public enum H3DLight
         {
             MatResI = 500,
@@ -228,6 +474,22 @@ namespace Horde3DNET
             ShadowContextStr
         }
 
+        /// <summary>
+        /// Enum: H3DCamera
+        ///            The available Camera node parameters.
+
+        ///        PipeResI      - Pipeline resource used for rendering
+        ///        OutTexResI    - 2D Texture resource used as output buffer (can be 0 to use main framebuffer) (default: 0)
+        ///        OutBufIndexI  - Index of the output buffer for stereo rendering (values: 0 for left eye, 1 for right eye) (default: 0)
+        ///        LeftPlaneF    - Coordinate of left plane relative to near plane center (default: -0.055228457)
+        ///        RightPlaneF   - Coordinate of right plane relative to near plane center (default: 0.055228457)
+        ///        BottomPlaneF  - Coordinate of bottom plane relative to near plane center (default: -0.041421354f)
+        ///        TopPlaneF     - Coordinate of top plane relative to near plane center (default: 0.041421354f)
+        ///        NearPlaneF    - Distance of near clipping plane (default: 0.1)
+        ///        FarPlaneF     - Distance of far clipping plane (default: 1000)
+        ///        OrthoI        - Flag for setting up an orthographic frustum instead of a perspective one (default: 0)
+        ///        OccCullingI   - Flag for enabling occlusion culling (default: 0)
+        /// </summary>
         public enum H3DCamera
         {
             PipeResI = 600,
@@ -242,6 +504,20 @@ namespace Horde3DNET
             OrthoI,
             OccCullingI
         }
+
+        /// <summary>
+        /// Enum: H3DEmitter
+        ///    The available Emitter node parameters.
+
+        /// MatResI        - Material resource used for rendering
+        /// PartEffResI    - ParticleEffect resource which configures particle properties
+        /// MaxCountI      - Maximal number of particles living at the same time
+        /// RespawnCountI  - Number of times a single particle is recreated after dying (-1 for infinite)
+        /// DelayF         - Time in seconds before emitter begins creating particles (default: 0.0)
+        /// EmissionRateF  - Maximal number of particles to be created per second (default: 0.0)
+        /// SpreadAngleF   - Angle of cone for random emission direction (default: 0.0)
+        /// ForceF3        - Force vector XYZ applied to particles (default: 0.0, 0.0, 0.0)
+        /// </summary>
 
         public enum H3DEmitter
         {
@@ -275,6 +551,25 @@ namespace Horde3DNET
         public static bool checkExtension(string extensionName)
         {
             return NativeMethodsEngine.h3dCheckExtension(extensionName);
+        }
+
+        /// <summary>
+        /// Checks if an error occured.
+        /// </summary>
+        /// <remarks>
+        /// This function checks if an error occured in a previous API function call. If an error
+        /// flag is set, the function resets the flag and returns true. The function will solely
+        /// report errors that originate from a violated precondition, like an invalid parameter
+        /// that is passed to an API function. Errors that happen during the execution of a function,
+        /// for example failure of initializing the engine due to a missing hardware feature, can
+        /// be catched by checking the return value of the corresponding API function.
+        /// More information about the error can be retrieved by checking the message queue,
+        /// provided that the message level is set accordingly.
+        /// </remarks>        
+        /// <returns>true in there was an error, otherwise false</returns>
+        public static bool getError()
+        {
+            return NativeMethodsEngine.h3dGetError();
         }
 
         /// <summary>
@@ -317,6 +612,25 @@ namespace Horde3DNET
         public static void setupViewport(int x, int y, int width, int height, bool resizeBuffers)
         {
             NativeMethodsEngine.h3dSetupViewport(x, y, width, height, resizeBuffers);
+        }
+
+        /// <summary>
+        ///    Gets the current viewport parameters.
+
+        ///<remarks>
+        ///    This function returns the aspect ratio (width divided by height) of the current viewport and
+        ///    writes the other viewport parameters to the specified variables. If a specific parameter is not
+        ///    of interest, NULL can be passed as argument.
+        /// </remarks>
+        ///<param name="x">pointer to variable where x-position will be stored (can be NULL)</param>
+        ///<param name="y">pointer to variable where y-position will be stored (can be NULL)</param>        
+        ///<param name="width">pointer to variable where viewport width will be stored (can be NULL)</param>    
+        ///<param name="height">pointer to variable where viewport height will be stored (can be NULL)</param>
+        /// <returns>viewport aspect ratio</returns>   
+        /// </summary>
+        public static float getViewportParams(out int x, out int y, out int width, out int height)
+        {
+            return NativeMethodsEngine.h3dGetViewportParams(out x, out y, out width, out height);
         }
 
         /// <summary>
@@ -402,51 +716,41 @@ namespace Horde3DNET
         }
 
         /// <summary>
-        /// This function displays an overlay with a specified material at a specified position on the screen.
+        /// Displays overlays on the screen.
         /// </summary>
         /// <remarks>
-        /// An overlay is a 2D image that can be used to render 2D GUI elements. 
-        /// The coordinate system used has its origin (0, 0) at the lower left corner of the screen and its maximum (1, 1) at the upper right corner. 
-        /// Texture coordinates are using the same system, where the coordinates (0, 0) correspond to the lower left corner of the image. 
-        /// Overlays can have different layers which describe the order in which they are drawn. 
-        /// Overlays with smaller layer numbers are drawn before overlays with higher layer numbers.
+        /// This function displays one or more overlays with a specified material and color.
+        /// An overlay is a screen-space quad that can be used to render 2D GUI elements. The overlay coordinate
+        /// system has its origin (0, 0) at the top-left corner of the screen and its maximum (aspect, 1)
+        /// at the bottom-right corner. As the x coordinate of the maximum corresponds to the aspect ratio
+        /// of the viewport, the size of overlays can always be the same, even when different screen formats
+        /// (standard 4:3, widescreen 16:9, etc.) are used. Texture coordinates are using a system where the
+        /// coordinates (0, 0) correspond to the lower left corner of the image.
+        /// Overlays are drawn in the order in which they are pushed using this function. Overlays with
+        /// the same state will be batched together, so it can make sense to group overlays that have the
+        /// same material, color and flags in order to achieve best performance.
+        /// Note that the overlays have to be removed manually using the function h3dClearOverlays.
         /// </remarks>
-        /// <param name="x_ll">x position of the lower left corner</param>
-        /// <param name="y_ll">y position of the lower left corner</param>
-        /// <param name="u_ll">u texture coordinate of the lower left corner</param>
-        /// <param name="v_ll">v texture coordinate of the lower left corner</param>
-        /// <param name="x_lr">x position of the lower right corner</param>
-        /// <param name="y_lr">y position of the lower right corner</param>
-        /// <param name="u_lr">u texture coordinate of the lower right corner</param>
-        /// <param name="v_lr">v texture coordinate of the lower right corner</param>
-        /// <param name="x_ur">x position of the upper right corner</param>
-        /// <param name="y_ur">y position of the upper right corner</param>
-        /// <param name="u_ur">u texture coordinate of the upper right corner</param>
-        /// <param name="v_ur">v texture coordinate of the upper right corner</param>
-        /// <param name="x_ul">x position of the upper left corner</param>
-        /// <param name="y_ul">y position of the upper left corner</param>
-        /// <param name="u_ul">u texture coordinate of the upper left corner</param>
-        /// <param name="v_ul">v texture coordinate of the upper left corner</param>
+        /// <param name="verts">vertex data (x, y, u, v), interpreted as quads</param>
+        /// <param name="vertCount">number of vertices (must be multiple of 4)</param>
         /// <param name="colR">red color value of the overlay that is set for the material's shader</param>
         /// <param name="colG">green color value of the overlay that is set for the material's shader</param>
         /// <param name="colB">blue color value of the overlay that is set for the material's shader</param>
         /// <param name="colA">alpha color value of the overlay that is set for the material's shader</param>
         /// <param name="material">material resource used for rendering</param>
-        /// <param name="layer">layer index of the overlay (Values: from 0 to 7)</param>
-        public static void showOverlay(
-                         float x_tl, float y_tl, float u_tl, float v_tl,
-                         float x_bl, float y_bl, float u_bl, float v_bl,
-                         float x_br, float y_br, float u_br, float v_br,
-                         float x_tr, float y_tr, float u_tr, float v_tr,
+        /// <param name="flags">overlay flags (reserved for future use)</param>
+        public static void showOverlays(
+                         float[] verts, int vertCount, 
                          float colR, float colG, float colB, float colA,
-                         int materialRes, int layer)
+                         int materialRes, int flags )
         {
-            NativeMethodsEngine.h3dShowOverlay(x_tl, y_tl, u_tl, v_tl, x_bl, y_bl, u_bl, v_bl, x_br, y_br, u_br, v_br, x_tr, y_tr, u_tr, v_tr, colR, colG, colB, colA, materialRes, layer);
+            NativeMethodsEngine.h3dShowOverlays(verts, vertCount, colR, colG, colB, colA, materialRes, flags);
         }
 
         /// <summary>
-        /// Clears the overlays added before using showOverlay
+        /// Removes all overlays.
         /// </summary>
+        /// <remarks>This function removes all overlays that were added with h3dShowOverlays.</remarks>
         public static void clearOverlays()
         {
             NativeMethodsEngine.h3dClearOverlays();
@@ -641,6 +945,26 @@ namespace Horde3DNET
         {
             return NativeMethodsEngine.h3dGetResElemCount(res, elem);
         }
+
+        /// <summary>
+        /// Finds a resource element with the specified property value.        
+        /// </summary>
+        /// <remarks>
+        /// This function searches in a specified resource for the first element of the specified
+        /// type that has the property with the specified name set to the specified search value.
+        /// If such element is found, its index is returned, otherwise the function returns -1. All
+        /// string comparisons done for the search are case-sensitive.
+        /// </remarks>        
+        /// <param name="res">handle to the resource to be accessed</param>
+        /// <param name="elem">element type</param>
+        /// <param name="param">parameter name</param>
+        /// <param name="value">parameter value to be searched for</param>
+        /// <returns>index of element or -1 if element not found</returns>
+        public static int findResElem(int res, int elem, int param, string value)
+        {
+            return NativeMethodsEngine.h3dFindResElem(res, elem, param, value);
+        }
+
 
         /// <summary>
         /// Gets a property of a resource.
@@ -1026,16 +1350,45 @@ namespace Horde3DNET
 
             NativeMethodsEngine.h3dSetNodeTransMat(node, mat4x4);
         }
+   
+        /// <summary>
+        /// Gets a property of a scene node.
+        /// </summary>
+        /// <remarks>This function returns a specified property of the specified node.
+		/// The property must be of the type int or H3DRes.</remarks>
+        /// <param name="node">handle to the node to be accessed</param>
+        /// <param name="param">parameter to be accessed</param>
+        /// <returns></returns>
+        public static int getNodeParamI(int node, int param)
+        {
+            return NativeMethodsEngine.h3dGetNodeParamI(node, param);
+        }
 
         /// <summary>
-        /// 
+        /// Sets a property of a scene node.
         /// </summary>
-        /// <param name="node"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        public static float getNodeParamF(int node, int param)
+        /// <remarks>This function sets a specified property of the specified node to a specified value.
+        /// The property must be of the type int or ResHandle.</remarks>
+        /// <param name="node">handle to the node to be modified</param>
+        /// <param name="param">parameter to be modified</param>
+        /// <param name="value">new value for the specified parameter</param>        
+        public static void setNodeParamI(int node, int param, int value)
         {
-            return NativeMethodsEngine.h3dGetNodeParamF(node, param);
+            NativeMethodsEngine.h3dSetNodeParamI(node, param, value);
+        }
+        /// <summary>
+        /// Gets a property of a scene node.
+        /// </summary>
+        /// <remarks>This function returns a specified property of the specified node. Float properties can have
+		/// several indexed components, for example the x, y and z components of a vector.
+        /// The property must be of the type float.</remarks>
+        /// <param name="node">handle to the node to be accessed</param>
+        /// <param name="param">parameter to be accessed</param>
+        /// <param name="compIdx">component of the parameter to be accessed</param>
+        /// <returns>value of the parameter</returns>
+        public static float getNodeParamF(int node, int param, int compIdx)
+        {
+            return NativeMethodsEngine.h3dGetNodeParamF(node, param, compIdx);
         }
 
         /// <summary>
@@ -1051,31 +1404,6 @@ namespace Horde3DNET
         {
             NativeMethodsEngine.h3dSetNodeParamF(node, param, compIdx, value);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        public static int getNodeParamI(int node, int param)
-        {
-            return NativeMethodsEngine.h3dGetNodeParamI(node, param);
-        }
-
-        /// <summary>
-        /// Sets a property of a scene node.
-        /// </summary>
-        /// <remarks>This function sets a specified property of the specified node to a specified value.
-		/// The property must be of the type int or ResHandle.</remarks>
-        /// <param name="node">handle to the node to be modified</param>
-        /// <param name="param">parameter to be modified</param>
-        /// <param name="value">new value for the specified parameter</param>        
-        public static void setNodeParamI(int node, int param, int value)
-        {
-            NativeMethodsEngine.h3dSetNodeParamI(node, param, value);
-        }
-
 
         /// <summary>
         /// Gets a property of a scene node.

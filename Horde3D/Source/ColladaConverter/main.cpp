@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -208,7 +208,7 @@ int main( int argc, char **argv )
 		// Check if it's an absolute path
 		if( input[0] == '/' || input[1] == ':' || input[0] == '\\' )
 		{
-			int index = input.find_last_of( "\\/" );
+			size_t index = input.find_last_of( "\\/" );
 			_chdir( input.substr( 0, index ).c_str() );
 			input = input.substr( index + 1, input.length() - index );
 		}

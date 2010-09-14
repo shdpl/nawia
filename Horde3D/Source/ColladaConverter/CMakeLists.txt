@@ -18,7 +18,5 @@ add_executable(ColladaConv
 	main.cpp
 	optimizer.cpp
 	utils.cpp
-
-	../Shared/utXMLParser.cpp
 	)
 

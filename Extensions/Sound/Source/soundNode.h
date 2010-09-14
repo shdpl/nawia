@@ -34,7 +34,8 @@
 
 #include "soundResource.h"
 
-
+namespace Horde3D
+{
 	const int SNT_SoundNode = 202;
 
 	struct SoundNodeParams
@@ -111,6 +112,6 @@
 		void pause();
 		void rewind();
 	};
-
+}
 
 #endif // _Horde3DSound_soundNode_H_

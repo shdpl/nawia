@@ -6,10 +6,10 @@ Horde3D
 		-S D K-
 		-------
 		
-		Version 1.0.0 Beta4
+		Version 1.0.0 Beta5
 		
 
-Copyright (C) 2006-2009 Nicolas Schulz and the Horde3D Team
+Copyright (C) 2006-2011 Nicolas Schulz and the Horde3D Team
 
 http://www.horde3d.org
 
@@ -23,26 +23,25 @@ A GeForce 6 or Radeon X1000 series card is the minimum requirement to run the sa
 
 The source code of the engine and tools is included in the SDK. It has the following dependencies:
 
-	- XMLParser by Frank Vanden Berghen
-		http://www.applied-mathematics.net/tools/xmlParser.html
+	- RapidXml
+		http://rapidxml.sourceforge.net
 	- stbi by Sean Barrett
 		http://nothings.org
-	- GLFW 2.6 for window management in samples
-		http://glfw.sourceforge.net/
+	- GLFW for window management in samples
+		http://glfw.sourceforge.net
 		
 These libraries are included directly as code in the SDK.
 
 
 Release Notes:
 	
-	The new Beta4 release features an improved API which is clearer and less verbose.
-	Moreover, the enhanced API provides more powerful access to resource data
-	and has better support for dynamic content.
-	Besides the API enhancements and many smaller fixes, Beta4 features updates to the
-	animation system and a more familiar CgFX-like shader effect syntax.
-	The new release is distributed under a different license now, namely the Eclipse
-	Public License. This license is less restrictive than the LGPL and allows static
-	linking as well as development of proprietary extensions.
+	The Beta5 release brings a plenty of bug fixes and performance improvements. On the
+	feature side, there are several updates to the shader system which remove all
+	fixed-function dependencies. Besides that, several smaller enhancements to overlays,
+	particle systems, animations and in-game profiling were done.
+	ColladaConv was extended to allow batch processing of input files so that a whole
+	asset repository can be recompiled automatically. Moreover, the parsing speed was
+	improved by using a faster XML parser and applying various other optimizations.
 
 
 Special thanks go to the University of Augsburg for supporting this project!
@@ -66,12 +65,12 @@ Input:
 
 	Use WASD to move and the mouse to look around.
 	Hold down LSHIFT to move faster.
-	Space freezes the scene.
+	Space freezes the scene, hitting space two times freezes the camera as well.
 	F1 sets fullscreen mode.
 	F3 switches between forward and deferred shading.
+	F6 toggles frame stats display.
 	F7 toggles debug view.
 	F8 toggles wireframe mode.
-	F9 toggles frame stats display.
 	ESC quits the application.
 
 Notes on content:
@@ -97,12 +96,12 @@ Input:
 	Use WASD to move and the mouse to look around.
 	Hold down LSHIFT to move faster.
 	Use 1 and 2 to blend between character animations.
-	Space freezes the scene.
+	Space freezes the scene, hitting space two times freezes the camera as well.
 	F1 sets fullscreen mode.
 	F3 switches between hdr and standard forward lighting.
+	F6 toggles frame stats and information display.
 	F7 toggles debug view.
 	F8 toggles wireframe mode.
-	F9 toggles frame stats and information display.
 	ESC quits the application.
 
 Notes on content:
@@ -112,9 +111,3 @@ Notes on content:
 	Noncommercial 3.0 License (http://creativecommons.org/licenses/by-nc/3.0/).
 	The cubemap texture is a modified version of one of M@dcow's high res skymaps
 	which can be found at BlenderArtist.org.
-	
-	
-	
--------------------------
-Have fun with the engine!
--------------------------

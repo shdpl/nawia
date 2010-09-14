@@ -1,7 +1,7 @@
 Horde3D Terrain Extension
 --------------------------
 
-Copyright (C) 2006-2009 Nicolas Schulz and Volker Wiendl
+Copyright (C) 2006-2011 Nicolas Schulz and Volker Wiendl
 
 The Terrain Extension extends Horde3D with the capability to render large landscapes. A special
 level of detail algorithm adapts the resolution of the terrain mesh so that near regions get
@@ -75,9 +75,9 @@ Input:
 	Use WASD to move and the mouse to look around.
 	Hold down LSHIFT to move faster.
 	F1 sets fullscreen mode.
+	F6 toggles frame stats display.
 	F7 toggles debug view.
 	F8 toggles wireframe mode.
-	F9 toggles frame stats display.
 	ESC quits the application.
 
 Notes on content:

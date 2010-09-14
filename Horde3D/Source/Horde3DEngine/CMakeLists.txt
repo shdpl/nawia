@@ -52,7 +52,6 @@ set(HORDE3D_SOURCES
 	utTimer.h
 	utOpenGL.h
 	../../Bindings/C++/Horde3D.h
-	../Shared/utXMLParser.cpp
 
 	${HORDE3D_EXTENSION_SOURCES}
 	)

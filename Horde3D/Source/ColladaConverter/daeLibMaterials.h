@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -13,10 +13,12 @@
 #ifndef _daeLibMaterials_H_
 #define _daeLibMaterials_H_
 
-#include "utXMLParser.h"
+#include "utXML.h"
 #include "daeLibEffects.h"
 #include <string>
 #include <vector>
+
+using namespace Horde3D;
 
 
 struct DaeMaterial
@@ -41,7 +43,7 @@ struct DaeMaterial
 		name = matNode.getAttribute( "name", "" );
 		if( name.empty() ) name = id;
 		
-		XMLNode node1 = matNode.getChildNode( "instance_effect" );
+		XMLNode node1 = matNode.getFirstChild( "instance_effect" );
 		if( !node1.isEmpty() )
 		{
 			effectId = node1.getAttribute( "url", "" );
@@ -79,18 +81,17 @@ struct DaeLibMaterials
 
 	bool parse( const XMLNode &rootNode )
 	{
-		XMLNode node1 = rootNode.getChildNode( "library_materials" );
+		XMLNode node1 = rootNode.getFirstChild( "library_materials" );
 		if( node1.isEmpty() ) return true;
 
-		int nodeItr2 = 0;
-		XMLNode node2 = node1.getChildNode( "material", nodeItr2 );
+		XMLNode node2 = node1.getFirstChild( "material" );
 		while( !node2.isEmpty() )
 		{
 			DaeMaterial *material = new DaeMaterial();
 			if( material->parse( node2 ) ) materials.push_back( material );
 			else delete material;
 
-			node2 = node1.getChildNode( "material", ++nodeItr2 );
+			node2 = node2.getNextSibling( "material" );
 		}
 		
 		return true;

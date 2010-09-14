@@ -206,13 +206,12 @@ namespace Horde3DNET.Utils
         /// <param name="layer">layer index of the font overlays (values: 0-7)</param>        
         public static void showText(string text, float x, float y, float size,
                                     float colR, float colG, float colB,
-                                    int fontMatRes, int layer)
+                                    int fontMatRes)
         {
-            if (text == null) throw new ArgumentNullException("text", Resources.StringNullExceptionString);
-            if (layer < 0) throw new ArgumentOutOfRangeException("layer", Resources.UIntOutOfRangeExceptionString);
+            if (text == null) throw new ArgumentNullException("text", Resources.StringNullExceptionString);            
             if (fontMatRes < 0) throw new ArgumentOutOfRangeException("fontMatRes", Resources.UIntOutOfRangeExceptionString);
 
-            NativeMethodsUtils.h3dutShowText(text, x, y, size, colR, colG, colB, fontMatRes, layer);
+            NativeMethodsUtils.h3dutShowText(text, x, y, size, colR, colG, colB, fontMatRes );
         }
 
         /// <summary>

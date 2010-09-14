@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -13,9 +13,11 @@
 #ifndef _daeLibControllers_H_
 #define _daeLibControllers_H_
 
-#include "utXMLParser.h"
+#include "utXML.h"
 #include <string>
 #include <vector>
+
+using namespace Horde3D;
 
 
 struct DaeWeight
@@ -63,7 +65,7 @@ struct DaeSkin
 	
 	bool parse( const XMLNode &ctrlNode )
 	{
-		XMLNode node1 = ctrlNode.getChildNode( "skin" );
+		XMLNode node1 = ctrlNode.getFirstChild( "skin" );
 		if( node1.isEmpty() ) return false;
 		
 		id = ctrlNode.getAttribute( "id", "" );
@@ -72,7 +74,7 @@ struct DaeSkin
 		removeGate( ownerId );
 
 		// Bind shape matrix
-		XMLNode node2 = node1.getChildNode( "bind_shape_matrix" );
+		XMLNode node2 = node1.getFirstChild( "bind_shape_matrix" );
 		if( node2.isEmpty() ) return false;
 
 		char *str = (char *)node2.getText();
@@ -85,22 +87,20 @@ struct DaeSkin
 		}
 		
 		// Sources
-		int nodeItr2 = 0;
-		node2 = node1.getChildNode( "source", nodeItr2 );
+		node2 = node1.getFirstChild( "source" );
 		while( !node2.isEmpty() )
 		{
 			sources.push_back( DaeSource() );
 			if( !sources.back().parse( node2 ) ) sources.pop_back();
 			
-			node2 = node1.getChildNode( "source", ++nodeItr2 );
+			node2 = node2.getNextSibling( "source" );
 		}
 
 		// Joints
-		node2 = node1.getChildNode( "joints" );
+		node2 = node1.getFirstChild( "joints" );
 		if( !node2.isEmpty() )
 		{
-			int nodeItr3 = 0;
-			XMLNode node3 = node2.getChildNode( "input", nodeItr3 );
+			XMLNode node3 = node2.getFirstChild( "input" );
 			while( !node3.isEmpty() )
 			{
 				if( strcmp( node3.getAttribute( "semantic", "" ), "JOINT" ) == 0 )
@@ -116,7 +116,7 @@ struct DaeSkin
 					bindMatArray = findSource( sourceId );
 				}
 
-				node3 = node2.getChildNode( "input", ++nodeItr3 );
+				node3 = node3.getNextSibling( "input" );
 			}
 		}
 		
@@ -124,10 +124,9 @@ struct DaeSkin
 		unsigned int jointOffset = 0, weightOffset = 0;
 		unsigned int numInputs = 0;
 		
-		node2 = node1.getChildNode( "vertex_weights" );
+		node2 = node1.getFirstChild( "vertex_weights" );
 		int count = atoi( node2.getAttribute( "count", "0" ) );
-		int nodeItr3 = 0;
-		XMLNode node3 = node2.getChildNode( "input", nodeItr3 );
+		XMLNode node3 = node2.getFirstChild( "input" );
 		while( !node3.isEmpty() )
 		{
 			++numInputs;
@@ -150,10 +149,10 @@ struct DaeSkin
 				weightArray = findSource( id );
 			}
 			
-			node3 = node2.getChildNode( "input", ++nodeItr3 );
+			node3 = node3.getNextSibling( "input" );
 		}
 
-		node3 = node2.getChildNode( "vcount" );
+		node3 = node2.getFirstChild( "vcount" );
 		str = (char *)node3.getText();
 		if( str == 0x0 ) return false;
 		for( int i = 0; i < count; ++i )
@@ -170,7 +169,7 @@ struct DaeSkin
 			vertWeights.push_back( vertWeight );
 		}
 
-		node3 = node2.getChildNode( "v" );
+		node3 = node2.getFirstChild( "v" );
 		str = (char *)node3.getText();
 		if( str == 0x0 ) return false;
 		for( int i = 0; i < count; ++i )
@@ -224,7 +223,7 @@ struct DaeMorph
 	
 	bool parse( const XMLNode &ctrlNode )
 	{
-		XMLNode node1 = ctrlNode.getChildNode( "morph" );
+		XMLNode node1 = ctrlNode.getFirstChild( "morph" );
 		if( node1.isEmpty() ) return false;
 
 		id = ctrlNode.getAttribute( "id", "" );
@@ -233,22 +232,20 @@ struct DaeMorph
 		removeGate( ownerId );
 		
 		// Sources
-		int nodeItr2 = 0;
-		XMLNode node2 = node1.getChildNode( "source", nodeItr2 );
+		XMLNode node2 = node1.getFirstChild( "source" );
 		while( !node2.isEmpty() )
 		{
 			sources.push_back( DaeSource() );
 			if( !sources.back().parse( node2 ) ) sources.pop_back();
 			
-			node2 = node1.getChildNode( "source", ++nodeItr2 );
+			node2 = node2.getNextSibling( "source" );
 		}
 
 		// Targets
-		node2 = node1.getChildNode( "targets" );
+		node2 = node1.getFirstChild( "targets" );
 		if( !node2.isEmpty() )
 		{
-			int nodeItr3 = 0;
-			XMLNode node3 = node2.getChildNode( "input", nodeItr3 );
+			XMLNode node3 = node2.getFirstChild( "input" );
 			while( !node3.isEmpty() )
 			{
 				if( strcmp( node3.getAttribute( "semantic", "" ), "MORPH_TARGET" ) == 0 )
@@ -264,7 +261,7 @@ struct DaeMorph
 					weightArray = findSource( sourceId );
 				}
 
-				node3 = node2.getChildNode( "input", ++nodeItr3 );
+				node3 = node3.getNextSibling( "input" );
 			}
 		}
 
@@ -314,15 +311,14 @@ struct DaeLibControllers
 	
 	bool parse( const XMLNode &rootNode )
 	{
-		XMLNode node1 = rootNode.getChildNode( "library_controllers" );
+		XMLNode node1 = rootNode.getFirstChild( "library_controllers" );
 		if( node1.isEmpty() ) return true;
 
-		int nodeItr2 = 0;
-		XMLNode node2 = node1.getChildNode( "controller", nodeItr2 );
+		XMLNode node2 = node1.getFirstChild( "controller" );
 		while( !node2.isEmpty() )
 		{
 			// Skin
-			XMLNode node3 = node2.getChildNode( "skin" );
+			XMLNode node3 = node2.getFirstChild( "skin" );
 			if( !node3.isEmpty() )
 			{
 				DaeSkin *skin = new DaeSkin();
@@ -331,7 +327,7 @@ struct DaeLibControllers
 			}
 
 			// Morph
-			node3 = node2.getChildNode( "morph" );
+			node3 = node2.getFirstChild( "morph" );
 			if( !node3.isEmpty() )
 			{
 				DaeMorph *morph = new DaeMorph();
@@ -339,7 +335,7 @@ struct DaeLibControllers
 				else delete morph;
 			}
 
-			node2 = node1.getChildNode( "controller", ++nodeItr2 );
+			node2 = node2.getNextSibling( "controller" );
 		}
 		
 		return true;

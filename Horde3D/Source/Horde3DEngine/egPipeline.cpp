@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -15,11 +15,14 @@
 #include "egModules.h"
 #include "egCom.h"
 #include "egRenderer.h"
-#include "utXMLParser.h"
+#include "utXML.h"
 #include "utPlatform.h"
 #include <fstream>
 
 #include "utDebug.h"
+
+
+namespace Horde3D {
 
 using namespace std;
 
@@ -100,8 +103,7 @@ const string PipelineResource::parseStage( XMLNode &node, PipelineStage &stage )
 		stage.matLink = (MaterialResource *)Modules::resMan().resolveResHandle( mat );
 	}
 	
-	int nodeItr1 = 0;
-	XMLNode node1 = node.getChildNode();
+	XMLNode node1 = node.getFirstChild();
 	while( !node1.isEmpty() && node1.getName() != 0x0 )
 	{
 		if( strcmp( node1.getName(), "SwitchTarget" ) == 0 )
@@ -180,10 +182,10 @@ const string PipelineResource::parseStage( XMLNode &node, PipelineStage &stage )
 			stage.commands.back().valParams.push_back( new PCStringParam( node1.getAttribute( "class", "" ) ) );
 			
 			string orderString = node1.getAttribute( "order", "" );
-			int order = RenderingOrder::None;
+			int order = RenderingOrder::StateChanges;
 			if( orderString == "FRONT_TO_BACK" ) order = RenderingOrder::FrontToBack;
 			else if( orderString == "BACK_TO_FRONT" ) order = RenderingOrder::BackToFront;
-			else if( orderString == "STATECHANGES" ) order = RenderingOrder::StateChanges;
+			else if( orderString == "NONE" ) order = RenderingOrder::None;
 			stage.commands.back().valParams.push_back( new PCIntParam( order ) );
 		}
 		else if( strcmp( node1.getName(), "DrawOverlays" ) == 0 )
@@ -211,10 +213,10 @@ const string PipelineResource::parseStage( XMLNode &node, PipelineStage &stage )
 				_stricmp( node1.getAttribute( "noShadows", "false" ), "true" ) == 0 ) );
 
 			string orderString = node1.getAttribute( "order", "" );
-			int order = RenderingOrder::None;
+			int order = RenderingOrder::StateChanges;
 			if( orderString == "FRONT_TO_BACK" ) order = RenderingOrder::FrontToBack;
 			else if( orderString == "BACK_TO_FRONT" ) order = RenderingOrder::BackToFront;
-			else if( orderString == "STATECHANGES" ) order = RenderingOrder::StateChanges;
+			else if( orderString == "NONE" ) order = RenderingOrder::None;
 			stage.commands.back().valParams.push_back( new PCIntParam( order ) );
 		}
 		else if( strcmp( node1.getName(), "DoDeferredLightLoop" ) == 0 )
@@ -242,7 +244,7 @@ const string PipelineResource::parseStage( XMLNode &node, PipelineStage &stage )
 			valParams[4] = new PCFloatParam( (float)atof( node1.getAttribute( "d", "0" ) ) );
 		}
 
-		node1 = node.getChildNode( ++nodeItr1 );
+		node1 = node1.getNextSibling();
 	}
 
 	return "";
@@ -317,24 +319,21 @@ void PipelineResource::releaseRenderTargets()
 bool PipelineResource::load( const char *data, int size )
 {
 	if( !Resource::load( data, size ) ) return false;
-	if( data[size - 1] != '\0' )
-	{	
-		return raiseError( "Data block not NULL-terminated" );
-	}
 
-	XMLResults res;
-	XMLNode rootNode = XMLNode::parseString( data, "Pipeline", &res );
-	if( res.error != eXMLErrorNone )
-	{
-		return raiseError( XMLNode::getError( res.error ), res.nLine );
-	}
+	XMLDoc doc;
+	doc.parseBuffer( data, size );
+	if( doc.hasError() )
+		return raiseError( "XML parsing error" );
+
+	XMLNode rootNode = doc.getRootNode();
+	if( strcmp( rootNode.getName(), "Pipeline" ) != 0 )
+		return raiseError( "Not a pipeline resource file" );
 
 	// Parse setup
-	XMLNode node1 = rootNode.getChildNode( "Setup" );
+	XMLNode node1 = rootNode.getFirstChild( "Setup" );
 	if( !node1.isEmpty() )
 	{
-		int nodeItr2 = 0;
-		XMLNode node2 = node1.getChildNode( "RenderTarget", nodeItr2 );
+		XMLNode node2 = node1.getFirstChild( "RenderTarget" );
 		while( !node2.isEmpty() )
 		{
 			if( node2.getAttribute( "id" ) == 0x0 ) return raiseError( "Missing RenderTarget attribute 'id'" );
@@ -368,16 +367,15 @@ bool PipelineResource::load( const char *data, int size )
 			addRenderTarget( id, depth, numBuffers, format,
 				std::min( maxSamples, Modules::config().sampleCount ), width, height, scale );
 
-			node2 = node1.getChildNode( "RenderTarget", ++nodeItr2 );
+			node2 = node2.getNextSibling( "RenderTarget" );
 		}
 	}
 
 	// Parse commands
-	node1 = rootNode.getChildNode( "CommandQueue" );
+	node1 = rootNode.getFirstChild( "CommandQueue" );
 	if( !node1.isEmpty() )
 	{
-		int nodeItr2 = 0;
-		XMLNode node2 = node1.getChildNode( "Stage", nodeItr2 );
+		XMLNode node2 = node1.getFirstChild( "Stage" );
 		while( !node2.isEmpty() )
 		{
 			_stages.push_back( PipelineStage() );
@@ -385,7 +383,7 @@ bool PipelineResource::load( const char *data, int size )
 			if( errorMsg != "" ) 
 				return raiseError( "Error in stage '" + _stages.back().id + "': " + errorMsg );
 			
-			node2 = node1.getChildNode( "Stage", ++nodeItr2 );
+			node2 = node2.getNextSibling( "Stage" );
 		}
 	}
 
@@ -481,7 +479,7 @@ const char *PipelineResource::getElemParamStr( int elem, int elemIdx, int param 
 
 
 bool PipelineResource::getRenderTargetData( const string &target, int bufIndex, int *width, int *height,
-                                            int *compCount, float *dataBuffer, int bufferSize )
+                                            int *compCount, void *dataBuffer, int bufferSize )
 {
 	uint32 rbObj = 0;
 	if( target != "" )
@@ -494,3 +492,5 @@ bool PipelineResource::getRenderTargetData( const string &target, int bufIndex, 
 	return Modules::renderer().getRenderBufferData(
 		rbObj, bufIndex, width, height, compCount, dataBuffer, bufferSize );
 }
+
+}  // namespace

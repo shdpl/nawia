@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -13,10 +13,15 @@
 #include "egSceneGraphRes.h"
 #include "egModules.h"
 #include "egCom.h"
-#include "utXMLParser.h"
+#include "utXML.h"
+#include "rapidxml_print.h"
+#include <iterator>
 #include "utPlatform.h"
 
 #include "utDebug.h"
+
+
+namespace Horde3D {
 
 using namespace std;
 
@@ -60,12 +65,11 @@ void SceneGraphResource::parseBaseAttributes( XMLNode &xmlNode, SceneNodeTpl &no
 	nodeTpl.scale.y = (float)atof( xmlNode.getAttribute( "sy", "1" ) );
 	nodeTpl.scale.z = (float)atof( xmlNode.getAttribute( "sz", "1" ) );
 
-	XMLNode node1 = xmlNode.getChildNode( "Attachment" );
+	XMLNode node1 = xmlNode.getFirstChild( "Attachment" );
 	if( !node1.isEmpty() )
 	{
-		char *s = node1.createXMLString();
-		nodeTpl.attachmentString = s;
-		delete[] s;
+		nodeTpl.attachmentString.clear();
+		rapidxml::print( std::back_inserter( nodeTpl.attachmentString ), *node1.getRapidXMLNode(), 0 );
 	}
 }
 
@@ -93,21 +97,23 @@ void SceneGraphResource::parseNode( XMLNode &xmlNode, SceneNodeTpl *parentTpl )
 				map< string, string > attribs;
 				
 				// Parse custom attributes
-				for( int i = 0; i < xmlNode.nAttribute(); ++i )
+				XMLAttribute attrib = xmlNode.getFirstAttrib();
+				while( !attrib.isEmpty() )
 				{
-					if( strcmp( xmlNode.getAttribute( i ).lpszName, "name" ) != 0 &&
-						strcmp( xmlNode.getAttribute( i ).lpszName, "tx" ) != 0 &&
-						strcmp( xmlNode.getAttribute( i ).lpszName, "ty" ) != 0 &&
-						strcmp( xmlNode.getAttribute( i ).lpszName, "tz" ) != 0 &&
-						strcmp( xmlNode.getAttribute( i ).lpszName, "rx" ) != 0 &&
-						strcmp( xmlNode.getAttribute( i ).lpszName, "ry" ) != 0 &&
-						strcmp( xmlNode.getAttribute( i ).lpszName, "rz" ) != 0 &&
-						strcmp( xmlNode.getAttribute( i ).lpszName, "sx" ) != 0 &&
-						strcmp( xmlNode.getAttribute( i ).lpszName, "sy" ) != 0 &&
-						strcmp( xmlNode.getAttribute( i ).lpszName, "sz" ) != 0 )
+					if( strcmp( attrib.getName(), "name" ) != 0 &&
+						strcmp( attrib.getName(), "tx" ) != 0 &&
+						strcmp( attrib.getName(), "ty" ) != 0 &&
+						strcmp( attrib.getName(), "tz" ) != 0 &&
+						strcmp( attrib.getName(), "rx" ) != 0 &&
+						strcmp( attrib.getName(), "ry" ) != 0 &&
+						strcmp( attrib.getName(), "rz" ) != 0 &&
+						strcmp( attrib.getName(), "sx" ) != 0 &&
+						strcmp( attrib.getName(), "sy" ) != 0 &&
+						strcmp( attrib.getName(), "sz" ) != 0 )
 					{
-						attribs[xmlNode.getAttribute( i ).lpszName] = xmlNode.getAttribute( i ).lpszValue;
+						attribs[attrib.getName()] = attrib.getValue();
 					}
+					attrib = attrib.getNextAttrib();
 				}
 
 				// Call function pointer
@@ -140,14 +146,13 @@ void SceneGraphResource::parseNode( XMLNode &xmlNode, SceneNodeTpl *parentTpl )
 	}
 	
 	// Parse children
-	int nodeItr1 = 0;
-	XMLNode xmlNode1 = xmlNode.getChildNode( nodeItr1 );
+	XMLNode xmlNode1 = xmlNode.getFirstChild();
 	while( !xmlNode1.isEmpty() )
 	{	
 		if( xmlNode1.getName() == 0x0 || strcmp( xmlNode1.getName(), "Attachment" ) != 0 )			
 			parseNode( xmlNode1, nodeTpl );
 
-		xmlNode1 = xmlNode.getChildNode( ++nodeItr1 );
+		xmlNode1 = xmlNode1.getNextSibling();
 	}
 }
 
@@ -155,16 +160,16 @@ void SceneGraphResource::parseNode( XMLNode &xmlNode, SceneNodeTpl *parentTpl )
 bool SceneGraphResource::load( const char *data, int size )
 {
 	if( !Resource::load( data, size ) ) return false;
-	if( data[size - 1] != '\0' )
-	{	
-		Modules::log().writeError( "SceneGraph resource '%s': Data block not NULL-terminated", _name.c_str() );
+	
+	XMLDoc doc;
+	doc.parseBuffer( data, size );
+	if( doc.hasError() )
+	{
 		return false;
 	}
 
-	// Parse XML file
-	XMLNode rootNode = XMLNode::parseString( data );
-
 	// Parse scene nodes and load resources
+	XMLNode rootNode = doc.getRootNode();
 	if( !rootNode.isEmpty() )
 	{	
 		parseNode( rootNode, 0x0 );
@@ -176,3 +181,5 @@ bool SceneGraphResource::load( const char *data, int size )
 
 	return true;
 }
+
+}  // namespace

@@ -297,10 +297,6 @@
 				RelativePath=".\utOpenGL.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\Shared\utXMLParser.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -416,7 +412,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Shared\utXMLParser.h"
+				RelativePath="..\Shared\utXML.h"
 				>
 			</File>
 		</Filter>

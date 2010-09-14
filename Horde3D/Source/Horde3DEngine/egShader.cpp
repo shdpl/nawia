@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -14,11 +14,13 @@
 #include "egModules.h"
 #include "egCom.h"
 #include "egRenderer.h"
-#include "utXMLParser.h"
 #include "utPlatform.h"
 #include <fstream>
 
 #include "utDebug.h"
+
+
+namespace Horde3D {
 
 using namespace std;
 
@@ -1088,3 +1090,5 @@ const char *ShaderResource::getElemParamStr( int elem, int elemIdx, int param )
 	
 	return Resource::getElemParamStr( elem, elemIdx, param );
 }
+
+}  // namespace

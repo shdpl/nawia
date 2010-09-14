@@ -163,7 +163,7 @@
 	{
 		if( !_initialized )
 		{
-			Modules::log().writeError( "Trying to decode sound using an uninitialized vorbis decoder" );
+			Horde3D::Modules::log().writeError( "Trying to decode sound using an uninitialized vorbis decoder" );
 			return 0;
 		}
 
@@ -189,7 +189,7 @@
 			}
 			else
 			{
-				Modules::log().writeDebugInfo( "Recieved error code %i when decoding vorbis data", result );
+				Horde3D::Modules::log().writeDebugInfo( "Recieved error code %i when decoding vorbis data", result );
 				break;
 			}
 		}

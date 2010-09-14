@@ -1,11 +1,13 @@
 //========================================================================
 // GLFW - An OpenGL framework
-// File:        macosx_init.c
-// Platform:    Mac OS X
+// Platform:    Carbon/AGL/CGL
 // API Version: 2.7
-// WWW:         http://glfw.sourceforge.net
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
-// Copyright (c) 2002-2006 Camilla Berglund
+// Copyright (c) 2002-2006 Marcus Geelnard
+// Copyright (c) 2003      Keith Bauer
+// Copyright (c) 2003-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2007 Robin Leffmann
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -38,6 +40,16 @@
 
 // KCHR resource pointer for keycode translation
 void *KCHRPtr;
+
+
+//========================================================================
+// Terminate GLFW when exiting application
+//========================================================================
+
+static void glfw_atexit( void )
+{
+    glfwTerminate();
+}
 
 
 //========================================================================
@@ -79,7 +91,7 @@ void _glfwChangeToResourcesDirectory( void )
 
     CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL( mainBundle );
     char resourcesPath[ _GLFW_MAX_PATH_LENGTH ];
-    
+
     CFStringRef lastComponent = CFURLCopyLastPathComponent( resourcesURL );
     if( kCFCompareEqualTo != CFStringCompare(
             CFSTR( "Resources" ),
@@ -88,7 +100,7 @@ void _glfwChangeToResourcesDirectory( void )
     {
         UNBUNDLED;
     }
-    
+
     CFRelease( lastComponent );
 
     if( !CFURLGetFileSystemRepresentation( resourcesURL,
@@ -117,11 +129,11 @@ int _glfwPlatformInit( void )
     _glfwWin.aglContext = NULL;
     _glfwWin.cglContext = NULL;
     _glfwWin.windowUPP = NULL;
-    
+
     _glfwInput.Modifiers = 0;
-    
+
     _glfwLibrary.Unbundled = 0;
-    
+
     _glfwLibrary.Libs.OpenGLFramework =
         CFBundleGetBundleWithIdentifier( CFSTR( "com.apple.opengl" ) );
     if( _glfwLibrary.Libs.OpenGLFramework == NULL )
@@ -136,6 +148,9 @@ int _glfwPlatformInit( void )
         fprintf( stderr, "glfwInit failing because it kind find the desktop display mode\n" );
         return GL_FALSE;
     }
+
+    // Install atexit routine
+    atexit( glfw_atexit );
 
     _glfwInitThreads();
 

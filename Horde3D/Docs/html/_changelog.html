@@ -10,7 +10,62 @@
 <div id="content">
 
 <h1>Horde3D SDK Change Log</h1>
-<p>Here you can see what has changed in the Horde3D SDK releases.</p>
+<p>You can find out here what has changed in the Horde3D SDK releases.</p>
+
+<h3>Version [1.0.0] Beta5</h3>
+<ul>
+	<li><b>Core Engine</b></li>
+	<ul>
+		<li>Refactored overlay system and h3dShowOverlay: layers were removed and overlays are batched for better performance.</li>
+		<li>Changed overlay coordinate system to go from (0,0) to (aspect,1) for better compatibility with different screen aspect ratios.</li>
+		<li>Refactored extension system.</li>
+		<li>Exchanged current XML parser by RapidXml.</li>
+		<li>Improved particle spawning: particles are created along emitter's motion vector to avoid blobs when framerate is low.</li>
+		<li>Added particle parameter 'drag' with which particles can inherit the velocity of their emitter.</li>
+		<li>Added support for weighted additive animations.</li>
+		<li>Added support for negative morpher weights.</li>
+		<li>Added API function h3dGetViewportParams to retrieve the viewport parameters.</li>
+		<li>Renamed API function getPipelineRenderTargetData to getRenderTargetData and added support for reading out the backbuffer directly.</li>
+		<li>Added color intensity multiplier for light nodes.</li>
+		<li>Added support for input gamma correction (sRGB texture support).</li>
+		<li>Optimized deferred shading by drawing light volumes.</li>
+		<li>Added more CPU timing stats.</li>
+		<li>Added basic GPU timing stats (requires ARB_timer_query to work).</li>
+		<li>Removed most of the deprecated OpenGL fixed function calls.</li>
+		<li>Introduced FX sampler parameter 'Texture' for specifying default textures.</li>
+		<li>Introduced FX context state 'ZEnable'.</li>
+		<li>Added backface culling configuration to FX context.</li>
+		<li>Changed declaration of FX samplers to include type.</li>
+		<li>Added support for single float uniforms.</li>
+		<li>Added shader uniform 'nodeId' which contains the object's node handle.</li>
+		<li>Changed overlay shader vertex attributes.</li>
+		<li>Replaced all built-in GLSL vertex attributes by custom ones.</li>
+		<li>Removed vertex attribute 'bitangent' as it can be derived in the shader.</li>
+		<li>Replaced fixed-function modelview and projection matrices by custom uniforms (viewMat, viewMatInv, projMat, viewProjMat).</li>
+		<li>Renamed uniform 'viewer' to 'viewerPos'.</li>
+		<li>Merged uniform 'lightCosCutoff' into w component of 'lightDir'.</li>
+		<li>Added log messages to the debugger output (Win only).</li>
+		<li>Fixed a plenty of different bugs.</li>
+	</ul>
+	<li><b>Utility Lib</b></li>
+	<ul>
+		<li>Changed filename of default engine log file to 'Horde3D_Log.html'.</li>
+		<li>Added utility function h3dutScreenshot.</li>
+	</ul>
+	<li><b>ColladaConv</b></li>
+	<ul>
+		<li>Implemented batch processing that can be used to recompile an entire asset repository.</li>
+		<li>Improved parsing performance.</li>
+		<li>Improved COLLADA compatibility and fixed several bugs.</li>
+	</ul>
+	<li><b>Samples</b></li>
+	<ul>
+		<li>Updated sample framework to GLFW version 2.7</li>
+		<li>Added possibility to freeze camera.</li>
+		<li>Set window resolution of samples to widescreen format by default.</li>
+	</ul>
+</ul>
+
 
 <h3>Version [1.0.0] Beta4</h3>
 <ul>
@@ -431,7 +486,7 @@
 </ul>
 
 
-<div id="copy">Copyright &copy; 2006-2009 Nicolas Schulz</div>
+<div id="copy">Copyright &copy; 2006-2011 Nicolas Schulz</div>
 </div>
 
 <div id="logo">

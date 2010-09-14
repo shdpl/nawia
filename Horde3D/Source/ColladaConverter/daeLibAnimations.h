@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -13,11 +13,13 @@
 #ifndef _daeLibAnimations_H_
 #define _daeLibAnimations_H_
 
-#include "utXMLParser.h"
+#include "utXML.h"
 #include "daeCommon.h"
 #include "utils.h"
 #include <string>
 #include <vector>
+
+using namespace Horde3D;
 
 
 struct DaeSampler
@@ -94,19 +96,17 @@ struct DaeAnimation
 		id = animNode.getAttribute( "id", "" );
 		
 		// Sources
-		int nodeItr1 = 0;
-		XMLNode node1 = animNode.getChildNode( "source", nodeItr1 );
+		XMLNode node1 = animNode.getFirstChild( "source" );
 		while( !node1.isEmpty() )
 		{
 			sources.push_back( DaeSource() );
 			if( !sources.back().parse( node1 ) ) sources.pop_back();
 
-			node1 = animNode.getChildNode( "source", ++nodeItr1 );
+			node1 = node1.getNextSibling( "source" );
 		}
 		
 		// Samplers
-		nodeItr1 = 0;
-		node1 = animNode.getChildNode( "sampler", nodeItr1 );
+		node1 = animNode.getFirstChild( "sampler" );
 		while( !node1.isEmpty() )
 		{
 			samplers.push_back( DaeSampler() );
@@ -114,8 +114,7 @@ struct DaeAnimation
 
 			sampler.id = node1.getAttribute( "id" );
 			
-			int nodeItr2 = 0;
-			XMLNode node2 = node1.getChildNode( "input", nodeItr2 );
+			XMLNode node2 = node1.getFirstChild( "input" );
 			while( !node2.isEmpty() )
 			{
 				if( strcmp( node2.getAttribute( "semantic", "" ), "INPUT" ) == 0x0 )
@@ -131,7 +130,7 @@ struct DaeAnimation
 					sampler.output = findSource( id );
 				}
 				
-				node2 = node1.getChildNode( "input", ++nodeItr2 );
+				node2 = node2.getNextSibling( "input" );
 			}
 			
 			if( sampler.input == 0x0 || sampler.output == 0x0 )
@@ -145,12 +144,11 @@ struct DaeAnimation
 					maxAnimTime = std::max( maxAnimTime, sampler.input->floatArray[i] );
 			}
 
-			node1 = animNode.getChildNode( "sampler", ++nodeItr1 );
+			node1 = node1.getNextSibling( "sampler" );
 		}
 
 		// Channels
-		nodeItr1 = 0;
-		node1 = animNode.getChildNode( "channel", nodeItr1 );
+		node1 = animNode.getFirstChild( "channel" );
 		while( !node1.isEmpty() )
 		{
 			channels.push_back( DaeChannel() );
@@ -227,19 +225,18 @@ struct DaeAnimation
 				channels.pop_back();
 			}
 
-			node1 = animNode.getChildNode( "channel", ++nodeItr1 );
+			node1 = node1.getNextSibling( "channel" );
 		}
 		
 		// Parse children
-		nodeItr1 = 0;
-		node1 = animNode.getChildNode( "animation", nodeItr1 );
+		node1 = animNode.getFirstChild( "animation" );
 		while( !node1.isEmpty() )
 		{
 			DaeAnimation *anim = new DaeAnimation();
 			if( anim->parse( node1, maxFrameCount, maxAnimTime ) ) children.push_back( anim );
 			else delete anim;
 
-			node1 = animNode.getChildNode( "animation", ++nodeItr1 );
+			node1 = node1.getNextSibling( "animation" );
 		}
 		
 		return true;
@@ -276,18 +273,17 @@ struct DaeLibAnimations
 	{
 		maxFrameCount = 0;
 		
-		XMLNode node1 = rootNode.getChildNode( "library_animations" );
+		XMLNode node1 = rootNode.getFirstChild( "library_animations" );
 		if( node1.isEmpty() ) return true;
 
-		int nodeItr2 = 0;
-		XMLNode node2 = node1.getChildNode( "animation", nodeItr2 );
+		XMLNode node2 = node1.getFirstChild( "animation" );
 		while( !node2.isEmpty() )
 		{
 			DaeAnimation *anim = new DaeAnimation();
 			if( anim->parse( node2, maxFrameCount, maxAnimTime ) ) animations.push_back( anim );
 			else delete anim;
 
-			node2 = node1.getChildNode( "animation", ++nodeItr2 );
+			node2 = node2.getNextSibling( "animation" );
 		}
 		
 		return true;

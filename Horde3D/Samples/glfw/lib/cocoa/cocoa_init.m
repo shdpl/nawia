@@ -1,11 +1,10 @@
 //========================================================================
 // GLFW - An OpenGL framework
-// File:        macosx_init.m
-// Platform:    Mac OS X
+// Platform:    Cocoa/NSOpenGL
 // API Version: 2.7
-// WWW:         http://glfw.sourceforge.net
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
-// Copyright (c) 2002-2006 Camilla Berglund
+// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -32,6 +31,28 @@
 #include <crt_externs.h>
 
 #include "internal.h"
+
+@interface GLFWApplication : NSApplication
+@end
+
+@implementation GLFWApplication
+
+// From http://cocoadev.com/index.pl?GameKeyboardHandlingAlmost
+// This works around an AppKit bug, where key up events while holding
+// down the command key don't get sent to the key window.
+- (void)sendEvent:(NSEvent *)event
+{
+    if( [event type] == NSKeyUp && ( [event modifierFlags] & NSCommandKeyMask ) )
+    {
+        [[self keyWindow] sendEvent:event];
+    }
+    else
+    {
+        [super sendEvent:event];
+    }
+}
+
+@end
 
 // Prior to Snow Leopard, we need to use this oddly-named semi-private API
 // to get the application menu working properly.  Need to be careful in
@@ -164,6 +185,16 @@ static void setUpMenuBar( void )
 }
 
 //========================================================================
+// Terminate GLFW when exiting application
+//========================================================================
+
+static void glfw_atexit( void )
+{
+    glfwTerminate();
+}
+
+
+//========================================================================
 // Initialize GLFW thread package
 //========================================================================
 
@@ -196,7 +227,7 @@ int _glfwPlatformInit( void )
     _glfwLibrary.AutoreleasePool = [[NSAutoreleasePool alloc] init];
 
     // Implicitly create shared NSApplication instance
-    [NSApplication sharedApplication];
+    [GLFWApplication sharedApplication];
 
     NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
 
@@ -209,6 +240,9 @@ int _glfwPlatformInit( void )
     setUpMenuBar();
 
     [NSApp finishLaunching];
+
+    // Install atexit routine
+    atexit( glfw_atexit );
 
     initThreads();
 

@@ -1356,11 +1356,11 @@ DLL bool h3dSetMaterialUniform( H3DRes materialRes, const char *name, float a, f
 	
 	Details:
 		This function reads back the pixels of a specified render target. If no pipeline resource is specified,
-		the color data of the backbuffer is read back as BGRA8. Otherwise, the specified buffer of the
+		the color data of the backbuffer is read back as RGBA float. Otherwise, the specified buffer of the
 		specified render target is read back and stored in dataBuffer as RGBA float values.
 		To compute the required size of the output buffer to which the data is written, the function can be called
-		with a NULL pointer for dataBuffer and pointers to variables where the buffer width, height and bytes per pixel
-		will be stored.
+		with a NULL pointer for dataBuffer and pointers to variables where the buffer width, height and the number
+		of components will be stored.
 		As this function has a considerable performance overhead, it is only intended for debugging purposes and screenshots.
 		For more information about the render buffers, refer to the Pipeline documentation.
 		
@@ -1375,7 +1375,7 @@ DLL bool h3dSetMaterialUniform( H3DRes materialRes, const char *name, float a, f
 		bufferSize   - size of dataBuffer array in bytes
 		
 	Returns:
-		true if render target could be found, otherwise false
+		true if specified render target could be found, otherwise false
 */
 DLL bool h3dGetRenderTargetData( H3DRes pipelineRes, const char *targetName, int bufIndex,
                                  int *width, int *height, int *compCount, void *dataBuffer, int bufferSize );

@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -13,11 +13,13 @@
 #ifndef _daeLibVisualScenes_H_
 #define _daeLibVisualScenes_H_
 
-#include "utXMLParser.h"
+#include "utXML.h"
 #include "daeLibAnimations.h"
 #include <string>
 #include <vector>
 #include <map>
+
+using namespace Horde3D;
 
 
 struct DaeTransformation
@@ -60,8 +62,7 @@ struct DaeNode
 		else joint = false;
 		
 		// Parse transformations
-		int nodeItr1 = 0;
-		XMLNode node1 = nodeNode.getChildNode( nodeItr1 );
+		XMLNode node1 = nodeNode.getFirstChild();
 		while( !node1.isEmpty() )
 		{
 			if( node1.getName() == 0x0 ) continue;
@@ -130,12 +131,11 @@ struct DaeNode
 				log( "Warning: Unsupported transformation type" );
 			}
 
-			node1 = nodeNode.getChildNode( ++nodeItr1 );
+			node1 = node1.getNextSibling();
 		}
 
 		// Parse instances
-		nodeItr1 = 0;
-		node1 = nodeNode.getChildNode( nodeItr1 );
+		node1 = nodeNode.getFirstChild();
 		while( !node1.isEmpty() && node1.getName() != 0x0 )
 		{
 			if( strcmp( node1.getName(), "instance_node" ) == 0 )
@@ -164,40 +164,38 @@ struct DaeNode
 					inst.url = url;
 
 					// Find material bindings
-					XMLNode node2 = node1.getChildNode( "bind_material" );
+					XMLNode node2 = node1.getFirstChild( "bind_material" );
 					if( !node2.isEmpty() )
 					{
-						XMLNode node3 = node2.getChildNode( "technique_common" );
+						XMLNode node3 = node2.getFirstChild( "technique_common" );
 						if( !node3.isEmpty() )
 						{
-							int nodeItr4 = 0;
-							XMLNode node4 = node3.getChildNode( "instance_material", nodeItr4 );
+							XMLNode node4 = node3.getFirstChild( "instance_material" );
 							while( !node4.isEmpty() )
 							{
 								std::string s = node4.getAttribute( "target", "" );
 								removeGate( s );
 								inst.materialBindings[node4.getAttribute( "symbol", "" )] = s;
 
-								node4 = node3.getChildNode( "instance_material", ++nodeItr4 );
+								node4 = node4.getNextSibling( "instance_material" );
 							}
 						}
 					}
 				}
 			}
 			
-			node1 = nodeNode.getChildNode( ++nodeItr1 );
+			node1 = node1.getNextSibling();
 		}
 
 		// Parse children
-		nodeItr1 = 0;
-		node1 = nodeNode.getChildNode( "node", nodeItr1 );
+		node1 = nodeNode.getFirstChild( "node" );
 		while( !node1.isEmpty() )
 		{
 			DaeNode *node = new DaeNode();
 			if( node->parse( node1 ) ) children.push_back( node );
 			else delete node;
 
-			node1 = nodeNode.getChildNode( "node", ++nodeItr1 );
+			node1 = node1.getNextSibling( "node" );
 		}
 		
 		return true;
@@ -282,15 +280,14 @@ struct DaeVisualScene
 		id = visSceneNode.getAttribute( "id", "" );
 		if( id == "" ) return false;
 		
-		int nodeItr1 = 0;
-		XMLNode node1 = visSceneNode.getChildNode( "node", nodeItr1 );
+		XMLNode node1 = visSceneNode.getFirstChild( "node" );
 		while( !node1.isEmpty() )
 		{
 			DaeNode *node = new DaeNode();
 			if( node->parse( node1 ) ) nodes.push_back( node );
 			else delete node;
 
-			node1 = visSceneNode.getChildNode( "node", ++nodeItr1 );
+			node1 = node1.getNextSibling( "node" );
 		}
 		
 		return true;
@@ -324,11 +321,10 @@ struct DaeLibVisScenes
 	
 	bool parse( const XMLNode &rootNode )
 	{
-		XMLNode node1 = rootNode.getChildNode( "library_visual_scenes" );
+		XMLNode node1 = rootNode.getFirstChild( "library_visual_scenes" );
 		if( node1.isEmpty() ) return true;
 
-		int nodeItr2 = 0;
-		XMLNode node2 = node1.getChildNode( "visual_scene", nodeItr2 );
+		XMLNode node2 = node1.getFirstChild( "visual_scene" );
 		while( !node2.isEmpty() )
 		{
 			DaeVisualScene *visScene = new DaeVisualScene();
@@ -336,7 +332,7 @@ struct DaeLibVisScenes
 			if( visScene->parse( node2 ) ) visScenes.push_back( visScene );
 			else delete visScene;
 
-			node2 = node1.getChildNode( "visual_scene", ++nodeItr2 );
+			node2 = node2.getNextSibling( "visual_scene" );
 		}
 		
 		return true;

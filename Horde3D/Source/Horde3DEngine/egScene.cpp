@@ -3,7 +3,7 @@
 // Horde3D
 //   Next-Generation Graphics Engine
 // --------------------------------------
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // This software is distributed under the terms of the Eclipse Public License v1.0.
 // A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
@@ -21,6 +21,9 @@
 
 #include "utDebug.h"
 
+
+namespace Horde3D {
+
 using namespace std;
 
 // *************************************************************************************************
@@ -28,7 +31,7 @@ using namespace std;
 // *************************************************************************************************
 
 SceneNode::SceneNode( const SceneNodeTpl &tpl ) :
-	_parent( 0x0 ), _type( tpl.type ), _handle( 0 ), _sgHandle( 0 ),
+	_parent( 0x0 ), _type( tpl.type ), _handle( 0 ), _sgHandle( 0 ), _sortKey( 0 ),
 	_dirty( true ), _transformed( true ), _renderable( false ), _active( true ),
 	_name( tpl.name ), _attachment( tpl.attachmentString )
 {
@@ -332,9 +335,20 @@ void SpatialGraph::updateNode( uint32 sgHandle )
 }
 
 
+struct RendQueueItemCompFunc
+{
+	bool operator()( const RendQueueItem &a, const RendQueueItem &b ) const
+		{ return a.sortKey < b.sortKey; }
+};
+
+
 void SpatialGraph::updateQueues( const Frustum &frustum1, const Frustum *frustum2,
 	                             RenderingOrder::List order, bool lightQueue, bool renderQueue )
 {
+	Vec3f camPos( frustum1.getOrigin() );
+	if( Modules::renderer().getCurCamera() != 0x0 )
+		camPos = Modules::renderer().getCurCamera()->getAbsPos();
+	
 	Modules::sceneMan().updateNodes();
 	
 	// Clear without affecting capacity
@@ -352,12 +366,28 @@ void SpatialGraph::updateQueues( const Frustum &frustum1, const Frustum *frustum
 			if( !frustum1.cullBox( node->_bBox ) &&
 				(frustum2 == 0x0 || !frustum2->cullBox( node->_bBox )) )
 			{
-				if( order != RenderingOrder::None )
+				if( node->_type == SceneNodeTypes::Mesh )  // TODO: Generalize and optimize this
 				{
-					node->tmpSortValue = nearestDistToAABB( frustum1.getOrigin(),
-						node->_bBox.min, node->_bBox.max );
+					uint32 curLod = ((MeshNode *)node)->getParentModel()->calcLodLevel( camPos );
+					if( ((MeshNode *)node)->getLodLevel() != curLod ) continue;
 				}
-				_renderableQueue.push_back( RendQueueEntry( node->_type, node ) );	
+				
+				float sortKey = 0;
+
+				switch( order )
+				{
+				case RenderingOrder::StateChanges:
+					sortKey = node->_sortKey;
+					break;
+				case RenderingOrder::FrontToBack:
+					sortKey = nearestDistToAABB( frustum1.getOrigin(), node->_bBox.min, node->_bBox.max );
+					break;
+				case RenderingOrder::BackToFront:
+					sortKey = -nearestDistToAABB( frustum1.getOrigin(), node->_bBox.min, node->_bBox.max );
+					break;
+				}
+				
+				_renderableQueue.push_back( RendQueueItem( node->_type, sortKey, node ) );
 			}
 		}
 		else if( lightQueue && node->_type == SceneNodeTypes::Light )
@@ -367,10 +397,8 @@ void SpatialGraph::updateQueues( const Frustum &frustum1, const Frustum *frustum
 	}
 
 	// Sort
-	if( order == RenderingOrder::FrontToBack )
-		std::sort( _renderableQueue.begin(), _renderableQueue.end(), SpatialGraph::frontToBackOrder );
-	else if( order == RenderingOrder::BackToFront )
-		std::sort( _renderableQueue.begin(), _renderableQueue.end(), SpatialGraph::backToFrontOrder );
+	if( order != RenderingOrder::None )
+		std::sort( _renderableQueue.begin(), _renderableQueue.end(), RendQueueItemCompFunc() );
 }
 
 
@@ -727,9 +755,9 @@ int SceneManager::checkNodeVisibility( SceneNode &node, CameraNode &cam, bool ch
 	// Check occlusion
 	if( checkOcclusion && cam._occSet >= 0 )
 	{
-		if( node.getType() == SceneNodeTypes::Model && cam._occSet < (int)((ModelNode *)&node)->_occQueries.size() )
+		if( node.getType() == SceneNodeTypes::Mesh && cam._occSet < (int)((MeshNode *)&node)->_occQueries.size() )
 		{
-			if( Modules::renderer().getQueryResult( ((ModelNode *)&node)->_occQueries[cam._occSet] ) < 1 )
+			if( Modules::renderer().getQueryResult( ((MeshNode *)&node)->_occQueries[cam._occSet] ) < 1 )
 				return -1;
 		}
 		else if( node.getType() == SceneNodeTypes::Emitter && cam._occSet < (int)((EmitterNode *)&node)->_occQueries.size() )
@@ -752,3 +780,5 @@ int SceneManager::checkNodeVisibility( SceneNode &node, CameraNode &cam, bool ch
 	else
 		return 0;
 }
+
+}  // namespace
