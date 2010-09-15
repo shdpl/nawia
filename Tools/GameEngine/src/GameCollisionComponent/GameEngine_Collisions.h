@@ -38,6 +38,13 @@
 
 namespace GameEngine
 {
+	/** \addtogroup GameCollisionComponent
+	 * 
+	 * The Collision component offers an interface for accessing the collisions of an entity reported by the BulletPhysics component.
+	 *
+	 * @{
+	 */
+
 	/**
 	 * Returns number of collisions the specified entity during the last update iteration
 	 * @param entityWorldID the unique world id of the entity 
@@ -53,6 +60,8 @@ namespace GameEngine
 	 * @return unsigned int the world id of the entity colliding with the entity specified by entityWorldID
 	 */
 	COLLISIONPLUGINEXP unsigned int collision(unsigned int entityWorldID, int index);
+
+	/*! @}*/
 }
 
 #endif

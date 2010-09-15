@@ -18,6 +18,7 @@
 double pi = std::acos( -1.0 );
 
 using namespace std;
+using namespace Horde3D;
 
 DemoApp::DemoApp(int desktopWidth, int desktopHeight) : m_running(true), m_selectedEntity(0),
 m_savedMaterial(0), m_desktopWidth(desktopWidth), m_desktopHeight(desktopHeight), m_eyeX(0), m_eyeY(0),

@@ -49,6 +49,13 @@
 
 namespace GameEngine
 {
+	/** \addtogroup GameBulletPhysicsComponent
+	 * 
+	 * The BulletPhysics component integrates the Bullet physics engine into the GameEngine
+	 *
+	 * @{
+	 */
+
 	/**
 	* Render physics collision objects
 	*/
@@ -100,6 +107,8 @@ namespace GameEngine
 	BULLETPHYSICSPLUGINEXP void resetEntityPhysicsForces(const char* entityID);
 
 	BULLETPHYSICSPLUGINEXP int physicsRay(float x, float y, float z, float dx, float dy, float dz, float* pos = 0, float* normal = 0);
+
+	/*! @}*/
 }
 
 #endif

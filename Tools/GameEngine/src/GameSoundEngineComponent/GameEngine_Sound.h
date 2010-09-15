@@ -40,6 +40,13 @@
 
 namespace GameEngine
 {
+	/** \addtogroup GameSoundComponent
+	 * 
+	 * The Sound component offers 3D sound and the playback of *.ogg and *.wav files.
+	 *
+	 * @{
+	 */
+
 	/**
 	 * Enables (and plays) or disables (and stops) a sound file
 	 * @param entityWorldID the entity that is playing the sound
@@ -102,6 +109,7 @@ namespace GameEngine
 	 * Returns the sound resource directory
 	 */
 	SOUNDPLUGINEXP const char* soundResourceDirectory();
+	/*! @}*/
 }
 
 #endif

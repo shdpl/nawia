@@ -39,6 +39,13 @@
 
 namespace GameEngine
 {
+	/** \addtogroup GameVideoComponent
+	 * 
+	 * The Video component offers video playback on Horde materials and as an overlay using video for windows.
+	 *
+	 * @{
+	 */
+
 	/**
 	 * Play the currently loaded avi
 	 * @param entityWorldID the entity we want to use the function on
@@ -51,6 +58,7 @@ namespace GameEngine
 	 * @param file the filename of the video to be loaded
 	 */
 	VIDEOPLUGINEXP void OpenAvi( unsigned int entityWorldID, const char* file);
+	/*! @}*/
 }
 
 #endif

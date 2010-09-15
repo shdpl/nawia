@@ -30,6 +30,13 @@
 
 namespace GameEngine
 {
+	/** \addtogroup GameSapiComponent
+	 * 
+	 * The Sapi component offers Text-To-Speech with visemes supported by MS SAPI
+	 *
+	 * @{
+	 */
+
 	/**
 	 * \brief Sends a E_SPEAK event to the TTS component of the given entity
 	 * 
@@ -52,6 +59,7 @@ namespace GameEngine
 	 * @param entityWorldID 
 	 */ 
 	SAPIPLUGINEXP bool isSpeaking(unsigned int entityWorldID);
+	/*! @}*/
 }
 
 #endif
