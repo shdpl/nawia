@@ -173,6 +173,14 @@
       <Project>{db488001-8e98-4724-9787-72da137c4e47}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\GameSapiComponent\GameSapiComponent.vcxproj">
+      <Project>{f606e654-0f08-4b81-8388-5a903bba07e9}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\GameSceneGraphComponent\GameSceneGraphComponent.vcxproj">
       <Project>{7b21d090-9a12-4e86-8e65-9aaea2b72ab4}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
