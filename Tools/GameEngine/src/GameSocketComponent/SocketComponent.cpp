@@ -1,0 +1,211 @@
+// ****************************************************************************************
+//
+// GameEngine of the University of Augsburg
+// --------------------------------------
+// Copyright (C) 2007 Volker Wiendl
+// 
+// This file is part of the GameEngine developed at the 
+// Lab for Multimedia Concepts and Applications of the University of Augsburg
+//
+// This software is distributed under the terms of the Eclipse Public License v1.0.
+// A copy of the license may be obtained at: http://www.eclipse.org/legal/epl-v10.html
+//
+// ****************************************************************************************
+//
+
+// ****************************************************************************************
+//
+// GameEngine Socket Component of the University of Augsburg
+// ---------------------------------------------------------
+// Copyright (C) 2010
+// authors: Ionut Damian, Nikolaus Bee, Felix Kistler
+// 
+// ****************************************************************************************
+#include "SocketComponent.h"
+
+#include "SocketManager.h"
+#include <XmlParser/utXMLParser.h>
+
+#include <GameEngine/GameLog.h>
+#include <GameEngine/GameEngine.h>
+#include <GameEngine/GameEntity.h>
+#include <GameEngine/GameEvent.h>
+
+#include "GameEngine_Socket.h"
+
+#pragma comment(lib, "ws2_32.lib")
+
+
+GameComponent* SocketComponent::createComponent( GameEntity* owner )
+{
+	return new SocketComponent( owner );
+}
+
+SocketComponent::SocketComponent(GameEntity* owner) : GameComponent(owner, "SocketComponent"), m_server(0), m_client(0)
+{
+	owner->addListener(GameEvent::E_SEND_SOCKET_DATA, this);
+	SocketManager::instance()->addComponent(this);
+
+	// initialize Winsock
+	int err;
+	err = WSAStartup( MAKEWORD(2,2), &m_wsaData );
+	if (err != 0) 
+	{
+        // Tell the user that we could not find a usable Winsock DLL
+        GameLog::errorMessage("SocketComponent: WSAStartup failed with error");
+        return;
+    }
+}
+
+SocketComponent::~SocketComponent()
+{
+	if(m_client != 0)
+		delete m_client;
+
+	else if(m_server != 0)
+		delete m_server;
+
+	WSACleanup();
+	SocketManager::instance()->removeComponent(this);
+}
+
+void SocketComponent::executeEvent(GameEvent* event)
+{
+	switch (event->id())
+	{
+	case GameEvent::E_SEND_SOCKET_DATA:
+		{
+			sendSocketData(static_cast<const char*>(event->data()));
+		}
+		break;
+	}
+}
+
+/**
+ * XML Syntax: 
+ * < Socket protocol port address type NrOfClients />
+ *
+ * where protocol = "TCP" / "UDP"
+ *       port = int value
+ *       address = alphanumeric value (optional, default 127.0.0.1)
+ *       type = "server" / "client"
+ *       NrOfClients = int value (optional, default 1)
+ *
+ * Example
+ *		<Socket protocol="TCP" port="122" address="127.0.0.1" type="server" NrOfClients="6" />
+ */
+void SocketComponent::loadFromXml(const XMLNode* node)
+{
+	const char* protocol;
+	const char* address;
+	int port, nrClients;
+	bool ok = true;
+	bool isServer = false;
+
+	/**
+	 * Parse the xml file
+	 */
+
+	if((node->getAttribute( "protocol" ) != 0) && (strcmp(node->getAttribute("protocol"), "") != 0))
+		protocol = node->getAttribute( "protocol", "UDP" );
+	else ok = false;
+
+	if((node->getAttribute( "port" ) != 0) && (strcmp(node->getAttribute("port"), "") != 0))
+		port = atoi(node->getAttribute( "port" ));
+	else ok = false;
+
+	if((node->getAttribute( "address" ) != 0) && (strcmp(node->getAttribute("address"), "") != 0))
+		address = node->getAttribute( "address" );
+	else
+		address = "127.0.0.1";
+
+	if((node->getAttribute( "type" ) != 0) && (strcmp(node->getAttribute("type"), "") != 0))
+	{
+		if(strcmp(node->getAttribute( "type" ), "server") == 0)
+		{
+			isServer = true;
+
+			if((node->getAttribute( "NrOfClients" ) != 0) && (strcmp(node->getAttribute("NrOfClients"), "") != 0))
+				nrClients = atoi(node->getAttribute( "NrOfClients" ));
+			else
+				nrClients = 1;
+		}
+	} else ok = false;
+
+	if(!ok)
+	{
+		GameLog::errorMessage("SocketComponent: xml parameter definition missing or incomplete");
+		return;
+	}
+
+	/**
+	 * Initialize the component
+	 */
+
+	if ( protocol != 0 )
+	{
+		if ( strcmp ("UDP", protocol) == 0 )
+		{
+			if ( isServer )
+			{
+				m_server = new SocketServer( address, port, SocketProtocol::UDP, nrClients );
+				m_client = 0;
+			}
+			else
+			{
+				m_server = 0;
+				m_client = new SocketClient( address, port, SocketProtocol::UDP );
+			}
+		}
+		else if ( strcmp ("TCP", protocol) == 0 )
+		{
+			if ( isServer )
+			{
+				m_server = new SocketServer( address, port, SocketProtocol::TCP, nrClients );
+				m_client = 0;
+			}
+			else
+			{
+				m_server = 0;
+				m_client = new SocketClient( address, port, SocketProtocol::TCP );
+			}
+		}
+		else
+		{
+			GameLog::errorMessage("SocketComponent: no valid protocol");
+		}
+	}
+	else
+	{
+		GameLog::errorMessage("SocketComponent: no protocol defined");
+	}
+}
+
+void SocketComponent::update()
+{
+	if(m_client != 0)
+		m_client->update();
+
+	else if(m_server != 0)
+		m_server->update();	
+}
+
+int SocketComponent::getSocketData(const char **data, bool onlyNewestMessage /*= false*/)
+{
+	if(m_client != 0)
+		return m_client->getSocketData(data);
+
+	else if(m_server != 0)
+		return m_server->getSocketData(data, onlyNewestMessage);
+
+	return -1;
+}
+
+void SocketComponent::sendSocketData(const char *data)
+{
+	if(m_client != 0)
+		m_client->sendSocketData(data);
+
+	else if(m_server != 0)
+		m_server->sendSocketData(data);
+}
