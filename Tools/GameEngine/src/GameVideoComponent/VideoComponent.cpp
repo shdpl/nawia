@@ -50,6 +50,8 @@ VideoComponent::VideoComponent(GameEntity* owner) : GameComponent(owner, "VideoC
 	m_autoStart(false), m_loop(false), m_initialStart(false), m_newData(false)
 {
 	VideoManager::instance()->addComponent(this);
+	// We need our own access to the com library for not disturbing others (like the SapiComponent)
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
 	m_hdd = DrawDibOpen();
 	m_hdc = CreateCompatibleDC(0);
@@ -62,6 +64,7 @@ VideoComponent::~VideoComponent()
 		closeAvi();
 	DrawDibClose(m_hdd);			// Closes The DrawDib Device Context
 	DeleteDC(m_hdc);				// Delete the Dc
+	CoUninitialize();
 }
 
 void VideoComponent::loadFromXml(const XMLNode* node)
