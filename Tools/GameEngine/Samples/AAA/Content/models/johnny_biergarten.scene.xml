@@ -1,0 +1,107 @@
+<!DOCTYPE HordeSceneGraph>
+   <Group name="Biergarten" sx="1" rx="0" sy="1" ry="0" sz="1" tx="0" rz="0" ty="0" tz="0" >
+		<Reference tx="0" sx="1" ty="0" sy="1" rx="0" tz="0" sceneGraph="models/biergartenmodel.scene.xml" sz="1" ry="0" rz="0" name="Biergarten Scene" />
+	    <Light name="light" lightingContext="LIGHTING" sx="1" sy="1" sz="1" tx="5" ty="45" tz="20" rx="-150" ry="-45" rz="0" material="materials/light.material.xml"
+			col_R="1" col_G="1" col_B="1" shadowContext="SHADOWMAP" shadowMapBias="0.002" shadowMapCount="4" radius="300" fov="300" shadowSplitLambda="0.95" />
+	    <Camera pipeline="pipelines/forward.pipeline.xml" 
+			tx="-13" ty="5.63" tz="2" 
+			rx="-25" ry="-40" rz="0"
+			sx="1" sy="1" sz="1" name="camera" occlusionCulling="0">
+	        <Attachment type="GameEngine" name="camera" >
+				<BayesNet file="../Kultur-Modell_paper.xdsl"/>
+	        </Attachment>
+	    </Camera>
+	    <Reference tx="0" sx="40" ty="15" sy="40" rx="0" tz="0" sceneGraph="models/skybox/skybox.scene.xml" sz="40" ry="0" rz="0" name="Skybox" />
+	    <Reference tx="0" sx="1" ty="0" sy="1" rx="0" tz="0" sceneGraph="models/ground2/ground2.scene.xml" sz="1" ry="0" rz="0" name="Ground" />
+		
+		<AAA>
+			<Agents>
+				<Agent name="agent0" visible="true" pc="true" />	<!-- id = 0 -->
+				<Agent name="agent1" visible="true" pc="false" />	<!-- id = 1 -->
+				<Agent name="agent2" visible="true" pc="false" />	<!-- id = 2 -->
+			</Agents>
+		</AAA>
+		
+		
+		<Reference tx="-10.4" ty="0" tz="-6" rx="0" ry="70" rz="0" sx="0.06" sy="0.06" sz="0.06" sceneGraph="models/char_female_withVisemes/char_female_withVisemes.scene.xml" name="agent0" >
+			<Attachment type="GameEngine" name="agent0" >
+				<Socket protocol="UDP" port="343" address="127.0.0.1" type="server" />
+				<IK file="models/char_female_withVisemes/char_female_withVisemes.scene.xml" leye="BoneAuge_l" reye="BoneAuge_r" neck="Bip01_Head" />
+				<AgentAnimation stillAnim="female_japan_still.anim">
+					<AnimationData name="female_german_gesture1.anim" animname="char_female_deutsch_geste01.anim" type="gesture" stroke_start="10" stroke_end="163" />
+					<AnimationData name="female_german_gesture2.anim" animname="char_female_deutsch_geste02.anim" type="gesture" stroke_start="41" stroke_end="101" />
+					<AnimationData name="female_german_gesture4.anim" animname="char_female_deutsch_geste04.anim" type="gesture" stroke_start="7" stroke_end="138" />
+					<AnimationData name="female_german_gesture5.anim" animname="char_female_deutsch_geste05.anim" type="gesture" stroke_start="7" stroke_end="142" />
+					<AnimationData name="female_german_gesture6.anim" animname="char_female_deutsch_geste06_teil1.anim" type="gesture" stroke_start="7" stroke_end="132" />
+					<AnimationData name="female_german_gesture7.anim" animname="char_female_deutsch_begruessen.anim" type="gesture" stroke_start="2" stroke_end="78" />
+				</AgentAnimation>
+				<Sapi voice="Microsoft Anna"/>
+				<AgentAction IdleAnimFile="female_german_idle.anim" WalkAnimFile="female_walk.anim" >
+					<BufferZone radius="3.6"/>
+					<BufferZone radius="1.2"/>
+					<BufferZone radius="0.45"/>
+					<Orientation name="H"/>
+					<Orientation name="C"/>
+					<Orientation name="V"/>
+					<Orientation name="I"/>
+					<Orientation name="L"/>
+					<Orientation name="N"/>
+				</AgentAction>
+			</Attachment>
+	    </Reference>
+	   
+	   
+	   <Reference tx="-3" ty="0" tz="-3" rx="0" ry="-70" rz="0" sx="0.06" sy="0.06" sz="0.06"
+	   sceneGraph="models/male01/male01.scene.xml" name="agent1" >
+			<Attachment type="GameEngine" name="agent1" >
+				<IK file="models/male01/male01.scene.xml" leye="BoneAuge_l" reye="BoneAuge_r" neck="Bip01_Head" />
+				<AgentAnimation>
+					<AnimationData name="female_german_gesture1.anim" animname="char_female_deutsch_geste01.anim" type="gesture" stroke_start="10" stroke_end="163" />
+					<AnimationData name="female_german_gesture2.anim" animname="char_female_deutsch_geste02.anim" type="gesture" stroke_start="41" stroke_end="101" />
+					<AnimationData name="female_german_gesture4.anim" animname="char_female_deutsch_geste04.anim" type="gesture" stroke_start="7" stroke_end="138" />
+					<AnimationData name="female_german_gesture5.anim" animname="char_female_deutsch_geste05.anim" type="gesture" stroke_start="7" stroke_end="142" />
+					<AnimationData name="female_german_gesture6.anim" animname="char_female_deutsch_geste06_teil1.anim" type="gesture" stroke_start="7" stroke_end="132" />
+					<AnimationData name="female_german_gesture7.anim" animname="char_female_deutsch_begruessen.anim" type="gesture" stroke_start="2" stroke_end="78" />
+				</AgentAnimation>
+				<Sapi voice="Microsoft Anna"/>
+				<AgentAction IdleAnimFile="female_german_idle.anim" WalkAnimFile="female_walk.anim" >
+					<BufferZone radius="3.6"/>
+					<BufferZone radius="1.2"/>
+					<BufferZone radius="0.45"/>
+					<Orientation name="V"/>
+					<Orientation name="I"/>
+					<Orientation name="H"/>
+					<Orientation name="C"/>
+					<Orientation name="L"/>
+					<Orientation name="N"/>
+				</AgentAction>
+	        </Attachment>
+	    </Reference>
+		
+	
+		<Reference tx="-5" ty="0" tz="-6" rx="0" ry="-40" rz="0" sx="0.06" sy="0.06" sz="0.06" sceneGraph="models/char_female_withVisemes/char_female_withVisemes.scene.xml" name="agent2" >
+			<Attachment type="GameEngine" name="agent2" >
+				<IK file="models/char_female_withVisemes/char_female_withVisemes.scene.xml" leye="BoneAuge_l" reye="BoneAuge_r" neck="Bip01_Head" />
+				<AgentAnimation stillAnim="female_japan_still.anim">
+					<AnimationData name="female_german_gesture1.anim" animname="char_female_deutsch_geste01.anim" type="gesture" stroke_start="10" stroke_end="163" />
+					<AnimationData name="female_german_gesture2.anim" animname="char_female_deutsch_geste02.anim" type="gesture" stroke_start="41" stroke_end="101" />
+					<AnimationData name="female_german_gesture4.anim" animname="char_female_deutsch_geste04.anim" type="gesture" stroke_start="7" stroke_end="138" />
+					<AnimationData name="female_german_gesture5.anim" animname="char_female_deutsch_geste05.anim" type="gesture" stroke_start="7" stroke_end="142" />
+					<AnimationData name="female_german_gesture6.anim" animname="char_female_deutsch_geste06_teil1.anim" type="gesture" stroke_start="7" stroke_end="132" />
+					<AnimationData name="female_german_gesture7.anim" animname="char_female_deutsch_begruessen.anim" type="gesture" stroke_start="2" stroke_end="78" />
+				</AgentAnimation>
+				<Sapi voice="Microsoft Anna"/>
+				<AgentAction IdleAnimFile="female_german_idle.anim" WalkAnimFile="female_walk.anim" >
+					<BufferZone radius="3.6"/>
+					<BufferZone radius="1.2"/>
+					<BufferZone radius="0.45"/>
+					<Orientation name="N"/>
+					<Orientation name="I"/>
+					<Orientation name="V"/>
+					<Orientation name="H"/>
+					<Orientation name="L"/>
+					<Orientation name="C"/>
+				</AgentAction>
+			</Attachment>
+	    </Reference>
+   </Group>

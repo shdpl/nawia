@@ -1,0 +1,4 @@
+<Model geometry="models/bench/bench.geo" name="bench" >
+    <Mesh tx="-2.3e-005" vertREnd="388" ty="0.221153" tz="-1.7e-005" batchStart="0" name="Ale-Bench" batchCount="420" material="models/bench/BeerBankAndTable_Green_Metal.material.xml" vertRStart="0" />
+    <Mesh tx="-2.3e-005" vertREnd="677" ty="0.221153" tz="-1.7e-005" batchStart="420" name="Ale-Bench" batchCount="306" material="models/bench/BeerBankAndTable_Bright_Wood.material.xml" vertRStart="389" />
+</Model>

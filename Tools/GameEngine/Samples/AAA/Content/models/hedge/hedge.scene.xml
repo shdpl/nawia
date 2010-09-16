@@ -1,0 +1,3 @@
+<Model geometry="models/hedge/hedge.geo" name="hedge" >
+    <Mesh tx="-1.75083" vertREnd="23" ty="43.547" rx="90" tz="-16.3887" ry="0" rz="-0" batchStart="0" name="Box01" batchCount="36" material="models/hedge/hedge.material.xml" vertRStart="0" />
+</Model>

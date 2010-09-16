@@ -1,0 +1,9 @@
+<Model geometry="models/toilet/toilet.geo" name="toilet" >
+    <Mesh vertREnd="11" batchStart="0" name="klo_uv" batchCount="24" material="models/toilet/klos.material.xml" vertRStart="0" />
+    <Mesh vertREnd="20" batchStart="24" name="klo_uv" batchCount="15" material="models/toilet/t2.material.xml" vertRStart="12" />
+    <Mesh vertREnd="34" batchStart="39" name="klo_uv" batchCount="18" material="models/toilet/klos2.material.xml" vertRStart="21" />
+    <Mesh vertREnd="40" batchStart="57" name="klo_uv" batchCount="9" material="models/toilet/r.material.xml" vertRStart="35" />
+    <Mesh vertREnd="52" batchStart="66" name="klo_uv" batchCount="18" material="models/toilet/topc.material.xml" vertRStart="41" />
+    <Mesh vertREnd="56" batchStart="84" name="klo_uv" batchCount="6" material="models/toilet/f2.material.xml" vertRStart="53" />
+    <Mesh vertREnd="60" batchStart="90" name="klo_uv" batchCount="6" material="models/toilet/s.material.xml" vertRStart="57" />
+</Model>

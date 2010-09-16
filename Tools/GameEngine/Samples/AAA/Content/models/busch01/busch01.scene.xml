@@ -1,0 +1,5 @@
+<Model geometry="models/busch01/busch01.geo" name="busch01" >
+    <Mesh vertREnd="118" batchStart="0" name="Model_0" batchCount="120" material="models/busch01/rinde.material.xml" vertRStart="0" >
+        <Mesh vertREnd="469" batchStart="120" name="#Model_0" batchCount="936" material="models/busch01/aeste.material.xml" vertRStart="119" />
+    </Mesh>
+</Model>

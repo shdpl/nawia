@@ -1,0 +1,6 @@
+<Model geometry="models/salad/salad.geo" name="salad" >
+    <Mesh tx="0" vertREnd="11" ty="5.83517" tz="-0" batchStart="0" name="objSalat" batchCount="30" material="models/salad/_2_-_Default.material.xml" vertRStart="0" />
+    <Mesh tx="0" vertREnd="59" ty="5.83517" tz="-0" batchStart="30" name="objSalatbesteck" batchCount="72" material="models/salad/_1_-_Default.material.xml" vertRStart="12" />
+    <Mesh tx="0" vertREnd="121" ty="5.83517" tz="-0" batchStart="102" name="objSalatbesteck01" batchCount="72" material="models/salad/_1_-_Default.material.xml" vertRStart="60" />
+    <Mesh tx="0" vertREnd="231" ty="5.83517" tz="-0" batchStart="174" name="objSchuessel" batchCount="504" material="models/salad/_3_-_Default.material.xml" vertRStart="122" />
+</Model>
