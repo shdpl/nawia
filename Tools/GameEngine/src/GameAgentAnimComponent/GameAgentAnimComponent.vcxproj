@@ -118,6 +118,7 @@
     <ClCompile Include="AnimationNode.cpp" />
     <ClCompile Include="GameEngine_AgentAnim.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="StillAnimationNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AgentAnimComponent.h" />
@@ -127,6 +128,7 @@
     <ClInclude Include="AnimationFile.h" />
     <ClInclude Include="AnimationNode.h" />
     <ClInclude Include="GameEngine_AgentAnim.h" />
+    <ClInclude Include="StillAnimationNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Horde3D\Source\Horde3DEngine\Horde3D Engine.vcxproj">

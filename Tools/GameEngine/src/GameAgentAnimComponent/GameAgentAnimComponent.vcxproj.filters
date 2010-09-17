@@ -39,6 +39,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StillAnimationNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AgentAnimComponent.h">
@@ -60,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine_AgentAnim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StillAnimationNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
