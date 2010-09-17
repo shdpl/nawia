@@ -291,6 +291,7 @@ public:
 		E_SET_SOUND_GAIN,		/// Sets the sound gain
 		E_SET_SOUND_LOOP,		/// Sets the sound to loop
 		E_SET_SOUND_FILE,		/// Sets a sound file
+		E_SET_SOUND_WITH_USER_DATA, /// Sets a sound already providing the decoded data
 		E_SET_PHONEMES_FILE,	/// Sets a phonemes file
 		E_SET_ENABLED,			/// Enables components (wether the component should be rendered/updated or not)	
 		E_PICKUP,				/// Attaches an entity under the child scene node of another entity
@@ -1534,6 +1535,41 @@ public:
 
 	const char* text;
 	unsigned int partnerID;
+};
+
+class SoundResourceData : public GameEventData
+{
+public:
+	SoundResourceData(const char* userData,	int dataSize, int samplesPerSec, int bitsPerSample,	int numChannels) : GameEventData(CUSTOM),
+		m_userData(userData), m_dataSize(dataSize), m_samplesPerSec(samplesPerSec), m_bitsPerSample(bitsPerSample), m_numChannels(numChannels)
+	{
+		m_data.ptr = this;
+	}
+
+	SoundResourceData(const SoundResourceData& copy) : GameEventData(CUSTOM), m_userData(copy.m_userData), m_dataSize(copy.m_dataSize), 
+		m_samplesPerSec(copy.m_samplesPerSec), m_bitsPerSample(copy.m_bitsPerSample), m_numChannels(copy.m_numChannels)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+	}
+
+	~SoundResourceData()
+	{
+	}
+
+	GameEventData* clone() const
+	{
+		return new SoundResourceData(*this);
+	}
+
+	// Pointer to data
+	const char* m_userData;
+	// It's size
+	int m_dataSize;
+	// Sound properties
+	int m_samplesPerSec;
+	int m_bitsPerSample;
+	int m_numChannels;
 };
 
 /*! @}*/
