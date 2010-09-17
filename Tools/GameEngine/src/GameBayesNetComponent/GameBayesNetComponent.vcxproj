@@ -54,14 +54,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
-      <Command>xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smile.lib" "$(SolutionDir)lib" /y
-xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smilearn.lib" "$(SolutionDir)lib" /y
-xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smile_dbg.lib" "$(SolutionDir)lib" /y
-xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smilearn_dbg.lib" "$(SolutionDir)lib" /y
-xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smile_dyn.lib" "$(SolutionDir)lib" /y
-xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smilearn_dyn.lib" "$(SolutionDir)lib" /y
-
-</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -96,12 +90,8 @@ xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smilearn_dyn.lib" "$(SolutionDir
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smile.lib" "$(SolutionDir)lib" /y
-xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smilearn.lib" "$(SolutionDir)lib" /y
-xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smile_dbg.lib" "$(SolutionDir)lib" /y
-xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smilearn_dbg.lib" "$(SolutionDir)lib" /y
-xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smile_dyn.lib" "$(SolutionDir)lib" /y
-xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smilearn_dyn.lib" "$(SolutionDir)lib" /y</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)/include;$(ProjectDir)..\..\include;$(SolutionDir)\..\Dependencies\SMILE\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -138,6 +128,7 @@ xcopy "$(SolutionDir)\..\Dependencies\SMILE\lib\smilearn_dyn.lib" "$(SolutionDir
   <ItemGroup>
     <ClInclude Include="BayesNetComponent.h" />
     <ClInclude Include="BayesNetManager.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="GameEngine_BayesNet.h" />
   </ItemGroup>
   <ItemGroup>

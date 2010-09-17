@@ -38,5 +38,8 @@
     <ClInclude Include="GameEngine_BayesNet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
