@@ -98,6 +98,7 @@ m_bufferCount(0), m_resourceID(0), m_stream(false), m_gain(0.0f), m_initialGain(
 	owner->addListener(GameEvent::E_SET_TRANSLATION, this);
 	owner->addListener(GameEvent::E_SET_PHONEMES_FILE, this);
 	owner->addListener(GameEvent::E_GET_SOUND_DISTANCE, this);
+	owner->addListener(GameEvent::E_SET_SOUND_WITH_USER_DATA, this);
 
 	SoundManager::instance()->addComponent(this);
 }
@@ -150,6 +151,10 @@ void SoundComponent::executeEvent(GameEvent *event)
 			float* dist = static_cast<float*>(event->data());
 			*dist = getDistanceToListener();
 		}
+		break;
+	case GameEvent::E_SET_SOUND_WITH_USER_DATA:
+		const SoundResourceData* resData = (SoundResourceData*) event->data();
+		setSoundFromUserData(resData->m_userData, resData->m_dataSize, resData->m_samplesPerSec, resData->m_bitsPerSample, resData->m_numChannels);
 		break;
 	}
 }
@@ -491,7 +496,7 @@ void SoundComponent::setEnabled(bool enabled)
 			SoundResourceManager::instance()->reloadResource(m_resourceID);
 	}	
 	else if( !enabled )
-		m_gain = OFF;		
+		m_gain = OFF;
 }
 
 
@@ -536,6 +541,62 @@ void SoundComponent::setMaxDist(const float maxDist)
 void SoundComponent::setRefDist(const float value)
 {
 	m_reference_dist = value;
+}
+
+bool SoundComponent::setSoundFromUserData(const char* data, int dataSize, int samplesPerSec, int bitsPerSample, int numChannels)
+{
+	// Clear all old data
+	stopVisemes();
+	unsigned int oldRes = m_resourceID;
+	bool oldStream = m_stream;
+	// Old stream can be removed anyway
+	if( oldStream )
+	{
+		if( m_sourceID != 0 )
+			SoundManager::instance()->stopSound( this );
+		if( oldRes != 0 )
+			SoundResourceManager::instance()->removeResource(oldRes);
+		m_sourceID = 0;
+	}
+	m_resourceID = SoundResourceManager::instance()->addUserResource(data, dataSize, samplesPerSec, bitsPerSample, numChannels);
+
+	if (m_resourceID != 0)
+	{
+		int newBufferCount = SoundResourceManager::instance()->getBufferCount(m_resourceID);
+		if (m_bufferCount != newBufferCount)
+		{
+			m_bufferCount = newBufferCount;
+			delete[] m_buffer;
+			m_buffer = new unsigned int[m_bufferCount];
+		}
+		memcpy(m_buffer, SoundResourceManager::instance()->getBuffer(m_resourceID), m_bufferCount * sizeof(int));
+		m_stream = SoundResourceManager::instance()->isStream(m_resourceID); 
+
+		// Don't start the sound immediately
+		m_gain= OFF;
+		
+		//Old stream already removed
+		if (!oldStream)
+		{
+			// Sound will be played another time
+			// Only reference counter has to be decremented
+			// Because it was incremented by addResource
+			if (m_resourceID == oldRes)
+				SoundResourceManager::instance()->removeResource(oldRes);
+			// Stop old sound if different
+			else {
+				if (m_sourceID != 0)
+					SoundManager::instance()->stopSound(this);
+				if (oldRes != 0)
+					SoundResourceManager::instance()->removeResource(oldRes);
+				m_sourceID = 0;
+			}
+		}
+		return true;
+	}
+	
+	GameLog::errorMessage("Error loading sound with user data");
+	return false;
 }
 
 bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*/)

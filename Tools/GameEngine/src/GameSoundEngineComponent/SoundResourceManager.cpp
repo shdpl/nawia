@@ -30,6 +30,8 @@
 
 #include <al.h>
 
+#include <sstream>
+
 SoundResourceManager* SoundResourceManager::m_instance = 0;
 
 SoundResourceManager* SoundResourceManager::instance()
@@ -74,6 +76,77 @@ void SoundResourceManager::setResourceDirectory(const char* directory)
 		m_directory.find_last_of('/') != m_directory.length()-1 &&
 		m_directory.length() > 0)
 		m_directory+="/";
+}
+
+unsigned int SoundResourceManager::addUserResource(const char* data, int dataSize, int samplesPerSec, int bitsPerSample, int numChannels)
+{
+	unsigned int resourceID = 0;
+	SoundFile soundfile;
+
+	std::stringstream filename;
+	filename << "userResource";
+	std::vector<SoundFile>::iterator iter = m_files.begin();
+	int index = 0;
+	while (index < 100 && iter != m_files.end())
+	{
+		if ( iter->filename == filename.str())
+		{
+			// Try next index
+			filename.str("");
+			// Create new resource name
+			filename << "userResource" << index;
+			index++;
+			// Restart search for equivalent
+			iter = m_files.begin();
+		}
+		else
+			iter++;
+	}
+
+	if (index == 100)
+		GameLog::errorMessage("Error creating Sound resource, maximum of 100 user resources reached!");
+
+	soundfile.fileType=SRESFT_PCM_WAV;
+	// Create ALBuffer
+	ALenum error_code = AL_NO_ERROR;
+	alGenBuffers(1, soundfile.buffers);
+	if( (error_code = alGetError()) != AL_NO_ERROR ) 
+	{
+		DisplayALError("Error generating Buffer: ", error_code);
+	}
+	else
+	{
+		// Get format
+		ALenum alFormat = alGetEnumValue("AL_FORMAT_STEREO16");
+		if (numChannels == 1)
+			alFormat = bitsPerSample == 16 ? alGetEnumValue("AL_FORMAT_MONO16") : alGetEnumValue("AL_FORMAT_MONO8");
+		else if (numChannels == 2)
+			alFormat = bitsPerSample == 16 ? alGetEnumValue("AL_FORMAT_STEREO16") : alGetEnumValue("AL_FORMAT_STEREO8");
+		else if ((numChannels == 4) && (bitsPerSample == 16))
+			alFormat = alGetEnumValue("AL_FORMAT_QUAD16");
+		else if ((numChannels == 6) && (bitsPerSample == 16))
+			alFormat = alGetEnumValue("AL_FORMAT_51CHN16");
+		else if ((numChannels == 7) && (bitsPerSample == 16))
+			alFormat = alGetEnumValue("AL_FORMAT_61CHN16");
+		else if ((numChannels == 8) && (bitsPerSample == 16))
+			alFormat = alGetEnumValue("AL_FORMAT_71CHN16");
+
+		// And add the user data
+		alBufferData(*(soundfile.buffers), alFormat, data, dataSize, samplesPerSec);
+		if (alGetError() == AL_NO_ERROR)
+		{
+			soundfile.filename = filename.str();
+			soundfile.numBuffers = 1;
+			soundfile.stream=false;
+			soundfile.oggID=-1; // Ogg only
+			soundfile.refCount = 1;
+			resourceID = ++m_resourceCount;
+			soundfile.resourceID=resourceID;
+			m_files.push_back(soundfile);
+		}
+	}
+
+	return resourceID;
 }
 
 unsigned int SoundResourceManager::addResource(const char* filename, bool forceNoStream /*= false*/)

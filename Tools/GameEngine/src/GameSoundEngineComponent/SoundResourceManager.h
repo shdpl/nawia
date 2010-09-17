@@ -43,6 +43,7 @@ public:
 	void setResourceDirectory(const char* directory);
 	const char* getResourceDirectory() {return m_directory.c_str();}
 	unsigned int addResource(const char* filename, bool forceNoStream = false);
+	unsigned int addUserResource(const char* data, int dataSize, int samplesPerSec, int bitsPerSample, int numChannels);
 	int removeResource(unsigned int resourceID);
 	unsigned int * getBuffer(unsigned int resourceID);
 	int getBufferCount(unsigned int resourceID);
