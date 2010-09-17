@@ -295,6 +295,29 @@ bool VideoComponent::openAvi(const std::string& filename)
 	// Store old sampler
 	m_originalSampler = h3dGetResParamI(m_material, H3DMatRes::SamplerElem, m_samplerIndex, H3DMatRes::SampTexResI);
 
+	/*
+	// TODO open the audio stream if there is one, create sound resource through the sound component (type=user defined)
+	// And get pointer to the buffer
+	// Then update the buffer every frame
+
+	// Now open the audio stream
+	PAVISTREAM audioStream;
+	if (!AVIStreamOpenFromFile(&audioStream, filename.c_str(), streamtypeAUDIO, 0, OF_READ, NULL) !=0)
+	{
+		// Audio stream found
+		AVISTREAMINFO audioInfo;
+		AVIStreamInfo(audioStream, &audioInfo, sizeof(audioInfo));			// Reads Information About The Stream Into psi
+		PCMWAVEFORMAT audioFormat;
+		long formatSize = sizeof(audioFormat);
+		AVIStreamReadFormat(audioStream, 0, &audioFormat, &formatSize);
+		long bufferSize = audioFormat.wBitsPerSample / 8;
+		unsigned long bytesPerSec = audioFormat.wf.nAvgBytesPerSec;
+		char* buffer = new char[bufferSize];		
+		long bytesWritten = 0;
+		AVIStreamRead(audioStream, 0, 1, buffer, bufferSize, &bytesWritten, 0x0);
+		delete[] buffer;		
+	}*/
+
 	if (m_autoStart)
 		// Play video directly
 		playAvi();
