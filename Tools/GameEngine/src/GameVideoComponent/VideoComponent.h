@@ -82,6 +82,7 @@ private:
 	long				m_lastframe;						// Last frame of video = length
 	float				m_timePerFrame;						// Will Hold Rough Seconds Per Frame
 	std::string			m_fileName;							// Filename of the video
+	bool				m_hasAudio;							// Whether we have succesfully decoded an audio stream
 
 	// And current settings for playing it
 	int					m_currentFrame;						// The currently displayed frame number

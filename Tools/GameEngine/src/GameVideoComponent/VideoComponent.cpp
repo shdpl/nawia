@@ -47,7 +47,7 @@ GameComponent* VideoComponent::createComponent( GameEntity* owner )
 
 VideoComponent::VideoComponent(GameEntity* owner) : GameComponent(owner, "VideoComponent"), m_startTime(0), m_data(0x0), m_playing(false), 
 	m_material(0), m_resize(false), m_bgraData(0x0), m_pgf(0x0), m_videoTexture(0), m_samplerIndex(-1), m_originalSampler(0), 
-	m_autoStart(false), m_loop(false), m_initialStart(false), m_newData(false)
+	m_autoStart(false), m_loop(false), m_initialStart(false), m_newData(false), m_hasAudio(false)
 {
 	VideoManager::instance()->addComponent(this);
 	// We need our own access to the com library for not disturbing others (like the SapiComponent)
@@ -182,6 +182,13 @@ void VideoComponent::playAvi()
 
 		m_startTime = GameEngine::currentTimeStamp();
 		m_playing = true;
+
+		if (m_hasAudio)
+		{
+			// Play the previously loaded sound
+			GameEvent enableSound(GameEvent::E_SET_ENABLED, &GameEventData(true), this);
+			m_owner->executeEvent(&enableSound);
+		}
 	}
 }
 
@@ -295,28 +302,37 @@ bool VideoComponent::openAvi(const std::string& filename)
 	// Store old sampler
 	m_originalSampler = h3dGetResParamI(m_material, H3DMatRes::SamplerElem, m_samplerIndex, H3DMatRes::SampTexResI);
 
-	/*
-	// TODO open the audio stream if there is one, create sound resource through the sound component (type=user defined)
-	// And get pointer to the buffer
-	// Then update the buffer every frame
-
+	
 	// Now open the audio stream
 	PAVISTREAM audioStream;
 	if (!AVIStreamOpenFromFile(&audioStream, filename.c_str(), streamtypeAUDIO, 0, OF_READ, NULL) !=0)
 	{
 		// Audio stream found
-		AVISTREAMINFO audioInfo;
-		AVIStreamInfo(audioStream, &audioInfo, sizeof(audioInfo));			// Reads Information About The Stream Into psi
+		// Get format info
 		PCMWAVEFORMAT audioFormat;
 		long formatSize = sizeof(audioFormat);
 		AVIStreamReadFormat(audioStream, 0, &audioFormat, &formatSize);
-		long bufferSize = audioFormat.wBitsPerSample / 8;
-		unsigned long bytesPerSec = audioFormat.wf.nAvgBytesPerSec;
-		char* buffer = new char[bufferSize];		
+		long numSamples = AVIStreamLength(audioStream);
+		// Create buffer with appropriate
+		long bufferSize = audioFormat.wBitsPerSample / 8 * numSamples;
+		char* buffer = new char[bufferSize];
+
+		// Read the audio data
 		long bytesWritten = 0;
-		AVIStreamRead(audioStream, 0, 1, buffer, bufferSize, &bytesWritten, 0x0);
-		delete[] buffer;		
-	}*/
+		AVIStreamRead(audioStream, 0, numSamples, buffer, bufferSize, &bytesWritten, 0x0);
+
+		if (bytesWritten > 0)
+		{
+			// Send the audio data to the sound component
+			SoundResourceData eventData(buffer, bytesWritten, audioFormat.wf.nSamplesPerSec, audioFormat.wBitsPerSample, audioFormat.wf.nChannels);
+			GameEvent event(GameEvent::E_SET_SOUND_WITH_USER_DATA, &eventData, this);
+			m_owner->executeEvent(&event);
+			m_hasAudio = true;
+		}
+
+		// Delete the buffer data
+		delete[] buffer;
+	}
 
 	if (m_autoStart)
 		// Play video directly
@@ -357,6 +373,13 @@ void VideoComponent::stopAvi()
 	if (m_originalSampler != 0 && m_samplerIndex != -1 && m_material != 0)
 		// Reset original sampler texture
 		h3dSetResParamI(m_material, H3DMatRes::SamplerElem, m_samplerIndex, H3DMatRes::SampTexResI, m_originalSampler);
+
+	if (m_hasAudio)
+	{
+		// Stopping a sound is done by setting the gain to 0
+		GameEvent stopSound(GameEvent::E_SET_SOUND_GAIN, &GameEventData(0.0f), this);
+		m_owner->executeEvent(&stopSound);
+	}
 	m_playing = false;
 }
 
@@ -381,5 +404,12 @@ void VideoComponent::closeAvi()
 		m_videoTexture = 0;
 		m_originalSampler = 0;
 		m_samplerIndex = 0;
+	}
+	if (m_hasAudio)
+	{
+		// Set an empty sound for releasing the old one
+		GameEvent clearSound(GameEvent::E_SET_SOUND_FILE, &GameEventData(""), this);
+		m_owner->executeEvent(&clearSound);
+		m_hasAudio = false;
 	}
 }
