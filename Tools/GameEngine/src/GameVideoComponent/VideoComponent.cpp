@@ -311,6 +311,7 @@ bool VideoComponent::openAvi(const std::string& filename)
 		// Get format info
 		PCMWAVEFORMAT audioFormat;
 		long formatSize = sizeof(audioFormat);
+		// TODO get channelsmask and use it
 		AVIStreamReadFormat(audioStream, 0, &audioFormat, &formatSize);
 		long numSamples = AVIStreamLength(audioStream);
 		// Create buffer with appropriate
@@ -343,7 +344,7 @@ bool VideoComponent::openAvi(const std::string& filename)
 
 bool VideoComponent::grabAviFrame(int frame)
 {
-	if (m_pgf != 0x0 && frame >= 0 && frame < m_lastframe && m_hdd && m_hdd)
+	if (m_pgf != 0x0 && frame >= 0 && frame < m_lastframe && m_hdd && m_hdc)
 	{
 		LPBITMAPINFOHEADER lpbi;					// Holds The Bitmap Header Information
 		lpbi = (LPBITMAPINFOHEADER)AVIStreamGetFrame(m_pgf, frame);	// Grab Data From The AVI Stream
