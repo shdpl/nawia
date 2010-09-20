@@ -2,5 +2,5 @@
 	<Shader source="shaders/model.shader" />
 	<ShaderFlag name="_F01_Skinning" />
 
-	<Sampler name="albedoMap" map="models/female01/torso_sans.psd" />
+	<Sampler name="albedoMap" map="textures/character/female/torso_sans.jpg" />
 </Material>

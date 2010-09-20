@@ -2,5 +2,5 @@
 	<Shader source="shaders/model.shader" />
 	<ShaderFlag name="_F01_Skinning" />
 
-	<Sampler name="albedoMap" map="models/female05/hose_lang_hellesBlau.psd" />
+	<Sampler name="albedoMap" map="textures/character/female/hose_lang_hellesBlau.jpg" />
 </Material>

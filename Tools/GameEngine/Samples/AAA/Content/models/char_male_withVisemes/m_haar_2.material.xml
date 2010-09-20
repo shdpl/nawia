@@ -2,5 +2,5 @@
 	<Shader source="shaders/model.shader" />
 	<ShaderFlag name="_F01_Skinning" />
 
-	<Sampler name="albedoMap" map="models/char_male_withVisemes/haar_2.psd" />
+	<Sampler name="albedoMap" map="textures/character/male/haar_2.jpg" />
 </Material>
