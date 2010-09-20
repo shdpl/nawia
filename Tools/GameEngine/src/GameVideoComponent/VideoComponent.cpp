@@ -47,7 +47,7 @@ GameComponent* VideoComponent::createComponent( GameEntity* owner )
 
 VideoComponent::VideoComponent(GameEntity* owner) : GameComponent(owner, "VideoComponent"), m_startTime(0), m_data(0x0), m_playing(false), 
 	m_material(0), m_resize(false), m_bgraData(0x0), m_pgf(0x0), m_videoTexture(0), m_samplerIndex(-1), m_originalSampler(0), 
-	m_autoStart(false), m_loop(false), m_initialStart(false), m_newData(false), m_hasAudio(false)
+	m_autoStart(false), m_loop(false), m_startNextFrame(false), m_newData(false), m_hasAudio(false)
 {
 	VideoManager::instance()->addComponent(this);
 	// We need our own access to the com library for not disturbing others (like the SapiComponent)
@@ -107,8 +107,8 @@ void VideoComponent::loadFromXml(const XMLNode* node)
 	}
 
 	// Set autostart after openavi() as we only get a correct start time stamp at the first update call
-	// m_initialStart indicates that the video has to be started in the first (next) coming update call
-	m_initialStart = m_autoStart = _stricmp(node->getAttribute("autoStart", "0"), "true") == 0 
+	// m_startNextFrame indicates that the video has to be started in the first (next) coming update call
+	m_startNextFrame = m_autoStart = _stricmp(node->getAttribute("autoStart", "0"), "true") == 0 
 		|| _stricmp(node->getAttribute("autoStart", "0"), "1") == 0;
 }
 
@@ -146,13 +146,11 @@ void VideoComponent::update()
 		else
 			stopAvi();
 	}
-	if (m_initialStart)
+	if (m_startNextFrame)
 	{
-		// This is the first update() call and we shall start the avi initally here
-		// Important: We have to do this at the end of the first update call, as we don't have decoded any data yet
+		// We shall start the video in this frame
 		playAvi();
-		// But never again at this place
-		m_initialStart = false;
+		m_startNextFrame = false;
 	}
 }
 
@@ -175,7 +173,14 @@ void VideoComponent::render()
 
 void VideoComponent::playAvi()
 {
-	if (m_pgf != 0x0 && m_material != 0 && m_videoTexture != 0 && m_samplerIndex != -1)
+	if (m_playing)
+	{
+		// Already playing, so stop first to restart
+		stopAvi();
+		// And start the next frame (so the Sound Component will be able to stop the sound before)
+		m_startNextFrame = true;
+	}
+	else if (m_pgf != 0x0 && m_material != 0 && m_videoTexture != 0 && m_samplerIndex != -1)
 	{
 		// And apply the new video texture as sampler to the material
 		h3dSetResParamI(m_material, H3DMatRes::SamplerElem, m_samplerIndex, H3DMatRes::SampTexResI, m_videoTexture);
@@ -305,27 +310,37 @@ bool VideoComponent::openAvi(const std::string& filename)
 	
 	// Now open the audio stream
 	PAVISTREAM audioStream;
-	if (!AVIStreamOpenFromFile(&audioStream, filename.c_str(), streamtypeAUDIO, 0, OF_READ, NULL) !=0)
+	if (AVIStreamOpenFromFile(&audioStream, filename.c_str(), streamtypeAUDIO, 0, OF_READ, NULL) == 0)
 	{
 		// Audio stream found
 		// Get format info
 		PCMWAVEFORMAT audioFormat;
 		long formatSize = sizeof(audioFormat);
+		int start = AVIStreamStart(audioStream);
 		// TODO get channelsmask and use it
-		AVIStreamReadFormat(audioStream, 0, &audioFormat, &formatSize);
+		AVIStreamReadFormat(audioStream, start, &audioFormat, &formatSize);
 		long numSamples = AVIStreamLength(audioStream);
-		// Create buffer with appropriate
-		long bufferSize = audioFormat.wBitsPerSample / 8 * numSamples;
-		char* buffer = new char[bufferSize];
+		int bitsPerSample = (audioFormat.wf.nAvgBytesPerSec * 8) / (audioFormat.wf.nSamplesPerSec * audioFormat.wf.nChannels);
+		/*if (audioFormat.wf.wFormatTag == WAVE_FORMAT_MPEGLAYER3)
+		{
+			// TODO
+			MPEGLAYER3WAVEFORMAT mp3Format;
+			formatSize = sizeof(mp3Format);
+			AVIStreamReadFormat(audioStream, start, &mp3Format, &formatSize);
+		}*/
 
+		// Create buffer with appropriate size
+		long bufferSize = (bitsPerSample * numSamples) / 8;
+		char* buffer = new char[bufferSize];
+		memset(buffer, 0, bufferSize);
 		// Read the audio data
 		long bytesWritten = 0;
-		AVIStreamRead(audioStream, 0, numSamples, buffer, bufferSize, &bytesWritten, 0x0);
+		AVIStreamRead(audioStream, start, numSamples, buffer, bufferSize, &bytesWritten, 0x0);
 
 		if (bytesWritten > 0)
 		{
 			// Send the audio data to the sound component
-			SoundResourceData eventData(buffer, bytesWritten, audioFormat.wf.nSamplesPerSec, audioFormat.wBitsPerSample, audioFormat.wf.nChannels);
+			SoundResourceData eventData(buffer, bytesWritten, audioFormat.wf.nSamplesPerSec, bitsPerSample, audioFormat.wf.nChannels);
 			GameEvent event(GameEvent::E_SET_SOUND_WITH_USER_DATA, &eventData, this);
 			m_owner->executeEvent(&event);
 			m_hasAudio = true;

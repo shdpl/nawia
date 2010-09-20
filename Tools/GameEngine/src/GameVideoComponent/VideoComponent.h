@@ -90,7 +90,7 @@ private:
 	bool				m_playing;							// Whether we are currently playing an avi
 	bool				m_newData;							// True if we have just decompressed new video data in the last run call
 	bool				m_autoStart;						// Automatically start the video after loading
-	bool				m_initialStart;						// True if we initially have to start the video in the next run call
+	bool				m_startNextFrame;					// True if the video should be started the next frame (update-call)
 	bool				m_loop;								// Restart video after finishing
 	
 	int					m_videoTexture;						// The texture where we stream our video data to
