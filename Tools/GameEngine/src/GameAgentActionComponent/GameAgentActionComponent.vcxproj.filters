@@ -89,5 +89,8 @@
     <ClInclude Include="Orientation_V.h">
       <Filter>Header Files\Orientations</Filter>
     </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

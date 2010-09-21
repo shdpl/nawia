@@ -126,6 +126,7 @@
     <ClInclude Include="ActionEntity.h" />
     <ClInclude Include="AgentActionComponent.h" />
     <ClInclude Include="AgentActionManager.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="GameEngine_AgentAction.h" />
     <ClInclude Include="Orientation.h" />
     <ClInclude Include="Orientation_C.h" />
