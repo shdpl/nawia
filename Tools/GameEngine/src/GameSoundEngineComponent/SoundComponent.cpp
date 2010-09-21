@@ -440,7 +440,7 @@ void SoundComponent::update()
 		//m_visemeBlendFac = 1 - (m_visemes[m_visemeIndex].m_end - (float)time) / m_visemes[m_visemeIndex].m_duration + 0.6f;
 		//m_visemeBlendFac = clamp(m_visemeBlendFac, 0.6f, 1.0f) / 2.0f;
 
-		if (m_FACSmapping)
+		if (m_FACSmapping && changedBlending)
 			setViseme( visemeMapping[m_curViseme], m_visemeBlendFac);
 		else
 		{
