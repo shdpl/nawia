@@ -127,6 +127,7 @@
     <ClInclude Include="AnimationData.h" />
     <ClInclude Include="AnimationFile.h" />
     <ClInclude Include="AnimationNode.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="GameEngine_AgentAnim.h" />
     <ClInclude Include="StillAnimationNode.h" />
   </ItemGroup>
