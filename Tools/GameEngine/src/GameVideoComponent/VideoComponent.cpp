@@ -332,7 +332,6 @@ bool VideoComponent::openAvi(const std::string& filename)
 		// Create buffer with appropriate size
 		long bufferSize = (bitsPerSample * numSamples) / 8;
 		char* buffer = new char[bufferSize];
-		memset(buffer, 0, bufferSize);
 		// Read the audio data
 		long bytesWritten = 0;
 		AVIStreamRead(audioStream, start, numSamples, buffer, bufferSize, &bytesWritten, 0x0);
