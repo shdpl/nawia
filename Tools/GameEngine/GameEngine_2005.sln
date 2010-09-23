@@ -76,7 +76,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libconvexdecomposition", ".
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGIMPACTUtils", "..\Dependencies\Bullet\bullet-2.74\msvc\8\libGIMPACTUtils_2005.vcproj", "{C1C6726D-7A72-46E9-AE61-E3E456950A3A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "..\..\Horde3D\Dependencies\Source\glfw\glfw.vcproj", "{2A423B83-D582-49BA-A45F-E27148099850}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glfw", "..\..\Horde3D\Samples\glfw\glfw.vcproj", "{2A423B83-D582-49BA-A45F-E27148099850}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Horde3D", "Horde3D", "{284A8B6D-11F0-4242-9FE9-FBA5E7E632BA}"
 EndProject
