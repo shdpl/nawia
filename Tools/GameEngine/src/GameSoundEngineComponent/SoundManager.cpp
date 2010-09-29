@@ -43,8 +43,15 @@
 
 #define sq(x) (x)*(x)
 
-
 using namespace std;
+
+struct UpdateNode
+{ 		
+	void operator()(SoundComponent* ptr) const
+	{
+		ptr->update();
+	}
+};
 
 SoundManager* SoundManager::m_instance = 0x0;
 
@@ -140,6 +147,11 @@ SoundManager::~SoundManager()
 	m_instance = 0;
 }
 
+void SoundManager::update()
+{
+	for_each(m_soundNodes.begin(), m_soundNodes.end(), UpdateNode());
+}
+
 void SoundManager::run()
 {
 	if( m_activeListener == 0x0 ) return;
@@ -168,7 +180,7 @@ void SoundManager::run()
 		if( node->m_resourceID == 0)
 			continue;
 
-		node->update();
+		node->run();
 
 		// calculate distance between listener and sound node
 		float dist = sqrtf((

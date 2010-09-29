@@ -66,10 +66,8 @@ public:
 
 	void loadFromXml(const XMLNode* description);
 
-	/**
-	 * Calculate velocity
-	 */
 	void update();
+	void run();
 
 	void setEnabled(const bool enabled);
 	void setGain(const float gain);
@@ -89,8 +87,8 @@ private:
 	void addRheme(const XMLNode* rheme, std::vector<SoundComponent::Viseme>* container = 0x0);
 	void startVisemes();
 	void stopVisemes();
-	void resetPreviousViseme();
-	void setViseme( const std::string& viseme, const float weight );
+	//void resetPreviousViseme();
+	void updateAUs();
 
 	unsigned int		*m_buffer;
 	unsigned int		m_sourceID;
@@ -119,11 +117,11 @@ private:
 	int					m_prevViseme, m_curViseme, m_visemeIndex;
 	float				m_visemeBlendFac, m_visemeBlendFacPrev;
 	bool				m_isSpeaking;
+	bool				m_changedBlending;
+	int					m_time;
 
 	bool				m_FACSmapping;
 	std::map<std::string, std::map<int, float>> m_FACSvisemes;
-	std::string			m_curFACSViseme;
-	float				m_curFACSWeight;
 
 	// Soundfiles loaded from xml, stored by tag
 	typedef std::map<std::string, std::vector<int>>::iterator SoundFileIterator;

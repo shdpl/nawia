@@ -55,7 +55,7 @@ public:
 	/**
 	 * Updates all current Sound Targets
 	 */
-	void update() {}
+	void update();
 
 	/**
 	 * Adds a created SoundComponent to the Sound manager
