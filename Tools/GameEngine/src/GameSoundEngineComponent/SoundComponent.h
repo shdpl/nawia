@@ -88,7 +88,7 @@ private:
 	void startVisemes();
 	void stopVisemes();
 	//void resetPreviousViseme();
-	void updateAUs();
+	void updateVisemes();
 
 	unsigned int		*m_buffer;
 	unsigned int		m_sourceID;
