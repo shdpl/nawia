@@ -2,7 +2,6 @@
     <Light sy="1" sz="1" lightingContext="LIGHTING" col_B="1" name="light" col_G="1" tx="25" ty="35" shadowContext="SHADOWMAP" tz="-45" shadowMapBias="0.002" rx="-150" ry="-45" shadowMapCount="4" rz="0" col_R="1" radius="150" fov="90" shadowSplitLambda="0.95" sx="1" />
     <Camera pipeline="pipelines/forward.pipeline.xml" tx="-12" ty="1.6" sx="1" occlusionCulling="0" tz="-1" rx="0" sy="1" ry="270" sz="1" rz="0" name="camera" >
         <Attachment type="GameEngine" name="camera" >
-            <!--<KeyboardController/>-->
         </Attachment>
     </Camera>
     <Reference tx="0" ty="15" sx="40" tz="0" sy="40" rx="0" sz="40" sceneGraph="models/skybox/skybox.scene.xml" ry="0" rz="0" name="skybox" />

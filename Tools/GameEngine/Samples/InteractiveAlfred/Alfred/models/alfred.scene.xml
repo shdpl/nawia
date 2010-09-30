@@ -3,7 +3,6 @@
     <Camera pipeline="pipelines\forward.pipeline.xml" topPlane="0.0254897" bottomPlane="-0.0254897" tx="0" ty="5" sx="1" tz="15" rx="-5" sy="1" leftPlane="-0.0339862" ry="0" sz="1" rz="0" farPlane="1000" name="Camera" rightPlane="0.0339862" nearPlane="0.1" >
         <Attachment type="GameEngine" name="Camera" >
             <Socket protocol="UDP" port="5555" to="127.0.0.1" />
-            <!--<KeyboardController />-->
         </Attachment>
     </Camera>
     <Light material="materials/light.material.xml" radius="100" col_G="0.96" shadowMapCount="0" tx="0" ty="12" tz="25" rx="-14" fov="70" lightingContext="LIGHTING" ry="0" rz="0" shadowMapBias="0.01" name="light1" col_R="0.96" shadowSplitLambda="0" shadowContext="SHADOWMAP" col_B="0.96" />

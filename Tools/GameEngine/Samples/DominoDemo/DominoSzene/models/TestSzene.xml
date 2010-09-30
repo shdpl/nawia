@@ -5,7 +5,6 @@
     <Camera sy="1" sz="1" nearDist="0.1" nearPlane="0.1" leftPlane="-0.0552271" topPlane="0.0414214" name="camera" tx="-19.1883" ty="36.1332" rightPlane="0.0552271" tz="60.3242" bottomPlane="-0.0414214" rx="-32.8505" ry="-23.1" rz="0" keepAspect="1" farPlane="2000" pipeline="pipelines/forward.pipeline.xml" sx="1" >
         <Attachment type="GameEngine" name="camera" >
             <SoundListener/>
-            <!-- <KeyboardController rotateUp="U" rotateLeft="Q" rotateRight="E" rotateDown="J" />-->
         </Attachment>
     </Camera>
     <Reference tx="0" sx="500" ty="8" sy="500" rx="0" tz="0" sceneGraph="models/skybox/skybox.scene.xml" sz="500" ry="0" rz="0" name="Skybox" />
