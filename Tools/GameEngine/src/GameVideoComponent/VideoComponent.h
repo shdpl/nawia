@@ -43,7 +43,7 @@ public:
 
 	bool checkEvent(GameEvent* event) { return true; }
 
-	void executeEvent(GameEvent* event) {}
+	void executeEvent(GameEvent* event);
 
 	void loadFromXml(const XMLNode* description);
 
@@ -103,6 +103,8 @@ private:
 	bool				m_resize;							// Whether we have to resize
 
 	bool				m_isOverlay;						// Whether this video should be rendered as an overlay
+
+	int					m_camId;							// Current horde camera id
 
 };
 

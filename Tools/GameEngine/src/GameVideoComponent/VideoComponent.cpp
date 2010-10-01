@@ -30,6 +30,8 @@
 #include <GameEngine/GameEngine.h>
 #include <GameEngine/GameEntity.h>
 #include <GameEngine/GameLog.h>
+#include <GameEngine/GameModules.h>
+#include <GameEngine/GameWorld.h>
 
 #include <XMLParser/utXMLParser.h>
 
@@ -47,11 +49,27 @@ GameComponent* VideoComponent::createComponent( GameEntity* owner )
 
 VideoComponent::VideoComponent(GameEntity* owner) : GameComponent(owner, "VideoComponent"), m_startTime(0), m_data(0x0), m_playing(false), 
 	m_material(0), m_resize(false), m_bgraData(0x0), m_pgf(0x0), m_videoTexture(0), m_samplerIndex(-1), m_originalSampler(0), 
-	m_autoStart(false), m_loop(false), m_startNextFrame(false), m_newData(false), m_hasAudio(false)
+	m_autoStart(false), m_loop(false), m_startNextFrame(false), m_newData(false), m_hasAudio(false), m_camId(0)
 {
 	VideoManager::instance()->addComponent(this);
 	// We need our own access to the com library for not disturbing others (like the SapiComponent)
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+
+	// Listen to cam changes
+	owner->addListener(GameEvent::E_ACTIVE_CAM_CHANGE, this);
+	// And get the current one
+	// First the GameEngine id
+	int camID = 0;
+	GameEvent camEvent(GameEvent::E_GET_ACTIVE_CAM, &GameEventData(&camID), this);
+	GameModules::gameWorld()->executeEvent(&camEvent);
+	// Then the entity
+	GameEntity* camEntity = GameModules::gameWorld()->entity(camID);
+	if (camEntity)
+	{
+		// And finally the horde id, puh!
+		GameEvent getHordeID(GameEvent::E_GET_SCENEGRAPH_ID, &m_camId, this);
+		camEntity->executeEvent(&getHordeID);
+	}
 
 	m_hdd = DrawDibOpen();
 	m_hdc = CreateCompatibleDC(0);
@@ -65,6 +83,29 @@ VideoComponent::~VideoComponent()
 	DrawDibClose(m_hdd);			// Closes The DrawDib Device Context
 	DeleteDC(m_hdc);				// Delete the Dc
 	CoUninitialize();
+}
+
+void VideoComponent::executeEvent(GameEvent* event)
+{
+	switch (event->id())
+	{
+		case GameEvent::E_ACTIVE_CAM_CHANGE:
+			{
+				const unsigned int* id = static_cast<const unsigned int*>(event->data());
+				if (id)
+				{
+					// Get the entity
+					GameEntity* camEntity = GameModules::gameWorld()->entity(*id);
+					if (camEntity)
+					{
+						// And it's scenegraph id
+						GameEvent getHordeID(GameEvent::E_GET_SCENEGRAPH_ID, &m_camId, this);
+						camEntity->executeEvent(&getHordeID);
+					}
+				}
+			}
+			break;
+	}
 }
 
 void VideoComponent::loadFromXml(const XMLNode* node)
@@ -159,7 +200,8 @@ void VideoComponent::render()
 	if (m_playing && m_isOverlay)
 	{
 		// Render the overlay (currently in fullscreen)
-		const float ww = h3dGetViewportParams( 0x0, 0x0, 0x0, 0x0 );
+		const float ww = (float)h3dGetNodeParamI( m_camId, H3DCamera::ViewportWidthI ) /
+	                 (float)h3dGetNodeParamI( m_camId, H3DCamera::ViewportHeightI );
 		const float coords[] = 
 		{
 			0, 0, 0, 1.0f,
