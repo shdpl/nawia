@@ -60,13 +60,11 @@ A_id(blend_A), B_id(blend_B), running(true), abort(false), t(0), temp_posture_we
 	}
 
 	m_component = comp;
-	temp_still_max_weight = m_component->stillAnim->getMaxWeight();
-	if(temp_still_max_weight > 0.0f && blend_A == -1) 
+	temp_still_max_weight = (m_component->stillAnim != 0) ? m_component->stillAnim->getMaxWeight() : 0;
+	if(m_component->stillAnim != 0 && temp_still_max_weight > 0.0f && blend_A == -1) 
 	{
 		m_component->stillAnim->setMaxWeight(0.0f);
-
-		if(m_component->stillAnim != 0)
-			m_component->stillAnim->setWeight(0.0f);
+		m_component->stillAnim->setWeight(0.0f);
 	}
 
 	start_weight = 1;
@@ -132,10 +130,7 @@ void AnimationBlending::blend_gg()
 		start_weight = A->weight;
 	if(t <= 1)
 	{
-		//A->weight = ((start_weight-t) * m_component->model_max_weight);
-		//A->setWeight(start_weight - t, m_component->model_max_weight);
 		A->setWeight(start_weight * (1 - t));
-		//B->weight = (t * m_component->model_max_weight);
 		B->setWeight(t, m_component->model_max_weight);
 
 		if(start_weight <= 0.9)
@@ -146,8 +141,8 @@ void AnimationBlending::blend_gg()
 		if(m_component->posture_weight < 0) m_component->posture_weight = 0;
 
 		//update still anim
-		m_component->stillAnim->updateWeight(m_component->getAnimNodeWithNoCust(true) != 0, t);
-		//m_component->updateAnim(m_component->stillAnim);
+		if(m_component->stillAnim != 0)
+			m_component->stillAnim->updateWeight(m_component->getAnimNodeWithNoCust(true) != 0, t);
 
 		t = t + BLENDING_SPEED * (float)(m_component->loopTime/CLOCKS_PER_SEC) * (float)((A->scale > B->scale)? A->scale : B->scale);
 		//t = t + BLENDING_SPEED_PG * 0.1f;		
@@ -202,10 +197,13 @@ void AnimationBlending::blend_pg()
 		if(m_component->posture_weight < 0) m_component->posture_weight = 0;
 
 		//if the spacial extent of the animations is restricted, we must blend that too
-		if(temp_still_max_weight > 0.0f && m_component->stillAnim->getMaxWeight() < temp_still_max_weight)
-			m_component->stillAnim->setMaxWeight(t);
-		else
-			m_component->stillAnim->setMaxWeight(temp_still_max_weight);
+		if(m_component->stillAnim != 0)
+		{
+			if(temp_still_max_weight > 0.0f && m_component->stillAnim->getMaxWeight() < temp_still_max_weight)
+				m_component->stillAnim->setMaxWeight(t);
+			else
+				m_component->stillAnim->setMaxWeight(temp_still_max_weight);
+		}
 		
 		//force a still animation weight update
 		if(m_component->stillAnim != 0)
@@ -216,8 +214,7 @@ void AnimationBlending::blend_pg()
 	}
 	else
 	{
-		m_component->posture_weight = 0.0f;//temp_posture_weight;
-
+		m_component->posture_weight = 0.0f;
 		if(B->loop)
 		{
 			//kill all postures
@@ -260,17 +257,19 @@ void AnimationBlending::blend_gp()
 	//compute weight morphing (blending)
 	if(t <= 1)
 	{
-		//A->weight = ((1-t) * m_component->model_max_weight);		
 		A->setWeight(start_weight - t, m_component->model_max_weight);
 		m_component->posture_weight = (t * temp_posture_weight);
 
 		if(m_component->posture_weight < 0) m_component->posture_weight = 0;
 
 		//if the spacial extent of the animations is restricted, we must blend that too
-		if(temp_still_max_weight > 0.0f && m_component->stillAnim->getMaxWeight() > 0.0f)
-			m_component->stillAnim->setMaxWeight(temp_still_max_weight - t);
-		else
-			m_component->stillAnim->setMaxWeight(0.0f);
+		if(m_component->stillAnim != 0)
+		{
+			if(temp_still_max_weight > 0.0f && m_component->stillAnim->getMaxWeight() > 0.0f)
+				m_component->stillAnim->setMaxWeight(temp_still_max_weight - t);
+			else
+				m_component->stillAnim->setMaxWeight(0.0f);
+		}
 		
 		//force a still animation weight update
 		if(m_component->stillAnim != 0)
@@ -291,7 +290,9 @@ void AnimationBlending::blend_gp()
 	else
 	{
 		m_component->posture_weight = temp_posture_weight;
-		m_component->stillAnim->setMaxWeight(temp_still_max_weight);
+		if(m_component->stillAnim != 0)
+			m_component->stillAnim->setMaxWeight(temp_still_max_weight);
+
 		A->weight = 0.0f;
 		t = 0;
 		running = false;
@@ -342,8 +343,8 @@ void AnimationBlending::blend_gi()
 		if(m_component->posture_weight < 0) m_component->posture_weight = 0;
 		
 		//update still anim
-		m_component->stillAnim->updateWeight(m_component->getAnimNodeWithNoCust(true) != 0);
-		//m_component->updateAnim(m_component->stillAnim);
+		if(m_component->stillAnim != 0)
+			m_component->stillAnim->updateWeight(m_component->getAnimNodeWithNoCust(true) != 0);	
 
 		t = t + BLENDING_SPEED * (float)(m_component->loopTime/CLOCKS_PER_SEC) * (float)((A->scale > B->scale)? A->scale : B->scale);
 		//t = t + BLENDING_SPEED_PG * 0.1f;		
@@ -424,7 +425,8 @@ void AnimationBlending::forceBlendFinish_gp(bool kill_anim)
 	A->frame = 0.0f;
 
 	m_component->posture_weight = temp_posture_weight;
-	m_component->stillAnim->setMaxWeight(temp_still_max_weight);
+	if(m_component->stillAnim != 0)
+		m_component->stillAnim->setMaxWeight(temp_still_max_weight);
 
 	t = 0;
 
@@ -442,7 +444,8 @@ void AnimationBlending::forceBlendFinish_pg(bool kill_anim)
 
 	m_component->posture_weight = 0.0f;
 	B->weight = m_component->model_max_weight;
-	m_component->stillAnim->setMaxWeight(temp_still_max_weight);
+	if(m_component->stillAnim != 0)
+		m_component->stillAnim->setMaxWeight(temp_still_max_weight);
 
 	if(B->loop && kill_anim)
 	{

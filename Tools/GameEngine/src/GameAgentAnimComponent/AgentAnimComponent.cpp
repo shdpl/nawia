@@ -502,11 +502,13 @@ int AgentAnimComponent::preloadAnim( AnimationData* data, char* mask )
 
 int AgentAnimComponent::preloadAnimByFile( const char* anim_file, int type, char* mask )
 {
-	//first we need to create a "dummy" AnimationData
-	AnimationData adata(-1, anim_file, type);	
-	adata.addFile(new AnimationFile(m_gender, m_culture, anim_file));
+	//first we need to create a "dummy" AnimationData	
+	AnimationData *adata = new AnimationData(-1, anim_file, type);
+	adata->setForm(	-1, -1, 1);	
+	adata->addFile( new AnimationFile(m_gender, m_culture, anim_file) );
+	m_animationData.push_back( adata );
 
-	return preloadAnim( &adata, mask );
+	return preloadAnim( adata, mask );
 }
 
 int AgentAnimComponent::preloadAnimByID( int anim_id, int type, char* mask )
@@ -580,11 +582,13 @@ int AgentAnimComponent::loadAnim( AnimationData* data, char* mask, char* syncWor
 
 int AgentAnimComponent::loadAnimByFile( const char* anim_file, int type, char* mask, char* syncWord )
 {
-	//first we need to create a "dummy" AnimationData
-	AnimationData adata(-1, anim_file, type);
-	adata.addFile(new AnimationFile(m_gender, m_culture, anim_file));
+	//first we need to create a "dummy" AnimationData	
+	AnimationData *adata = new AnimationData(-1, anim_file, type);
+	adata->setForm(	-1, -1, 1);	
+	adata->addFile( new AnimationFile(m_gender, m_culture, anim_file) );
+	m_animationData.push_back( adata );
 
-	return loadAnim( &adata, mask, syncWord );
+	return loadAnim( adata, mask, syncWord );
 }
 
 int AgentAnimComponent::loadAnimByID( int anim_id, int type, char* mask, char* syncWord )
