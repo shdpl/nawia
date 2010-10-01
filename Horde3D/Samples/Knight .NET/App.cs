@@ -182,9 +182,8 @@ namespace Horde3DNET.Samples.KnightNET
                 Horde3DUtils.showText(text, 0.03f, 0.24f, 0.026f, 1, 1, 1, _fontMatRes );
             }
 
-            // Show logo            
-            int x, y, width, height;
-            float ww = h3d.getViewportParams(out x, out y, out width, out height);
+            // Show logo                        
+            float ww = h3d.getNodeParamI(_cam, (int)h3d.H3DCamera.ViewportWidthI) / (float)h3d.getNodeParamI(_cam, (int)h3d.H3DCamera.ViewportHeightI);
             float[] ovLogo = new float[] { ww - 0.4f, 0.8f, 0, 1, ww - 0.4f, 1, 0, 0, ww, 1, 1, 0, ww, 0.8f, 1, 1 };
             h3d.showOverlays(ovLogo, 4, 1, 1, 1, 1, _logoMatRes, 0);
 
@@ -211,11 +210,14 @@ namespace Horde3DNET.Samples.KnightNET
             if (!_initialized) return;
 
             // Resize viewport
-            h3d.setupViewport( 0, 0, width, height, true );
-
+            h3d.setNodeParamI(_cam, (int)h3d.H3DCamera.ViewportXI, 0);
+            h3d.setNodeParamI(_cam, (int)h3d.H3DCamera.ViewportYI, 0);
+            h3d.setNodeParamI(_cam, (int)h3d.H3DCamera.ViewportWidthI, width);
+            h3d.setNodeParamI(_cam, (int)h3d.H3DCamera.ViewportHeightI, height);
+            h3d.resizePipelineBuffers(_forwardPipeRes, width, height);
+            h3d.resizePipelineBuffers(_hdrPipeRes, width, height);
             // Set virtual camera parameters
-            //depreceated h3d.setupCameraView(h3d.PrimeTimeCam, 45.0f, (float)width / height, 0.1f, 1000.0f);
-            h3d.setupCameraView( _cam, 45.0f, (float)width / height, 0.1f, 1000.0f ); //horde3d 1.0
+            h3d.setupCameraView(_cam, 45.0f, (float)width / height, 0.1f, 1000.0f);
         }
 
         public void keyPressEvent(Keys key)

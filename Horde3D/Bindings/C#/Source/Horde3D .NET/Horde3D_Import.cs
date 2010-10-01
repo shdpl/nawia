@@ -46,10 +46,7 @@ namespace Horde3DNET
         internal static extern void h3dRelease();
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
-        internal static extern void h3dSetupViewport(int x, int y, int width, int height, [MarshalAs(UnmanagedType.U1)]bool resizeBuffers);
-
-        [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
-        internal static extern float h3dGetViewportParams(out int x, out int y, out int width, out int height);        
+        internal static extern void h3dResizePipelineBuffers( int pipeRes, int width, int height );
 
         //horde3d 1.0
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]        

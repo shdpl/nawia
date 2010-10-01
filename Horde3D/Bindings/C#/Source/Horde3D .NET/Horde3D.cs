@@ -477,18 +477,21 @@ namespace Horde3DNET
         /// <summary>
         /// Enum: H3DCamera
         ///            The available Camera node parameters.
-
-        ///        PipeResI      - Pipeline resource used for rendering
-        ///        OutTexResI    - 2D Texture resource used as output buffer (can be 0 to use main framebuffer) (default: 0)
-        ///        OutBufIndexI  - Index of the output buffer for stereo rendering (values: 0 for left eye, 1 for right eye) (default: 0)
-        ///        LeftPlaneF    - Coordinate of left plane relative to near plane center (default: -0.055228457)
-        ///        RightPlaneF   - Coordinate of right plane relative to near plane center (default: 0.055228457)
-        ///        BottomPlaneF  - Coordinate of bottom plane relative to near plane center (default: -0.041421354f)
-        ///        TopPlaneF     - Coordinate of top plane relative to near plane center (default: 0.041421354f)
-        ///        NearPlaneF    - Distance of near clipping plane (default: 0.1)
-        ///        FarPlaneF     - Distance of far clipping plane (default: 1000)
-        ///        OrthoI        - Flag for setting up an orthographic frustum instead of a perspective one (default: 0)
-        ///        OccCullingI   - Flag for enabling occlusion culling (default: 0)
+        ///        PipeResI         - Pipeline resource used for rendering
+        ///        OutTexResI       - 2D Texture resource used as output buffer (can be 0 to use main framebuffer) (default: 0)
+        ///        OutBufIndexI     - Index of the output buffer for stereo rendering (values: 0 for left eye, 1 for right eye) (default: 0)
+        ///        LeftPlaneF       - Coordinate of left plane relative to near plane center (default: -0.055228457)
+        ///        RightPlaneF      - Coordinate of right plane relative to near plane center (default: 0.055228457)
+        ///        BottomPlaneF     - Coordinate of bottom plane relative to near plane center (default: -0.041421354f)
+        ///        TopPlaneF        - Coordinate of top plane relative to near plane center (default: 0.041421354f)
+        ///        NearPlaneF       - Distance of near clipping plane (default: 0.1)
+        ///        FarPlaneF        - Distance of far clipping plane (default: 1000)
+        ///        ViewportXI       - Position x-coordinate of the lower left corner of the viewport rectangle (default: 0)
+        ///        ViewportYI       - Position y-coordinate of the lower left corner of the viewport rectangle (default: 0)
+        ///        ViewportWidthI   - Width of the viewport rectangle (default: 320)
+        ///        ViewportHeightI  - Height of the viewport rectangle (default: 240)
+        ///        OrthoI           - Flag for setting up an orthographic frustum instead of a perspective one (default: 0)
+        ///        OccCullingI      - Flag for enabling occlusion culling (default: 0)
         /// </summary>
         public enum H3DCamera
         {
@@ -501,6 +504,10 @@ namespace Horde3DNET
             TopPlaneF,
             NearPlaneF,
             FarPlaneF,
+            ViewportXI,
+            ViewportYI,
+            ViewportWidthI,
+            ViewportHeightI,
             OrthoI,
             OccCullingI
         }
@@ -597,41 +604,21 @@ namespace Horde3DNET
         }
 
         /// <summary>
-        /// This function sets the location and size of the viewport. It has to be called
-        /// after engine initialization and whenever the size of the rendering context/window
-        /// changes. The resizeBuffers parameter specifies whether render targets with a size
-        /// relative to the viewport dimensions should be resized. This is usually desired
-        /// after engine initialization and when the window is resized but not for just rendering
-        /// to a part of the framebuffer.
+        /// This function sets the base width and height which affects render targets with relative (in percent) size 
+        /// specification. Changing the base size is usually desired after engine initialization and when the window
+        /// is being resized. Note that in case several cameras use the same pipeline resource instance, the change
+        /// will affect all cameras.
         /// </summary>
-        /// <param name="x">the x-position of the viewport in the rendering context</param>
-        /// <param name="y">the y-position of the viewport in the rendering context</param>
-        /// <param name="width">the width of the viewport</param>
-        /// <param name="height">the height of the viewport</param>
-        /// <param name="resizeBuffers">specifies whether render targets should be adapted to new size</param>
-        public static void setupViewport(int x, int y, int width, int height, bool resizeBuffers)
+        /// <param name="pipeRes">the pipeline resource instance to be changed</param>        
+        /// <param name="width">base width in pixels used for render targets with relative size</param>
+        /// <param name="height">base height in pixels used for render targets with relative size</param>
+        public static void resizePipelineBuffers(int pipeRes, int width, int height)
         {
-            NativeMethodsEngine.h3dSetupViewport(x, y, width, height, resizeBuffers);
+            NativeMethodsEngine.h3dResizePipelineBuffers( pipeRes, width, height );
         }
 
         /// <summary>
         ///    Gets the current viewport parameters.
-
-        ///<remarks>
-        ///    This function returns the aspect ratio (width divided by height) of the current viewport and
-        ///    writes the other viewport parameters to the specified variables. If a specific parameter is not
-        ///    of interest, NULL can be passed as argument.
-        /// </remarks>
-        ///<param name="x">pointer to variable where x-position will be stored (can be NULL)</param>
-        ///<param name="y">pointer to variable where y-position will be stored (can be NULL)</param>        
-        ///<param name="width">pointer to variable where viewport width will be stored (can be NULL)</param>    
-        ///<param name="height">pointer to variable where viewport height will be stored (can be NULL)</param>
-        /// <returns>viewport aspect ratio</returns>   
-        /// </summary>
-        public static float getViewportParams(out int x, out int y, out int width, out int height)
-        {
-            return NativeMethodsEngine.h3dGetViewportParams(out x, out y, out width, out height);
-        }
 
         /// <summary>
         /// This is the main function of the engine. 
