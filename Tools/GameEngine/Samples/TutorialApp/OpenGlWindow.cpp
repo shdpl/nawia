@@ -16,7 +16,7 @@ m_resizeCB(0)
 /// creates window with size width and height, windowName is displayed in title bar
 OpenGLWindow::OpenGLWindow(const char* windowName /*= "OpenGL Window"*/, int width /*= 800*/, int height /*= 600*/, bool fullscreen /*=false*/) :
 m_hInstance(0), m_hWnd(0), m_hRC(0), m_hDC(0), m_windowWidth(width), m_windowHeight(height), m_fullScreen(fullscreen), m_keyboardCB(0), m_mouseCB(0), m_active(false), m_userData(0), m_renderCB(0),
-m_resizeCB(0)
+m_resizeCB(0), m_userDataRS(0)
 { 
 	m_appName = new char[strlen(windowName)+1];
 	strcpy(m_appName, windowName);  
@@ -203,7 +203,7 @@ bool OpenGLWindow::createWindow() {
 void OpenGLWindow::resize(const int width, const int height) 
 {
 	if (m_resizeCB)
-		m_resizeCB(width, height);
+		m_resizeCB(m_userDataRS, width, height);
 	// Set virtual camera parameters
 	//Horde3D::setCameraParam( PrimeTimeCam, CameraNodeParams::Aspect, (float)width / height );
 }

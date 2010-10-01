@@ -21,7 +21,7 @@ public:
 	static void keyboardCb(unsigned int param, bool pressed, void* userData);
 	static void mouseCb(float x, float y, void* userData);
 	static void renderCb(void* userData);
-	static void resizeCb(int width, int height);
+	static void resizeCb(void *userData, int width, int height);
 
 private:
 
