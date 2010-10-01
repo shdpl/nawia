@@ -110,29 +110,28 @@ namespace Horde3D
 			return 0;
 		}
 
-		/* 	Function: resize
-		Resizes the viewport.
+		/* 	Function: resizePipelineBuffers
+		Changes the size of the render targets of a pipeline.
 
-		This function sets the dimensions of the rendering viewport. It has to be called after
-		initialization and whenever the viewport size changes.
+		This function sets the base width and height which affects render targets with relative (in percent) size 
+		specification. Changing the base size is usually desired after engine initialization and when the window
+		is being resized. Note that in case several cameras use the same pipeline resource instance, the change
+		will affect all cameras.
 
 		Parameters:
-		x		- the x-position of the viewport in the rendering context
-		y		- the y-position of the viewport in the rendering context
-		width	- the width of the viewport
-		height	- the height of the viewport
+			pipeRes  - the pipeline resource instance to be changed
+			width    - base width in pixels used for render targets with relative size
+			height   - base height in pixels used for render targets with relative size
 
 		Returns:
 		nothing
 		*/		
-		int lua_resize( lua_State *L )
+		int lua_ResizePipelineBuffers( lua_State *L )
 		{
-			int x = luaL_checkint(L, 1);
-			int y = luaL_checkint(L, 2);
-			int width = luaL_checkint(L, 3);
-			int height = luaL_checkint(L, 4);
-			bool resizeBuffers = luaL_checkinteger( L, 5 ) != 0;
-			h3dSetupViewport( x, y, width, height, resizeBuffers );
+			int pipeRes = luaL_checkint(L, 1);
+			int width = luaL_checkint(L, 2);
+			int height = luaL_checkint(L, 3);			
+			h3dResizePipelineBuffers( pipeRes, width, height );
 			return 0;
 		}
 
@@ -1802,7 +1801,7 @@ namespace Horde3D
 			{"checkExtension", lua_checkExtension},
 			{"init", lua_init},
 			{"release", lua_release},
-			{"resize", lua_resize},
+			{"resizePipelineBuffers", lua_ResizePipelineBuffers},
 			{"render", lua_render},
 			{"clear", lua_clear},
 			{"getMessage", lua_getMessage},

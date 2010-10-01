@@ -16,7 +16,6 @@
 #include "egCom.h"
 #include "egRenderer.h"
 #include "utXML.h"
-#include "utPlatform.h"
 #include <fstream>
 
 #include "utDebug.h"
@@ -42,6 +41,7 @@ PipelineResource::~PipelineResource()
 
 void PipelineResource::initDefault()
 {
+	_baseWidth = 320; _baseHeight = 240;
 }
 
 
@@ -293,10 +293,10 @@ bool PipelineResource::createRenderTargets()
 		RenderTarget &rt = _renderTargets[i];
 	
 		uint32 width = ftoi_r( rt.width * rt.scale ), height = ftoi_r( rt.height * rt.scale );
-		if( width == 0 ) width = ftoi_r( Modules::renderer().getVPWidth() * rt.scale );
-		if( height == 0 ) height = ftoi_r( Modules::renderer().getVPHeight() * rt.scale );
+		if( width == 0 ) width = ftoi_r( _baseWidth * rt.scale );
+		if( height == 0 ) height = ftoi_r( _baseHeight * rt.scale );
 		
-		rt.rendBuf = Modules::renderer().createRenderBuffer(
+		rt.rendBuf = gRDI->createRenderBuffer(
 			width, height, rt.format, rt.hasDepthBuf, rt.numColBufs, rt.samples );
 		if( rt.rendBuf == 0 ) return false;
 	}
@@ -311,7 +311,7 @@ void PipelineResource::releaseRenderTargets()
 	{
 		RenderTarget &rt = _renderTargets[i];
 		if( rt.rendBuf )
-			Modules::renderer().releaseRenderBuffer( rt.rendBuf );
+			gRDI->releaseRenderBuffer( rt.rendBuf );
 	}
 }
 
@@ -397,8 +397,10 @@ bool PipelineResource::load( const char *data, int size )
 }
 
 
-void PipelineResource::resize()
+void PipelineResource::resize( uint32 width, uint32 height )
 {
+	_baseWidth = width;
+	_baseHeight = height;
 	// Recreate render targets
 	releaseRenderTargets();
 	createRenderTargets();
@@ -489,7 +491,7 @@ bool PipelineResource::getRenderTargetData( const string &target, int bufIndex, 
 		else rbObj = rt->rendBuf;
 	}
 	
-	return Modules::renderer().getRenderBufferData(
+	return gRDI->getRenderBufferData(
 		rbObj, bufIndex, width, height, compCount, dataBuffer, bufferSize );
 }
 

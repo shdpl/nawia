@@ -16,7 +16,6 @@
 #include "egCom.h"
 #include "egRenderer.h"
 #include "utXML.h"
-#include "utPlatform.h"
 
 #include "utDebug.h"
 
@@ -327,7 +326,7 @@ EmitterNode::~EmitterNode()
 	for( uint32 i = 0; i < _occQueries.size(); ++i )
 	{
 		if( _occQueries[i] != 0 )
-			Modules::renderer().releaseQuery( _occQueries[i] );
+			gRDI->releaseQuery( _occQueries[i] );
 	}
 	
 	delete[] _particles;

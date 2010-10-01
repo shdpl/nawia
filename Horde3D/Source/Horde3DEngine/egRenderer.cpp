@@ -41,9 +41,10 @@ const char *fsDefColor =
 	"}\n";
 
 
-Renderer::Renderer() : RenderDeviceInterface()
+Renderer::Renderer()
 {
 	_scratchBuf = 0x0;
+	_overlayVerts = 0x0;
 	_scratchBufSize = 0;
 	_frameID = 1;
 	_defShadowMap = 0;
@@ -54,20 +55,26 @@ Renderer::Renderer() : RenderDeviceInterface()
 	_curShader = 0x0;
 	_curRenderTarget = 0x0;
 	_curShaderUpdateStamp = 1;
+	_maxAnisoMask = 0;
 	_smSize = 0;
+	_shadowRB = 0;
+	_vlPosOnly = 0;
+	_vlOverlay = 0;
+	_vlModel = 0;
+	_vlParticle = 0;
 }
 
 
 Renderer::~Renderer()
 {
 	releaseShadowRB();
-	releaseTexture( _defShadowMap );
-	releaseBuffer( _particleVBO );
-	releaseVertexLayout( _vlPosOnly );
-	releaseVertexLayout( _vlOverlay );
-	releaseVertexLayout( _vlModel );
-	releaseVertexLayout( _vlParticle );
-	Modules::renderer().releaseShaderComb( _defColorShader );
+	gRDI->releaseTexture( _defShadowMap );
+	gRDI->releaseBuffer( _particleVBO );
+	gRDI->releaseVertexLayout( _vlPosOnly );
+	gRDI->releaseVertexLayout( _vlOverlay );
+	gRDI->releaseVertexLayout( _vlModel );
+	gRDI->releaseVertexLayout( _vlParticle );
+	releaseShaderComb( _defColorShader );
 
 	delete[] _scratchBuf;
 	delete[] _overlayVerts;
@@ -93,39 +100,39 @@ unsigned char *Renderer::useScratchBuf( uint32 minSize )
 
 bool Renderer::init()
 {
-	// Init backend
-	if( !RenderDeviceInterface::init() ) return false;
+	// Init Render Device Interface
+	if( !gRDI->init() ) return false;
 
 	// Check capabilities
-	if( !_caps[RenderCaps::Tex_Float] )
+	if( !gRDI->_caps[RenderCaps::Tex_Float] )
 		Modules::log().writeWarning( "Renderer: No floating point texture support available" );
-	if( !_caps[RenderCaps::Tex_NPOT] )
+	if( !gRDI->_caps[RenderCaps::Tex_NPOT] )
 		Modules::log().writeWarning( "Renderer: No non-Power-of-two texture support available" );
-	if( !_caps[RenderCaps::RT_Multisampling] )
+	if( !gRDI->_caps[RenderCaps::RT_Multisampling] )
 		Modules::log().writeWarning( "Renderer: No multisampling for render targets available" );
 	
 	// Create vertex layouts
-	_vlPosOnly = createVertexLayout( 1 );
-	setVertexLayoutElem( _vlPosOnly, 0, "vertPos", 0, 3, 0 );
+	_vlPosOnly = gRDI->createVertexLayout( 1 );
+	gRDI->setVertexLayoutElem( _vlPosOnly, 0, "vertPos", 0, 3, 0 );
 
-	_vlOverlay = createVertexLayout( 2 );
-	setVertexLayoutElem( _vlOverlay, 0, "vertPos", 0, 2, 0 );
-	setVertexLayoutElem( _vlOverlay, 1, "texCoords0", 0, 2, 8 );
+	_vlOverlay = gRDI->createVertexLayout( 2 );
+	gRDI->setVertexLayoutElem( _vlOverlay, 0, "vertPos", 0, 2, 0 );
+	gRDI->setVertexLayoutElem( _vlOverlay, 1, "texCoords0", 0, 2, 8 );
 	
-	_vlModel = createVertexLayout( 7 );
-	setVertexLayoutElem( _vlModel, 0, "vertPos", 0, 3, 0 );
-	setVertexLayoutElem( _vlModel, 1, "normal", 1, 3, 0 );
-	setVertexLayoutElem( _vlModel, 2, "tangent", 2, 4, 0 );
-	setVertexLayoutElem( _vlModel, 3, "joints", 3, 4, 8 );
-	setVertexLayoutElem( _vlModel, 4, "weights", 3, 4, 24 );
-	setVertexLayoutElem( _vlModel, 5, "texCoords0", 3, 2, 0 );
-	setVertexLayoutElem( _vlModel, 6, "texCoords1", 3, 2, 40 );
+	_vlModel = gRDI->createVertexLayout( 7 );
+	gRDI->setVertexLayoutElem( _vlModel, 0, "vertPos", 0, 3, 0 );
+	gRDI->setVertexLayoutElem( _vlModel, 1, "normal", 1, 3, 0 );
+	gRDI->setVertexLayoutElem( _vlModel, 2, "tangent", 2, 4, 0 );
+	gRDI->setVertexLayoutElem( _vlModel, 3, "joints", 3, 4, 8 );
+	gRDI->setVertexLayoutElem( _vlModel, 4, "weights", 3, 4, 24 );
+	gRDI->setVertexLayoutElem( _vlModel, 5, "texCoords0", 3, 2, 0 );
+	gRDI->setVertexLayoutElem( _vlModel, 6, "texCoords1", 3, 2, 40 );
 
-	_vlParticle = createVertexLayout( 4 );
-	setVertexLayoutElem( _vlParticle, 0, "vertPos", 0, 3, 0 );
-	setVertexLayoutElem( _vlParticle, 1, "parIdx", 0, 1, 24 );
-	setVertexLayoutElem( _vlParticle, 2, "parCornerIdx", 0, 1, 20 );
-	setVertexLayoutElem( _vlParticle, 3, "texCoords0", 0, 2, 12 );
+	_vlParticle = gRDI->createVertexLayout( 4 );
+	gRDI->setVertexLayoutElem( _vlParticle, 0, "vertPos", 0, 3, 0 );
+	gRDI->setVertexLayoutElem( _vlParticle, 1, "parIdx", 0, 1, 24 );
+	gRDI->setVertexLayoutElem( _vlParticle, 2, "parCornerIdx", 0, 1, 20 );
+	gRDI->setVertexLayoutElem( _vlParticle, 3, "texCoords0", 0, 2, 12 );
 	
 	// Upload default shaders
 	if( !createShaderComb( vsDefColor, fsDefColor, _defColorShader ) )
@@ -135,7 +142,7 @@ bool Renderer::init()
 	}
 
 	// Cache common uniforms
-	_defColShader_color = glGetUniformLocation( _defColorShader.shaderObj, "color" );
+	_defColShader_color = gRDI->getShaderConstLoc( _defColorShader.shaderObj, "color" );
 	
 	// Create shadow map render target
 	if( !createShadowRB( Modules::config().shadowMapSize, Modules::config().shadowMapSize ) )
@@ -146,8 +153,8 @@ bool Renderer::init()
 
 	// Create default shadow map
 	float shadowTex[16] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-	_defShadowMap = createTexture( TextureTypes::Tex2D, 4, 4, TextureFormats::DEPTH, false, false, false, false );
-	uploadTextureData( _defShadowMap, 0, 0, shadowTex );
+	_defShadowMap = gRDI->createTexture( TextureTypes::Tex2D, 4, 4, 1, TextureFormats::DEPTH, false, false, false, false );
+	gRDI->uploadTextureData( _defShadowMap, 0, 0, shadowTex );
 
 	// Create index buffer used for drawing quads
 	uint16 *quadIndices = new uint16[QuadIndexBufCount];
@@ -156,7 +163,7 @@ bool Renderer::init()
 		quadIndices[i*6+0] = i * 4 + 0; quadIndices[i*6+1] = i * 4 + 1; quadIndices[i*6+2] = i * 4 + 2;
 		quadIndices[i*6+3] = i * 4 + 2; quadIndices[i*6+4] = i * 4 + 3; quadIndices[i*6+5] = i * 4 + 0;
 	}
-	_quadIdxBuf = createIndexBuffer( QuadIndexBufCount * sizeof( uint16 ), quadIndices );
+	_quadIdxBuf = gRDI->createIndexBuffer( QuadIndexBufCount * sizeof( uint16 ), quadIndices );
 	delete[] quadIndices; quadIndices = 0x0;
 	
 	// Create particle geometry array
@@ -173,12 +180,12 @@ bool Renderer::init()
 		parVerts[i * 4 + 2] = v2; parVerts[i * 4 + 2].index = (float)i;
 		parVerts[i * 4 + 3] = v3; parVerts[i * 4 + 3].index = (float)i;
 	}
-	_particleVBO = createVertexBuffer( ParticlesPerBatch * 4 * sizeof( ParticleVert ), (float *)parVerts );
+	_particleVBO = gRDI->createVertexBuffer( ParticlesPerBatch * 4 * sizeof( ParticleVert ), (float *)parVerts );
 	delete[] parVerts; parVerts = 0x0;
 
 	_overlayBatches.reserve( 64 );
 	_overlayVerts = new OverlayVert[MaxNumOverlayVerts];
-	_overlayVB = createVertexBuffer( MaxNumOverlayVerts * sizeof( OverlayVert ), 0x0 );
+	_overlayVB = gRDI->createVertexBuffer( MaxNumOverlayVerts * sizeof( OverlayVert ), 0x0 );
 
 	// Create unit primitives
 	createPrimitives();
@@ -198,9 +205,9 @@ bool Renderer::init()
 }
 
 
-void Renderer::resize( int x, int y, int width, int height )
+void Renderer::initStates()
 {
-	RenderDeviceInterface::resize( x, y, width, height );
+	gRDI->initStates();
 }
 
 
@@ -237,8 +244,8 @@ void Renderer::createPrimitives()
 		0, 1, 2, 2, 3, 0,   1, 5, 6, 6, 2, 1,   5, 4, 7, 7, 6, 5,
 		4, 0, 3, 3, 7, 4,   3, 2, 6, 6, 7, 3,   4, 5, 1, 1, 0, 4
 	};
-	_vbCube = Modules::renderer().createVertexBuffer( 8 * 3 * sizeof( float ), cubeVerts );
-	_ibCube = Modules::renderer().createIndexBuffer( 36 * sizeof( uint16 ), cubeInds );
+	_vbCube = gRDI->createVertexBuffer( 8 * 3 * sizeof( float ), cubeVerts );
+	_ibCube = gRDI->createIndexBuffer( 36 * sizeof( uint16 ), cubeInds );
 
 	// Unit (geodesic) sphere (created by recursively subdividing a base octahedron)
 	Vec3f spVerts[126] = {  // x, y, z
@@ -264,8 +271,8 @@ void Renderer::createPrimitives()
 			spInds[j + 0] = nv - 3; spInds[j + 1] = nv - 2; spInds[j + 2] = nv - 1;
 		}
 	}
-	_vbSphere = Modules::renderer().createVertexBuffer( 126 * sizeof( Vec3f ), spVerts );
-	_ibSphere = Modules::renderer().createIndexBuffer( 128 * 3 * sizeof( uint16 ), spInds );
+	_vbSphere = gRDI->createVertexBuffer( 126 * sizeof( Vec3f ), spVerts );
+	_ibSphere = gRDI->createIndexBuffer( 128 * 3 * sizeof( uint16 ), spInds );
 	
 	// Unit cone
 	float coneVerts[13 * 3] = {  // x, y, z
@@ -281,14 +288,14 @@ void Renderer::createPrimitives()
 		10, 6, 2,   10, 8, 6,   10, 9, 8,   8, 7, 6,   6, 4, 2,   6, 5, 4,   4, 3, 2,
 		2, 12, 10,   2, 1, 12,   12, 11, 10
 	};
-	_vbCone = Modules::renderer().createVertexBuffer( 13 * 3 * sizeof( float ), coneVerts );
-	_ibCone = Modules::renderer().createIndexBuffer( 22 * 3 * sizeof( uint16 ), coneInds );
+	_vbCone = gRDI->createVertexBuffer( 13 * 3 * sizeof( float ), coneVerts );
+	_ibCone = gRDI->createIndexBuffer( 22 * 3 * sizeof( uint16 ), coneInds );
 
 	// Fullscreen polygon
 	float fsVerts[3 * 5] = {  // x, y, z
 		0.f, 0.f, 1.f,   2.f, 0.f, 1.f,   0.f, 2.f, 1.f
 	};
-	_vbFSPoly = Modules::renderer().createVertexBuffer( 3 * 5 * sizeof( float ), fsVerts );
+	_vbFSPoly = gRDI->createVertexBuffer( 3 * 5 * sizeof( float ), fsVerts );
 }
 
 
@@ -298,13 +305,13 @@ void Renderer::drawAABB( const Vec3f &bbMin, const Vec3f &bbMax )
 	
 	Matrix4f mat = Matrix4f::TransMat( bbMin.x, bbMin.y, bbMin.z ) *
 		Matrix4f::ScaleMat( bbMax.x - bbMin.x, bbMax.y - bbMin.y, bbMax.z - bbMin.z );
-	glUniformMatrix4fv( _curShader->uni_worldMat, 1, false, &mat.x[0] );
+	gRDI->setShaderConst( _curShader->uni_worldMat, CONST_FLOAT44, &mat.x[0] );
 	
-	setVertexBuffer( 0, _vbCube, 0, 12 );
-	setIndexBuffer( _ibCube, IDXFMT_16 );
-	setVertexLayout( _vlPosOnly );
+	gRDI->setVertexBuffer( 0, _vbCube, 0, 12 );
+	gRDI->setIndexBuffer( _ibCube, IDXFMT_16 );
+	gRDI->setVertexLayout( _vlPosOnly );
 
-	drawIndexed( PRIM_TRILIST, 0, 36, 0, 24 );
+	gRDI->drawIndexed( PRIM_TRILIST, 0, 36, 0, 8 );
 }
 
 
@@ -314,13 +321,13 @@ void Renderer::drawSphere( const Vec3f &pos, float radius )
 
 	Matrix4f mat = Matrix4f::TransMat( pos.x, pos.y, pos.z ) *
 	               Matrix4f::ScaleMat( radius, radius, radius );
-	glUniformMatrix4fv( _curShader->uni_worldMat, 1, false, &mat.x[0] );
+	gRDI->setShaderConst( _curShader->uni_worldMat, CONST_FLOAT44, &mat.x[0] );
 	
-	setVertexBuffer( 0, _vbSphere, 0, 12 );
-	setIndexBuffer( _ibSphere, IDXFMT_16 );
-	setVertexLayout( _vlPosOnly );
+	gRDI->setVertexBuffer( 0, _vbSphere, 0, 12 );
+	gRDI->setIndexBuffer( _ibSphere, IDXFMT_16 );
+	gRDI->setVertexLayout( _vlPosOnly );
 
-	drawIndexed( PRIM_TRILIST, 0, 128 * 3, 0, 126 );
+	gRDI->drawIndexed( PRIM_TRILIST, 0, 128 * 3, 0, 126 );
 }
 
 
@@ -329,13 +336,13 @@ void Renderer::drawCone( float height, float radius, const Matrix4f &transMat )
 	ASSERT( _curShader != 0x0 );
 
 	Matrix4f mat = transMat * Matrix4f::ScaleMat( radius, radius, height );
-	glUniformMatrix4fv( _curShader->uni_worldMat, 1, false, &mat.x[0] );
+	gRDI->setShaderConst( _curShader->uni_worldMat, CONST_FLOAT44, &mat.x[0] );
 	
-	setVertexBuffer( 0, _vbCone, 0, 12 );
-	setIndexBuffer( _ibCone, IDXFMT_16 );
-	setVertexLayout( _vlPosOnly );
+	gRDI->setVertexBuffer( 0, _vbCone, 0, 12 );
+	gRDI->setIndexBuffer( _ibCone, IDXFMT_16 );
+	gRDI->setVertexLayout( _vlPosOnly );
 
-	drawIndexed( PRIM_TRILIST, 0, 22 * 3, 0, 39 );
+	gRDI->drawIndexed( PRIM_TRILIST, 0, 22 * 3, 0, 13 );
 }
 
 
@@ -346,49 +353,49 @@ void Renderer::drawCone( float height, float radius, const Matrix4f &transMat )
 bool Renderer::createShaderComb( const char *vertexShader, const char *fragmentShader, ShaderCombination &sc )
 {
 	// Create shader program
-	uint32 shdObj = createShader( vertexShader, fragmentShader );
+	uint32 shdObj = gRDI->createShader( vertexShader, fragmentShader );
 	if( shdObj == 0 ) return false;
 	
 	sc.shaderObj = shdObj;
-	bindShader( shdObj );
+	gRDI->bindShader( shdObj );
 	
 	// Set standard uniforms
-	int loc = glGetUniformLocation( shdObj, "shadowMap" );
-	if( loc >= 0 ) glUniform1i( loc, 12 );
+	int loc =gRDI-> getShaderSamplerLoc( shdObj, "shadowMap" );
+	if( loc >= 0 ) gRDI->setShaderSampler( loc, 12 );
 
 	// Misc general uniforms
-	sc.uni_frameBufSize = glGetUniformLocation( shdObj, "frameBufSize" );
+	sc.uni_frameBufSize = gRDI->getShaderConstLoc( shdObj, "frameBufSize" );
 	
 	// View/projection uniforms
-	sc.uni_viewMat = glGetUniformLocation( shdObj, "viewMat" );
-	sc.uni_viewMatInv = glGetUniformLocation( shdObj, "viewMatInv" );
-	sc.uni_projMat = glGetUniformLocation( shdObj, "projMat" );
-	sc.uni_viewProjMat = glGetUniformLocation( shdObj, "viewProjMat" );
-	sc.uni_viewerPos = glGetUniformLocation( shdObj, "viewerPos" );
+	sc.uni_viewMat = gRDI->getShaderConstLoc( shdObj, "viewMat" );
+	sc.uni_viewMatInv = gRDI->getShaderConstLoc( shdObj, "viewMatInv" );
+	sc.uni_projMat = gRDI->getShaderConstLoc( shdObj, "projMat" );
+	sc.uni_viewProjMat = gRDI->getShaderConstLoc( shdObj, "viewProjMat" );
+	sc.uni_viewerPos = gRDI->getShaderConstLoc( shdObj, "viewerPos" );
 	
 	// Per-instance uniforms
-	sc.uni_worldMat = glGetUniformLocation( shdObj, "worldMat" );
-	sc.uni_worldNormalMat = glGetUniformLocation( shdObj, "worldNormalMat" );
-	sc.uni_nodeId = glGetUniformLocation( shdObj, "nodeId" );
-	sc.uni_skinMatRows = glGetUniformLocation( shdObj, "skinMatRows[0]" );
+	sc.uni_worldMat = gRDI->getShaderConstLoc( shdObj, "worldMat" );
+	sc.uni_worldNormalMat = gRDI->getShaderConstLoc( shdObj, "worldNormalMat" );
+	sc.uni_nodeId = gRDI->getShaderConstLoc( shdObj, "nodeId" );
+	sc.uni_skinMatRows = gRDI->getShaderConstLoc( shdObj, "skinMatRows[0]" );
 	
 	// Lighting uniforms
-	sc.uni_lightPos = glGetUniformLocation( shdObj, "lightPos" );
-	sc.uni_lightDir = glGetUniformLocation( shdObj, "lightDir" );
-	sc.uni_lightColor = glGetUniformLocation( shdObj, "lightColor" );
-	sc.uni_shadowSplitDists = glGetUniformLocation( shdObj, "shadowSplitDists" );
-	sc.uni_shadowMats = glGetUniformLocation( shdObj, "shadowMats" );
-	sc.uni_shadowMapSize = glGetUniformLocation( shdObj, "shadowMapSize" );
-	sc.uni_shadowBias = glGetUniformLocation( shdObj, "shadowBias" );
+	sc.uni_lightPos = gRDI->getShaderConstLoc( shdObj, "lightPos" );
+	sc.uni_lightDir = gRDI->getShaderConstLoc( shdObj, "lightDir" );
+	sc.uni_lightColor = gRDI->getShaderConstLoc( shdObj, "lightColor" );
+	sc.uni_shadowSplitDists = gRDI->getShaderConstLoc( shdObj, "shadowSplitDists" );
+	sc.uni_shadowMats = gRDI->getShaderConstLoc( shdObj, "shadowMats" );
+	sc.uni_shadowMapSize = gRDI->getShaderConstLoc( shdObj, "shadowMapSize" );
+	sc.uni_shadowBias = gRDI->getShaderConstLoc( shdObj, "shadowBias" );
 	
 	// Particle-specific uniforms
-	sc.uni_parCorners = glGetUniformLocation( shdObj, "parCorners" );
-	sc.uni_parPosArray = glGetUniformLocation( shdObj, "parPosArray" );
-	sc.uni_parSizeAndRotArray = glGetUniformLocation( shdObj, "parSizeAndRotArray" );
-	sc.uni_parColorArray = glGetUniformLocation( shdObj, "parColorArray" );
+	sc.uni_parCorners = gRDI->getShaderConstLoc( shdObj, "parCorners" );
+	sc.uni_parPosArray = gRDI->getShaderConstLoc( shdObj, "parPosArray" );
+	sc.uni_parSizeAndRotArray = gRDI->getShaderConstLoc( shdObj, "parSizeAndRotArray" );
+	sc.uni_parColorArray = gRDI->getShaderConstLoc( shdObj, "parColorArray" );
 	
 	// Overlay-specific uniforms
-	sc.uni_olayColor = glGetUniformLocation( shdObj, "olayColor" );
+	sc.uni_olayColor = gRDI->getShaderConstLoc( shdObj, "olayColor" );
 
 	return true;
 }
@@ -396,7 +403,7 @@ bool Renderer::createShaderComb( const char *vertexShader, const char *fragmentS
 
 void Renderer::releaseShaderComb( ShaderCombination &sc )
 {
-	releaseShader( sc.shaderObj );
+	gRDI->releaseShader( sc.shaderObj );
 }
 
 
@@ -404,8 +411,8 @@ void Renderer::setShaderComb( ShaderCombination *sc )
 {
 	if( _curShader != sc )
 	{
-		if( sc == 0x0 ) bindShader( 0 );
-		else bindShader( sc->shaderObj );
+		if( sc == 0x0 ) gRDI->bindShader( 0 );
+		else gRDI->bindShader( sc->shaderObj );
 
 		_curShader = sc;
 	}
@@ -420,52 +427,61 @@ void Renderer::commitGeneralUniforms()
 	if( _curShader->lastUpdateStamp != _curShaderUpdateStamp )
 	{
 		if( _curShader->uni_frameBufSize >= 0 )
-			glUniform2f( _curShader->uni_frameBufSize, (float)_fbWidth, (float)_fbHeight );
+		{
+			float dimensions[2] = { (float)gRDI->_fbWidth, (float)gRDI->_fbHeight };
+			gRDI->setShaderConst( _curShader->uni_frameBufSize, CONST_FLOAT2, dimensions );
+		}
 		
 		// Viewer params
 		if( _curShader->uni_viewMat >= 0 )
-			glUniformMatrix4fv( _curShader->uni_viewMat, 1, false, _viewMat.x );
+			gRDI->setShaderConst( _curShader->uni_viewMat, CONST_FLOAT44, _viewMat.x );
 		
 		if( _curShader->uni_viewMatInv >= 0 )
-			glUniformMatrix4fv( _curShader->uni_viewMatInv, 1, false, _viewMatInv.x );
+			gRDI->setShaderConst( _curShader->uni_viewMatInv, CONST_FLOAT44, _viewMatInv.x );
 		
 		if( _curShader->uni_projMat >= 0 )
-			glUniformMatrix4fv( _curShader->uni_projMat, 1, false, _projMat.x );
+			gRDI->setShaderConst( _curShader->uni_projMat, CONST_FLOAT44, _projMat.x );
 		
 		if( _curShader->uni_viewProjMat >= 0 )
-			glUniformMatrix4fv( _curShader->uni_viewProjMat, 1, false, _viewProjMat.x );
+			gRDI->setShaderConst( _curShader->uni_viewProjMat, CONST_FLOAT44, _viewProjMat.x );
 		
 		if( _curShader->uni_viewerPos >= 0 )
-			glUniform3fv( _curShader->uni_viewerPos, 1, &_viewMatInv.x[12] );
+			gRDI->setShaderConst( _curShader->uni_viewerPos, CONST_FLOAT3, &_viewMatInv.x[12] );
 		
 		// Light params
 		if( _curLight != 0x0 )
 		{
 			if( _curShader->uni_lightPos >= 0 )
-				glUniform4f( _curShader->uni_lightPos, _curLight->_absPos.x, _curLight->_absPos.y,
-				             _curLight->_absPos.z, _curLight->_radius );
+			{
+				float data[4] = { _curLight->_absPos.x, _curLight->_absPos.y,
+				                  _curLight->_absPos.z, _curLight->_radius };
+				gRDI->setShaderConst( _curShader->uni_lightPos, CONST_FLOAT4, data );
+			}
 			
 			if( _curShader->uni_lightDir >= 0 )
-				glUniform4f( _curShader->uni_lightDir, _curLight->_spotDir.x, _curLight->_spotDir.y,
-				             _curLight->_spotDir.z, cosf( degToRad( _curLight->_fov / 2.0f ) ) );
+			{
+				float data[4] = { _curLight->_spotDir.x, _curLight->_spotDir.y,
+				                  _curLight->_spotDir.z, cosf( degToRad( _curLight->_fov / 2.0f ) ) };
+				gRDI->setShaderConst( _curShader->uni_lightDir, CONST_FLOAT4, data );
+			}
 			
 			if( _curShader->uni_lightColor >= 0 )
 			{
 				Vec3f col = _curLight->_diffuseCol * _curLight->_diffuseColMult;
-				glUniform3fv( _curShader->uni_lightColor, 1, &col.x );
+				gRDI->setShaderConst( _curShader->uni_lightColor, CONST_FLOAT3, &col.x );
 			}
 			
 			if( _curShader->uni_shadowSplitDists >= 0 )
-				glUniform4fv( _curShader->uni_shadowSplitDists, 1, &_splitPlanes[1] );
+				gRDI->setShaderConst( _curShader->uni_shadowSplitDists, CONST_FLOAT4, &_splitPlanes[1] );
 
 			if( _curShader->uni_shadowMats >= 0 )
-				glUniformMatrix4fv( _curShader->uni_shadowMats, 4, false, &_lightMats[0].x[0] );
+				gRDI->setShaderConst( _curShader->uni_shadowMats, CONST_FLOAT44, &_lightMats[0].x[0], 4 );
 			
 			if( _curShader->uni_shadowMapSize >= 0 )
-				glUniform1f( _curShader->uni_shadowMapSize, _smSize );
+				gRDI->setShaderConst( _curShader->uni_shadowMapSize, CONST_FLOAT, &_smSize );
 			
 			if( _curShader->uni_shadowBias >= 0 )
-				glUniform1f( _curShader->uni_shadowBias, _curLight->_shadowMapBias );
+				gRDI->setShaderConst( _curShader->uni_shadowBias, CONST_FLOAT, &_curLight->_shadowMapBias );
 		}
 
 		_curShader->lastUpdateStamp = _curShaderUpdateStamp;
@@ -494,7 +510,7 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		// Set shader combination
 		ShaderCombination *sc = shaderRes->getCombination( *context, materialRes->_combMask );
 		if( sc != _curShader ) setShaderComb( sc );
-		if( _curShader == 0x0 || _curShaderObj == 0 ) return false;
+		if( _curShader == 0x0 || gRDI->_curShader == 0 ) return false;
 
 		// Setup standard shader uniforms
 		commitGeneralUniforms();
@@ -592,8 +608,6 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		
 		ShaderSampler &sampler = shaderRes->_samplers[i];
 		TextureResource *texRes = 0x0;
-		int target = 0;
-		bool mips = false;
 
 		// Use default texture
 		if( firstRec) texRes = sampler.defTex;
@@ -609,6 +623,12 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 			}
 		}
 
+		uint32 sampState = shaderRes->_samplers[i].sampState;
+		if( (sampState & SS_FILTER_TRILINEAR) && !Modules::config().trilinearFiltering )
+			sampState = (sampState & ~SS_FILTER_TRILINEAR) | SS_FILTER_BILINEAR;
+		if( (sampState & SS_ANISO_MASK) > _maxAnisoMask )
+			sampState = (sampState & ~SS_ANISO_MASK) | _maxAnisoMask;
+
 		// Bind texture
 		if( texRes != 0x0 )
 		{
@@ -616,27 +636,23 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 			
 			if( texRes->getTexType() == TextureTypes::Tex2D )
 			{
-				target = GL_TEXTURE_2D;
-				mips = texRes->hasMipMaps();
-				
 				if( texRes->getRBObject() == 0 )
 				{
-					bindTexture( shaderRes->_samplers[i].texUnit, texRes->getTexObject() );
+					gRDI->setTexture( shaderRes->_samplers[i].texUnit, texRes->getTexObject(), sampState );
 				}
-				else if( texRes->getRBObject() != _curRendBuf )
+				else if( texRes->getRBObject() != gRDI->_curRendBuf )
 				{
-					bindTexture( shaderRes->_samplers[i].texUnit, getRenderBufferTex( texRes->getRBObject(), 0 ) );
+					gRDI->setTexture( shaderRes->_samplers[i].texUnit,
+					                  gRDI->getRenderBufferTex( texRes->getRBObject(), 0 ), sampState );
 				}
 				else  // Trying to bind active render buffer as texture
 				{
-					bindTexture( shaderRes->_samplers[i].texUnit, TextureResource::defTex2DObject );
+					gRDI->setTexture( shaderRes->_samplers[i].texUnit, TextureResource::defTex2DObject, 0 );
 				}
 			}
-			else if( texRes->getTexType() == TextureTypes::TexCube )
+			else
 			{
-				target = GL_TEXTURE_CUBE_MAP;
-				mips = texRes->hasMipMaps();
-				bindTexture( shaderRes->_samplers[i].texUnit, texRes->getTexObject() );
+				gRDI->setTexture( shaderRes->_samplers[i].texUnit, texRes->getTexObject(), sampState );
 			}
 		}
 
@@ -647,73 +663,12 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 			{
 				if( strcmp( _pipeSamplerBindings[j].sampler, sampler.id.c_str() ) == 0 )
 				{
-					target = GL_TEXTURE_2D;
-					mips = false;
-
-					bindTexture( shaderRes->_samplers[i].texUnit, getRenderBufferTex(
-						_pipeSamplerBindings[j].rbObj, _pipeSamplerBindings[j].bufIndex ) );
-					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
+					gRDI->setTexture( shaderRes->_samplers[i].texUnit, gRDI->getRenderBufferTex(
+						_pipeSamplerBindings[j].rbObj, _pipeSamplerBindings[j].bufIndex ), sampState );
 
 					break;
 				}
 			}
-		}
-
-		if( target == 0 ) continue;
-
-		// Address mode
-		switch( sampler.addressMode )
-		{
-		case TexAddressModes::Wrap:
-			glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_REPEAT );
-			glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_REPEAT );
-			glTexParameteri( target, GL_TEXTURE_WRAP_R, GL_REPEAT );
-			break;
-		case TexAddressModes::Clamp:
-			glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-			glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-			glTexParameteri( target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
-			break;
-		}
-
-		// Filtering
-		switch( sampler.filterMode )
-		{
-		case TexFilterModes::Trilinear:
-			if( Modules::config().trilinearFiltering )
-			{
-				glTexParameteri( target, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-				if( mips )
-					glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-				else
-					glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-				break;
-			} // else go to case TexFilterModes::Bilinear
-		case TexFilterModes::Bilinear:
-			glTexParameteri( target, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-			if( mips )
-				glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
-			else
-				glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			break;
-		case TexFilterModes::None:
-			glTexParameteri( target, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-			if( mips )
-				glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST );
-			else
-				glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			break;
-		}
-
-		// Anisotropy
-		if( mips )
-		{
-			glTexParameteri( target, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-				std::min( sampler.maxAnisotropy, Modules::config().maxAnisotropy ) );
-		}
-		else
-		{
-			glTexParameteri( target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1 );
 		}
 	}
 
@@ -745,10 +700,10 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 			switch( shaderRes->_uniforms[i].size )
 			{
 			case 1:
-				glUniform1f( _curShader->customUniforms[i], *unifData );
+				gRDI->setShaderConst( _curShader->customUniforms[i], CONST_FLOAT, unifData );
 				break;
 			case 4:
-				glUniform4fv( _curShader->customUniforms[i], 1, unifData );
+				gRDI->setShaderConst( _curShader->customUniforms[i], CONST_FLOAT4, unifData );
 				break;
 			}
 		}
@@ -802,7 +757,7 @@ bool Renderer::setMaterial( MaterialResource *materialRes, const string &shaderC
 
 bool Renderer::createShadowRB( uint32 width, uint32 height )
 {
-	_shadowRB = createRenderBuffer( width, height, TextureFormats::BGRA8, true, 0, 0 );
+	_shadowRB = gRDI->createRenderBuffer( width, height, TextureFormats::BGRA8, true, 0, 0 );
 	
 	return _shadowRB != 0;
 }
@@ -810,33 +765,25 @@ bool Renderer::createShadowRB( uint32 width, uint32 height )
 
 void Renderer::releaseShadowRB()
 {
-	releaseRenderBuffer( _shadowRB );
+	if( _shadowRB ) gRDI->releaseRenderBuffer( _shadowRB );
 }
 
 
 void Renderer::setupShadowMap( bool noShadows )
 {
+	uint32 sampState = SS_FILTER_BILINEAR | SS_ANISO1 | SS_ADDR_CLAMPCOL | SS_COMP_LEQUAL;
+	
 	// Bind shadow map
 	if( !noShadows && _curLight->_shadowMapCount > 0 )
 	{
-		bindTexture( 12, getRenderBufferTex( _shadowRB, 32 ) );
+		gRDI->setTexture( 12, gRDI->getRenderBufferTex( _shadowRB, 32 ), sampState );
 		_smSize = (float)Modules::config().shadowMapSize;
 	}
 	else
 	{
-		bindTexture( 12, _defShadowMap );
+		gRDI->setTexture( 12, _defShadowMap, sampState );
 		_smSize = 4;
 	}
-
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1 );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
-	float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
 }
 
 
@@ -916,8 +863,11 @@ void Renderer::updateShadowMap()
 {
 	if( _curLight == 0x0 ) return;
 	
-	uint32 prevRendBuf = _curRendBuf;
-	setRenderBuffer( _shadowRB );
+	uint32 prevRendBuf = gRDI->_curRendBuf;
+	int prevVPX = gRDI->_vpX, prevVPY = gRDI->_vpY, prevVPWidth = gRDI->_vpWidth, prevVPHeight = gRDI->_vpHeight;
+	RDIRenderBuffer &shadowRT = gRDI->_rendBufs.getRef( _shadowRB );
+	gRDI->setViewport( 0, 0, shadowRT.width, shadowRT.height );
+	gRDI->setRenderBuffer( _shadowRB );
 	
 	glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
 	glDepthMask( GL_TRUE );
@@ -1041,7 +991,8 @@ void Renderer::updateShadowMap()
 	glCullFace( GL_BACK );
 	glDisable( GL_SCISSOR_TEST );
 		
-	setRenderBuffer( prevRendBuf );
+	gRDI->setViewport( prevVPX, prevVPY, prevVPWidth, prevVPHeight );
+	gRDI->setRenderBuffer( prevRendBuf );
 	glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 }
 
@@ -1087,25 +1038,25 @@ void Renderer::drawOccProxies( uint32 list )
 	
 	setShaderComb( &Modules::renderer()._defColorShader );
 	commitGeneralUniforms();
-	setVertexBuffer( 0, _vbCube, 0, 12 );
-	setIndexBuffer( _ibCube, IDXFMT_16 );
-	setVertexLayout( _vlPosOnly );
+	gRDI->setVertexBuffer( 0, _vbCube, 0, 12 );
+	gRDI->setIndexBuffer( _ibCube, IDXFMT_16 );
+	gRDI->setVertexLayout( _vlPosOnly );
 
 	// Draw occlusion proxies
 	for( size_t i = 0, s = _occProxies[list].size(); i < s; ++i )
 	{
 		OccProxy &proxy = _occProxies[list][i];
 
-		beginQuery( proxy.queryObj );
+		gRDI->beginQuery( proxy.queryObj );
 		
 		Matrix4f mat = Matrix4f::TransMat( proxy.bbMin.x, proxy.bbMin.y, proxy.bbMin.z ) *
 			Matrix4f::ScaleMat( proxy.bbMax.x - proxy.bbMin.x, proxy.bbMax.y - proxy.bbMin.y, proxy.bbMax.z - proxy.bbMin.z );
-		glUniformMatrix4fv( _curShader->uni_worldMat, 1, false, &mat.x[0] );
+		gRDI->setShaderConst( _curShader->uni_worldMat, CONST_FLOAT44, &mat.x[0] );
 
 		// Draw AABB
-		drawIndexed( PRIM_TRILIST, 0, 36, 0, 24 );
+		gRDI->drawIndexed( PRIM_TRILIST, 0, 36, 0, 24 );
 
-		endQuery( proxy.queryObj );
+		gRDI->endQuery( proxy.queryObj );
 	}
 
 	setShaderComb( 0x0 );
@@ -1163,13 +1114,13 @@ void Renderer::drawOverlays( const string &shaderContext )
 	if( numOverlayVerts == 0 ) return;
 	
 	// Upload overlay vertices
-	updateBufferData( _overlayVB, 0, MaxNumOverlayVerts * sizeof( OverlayVert ), _overlayVerts );
+	gRDI->updateBufferData( _overlayVB, 0, MaxNumOverlayVerts * sizeof( OverlayVert ), _overlayVerts );
 
-	setVertexBuffer( 0, _overlayVB, 0, sizeof( OverlayVert ) );
-	setIndexBuffer( _quadIdxBuf, IDXFMT_16 );
+	gRDI->setVertexBuffer( 0, _overlayVB, 0, sizeof( OverlayVert ) );
+	gRDI->setIndexBuffer( _quadIdxBuf, IDXFMT_16 );
 	ASSERT( QuadIndexBufCount >= MaxNumOverlayVerts * 6 );
 
-	float aspect = (float)_vpWidth / (float)_vpHeight;
+	float aspect = (float)_curCamera->_vpWidth / (float)_curCamera->_vpHeight;
 	setupViewMatrices( Matrix4f(), Matrix4f::OrthoMat( 0, aspect, 1, 0, -1, 1 ) );
 	
 	MaterialResource *curMatRes = 0x0;
@@ -1181,15 +1132,15 @@ void Renderer::drawOverlays( const string &shaderContext )
 		if( curMatRes != ob.materialRes )
 		{
 			if( !setMaterial( ob.materialRes, shaderContext ) ) continue;
-			setVertexLayout( _vlOverlay );
+			gRDI->setVertexLayout( _vlOverlay );
 			curMatRes = ob.materialRes;
 		}
 		
 		if( _curShader->uni_olayColor >= 0 )
-			glUniform4fv( _curShader->uni_olayColor, 1, ob.colRGBA );
+			gRDI->setShaderConst( _curShader->uni_olayColor, CONST_FLOAT4, ob.colRGBA );
 		
 		// Draw batch
-		drawIndexed( PRIM_TRILIST, ob.firstVert * 6/4, ob.vertCount * 6/4, ob.firstVert, ob.vertCount );
+		gRDI->drawIndexed( PRIM_TRILIST, ob.firstVert * 6/4, ob.vertCount * 6/4, ob.firstVert, ob.vertCount );
 	}
 }
 
@@ -1239,12 +1190,12 @@ void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
 	glDepthMask( GL_TRUE );
 	glClearColor( r, g, b, a );
 
-	if( _curRendBuf != 0x0 )
+	if( gRDI->_curRendBuf != 0x0 )
 	{
 		// Store state of glDrawBuffers
 		for( uint32 i = 0; i < 4; ++i ) glGetIntegerv( GL_DRAW_BUFFER0 + i, (int *)&prevBuffers[i] );
 		
-		RDIRenderBuffer &rb = _rendBufs.getRef( _curRendBuf );
+		RDIRenderBuffer &rb = gRDI->_rendBufs.getRef( gRDI->_curRendBuf );
 		uint32 buffers[4], cnt = 0;
 
 		if( depth && rb.depthTex != 0 ) mask |= GL_DEPTH_BUFFER_BIT;
@@ -1264,7 +1215,7 @@ void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
 	{
 		if( depth ) mask |= GL_DEPTH_BUFFER_BIT;
 		if( buf0 ) mask |= GL_COLOR_BUFFER_BIT;
-		glScissor( _vpX, _vpY, _vpWidth, _vpHeight );
+		glScissor( _curCamera->_vpX, _curCamera->_vpY, _curCamera->_vpWidth, _curCamera->_vpHeight );
 		glEnable( GL_SCISSOR_TEST );
 	}
 	
@@ -1272,7 +1223,7 @@ void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
 	glDisable( GL_SCISSOR_TEST );
 	
 	// Restore state of glDrawBuffers
-	if( _curRendBuf != 0x0 )
+	if( gRDI->_curRendBuf != 0x0 )
 		glDrawBuffers( 4, prevBuffers );
 }
 
@@ -1285,11 +1236,11 @@ void Renderer::drawFSQuad( Resource *matRes, const string &shaderContext )
 	
 	if( !setMaterial( (MaterialResource *)matRes, shaderContext ) ) return;
 
-	setVertexBuffer( 0, _vbFSPoly, 0, 12 );
-	setIndexBuffer( 0, IDXFMT_16 );
-	setVertexLayout( _vlPosOnly );
+	gRDI->setVertexBuffer( 0, _vbFSPoly, 0, 12 );
+	gRDI->setIndexBuffer( 0, IDXFMT_16 );
+	gRDI->setVertexLayout( _vlPosOnly );
 
-	draw( PRIM_TRILIST, 0, 3 );
+	gRDI->draw( PRIM_TRILIST, 0, 3 );
 }
 
 
@@ -1303,11 +1254,9 @@ void Renderer::drawGeometry( const string &shaderContext, const string &theClass
 }
 
 
-void Renderer::drawLightGeometry( const string shaderContext, const string &theClass,
+void Renderer::drawLightGeometry( const string &shaderContext, const string &theClass,
                                   bool noShadows, RenderingOrder::List order, int occSet )
 {
-	string context = shaderContext;
-	
 	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None, true, false );
 	
 	for( size_t i = 0, s = Modules::sceneMan().getLightQueue().size(); i < s; ++i )
@@ -1327,7 +1276,7 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 			}
 			if( _curLight->_occQueries[occSet] == 0 )
 			{
-				_curLight->_occQueries[occSet] = Modules::renderer().createOcclusionQuery();
+				_curLight->_occQueries[occSet] = gRDI->createOcclusionQuery();
 				_curLight->_lastVisited[occSet] = 0;
 			}
 			else
@@ -1345,7 +1294,7 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 						Modules::renderer().pushOccProxy( 1, bbMin, bbMax, _curLight->_occQueries[occSet] );
 
 						// Check query result from previous frame
-						if( Modules::renderer().getQueryResult( _curLight->_occQueries[occSet] ) < 1 )
+						if( gRDI->getQueryResult( _curLight->_occQueries[occSet] ) < 1 )
 						{
 							continue;
 						}
@@ -1365,20 +1314,19 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 		// Set scissor rectangle
 		if( bbx != 0 || bby != 0 || bbw != 1 || bbh != 1 )
 		{
-			glScissor( ftoi_r( bbx * _fbWidth ), ftoi_r( bby * _fbHeight ),
-			           ftoi_r( bbw * _fbWidth ), ftoi_r( bbh * _fbHeight ) );
+			glScissor( ftoi_r( bbx * gRDI->_fbWidth ), ftoi_r( bby * gRDI->_fbHeight ),
+			           ftoi_r( bbw * gRDI->_fbWidth ), ftoi_r( bbh * gRDI->_fbHeight ) );
 			glEnable( GL_SCISSOR_TEST );
 		}
 		
 		setupShadowMap( noShadows );
-
-		if( shaderContext == "" ) context = _curLight->_lightingContext;
 		
 		// Render
 		Modules::sceneMan().updateQueues( _curCamera->getFrustum(), &_curLight->getFrustum(),
 		                                  order, false, true );
 		setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
-		drawRenderables( context, theClass, false, &_curCamera->getFrustum(),
+		drawRenderables( shaderContext.empty() ? _curLight->_lightingContext : shaderContext,
+		                 theClass, false, &_curCamera->getFrustum(),
 		                 &_curLight->getFrustum(), order, occSet );
 		Modules().stats().incStat( EngineStats::LightPassCount, 1 );
 
@@ -1397,10 +1345,9 @@ void Renderer::drawLightGeometry( const string shaderContext, const string &theC
 }
 
 
-void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int occSet )
+void Renderer::drawLightShapes( const string &shaderContext, bool noShadows, int occSet )
 {
 	MaterialResource *curMatRes = 0x0;
-	string context = shaderContext;
 	
 	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None, true, false );
 	
@@ -1424,7 +1371,7 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 			}
 			if( _curLight->_occQueries[occSet] == 0 )
 			{
-				_curLight->_occQueries[occSet] = Modules::renderer().createOcclusionQuery();
+				_curLight->_occQueries[occSet] = gRDI->createOcclusionQuery();
 				_curLight->_lastVisited[occSet] = 0;
 			}
 			else
@@ -1442,7 +1389,7 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 						Modules::renderer().pushOccProxy( 1, bbMin, bbMax, _curLight->_occQueries[occSet] );
 
 						// Check query result from previous frame
-						if( Modules::renderer().getQueryResult( _curLight->_occQueries[occSet] ) < 1 )
+						if( gRDI->getQueryResult( _curLight->_occQueries[occSet] ) < 1 )
 						{
 							continue;
 						}
@@ -1465,13 +1412,15 @@ void Renderer::drawLightShapes( const string shaderContext, bool noShadows, int 
 			setupShadowMap( true );
 		}
 
-		if( shaderContext == "" ) context = _curLight->_lightingContext;
-
 		setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
 
 		if( curMatRes != _curLight->_materialRes )
 		{
-			if( !setMaterial( _curLight->_materialRes, context ) ) continue;
+			if( !setMaterial( _curLight->_materialRes,
+				              shaderContext.empty() ? _curLight->_lightingContext : shaderContext ) )
+			{
+				continue;
+			}
 			curMatRes = _curLight->_materialRes;
 		}
 		else
@@ -1585,7 +1534,7 @@ void Renderer::drawMeshes( const string &shaderContext, const string &theClass, 
 			}
 			if( meshNode->_occQueries[occSet] == 0 )
 			{
-				queryObj = Modules::renderer().createOcclusionQuery();
+				queryObj = gRDI->createOcclusionQuery();
 				meshNode->_occQueries[occSet] = queryObj;
 				meshNode->_lastVisited[occSet] = 0;
 			}
@@ -1598,7 +1547,7 @@ void Renderer::drawMeshes( const string &shaderContext, const string &theClass, 
 					// Check query result (viewer must be outside of bounding box)
 					if( nearestDistToAABB( frust1->getOrigin(), meshNode->getBBox().min,
 					                       meshNode->getBBox().max ) > 0 &&
-						Modules::renderer().getQueryResult( meshNode->_occQueries[occSet] ) < 1 )
+						gRDI->getQueryResult( meshNode->_occQueries[occSet] ) < 1 )
 					{
 						Modules::renderer().pushOccProxy( 0, meshNode->getBBox().min, meshNode->getBBox().max,
 						                                  meshNode->_occQueries[occSet] );
@@ -1617,21 +1566,21 @@ void Renderer::drawMeshes( const string &shaderContext, const string &theClass, 
 			ASSERT( curGeoRes != 0x0 );
 		
 			// Indices
-			Modules::renderer().setIndexBuffer( curGeoRes->getIndexBuf(),
-			                                    curGeoRes->_16BitIndices ? IDXFMT_16 : IDXFMT_32 );
+			gRDI->setIndexBuffer( curGeoRes->getIndexBuf(),
+			                      curGeoRes->_16BitIndices ? IDXFMT_16 : IDXFMT_32 );
 
 			// Vertices
 			uint32 posVBuf = curGeoRes->getPosVBuf();
 			uint32 tanVBuf = curGeoRes->getTanVBuf();
 			uint32 staticVBuf = curGeoRes->getStaticVBuf();
 			
-			Modules::renderer().setVertexBuffer( 0, posVBuf, 0, sizeof( Vec3f ) );
-			Modules::renderer().setVertexBuffer( 1, tanVBuf, 0, sizeof( VertexDataTan ) );
-			Modules::renderer().setVertexBuffer( 2, tanVBuf, sizeof( Vec3f ), sizeof( VertexDataTan ) );
-			Modules::renderer().setVertexBuffer( 3, staticVBuf, 0, sizeof( VertexDataStatic ) );
+			gRDI->setVertexBuffer( 0, posVBuf, 0, sizeof( Vec3f ) );
+			gRDI->setVertexBuffer( 1, tanVBuf, 0, sizeof( VertexDataTan ) );
+			gRDI->setVertexBuffer( 2, tanVBuf, sizeof( Vec3f ), sizeof( VertexDataTan ) );
+			gRDI->setVertexBuffer( 3, staticVBuf, 0, sizeof( VertexDataStatic ) );
 		}
 
-		Modules::renderer().setVertexLayout( Modules::renderer()._vlModel );
+		gRDI->setVertexLayout( Modules::renderer()._vlModel );
 		
 		ShaderCombination *prevShader = Modules::renderer().getCurShader();
 		
@@ -1666,7 +1615,7 @@ void Renderer::drawMeshes( const string &shaderContext, const string &theClass, 
 			// Darken models with skeleton so that bones are more noticable
 			if( !modelNode->_jointList.empty() ) color = color * 0.3f;
 
-			glUniform4fv( Modules::renderer()._defColShader_color, 1, &color.x );
+			gRDI->setShaderConst( Modules::renderer()._defColShader_color, CONST_FLOAT4, &color.x );
 		}
 
 		ShaderCombination *curShader = Modules::renderer().getCurShader();
@@ -1679,8 +1628,8 @@ void Renderer::drawMeshes( const string &shaderContext, const string &theClass, 
 				// Note:	OpenGL 2.1 supports mat4x3 but it is internally realized as mat4 on most
 				//			hardware so it would require 4 instead of 3 uniform slots per joint
 				
-				glUniform4fv( curShader->uni_skinMatRows, (int)modelNode->_skinMatRows.size(),
-				              (float *)&modelNode->_skinMatRows[0] );
+				gRDI->setShaderConst( curShader->uni_skinMatRows, CONST_FLOAT4,
+				                      &modelNode->_skinMatRows[0], (int)modelNode->_skinMatRows.size() );
 			}
 
 			modelChanged = false;
@@ -1689,7 +1638,7 @@ void Renderer::drawMeshes( const string &shaderContext, const string &theClass, 
 		// World transformation
 		if( curShader->uni_worldMat >= 0 )
 		{
-			glUniformMatrix4fv( curShader->uni_worldMat, 1, false, &meshNode->_absTrans.x[0] );
+			gRDI->setShaderConst( curShader->uni_worldMat, CONST_FLOAT44, &meshNode->_absTrans.x[0] );
 		}
 		if( curShader->uni_worldNormalMat >= 0 )
 		{
@@ -1698,31 +1647,32 @@ void Renderer::drawMeshes( const string &shaderContext, const string &theClass, 
 			float normalMat[9] = { normalMat4.x[0], normalMat4.x[1], normalMat4.x[2],
 			                       normalMat4.x[4], normalMat4.x[5], normalMat4.x[6],
 			                       normalMat4.x[8], normalMat4.x[9], normalMat4.x[10] };
-			glUniformMatrix3fv( curShader->uni_worldNormalMat, 1, false, normalMat );
+			gRDI->setShaderConst( curShader->uni_worldNormalMat, CONST_FLOAT33, normalMat );
 		}
 		if( curShader->uni_nodeId >= 0 )
 		{
-			glUniform1f( curShader->uni_nodeId, (float)meshNode->getHandle() );
+			float id = (float)meshNode->getHandle();
+			gRDI->setShaderConst( curShader->uni_nodeId, CONST_FLOAT, &id );
 		}
 
 		if( queryObj )
-			Modules::renderer().beginQuery( queryObj );
+			gRDI->beginQuery( queryObj );
 		
 		// Render
-		Modules::renderer().drawIndexed( PRIM_TRILIST, meshNode->getBatchStart(), meshNode->getBatchCount(),
-		                                 meshNode->getVertRStart(), meshNode->getVertREnd() );
+		gRDI->drawIndexed( PRIM_TRILIST, meshNode->getBatchStart(), meshNode->getBatchCount(),
+		                   meshNode->getVertRStart(), meshNode->getVertREnd() - meshNode->getVertRStart() + 1 );
 		Modules::stats().incStat( EngineStats::BatchCount, 1 );
 		Modules::stats().incStat( EngineStats::TriCount, meshNode->getBatchCount() / 3.0f );
 
 		if( queryObj )
-			Modules::renderer().endQuery( queryObj );
+			gRDI->endQuery( queryObj );
 	}
 
 	// Draw occlusion proxies
 	if( occSet >= 0 )
 		Modules::renderer().drawOccProxies( 0 );
 
-	Modules::renderer().setVertexLayout( 0 );
+	gRDI->setVertexLayout( 0 );
 }
 
 
@@ -1748,8 +1698,8 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 	if( Modules::config().gatherTimeStats ) timer->beginQuery( Modules::renderer().getFrameID() );
 
 	// Bind particle geometry
-	Modules::renderer().setVertexBuffer( 0, Modules::renderer().getParticleVBO(), 0, sizeof( ParticleVert ) );
-	Modules::renderer().setIndexBuffer( Modules::renderer().getQuadIdxBuf(), IDXFMT_16 );
+	gRDI->setVertexBuffer( 0, Modules::renderer().getParticleVBO(), 0, sizeof( ParticleVert ) );
+	gRDI->setIndexBuffer( Modules::renderer().getQuadIdxBuf(), IDXFMT_16 );
 	ASSERT( QuadIndexBufCount >= ParticlesPerBatch * 6 );
 
 	// Loop through emitter queue
@@ -1773,7 +1723,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 			}
 			if( emitter->_occQueries[occSet] == 0 )
 			{
-				queryObj = Modules::renderer().createOcclusionQuery();
+				queryObj = gRDI->createOcclusionQuery();
 				emitter->_occQueries[occSet] = queryObj;
 				emitter->_lastVisited[occSet] = 0;
 			}
@@ -1786,10 +1736,10 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 					// Check query result (viewer must be outside of bounding box)
 					if( nearestDistToAABB( frust1->getOrigin(), emitter->getBBox().min,
 					                       emitter->getBBox().max ) > 0 &&
-						Modules::renderer().getQueryResult( emitter->_occQueries[occSet] ) < 1 )
+						gRDI->getQueryResult( emitter->_occQueries[occSet] ) < 1 )
 					{
-						Modules::renderer().pushOccProxy( 0, emitter->getBBox().min, emitter->getBBox().max,
-						                                  emitter->_occQueries[occSet] );
+						Modules::renderer().pushOccProxy( 0, emitter->getBBox().min,
+							emitter->getBBox().max, emitter->_occQueries[occSet] );
 						continue;
 					}
 					else
@@ -1806,15 +1756,20 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 		}
 
 		// Set vertex layout
-		Modules::renderer().setVertexLayout( Modules::renderer()._vlParticle );
+		gRDI->setVertexLayout( Modules::renderer()._vlParticle );
 		
 		if( queryObj )
-			Modules::renderer().beginQuery( queryObj );
+			gRDI->beginQuery( queryObj );
 		
 		// Shader uniforms
 		ShaderCombination *curShader = Modules::renderer().getCurShader();
-		if( curShader->uni_parCorners >= 0 ) glUniform3fv( curShader->uni_parCorners, 4, (float *)cornerCoords );
-		if( curShader->uni_nodeId >= 0 ) glUniform1f( curShader->uni_nodeId, (float)emitter->getHandle() );
+		if( curShader->uni_parCorners >= 0 )
+			gRDI->setShaderConst( curShader->uni_parCorners, CONST_FLOAT3, (float *)cornerCoords, 4 );
+		if( curShader->uni_nodeId >= 0 )
+		{
+			float id = (float)emitter->getHandle();
+			gRDI->setShaderConst( curShader->uni_nodeId, CONST_FLOAT, &id );
+		}
 
 		// Divide particles in batches and render them
 		for( uint32 j = 0; j < emitter->_particleCount / ParticlesPerBatch; ++j )
@@ -1833,13 +1788,16 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 
 			// Render batch
 			if( curShader->uni_parPosArray >= 0 )
-				glUniform3fv( curShader->uni_parPosArray, ParticlesPerBatch, (float *)emitter->_parPositions + j*ParticlesPerBatch*3 );
+				gRDI->setShaderConst( curShader->uni_parPosArray, CONST_FLOAT3,
+				                      (float *)emitter->_parPositions + j*ParticlesPerBatch*3, ParticlesPerBatch );
 			if( curShader->uni_parSizeAndRotArray >= 0 )
-				glUniform2fv( curShader->uni_parSizeAndRotArray, ParticlesPerBatch, (float *)emitter->_parSizesANDRotations + j*ParticlesPerBatch*2 );
+				gRDI->setShaderConst( curShader->uni_parSizeAndRotArray, CONST_FLOAT2,
+				                      (float *)emitter->_parSizesANDRotations + j*ParticlesPerBatch*2, ParticlesPerBatch );
 			if( curShader->uni_parColorArray >= 0 )
-				glUniform4fv( curShader->uni_parColorArray, ParticlesPerBatch, (float *)emitter->_parColors + j*ParticlesPerBatch*4 );
+				gRDI->setShaderConst( curShader->uni_parColorArray, CONST_FLOAT4,
+				                      (float *)emitter->_parColors + j*ParticlesPerBatch*4, ParticlesPerBatch );
 
-			Modules::renderer().drawIndexed( PRIM_TRILIST, 0, ParticlesPerBatch * 6, 0, ParticlesPerBatch * 4 );
+			gRDI->drawIndexed( PRIM_TRILIST, 0, ParticlesPerBatch * 6, 0, ParticlesPerBatch * 4 );
 			Modules::stats().incStat( EngineStats::BatchCount, 1 );
 			Modules::stats().incStat( EngineStats::TriCount, ParticlesPerBatch * 2.0f );
 		}
@@ -1864,20 +1822,23 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 			{
 				// Render batch
 				if( curShader->uni_parPosArray >= 0 )
-					glUniform3fv( curShader->uni_parPosArray, count, (float *)emitter->_parPositions + offset*3 );
+					gRDI->setShaderConst( curShader->uni_parPosArray, CONST_FLOAT3,
+					                      (float *)emitter->_parPositions + offset*3, count );
 				if( curShader->uni_parSizeAndRotArray >= 0 )
-					glUniform2fv( curShader->uni_parSizeAndRotArray, count, (float *)emitter->_parSizesANDRotations + offset*2 );
+					gRDI->setShaderConst( curShader->uni_parSizeAndRotArray, CONST_FLOAT2,
+					                      (float *)emitter->_parSizesANDRotations + offset*2, count );
 				if( curShader->uni_parColorArray >= 0 )
-					glUniform4fv( curShader->uni_parColorArray, count, (float *)emitter->_parColors + offset*4 );
+					gRDI->setShaderConst( curShader->uni_parColorArray, CONST_FLOAT4,
+					                      (float *)emitter->_parColors + offset*4, count );
 				
-				Modules::renderer().drawIndexed( PRIM_TRILIST, 0, count * 6, 0, count * 4 );
+				gRDI->drawIndexed( PRIM_TRILIST, 0, count * 6, 0, count * 4 );
 				Modules::stats().incStat( EngineStats::BatchCount, 1 );
 				Modules::stats().incStat( EngineStats::TriCount, count * 2.0f );
 			}
 		}
 
 		if( queryObj )
-			Modules::renderer().endQuery( queryObj );
+			gRDI->endQuery( queryObj );
 	}
 
 	timer->endQuery();
@@ -1886,7 +1847,7 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 	if( occSet >= 0 )
 		Modules::renderer().drawOccProxies( 0 );
 	
-	Modules::renderer().setVertexLayout( 0 );
+	gRDI->setVertexLayout( 0 );
 }
 
 
@@ -1898,6 +1859,14 @@ void Renderer::render( CameraNode *camNode )
 {
 	_curCamera = camNode;
 	if( _curCamera == 0x0 ) return;
+
+	// Build sampler anisotropy mask from anisotropy value
+	int maxAniso = Modules::config().maxAnisotropy;
+	if( maxAniso <= 1 ) _maxAnisoMask = SS_ANISO1;
+	else if( maxAniso <= 2 ) _maxAnisoMask = SS_ANISO2;
+	else if( maxAniso <= 4 ) _maxAnisoMask = SS_ANISO4;
+	else if( maxAniso <= 8 ) _maxAnisoMask = SS_ANISO8;
+	else _maxAnisoMask = SS_ANISO16;
 	
 	if( Modules::config().debugViewMode || _curCamera->_pipelineRes == 0x0 )
 	{
@@ -1907,11 +1876,12 @@ void Renderer::render( CameraNode *camNode )
 	}
 	
 	// Initialize
-	_outputBufferIndex = _curCamera->_outputBufferIndex;
+	gRDI->_outputBufferIndex = _curCamera->_outputBufferIndex;
+	gRDI->setViewport( _curCamera->_vpX, _curCamera->_vpY, _curCamera->_vpWidth, _curCamera->_vpHeight );
 	if( _curCamera->_outputTex != 0x0 )
-		setRenderBuffer( _curCamera->_outputTex->getRBObject() );
+		gRDI->setRenderBuffer( _curCamera->_outputTex->getRBObject() );
 	else 
-		setRenderBuffer( 0 );
+		gRDI->setRenderBuffer( 0 );
 
 	// Process pipeline commands
 	for( uint32 i = 0; i < _curCamera->_pipelineRes->_stages.size(); ++i )
@@ -1936,10 +1906,18 @@ void Renderer::render( CameraNode *camNode )
 				_curRenderTarget = rt;
 
 				if( rt != 0x0 )
-					setRenderBuffer( rt->rendBuf );
+				{
+					RDIRenderBuffer &rendBuf = gRDI->_rendBufs.getRef( rt->rendBuf );
+					gRDI->_outputBufferIndex = _curCamera->_outputBufferIndex;
+					gRDI->setViewport( 0, 0, rendBuf.width, rendBuf.height );
+					gRDI->setRenderBuffer( rt->rendBuf );
+				}
 				else
-					setRenderBuffer( _curCamera->_outputTex != 0x0 ?
-					                 _curCamera->_outputTex->getRBObject() : 0 );
+				{
+					gRDI->setViewport( _curCamera->_vpX, _curCamera->_vpY, _curCamera->_vpWidth, _curCamera->_vpHeight );
+					gRDI->setRenderBuffer( _curCamera->_outputTex != 0x0 ?
+					                       _curCamera->_outputTex->getRBObject() : 0 );
+				}
 				break;
 
 			case PipelineCommands::BindBuffer:
@@ -2017,7 +1995,9 @@ void Renderer::finalizeFrame()
 
 void Renderer::renderDebugView()
 {
-	setRenderBuffer( 0 );
+	float color[4] = { 0 };
+	
+	gRDI->setRenderBuffer( 0 );
 	setMaterial( 0x0, "" );
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
@@ -2035,8 +2015,9 @@ void Renderer::renderDebugView()
 	setMaterial( 0x0, "" );
 	setShaderComb( &_defColorShader );
 	commitGeneralUniforms();
-	glUniformMatrix4fv( _defColorShader.uni_worldMat, 1, false, &Matrix4f().x[0] );
-	glUniform4f( Modules::renderer()._defColShader_color, 0.4f, 0.4f, 0.4f, 1 );
+	gRDI->setShaderConst( _defColorShader.uni_worldMat, CONST_FLOAT44, &Matrix4f().x[0] );
+	color[0] = 0.4f; color[1] = 0.4f; color[2] = 0.4f; color[3] = 1;
+	gRDI->setShaderConst( Modules::renderer()._defColShader_color, CONST_FLOAT4, color );
 	for( uint32 i = 0, s = (uint32)Modules::sceneMan().getRenderableQueue().size(); i < s; ++i )
 	{
 		SceneNode *sn = Modules::sceneMan().getRenderableQueue()[i].node;
@@ -2046,8 +2027,9 @@ void Renderer::renderDebugView()
 	glEnable( GL_CULL_FACE );
 
 	/*// Draw skeleton
-	glUniformMatrix4fv( _defColorShader.uni_worldMat, 1, false, &Matrix4f().x[0] );
-	glUniform4f( Modules::renderer()._defColShader_color, 1.0f, 0, 0, 1 );
+	setShaderConst( _defColorShader.uni_worldMat, CONST_FLOAT44, &Matrix4f().x[0] );
+	color[0] = 1; color[1] = 0; color[2] = 0; color[3] = 1;
+	setShaderConst( Modules::renderer()._defColShader_color, CONST_FLOAT, color );
 	glLineWidth( 2.0f );
 	glPointSize( 5.0f );
 	for( uint32 i = 0, si = (uint32)Modules::sceneMan().getRenderableQueue().size(); i < si; ++i )
@@ -2085,7 +2067,8 @@ void Renderer::renderDebugView()
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 	glCullFace( GL_FRONT );
-	glUniform4f( Modules::renderer()._defColShader_color, 1, 1, 0, 0.25f );
+	color[0] = 1; color[1] = 1; color[2] = 0; color[3] = 0.25f;
+	gRDI->setShaderConst( Modules::renderer()._defColShader_color, CONST_FLOAT4, color );
 	for( size_t i = 0, s = Modules::sceneMan().getLightQueue().size(); i < s; ++i )
 	{
 		LightNode *lightNode = (LightNode *)Modules::sceneMan().getLightQueue()[i];
@@ -2107,9 +2090,9 @@ void Renderer::renderDebugView()
 
 void Renderer::finishRendering()
 {
-	setRenderBuffer( 0 );
+	gRDI->setRenderBuffer( 0 );
 	setMaterial( 0x0, "" );
-	resetStates();
+	gRDI->resetStates();
 	glBindBuffer( GL_ARRAY_BUFFER, 0 );
 	
 	//ASSERT( glGetError() == GL_NO_ERROR );

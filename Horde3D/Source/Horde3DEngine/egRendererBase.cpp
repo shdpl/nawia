@@ -121,13 +121,13 @@ void GPUTimer::reset()
 RenderDeviceInterface::RenderDeviceInterface()
 {
 	_vpX = 0; _vpY = 0; _vpWidth = 320; _vpHeight = 240;
-	_curShaderObj = 0;
+	_prevShader = _curShader = 0;
 	_curRendBuf = 0; _outputBufferIndex = 0;
 	_textureMem = 0; _bufferMem = 0;
 	_curVertLayout = _newVertLayout = 0;
 	_curIndexBuf = _newIndexBuf = 0;
 	_indexFormat = (uint32)IDXFMT_16;
-	_vertLayoutDirty = true;
+	_pendingMask = 0;
 }
 
 
@@ -221,12 +221,6 @@ bool RenderDeviceInterface::init()
 }
 
 
-void RenderDeviceInterface::resize( int x, int y, int width, int height )
-{
-	_vpX = x; _vpY = y; _vpWidth = width; _vpHeight = height;
-}
-
-
 // =================================================================================================
 // Buffers
 // =================================================================================================
@@ -316,29 +310,30 @@ uint32 RenderDeviceInterface::cloneBuffer( uint32 bufObj )
 // Textures
 // =================================================================================================
 
-uint32 RenderDeviceInterface::calcTextureSize( TextureFormats::List format, int width, int height )
+uint32 RenderDeviceInterface::calcTextureSize( TextureFormats::List format, int width, int height, int depth )
 {
 	switch( format )
 	{
 	case TextureFormats::BGRA8:
-		return width * height * 4;
+		return width * height * depth * 4;
 	case TextureFormats::DXT1:
-		return std::max( width / 4, 1 ) * std::max( height / 4, 1 ) * 8;
+		return std::max( width / 4, 1 ) * std::max( height / 4, 1 ) * depth * 8;
 	case TextureFormats::DXT3:
-		return std::max( width / 4, 1 ) * std::max( height / 4, 1 ) * 16;
+		return std::max( width / 4, 1 ) * std::max( height / 4, 1 ) * depth * 16;
 	case TextureFormats::DXT5:
-		return std::max( width / 4, 1 ) * std::max( height / 4, 1 ) * 16;
+		return std::max( width / 4, 1 ) * std::max( height / 4, 1 ) * depth * 16;
 	case TextureFormats::RGBA16F:
-		return width * height * 8;
+		return width * height * depth * 8;
 	case TextureFormats::RGBA32F:
-		return width * height * 16;
+		return width * height * depth * 16;
 	default:
 		return 0;
 	}
 }
 
 
-uint32 RenderDeviceInterface::createTexture( TextureTypes::List type, int width, int height, TextureFormats::List format,
+uint32 RenderDeviceInterface::createTexture( TextureTypes::List type, int width, int height, int depth,
+                                             TextureFormats::List format,
                                              bool hasMips, bool genMips, bool compress, bool sRGB )
 {
 	if( !_caps[RenderCaps::Tex_NPOT] )
@@ -353,8 +348,10 @@ uint32 RenderDeviceInterface::createTexture( TextureTypes::List type, int width,
 	tex.format = format;
 	tex.width = width;
 	tex.height = height;
+	tex.depth = (type == TextureTypes::Tex3D ? depth : 1);
 	tex.sRGB = sRGB && Modules::config().sRGBLinearization;
 	tex.genMips = genMips;
+	tex.hasMips = hasMips;
 	
 	switch( format )
 	{
@@ -388,15 +385,18 @@ uint32 RenderDeviceInterface::createTexture( TextureTypes::List type, int width,
 	glActiveTexture( GL_TEXTURE15 );
 	glBindTexture( tex.type, tex.glObj );
 	
-	if( hasMips || genMips )
-		glTexParameteri( tex.type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-	else
-		glTexParameteri( tex.type, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-
-	bindTexture( 15, 0 );
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor );
+	
+	tex.samplerState = 0;
+	applySamplerState( tex );
+	
+	glBindTexture( tex.type, 0 );
+	if( _texSlots[15].texObj )
+		glBindTexture( _textures.getRef( _texSlots[15].texObj ).type, _textures.getRef( _texSlots[15].texObj ).glObj );
 
 	// Calculate memory requirements
-	tex.memSize = calcTextureSize( format, width, height );
+	tex.memSize = calcTextureSize( format, width, height, depth );
 	if( hasMips || genMips ) tex.memSize += ftoi_r( tex.memSize * 1.0f / 3.0f );
 	if( type == TextureTypes::TexCube ) tex.memSize *= 6;
 	_textureMem += tex.memSize;
@@ -410,11 +410,12 @@ void RenderDeviceInterface::uploadTextureData( uint32 texObj, int slice, int mip
 	const RDITexture &tex = _textures.getRef( texObj );
 	TextureFormats::List format = tex.format;
 
-	bindTexture( 15, texObj );
+	glActiveTexture( GL_TEXTURE15 );
+	glBindTexture( tex.type, tex.glObj );
 	
 	int inputFormat = GL_BGRA, inputType = GL_UNSIGNED_BYTE;
-	int target = tex.type == TextureTypes::TexCube ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
-	if( target == GL_TEXTURE_CUBE_MAP ) target = GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice;
+	bool compressed = (format == TextureFormats::DXT1) || (format == TextureFormats::DXT3) ||
+	                  (format == TextureFormats::DXT5);
 	
 	switch( format )
 	{
@@ -434,17 +435,39 @@ void RenderDeviceInterface::uploadTextureData( uint32 texObj, int slice, int mip
 	// Calculate size of next mipmap using "floor" convention
 	int width = std::max( tex.width >> mipLevel, 1 ), height = std::max( tex.height >> mipLevel, 1 );
 	
-	if( format == TextureFormats::DXT1 || format == TextureFormats::DXT3 || format == TextureFormats::DXT5 )
-		glCompressedTexImage2D( target, mipLevel, tex.glFmt, width, height, 0,
-		                        calcTextureSize( format, width, height ), pixels );	
-	else
-		glTexImage2D( target, mipLevel, tex.glFmt, width, height, 0, inputFormat, inputType, pixels );
+	if( tex.type == TextureTypes::Tex2D || tex.type == TextureTypes::TexCube )
+	{
+		int target = (tex.type == TextureTypes::Tex2D) ?
+			GL_TEXTURE_2D : (GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice);
+		
+		if( compressed )
+			glCompressedTexImage2D( target, mipLevel, tex.glFmt, width, height, 0,
+			                        calcTextureSize( format, width, height, 1 ), pixels );	
+		else
+			glTexImage2D( target, mipLevel, tex.glFmt, width, height, 0, inputFormat, inputType, pixels );
+	}
+	else if( tex.type == TextureTypes::Tex3D )
+	{
+		int depth = std::max( tex.depth >> mipLevel, 1 );
+		
+		if( compressed )
+			glCompressedTexImage3D( GL_TEXTURE_3D, mipLevel, tex.glFmt, width, height, depth, 0,
+			                        calcTextureSize( format, width, height, depth ), pixels );	
+		else
+			glTexImage3D( GL_TEXTURE_3D, mipLevel, tex.glFmt, width, height, depth, 0,
+			              inputFormat, inputType, pixels );
+	}
 
 	if( tex.genMips )
 	{
-		target = tex.type == TextureTypes::TexCube ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
-		glGenerateMipmapEXT( target );
+		glEnable( tex.type );  // Workaround for ATI driver bug
+		glGenerateMipmapEXT( tex.type );
+		glDisable( tex.type );
 	}
+
+	glBindTexture( tex.type, 0 );
+	if( _texSlots[15].texObj )
+		glBindTexture( _textures.getRef( _texSlots[15].texObj ).type, _textures.getRef( _texSlots[15].texObj ).glObj );
 }
 
 
@@ -462,9 +485,6 @@ void RenderDeviceInterface::releaseTexture( uint32 texObj )
 
 void RenderDeviceInterface::updateTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels )
 {
-	const RDITexture &tex = _textures.getRef( texObj );
-	
-	bindTexture( 15, texObj );
 	uploadTextureData( texObj, slice, mipLevel, pixels );
 }
 
@@ -477,7 +497,8 @@ bool RenderDeviceInterface::getTextureData( uint32 texObj, int slice, int mipLev
 	if( target == GL_TEXTURE_CUBE_MAP ) target = GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice;
 	
 	int fmt, type, compressed = 0;
-	bindTexture( 15, texObj );
+	glActiveTexture( GL_TEXTURE15 );
+	glBindTexture( tex.type, tex.glObj );
 
 	switch( tex.format )
 	{
@@ -504,28 +525,11 @@ bool RenderDeviceInterface::getTextureData( uint32 texObj, int slice, int mipLev
 	else
 		glGetTexImage( target, mipLevel, fmt, type, buffer );
 
+	glBindTexture( tex.type, 0 );
+	if( _texSlots[15].texObj )
+		glBindTexture( _textures.getRef( _texSlots[15].texObj ).type, _textures.getRef( _texSlots[15].texObj ).glObj );
+
 	return true;
-}
-
-
-void RenderDeviceInterface::bindTexture( uint32 unit, uint32 texObj )
-{
-	ASSERT( unit < 16 );
-	
-	glActiveTexture( GL_TEXTURE0 + unit );
-	
-	if( texObj == 0 )
-	{
-		glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
-		glBindTexture( GL_TEXTURE_2D, 0 );
-	}
-	else
-	{
-		const RDITexture &tex = _textures.getRef( texObj );
-		glBindTexture( tex.type, tex.glObj );
-	}
-
-	_texSlots[unit].texObj = texObj;
 }
 
 
@@ -691,25 +695,53 @@ void RenderDeviceInterface::releaseShader( uint32 shdObj )
 
 void RenderDeviceInterface::bindShader( uint32 shdObj )
 {
-	_curShaderObj = shdObj;
+	_curShader = shdObj;
 	glUseProgram( shdObj );
-	_vertLayoutDirty = true;
+	_pendingMask |= PM_VERTLAYOUT;
 } 
 
 
-int RenderDeviceInterface::getShaderVar( uint32 shdObj, const char *var )
+int RenderDeviceInterface::getShaderConstLoc( uint32 shdObj, const char *name )
 {
-	return glGetUniformLocation( shdObj, var );
+	return glGetUniformLocation( shdObj, name );
 }
 
 
-bool RenderDeviceInterface::setShaderVar1i( uint32 shdObj, const char *var, int value )
+int RenderDeviceInterface::getShaderSamplerLoc( uint32 shdObj, const char *name )
 {
-	int loc = glGetUniformLocation( shdObj, var );
-	if( loc < 0 ) return false;
+	return glGetUniformLocation( shdObj, name );
+}
 
-	glUniform1i( loc, value );
-	return true;
+
+void RenderDeviceInterface::setShaderConst( int loc, RDIShaderConstType type, void *values, uint32 count )
+{
+	switch( type )
+	{
+	case CONST_FLOAT:
+		glUniform1fv( loc, count, (float *)values );
+		break;
+	case CONST_FLOAT2:
+		glUniform2fv( loc, count, (float *)values );
+		break;
+	case CONST_FLOAT3:
+		glUniform3fv( loc, count, (float *)values );
+		break;
+	case CONST_FLOAT4:
+		glUniform4fv( loc, count, (float *)values );
+		break;
+	case CONST_FLOAT44:
+		glUniformMatrix4fv( loc, count, false, (float *)values );
+		break;
+	case CONST_FLOAT33:
+		glUniformMatrix3fv( loc, count, false, (float *)values );
+		break;
+	}
+}
+
+
+void RenderDeviceInterface::setShaderSampler( int loc, uint32 texUnit )
+{
+	glUniform1i( loc, (int)texUnit );
 }
 
 
@@ -757,7 +789,7 @@ uint32 RenderDeviceInterface::createRenderBuffer( uint32 width, uint32 height, T
 		{
 			glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, rb.fbo );
 			// Create a color texture
-			uint32 texObj = createTexture( TextureTypes::Tex2D, rb.width, rb.height, format, false, false, false, false );
+			uint32 texObj = createTexture( TextureTypes::Tex2D, rb.width, rb.height, 1, format, false, false, false, false );
 			ASSERT( texObj != 0 );
 			uploadTextureData( texObj, 0, 0, 0x0 );
 			rb.colTexs[j] = texObj;
@@ -808,7 +840,7 @@ uint32 RenderDeviceInterface::createRenderBuffer( uint32 width, uint32 height, T
 	{
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, rb.fbo );
 		// Create a depth texture
-		uint32 texObj = createTexture( TextureTypes::Tex2D, rb.width, rb.height, TextureFormats::DEPTH, false, false, false, false );
+		uint32 texObj = createTexture( TextureTypes::Tex2D, rb.width, rb.height, 1, TextureFormats::DEPTH, false, false, false, false );
 		ASSERT( texObj != 0 );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
 		uploadTextureData( texObj, 0, 0, 0x0 );
@@ -944,7 +976,6 @@ void RenderDeviceInterface::setRenderBuffer( uint32 rbObj )
 	{
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 		glDrawBuffer( _outputBufferIndex == 1 ? GL_BACK_RIGHT : GL_BACK_LEFT );
-		glViewport( _vpX, _vpY, _vpWidth, _vpHeight );
 		_fbWidth = _vpWidth + _vpX;
 		_fbHeight = _vpHeight + _vpY;
 		glDisable( GL_MULTISAMPLE );
@@ -952,13 +983,13 @@ void RenderDeviceInterface::setRenderBuffer( uint32 rbObj )
 	else
 	{
 		// Unbind all textures to make sure that no FBO attachment is bound any more
-		for( uint32 i = 0; i < 16; ++i ) bindTexture( i, 0 );
+		for( uint32 i = 0; i < 16; ++i ) setTexture( i, 0, 0 );
+		commitStates( PM_TEXTURES );
 		
 		RDIRenderBuffer &rb = _rendBufs.getRef( rbObj );
 
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, rb.fboMS != 0 ? rb.fboMS : rb.fbo );
 		ASSERT( glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT ) == GL_FRAMEBUFFER_COMPLETE_EXT );
-		glViewport( 0, 0, rb.width, rb.height );
 		_fbWidth = rb.width;
 		_fbHeight = rb.height;
 
@@ -1121,8 +1152,8 @@ bool RenderDeviceInterface::applyVertexLayout()
 	RDIVertexLayout &vl = _vertexLayouts.getRef( _newVertLayout );
 
 	// Find data for the currently bound shader
-	ASSERT( _curShaderObj != 0 );
-	std::map< uint32, RDIVertexLayout::ShaderData >::iterator itr = vl.shaderData.find( _curShaderObj );
+	ASSERT( _curShader != 0 );
+	std::map< uint32, RDIVertexLayout::ShaderData >::iterator itr = vl.shaderData.find( _curShader );
 	if( itr == vl.shaderData.end() ) return false;
 
 	// Set vertex attrib pointers
@@ -1148,26 +1179,104 @@ bool RenderDeviceInterface::applyVertexLayout()
 }
 
 
-bool RenderDeviceInterface::commitStates()
+void RenderDeviceInterface::applySamplerState( RDITexture &tex )
 {
-	// Bind index buffer
-	if( _newIndexBuf != _curIndexBuf )
+	uint32 state = tex.samplerState;
+	uint32 target = tex.type;
+	
+	const uint32 magFilters[] = { GL_LINEAR, GL_LINEAR, GL_NEAREST };
+	const uint32 minFiltersMips[] = { GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_LINEAR, GL_NEAREST_MIPMAP_NEAREST };
+	const uint32 maxAniso[] = { 1, 2, 4, 0, 8, 0, 0, 0, 16 };
+	const uint32 wrapModes[] = { GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_BORDER };
+
+	if( tex.hasMips )
+		glTexParameteri( target, GL_TEXTURE_MIN_FILTER, minFiltersMips[(state & SS_FILTER_MASK) >> SS_FILTER_START] );
+	else
+		glTexParameteri( target, GL_TEXTURE_MIN_FILTER, magFilters[(state & SS_FILTER_MASK) >> SS_FILTER_START] );
+
+	glTexParameteri( target, GL_TEXTURE_MAG_FILTER, magFilters[(state & SS_FILTER_MASK) >> SS_FILTER_START] );
+	glTexParameteri( target, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAniso[(state & SS_ANISO_MASK) >> SS_ANISO_START] );
+	glTexParameteri( target, GL_TEXTURE_WRAP_S, wrapModes[(state & SS_ADDRU_MASK) >> SS_ADDRU_START] );
+	glTexParameteri( target, GL_TEXTURE_WRAP_T, wrapModes[(state & SS_ADDRV_MASK) >> SS_ADDRV_START] );
+	glTexParameteri( target, GL_TEXTURE_WRAP_R, wrapModes[(state & SS_ADDRW_MASK) >> SS_ADDRW_START] );
+	
+	if( !(state & SS_COMP_LEQUAL) )
 	{
-		if( _newIndexBuf != 0 )
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _buffers.getRef( _newIndexBuf ).glObj );
-		else
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-		
-		_curIndexBuf = _newIndexBuf;
+		glTexParameteri( target, GL_TEXTURE_COMPARE_MODE, GL_NONE );
+	}
+	else
+	{
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
+	}
+}
+
+
+bool RenderDeviceInterface::commitStates( uint32 filter )
+{
+	// Set viewport
+	if( _pendingMask & filter & PM_VIEWPORT )
+	{
+		glViewport( _vpX, _vpY, _vpWidth, _vpHeight );
+		_pendingMask &= ~PM_VIEWPORT;
+	}
+	
+	// Bind index buffer
+	if( _pendingMask & filter & PM_INDEXBUF )
+	{
+		if( _newIndexBuf != _curIndexBuf )
+		{
+			if( _newIndexBuf != 0 )
+				glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _buffers.getRef( _newIndexBuf ).glObj );
+			else
+				glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			
+			_curIndexBuf = _newIndexBuf;
+			_pendingMask &= ~PM_INDEXBUF;
+		}
 	}
 	
 	// Bind vertex buffers
-	if( _newVertLayout != _curVertLayout || _vertLayoutDirty )
+	if( _pendingMask & filter & PM_VERTLAYOUT )
 	{
-		if( !applyVertexLayout() )
-			return false;
-		_curVertLayout = _newVertLayout;
-		_vertLayoutDirty = false;
+		//if( _newVertLayout != _curVertLayout || _curShader != _prevShader )
+		{
+			if( !applyVertexLayout() )
+				return false;
+			_curVertLayout = _newVertLayout;
+			_prevShader = _curShader;
+			_pendingMask &= ~PM_VERTLAYOUT;
+		}
+	}
+
+	// Bind textures and set sampler state
+	if( _pendingMask & filter & PM_TEXTURES )
+	{
+		for( uint32 i = 0; i < 16; ++i )
+		{
+			glActiveTexture( GL_TEXTURE0 + i );
+
+			if( _texSlots[i].texObj != 0 )
+			{
+				RDITexture &tex = _textures.getRef( _texSlots[i].texObj );
+				glBindTexture( tex.type, tex.glObj );
+
+				// Apply sampler state
+				if( tex.samplerState != _texSlots[i].samplerState )
+				{
+					tex.samplerState = _texSlots[i].samplerState;
+					applySamplerState( tex );
+				}
+			}
+			else
+			{
+				glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
+				glBindTexture( GL_TEXTURE_3D, 0 );
+				glBindTexture( GL_TEXTURE_2D, 0 );
+			}
+		}
+		
+		_pendingMask &= ~PM_TEXTURES;
 	}
 
 	return true;
@@ -1178,8 +1287,11 @@ void RenderDeviceInterface::resetStates()
 {
 	_curIndexBuf = 1; _newIndexBuf = 0;
 	_curVertLayout = 1; _newVertLayout = 0;
-	_vertLayoutDirty = true;
-	
+
+	for( uint32 i = 0; i < 16; ++i )
+		setTexture( i, 0, 0 );
+
+	_pendingMask = 0xFFFFFFFF;
 	commitStates();
 }
 

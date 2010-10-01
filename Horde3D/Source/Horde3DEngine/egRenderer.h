@@ -102,7 +102,7 @@ struct PipeSamplerBinding
 };
 
 
-class Renderer : public RenderDeviceInterface
+class Renderer
 {
 protected:
 	
@@ -131,6 +131,7 @@ protected:
 	RenderTarget                       *_curRenderTarget;
 	uint32                             _curShaderUpdateStamp;
 	
+	uint32                             _maxAnisoMask;
 	float                              _smSize;
 	float                              _splitPlanes[5];
 	Matrix4f                           _lightMats[4];
@@ -159,9 +160,9 @@ protected:
 	void drawFSQuad( Resource *matRes, const std::string &shaderContext );
 	void drawGeometry( const std::string &shaderContext, const std::string &theClass,
 	                   RenderingOrder::List order, int occSet );
-	void drawLightGeometry( const std::string shaderContext, const std::string &theClass,
+	void drawLightGeometry( const std::string &shaderContext, const std::string &theClass,
 	                        bool noShadows, RenderingOrder::List order, int occSet );
-	void drawLightShapes( const std::string shaderContext, bool noShadows, int occSet );
+	void drawLightShapes( const std::string &shaderContext, bool noShadows, int occSet );
 	
 	void drawRenderables( const std::string &shaderContext, const std::string &theClass, bool debugView,
 		const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order, int occSet );
@@ -177,7 +178,7 @@ public:
 	unsigned char *useScratchBuf( uint32 minSize );
 	
 	bool init();
-	void resize( int x, int y, int width, int height );
+	void initStates();
 
 	void drawAABB( const Vec3f &bbMin, const Vec3f &bbMax );
 	void drawSphere( const Vec3f &pos, float radius );
@@ -211,8 +212,6 @@ public:
 	void finalizeFrame();
 
 	uint32 getFrameID() { return _frameID; }
-	uint32 getVPWidth() { return _vpWidth; }
-	uint32 getVPHeight() { return _vpHeight; }
 	ShaderCombination *getCurShader() { return _curShader; }
 	CameraNode *getCurCamera() { return _curCamera; }
 	uint32 getQuadIdxBuf() { return _quadIdxBuf; }

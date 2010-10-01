@@ -36,9 +36,9 @@ namespace Horde3DTerrain
 			TerrainNode::parsingFunc, TerrainNode::factoryFunc, TerrainNode::renderFunc );
 
 		// Create vertex layout
-		TerrainNode::vlTerrain = Modules::renderer().createVertexLayout( 2 );
-		Modules::renderer().setVertexLayoutElem( TerrainNode::vlTerrain, 0, "vertPos", 0, 3, 0 );
-		Modules::renderer().setVertexLayoutElem( TerrainNode::vlTerrain, 1, "terHeight", 1, 1, 0 );
+		TerrainNode::vlTerrain = gRDI->createVertexLayout( 2 );
+		gRDI->setVertexLayoutElem( TerrainNode::vlTerrain, 0, "vertPos", 0, 3, 0 );
+		gRDI->setVertexLayoutElem( TerrainNode::vlTerrain, 1, "terHeight", 1, 1, 0 );
 
 		// Upload default shader used for debug view
 		Modules::renderer().createShaderComb(
@@ -49,7 +49,7 @@ namespace Horde3DTerrain
 
 	void ExtTerrain::release()
 	{
-		Modules::renderer().releaseVertexLayout( TerrainNode::vlTerrain );
+		gRDI->releaseVertexLayout( TerrainNode::vlTerrain );
 		Modules::renderer().releaseShaderComb( TerrainNode::debugViewShader );
 	}
 }

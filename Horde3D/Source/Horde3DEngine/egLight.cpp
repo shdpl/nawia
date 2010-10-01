@@ -43,7 +43,7 @@ LightNode::~LightNode()
 	for( uint32 i = 0; i < _occQueries.size(); ++i )
 	{
 		if( _occQueries[i] != 0 )
-			Modules::renderer().releaseQuery( _occQueries[i] );
+			gRDI->releaseQuery( _occQueries[i] );
 	}
 }
 

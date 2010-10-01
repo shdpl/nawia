@@ -19,8 +19,6 @@
 #include "egCamera.h"
 #include "egParticle.h"
 #include "egTexture.h"
-#define _utPlatform_H___ValidatePlatform__
-#include "utPlatform.h"
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -34,6 +32,18 @@
 #endif
 
 #include "utDebug.h"
+
+
+// Check some platform-dependent assumptions
+// Note: this function is never called but just wraps the compile time asserts
+static void __ValidatePlatform__()
+{
+	ASSERT_STATIC( sizeof( int64 ) == 8 );
+	ASSERT_STATIC( sizeof( int ) == 4 );
+	ASSERT_STATIC( sizeof( short ) == 2 );
+	ASSERT_STATIC( sizeof( char ) == 1 );
+}
+
 
 using namespace Horde3D;
 using namespace std;
@@ -116,41 +126,6 @@ DLLEXP void h3dRender( NodeHandle cameraNode )
 DLLEXP void h3dFinalizeFrame()
 {
 	Modules::renderer().finalizeFrame();
-}
-
-
-DLLEXP void h3dSetupViewport( int x, int y, int width, int height, bool resizeBuffers )
-{
-	if( !initialized ) return;
-	
-	Modules::renderer().resize( x, y, width, height );
-
-	if( !resizeBuffers ) return;
-
-	// Update pipeline resources
-	for( uint32 i = 0; i < Modules::resMan().getResources().size(); ++i )
-	{
-		Resource *res = Modules::resMan().getResources()[i];
-		
-		if( res != 0x0 && res->getType() == ResourceTypes::Pipeline )
-		{
-			((PipelineResource *)res)->resize();
-		}
-	}
-}
-
-
-DLLEXP float h3dGetViewportParams( int *x, int *y, int *width, int *height )
-{
-	int vpWidth = Modules::renderer().getViewportWidth();
-	int vpHeight = Modules::renderer().getViewportHeight();
-
-	if( width != 0x0 ) *width = vpWidth;
-	if( height != 0x0 ) *height = vpHeight;
-	if( x != 0x0 ) *x = Modules::renderer().getViewportX();
-	if( y != 0x0 ) *y = Modules::renderer().getViewportY();
-	
-	return (float)vpWidth / (float)vpHeight;
 }
 
 
@@ -411,7 +386,7 @@ DLLEXP void h3dReleaseUnusedResources()
 DLLEXP ResHandle h3dCreateTexture( const char *name, int width, int height, int fmt, int flags )
 {
 	TextureResource *texRes = new TextureResource( safeStr( name, 0 ), (uint32)width,
-		(uint32)height, (TextureFormats::List)fmt, flags );
+		(uint32)height, 1, (TextureFormats::List)fmt, flags );
 
 	ResHandle res = Modules::resMan().addNonExistingResource( *texRes, true );
 	if( res == 0 )
@@ -439,6 +414,16 @@ DLLEXP bool h3dSetMaterialUniform( ResHandle materialRes, const char *name, floa
 }
 
 
+DLLEXP void h3dResizePipelineBuffers( ResHandle pipeRes, int width, int height )
+{
+	Resource *resObj = Modules::resMan().resolveResHandle( pipeRes );
+	VALIDATE_RES_TYPE( resObj, ResourceTypes::Pipeline, "h3dResizePipelineBuffers", EMPTY );
+
+	PipelineResource *pipeResObj = (PipelineResource *)resObj;
+	pipeResObj->resize( width, height );
+}
+
+
 DLLEXP bool h3dGetRenderTargetData( ResHandle pipelineRes, const char *targetName, int bufIndex,
                                     int *width, int *height, int *compCount, void *dataBuffer, int bufferSize )
 {
@@ -452,8 +437,7 @@ DLLEXP bool h3dGetRenderTargetData( ResHandle pipelineRes, const char *targetNam
 	}
 	else
 	{
-		return Modules::renderer().getRenderBufferData( 0, bufIndex, width, height,
-		                                                compCount, dataBuffer, bufferSize );
+		return gRDI->getRenderBufferData( 0, bufIndex, width, height, compCount, dataBuffer, bufferSize );
 	}
 }
 

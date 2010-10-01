@@ -98,7 +98,13 @@ void DemoApp::renderCb(void *userData)
 	if (app) app->render();
 }
 
-void DemoApp::resizeCb(int width, int height)
+void DemoApp::resizeCb( void *userData, int width, int height )
 {	
-	h3dSetupViewport(0, 0, width, height, true);
+	DemoApp* app = static_cast<DemoApp*>(userData);
+	H3DNode camID = GameEngine::entitySceneGraphID( app->m_camID );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportXI, 0 );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportYI, 0 );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportWidthI, width );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportHeightI, height );	
+	h3dResizePipelineBuffers( h3dGetNodeParamI( camID, H3DCamera::PipeResI ), width, height );
 }

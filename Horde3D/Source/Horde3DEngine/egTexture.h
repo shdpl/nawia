@@ -52,7 +52,7 @@ protected:
 	
 	TextureTypes::List    _texType;
 	TextureFormats::List  _texFormat;
-	int                   _width, _height;
+	int                   _width, _height, _depth;
 	uint32                _texObject;
 	uint32                _rbObj;  // Used when texture is renderable
 	bool                  _sRGB;
@@ -64,6 +64,7 @@ protected:
 public:
 	
 	static uint32 defTex2DObject;
+	static uint32 defTex3DObject;
 	static uint32 defTexCubeObject;
 
 	static void initializationFunc();
@@ -72,7 +73,7 @@ public:
 		{ return new TextureResource( name, flags ); }
 	
 	TextureResource( const std::string &name, int flags );
-	TextureResource( const std::string &name, uint32 width, uint32 height,
+	TextureResource( const std::string &name, uint32 width, uint32 height, uint32 depth,
                     TextureFormats::List fmt, int flags );
 	~TextureResource();
 	
@@ -88,7 +89,8 @@ public:
 	TextureTypes::List getTexType() { return _texType; }
 	TextureFormats::List getTexFormat() { return _texFormat; }
 	uint32 getWidth() const { return _width; }
-	uint32 getHeight() const { return _height; } 
+	uint32 getHeight() const { return _height; }
+	uint32 getDepth() const { return _depth; }
 	uint32 getTexObject() { return _texObject; }
 	uint32 getRBObject()  { return _rbObj; }
 	bool hasMipMaps() { return _hasMipMaps; }

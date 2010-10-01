@@ -14,7 +14,6 @@
 #define _egModules_H_
 
 #include "egPrerequisites.h"
-#include "utPlatform.h"
 
 
 namespace Horde3D {
@@ -25,6 +24,7 @@ class EngineLog;
 class StatManager;
 class SceneManager;
 class ResourceManager;
+class RenderDeviceInterface;
 class Renderer;
 class ExtensionManager;
 
@@ -43,15 +43,16 @@ class Modules
 {
 private:
 
-	static bool              _errorFlag;
+	static bool                   _errorFlag;
 
-	static EngineConfig      *_engineConfig;
-	static EngineLog         *_engineLog;
-	static StatManager       *_statManager;
-	static SceneManager      *_sceneManager;
-	static ResourceManager   *_resourceManager;
-	static Renderer          *_renderer;
-	static ExtensionManager  *_extensionManager;
+	static EngineConfig           *_engineConfig;
+	static EngineLog              *_engineLog;
+	static StatManager            *_statManager;
+	static SceneManager           *_sceneManager;
+	static ResourceManager        *_resourceManager;
+	static RenderDeviceInterface  *_renderDeviceInterface;
+	static Renderer               *_renderer;
+	static ExtensionManager       *_extensionManager;
 
 	static void installExtensions();
 
@@ -73,6 +74,8 @@ public:
 	static Renderer &renderer() { return *_renderer; }
 	static ExtensionManager &extMan() { return *_extensionManager; }
 };
+
+extern RenderDeviceInterface  *gRDI;
 
 }
 #endif // _egModules_H_

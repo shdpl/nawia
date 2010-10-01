@@ -554,17 +554,21 @@ struct H3DCamera
 	/*	Enum: H3DCamera
 			The available Camera node parameters.
 		
-		PipeResI      - Pipeline resource used for rendering
-		OutTexResI    - 2D Texture resource used as output buffer (can be 0 to use main framebuffer) (default: 0)
-		OutBufIndexI  - Index of the output buffer for stereo rendering (values: 0 for left eye, 1 for right eye) (default: 0)
-		LeftPlaneF    - Coordinate of left plane relative to near plane center (default: -0.055228457)
-		RightPlaneF   - Coordinate of right plane relative to near plane center (default: 0.055228457)
-		BottomPlaneF  - Coordinate of bottom plane relative to near plane center (default: -0.041421354f)
-		TopPlaneF     - Coordinate of top plane relative to near plane center (default: 0.041421354f)
-		NearPlaneF    - Distance of near clipping plane (default: 0.1)
-		FarPlaneF     - Distance of far clipping plane (default: 1000)
-		OrthoI        - Flag for setting up an orthographic frustum instead of a perspective one (default: 0)
-		OccCullingI   - Flag for enabling occlusion culling (default: 0)
+		PipeResI         - Pipeline resource used for rendering
+		OutTexResI       - 2D Texture resource used as output buffer (can be 0 to use main framebuffer) (default: 0)
+		OutBufIndexI     - Index of the output buffer for stereo rendering (values: 0 for left eye, 1 for right eye) (default: 0)
+		LeftPlaneF       - Coordinate of left plane relative to near plane center (default: -0.055228457)
+		RightPlaneF      - Coordinate of right plane relative to near plane center (default: 0.055228457)
+		BottomPlaneF     - Coordinate of bottom plane relative to near plane center (default: -0.041421354f)
+		TopPlaneF        - Coordinate of top plane relative to near plane center (default: 0.041421354f)
+		NearPlaneF       - Distance of near clipping plane (default: 0.1)
+		FarPlaneF        - Distance of far clipping plane (default: 1000)
+		ViewportXI       - Position x-coordinate of the lower left corner of the viewport rectangle (default: 0)
+		ViewportYI       - Position y-coordinate of the lower left corner of the viewport rectangle (default: 0)
+		ViewportWidthI   - Width of the viewport rectangle (default: 320)
+		ViewportHeightI  - Height of the viewport rectangle (default: 240)
+		OrthoI           - Flag for setting up an orthographic frustum instead of a perspective one (default: 0)
+		OccCullingI      - Flag for enabling occlusion culling (default: 0)
 	*/
 	enum List
 	{
@@ -577,6 +581,10 @@ struct H3DCamera
 		TopPlaneF,
 		NearPlaneF,
 		FarPlaneF,
+		ViewportXI,
+		ViewportYI,
+		ViewportWidthI,
+		ViewportHeightI,
 		OrthoI,
 		OccCullingI
 	};
@@ -692,48 +700,6 @@ DLL bool h3dInit();
 */
 DLL void h3dRelease();
 
-/* Function: h3dSetupViewport
-		Sets the location and size of the viewport.
-	
-	Details:
-		This function sets the location and size of the viewport. It has to be called
-		after engine initialization and whenever the size of the rendering context/window
-		changes. The resizeBuffers parameter specifies whether render targets with a size
-		relative to the viewport dimensions should be resized. This is usually desired
-		after engine initialization and when the window is resized but not for just rendering
-		to a part of the framebuffer.
-
-	
-	Parameters:
-		x              - the x-position of the lower left corner of the viewport rectangle
-		y              - the y-position of the lower left corner of the viewport rectangle
-		width          - the width of the viewport
-		height         - the height of the viewport
-		resizeBuffers  - specifies whether render targets should be adapted to new size
-		
-	Returns:
-		nothing
-*/
-DLL void h3dSetupViewport( int x, int y, int width, int height, bool resizeBuffers );
-
-/* Function: h3dGetViewportParams
-		Gets the current viewport parameters.
-	
-	Details:
-		This function returns the aspect ratio (width divided by height) of the current viewport and
-		writes the other viewport parameters to the specified variables. If a specific parameter is not
-		of interest, NULL can be passed as argument.
-
-	Parameters:
-		x       - pointer to variable where x-position will be stored (can be NULL)
-		y       - pointer to variable where y-position will be stored (can be NULL)
-		width   - pointer to variable where viewport width will be stored (can be NULL)
-		height  - pointer to variable where viewport height will be stored (can be NULL)
-		
-	Returns:
-		viewport aspect ratio
-*/
-DLL float h3dGetViewportParams( int *x, int *y, int *width, int *height );
 
 /* Function: h3dRender
 		Main rendering function.
@@ -965,8 +931,6 @@ DLL H3DRes h3dFindResource( int type, const char *name );
 		This function tries to add a resource of a specified type and name to the resource manager. If
 		a resource of the same type and name is already existing, the handle to the existing resource is returned
 		instead of creating a new one and the user reference count of the resource is increased.
-
-		*Note: The name string may not contain a colon character (:)*
 	
 	Parameters:
 		type   - type of the resource
@@ -986,8 +950,6 @@ DLL H3DRes h3dAddResource( int type, const char *name, int flags );
 		specified name is added to the resource manager and filled with the data of the specified source
 		resource. If the specified name for the new resource is already in use, the function fails and
 		returns 0. If the name string is empty, a unique name for the resource is generated automatically.
-	
-		*Note: The name string may not contain a colon character (:)*
 	
 	Parameters:
 		sourceRes  - handle to resource to be cloned
@@ -1037,8 +999,6 @@ DLL bool h3dIsResLoaded( H3DRes res );
 		(e.g. the corresponding file was not found). In this case, the resource remains in the unloaded state
 		but is no more returned when querying unloaded resources. When the specified resource is already loaded,
 		the function returns false.
-	
-		*Important Note: XML-data must be NULL-terminated*
 	
 	Parameters:
 		res   - handle to the resource for which data will be loaded
@@ -1302,8 +1262,6 @@ DLL void h3dReleaseUnusedResources();
 		texture is initialized with the specified dimensions and the resource is declared as loaded. This
 		function is especially useful to create dynamic textures (e.g. for displaying videos) or output buffers
 		for render-to-texture.
-
-	*Note: The name string may not contain a colon character (:)*
 	
 	Parameters:
 		name        - name of the resource
@@ -1350,6 +1308,25 @@ DLL void h3dSetShaderPreambles( const char *vertPreamble, const char *fragPreamb
 		true if uniform was found, otherwise false
 */
 DLL bool h3dSetMaterialUniform( H3DRes materialRes, const char *name, float a, float b, float c, float d );
+
+/* Function: h3dResizePipelineBuffers
+		Changes the size of the render targets of a pipeline.
+	
+	Details:
+		This function sets the base width and height which affects render targets with relative (in percent) size 
+		specification. Changing the base size is usually desired after engine initialization and when the window
+		is being resized. Note that in case several cameras use the same pipeline resource instance, the change
+		will affect all cameras.
+	
+	Parameters:
+	    pipeRes  - the pipeline resource instance to be changed
+		width    - base width in pixels used for render targets with relative size
+		height   - base height in pixels used for render targets with relative size
+		
+	Returns:
+		nothing
+*/
+DLL void h3dResizePipelineBuffers( H3DRes pipeRes, int width, int height );
 
 /* Function: h3dGetRenderTargetData
 		Reads back the pixel data of a render target buffer.

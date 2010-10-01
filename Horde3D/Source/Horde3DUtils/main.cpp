@@ -221,6 +221,9 @@ DLLEXP bool h3dutLoadResourcesFromDisk( const char *contentDir )
 	// Get the first resource that needs to be loaded
 	int res = h3dQueryUnloadedResource( 0 );
 	
+	char *dataBuf = 0;
+	int bufSize = 0;
+
 	while( res != 0 )
 	{
 		ifstream inf;
@@ -239,17 +242,25 @@ DLLEXP bool h3dutLoadResourcesFromDisk( const char *contentDir )
 		{
 			// Find size of resource file
 			inf.seekg( 0, ios::end );
-			int size = inf.tellg();
+			int fileSize = inf.tellg();
+			if( bufSize < fileSize  )
+			{
+				delete[] dataBuf;				
+				dataBuf = new char[fileSize];
+				if( !dataBuf )
+				{
+					bufSize = 0;
+					continue;
+				}
+				bufSize = fileSize;
+			}
+			if( fileSize == 0 )	continue;
 			// Copy resource file to memory
-			char *data = new char[size + 1];
 			inf.seekg( 0 );
-			inf.read( data, size );
+			inf.read( dataBuf, fileSize );
 			inf.close();
-			// Null-terminate buffer - this is important for XML data
-			data[size] = '\0';
 			// Send resource data to engine
-			result &= h3dLoadResource( res, data, size + 1 );
-			delete[] data;
+			result &= h3dLoadResource( res, dataBuf, fileSize );
 		}
 		else // Resource file not found
 		{
@@ -260,6 +271,7 @@ DLLEXP bool h3dutLoadResourcesFromDisk( const char *contentDir )
 		// Get next unloaded resource
 		res = h3dQueryUnloadedResource( 0 );
 	}
+	delete[] dataBuf;
 
 	return result;
 }
@@ -575,6 +587,162 @@ DLLEXP void h3dutFreeMem( char **ptr )
 	delete[] *ptr; *ptr = 0x0;
 }
 
+DLLEXP H3DRes h3dutCreateGeometryRes( 
+	const char *name, 
+	int numVertices, int numTriangleIndices,
+	float *posData, 
+	uint32 *indexData, 
+	short *normalData,
+	short *tangentData,
+	short *bitangentData,
+	float *texData1, float *texData2 )
+{
+	if( numVertices == 0 || numTriangleIndices == 0 ) return 0;
+
+	H3DRes res = h3dAddResource( H3DResTypes::Geometry, name, 0 );
+				
+	uint32 size = 
+		// General data
+		4 +					// Horde Flag 
+		sizeof( uint32 ) +	// Version 
+		sizeof( uint32 ) +	// Joint Count ( will be always set to set to zero because this method does not create joints )
+		sizeof( uint32 ) +	// number of streams 
+		sizeof( uint32 ) +	// streamsize
+		// vertex stream data
+		sizeof( uint32 ) +	// stream id 
+		sizeof( uint32 ) +	// stream element size 
+		numVertices * sizeof( float ) * 3 + // vertices data
+	
+		// morph targets 
+		sizeof( uint32 );	// number of morph targets ( will be always set to zero because this method does not create morph targets )
+
+	if( normalData )
+	{
+		size += 
+			// normal stream data
+			sizeof( uint32 ) +	// stream id 
+			sizeof( uint32 ) +	// stream element size 
+			numVertices * sizeof( uint16 ) * 3; // normal data
+	}
+
+	if( tangentData && bitangentData )
+	{
+		size += 
+			// normal stream data
+			sizeof( uint32 ) +	// stream id 
+			sizeof( uint32 ) +	// stream element size 
+			numVertices * sizeof( uint16 ) * 3 + // tangent data
+			// normal stream data
+			sizeof( uint32 ) +	// stream id 
+			sizeof( uint32 ) +	// stream element size 
+			numVertices * sizeof( uint16 ) * 3; // bitangent data
+	}
+
+	int numTexSets = 0;
+	if( texData1 ) ++numTexSets;
+	if( texData2 ) ++numTexSets;
+
+	for( int i = 0; i < numTexSets; ++i )
+	{
+		size += 
+			// texture stream data
+			sizeof( uint32 ) +	// stream id 
+			sizeof( uint32 ) +	// stream element size 
+		numVertices * sizeof( float ) * 2; // texture data
+	}
+
+	size += 
+		// index stream data
+		sizeof( uint32 ) +	// index count 
+		numTriangleIndices * sizeof( uint32 ); // index data
+
+
+	// Create resource data block
+	char *data = new char[size];
+
+	char *pData = data;
+	// Write Horde flag
+	pData[0] = 'H'; pData[1] = '3'; pData[2] = 'D'; pData[3] = 'G'; pData += 4;
+	// Set version to 5 
+	*( (uint32 *)pData ) = 5; pData += sizeof( uint32 );
+	// Set joint count (zero for this method)
+	*( (uint32 *)pData ) = 0; pData += sizeof( uint32 );
+	// Set number of streams
+	*( (uint32 *)pData ) = 1 + numTexSets + ( normalData ? 1 : 0 ); pData += sizeof( uint32 );
+	// Write number of elements in each stream
+	*( (uint32 *)pData ) = numVertices; pData += sizeof( uint32 );
+
+	// Beginning of stream data
+
+	// Vertex Stream ID
+	*( (uint32 *)pData ) = 0; pData += sizeof( uint32 );
+	// set vertex stream element size
+	*( (uint32 *)pData ) = sizeof( float ) * 3; pData += sizeof( uint32 );
+	// vertex data
+	memcpy( (float*) pData, posData, numVertices * sizeof( float ) * 3 );
+	pData += numVertices * sizeof( float ) * 3;
+
+	if( normalData )
+	{
+		// Normals Stream ID
+		*( (uint32 *)pData ) = 1; pData += sizeof( uint32 );
+		// set normal stream element size
+		*( (uint32 *)pData ) = sizeof( short ) * 3; pData += sizeof( uint32 );
+		// normal data
+		memcpy( (short*) pData, normalData, numVertices * sizeof( short ) * 3 );
+		pData += numVertices * sizeof( short ) * 3;
+	}
+
+	if( tangentData && bitangentData )
+	{
+		// Tangent Stream ID
+		*( (uint32 *)pData ) = 2; pData += sizeof( uint32 );
+		// set tangent stream element size
+		*( (uint32 *)pData ) = sizeof( short ) * 3; pData += sizeof( uint32 );
+		// tangent data
+		memcpy( (short*) pData, tangentData, numVertices * sizeof( short ) * 3 );
+		pData += numVertices * sizeof( short ) * 3;
+	
+		// Bitangent Stream ID
+		*( (uint32 *)pData ) = 3; pData += sizeof( uint32 );
+		// set bitangent stream element size
+		*( (uint32 *)pData ) = sizeof( short ) * 3; pData += sizeof( uint32 );
+		// bitangent data
+		memcpy( (short*) pData, bitangentData, numVertices * sizeof( short ) * 3 );
+		pData += numVertices * sizeof( short ) * 3;
+	}
+
+	// texture coordinates stream
+	if( texData1 )
+	{
+		*( (uint32 *)pData ) = 6; pData += sizeof( uint32 ); // Tex Set 1
+		*( (uint32 *)pData ) = sizeof( float ) * 2; pData += sizeof( uint32 ); // stream element size
+		memcpy( (float *)pData, texData1, sizeof( float ) * 2 * numVertices ); // stream data
+		pData += sizeof( float ) * 2 * numVertices; 
+	}
+	if( texData2 )
+	{
+		*( (uint32 *)pData ) = 7; pData += sizeof( uint32 ); // Tex Set 2
+		*( (uint32 *)pData ) = sizeof( float ) * 2; pData += sizeof( uint32 ); // stream element size
+		memcpy( (float *)pData, texData2, sizeof( float ) * 2 * numVertices ); // stream data
+		pData += sizeof( float ) * 2 * numVertices; 
+	}
+
+	// Set number of indices
+	*( (uint32 *) pData ) = numTriangleIndices; pData += sizeof( uint32 );	
+	
+	// index data
+	memcpy( pData, indexData, numTriangleIndices * sizeof( uint32 ) );
+	pData += numTriangleIndices * sizeof( uint32 );				
+
+	// Set number of morph targets to zero
+	*( (uint32 *) pData ) = 0;	pData += sizeof( uint32 );
+
+	if ( res ) h3dLoadResource( res, data, size );
+	delete[] data;
+
+	return res;
+}
 
 DLLEXP bool h3dutCreateTGAImage( const unsigned char *pixels, int width, int height, int bpp,
                                  char **outData, int *outSize )

@@ -71,9 +71,12 @@ namespace GameEngine
 	}
 	GAMEENGINE_API void release()
 	{
-		Initialized = false;
-		GameModules::release();
-		GameLog::close();
+		if( Initialized )
+		{
+			Initialized = false;
+			GameModules::release();
+			GameLog::close();
+		}
 	}
 
 

@@ -38,6 +38,10 @@ struct CameraNodeParams
 		TopPlaneF,
 		NearPlaneF,
 		FarPlaneF,
+		ViewportXI,
+		ViewportYI,
+		ViewportWidthI,
+		ViewportHeightI,
 		OrthoI,
 		OccCullingI
 	};
@@ -78,6 +82,7 @@ private:
 	Matrix4f            _viewMat, _projMat;
 	Frustum             _frustum;
 	Vec3f               _absPos;
+	int					_vpX, _vpY, _vpWidth, _vpHeight;
 	float               _frustLeft, _frustRight, _frustBottom, _frustTop;
 	float               _frustNear, _frustFar;
 	int                 _outputBufferIndex;

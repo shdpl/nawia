@@ -112,6 +112,15 @@ struct RenderCaps
 };
 
 
+enum RDIPendingMask
+{
+	PM_VIEWPORT    = 0x00000001,
+	PM_INDEXBUF    = 0x00000002,
+	PM_VERTLAYOUT  = 0x00000004,
+	PM_TEXTURES    = 0x00000008
+};
+
+
 // ---------------------------------------------------------
 // Buffers
 // ---------------------------------------------------------
@@ -144,6 +153,7 @@ struct TextureTypes
 	enum List
 	{
 		Tex2D = GL_TEXTURE_2D,
+		Tex3D = GL_TEXTURE_3D,
 		TexCube = GL_TEXTURE_CUBE_MAP
 	};
 };
@@ -169,17 +179,36 @@ struct RDITexture
 	uint32                glFmt;
 	int                   type;
 	TextureFormats::List  format;
-	int                   width, height;
+	int                   width, height, depth;
 	int                   memSize;
+	uint32                samplerState;
 	bool                  sRGB;
-	bool                  genMips;
+	bool                  hasMips, genMips;
 };
 
 struct RDITexSlot
 {
 	uint32  texObj;
+	uint32  samplerState;
 
-	RDITexSlot() : texObj( 0 ) {}
+	RDITexSlot() : texObj( 0 ), samplerState( 0 ) {}
+	RDITexSlot( uint32 texObj, uint32 samplerState ) :
+		texObj( texObj ), samplerState( samplerState ) {}
+};
+
+
+// ---------------------------------------------------------
+// Shaders
+// ---------------------------------------------------------
+
+enum RDIShaderConstType
+{
+	CONST_FLOAT,
+	CONST_FLOAT2,
+	CONST_FLOAT3,
+	CONST_FLOAT4,
+	CONST_FLOAT44,
+	CONST_FLOAT33
 };
 
 
@@ -230,6 +259,49 @@ struct RDIVertexLayout
 
 
 // ---------------------------------------------------------
+// Render states
+// ---------------------------------------------------------
+
+enum RDISamplerState
+{
+	SS_FILTER_BILINEAR   = 0x0,
+	SS_FILTER_TRILINEAR  = 0x0001,
+	SS_FILTER_POINT      = 0x0002,
+	SS_ANISO1            = 0x0,
+	SS_ANISO2            = 0x0004,
+	SS_ANISO4            = 0x0008,
+	SS_ANISO8            = 0x0010,
+	SS_ANISO16           = 0x0020,
+	SS_ADDRU_CLAMP       = 0x0,
+	SS_ADDRU_WRAP        = 0x0040,
+	SS_ADDRU_CLAMPCOL    = 0x0080,
+	SS_ADDRV_CLAMP       = 0x0,
+	SS_ADDRV_WRAP        = 0x0100,
+	SS_ADDRV_CLAMPCOL    = 0x0200,
+	SS_ADDRW_CLAMP       = 0x0,
+	SS_ADDRW_WRAP        = 0x0400,
+	SS_ADDRW_CLAMPCOL    = 0x0800,
+	SS_ADDR_CLAMP        = SS_ADDRU_CLAMP | SS_ADDRV_CLAMP | SS_ADDRW_CLAMP,
+	SS_ADDR_WRAP         = SS_ADDRU_WRAP | SS_ADDRV_WRAP | SS_ADDRW_WRAP,
+	SS_ADDR_CLAMPCOL     = SS_ADDRU_CLAMPCOL | SS_ADDRV_CLAMPCOL | SS_ADDRW_CLAMPCOL,
+	SS_COMP_LEQUAL       = 0x1000
+};
+
+const uint32 SS_FILTER_START = 0;
+const uint32 SS_FILTER_MASK = SS_FILTER_BILINEAR | SS_FILTER_TRILINEAR | SS_FILTER_POINT;
+const uint32 SS_ANISO_START = 2;
+const uint32 SS_ANISO_MASK = SS_ANISO1 | SS_ANISO2 | SS_ANISO4 | SS_ANISO8 | SS_ANISO16;
+const uint32 SS_ADDRU_START = 6;
+const uint32 SS_ADDRU_MASK = SS_ADDRU_CLAMP | SS_ADDRU_WRAP | SS_ADDRU_CLAMPCOL;
+const uint32 SS_ADDRV_START = 8;
+const uint32 SS_ADDRV_MASK = SS_ADDRV_CLAMP | SS_ADDRV_WRAP | SS_ADDRV_CLAMPCOL;
+const uint32 SS_ADDRW_START = 10;
+const uint32 SS_ADDRW_MASK = SS_ADDRW_CLAMP | SS_ADDRW_WRAP | SS_ADDRW_CLAMPCOL;
+const uint32 SS_ADDR_START = 6;
+const uint32 SS_ADDR_MASK = SS_ADDR_CLAMP | SS_ADDR_WRAP | SS_ADDR_CLAMPCOL;
+
+
+// ---------------------------------------------------------
 // Draw calls
 // ---------------------------------------------------------
 
@@ -268,17 +340,18 @@ protected:
 
 	RDIVertBufSlot    _vertBufSlots[16];
 	RDITexSlot        _texSlots[16];
-	uint32            _curShaderObj;
+	uint32            _prevShader, _curShader;
 	uint32            _curVertLayout, _newVertLayout;
 	uint32            _curIndexBuf, _newIndexBuf;
 	uint32            _indexFormat;
-	bool              _vertLayoutDirty;
+	uint32            _pendingMask;
 	
 	uint32 loadShader( const char *vertexShader, const char *fragmentShader );
 	bool linkShader( uint32 shaderId );
 	void resolveRenderBuffer( uint32 rbObj );
 
 	bool applyVertexLayout();
+	void applySamplerState( RDITexture &tex );
 
 public:
 	
@@ -288,7 +361,6 @@ public:
 	// Rendering functions
 	void initStates();
 	virtual bool init();
-	virtual void resize( int x, int y, int width, int height );
 	
 // -----------------------------------------------------------------------------
 // Resources
@@ -303,23 +375,24 @@ public:
 	uint32 getBufferMem() { return _bufferMem; }
 
 	// Textures
-	uint32 calcTextureSize( TextureFormats::List format, int width, int height );
-	uint32 createTexture( TextureTypes::List type, int width, int height, TextureFormats::List format,
+	uint32 calcTextureSize( TextureFormats::List format, int width, int height, int depth );
+	uint32 createTexture( TextureTypes::List type, int width, int height, int depth, TextureFormats::List format,
 	                      bool hasMips, bool genMips, bool compress, bool sRGB );
 	void uploadTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels );
 	void releaseTexture( uint32 texObj );
 	void updateTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels );
 	bool getTextureData( uint32 texObj, int slice, int mipLevel, void *buffer );
-	void bindTexture( uint32 unit, uint32 texObj );
 	uint32 getTextureMem() { return _textureMem; }
 
 	// Shaders
 	uint32 createShader( const char *vertexShader, const char *fragmentShader );
 	void releaseShader( uint32 shdObj );
 	void bindShader( uint32 shdObj );
-	int getShaderVar( uint32 shdObj, const char *var );
-	bool setShaderVar1i( uint32 shdObj, const char *var, int value );
 	std::string &getShaderLog() { return _shaderLog; }
+	int getShaderConstLoc( uint32 shdObj, const char *name );
+	int getShaderSamplerLoc( uint32 shdObj, const char *name );
+	void setShaderConst( int loc, RDIShaderConstType type, void *values, uint32 count = 1 );
+	void setShaderSampler( int loc, uint32 texUnit );
 
 	// Renderbuffers
 	uint32 createRenderBuffer( uint32 width, uint32 height, TextureFormats::List format,
@@ -347,15 +420,20 @@ public:
 // Commands
 // -----------------------------------------------------------------------------
 	
+	void setViewport( int x, int y, int width, int height )
+		{ _vpX = x; _vpY = y; _vpWidth = width; _vpHeight = height; _pendingMask |= PM_VIEWPORT; }
 	void setIndexBuffer( uint32 bufObj, RDIIndexFormat idxFmt )
-		{ _indexFormat = (uint32)idxFmt; _newIndexBuf = bufObj; }
+		{ _indexFormat = (uint32)idxFmt; _newIndexBuf = bufObj; _pendingMask |= PM_INDEXBUF; }
 	void setVertexBuffer( uint32 slot, uint32 vbObj, uint32 offset, uint32 stride )
 		{ ASSERT( slot < 16 ); _vertBufSlots[slot] = RDIVertBufSlot( vbObj, offset, stride );
-	      _vertLayoutDirty = true; }
+	      _pendingMask |= PM_VERTLAYOUT; }
 	void setVertexLayout( uint32 vlObj )
 		{ _newVertLayout = vlObj; }
+	void setTexture( uint32 slot, uint32 texObj, uint16 samplerState )
+		{ ASSERT( slot < 16 ); _texSlots[slot] = RDITexSlot( texObj, samplerState );
+	      _pendingMask |= PM_TEXTURES; }
 
-	bool commitStates();
+	bool commitStates( uint32 filter = 0xFFFFFFFF );
 	void resetStates();
 	
 	// Draw calls
@@ -363,14 +441,8 @@ public:
 	void drawIndexed( RDIPrimType primType, uint32 firstIndex, uint32 numIndices,
 	                  uint32 firstVert, uint32 numVerts );
 
-// -----------------------------------------------------------------------------
-// Misc
-// -----------------------------------------------------------------------------
 
-	int getViewportX() { return _vpX; }
-	int getViewportY() { return _vpY; }
-	int getViewportWidth() { return _vpWidth; }
-	int getViewportHeight() { return _vpHeight; }
+	friend class Renderer;
 };
 
 }

@@ -13,8 +13,11 @@
 #ifndef _utPlatform_H_
 #define _utPlatform_H_
 
-#include <assert.h>
+#if defined( _DEBUG )
+	#include <assert.h>
+#endif
 
+// Detect platform
 #if defined( WIN32 ) || defined( _WINDOWS )
 #	if !defined( PLATFORM_WIN )
 #		define PLATFORM_WIN
@@ -42,6 +45,14 @@
 #	endif
 #endif
 
+
+// Shortcuts for common types
+typedef unsigned short uint16;
+typedef unsigned int uint32;
+typedef long long int64;
+typedef unsigned long long uint64;
+
+
 #ifndef PLATFORM_WIN
 #	define _stricmp strcasecmp
 #	define _mkdir( name ) mkdir( name, 0755 )
@@ -51,8 +62,6 @@
 #	define strncpy_s( dst, dstSize, src, count ) strncpy( dst, src, count < dstSize ? count : dstSize )
 #endif
 
-typedef long long int64;
-typedef unsigned long long uint64;
 
 // Runtime assertion
 #if defined( _DEBUG )
@@ -73,18 +82,5 @@ namespace StaticAssert
 	template<> struct FAILED< true > { };
 }
 #define ASSERT_STATIC( exp ) (StaticAssert::FAILED< (exp) != 0 >())
-
-
-#ifdef _utPlatform_H___ValidatePlatform__
-// Check the size of some common types
-// Note: this function is never called but just wraps the compile time asserts
-static void __ValidatePlatform__()
-{
-	ASSERT_STATIC( sizeof( int64 ) == 8 );
-	ASSERT_STATIC( sizeof( int ) == 4 );
-	ASSERT_STATIC( sizeof( short ) == 2 );
-	ASSERT_STATIC( sizeof( char ) == 1 );
-}
-#endif
 
 #endif // _utPlatform_H_

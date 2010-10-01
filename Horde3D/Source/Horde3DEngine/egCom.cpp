@@ -11,7 +11,6 @@
 // *************************************************************************************************
 
 #include "egCom.h"
-#include "utPlatform.h"
 #include "utMath.h"
 #include "egModules.h"
 #include "egRenderer.h"
@@ -324,9 +323,9 @@ float StatManager::getStat( int param, bool reset )
 		if( reset ) _particleGPUTimer->reset();
 		return value;
 	case EngineStats::TextureVMem:
-		return (Modules::renderer().getTextureMem() / 1024) / 1024.0f;
+		return (gRDI->getTextureMem() / 1024) / 1024.0f;
 	case EngineStats::GeometryVMem:
-		return (Modules::renderer().getBufferMem() / 1024) / 1024.0f;
+		return (gRDI->getBufferMem() / 1024) / 1024.0f;
 	default:
 		Modules::setError( "Invalid param for h3dGetStat" );
 		return Math::NaN;

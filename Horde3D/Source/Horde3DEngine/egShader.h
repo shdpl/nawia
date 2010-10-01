@@ -119,25 +119,6 @@ struct CullModes
 	};
 };
 
-struct TexFilterModes
-{
-	enum List
-	{
-		None,
-		Bilinear,
-		Trilinear
-	};
-};
-
-struct TexAddressModes
-{
-	enum List
-	{
-		Wrap,
-		Clamp
-	};
-};
-
 
 struct ShaderCombination
 {
@@ -202,14 +183,11 @@ struct ShaderSampler
 	TextureTypes::List     type;
 	PTextureResource       defTex;
 	int                    texUnit;
-	TexAddressModes::List  addressMode;
-	TexFilterModes::List   filterMode;
-	int                    maxAnisotropy;
+	uint32                 sampState;
 
 
 	ShaderSampler() :
-		texUnit( -1 ), addressMode( TexAddressModes::Wrap ), filterMode( TexFilterModes::Trilinear ),
-		maxAnisotropy( 8 )
+		texUnit( -1 ), sampState( 0 )
 	{
 	}
 };

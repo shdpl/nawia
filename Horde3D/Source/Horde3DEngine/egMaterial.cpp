@@ -14,7 +14,6 @@
 #include "egTexture.h"
 #include "egModules.h"
 #include "egCom.h"
-#include "utPlatform.h"
 #include "utXML.h"
 
 #include "utDebug.h"

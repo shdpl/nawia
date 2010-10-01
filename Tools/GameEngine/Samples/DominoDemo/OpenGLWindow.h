@@ -16,7 +16,7 @@ public:
 	typedef void (*KeyboardCB)(unsigned int param, bool pressed, void* userData);
 	typedef void (*MouseCB)(float x, float y, void* userData);
 	typedef void (*RenderCB) (void* userData);
-	typedef void (*ResizeCB)(int width, int height);
+	typedef void (*ResizeCB)(void* userData, int width, int height);
 
 #ifdef UNICODE
 	/// creates window with size width and height, windowName is displayed in title bar
@@ -49,7 +49,7 @@ public:
 	void setRenderCB(RenderCB cb, void* userData = 0) {m_renderCB = cb; m_userData = userData;}
 
 	/// a resize callback
-	void setResizeCB(ResizeCB cb) {m_resizeCB = cb;}
+	void setResizeCB(ResizeCB cb, void* userData = 0) {m_resizeCB = cb; m_userDataRS = userData;}
 
 	/// Show the window in fullscreen mode
 	void showFullScreen(bool fullScreen);
@@ -101,6 +101,7 @@ protected:
 	void*				m_userData;
 	// ResizeCB	
 	ResizeCB			m_resizeCB;
+	void*				m_userDataRS;
 
 	///	if not active don't process callbacks
 	bool				m_active;

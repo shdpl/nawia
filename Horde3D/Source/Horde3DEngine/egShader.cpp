@@ -14,7 +14,6 @@
 #include "egModules.h"
 #include "egCom.h"
 #include "egRenderer.h"
-#include "utPlatform.h"
 #include <fstream>
 
 #include "utDebug.h"
@@ -406,7 +405,7 @@ void ShaderResource::release()
 	{
 		for( uint32 j = 0; j < _contexts[i].shaderCombs.size(); ++j )
 		{
-			Modules::renderer().releaseShader( _contexts[i].shaderCombs[j].shaderObj );
+			gRDI->releaseShader( _contexts[i].shaderCombs[j].shaderObj );
 		}
 	}
 
@@ -509,9 +508,12 @@ bool ShaderResource::parseFXSection( char *data )
 
 			_uniforms.push_back( uniform );
 		}
-		else if( tok.checkToken( "sampler2D", true ) || tok.checkToken( "samplerCube", true ) )
+		else if( tok.checkToken( "sampler2D", true ) || tok.checkToken( "samplerCube", true ) ||
+		         tok.checkToken( "sampler3D", true ) )
 		{
 			ShaderSampler sampler;
+			sampler.sampState = SS_FILTER_TRILINEAR | SS_ANISO8 | SS_ADDR_WRAP;
+
 			if( tok.checkToken( "sampler2D" ) )
 			{	
 				sampler.type = TextureTypes::Tex2D;
@@ -521,6 +523,11 @@ bool ShaderResource::parseFXSection( char *data )
 			{
 				sampler.type = TextureTypes::TexCube;
 				sampler.defTex = (TextureResource *)Modules::resMan().findResource( ResourceTypes::Texture, "$TexCube" );
+			}
+			else if( tok.checkToken( "sampler3D" ) )
+			{
+				sampler.type = TextureTypes::Tex3D;
+				sampler.defTex = (TextureResource *)Modules::resMan().findResource( ResourceTypes::Texture, "$Tex3D" );
 			}
 			sampler.id = tok.getToken( identifier );
 			if( sampler.id == "" ) return raiseError( "FX: Invalid identifier", tok.getLine() );
@@ -555,23 +562,31 @@ bool ShaderResource::parseFXSection( char *data )
 					}
 					else if( tok.checkToken( "Address" ) )
 					{
+						sampler.sampState &= ~SS_ADDR_MASK;
 						if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
-						if( tok.checkToken( "Wrap" ) ) sampler.addressMode = TexAddressModes::Wrap;
-						else if( tok.checkToken( "Clamp" ) ) sampler.addressMode = TexAddressModes::Clamp;
+						if( tok.checkToken( "Wrap" ) ) sampler.sampState |= SS_ADDR_WRAP;
+						else if( tok.checkToken( "Clamp" ) ) sampler.sampState |= SS_ADDR_CLAMP;
 						else return raiseError( "FX: invalid enum value", tok.getLine() );
 					}
 					else if( tok.checkToken( "Filter" ) )
 					{
+						sampler.sampState &= ~SS_FILTER_MASK;
 						if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
-						if( tok.checkToken( "Trilinear" ) ) sampler.filterMode = TexFilterModes::Trilinear;
-						else if( tok.checkToken( "Bilinear" ) ) sampler.filterMode = TexFilterModes::Bilinear;
-						else if( tok.checkToken( "None" ) ) sampler.filterMode = TexFilterModes::None;
+						if( tok.checkToken( "Trilinear" ) ) sampler.sampState |= SS_FILTER_TRILINEAR;
+						else if( tok.checkToken( "Bilinear" ) ) sampler.sampState |= SS_FILTER_BILINEAR;
+						else if( tok.checkToken( "None" ) ) sampler.sampState |= SS_FILTER_POINT;
 						else return raiseError( "FX: invalid enum value", tok.getLine() );
 					}
 					else if( tok.checkToken( "MaxAnisotropy" ) )
 					{
+						sampler.sampState &= ~SS_ANISO_MASK;
 						if( !tok.checkToken( "=" ) ) return raiseError( "FX: expected '='", tok.getLine() );
-						sampler.maxAnisotropy = (int)atoi( tok.getToken( intnum ) );
+						uint32 maxAniso = (uint32)atoi( tok.getToken( intnum ) );
+						if( maxAniso <= 1 ) sampler.sampState |= SS_ANISO1;
+						else if( maxAniso <= 2 ) sampler.sampState |= SS_ANISO2;
+						else if( maxAniso <= 4 ) sampler.sampState |= SS_ANISO4;
+						else if( maxAniso <= 8 ) sampler.sampState |= SS_ANISO8;
+						else sampler.sampState |= SS_ANISO16;
 					}
 					else
 						return raiseError( "FX: unexpected token", tok.getLine() );
@@ -714,33 +729,31 @@ bool ShaderResource::parseFXSection( char *data )
 bool ShaderResource::load( const char *data, int size )
 {
 	if( !Resource::load( data, size ) ) return false;
-	if( data[size - 1] != '\0' )
-	{	
-		return raiseError( "Data block not NULL-terminated" );
-	}
 	
 	// Parse sections
 	const char *pData = data;
+	const char *eof = data + size;
 	char *fxCode = 0x0;
 	
-	while( *pData != '\0' )
+	while( pData < eof )
 	{
-		if( *pData++ == '[' && *pData++ == '[' )
+		if( pData < eof-1 && *pData == '[' && *(pData+1) == '[' )
 		{
+			pData += 2;
+			
 			// Parse section name
 			const char *sectionNameStart = pData;
-			while( *pData != ']' && *pData != '\n' && *pData != '\r' ) ++pData;
+			while( pData < eof && *pData != ']' && *pData != '\n' && *pData != '\r' ) ++pData;
 			const char *sectionNameEnd = pData++;
 
 			// Check for correct closing of name
-			if( *pData++ != ']' ) return raiseError( "Error in section name" );
+			if( pData >= eof || *pData++ != ']' ) return raiseError( "Error in section name" );
 			
 			// Parse content
 			const char *sectionContentStart = pData;
-			while( *pData != '\0' && !(*pData == '[' && *(pData+1) == '[') ) ++pData;
+			while( (pData < eof && *pData != '[') || (pData < eof-1 && *(pData+1) != '[') ) ++pData;
 			const char *sectionContentEnd = pData;
 			
-
 			if( sectionNameEnd - sectionNameStart == 2 &&
 			    *sectionNameStart == 'F' && *(sectionNameStart+1) == 'X' )
 			{
@@ -759,6 +772,8 @@ bool ShaderResource::load( const char *data, int size )
 				_codeSections.back().load( _tmpCode0.c_str(), (uint32)_tmpCode0.length() );
 			}
 		}
+		else
+			++pData;
 	}
 
 	if( fxCode == 0x0 ) return raiseError( "Missing FX section" );
@@ -832,7 +847,7 @@ void ShaderResource::compileCombination( ShaderContext &context, ShaderCombinati
 	// Unload shader if necessary
 	if( sc.shaderObj != 0 )
 	{
-		Modules::renderer().releaseShader( sc.shaderObj );
+		gRDI->releaseShader( sc.shaderObj );
 		sc.shaderObj = 0;
 	}
 	
@@ -852,15 +867,18 @@ void ShaderResource::compileCombination( ShaderContext &context, ShaderCombinati
 		}
 	}
 
+	gRDI->bindShader( sc.shaderObj );
+
 	// Find samplers in compiled shader
 	sc.customSamplers.reserve( _samplers.size() );
 	for( uint32 i = 0; i < _samplers.size(); ++i )
 	{
-		sc.customSamplers.push_back(
-			Modules::renderer().getShaderVar( sc.shaderObj, _samplers[i].id.c_str() ) );
+		int samplerLoc = gRDI->getShaderSamplerLoc( sc.shaderObj, _samplers[i].id.c_str() );
+		sc.customSamplers.push_back( samplerLoc );
 		
 		// Set texture unit
-		Modules::renderer().setShaderVar1i( sc.shaderObj, _samplers[i].id.c_str(), _samplers[i].texUnit );
+		if( samplerLoc >= 0 )
+			gRDI->setShaderSampler( samplerLoc, _samplers[i].texUnit );
 	}
 	
 	// Find uniforms in compiled shader
@@ -868,12 +886,14 @@ void ShaderResource::compileCombination( ShaderContext &context, ShaderCombinati
 	for( uint32 i = 0; i < _uniforms.size(); ++i )
 	{
 		sc.customUniforms.push_back(
-			Modules::renderer().getShaderVar( sc.shaderObj, _uniforms[i].id.c_str() ) );
+			gRDI->getShaderConstLoc( sc.shaderObj, _uniforms[i].id.c_str() ) );
 	}
 
+	gRDI->bindShader( 0 );
+
 	// Output shader log
-	if( Modules::renderer().getShaderLog() != "" )
-		Modules::log().writeInfo( "Shader resource '%s': ShaderLog: %s", _name.c_str(), Modules::renderer().getShaderLog().c_str() );
+	if( gRDI->getShaderLog() != "" )
+		Modules::log().writeInfo( "Shader resource '%s': ShaderLog: %s", _name.c_str(), gRDI->getShaderLog().c_str() );
 }
 
 

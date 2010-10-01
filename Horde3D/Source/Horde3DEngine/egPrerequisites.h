@@ -13,10 +13,10 @@
 #ifndef _egPrerequisites_H_
 #define _egPrerequisites_H_
 
-namespace Horde3D {
+#include "utPlatform.h"
 
-typedef unsigned short uint16;
-typedef unsigned int uint32;
+
+namespace Horde3D {
 
 typedef int ResHandle;
 typedef int NodeHandle;

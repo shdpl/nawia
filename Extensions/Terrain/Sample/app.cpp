@@ -118,7 +118,8 @@ void Application::mainLoop( float fps )
 	h3dutShowFrameStats( _fontMatRes, _panelMatRes, _statMode );
 
 	// Show logo
-	const float ww = h3dGetViewportParams( 0x0, 0x0, 0x0, 0x0 );
+	const float ww = (float)h3dGetNodeParamI( _cam, H3DCamera::ViewportWidthI ) /
+	                 (float)h3dGetNodeParamI( _cam, H3DCamera::ViewportHeightI );
 	const float ovLogo[] = { ww-0.4f, 0.8f, 0, 1,  ww-0.4f, 1, 0, 0,  ww, 1, 1, 0,  ww, 0.8f, 1, 1 };
 	h3dShowOverlays( ovLogo, 4, 1.f, 1.f, 1.f, 1.f, _logoMatRes, 0 );
 	
@@ -146,10 +147,14 @@ void Application::release()
 void Application::resize( int width, int height )
 {
 	// Resize viewport
-	h3dSetupViewport( 0, 0, width, height, true );
+	h3dSetNodeParamI( _cam, H3DCamera::ViewportXI, 0 );
+	h3dSetNodeParamI( _cam, H3DCamera::ViewportYI, 0 );
+	h3dSetNodeParamI( _cam, H3DCamera::ViewportWidthI, width );
+	h3dSetNodeParamI( _cam, H3DCamera::ViewportHeightI, height );
 	
 	// Set virtual camera parameters
 	h3dSetupCameraView( _cam, 45.0f, (float)width / height, 0.5f, 2048.0f );
+	h3dResizePipelineBuffers( h3dGetNodeParamI( _cam, H3DCamera::PipeResI ), width, height );
 }
 
 

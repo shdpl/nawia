@@ -34,8 +34,7 @@ that is done we can finally get to the engine related part.
 {
     <i>// Initialize engine</i>
     h3dInit();
-    h3dSetupViewport( 0, 0, winWidth, winHeight, true );
-    
+   
     <i>// Add pipeline resource</i>
     <b>H3DRes</b> pipeRes = h3dAddResource( H3DResTypes::Pipeline, <em>"standard.pipeline.xml"</em>, 0 );
     <i>// Add model resource</i>
@@ -58,6 +57,14 @@ that is done we can finally get to the engine related part.
 	
     <i>// Add camera</i>
     <b>H3DNode</b> cam = h3dAddCameraNode( H3DRootNode, <em>"Camera"</em>, pipeRes );
+
+    <i>// Setup viewport and render target sizes</i>
+    h3dSetNodeParamI( cam, H3DCamera::ViewportXI, 0 );
+    h3dSetNodeParamI( cam, H3DCamera::ViewportYI, 0 );
+    h3dSetNodeParamI( cam, H3DCamera::ViewportWidthI, winWidth );
+    h3dSetNodeParamI( cam, H3DCamera::ViewportHeightI, winHeight );
+    h3dSetupCameraView( cam, 45.0f, (float)winWidth / winHeight, 0.5f, 2048.0f );
+    h3dResizePipelineBuffers( pipeRes, winWidth, winHeight );
 }
 </pre>
 </div>
@@ -66,8 +73,7 @@ that is done we can finally get to the engine related part.
 <p>
 The first line of the code above declares two global handles to Horde scene graph nodes. All objects in Horde
 are accessible via handles, a concept similar to pointers. The first thing we need to do in our <i>initGame</i>
-function to use Horde3D is initializing the engine. This happens with the function <b>h3dInit</b>. After that we
-tell the engine the size of our rendering window so that it can adjust the viewport.
+function to use Horde3D is initializing the engine. This happens with the function <b>h3dInit</b>. 
 <br /><br />
 The next step is to load the required resources. In Horde resources are data files that are loaded once and
 can be referenced by several objects for rendering. The function <b>h3dAddResource</b> takes the resource type
@@ -94,6 +100,8 @@ rendering. More information on this can be found in other sections of the manual
 position and orientation which is done with <b>h3dSetNodeTransform</b>. After that we specify the light radius which
 defines the zone of influence using <b>h3dSetNodeParamF</b>. Finally we still need a camera which represents the viewer.
 It is added with the function <b>h3dAddCameraNode</b> and takes our loaded pipeline resource as parameter.
+The view parameters of the camera and the render targets of the pipeline resource depend on the size of the rendering window. 
+So in the last step we apply the viewport settings to the camera node and resize the output buffers of the pipeline.
 </p>
 <br />
 

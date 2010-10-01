@@ -16,7 +16,6 @@
 #include "utXML.h"
 #include "rapidxml_print.h"
 #include <iterator>
-#include "utPlatform.h"
 
 #include "utDebug.h"
 

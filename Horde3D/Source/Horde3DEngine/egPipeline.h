@@ -169,7 +169,8 @@ private:
 
 	std::vector< RenderTarget >   _renderTargets;
 	std::vector< PipelineStage >  _stages;
-	
+	uint32                        _baseWidth, _baseHeight;
+
 	bool raiseError( const std::string &msg, int line = -1 );
 	const std::string parseStage( XMLNode &node, PipelineStage &stage );
 
@@ -191,7 +192,7 @@ public:
 	void initDefault();
 	void release();
 	bool load( const char *data, int size );
-	void resize();
+	void resize( uint32 width, uint32 height );
 
 	int getElemCount( int elem );
 	int getElemParamI( int elem, int elemIdx, int param );

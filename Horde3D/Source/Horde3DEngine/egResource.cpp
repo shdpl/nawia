@@ -248,7 +248,7 @@ ResHandle ResourceManager::addResource( Resource &resource )
 
 ResHandle ResourceManager::addResource( int type, const string &name, int flags, bool userCall )
 {
-	if( name == "" || (userCall && name.find( ":" ) != string::npos) )
+	if( name == "" )
 	{	
 		Modules::log().writeDebugInfo( "Invalid name for added resource of type %i", type );
 		return 0;
@@ -283,7 +283,7 @@ ResHandle ResourceManager::addResource( int type, const string &name, int flags,
 
 ResHandle ResourceManager::addNonExistingResource( Resource &resource, bool userCall )
 {
-	if( resource._name == "" || (userCall && resource._name.find( ":" ) != string::npos) ) return 0;
+	if( resource._name == "" ) return 0;
 
 	// Check that name does not yet exist
 	for( uint32 i = 0; i < _resources.size(); ++i )

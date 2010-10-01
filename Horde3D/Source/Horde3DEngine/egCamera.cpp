@@ -28,6 +28,7 @@ CameraNode::CameraNode( const CameraNodeTpl &cameraTpl ) :
 	_pipelineRes = cameraTpl.pipeRes;
 	_outputTex = cameraTpl.outputTex;
 	_outputBufferIndex = cameraTpl.outputBufferIndex;
+	_vpX = 0; _vpY = 0; _vpWidth = 320; _vpHeight = 240;
 	_frustLeft = cameraTpl.leftPlane;
 	_frustRight = cameraTpl.rightPlane;
 	_frustBottom = cameraTpl.bottomPlane;
@@ -125,6 +126,14 @@ int CameraNode::getParamI( int param )
 		return _outputTex != 0x0 ? _outputTex->getHandle() : 0;
 	case CameraNodeParams::OutBufIndexI:
 		return _outputBufferIndex;
+	case CameraNodeParams::ViewportXI:
+		return _vpX;
+	case CameraNodeParams::ViewportYI:
+		return _vpY;
+	case CameraNodeParams::ViewportWidthI:
+		return _vpWidth;
+	case CameraNodeParams::ViewportHeightI:
+		return _vpHeight;
 	case CameraNodeParams::OrthoI:
 		return _orthographic ? 1 : 0;
 	case CameraNodeParams::OccCullingI:
@@ -158,6 +167,18 @@ void CameraNode::setParamI( int param, int value )
 		return;
 	case CameraNodeParams::OutBufIndexI:
 		_outputBufferIndex = value;
+		return;
+	case CameraNodeParams::ViewportXI:
+		_vpX = value;
+		return;
+	case CameraNodeParams::ViewportYI:
+		_vpY = value;
+		return;
+	case CameraNodeParams::ViewportWidthI:
+		_vpWidth = value;
+		return;
+	case CameraNodeParams::ViewportHeightI:
+		_vpHeight = value;
 		return;
 	case CameraNodeParams::OrthoI:
 		_orthographic = (value == 1);

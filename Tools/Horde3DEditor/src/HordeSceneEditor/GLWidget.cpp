@@ -207,8 +207,6 @@ void GLWidget::initializeGL()
 
 void GLWidget::resizeGL(int width, int height)
 {	
-	if ( m_initialized )
-		h3dSetupViewport( 0, 0, width, height, true);
 	emit resized(width, height);	
 }
 

@@ -288,7 +288,7 @@ The end result is that the character appears to be running.
 <i><b>Using animation layers</b></i>
 <br />
 Horde3D supports animation layers to make it easier to switch between animations. A layer has a signed number, the
-layer id, which determines the priority of the layer. Layers with a higer index have a higher priority and their
+layer id, which determines the priority of the layer. Layers with a higher index have a higher priority and their
 animations are processed before the ones on lower layers. All animations on a single layer have normalized blend
 weights. For example that means, if there are two animations both with weight 1.0 on layer 0, both animations
 will contribute 50% to the final animation. If the sum of the blend weights of a single layer is smaller than 1.0,
@@ -296,7 +296,7 @@ the remainder is propagated to the lower layers. So if there are two layers 1 an
 layer 1 have a weight sum of 0.6, the remaining weight of 0.4 is available for the animations on layer 0.
 <br /><br />
 As an example, we can consider a character that plays a weighted combination of walk and run cycles on a single
-layer, depending on the walking speed of the player. We want to replace thr resulting animation with a shoot animation
+layer, depending on the walking speed of the player. We want to replace the resulting animation with a shoot animation
 when the player hits a button. Doing this is very easy using the layer system: we just need to add the shoot animation
 on a higher layer, so that it has a higher priority than the other animations. The weight of the shoot animation
 can gradually be increased from 0.0 to 1.0. Since the shoot animation has a higher priority than the combined

@@ -19,6 +19,7 @@
 #include "egLight.h"
 #include "egCamera.h"
 #include "egResource.h"
+#include "egRendererBase.h"
 #include "egRenderer.h"
 #include "egPipeline.h"
 #include "egExtensions.h"
@@ -42,15 +43,17 @@ namespace Horde3D {
 
 const char *Modules::versionString = "Horde3D 1.0.0 Beta5";
 
-bool              Modules::_errorFlag = false;
-EngineConfig      *Modules::_engineConfig = 0x0;
-EngineLog         *Modules::_engineLog = 0x0;
-StatManager       *Modules::_statManager = 0x0;
-SceneManager      *Modules::_sceneManager = 0x0;
-ResourceManager   *Modules::_resourceManager = 0x0;
-Renderer          *Modules::_renderer = 0x0;
-ExtensionManager  *Modules::_extensionManager = 0x0;
+bool                   Modules::_errorFlag = false;
+EngineConfig           *Modules::_engineConfig = 0x0;
+EngineLog              *Modules::_engineLog = 0x0;
+StatManager            *Modules::_statManager = 0x0;
+SceneManager           *Modules::_sceneManager = 0x0;
+ResourceManager        *Modules::_resourceManager = 0x0;
+RenderDeviceInterface  *Modules::_renderDeviceInterface = 0x0;
+Renderer               *Modules::_renderer = 0x0;
+ExtensionManager       *Modules::_extensionManager = 0x0;
 
+RenderDeviceInterface  *gRDI = 0x0;
 
 void Modules::installExtensions()
 {
@@ -73,6 +76,8 @@ bool Modules::init()
 	if( _engineConfig == 0x0 ) _engineConfig = new EngineConfig();
 	if( _sceneManager == 0x0 ) _sceneManager = new SceneManager();
 	if( _resourceManager == 0x0 ) _resourceManager = new ResourceManager();
+	if( _renderDeviceInterface == 0x0 ) _renderDeviceInterface = new RenderDeviceInterface();
+	gRDI = _renderDeviceInterface;
 	if( _renderer == 0x0 ) _renderer = new Renderer();
 	if( _statManager == 0x0 ) _statManager = new StatManager();
 
@@ -120,7 +125,7 @@ bool Modules::init()
 
 	// Create default resources
 	TextureResource *tex2DRes = new TextureResource(
-		"$Tex2D", 32, 32, TextureFormats::BGRA8, ResourceFlags::NoTexMipmaps );
+		"$Tex2D", 32, 32, 1, TextureFormats::BGRA8, ResourceFlags::NoTexMipmaps );
 	void *image = tex2DRes->mapStream( TextureResData::ImageElem, 0, TextureResData::ImgPixelStream, false, true );
 	ASSERT( image != 0x0 );
 	for( uint32 i = 0; i < 32*32; ++i ) ((uint32 *)image)[i] = 0xffffffff;
@@ -129,7 +134,7 @@ bool Modules::init()
 	resMan().addNonExistingResource( *tex2DRes, false );
 
 	TextureResource *texCubeRes = new TextureResource(
-		"$TexCube", 32, 32, TextureFormats::BGRA8, ResourceFlags::TexCubemap | ResourceFlags::NoTexMipmaps );
+		"$TexCube", 32, 32, 1, TextureFormats::BGRA8, ResourceFlags::TexCubemap | ResourceFlags::NoTexMipmaps );
 	for( uint32 i = 0; i < 6; ++i )
 	{
 		image = texCubeRes->mapStream( TextureResData::ImageElem, i, TextureResData::ImgPixelStream, false, true );
@@ -139,6 +144,15 @@ bool Modules::init()
 	}
 	texCubeRes->addRef();
 	resMan().addNonExistingResource( *texCubeRes, false );
+
+	TextureResource *tex3DRes = new TextureResource(
+		"$Tex3D", 16, 16, 4, TextureFormats::BGRA8, ResourceFlags::NoTexMipmaps );
+	image = tex3DRes->mapStream( TextureResData::ImageElem, 0, TextureResData::ImgPixelStream, false, true );
+	ASSERT( image != 0x0 );
+	for( uint32 i = 0; i < 16*16*4; ++i ) ((uint32 *)image)[i] = 0xffffffff;
+	tex3DRes->unmapStream();
+	tex3DRes->addRef();
+	resMan().addNonExistingResource( *tex3DRes, false );
 	
 	return true;
 }
@@ -154,6 +168,8 @@ void Modules::release()
 	delete _sceneManager; _sceneManager = 0x0;
 	delete _resourceManager; _resourceManager = 0x0;
 	delete _renderer; _renderer = 0x0;
+	delete _renderDeviceInterface; _renderDeviceInterface = 0x0;
+	gRDI = 0x0;
 	delete _statManager; _statManager = 0x0;
 	delete _engineLog; _engineLog = 0x0;
 	delete _engineConfig; _engineConfig = 0x0;

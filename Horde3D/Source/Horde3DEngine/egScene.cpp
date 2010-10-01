@@ -345,11 +345,11 @@ struct RendQueueItemCompFunc
 void SpatialGraph::updateQueues( const Frustum &frustum1, const Frustum *frustum2,
 	                             RenderingOrder::List order, bool lightQueue, bool renderQueue )
 {
+	Modules::sceneMan().updateNodes();
+	
 	Vec3f camPos( frustum1.getOrigin() );
 	if( Modules::renderer().getCurCamera() != 0x0 )
 		camPos = Modules::renderer().getCurCamera()->getAbsPos();
-	
-	Modules::sceneMan().updateNodes();
 	
 	// Clear without affecting capacity
 	if( lightQueue ) _lightQueue.resize( 0 );
@@ -757,17 +757,17 @@ int SceneManager::checkNodeVisibility( SceneNode &node, CameraNode &cam, bool ch
 	{
 		if( node.getType() == SceneNodeTypes::Mesh && cam._occSet < (int)((MeshNode *)&node)->_occQueries.size() )
 		{
-			if( Modules::renderer().getQueryResult( ((MeshNode *)&node)->_occQueries[cam._occSet] ) < 1 )
+			if( gRDI->getQueryResult( ((MeshNode *)&node)->_occQueries[cam._occSet] ) < 1 )
 				return -1;
 		}
 		else if( node.getType() == SceneNodeTypes::Emitter && cam._occSet < (int)((EmitterNode *)&node)->_occQueries.size() )
 		{
-			if( Modules::renderer().getQueryResult( ((EmitterNode *)&node)->_occQueries[cam._occSet] ) < 1 )
+			if( gRDI->getQueryResult( ((EmitterNode *)&node)->_occQueries[cam._occSet] ) < 1 )
 				return -1;
 		}
 		else if( node.getType() == SceneNodeTypes::Light && cam._occSet < (int)((LightNode *)&node)->_occQueries.size() )
 		{
-			if( Modules::renderer().getQueryResult( ((LightNode *)&node)->_occQueries[cam._occSet] ) < 1 )
+			if( gRDI->getQueryResult( ((LightNode *)&node)->_occQueries[cam._occSet] ) < 1 )
 				return -1;
 		}
 	}

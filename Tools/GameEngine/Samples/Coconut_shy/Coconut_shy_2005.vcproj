@@ -24,7 +24,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\libs\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\Include\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y"
+				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -105,7 +105,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\libs\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\Include\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y"
+				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\libs\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\Include\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -184,7 +184,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\libs\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\Include\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y"
+				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\libs\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Dependencies\Include\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

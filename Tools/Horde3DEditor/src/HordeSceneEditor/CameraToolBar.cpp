@@ -111,6 +111,11 @@ void CameraToolBar::viewportResized(int width, int height)
 		h3dSetNodeParamF( camera->hordeId(), H3DCamera::TopPlaneF, 0, 1 );
 		h3dSetNodeParamF( camera->hordeId(), H3DCamera::BottomPlaneF, 0, -1 );
 	}
+	h3dSetNodeParamI( camera->hordeId(), H3DCamera::ViewportXI, 0 );
+	h3dSetNodeParamI( camera->hordeId(), H3DCamera::ViewportYI, 0 );
+	h3dSetNodeParamI( camera->hordeId(), H3DCamera::ViewportWidthI, width );
+	h3dSetNodeParamI( camera->hordeId(), H3DCamera::ViewportHeightI, height );
+	h3dResizePipelineBuffers( camera->pipeline().ResourceID, width, height );
 }
 
 void CameraToolBar::nodePropertyChanged( QXmlTreeNode* node )

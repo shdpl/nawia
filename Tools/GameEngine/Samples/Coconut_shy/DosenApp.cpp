@@ -247,7 +247,12 @@ void DemoApp::keyPress(unsigned int param, bool pressed)
 
 void DemoApp::resize(int width, int height)
 {	
-	h3dSetupViewport(0, 0, width, height, true);
+	H3DNode camID = GameEngine::entitySceneGraphID( m_camID );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportXI, 0 );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportYI, 0 );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportWidthI, width );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportHeightI, height );	
+	h3dResizePipelineBuffers( h3dGetNodeParamI( camID, H3DCamera::PipeResI ), width, height );
 	m_width = width;
 	m_height = height;
 }

@@ -32,15 +32,15 @@ int GeometryResource::mappedWriteStream = -1;
 
 void GeometryResource::initializationFunc()
 {
-	defVertBuffer = Modules::renderer().createVertexBuffer( 0, 0x0 );
-	defIndexBuffer = Modules::renderer().createIndexBuffer( 0, 0x0 );
+	defVertBuffer = gRDI->createVertexBuffer( 0, 0x0 );
+	defIndexBuffer = gRDI->createIndexBuffer( 0, 0x0 );
 }
 
 
 void GeometryResource::releaseFunc()
 {
-	Modules::renderer().releaseBuffer( defVertBuffer );
-	Modules::renderer().releaseBuffer( defIndexBuffer );
+	gRDI->releaseBuffer( defVertBuffer );
+	gRDI->releaseBuffer( defIndexBuffer );
 }
 
 
@@ -72,10 +72,10 @@ Resource *GeometryResource::clone()
 	memcpy( res->_vertPosData, _vertPosData, _vertCount * sizeof( Vec3f ) );
 	memcpy( res->_vertTanData, _vertTanData, _vertCount * sizeof( VertexDataTan ) );
 	memcpy( res->_vertStaticData, _vertStaticData, _vertCount * sizeof( VertexDataStatic ) );
-	res->_indexBuf = Modules::renderer().cloneBuffer( _indexBuf );
-	res->_posVBuf = Modules::renderer().cloneBuffer( _posVBuf );
-	res->_tanVBuf = Modules::renderer().cloneBuffer( _tanVBuf );
-	res->_staticVBuf = Modules::renderer().cloneBuffer( _staticVBuf );
+	res->_indexBuf = gRDI->cloneBuffer( _indexBuf );
+	res->_posVBuf = gRDI->cloneBuffer( _posVBuf );
+	res->_tanVBuf = gRDI->cloneBuffer( _tanVBuf );
+	res->_staticVBuf = gRDI->cloneBuffer( _staticVBuf );
 	
 	return res;
 }
@@ -104,23 +104,23 @@ void GeometryResource::release()
 {
 	if( _posVBuf != 0 && _posVBuf != defVertBuffer )
 	{
-		Modules::renderer().releaseBuffer( _posVBuf );
+		gRDI->releaseBuffer( _posVBuf );
 		_posVBuf = 0;
 	}
 	if( _tanVBuf != 0 && _tanVBuf != defVertBuffer )
 	{
-		Modules::renderer().releaseBuffer( _tanVBuf );
+		gRDI->releaseBuffer( _tanVBuf );
 		_tanVBuf = 0;
 	}
 	if( _staticVBuf != 0 && _staticVBuf != defVertBuffer )
 	{
-		Modules::renderer().releaseBuffer( _staticVBuf );
+		gRDI->releaseBuffer( _staticVBuf );
 		_staticVBuf = 0;
 	}
 	
 	if( _indexBuf != 0 && _indexBuf != defIndexBuffer )
 	{
-		Modules::renderer().releaseBuffer( _indexBuf );
+		gRDI->releaseBuffer( _indexBuf );
 		_indexBuf = 0;
 	}
 
@@ -433,16 +433,12 @@ bool GeometryResource::load( const char *data, int size )
 	if( _vertCount > 0 && _indexCount > 0 )
 	{
 		// Upload indices
-		_indexBuf = Modules::renderer().createIndexBuffer(
-			_indexCount * (_16BitIndices ? 2 : 4), _indexData );
+		_indexBuf = gRDI->createIndexBuffer( _indexCount * (_16BitIndices ? 2 : 4), _indexData );
 		
 		// Upload vertices
-		_posVBuf = Modules::renderer().createVertexBuffer(
-			_vertCount * sizeof( Vec3f ), _vertPosData );
-		_tanVBuf = Modules::renderer().createVertexBuffer(
-			_vertCount * sizeof( VertexDataTan ), _vertTanData );
-		_staticVBuf = Modules::renderer().createVertexBuffer(
-			_vertCount * sizeof( VertexDataStatic ), _vertStaticData );
+		_posVBuf = gRDI->createVertexBuffer(_vertCount * sizeof( Vec3f ), _vertPosData );
+		_tanVBuf = gRDI->createVertexBuffer( _vertCount * sizeof( VertexDataTan ), _vertTanData );
+		_staticVBuf = gRDI->createVertexBuffer( _vertCount * sizeof( VertexDataStatic ), _vertStaticData );
 	}
 	
 	return true;
@@ -521,19 +517,19 @@ void GeometryResource::unmapStream()
 		{
 		case GeometryResData::GeoIndexStream:
 			if( _indexData != 0x0 )
-				Modules::renderer().updateBufferData( _indexBuf, 0, _indexCount * (_16BitIndices ? 2 : 4), _indexData );
+				gRDI->updateBufferData( _indexBuf, 0, _indexCount * (_16BitIndices ? 2 : 4), _indexData );
 			break;
 		case GeometryResData::GeoVertPosStream:
 			if( _vertPosData != 0x0 )
-				Modules::renderer().updateBufferData( _posVBuf, 0, _vertCount * sizeof( Vec3f ), _vertPosData );
+				gRDI->updateBufferData( _posVBuf, 0, _vertCount * sizeof( Vec3f ), _vertPosData );
 			break;
 		case GeometryResData::GeoVertTanStream:
 			if( _vertTanData != 0x0 )
-				Modules::renderer().updateBufferData( _tanVBuf, 0, _vertCount * sizeof( VertexDataTan ), _vertTanData );
+				gRDI->updateBufferData( _tanVBuf, 0, _vertCount * sizeof( VertexDataTan ), _vertTanData );
 			break;
 		case GeometryResData::GeoVertStaticStream:
 			if( _vertStaticData != 0x0 )
-				Modules::renderer().updateBufferData( _staticVBuf, 0, _vertCount * sizeof( VertexDataStatic ), _vertStaticData );
+				gRDI->updateBufferData( _staticVBuf, 0, _vertCount * sizeof( VertexDataStatic ), _vertStaticData );
 			break;
 		}
 
@@ -547,13 +543,11 @@ void GeometryResource::updateDynamicVertData()
 	// Upload dynamic stream data
 	if( _vertPosData != 0x0 )
 	{
-		Modules::renderer().updateBufferData(
-			_posVBuf, 0, _vertCount * sizeof( Vec3f ), _vertPosData );
+		gRDI->updateBufferData( _posVBuf, 0, _vertCount * sizeof( Vec3f ), _vertPosData );
 	}
 	if( _vertTanData != 0x0 )
 	{
-		Modules::renderer().updateBufferData(
-			_tanVBuf, 0, _vertCount * sizeof( VertexDataTan ), _vertTanData );
+		gRDI->updateBufferData( _tanVBuf, 0, _vertCount * sizeof( VertexDataTan ), _vertTanData );
 	}
 }
 
