@@ -159,7 +159,20 @@ namespace GameEngine
 		
 		if (coords) h3dGetCastRayResult(0, 0, 0, coords);
 		
-		node = h3dGetNodeParent( node );
+		H3DNode parentNode = node;
+		while( true )
+		{
+			parentNode = h3dGetNodeParent( node );
+			
+			node = parentNode;
+			
+			if(h3dGetNodeType(node) == H3DNodeTypes::Model)
+				break;
+				
+		}
+		
+		
+		
 		return h3dGetNodeParamStr( node, H3DNodeParams::NameStr );
 	}
 
