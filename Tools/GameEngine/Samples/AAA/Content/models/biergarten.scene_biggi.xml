@@ -4,7 +4,6 @@
     <Light sy="1" lightingContext="LIGHTING" sz="1" col_B="0.5294117647058824" name="light" material="materials/light.material.xml" col_G="0.7215686274509804" tx="-15" ty="35" shadowContext="SHADOWMAP" tz="35" shadowMapBias="0.0004" rx="-40" ry="-45" shadowMapCount="4" rz="0" col_R="0.8705882352941177" radius="200" fov="150" shadowSplitLambda="0.7" sx="1" />
     <Camera pipeline="pipelines/forward.pipeline.xml" tx="-13" ty="5.63" sx="1" occlusionCulling="0" tz="2" rx="-25" sy="1" ry="-40" sz="1" rz="0" name="camera" >
         <Attachment type="GameEngine" name="camera" >
-            <SoundListener/>
             <BayesNet file="../Kultur-Modell_paper.xdsl" />
         </Attachment>
     </Camera>
@@ -47,7 +46,6 @@
 		-->
     <Reference tx="-8" ty="0" sx="0.06" tz="-6" rx="0" sy="0.06" ry="-80" sz="0.06" sceneGraph="models/female05/female05.scene.xml" rz="0" name="agent0" >
         <Attachment type="GameEngine" name="agent0" >
-            <Sound3D/>
             <Socket protocol="UDP" port="343" address="127.0.0.1" type="server" />
             <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female05/female05.scene.xml" neck="Bip01_Head" />
             <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
@@ -67,7 +65,6 @@
     </Reference>
     <Reference tx="-3" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male04/male04.scene.xml" rz="0" name="agent1" >
         <Attachment type="GameEngine" name="agent1" >
-            <Sound3D/>
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male04/male04.scene.xml" neck="Bip01_Head" />
             <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
             <Sapi voice="Mike16" useDistanceModel="1"/>
@@ -86,7 +83,6 @@
     </Reference>
     <Reference tx="-5" ty="0" sx="0.057" tz="-6" rx="0" sy="0.057" ry="-40" sz="0.057" sceneGraph="models/char_female_japan_02/char_female_japan_02.scene.xml" rz="0" name="agent2" >
         <Attachment type="GameEngine" name="agent2" >
-            <Sound3D/>
             <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/char_female_japan_02/char_female_japan_02.scene.xml" neck="Bip01_Head" />
             <AgentAnimation gender="female" culture="japan" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
             <Sapi voice="Crystal16" useDistanceModel="1"/>
@@ -105,7 +101,6 @@
     </Reference>
     <Reference tx="-8" ty="0" sx="0.057" tz="-3" rx="0" sy="0.057" ry="-70" sz="0.057" sceneGraph="models/char_male_japan_02/char_male_japan_02.scene.xml" rz="0" name="agent3" >
         <Attachment type="GameEngine" name="agent3" >
-            <Sound3D/>
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/char_male_japan_02/char_male_japan_02.scene.xml" neck="Bip01_Head" />
             <AgentAnimation gender="male" culture="japan" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
             <Sapi voice="Mike16" useDistanceModel="1"/>

@@ -189,6 +189,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameBayesNetComponent", "src\GameBayesNetComponent\GameBayesNetComponent_2008.vcproj", "{ACA0EDF7-A6D9-42DF-A0C1-29E8D0AACC32}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DB488001-8E98-4724-9787-72DA137C4E47} = {DB488001-8E98-4724-9787-72DA137C4E47}
+		{3BF9D44F-4A29-46EE-9A04-EE706E602620} = {3BF9D44F-4A29-46EE-9A04-EE706E602620}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameSocketComponent", "src\GameSocketComponent\GameSocketComponent_2008.vcproj", "{46436C34-9E64-4754-A03E-D951849B0830}"
