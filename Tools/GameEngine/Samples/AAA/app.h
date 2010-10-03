@@ -58,6 +58,9 @@ private:
 	bool			_keys[320];
 
 	//** Camera
+	///camera ids (horde3d id and entity id)
+	int				m_cam_hID;
+	int				m_cam_eID;
 	///initial camera position and rotation
 	float			init_x, init_y, init_z, init_rx, init_ry, init_rz;
 	///current camera position and rotation

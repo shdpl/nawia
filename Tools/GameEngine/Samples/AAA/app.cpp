@@ -73,9 +73,11 @@ bool Application::init( const char *fileName )
 	if (!GameEngine::loadScene(fileName)) return false;
 
 	//init cam
-	GameEngine::setActiveCamera(GameEngine::entitySceneGraphID(GameEngine::entityWorldID("camera")));
+	m_cam_eID = GameEngine::entityWorldID("camera");
+	m_cam_hID = GameEngine::entitySceneGraphID(m_cam_eID);
+	GameEngine::setActiveCamera(m_cam_hID);
 	//default camera position
-	h3dGetNodeTransform( GameEngine::entitySceneGraphID(GameEngine::entityWorldID("camera")), &init_x, &init_y, &init_z, &init_rx, &init_ry, &init_rz, 0,0,0 );
+	h3dGetNodeTransform( m_cam_hID, &init_x, &init_y, &init_z, &init_rx, &init_ry, &init_rz, 0,0,0 );
 	_x = init_x; _y = init_y; _z = init_z; 
 	_rx = init_rx; _ry = init_ry; _rz = init_rz; 
 
@@ -311,7 +313,7 @@ void Application::update( float fps )
     m_counter += 10.0f/_curFPS;
 
 	//** Set camera parameters
-	h3dSetNodeTransform( GameEngine::entitySceneGraphID(GameEngine::entityWorldID("camera")), _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
+	h3dSetNodeTransform( m_cam_hID, _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
 
 	//** Render scene
 	GameEngine::update();
@@ -406,10 +408,11 @@ void Application::release()
 void Application::resize( int width, int height )
 {
 	// Resize viewport
-	h3dSetupViewport( 0, 0, width, height, true );
-	
-	// Set virtual camera parameters
-	//Horde3D::setupCameraView( GameEngine::entityWorldID("camera"), 45.0f, (float)width / height, 0.1f, 1000.0f );
+	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportXI, 0 );
+	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportYI, 0 );
+	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportWidthI, width );
+	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportHeightI, height );	
+	h3dResizePipelineBuffers( h3dGetNodeParamI( m_cam_hID, H3DCamera::PipeResI ), width, height );
 }
 
 
@@ -534,7 +537,7 @@ void Application::keyHandler()
 	{
 		_x = init_x; _y = init_y; _z = init_z; 
 		_rx = init_rx; _ry = init_ry; _rz = init_rz; 
-		h3dSetNodeTransform( GameEngine::entitySceneGraphID(GameEngine::entityWorldID("camera")), _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
+		h3dSetNodeTransform( m_cam_hID, _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
 	}
 
 	//check number keys
@@ -895,7 +898,7 @@ void Application::mouseMoveEvent( float dX, float dY )
 		if(_keys[287] || _keys[289]) //shift or ctrl
 			_rz -= (dX * mouseRotSpeed / _fps) * 0.5f;
 
-		GameEngine::setEntityRotation( GameEngine::entityWorldID("camera"), _rx, _ry, _rz);
+		GameEngine::setEntityRotation( m_cam_eID, _rx, _ry, _rz);
 	}
 }
 
