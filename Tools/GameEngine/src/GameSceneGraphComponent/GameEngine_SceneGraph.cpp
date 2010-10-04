@@ -159,21 +159,14 @@ namespace GameEngine
 		
 		if (coords) h3dGetCastRayResult(0, 0, 0, coords);
 		
-		H3DNode parentNode = node;
-		while( true )
+		while(node != 0 && h3dGetNodeType(node) != H3DNodeTypes::Model)
 		{
-			parentNode = h3dGetNodeParent( node );
-			
-			node = parentNode;
-			
-			if(h3dGetNodeType(node) == H3DNodeTypes::Model)
-				break;
-				
-		}
+			node = h3dGetNodeParent( node );
+		}		
 		
-		
-		
-		return h3dGetNodeParamStr( node, H3DNodeParams::NameStr );
+		if (node != 0)
+			return h3dGetNodeParamStr( node, H3DNodeParams::NameStr );
+		return "";
 	}
 
 	SCENEGRAPHPLUGINEXP bool getEntityVisiblitiy(unsigned int entityID)
