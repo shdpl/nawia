@@ -21,32 +21,32 @@
 // authors: Ionut Damian, Nikolaus Bee, Felix Kistler
 // 
 // ****************************************************************************************
-#ifndef SOCKETCLIENT_H_
-#define SOCKETCLIENT_H_
+#pragma once
+#ifndef SOCKETCLIENTSERVER_H_
+#define SOCKETCLIENTSERVER_H_
 
 #include "SocketAddress.h"
 #include "GameEngine_Socket.h"
-#include "SocketClientServer.h"
+#include "config.h"
 
-class SocketClient : public SocketClientServer
+class SocketClientServer
 {
 public:
-	SocketClient(const char* server_name, int port, SocketProtocol::List protocol);
-	~SocketClient();
+	SocketClientServer(void) {}
+	virtual ~SocketClientServer(void) {}
 
 	//** functions
-	///initializes and starts a TCP Client
-	void startTCP();
-	///initializes and starts a UDP Client
-	void startUDP();
+	///initializes and starts a TCP or UDP Client
+	virtual void startTCP() = 0;
+	virtual void startUDP() = 0;
 
 	///checks for incomming messages and stores them in a local buffer
-	void update();
+	virtual void update() = 0;
 
 	///looks in the local buffer and copies the received messages in the "data" variable
-	int getSocketData(const char **data, bool onlyNewestMessage = false);
+	virtual int getSocketData(const char **data, bool onlyNewestMessage = false) = 0;
 	///sends data to the linked server socket
-	void sendSocketData(const char *data);
+	virtual void sendSocketData(const char *data) = 0;
 
 private:
 	//** variables
@@ -60,9 +60,19 @@ private:
 	SocketProtocol::List m_protocol;
 
 	///length of the buffer that stores received data
-	int			m_resultLength;
-	///buffer storing received data
-	char*		m_data;	
+	int			m_resultLength[BUFFER_LENGTH];
+	///number of received messages
+	int			m_numMessages;
+	///last received message (?)
+	int			m_currentMessage;
+	// Acces data per char or per message
+	union
+	{
+		///buffer storing received messages
+		char m_messages[BUFFER_LENGTH][MAX_MSG_LENGTH];
+		///buffer storing received data
+		char m_data[MAX_DATA_LENGTH];
+	};	
 };
 
 #endif

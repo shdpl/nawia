@@ -31,6 +31,9 @@
 #include <GameEngine/GameEntity.h>
 #include <GameEngine/GameEvent.h>
 
+#include "SocketServer.h"
+#include "SocketClient.h"
+
 #include "GameEngine_Socket.h"
 
 #pragma comment(lib, "ws2_32.lib")
@@ -41,7 +44,7 @@ GameComponent* SocketComponent::createComponent( GameEntity* owner )
 	return new SocketComponent( owner );
 }
 
-SocketComponent::SocketComponent(GameEntity* owner) : GameComponent(owner, "SocketComponent"), m_server(0), m_client(0)
+SocketComponent::SocketComponent(GameEntity* owner) : GameComponent(owner, "SocketComponent"), m_clientServer(0)
 {
 	owner->addListener(GameEvent::E_SEND_SOCKET_DATA, this);
 	SocketManager::instance()->addComponent(this);
@@ -59,11 +62,7 @@ SocketComponent::SocketComponent(GameEntity* owner) : GameComponent(owner, "Sock
 
 SocketComponent::~SocketComponent()
 {
-	if(m_client != 0)
-		delete m_client;
-
-	else if(m_server != 0)
-		delete m_server;
+	delete m_clientServer;
 
 	WSACleanup();
 	SocketManager::instance()->removeComponent(this);
@@ -144,35 +143,20 @@ void SocketComponent::loadFromXml(const XMLNode* node)
 
 	if ( protocol != 0 )
 	{
-		if ( strcmp ("UDP", protocol) == 0 )
+		if (strcmp("UDP", protocol) != 0 && strcmp("TCP", protocol) != 0)
 		{
-			if ( isServer )
-			{
-				m_server = new SocketServer( address, port, SocketProtocol::UDP, nrClients );
-				m_client = 0;
-			}
-			else
-			{
-				m_server = 0;
-				m_client = new SocketClient( address, port, SocketProtocol::UDP );
-			}
-		}
-		else if ( strcmp ("TCP", protocol) == 0 )
-		{
-			if ( isServer )
-			{
-				m_server = new SocketServer( address, port, SocketProtocol::TCP, nrClients );
-				m_client = 0;
-			}
-			else
-			{
-				m_server = 0;
-				m_client = new SocketClient( address, port, SocketProtocol::TCP );
-			}
+			GameLog::errorMessage("SocketComponent: no valid protocol");
 		}
 		else
 		{
-			GameLog::errorMessage("SocketComponent: no valid protocol");
+			if ( isServer )
+			{
+				m_clientServer = new SocketServer( address, port, (strcmp ("UDP", protocol) == 0) ? SocketProtocol::UDP : SocketProtocol::TCP, nrClients );
+			}
+			else
+			{
+				m_clientServer = new SocketClient( address, port, (strcmp ("UDP", protocol) == 0) ? SocketProtocol::UDP : SocketProtocol::TCP );
+			}
 		}
 	}
 	else
@@ -183,29 +167,20 @@ void SocketComponent::loadFromXml(const XMLNode* node)
 
 void SocketComponent::update()
 {
-	if(m_client != 0)
-		m_client->update();
-
-	else if(m_server != 0)
-		m_server->update();	
+	if (m_clientServer != 0)
+		m_clientServer->update();
 }
 
 int SocketComponent::getSocketData(const char **data, bool onlyNewestMessage /*= false*/)
 {
-	if(m_client != 0)
-		return m_client->getSocketData(data);
-
-	else if(m_server != 0)
-		return m_server->getSocketData(data, onlyNewestMessage);
+	if (m_clientServer != 0)
+		return m_clientServer->getSocketData(data, onlyNewestMessage);
 
 	return -1;
 }
 
 void SocketComponent::sendSocketData(const char *data)
 {
-	if(m_client != 0)
-		m_client->sendSocketData(data);
-
-	else if(m_server != 0)
-		m_server->sendSocketData(data);
+	if(m_clientServer != 0)
+		m_clientServer->sendSocketData(data);
 }

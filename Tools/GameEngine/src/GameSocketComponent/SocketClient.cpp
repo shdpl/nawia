@@ -27,7 +27,7 @@
 #define MAX_DATA_LENGTH 32768
 #define MAX_MSG_LENGTH 2048
 
-SocketClient::SocketClient(const char* server_name, int port, SocketProtocol::List protocol)
+SocketClient::SocketClient(const char* server_name, int port, SocketProtocol::List protocol) : SocketClientServer()
 {
 	m_data = new char[MAX_DATA_LENGTH];
 	m_resultLength = 0;
@@ -38,10 +38,10 @@ SocketClient::SocketClient(const char* server_name, int port, SocketProtocol::Li
 	switch(protocol)
 	{
 	case SocketProtocol::TCP:
-		startTCPClient();
+		startTCP();
 		break;
 	case SocketProtocol::UDP:
-		startUDPClient();
+		startUDP();
 		break;
 	}
 }
@@ -52,7 +52,7 @@ SocketClient::~SocketClient()
 	delete m_server_addr;
 }
 
-void SocketClient::startUDPClient()
+void SocketClient::startUDP()
 {
 	long rc = 0;
 
@@ -70,7 +70,7 @@ void SocketClient::startUDPClient()
 	ioctlsocket(m_socket, FIONBIO, &mode);
 }
 
-void SocketClient::startTCPClient()
+void SocketClient::startTCP()
 {
 	long rc = 0;
 
@@ -108,7 +108,7 @@ void SocketClient::update()
 	} while (resultLength > 0);
 }
 
-int SocketClient::getSocketData(const char **data)
+int SocketClient::getSocketData(const char **data, bool onlyNewestMessage /*= false*/)
 {
 	int res = m_resultLength;
 	m_resultLength = 0;

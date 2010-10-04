@@ -27,10 +27,11 @@
 #include "SocketAddress.h"
 #include "GameEngine_Socket.h"
 #include "config.h"
+#include "SocketClientServer.h"
 
 #include <vector>
 
-class SocketServer
+class SocketServer : public SocketClientServer
 {
 public:
 	SocketServer(const char* server_name, int port, SocketProtocol::List protocol, int NrOfClients = 0);
@@ -38,9 +39,9 @@ public:
 
 	//** functions
 	///initializes and starts a TCP Server
-	void startTCPServer();
+	void startTCP();
 	///initializes and starts a UDP Client
-	void startUDPServer();
+	void startUDP();
 
 	///checks for incomming messages and stores them in a local buffer
 	void update();

@@ -25,7 +25,7 @@
 #include <GameEngine/GameLog.h>
 #include <string>
 
-SocketServer::SocketServer(const char* server_name, int port, SocketProtocol::List protocol, int NrOfClients)
+SocketServer::SocketServer(const char* server_name, int port, SocketProtocol::List protocol, int NrOfClients) : SocketClientServer()
 {
 	memset(m_resultLength, 0, sizeof(m_resultLength));
 	m_numMessages = 0;
@@ -40,10 +40,10 @@ SocketServer::SocketServer(const char* server_name, int port, SocketProtocol::Li
 	switch(protocol)
 	{
 	case SocketProtocol::TCP:
-		startTCPServer();
+		startTCP();
 		break;
 	case SocketProtocol::UDP:
-		startUDPServer();
+		startUDP();
 		break;
 	}
 }
@@ -61,7 +61,7 @@ SocketServer::~SocketServer()
 	m_clients_socket.clear();
 }
 
-void SocketServer::startUDPServer()
+void SocketServer::startUDP()
 {
 	int ret = 0;
 
@@ -88,7 +88,7 @@ void SocketServer::startUDPServer()
 	ioctlsocket(m_socket, FIONBIO, &mode);
 }
 
-void SocketServer::startTCPServer()
+void SocketServer::startTCP()
 {
 	long rc = 0;
 

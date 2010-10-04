@@ -27,8 +27,7 @@
 #include <GameEngine/config.h>
 #include <GameEngine/GameComponent.h>
 #include "SocketAddress.h"
-#include "SocketServer.h"
-#include "SocketClient.h"
+#include "SocketClientServer.h"
 
 #include <string>
 
@@ -50,10 +49,7 @@ public:
 	void sendSocketData(const char *data);
 
 private:
-	///member server, if != 0 then client has to be 0
-	SocketServer* m_server;
-	///member client, if != 0 then server has to be 0
-	SocketClient* m_client;
+	SocketClientServer* m_clientServer;
 
 	///member WSA
 	WSADATA		m_wsaData;
