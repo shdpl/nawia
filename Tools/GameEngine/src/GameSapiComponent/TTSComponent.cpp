@@ -362,6 +362,10 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 	{
 		GameLog::errorMessage("No voice initialized");
 	}
+	else if (text == 0 || strlen(text) == 0)
+	{
+		m_isSpeaking = false;
+	}
 	else
 	{
 		if (m_useDistanceModel)
