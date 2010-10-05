@@ -79,7 +79,7 @@ public:
 	/**
 	 * Stop a sound and free the openal source
 	  */
-	void stopSound(SoundComponent* sound);
+	void stopSound(SoundComponent* sound, bool delayEvent = false);
 
 private:
 	static SoundManager*		 m_instance;
@@ -103,6 +103,8 @@ private:
 
 	SoundListenerComponent*		m_activeListener;
 
+	// Sounds stopped in the last run call, event will be sent in update
+	std::vector<SoundComponent*> m_stoppedNodes;
 
 };
 

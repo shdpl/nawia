@@ -41,6 +41,10 @@
 #include <al.h>
 #include <alc.h>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #define sq(x) (x)*(x)
 
 using namespace std;
@@ -149,6 +153,21 @@ SoundManager::~SoundManager()
 
 void SoundManager::update()
 {
+	const std::vector<SoundComponent*>::iterator end = m_stoppedNodes.end();
+	std::vector<SoundComponent*>::iterator iter;
+	for (iter = m_stoppedNodes.begin(); iter != end; iter++)
+	{
+		SoundComponent* sound = *iter;
+		if (sound->m_gain == SoundComponent::OFF)
+		{
+			// Only send event if we didn't get a new sound to play after stopping
+			GameEvent event(GameEvent::E_SOUND_STOPPED, 0x0, sound);
+			sound->m_owner->executeEvent(&event);
+		}
+	}
+	// Clear the stopped nodes
+	m_stoppedNodes.resize(0);
+
 	for_each(m_soundNodes.begin(), m_soundNodes.end(), UpdateNode());
 }
 
@@ -195,7 +214,7 @@ void SoundManager::run()
 			if( node->m_gain == SoundComponent::OFF // if gain has been set to zero during the last update iteration...
 				|| node->m_maxDist < dist) // or if the node is playing but out of scope
 			{
-				stopSound(node); // ...stop the sound
+				stopSound(node, true); // ...stop the sound
 			}
 			ALenum state = AL_STOPPED;
 			if( node->m_sourceID != 0 )
@@ -233,7 +252,7 @@ void SoundManager::run()
 		if (node->m_sourceID != 0)
 		{
 			// ...stop the sound
-			stopSound(node);
+			stopSound(node, true);
 			node->m_gain = SoundComponent::OFF;
 		}
 	}
@@ -317,14 +336,13 @@ void SoundManager::removeComponent(SoundComponent* sound)
 		if( sound->m_sourceID != 0 )
 		{
 			stopSound(sound);
-			sound->m_sourceID = 0;
 			sound->m_gain = SoundComponent::OFF;
 		}
 		m_soundNodes.erase(iter);		
 	}
 }
 
-void SoundManager::stopSound(SoundComponent* sound)
+void SoundManager::stopSound(SoundComponent* sound, bool delayEvent /*= false*/)
 {
 	// Free open al source
 	ALenum error_code = AL_NO_ERROR;
@@ -347,8 +365,18 @@ void SoundManager::stopSound(SoundComponent* sound)
 	m_sourcesAvailable.push_back(sound->m_sourceID);
 
 	// And send event about the stopped sound
-	GameEvent event(GameEvent::E_SOUND_STOPPED, 0x0, sound);
-	sound->m_owner->executeEvent(&event);
+	if (delayEvent)
+	{
+#pragma omp critical
+		{
+			m_stoppedNodes.push_back(sound);
+		}
+	}
+	else
+	{
+		GameEvent event(GameEvent::E_SOUND_STOPPED, 0x0, sound);
+		sound->m_owner->executeEvent(&event);
+	}
 
 	//stop Viseme playback
 	sound->stopVisemes();
@@ -359,6 +387,6 @@ void SoundManager::stopSound(SoundComponent* sound)
 
 void SoundManager::DisplayALError(const char *szText, int errorcode)
 {
-	printf("%s %s", szText, alGetString(errorcode));
+	printf("%s %s\n", szText, alGetString(errorcode));
 	GameLog::errorMessage("%s %s", szText, alGetString(errorcode));
 }

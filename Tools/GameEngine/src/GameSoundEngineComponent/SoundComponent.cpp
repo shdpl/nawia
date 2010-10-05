@@ -596,10 +596,9 @@ bool SoundComponent::setSoundFromUserData(const char* data, int dataSize, int sa
 	if( oldStream )
 	{
 		if( m_sourceID != 0 )
-			SoundManager::instance()->stopSound( this );
+			SoundManager::instance()->stopSound( this, true );
 		if( oldRes != 0 )
 			SoundResourceManager::instance()->removeResource(oldRes);
-		m_sourceID = 0;
 	}
 	m_resourceID = SoundResourceManager::instance()->addUserResource(data, dataSize, samplesPerSec, bitsPerSample, numChannels);
 
@@ -612,7 +611,7 @@ bool SoundComponent::setSoundFromUserData(const char* data, int dataSize, int sa
 			delete[] m_buffer;
 			m_buffer = new unsigned int[m_bufferCount];
 		}
-		memcpy(m_buffer, SoundResourceManager::instance()->getBuffer(m_resourceID), m_bufferCount * sizeof(int));
+		memcpy(m_buffer, SoundResourceManager::instance()->getBuffer(m_resourceID), m_bufferCount * sizeof(unsigned int));
 		m_stream = SoundResourceManager::instance()->isStream(m_resourceID); 
 
 		// Don't start the sound immediately
@@ -629,10 +628,9 @@ bool SoundComponent::setSoundFromUserData(const char* data, int dataSize, int sa
 			// Stop old sound if different
 			else {
 				if (m_sourceID != 0)
-					SoundManager::instance()->stopSound(this);
+					SoundManager::instance()->stopSound(this, true);
 				if (oldRes != 0)
 					SoundResourceManager::instance()->removeResource(oldRes);
-				m_sourceID = 0;
 			}
 		}
 		return true;
@@ -653,10 +651,9 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 	if( oldStream )
 	{
 		if( m_sourceID != 0 )
-			SoundManager::instance()->stopSound( this );
+			SoundManager::instance()->stopSound( this, true );
 		if( oldRes != 0 )
 			SoundResourceManager::instance()->removeResource(oldRes);
-		m_sourceID = 0;
 	}
 
 	// Check for tagged sound files
@@ -684,7 +681,7 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 			delete[] m_buffer;
 			m_buffer = new unsigned int[m_bufferCount];
 		}
-		memcpy(m_buffer, SoundResourceManager::instance()->getBuffer(m_resourceID), m_bufferCount * sizeof(int));
+		memcpy(m_buffer, SoundResourceManager::instance()->getBuffer(m_resourceID), m_bufferCount * sizeof(unsigned int));
 		m_stream = SoundResourceManager::instance()->isStream(m_resourceID); 
 
 		m_gain= m_initialGain;
@@ -700,10 +697,9 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 			// Stop old sound if different
 			else {
 				if (m_sourceID != 0)
-					SoundManager::instance()->stopSound(this);
+					SoundManager::instance()->stopSound(this, true);
 				if (oldRes != 0)
 					SoundResourceManager::instance()->removeResource(oldRes);
-				m_sourceID = 0;
 			}
 		}
 		return true;
