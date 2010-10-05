@@ -32,7 +32,7 @@ class SocketClient : public SocketClientServer
 {
 public:
 	SocketClient(const char* server_name, int port, SocketProtocol::List protocol);
-	~SocketClient();
+	virtual ~SocketClient();
 
 	//** functions
 	///initializes and starts a TCP Client
@@ -41,28 +41,12 @@ public:
 	void startUDP();
 
 	///checks for incomming messages and stores them in a local buffer
-	void update();
+	virtual void update();
 
 	///looks in the local buffer and copies the received messages in the "data" variable
-	int getSocketData(const char **data, bool onlyNewestMessage = false);
+	//virtual int getSocketData(const char **data, bool onlyNewestMessage = false);
 	///sends data to the linked server socket
-	void sendSocketData(const char *data);
-
-private:
-	//** variables
-	///member socket
-	SOCKET m_socket;
-
-	///socket address of the linked server
-	SocketAddress* m_server_addr;
-
-	///used communication protocol
-	SocketProtocol::List m_protocol;
-
-	///length of the buffer that stores received data
-	int			m_resultLength;
-	///buffer storing received data
-	char*		m_data;	
+	virtual void sendSocketData(const char *data);
 };
 
 #endif

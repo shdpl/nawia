@@ -114,14 +114,17 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SocketAddress.cpp" />
     <ClCompile Include="SocketClient.cpp" />
+    <ClCompile Include="SocketClientServer.cpp" />
     <ClCompile Include="SocketComponent.cpp" />
     <ClCompile Include="SocketManager.cpp" />
     <ClCompile Include="SocketServer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="config.h" />
     <ClInclude Include="GameEngine_Socket.h" />
     <ClInclude Include="SocketAddress.h" />
     <ClInclude Include="SocketClient.h" />
+    <ClInclude Include="SocketClientServer.h" />
     <ClInclude Include="SocketComponent.h" />
     <ClInclude Include="SocketManager.h" />
     <ClInclude Include="SocketServer.h" />

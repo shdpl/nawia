@@ -24,17 +24,10 @@
 #include "SocketClient.h"
 #include <GameEngine/GameLog.h>
 
-#define MAX_DATA_LENGTH 32768
-#define MAX_MSG_LENGTH 2048
+#include "config.h"
 
-SocketClient::SocketClient(const char* server_name, int port, SocketProtocol::List protocol) : SocketClientServer()
+SocketClient::SocketClient(const char* server_name, int port, SocketProtocol::List protocol) : SocketClientServer(server_name, port, protocol)
 {
-	m_data = new char[MAX_DATA_LENGTH];
-	m_resultLength = 0;
-
-	m_server_addr = new SocketAddress(server_name, port);
-	m_protocol = protocol;
-
 	switch(protocol)
 	{
 	case SocketProtocol::TCP:
@@ -48,8 +41,6 @@ SocketClient::SocketClient(const char* server_name, int port, SocketProtocol::Li
 
 SocketClient::~SocketClient()
 {
-	delete m_data;
-	delete m_server_addr;
 }
 
 void SocketClient::startUDP()
@@ -103,25 +94,28 @@ void SocketClient::update()
 		}
 		if (resultLength > 0)
 		{
-			m_resultLength = resultLength;
+			m_resultLength[0] = resultLength;
 		}
 	} while (resultLength > 0);
 }
 
-int SocketClient::getSocketData(const char **data, bool onlyNewestMessage /*= false*/)
-{
-	int res = m_resultLength;
-	m_resultLength = 0;
-	*data = (const char*) m_data;
-	return res;
-}
+//int SocketClient::getSocketData(const char **data, bool onlyNewestMessage /*= false*/)
+//{
+//	int res = m_resultLength[0];
+//	m_resultLength[0] = 0;
+//	*data = (const char*) m_data;
+//	return res;
+//}
 
 void SocketClient::sendSocketData(const char *data)
 {
-	if(m_protocol == SocketProtocol::UDP)
+	if (data != 0)
 	{
-		sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&m_server_addr->m_address , sizeof(m_server_addr->m_address));
+		if(m_protocol == SocketProtocol::UDP)
+		{
+			sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&m_server_addr->m_address , sizeof(m_server_addr->m_address));
+		}
+		else
+			send(m_socket, data, strlen(data) + 1 , 0);
 	}
-	else
-		send(m_socket, data, strlen(data) +1 , 0);
 }

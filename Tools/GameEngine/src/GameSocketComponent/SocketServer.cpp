@@ -25,18 +25,8 @@
 #include <GameEngine/GameLog.h>
 #include <string>
 
-SocketServer::SocketServer(const char* server_name, int port, SocketProtocol::List protocol, int NrOfClients) : SocketClientServer()
+SocketServer::SocketServer(const char* server_name, int port, SocketProtocol::List protocol, int NrOfClients) : SocketClientServer(server_name, port, protocol), m_nrClients(NrOfClients)
 {
-	memset(m_resultLength, 0, sizeof(m_resultLength));
-	m_numMessages = 0;
-	m_currentMessage = 0;
-
-	m_nrClients = NrOfClients;
-	m_protocol = protocol;
-
-	m_server_addr = new SocketAddress(server_name, port);
-	//m_client_addr = new SocketAddress(server_name, port);
-
 	switch(protocol)
 	{
 	case SocketProtocol::TCP:
@@ -49,11 +39,14 @@ SocketServer::SocketServer(const char* server_name, int port, SocketProtocol::Li
 }
 
 SocketServer::~SocketServer()
-{
-	delete m_server_addr;
-	
-	for(unsigned int i=0; i< m_clients_addr.size(); i++)
-		delete m_clients_addr[i];
+{	
+	//for(unsigned int i=0; i< m_clients_addr.size(); i++)
+	//	delete m_clients_addr[i];
+
+	const std::set<SocketAddress*>::iterator end = m_clients_addr.end();
+	std::set<SocketAddress*>::iterator iter;
+	for (iter = m_clients_addr.begin(); iter != end; iter++)
+		delete *iter;
 	m_clients_addr.clear();
 
 	for(unsigned int i=0; i< m_clients_socket.size(); i++)
@@ -127,7 +120,6 @@ void SocketServer::startTCP()
 
 	for(int i= 0; i<m_nrClients; i++)
 	{
-		//printf("SocketServer: Trying to accept client %d\r\n", i);
 		SOCKET acceptSocket = accept( m_socket, 0, 0 );
 		if(acceptSocket == INVALID_SOCKET) {
 			printf("SocketServer: Accept failed on client %d with error %d\r\n", i, WSAGetLastError());
@@ -142,7 +134,6 @@ void SocketServer::startTCP()
 			printf("SocketServer: Connection established to client %d\r\n", i);
 	
 		}
-		//printf("SocketServer: Connection established to client %d\r\n", i);
 	}
 
 }
@@ -162,8 +153,8 @@ void SocketServer::update()
 			resultLength = recvfrom(m_socket, m_messages[messageIndex], MAX_MSG_LENGTH, 0, (SOCKADDR *)&new_addr->m_address, &addrLen);
 
 			//save client address in local client vector
-			if(findClientAddress(new_addr) < 0)
-				m_clients_addr.push_back( new_addr );
+			//if(findClientAddress(new_addr) < 0)
+			m_clients_addr.insert( new_addr );
 
 			if (resultLength > 0)
 			{
@@ -192,28 +183,19 @@ void SocketServer::update()
 
 			// Check the result of the receive call
 			if ( bytesReceived > 0 ){
-				printf("Bytes received: %d\n", bytesReceived);
+				/*printf("Bytes received: %d\n", bytesReceived);
 				std::string str( msg, bytesReceived );
-				//printf( "Message received: '%s'\r\n", str.c_str() );
+				printf( "Message received: '%s'\r\n", str.c_str() );*/
 
 				// Store message in the global data buffer
-				memcpy( m_data+resultLength, msg, /*sizeof(msg)*/bytesReceived ); //m_data += bytesReceived/*sizeof(msg)*/;
-				//memcpy( m_data, "<MSGEND>", 8 ); m_data += 8;
+				memcpy( m_data+resultLength, msg, bytesReceived );
 				// Update the result length of the current update call
 				resultLength += bytesReceived;
 			}
-			else if ( bytesReceived == 0 ) {
-				//printf("Connection closed\n");
-			}
-			else {
-				//printf("recv failed: %d\n", WSAGetLastError());
-			}
-			//if(resultLength > 0) {
-			//printf("SocketServer: Received message of length %d from client %d\r\n", resultLength, i);
-			//store message in global buffer
-			//memcpy( m_data, msg, sizeof(msg) ); m_data += sizeof(msg);
-			//memcpy( m_data, "<MSGEND>", 8 ); m_data += 8;
-			//}
+			/*else if ( bytesReceived == 0 )
+				printf("Connection closed\n");
+			else
+				printf("recv failed: %d\n", WSAGetLastError());*/
 		}
 		m_currentMessage = 0;
 		// Update the global result length for the getData call
@@ -223,52 +205,32 @@ void SocketServer::update()
 	}
 }
 
-int SocketServer::getSocketData(const char **data, bool onlyNewestMessage /*= false*/)
-{
-	int res = 0;
-	if (onlyNewestMessage && m_numMessages > 0)
-	{
-		int index = (m_currentMessage + m_numMessages - 1) % BUFFER_LENGTH;
-		res = m_resultLength[index];
-		*data = (const char*) m_messages[index];
-		m_resultLength[index] = 0;
-		// Throw away all older messages
-		m_numMessages = m_currentMessage = 0;
-		m_resultLength[0] = 0;
-	}
-	else
-	{
-		res = m_resultLength[m_currentMessage];
-		*data = (const char*) m_messages[m_currentMessage];
-		m_resultLength[m_currentMessage] = 0;
-		if (res > 0)
-		{
-			m_numMessages--;
-			m_currentMessage = (m_currentMessage+1) % BUFFER_LENGTH;
-		}
-	}
-	return res;
-}
-
 void SocketServer::sendSocketData(const char *data)
 {
-	if(m_protocol == SocketProtocol::UDP)
+	if (data != 0)
 	{
-		//broadcast to all clients
-		for(unsigned int i=0; i<m_clients_addr.size(); i++)
-			sendto(m_socket, data, strlen(data), 0, (SOCKADDR *)&m_clients_addr[i]->m_address , sizeof(m_clients_addr[i]->m_address));
-	}
-	else
-	{	//broadcast to all clients
-		for(unsigned int i=0; i<m_clients_socket.size(); i++)
-			send(m_clients_socket[i], data, strlen(data), 0);
+		const std::set<SocketAddress*>::iterator end = m_clients_addr.end();
+		std::set<SocketAddress*>::iterator iter;
+		if(m_protocol == SocketProtocol::UDP)
+		{
+			//broadcast to all clients
+			/*for(unsigned int i=0; i<m_clients_addr.size(); i++)
+				sendto(m_socket, data, strlen(data), 0, (SOCKADDR *)&m_clients_addr[i]->m_address , sizeof(m_clients_addr[i]->m_address));*/
+			for (iter = m_clients_addr.begin(); iter != end; iter++)
+				sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&(*iter)->m_address , sizeof((*iter)->m_address));
+		}
+		else
+		{	//broadcast to all clients
+			for(unsigned int i=0; i<m_clients_socket.size(); i++)
+				send(m_clients_socket[i], data, strlen(data) + 1, 0);
+		}
 	}
 }
 
-int SocketServer::findClientAddress( SocketAddress* addr )
-{
-	for(unsigned int i=0; i<m_clients_addr.size(); i++)
-		if( m_clients_addr[i]->compareTo( addr ) ) return i;
-
-	return -1;
-}
+//int SocketServer::findClientAddress( SocketAddress* addr )
+//{
+//	for(unsigned int i=0; i<m_clients_addr.size(); i++)
+//		if( m_clients_addr[i]->compareTo( addr ) ) return i;
+//
+//	return -1;
+//}
