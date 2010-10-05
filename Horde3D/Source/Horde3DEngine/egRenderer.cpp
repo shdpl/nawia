@@ -789,14 +789,6 @@ void Renderer::setupShadowMap( bool noShadows )
 
 Matrix4f Renderer::calcCropMatrix( const Frustum &frustSlice, const Matrix4f &lightViewProjMat )
 {
-	// Find AABB of scene objects in slice
-	Modules::sceneMan().updateQueues( frustSlice, 0x0, RenderingOrder::None, false, true );
-	BoundingBox aabb;
-	for( size_t j = 0, s = Modules::sceneMan().getRenderableQueue().size(); j < s; ++j )
-	{
-		aabb.makeUnion( Modules::sceneMan().getRenderableQueue()[j].node->getBBox() );
-	}
-
 	float frustMinX =  Math::MaxFloat, bbMinX =  Math::MaxFloat;
 	float frustMinY =  Math::MaxFloat, bbMinY =  Math::MaxFloat;
 	float frustMinZ =  Math::MaxFloat, bbMinZ =  Math::MaxFloat;
@@ -804,13 +796,34 @@ Matrix4f Renderer::calcCropMatrix( const Frustum &frustSlice, const Matrix4f &li
 	float frustMaxY = -Math::MaxFloat, bbMaxY = -Math::MaxFloat;
 	float frustMaxZ = -Math::MaxFloat, bbMaxZ = -Math::MaxFloat;
 	
-	// Get frustum and scene AABB extents in post-projective space
+	// Find post-projective space AABB of all objects in frustum
+	Modules::sceneMan().updateQueues( frustSlice, 0x0, RenderingOrder::None, false, true );
+	std::vector< RendQueueItem > &rendQueue = Modules::sceneMan().getRenderableQueue();
+
+	for( size_t i = 0, s = rendQueue.size(); i < s; ++i )
+	{
+		for( uint32 j = 0; j < 8; ++j )
+		{
+			Vec4f v1 = lightViewProjMat * Vec4f( rendQueue[i].node->getBBox().getCorner( j ) );
+			v1.w = 1.f / fabs( v1.w );
+			v1.x *= v1.w; v1.y *= v1.w; v1.z *= v1.w;
+			
+			if( v1.x < bbMinX ) bbMinX = v1.x;
+			if( v1.y < bbMinY ) bbMinY = v1.y;
+			if( v1.z < bbMinZ ) bbMinZ = v1.z;
+			if( v1.x > bbMaxX ) bbMaxX = v1.x;
+			if( v1.y > bbMaxY ) bbMaxY = v1.y;
+			if( v1.z > bbMaxZ ) bbMaxZ = v1.z;
+		}
+	}
+
+	// Get frustum in post-projective space
 	for( uint32 i = 0; i < 8; ++i )
 	{
 		// Frustum slice
 		Vec4f v1 = lightViewProjMat * Vec4f( frustSlice.getCorner( i ) );
-		v1.w = fabs( v1.w );	// Use absolute value to reduce problems with back projection when v1.w < 0
-		v1.x /= v1.w; v1.y /= v1.w; v1.z /= v1.w;
+		v1.w = 1.f / fabs( v1.w );  // Use absolute value to reduce problems with back projection when v1.w < 0
+		v1.x *= v1.w; v1.y *= v1.w; v1.z *= v1.w;
 
 		if( v1.x < frustMinX ) frustMinX = v1.x;
 		if( v1.y < frustMinY ) frustMinY = v1.y;
@@ -818,18 +831,6 @@ Matrix4f Renderer::calcCropMatrix( const Frustum &frustSlice, const Matrix4f &li
 		if( v1.x > frustMaxX ) frustMaxX = v1.x;
 		if( v1.y > frustMaxY ) frustMaxY = v1.y;
 		if( v1.z > frustMaxZ ) frustMaxZ = v1.z;
-
-		// Scene AABB
-		v1 = lightViewProjMat * Vec4f( aabb.getCorner( i ) );
-		v1.w = fabs( v1.w );
-		v1.x /= v1.w; v1.y /= v1.w; v1.z /= v1.w;
-
-		if( v1.x < bbMinX ) bbMinX = v1.x;
-		if( v1.y < bbMinY ) bbMinY = v1.y;
-		if( v1.z < bbMinZ ) bbMinZ = v1.z;
-		if( v1.x > bbMaxX ) bbMaxX = v1.x;
-		if( v1.y > bbMaxY ) bbMaxY = v1.y;
-		if( v1.z > bbMaxZ ) bbMaxZ = v1.z;
 	}
 
 	// Merge frustum and AABB bounds and clamp to post-projective range [-1, 1]
