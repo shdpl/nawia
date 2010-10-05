@@ -25,7 +25,7 @@
 #include <GameEngine/GameLog.h>
 #include <string>
 
-SocketServer::SocketServer(const char* server_name, int port, SocketProtocol::List protocol, int NrOfClients) : SocketClientServer(server_name, port, protocol), m_nrClients(NrOfClients)
+SocketServer::SocketServer(const char* server_name, int port, SocketProtocol::List protocol) : SocketClientServer(server_name, port, protocol)
 {
 	switch(protocol)
 	{
@@ -39,10 +39,7 @@ SocketServer::SocketServer(const char* server_name, int port, SocketProtocol::Li
 }
 
 SocketServer::~SocketServer()
-{	
-	//for(unsigned int i=0; i< m_clients_addr.size(); i++)
-	//	delete m_clients_addr[i];
-
+{
 	const std::set<SocketAddress*>::iterator end = m_clients_addr.end();
 	std::set<SocketAddress*>::iterator iter;
 	for (iter = m_clients_addr.begin(); iter != end; iter++)
@@ -103,43 +100,40 @@ void SocketServer::startTCP()
 		return;			
 	}
 
-	// enable non-blocking
-	//unsigned long mode = 1;
-	//ioctlsocket(m_socket, FIONBIO, &mode);
+	//enable non-blocking
+	unsigned long mode = 1;
+	ioctlsocket(m_socket, FIONBIO, &mode);
 
-	//listening for clients
-	printf("SocketServer: waiting for %d clients\r\n", m_nrClients);
-
-	rc = listen(m_socket, m_nrClients);
+	rc = listen(m_socket, SOMAXCONN);
 	if(rc != 0)
 	{
 		WSACleanup();
 		GameLog::errorMessage("SocketComponent: SOCKET_ERROR (can't listen)");
 		return;			
 	}
-
-	for(int i= 0; i<m_nrClients; i++)
-	{
-		SOCKET acceptSocket = accept( m_socket, 0, 0 );
-		if(acceptSocket == INVALID_SOCKET) {
-			printf("SocketServer: Accept failed on client %d with error %d\r\n", i, WSAGetLastError());
-		}
-		else {
-			//////
-			unsigned long mode = 1;
-			ioctlsocket(acceptSocket, FIONBIO, &mode);
-			/////
-			printf("SocketServer: Accept succeeded on client %d with error %d\r\n", i, WSAGetLastError());
-			m_clients_socket.push_back( acceptSocket );
-			printf("SocketServer: Connection established to client %d\r\n", i);
-	
-		}
-	}
-
 }
 
 void SocketServer::update()
 {
+	if (m_protocol == SocketProtocol::TCP)
+	{
+		SOCKET acceptSocket;
+		do
+		{
+			acceptSocket = accept( m_socket, 0, 0 );
+			if(acceptSocket != INVALID_SOCKET)
+			{
+				// Enable non-blocking for new socket
+				unsigned long mode = 1;
+				ioctlsocket(acceptSocket, FIONBIO, &mode);
+				// Add new client socket
+				m_clients_socket.push_back( acceptSocket );
+				printf("SocketServer: Connection established to client %d\r\n", m_clients_socket.size());
+			}
+		}
+		while (acceptSocket != INVALID_SOCKET);
+	}
+
 	int resultLength = 0;
 	if (m_protocol == SocketProtocol::UDP)
 	{
@@ -152,12 +146,11 @@ void SocketServer::update()
 			int messageIndex = (m_numMessages + m_currentMessage) % BUFFER_LENGTH;
 			resultLength = recvfrom(m_socket, m_messages[messageIndex], MAX_MSG_LENGTH, 0, (SOCKADDR *)&new_addr->m_address, &addrLen);
 
-			//save client address in local client vector
-			//if(findClientAddress(new_addr) < 0)
-			m_clients_addr.insert( new_addr );
-
 			if (resultLength > 0)
 			{
+				//save client address in local client vector
+				m_clients_addr.insert( new_addr );
+
 				m_resultLength[messageIndex] = resultLength;
 				m_numMessages++;
 				if (m_numMessages == BUFFER_LENGTH)
@@ -192,9 +185,7 @@ void SocketServer::update()
 				// Update the result length of the current update call
 				resultLength += bytesReceived;
 			}
-			/*else if ( bytesReceived == 0 )
-				printf("Connection closed\n");
-			else
+			/*else if ( bytesReceived < 0 )
 				printf("recv failed: %d\n", WSAGetLastError());*/
 		}
 		m_currentMessage = 0;
@@ -213,9 +204,6 @@ void SocketServer::sendSocketData(const char *data)
 		std::set<SocketAddress*>::iterator iter;
 		if(m_protocol == SocketProtocol::UDP)
 		{
-			//broadcast to all clients
-			/*for(unsigned int i=0; i<m_clients_addr.size(); i++)
-				sendto(m_socket, data, strlen(data), 0, (SOCKADDR *)&m_clients_addr[i]->m_address , sizeof(m_clients_addr[i]->m_address));*/
 			for (iter = m_clients_addr.begin(); iter != end; iter++)
 				sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&(*iter)->m_address , sizeof((*iter)->m_address));
 		}
@@ -226,11 +214,3 @@ void SocketServer::sendSocketData(const char *data)
 		}
 	}
 }
-
-//int SocketServer::findClientAddress( SocketAddress* addr )
-//{
-//	for(unsigned int i=0; i<m_clients_addr.size(); i++)
-//		if( m_clients_addr[i]->compareTo( addr ) ) return i;
-//
-//	return -1;
-//}

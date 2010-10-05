@@ -35,7 +35,7 @@
 class SocketServer : public SocketClientServer
 {
 public:
-	SocketServer(const char* server_name, int port, SocketProtocol::List protocol, int NrOfClients = 0);
+	SocketServer(const char* server_name, int port, SocketProtocol::List protocol);
 	virtual ~SocketServer();
 
 	//** functions
@@ -60,10 +60,7 @@ private:
 	///socket addresses of all known clients (used for UDP communication)
 	std::set<SocketAddress*> m_clients_addr;
 	///sockets of all clients (used for TCP communication)
-	std::vector<SOCKET> m_clients_socket;
-
-	///expected number of clients (used for TCP communication)
-	int m_nrClients;	
+	std::vector<SOCKET> m_clients_socket;	
 };
 
 #endif

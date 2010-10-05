@@ -97,7 +97,7 @@ void SocketComponent::loadFromXml(const XMLNode* node)
 {
 	const char* protocol;
 	const char* address;
-	int port, nrClients;
+	int port;
 	bool ok = true;
 	bool isServer = false;
 
@@ -118,16 +118,15 @@ void SocketComponent::loadFromXml(const XMLNode* node)
 	else
 		address = "127.0.0.1";
 
-	if((node->getAttribute( "type" ) != 0) && (strcmp(node->getAttribute("type"), "") != 0))
+	if((node->getAttribute( "type" ) != 0))
 	{
 		if(strcmp(node->getAttribute( "type" ), "server") == 0)
 		{
-			isServer = true;
-
-			if((node->getAttribute( "NrOfClients" ) != 0) && (strcmp(node->getAttribute("NrOfClients"), "") != 0))
-				nrClients = atoi(node->getAttribute( "NrOfClients" ));
-			else
-				nrClients = 1;
+			 isServer = true;
+		}
+		else if (strcmp(node->getAttribute( "type" ), "client") != 0)
+		{
+			ok = false;
 		}
 	} else ok = false;
 
@@ -151,7 +150,7 @@ void SocketComponent::loadFromXml(const XMLNode* node)
 		{
 			if ( isServer )
 			{
-				m_clientServer = new SocketServer( address, port, (strcmp ("UDP", protocol) == 0) ? SocketProtocol::UDP : SocketProtocol::TCP, nrClients );
+				m_clientServer = new SocketServer( address, port, (strcmp ("UDP", protocol) == 0) ? SocketProtocol::UDP : SocketProtocol::TCP);
 			}
 			else
 			{
