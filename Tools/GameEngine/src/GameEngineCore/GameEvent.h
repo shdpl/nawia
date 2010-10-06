@@ -361,6 +361,8 @@ public:
 		E_GET_PROJECTION_MATRIX,/// Returns the current camera projection matrix @data pointer to float[16] for the matrix
 		E_GET_SCENEGRAPH_ID,	/// Returns the entity's scenegraph id (hordeID)
 		E_GET_ANIM_LENGTH,		/// Get the length of an animation in seconds (using all frames and default speed).
+		E_GET_SOCKET_DATA,		/// Gets the data received by the socket component @data: pointer to char* where data is copied to
+		E_GET_SOCKET_NEWEST_MSG,/// Gets the newest message received by the socket component and throws away all older messages @data: pointer to char* where data is copied to
 		EM_GET_MOOD_PAD,		/// gets the current mood from the Emotion component as PAD values (using Vec3f)
 		D_CURRENT_SENTENCE,		/// get current sentence from Dialogue components
 		IK_GETPARAMI,			/// Gets an IK parameter (IK_Param) of type integer
@@ -403,6 +405,7 @@ public:
 		SP_THEME_START,			/// theme started
 		SP_SPOKEN_WORD,			/// contains currently spoken word
 		E_SOUND_STOPPED,		/// the sound of the entity has stopped playing
+		E_SOCKET_NEW_DATA,		/// Sends all data received since the last update call
 
 		// TODO: move the following events to the right category
 		SP_BOOKMARK,
