@@ -45,20 +45,18 @@ public:
 	void startUDP();
 
 	///checks for incomming messages and stores them in a local buffer
-	virtual void update();
+	virtual void run();
 
 	///looks in the local buffer and copies the received messages in the "data" variable
 	//virtual int getSocketData(const char **data, bool onlyNewestMessage = false);
 	///sends data to all known clients (broadcast)
 	virtual void sendSocketData(const char *data);
 
-private:	
-	///returns the index to the client with the specified address
-	//int findClientAddress( SocketAddress* addr );
+private:
 
 	//** variables
 	///socket addresses of all known clients (used for UDP communication)
-	std::set<SocketAddress*> m_clients_addr;
+	std::set<SocketAddress> m_clients_addr;
 	///sockets of all clients (used for TCP communication)
 	std::vector<SOCKET> m_clients_socket;	
 };

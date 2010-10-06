@@ -33,9 +33,9 @@ SocketAddress::SocketAddress(const char *servername, int port)
 	m_address.sin_addr.s_addr = inet_addr(servername);
 }
 
-bool SocketAddress::compareTo( SocketAddress* addr )
-{
-	int ret = memcmp(&this->m_address, &addr->m_address, sizeof(sockaddr_in));
-	
-	return (ret == 0);
-}
+//bool SocketAddress::compareTo( SocketAddress* addr )
+//{
+//	int ret = memcmp(&this->m_address, &addr->m_address, sizeof(sockaddr_in));
+//	
+//	return (ret == 0);
+//}

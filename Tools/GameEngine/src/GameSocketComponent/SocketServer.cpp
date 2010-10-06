@@ -40,12 +40,6 @@ SocketServer::SocketServer(const char* server_name, int port, SocketProtocol::Li
 
 SocketServer::~SocketServer()
 {
-	const std::set<SocketAddress*>::iterator end = m_clients_addr.end();
-	std::set<SocketAddress*>::iterator iter;
-	for (iter = m_clients_addr.begin(); iter != end; iter++)
-		delete *iter;
-	m_clients_addr.clear();
-
 	for(unsigned int i=0; i< m_clients_socket.size(); i++)
 		closesocket( m_clients_socket[i] );
 	m_clients_socket.clear();
@@ -113,7 +107,7 @@ void SocketServer::startTCP()
 	}
 }
 
-void SocketServer::update()
+void SocketServer::run()
 {
 	if (m_protocol == SocketProtocol::TCP)
 	{
@@ -134,6 +128,9 @@ void SocketServer::update()
 		while (acceptSocket != INVALID_SOCKET);
 	}
 
+	m_firstNewMessage = -1;
+	m_sizeOfNewMessages = 0;
+	m_numNewMessages = 0;
 	int resultLength = 0;
 	if (m_protocol == SocketProtocol::UDP)
 	{
@@ -141,10 +138,10 @@ void SocketServer::update()
 		do {
 			i++;
 			int addrLen = sizeof(sockaddr_in);
-			SocketAddress* new_addr = new SocketAddress("", 0);
+			SocketAddress new_addr("", 0);
 
-			int messageIndex = (m_numMessages + m_currentMessage) % BUFFER_LENGTH;
-			resultLength = recvfrom(m_socket, m_messages[messageIndex], MAX_MSG_LENGTH, 0, (SOCKADDR *)&new_addr->m_address, &addrLen);
+			int messageIndex = (m_numMessages + m_currentMessage) % SocketData::BUFFER_LENGTH;
+			resultLength = recvfrom(m_socket, m_messages[messageIndex], SocketData::MAX_MSG_LENGTH, 0, (SOCKADDR *)&new_addr.m_address, &addrLen);
 
 			if (resultLength > 0)
 			{
@@ -153,26 +150,40 @@ void SocketServer::update()
 
 				m_resultLength[messageIndex] = resultLength;
 				m_numMessages++;
-				if (m_numMessages == BUFFER_LENGTH)
+				m_numNewMessages++;
+				m_sizeOfNewMessages += resultLength;
+				if (m_numMessages == SocketData::BUFFER_LENGTH)
 				{
-					// Buffer overflow, so throw away oldest message
+					// Buffer overflow
+					if (m_currentMessage == m_firstNewMessage)
+					{
+						// Also reached the first message received by this run() call
+						// So ignore it
+						m_firstNewMessage++;
+						m_sizeOfNewMessages -= m_resultLength[m_currentMessage];
+					}
+					// Throw away oldest message
 					m_resultLength[m_currentMessage] = 0;
-					m_currentMessage = (m_currentMessage + 1) % BUFFER_LENGTH;
+					m_currentMessage = (m_currentMessage + 1) % SocketData::BUFFER_LENGTH;
 					m_numMessages--;
 				}
+				if (m_numNewMessages == SocketData::BUFFER_LENGTH)
+					m_numNewMessages--;
+				if (m_firstNewMessage == -1)
+					m_firstNewMessage = m_currentMessage;
 			}
-		} while (resultLength > 0 && i < BUFFER_LENGTH);
+		} while (resultLength > 0 && i < SocketData::BUFFER_LENGTH);
 	}
 	else
 	{
 		// Our static array for the received message
-		char msg[MAX_MSG_LENGTH];
+		char msg[SocketData::MAX_MSG_LENGTH];
 
 		//Receive from all clients
 		for(unsigned int i=0; i<m_clients_socket.size(); i++)
 		{
 			// Receive from the current connection
-			int bytesReceived = recv(m_clients_socket[i], msg, MAX_MSG_LENGTH, 0);
+			int bytesReceived = recv(m_clients_socket[i], msg, SocketData::MAX_MSG_LENGTH, 0);
 
 			// Check the result of the receive call
 			if ( bytesReceived > 0 ){
@@ -192,7 +203,12 @@ void SocketServer::update()
 		// Update the global result length for the getData call
 		m_resultLength[0] = resultLength;
 		if (resultLength > 0)
-			m_numMessages = 1;		
+		{
+			m_numMessages = 1;
+			m_firstNewMessage = 0;
+			m_numNewMessages = 1;
+			m_sizeOfNewMessages = resultLength;
+		}
 	}
 }
 
@@ -200,12 +216,12 @@ void SocketServer::sendSocketData(const char *data)
 {
 	if (data != 0)
 	{
-		const std::set<SocketAddress*>::iterator end = m_clients_addr.end();
-		std::set<SocketAddress*>::iterator iter;
+		const std::set<SocketAddress>::iterator end = m_clients_addr.end();
+		std::set<SocketAddress>::iterator iter;
 		if(m_protocol == SocketProtocol::UDP)
 		{
 			for (iter = m_clients_addr.begin(); iter != end; iter++)
-				sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&(*iter)->m_address , sizeof((*iter)->m_address));
+				sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&iter->m_address , sizeof(iter->m_address));
 		}
 		else
 		{	//broadcast to all clients

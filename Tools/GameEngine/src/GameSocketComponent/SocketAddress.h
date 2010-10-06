@@ -40,7 +40,10 @@ public:
 	sockaddr_in m_address;
 	SocketAddress(const char *servername, int port);
 	///function for comparing two socket adresses
-	bool compareTo( SocketAddress* addr );
+	bool operator<(const SocketAddress& other) const
+	{
+		return memcmp(&m_address, &other.m_address, sizeof(sockaddr_in)) < 0;
+	}
 	//friend Socket;
 };
 

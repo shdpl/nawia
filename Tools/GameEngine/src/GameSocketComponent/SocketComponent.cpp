@@ -47,6 +47,8 @@ GameComponent* SocketComponent::createComponent( GameEntity* owner )
 SocketComponent::SocketComponent(GameEntity* owner) : GameComponent(owner, "SocketComponent"), m_clientServer(0)
 {
 	owner->addListener(GameEvent::E_SEND_SOCKET_DATA, this);
+	owner->addListener(GameEvent::E_GET_SOCKET_DATA, this);
+	owner->addListener(GameEvent::E_GET_SOCKET_NEWEST_MSG, this);
 	SocketManager::instance()->addComponent(this);
 
 	// initialize Winsock
@@ -77,6 +79,16 @@ void SocketComponent::executeEvent(GameEvent* event)
 			sendSocketData(static_cast<const char*>(event->data()));
 		}
 		break;
+	case GameEvent::E_GET_SOCKET_DATA:
+		{
+			getSocketData(static_cast<const char**>(event->data()));
+		}
+		break;
+	case GameEvent::E_GET_SOCKET_NEWEST_MSG:
+		{
+			getSocketData(static_cast<const char**>(event->data()), true);
+		}
+		break;
 	}
 }
 
@@ -88,7 +100,6 @@ void SocketComponent::executeEvent(GameEvent* event)
  *       port = int value
  *       address = alphanumeric value (optional, default 127.0.0.1)
  *       type = "server" / "client"
- *       NrOfClients = int value (optional, default 1)
  *
  * Example
  *		<Socket protocol="TCP" port="122" address="127.0.0.1" type="server" NrOfClients="6" />
@@ -164,10 +175,26 @@ void SocketComponent::loadFromXml(const XMLNode* node)
 	}
 }
 
+void SocketComponent::run()
+{
+	if (m_clientServer != 0)
+		m_clientServer->run();
+}
+
 void SocketComponent::update()
 {
 	if (m_clientServer != 0)
-		m_clientServer->update();
+	{
+		unsigned int newSize = m_clientServer->getNewestMessagesSize();
+		if (newSize > 0)
+		{
+			char* data = new char[newSize];
+			m_clientServer->getNewestMessages(&data);
+			GameEventData eventData(data, newSize);
+			GameEvent newData(GameEvent::E_SOCKET_NEW_DATA, &eventData, this);
+			delete[] data;
+		}
+	}
 }
 
 int SocketComponent::getSocketData(const char **data, bool onlyNewestMessage /*= false*/)

@@ -79,33 +79,31 @@ void SocketClient::startTCP()
 	ioctlsocket(m_socket, FIONBIO, &mode);
 }
 
-void SocketClient::update()
+void SocketClient::run()
 {
+	m_firstNewMessage = -1;
+	m_sizeOfNewMessages = 0;
+	m_numNewMessages = 0;
 	int resultLength = 0;
 	do {
 		if (m_protocol == SocketProtocol::UDP)
 		{
 			int addrLen = sizeof(m_server_addr->m_address);
-			resultLength = recvfrom(m_socket, m_data, MAX_MSG_LENGTH, 0, (SOCKADDR *)&m_server_addr->m_address, &addrLen);
+			resultLength = recvfrom(m_socket, m_data, SocketData::MAX_MSG_LENGTH, 0, (SOCKADDR *)&m_server_addr->m_address, &addrLen);
 		}
 		else
 		{
-			resultLength = recv(m_socket, m_data, MAX_MSG_LENGTH, 0);
+			resultLength = recv(m_socket, m_data, SocketData::MAX_MSG_LENGTH, 0);
 		}
 		if (resultLength > 0)
 		{
 			m_resultLength[0] = resultLength;
+			m_firstNewMessage = 0;
+			m_numNewMessages = 1;
+			m_sizeOfNewMessages = resultLength;
 		}
 	} while (resultLength > 0);
 }
-
-//int SocketClient::getSocketData(const char **data, bool onlyNewestMessage /*= false*/)
-//{
-//	int res = m_resultLength[0];
-//	m_resultLength[0] = 0;
-//	*data = (const char*) m_data;
-//	return res;
-//}
 
 void SocketClient::sendSocketData(const char *data)
 {

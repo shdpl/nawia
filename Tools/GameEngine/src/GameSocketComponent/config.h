@@ -29,12 +29,4 @@
  * This file contains configurations for the component
  */
 
-//** Constants
-const static enum Constants
-{ 
-	BUFFER_LENGTH = 32,
-	MAX_DATA_LENGTH = 32768,
-	MAX_MSG_LENGTH = 1024
-};
-
 #endif

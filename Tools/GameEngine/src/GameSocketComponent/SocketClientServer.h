@@ -40,10 +40,17 @@ public:
 	virtual void startTCP() = 0;
 	virtual void startUDP() = 0;
 
-	///checks for incomming messages and stores them in a local buffer
-	virtual void update() = 0;
+	///checks for incomming messages and stores them in a local buffer (in parallel to other components)
+	virtual void run() = 0;
 
-	///looks in the local buffer and copies the received messages in the "data" variable
+	///get the messages received by the last run() call, but doesn't throw them away
+	///@param data: pointer where the data should be copied to
+	virtual void getNewestMessages(char** data);
+
+	///Gets the size of the messages received by the last run() call
+	virtual unsigned int getNewestMessagesSize() { return m_sizeOfNewMessages; }
+
+	///looks in the local buffer and copies the received messages in the "data" variable, throwing away all old messages
 	virtual int getSocketData(const char **data, bool onlyNewestMessage = false);
 	///sends data to the linked server socket
 	virtual void sendSocketData(const char *data) = 0;
@@ -60,18 +67,24 @@ protected:
 	SocketProtocol::List m_protocol;
 
 	///length of the buffer that stores received data
-	int			m_resultLength[BUFFER_LENGTH];
+	int			m_resultLength[SocketData::BUFFER_LENGTH];
 	///number of received messages
 	int			m_numMessages;
-	///last received message (?)
+	///last received message
 	int			m_currentMessage;
+	///first message received in the last run() call, -1 if none received
+	int			m_firstNewMessage;
+	/// Number of messages received in the last run() call
+	int			m_numNewMessages;
+	///size of the messages received by the last run() call
+	unsigned int m_sizeOfNewMessages;
 	// Acces data per char or per message
 	union
 	{
 		///buffer storing received messages
-		char m_messages[BUFFER_LENGTH][MAX_MSG_LENGTH];
+		char m_messages[SocketData::BUFFER_LENGTH][SocketData::MAX_MSG_LENGTH];
 		///buffer storing received data
-		char m_data[MAX_DATA_LENGTH];
+		char m_data[SocketData::MAX_DATA_LENGTH];
 	};	
 };
 

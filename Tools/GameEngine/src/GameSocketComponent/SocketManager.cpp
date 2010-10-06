@@ -34,6 +34,14 @@ struct UpdateNode
 	}
 };
 
+struct RunNode
+{ 		
+	void operator()(SocketComponent* ptr) const
+	{
+		ptr->run();
+	}
+};
+
 SocketManager* SocketManager::m_instance = 0x0;
 
 SocketManager* SocketManager::instance()
@@ -67,10 +75,10 @@ void SocketManager::removeComponent(SocketComponent *component)
 
 void SocketManager::run()
 {
-	for_each(m_socketListener.begin(), m_socketListener.end(), UpdateNode());
+	for_each(m_socketListener.begin(), m_socketListener.end(), RunNode());
 }
 
 void SocketManager::update()
 {
-	// TODO maybe send event when new data has been received
+	for_each(m_socketListener.begin(), m_socketListener.end(), UpdateNode());
 }

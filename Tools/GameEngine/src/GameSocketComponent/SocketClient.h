@@ -41,7 +41,7 @@ public:
 	void startUDP();
 
 	///checks for incomming messages and stores them in a local buffer
-	virtual void update();
+	virtual void run();
 
 	///looks in the local buffer and copies the received messages in the "data" variable
 	//virtual int getSocketData(const char **data, bool onlyNewestMessage = false);

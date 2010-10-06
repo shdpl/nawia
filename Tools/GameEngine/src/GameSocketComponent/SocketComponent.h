@@ -42,6 +42,7 @@ public:
 	void loadFromXml(const XMLNode* description);
 
 	void update();
+	void run();
 
 	///receives socket data
 	int getSocketData(const char **data, bool onlyNewestMessage = false);
