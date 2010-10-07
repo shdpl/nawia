@@ -226,7 +226,7 @@ int IKComponent::gaze(unsigned int modelHandle, float targetX, float targetY, fl
 
 void IKComponent::release() 
 {
-	Joint::deleteAll();
 	delete m_gaze;
 	delete m_anim;
+	Joint::deleteAll();
 }
