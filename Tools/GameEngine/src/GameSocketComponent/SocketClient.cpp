@@ -84,6 +84,7 @@ void SocketClient::run()
 	m_firstNewMessage = -1;
 	m_sizeOfNewMessages = 0;
 	m_numNewMessages = 0;
+
 	int resultLength = 0;
 	do {
 		if (m_protocol == SocketProtocol::UDP)
@@ -99,6 +100,8 @@ void SocketClient::run()
 		{
 			m_resultLength[0] = resultLength;
 			m_firstNewMessage = 0;
+			m_currentMessage = 0;
+			m_numMessages = 1;
 			m_numNewMessages = 1;
 			m_sizeOfNewMessages = resultLength;
 		}

@@ -185,8 +185,14 @@ void SocketServer::run()
 			// Receive from the current connection
 			int bytesReceived = recv(m_clients_socket[i], msg, SocketData::MAX_MSG_LENGTH, 0);
 
+			if (resultLength + bytesReceived > SocketData::MAX_DATA_LENGTH)
+			{
+				printf("SocketComponent: Buffer overflow in TCP Server, some data is lost...\n");
+				GameLog::warnMessage("SocketComponent: Buffer overflow in TCP Server, some data is lost...");
+				break;
+			}
 			// Check the result of the receive call
-			if ( bytesReceived > 0 ){
+			if ( bytesReceived > 0){
 				/*printf("Bytes received: %d\n", bytesReceived);
 				std::string str( msg, bytesReceived );
 				printf( "Message received: '%s'\r\n", str.c_str() );*/
