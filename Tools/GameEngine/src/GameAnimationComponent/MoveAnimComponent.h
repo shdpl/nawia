@@ -150,6 +150,8 @@ private:
 	AnimationSetup* m_moveRightAnim;
 	/// Configuration setup for the animation played when translating the entity in -x direction
 	AnimationSetup* m_moveLeftAnim;
+	/// Configuration setup for the animation played when translation fast in the -z direction
+	AnimationSetup* m_runAnim;
 	/// up to 5 alternative Configuration setups for the animation played when entity is not moving
 	AnimationSetup* m_idleAnim[5];
 	/// count of idle Animations
@@ -162,6 +164,22 @@ private:
 
 	/// Constant scale factor for moving animation
 	float m_speed;
+
+	// translation speed at which the run animation is turned on
+	float m_runThreshold;
+
+
+	enum Constants
+	{
+		SPEED_HISTORY_SIZE = 5
+	};
+
+	// Last 5 speeds
+	float m_lastSpeeds[SPEED_HISTORY_SIZE];
+	// The current writing pos
+	unsigned int m_currentSpeedIndex;
+	// The current average speed
+	float m_avgSpeed;
 
 	/// Current animation playing
 	AnimationSetup* m_activeAnim;

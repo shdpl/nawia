@@ -282,7 +282,7 @@ namespace AnimationControl
 			const float end = GameEngine::timeStamp() + duration;			
 
 			float weight = m_timeline.back().Weight;
-			while(m_timeline.back().Timestamp > end)
+			while(!m_timeline.empty() && m_timeline.back().Timestamp > end)
 			{
 				weight = m_timeline.back().Weight;
 				m_timeline.pop_back();

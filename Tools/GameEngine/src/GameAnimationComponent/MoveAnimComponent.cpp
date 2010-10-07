@@ -42,10 +42,14 @@ GameComponent* MoveAnimComponent::createComponent( GameEntity* owner )
 MoveAnimComponent::MoveAnimComponent(GameEntity *owner) : GameComponent(owner, "MoveAnimComponent"), 
 	m_oldPos(0,0,0), m_newPos(0, 0, 0), m_moveAnim(0), m_moveBackAnim(0), m_moveLeftAnim(0),
 	m_moveRightAnim(0),	m_speed(1.0f), m_activeAnim(0), m_idle(false), m_idleAnimCount(0), m_idleTime(0),
-	m_randSeed(false), m_LODToStopAnim(999), m_lod(-1), m_rotationOffset(0)
+	m_randSeed(false), m_LODToStopAnim(999), m_lod(-1), m_rotationOffset(0), 
+	m_runAnim(0), m_runThreshold(999.0f), m_currentSpeedIndex(0), m_avgSpeed(0)
 {
 	for( int i=0; i< 5; ++i )
 		m_idleAnim[i] = 0x0;
+
+	for(int j = 0; j < SPEED_HISTORY_SIZE; j++)
+		m_lastSpeeds[j] = 0;
 
 	//get initial position
 	float absTrans[16];
@@ -75,6 +79,7 @@ MoveAnimComponent::~MoveAnimComponent()
 	delete m_moveBackAnim;
 	delete m_moveLeftAnim;
 	delete m_moveRightAnim;
+	delete m_runAnim;
 	for( int i=0; i< m_idleAnimCount; ++i )
 	{
 		delete m_idleAnim[i];
@@ -128,6 +133,7 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 	const char* moveBack = description->getAttribute("moveBackAnimation", "");
 	const char* moveLeft = description->getAttribute("moveLeftAnimation", "");
 	const char* moveRight = description->getAttribute("moveRightAnimation", "");
+	const char* run = description->getAttribute("runAnimation", "");
 
 	// Get lod value from which on animation is stopped, but remove listener if not set
 	m_LODToStopAnim = static_cast<int>(atoi(description->getAttribute("LODToStopAnim", "9999")));
@@ -159,7 +165,17 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 	{
 		m_moveRightAnim = static_cast<AnimationSetup*>(AnimationSetup(moveRight, 10, 0, -1.0f, 1.0f, 0.0f).clone());		
 		m_moveRightAnim->Speed = GameEngine::getAnimSpeed(m_owner->worldId(), m_moveRightAnim->Animation);
-	}	
+	}
+
+	if( _stricmp(run, "") != 0 )
+	{
+		m_runAnim = static_cast<AnimationSetup*>(AnimationSetup(run, 10, 0, -1.0f, 1.0f, 0.0f).clone());		
+		m_runAnim->Speed = GameEngine::getAnimSpeed(m_owner->worldId(), m_runAnim->Animation);
+	}
+
+	// Threshold for the speed from which on the run animation is used,
+	// also represents the translation speed at which the setted animation playback speed is applied
+	m_runThreshold = static_cast<float>(atof(description->getAttribute("runThreshold", "999"))); 
 	
 	// Idle anims have weight 0, means they are only played if there is no other animation playing
 	m_idleAnimCount = 0;
@@ -203,10 +219,23 @@ void MoveAnimComponent::update(float fps)
 		dist.y = 0;
 		float speed = m_speed * dist.length()* fps;
 		static const float pi3rd = Math::Pi / 3;
+		
+		if (m_runAnim)
+		{
+			// Currently the average speed is only used for the run animation
+			m_lastSpeeds[m_currentSpeedIndex] = speed;
+			m_currentSpeedIndex = (m_currentSpeedIndex + 1) % SPEED_HISTORY_SIZE;
+			m_avgSpeed = 0;
+			for (int i = 0; i < SPEED_HISTORY_SIZE; i++)
+			{
+				m_avgSpeed += m_lastSpeeds[i];
+			}
+			m_avgSpeed /= SPEED_HISTORY_SIZE;
+		}
 
 		// Object is moving
 		if( speed >= 0.0005f )
-		{	
+		{
 			AnimationSetup* nextAnim = 0x0;
 			// Direction in radiants = angle of walking direction - (y-rotation of the object + rotation offset)
 			float direction = atan2( -dist.x, -dist.z ) - (m_rotation.y + degToRad(m_rotationOffset));
@@ -231,6 +260,13 @@ void MoveAnimComponent::update(float fps)
 			else if (m_moveRightAnim != 0x0 && (direction > -2*pi3rd && direction < -pi3rd))
 			{
 				nextAnim = m_moveRightAnim;
+			}
+			else if (m_runAnim != 0 && m_avgSpeed > m_runThreshold)
+			{
+				nextAnim = m_runAnim;
+				// Reduce playback speed for run anim
+				speed -= m_runThreshold - m_speed;
+				//printf("Running speed: %.5f\n", speed);
 			}
 			else if (m_moveAnim != 0x0)
 			{
@@ -305,9 +341,16 @@ void MoveAnimComponent::setAnim(AnimationSetup *anim, bool idle /*=false*/)
 		}
 	}
 
-	//If new there is no new animation, we have finished
+	//If there is no new animation, we have finished
 	if( anim == 0x0 ) 
 	{
+		if (m_runAnim)
+		{
+			// Reset last speeds as we have resetted our current anim
+			for(int j = 0; j < SPEED_HISTORY_SIZE; j++)
+				m_lastSpeeds[j] = 0;
+		}
+
 		m_idle = idle;
 		return;
 	}
@@ -391,6 +434,12 @@ void MoveAnimComponent::changeMoveAnim(const std::string& tag, const std::string
 		animToDelete = m_moveRightAnim;
 		m_moveRightAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 0, -1.0f, 1.0f, 0.0f).clone());		 
 		m_moveRightAnim->Speed = GameEngine::getAnimSpeed(m_owner->worldId(), m_moveRightAnim->Animation);
+	}
+	else if (tag.compare("runAnimation") == 0)
+	{
+		animToDelete = m_runAnim;
+		m_runAnim = static_cast<AnimationSetup*>(AnimationSetup(name.c_str(), 10, 0, -1.0f, 1.0f, 0.0f).clone());		 
+		m_runAnim->Speed = GameEngine::getAnimSpeed(m_owner->worldId(), m_runAnim->Animation);
 	}
 
 	if (m_activeAnim != 0x0 && animToDelete == m_activeAnim)
