@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="InteractiveAlfred"
-	ProjectGUID="{C7F11274-E028-476B-9AD6-FA4412EA6D08}"
+	ProjectGUID="{FC8B3C49-37FD-4F8F-8078-8F1D0B65653E}"
 	RootNamespace="InteractiveAlfred"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
