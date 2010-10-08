@@ -134,9 +134,8 @@ void SocketServer::run()
 	int resultLength = 0;
 	if (m_protocol == SocketProtocol::UDP)
 	{
-		int i = -1;
+		int i = 0;
 		do {
-			i++;
 			int addrLen = sizeof(sockaddr_in);
 			SocketAddress new_addr("", 0);
 
@@ -145,6 +144,7 @@ void SocketServer::run()
 
 			if (resultLength > 0)
 			{
+				i++;
 				//save client address in local client vector
 				m_clients_addr.insert( new_addr );
 
@@ -157,64 +157,70 @@ void SocketServer::run()
 					// Buffer overflow
 					if (m_currentMessage == m_firstNewMessage)
 					{
+						GameLog::warnMessage("WARNING: Buffer overflow in SocketComponent, some data will be lost!");
 						// Also reached the first message received by this run() call
 						// So ignore it
 						m_firstNewMessage++;
 						m_sizeOfNewMessages -= m_resultLength[m_currentMessage];
+						m_numNewMessages--;
 					}
 					// Throw away oldest message
 					m_resultLength[m_currentMessage] = 0;
 					m_currentMessage = (m_currentMessage + 1) % SocketData::BUFFER_LENGTH;
 					m_numMessages--;
 				}
-				if (m_numNewMessages == SocketData::BUFFER_LENGTH)
-					m_numNewMessages--;
 				if (m_firstNewMessage == -1)
 					m_firstNewMessage = m_currentMessage;
 			}
-		} while (resultLength > 0 && i < SocketData::BUFFER_LENGTH);
+		}
+		while (resultLength > 0 && (i < SocketData::BUFFER_LENGTH || m_protocol == SocketProtocol::UDP));
+			// With TCP we receive a number of maximum BUFFER_LENGTH messages in one frame
+			// With UDP we receive as much as we can and only keep a number of BUFFER_LENGTH newest
 	}
-	else
+	else //TCP
 	{
-		// Our static array for the received message
-		char msg[SocketData::MAX_MSG_LENGTH];
-
-		//Receive from all clients
-		for(unsigned int i=0; i<m_clients_socket.size(); i++)
-		{
-			// Receive from the current connection
-			int bytesReceived = recv(m_clients_socket[i], msg, SocketData::MAX_MSG_LENGTH, 0);
-
-			if (resultLength + bytesReceived > SocketData::MAX_DATA_LENGTH)
+		int i = 0;
+		bool somethingReceived;
+		do {
+			somethingReceived = false;
+			//Receive from all clients
+			for(unsigned int i = 0; i < m_clients_socket.size(); i++)
 			{
-				printf("SocketComponent: Buffer overflow in TCP Server, some data is lost...\n");
-				GameLog::warnMessage("SocketComponent: Buffer overflow in TCP Server, some data is lost...");
-				break;
-			}
-			// Check the result of the receive call
-			if ( bytesReceived > 0){
-				/*printf("Bytes received: %d\n", bytesReceived);
-				std::string str( msg, bytesReceived );
-				printf( "Message received: '%s'\r\n", str.c_str() );*/
+				int messageIndex = (m_numMessages + m_currentMessage) % SocketData::BUFFER_LENGTH;
 
-				// Store message in the global data buffer
-				memcpy( m_data+resultLength, msg, bytesReceived );
-				// Update the result length of the current update call
-				resultLength += bytesReceived;
+				// Receive from the current connection
+				resultLength = recv(m_clients_socket[i], m_messages[messageIndex], SocketData::MAX_MSG_LENGTH, 0);
+
+				if (resultLength > 0)
+				{
+					somethingReceived = true;
+					i++;
+					m_resultLength[messageIndex] = resultLength;
+					m_numMessages++;
+					m_numNewMessages++;
+					m_sizeOfNewMessages += resultLength;
+					if (m_numMessages == SocketData::BUFFER_LENGTH)
+					{
+						// Buffer overflow
+						if (m_currentMessage == m_firstNewMessage)
+						{
+							GameLog::warnMessage("WARNING: Buffer overflow in SocketComponent, some data will be lost!");
+							// Also reached the first message received by this run() call
+							// So ignore it
+							m_firstNewMessage++;
+							m_sizeOfNewMessages -= m_resultLength[m_currentMessage];
+							m_numNewMessages--;
+						}
+						// Throw away oldest message
+						m_resultLength[m_currentMessage] = 0;
+						m_currentMessage = (m_currentMessage + 1) % SocketData::BUFFER_LENGTH;
+						m_numMessages--;
+					}
+					if (m_firstNewMessage == -1)
+						m_firstNewMessage = m_currentMessage;
+				}			
 			}
-			/*else if ( bytesReceived < 0 )
-				printf("recv failed: %d\n", WSAGetLastError());*/
-		}
-		m_currentMessage = 0;
-		// Update the global result length for the getData call
-		m_resultLength[0] = resultLength;
-		if (resultLength > 0)
-		{
-			m_numMessages = 1;
-			m_firstNewMessage = 0;
-			m_numNewMessages = 1;
-			m_sizeOfNewMessages = resultLength;
-		}
+		} while(somethingReceived);
 	}
 }
 
