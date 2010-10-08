@@ -86,7 +86,6 @@ void SocketClient::run()
 	m_numNewMessages = 0;
 
 	int resultLength = 0;
-	int i = 0;
 	do {
 		int messageIndex = (m_numMessages + m_currentMessage) % SocketData::BUFFER_LENGTH;
 		
@@ -95,14 +94,13 @@ void SocketClient::run()
 			int addrLen = sizeof(m_server_addr->m_address);
 			resultLength = recvfrom(m_socket, m_messages[messageIndex], SocketData::MAX_MSG_LENGTH, 0, (SOCKADDR *)&m_server_addr->m_address, &addrLen);
 		}
-		else
+		else // TCP
 		{
 			resultLength = recv(m_socket, m_messages[messageIndex], SocketData::MAX_MSG_LENGTH, 0);
 		}
 
 		if (resultLength > 0)
 		{
-			i++;
 			m_resultLength[messageIndex] = resultLength;
 			m_numMessages++;
 			m_numNewMessages++;
@@ -128,9 +126,7 @@ void SocketClient::run()
 				m_firstNewMessage = m_currentMessage;			
 		}
 	}
-	while (resultLength > 0 && (i < SocketData::BUFFER_LENGTH || m_protocol == SocketProtocol::UDP));
-	// With TCP we receive a number of maximum BUFFER_LENGTH messages in one frame
-	// With UDP we receive as much as we can and only keep a number of BUFFER_LENGTH newest
+	while (resultLength > 0);
 }
 
 void SocketClient::sendSocketData(const char *data)
@@ -141,7 +137,7 @@ void SocketClient::sendSocketData(const char *data)
 		{
 			sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&m_server_addr->m_address , sizeof(m_server_addr->m_address));
 		}
-		else
+		else // TCP
 			send(m_socket, data, strlen(data) + 1 , 0);
 	}
 }

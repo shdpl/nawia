@@ -56,6 +56,9 @@ public:
 	virtual void sendSocketData(const char *data) = 0;
 
 protected:
+	// Print and error code from winsocket
+	void printSocketError(int errorCode);
+
 	//** variables
 	///member socket
 	SOCKET m_socket;

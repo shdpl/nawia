@@ -134,7 +134,6 @@ void SocketServer::run()
 	int resultLength = 0;
 	if (m_protocol == SocketProtocol::UDP)
 	{
-		int i = 0;
 		do {
 			int addrLen = sizeof(sockaddr_in);
 			SocketAddress new_addr("", 0);
@@ -144,7 +143,6 @@ void SocketServer::run()
 
 			if (resultLength > 0)
 			{
-				i++;
 				//save client address in local client vector
 				m_clients_addr.insert( new_addr );
 
@@ -172,14 +170,21 @@ void SocketServer::run()
 				if (m_firstNewMessage == -1)
 					m_firstNewMessage = m_currentMessage;
 			}
+			else if (resultLength == 0)
+			{
+				// 0 means closed connection, so remove the client
+				m_clients_addr.erase(new_addr);
+			}
+			else
+			{
+				// negative value means error
+				//printSocketError(WSAGetLastError());
+			}
 		}
-		while (resultLength > 0 && (i < SocketData::BUFFER_LENGTH || m_protocol == SocketProtocol::UDP));
-			// With TCP we receive a number of maximum BUFFER_LENGTH messages in one frame
-			// With UDP we receive as much as we can and only keep a number of BUFFER_LENGTH newest
+		while (resultLength > 0 );
 	}
 	else //TCP
 	{
-		int i = 0;
 		bool somethingReceived;
 		do {
 			somethingReceived = false;
@@ -194,7 +199,6 @@ void SocketServer::run()
 				if (resultLength > 0)
 				{
 					somethingReceived = true;
-					i++;
 					m_resultLength[messageIndex] = resultLength;
 					m_numMessages++;
 					m_numNewMessages++;
@@ -218,7 +222,18 @@ void SocketServer::run()
 					}
 					if (m_firstNewMessage == -1)
 						m_firstNewMessage = m_currentMessage;
-				}			
+				}
+				else if (resultLength == 0)
+				{
+					// 0 means closed connection, so remove the client
+					m_clients_socket.erase(m_clients_socket.begin() + i);
+					i--;
+				}
+				else
+				{
+					// negative value means error
+					//printSocketError(WSAGetLastError());
+				}
 			}
 		} while(somethingReceived);
 	}
