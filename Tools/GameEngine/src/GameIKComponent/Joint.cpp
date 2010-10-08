@@ -66,6 +66,7 @@ void Joint::deleteAll()
 	while(iter != m_joints.end())
 	{
 		delete iter->second;
+		iter->second = 0;
 		iter++;
 	}
 	m_joints.clear();
