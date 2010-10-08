@@ -29,4 +29,6 @@
  * This file contains configurations for the component
  */
 
+//#define PRINT_SOCKET_ERRORS
+
 #endif

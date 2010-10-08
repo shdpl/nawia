@@ -26,21 +26,29 @@
 
 #include <iostream>
 
-SocketClientServer::SocketClientServer(const char* server_name, int port, SocketProtocol::List protocol)
+SocketClientServer::SocketClientServer(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol)
 {
-	memset(m_resultLength, 0, sizeof(m_resultLength));
 	m_numMessages = 0;
 	m_currentMessage = 0;
 	m_firstNewMessage = -1;
 	m_sizeOfNewMessages = 0;
 	m_numNewMessages = 0;
 	m_protocol = protocol;
+	m_maxMsgLength = maxMsgLength;
+	m_bufferLength = bufferLength;
+
+	m_messages = new char[maxMsgLength * bufferLength];
+
+	m_resultLength = new int[bufferLength];
+	memset(m_resultLength, 0, sizeof(int)*bufferLength);
 
 	m_server_addr = new SocketAddress(server_name, port);
 }
 
 SocketClientServer::~SocketClientServer() 
 {
+	delete[] m_resultLength;
+	delete[] m_messages;
 	delete m_server_addr;
 }
 
@@ -49,9 +57,9 @@ int SocketClientServer::getSocketData(const char** data, bool onlyNewestMessage 
 	int res = 0;
 	if (onlyNewestMessage && m_numMessages > 0)
 	{
-		int index = (m_currentMessage + m_numMessages - 1) % SocketData::BUFFER_LENGTH;
+		int index = (m_currentMessage + m_numMessages - 1) % m_bufferLength;
 		res = m_resultLength[index];
-		*data = (const char*) m_messages[index];
+		*data = (const char*) &m_messages[index * m_maxMsgLength];
 		m_resultLength[index] = 0;
 		// Throw away all older messages
 		m_numMessages = m_currentMessage = 0;
@@ -60,12 +68,12 @@ int SocketClientServer::getSocketData(const char** data, bool onlyNewestMessage 
 	else
 	{
 		res = m_resultLength[m_currentMessage];
-		*data = (const char*) m_messages[m_currentMessage];
+		*data = (const char*) &m_messages[m_currentMessage * m_maxMsgLength];
 		m_resultLength[m_currentMessage] = 0;
 		if (res > 0)
 		{
 			m_numMessages--;
-			m_currentMessage = (m_currentMessage+1) % SocketData::BUFFER_LENGTH;
+			m_currentMessage = (m_currentMessage+1) % m_bufferLength;
 		}
 	}
 	return res;
@@ -79,8 +87,8 @@ void SocketClientServer::getNewestMessages(char** data)
 		// We have at least one new message, so copy all to the data pointer
 		for (int i = m_firstNewMessage; i < m_numNewMessages; i++)
 		{
-			int index = i % SocketData::BUFFER_LENGTH;
-			memcpy(*data + bytesCopied, m_messages[index], m_resultLength[index]);
+			int index = i % m_bufferLength;
+			memcpy(*data + bytesCopied, &m_messages[index * m_maxMsgLength], m_resultLength[index]);
 			bytesCopied += m_resultLength[index];
 		}
 	}

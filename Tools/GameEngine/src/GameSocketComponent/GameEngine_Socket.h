@@ -46,17 +46,6 @@ struct SocketProtocol
 	};
 };
 
-// Data definitions
-struct SocketData
-{
-	enum List
-	{ 
-		BUFFER_LENGTH = 32,
-		MAX_DATA_LENGTH = 32768,
-		MAX_MSG_LENGTH = 1024
-	};
-};
-
 namespace GameEngine
 {
 	/** \addtogroup GameSocketComponent

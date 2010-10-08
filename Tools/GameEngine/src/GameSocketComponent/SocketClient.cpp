@@ -23,10 +23,11 @@
 // ****************************************************************************************
 #include "SocketClient.h"
 #include <GameEngine/GameLog.h>
+#include <iostream>
 
 #include "config.h"
 
-SocketClient::SocketClient(const char* server_name, int port, SocketProtocol::List protocol) : SocketClientServer(server_name, port, protocol)
+SocketClient::SocketClient(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol) : SocketClientServer(server_name, port, maxMsgLength, bufferLength, protocol)
 {
 	switch(protocol)
 	{
@@ -87,16 +88,16 @@ void SocketClient::run()
 
 	int resultLength = 0;
 	do {
-		int messageIndex = (m_numMessages + m_currentMessage) % SocketData::BUFFER_LENGTH;
+		int messageIndex = (m_numMessages + m_currentMessage) % m_bufferLength;
 		
 		if (m_protocol == SocketProtocol::UDP)
 		{
 			int addrLen = sizeof(m_server_addr->m_address);
-			resultLength = recvfrom(m_socket, m_messages[messageIndex], SocketData::MAX_MSG_LENGTH, 0, (SOCKADDR *)&m_server_addr->m_address, &addrLen);
+			resultLength = recvfrom(m_socket, &m_messages[messageIndex * m_maxMsgLength], m_maxMsgLength, 0, (SOCKADDR *)&m_server_addr->m_address, &addrLen);
 		}
 		else // TCP
 		{
-			resultLength = recv(m_socket, m_messages[messageIndex], SocketData::MAX_MSG_LENGTH, 0);
+			resultLength = recv(m_socket, &m_messages[messageIndex * m_maxMsgLength], m_maxMsgLength, 0);
 		}
 
 		if (resultLength > 0)
@@ -105,7 +106,7 @@ void SocketClient::run()
 			m_numMessages++;
 			m_numNewMessages++;
 			m_sizeOfNewMessages += resultLength;
-			if (m_numMessages == SocketData::BUFFER_LENGTH)
+			if (m_numMessages == m_bufferLength)
 			{
 				// Buffer overflow
 				if (m_currentMessage == m_firstNewMessage)
@@ -119,12 +120,25 @@ void SocketClient::run()
 				}
 				// Throw away oldest message
 				m_resultLength[m_currentMessage] = 0;
-				m_currentMessage = (m_currentMessage + 1) % SocketData::BUFFER_LENGTH;
+				m_currentMessage = (m_currentMessage + 1) % m_bufferLength;
 				m_numMessages--;
 			}
 			if (m_firstNewMessage == -1)
 				m_firstNewMessage = m_currentMessage;			
 		}
+#ifdef PRINT_SOCKET_ERRORS
+		else if (resultLength < 0)
+		{
+			// negative value means error
+			int error = WSAGetLastError();
+			if (error != WSAEWOULDBLOCK)
+			{
+				// WSAWOULDBLOCK happens, if there is nothing more to receive
+				printf("Error in ClientReceive - ");
+				printSocketError(error);
+			}
+		}
+#endif
 	}
 	while (resultLength > 0);
 }
@@ -133,11 +147,19 @@ void SocketClient::sendSocketData(const char *data)
 {
 	if (data != 0)
 	{
+		int rc = 0;
 		if(m_protocol == SocketProtocol::UDP)
 		{
-			sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&m_server_addr->m_address , sizeof(m_server_addr->m_address));
+			rc = sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&m_server_addr->m_address , sizeof(m_server_addr->m_address));
 		}
 		else // TCP
-			send(m_socket, data, strlen(data) + 1 , 0);
+			rc = send(m_socket, data, strlen(data) + 1 , 0);
+#ifdef PRINT_SOCKET_ERRORS
+		if (rc < 0)
+		{
+			printf("Error in ClientSend - ");
+			printSocketError(WSAGetLastError());
+		}
+#endif
 	}
 }

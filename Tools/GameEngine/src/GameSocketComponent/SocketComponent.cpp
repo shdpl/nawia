@@ -100,6 +100,8 @@ void SocketComponent::executeEvent(GameEvent* event)
  *       port = int value
  *       address = alphanumeric value (optional, default 127.0.0.1)
  *       type = "server" / "client"
+ *		 maxMsgLength = int value representing the maximum byte length of a message (TCP will split the messages if too long)
+ *		 bufferLength = int value representing the buffer length in number of messages
  *
  * Example
  *		<Socket protocol="TCP" port="122" address="127.0.0.1" type="server" NrOfClients="6" />
@@ -107,7 +109,6 @@ void SocketComponent::executeEvent(GameEvent* event)
 void SocketComponent::loadFromXml(const XMLNode* node)
 {
 	const char* protocol;
-	const char* address;
 	int port;
 	bool ok = true;
 	bool isServer = false;
@@ -123,11 +124,6 @@ void SocketComponent::loadFromXml(const XMLNode* node)
 	if((node->getAttribute( "port" ) != 0) && (strcmp(node->getAttribute("port"), "") != 0))
 		port = atoi(node->getAttribute( "port" ));
 	else ok = false;
-
-	if((node->getAttribute( "address" ) != 0) && (strcmp(node->getAttribute("address"), "") != 0))
-		address = node->getAttribute( "address" );
-	else
-		address = "127.0.0.1";
 
 	if((node->getAttribute( "type" ) != 0))
 	{
@@ -147,6 +143,11 @@ void SocketComponent::loadFromXml(const XMLNode* node)
 		return;
 	}
 
+	// optional arguments (with standard values)
+	const char* address = node->getAttribute( "address", "127.0.0.1");
+	int bufferLength = atoi(node->getAttribute("bufferLength", "64"));
+	int maxMsgLength = atoi(node->getAttribute("maxMsgLength", "1024"));
+
 	/**
 	 * Initialize the component
 	 */
@@ -161,11 +162,11 @@ void SocketComponent::loadFromXml(const XMLNode* node)
 		{
 			if ( isServer )
 			{
-				m_clientServer = new SocketServer( address, port, (strcmp ("UDP", protocol) == 0) ? SocketProtocol::UDP : SocketProtocol::TCP);
+				m_clientServer = new SocketServer( address, port, maxMsgLength, bufferLength, (strcmp ("UDP", protocol) == 0) ? SocketProtocol::UDP : SocketProtocol::TCP);
 			}
 			else
 			{
-				m_clientServer = new SocketClient( address, port, (strcmp ("UDP", protocol) == 0) ? SocketProtocol::UDP : SocketProtocol::TCP );
+				m_clientServer = new SocketClient( address, port, maxMsgLength, bufferLength, (strcmp ("UDP", protocol) == 0) ? SocketProtocol::UDP : SocketProtocol::TCP );
 			}
 		}
 	}

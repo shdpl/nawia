@@ -25,7 +25,7 @@
 #include <GameEngine/GameLog.h>
 #include <string>
 
-SocketServer::SocketServer(const char* server_name, int port, SocketProtocol::List protocol) : SocketClientServer(server_name, port, protocol)
+SocketServer::SocketServer(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol) : SocketClientServer(server_name, port, maxMsgLength, bufferLength, protocol)
 {
 	switch(protocol)
 	{
@@ -122,7 +122,7 @@ void SocketServer::run()
 				ioctlsocket(acceptSocket, FIONBIO, &mode);
 				// Add new client socket
 				m_clients_socket.push_back( acceptSocket );
-				printf("SocketServer: Connection established to client %d\r\n", m_clients_socket.size());
+				GameLog::logMessage("SocketServer: Connection established to client %d\r\n", m_clients_socket.size());
 			}
 		}
 		while (acceptSocket != INVALID_SOCKET);
@@ -138,8 +138,8 @@ void SocketServer::run()
 			int addrLen = sizeof(sockaddr_in);
 			SocketAddress new_addr("", 0);
 
-			int messageIndex = (m_numMessages + m_currentMessage) % SocketData::BUFFER_LENGTH;
-			resultLength = recvfrom(m_socket, m_messages[messageIndex], SocketData::MAX_MSG_LENGTH, 0, (SOCKADDR *)&new_addr.m_address, &addrLen);
+			int messageIndex = (m_numMessages + m_currentMessage) % m_bufferLength;
+			resultLength = recvfrom(m_socket, &m_messages[messageIndex * m_maxMsgLength], m_maxMsgLength, 0, (SOCKADDR *)&new_addr.m_address, &addrLen);
 
 			if (resultLength > 0)
 			{
@@ -150,7 +150,7 @@ void SocketServer::run()
 				m_numMessages++;
 				m_numNewMessages++;
 				m_sizeOfNewMessages += resultLength;
-				if (m_numMessages == SocketData::BUFFER_LENGTH)
+				if (m_numMessages == m_bufferLength)
 				{
 					// Buffer overflow
 					if (m_currentMessage == m_firstNewMessage)
@@ -164,7 +164,7 @@ void SocketServer::run()
 					}
 					// Throw away oldest message
 					m_resultLength[m_currentMessage] = 0;
-					m_currentMessage = (m_currentMessage + 1) % SocketData::BUFFER_LENGTH;
+					m_currentMessage = (m_currentMessage + 1) % m_bufferLength;
 					m_numMessages--;
 				}
 				if (m_firstNewMessage == -1)
@@ -175,11 +175,19 @@ void SocketServer::run()
 				// 0 means closed connection, so remove the client
 				m_clients_addr.erase(new_addr);
 			}
+#ifdef PRINT_SOCKET_ERRORS
 			else
 			{
 				// negative value means error
-				//printSocketError(WSAGetLastError());
+				int error = WSAGetLastError();
+				if (error != WSAEWOULDBLOCK)
+				{
+					// WSAWOULDBLOCK happens, if there is nothing more to receive
+					printf("Error in ServerReceive - ");
+					printSocketError(WSAGetLastError());
+				}
 			}
+#endif
 		}
 		while (resultLength > 0 );
 	}
@@ -191,10 +199,10 @@ void SocketServer::run()
 			//Receive from all clients
 			for(unsigned int i = 0; i < m_clients_socket.size(); i++)
 			{
-				int messageIndex = (m_numMessages + m_currentMessage) % SocketData::BUFFER_LENGTH;
+				int messageIndex = (m_numMessages + m_currentMessage) % m_bufferLength;
 
 				// Receive from the current connection
-				resultLength = recv(m_clients_socket[i], m_messages[messageIndex], SocketData::MAX_MSG_LENGTH, 0);
+				resultLength = recv(m_clients_socket[i], &m_messages[messageIndex * m_maxMsgLength], m_maxMsgLength, 0);
 
 				if (resultLength > 0)
 				{
@@ -203,7 +211,7 @@ void SocketServer::run()
 					m_numMessages++;
 					m_numNewMessages++;
 					m_sizeOfNewMessages += resultLength;
-					if (m_numMessages == SocketData::BUFFER_LENGTH)
+					if (m_numMessages == m_bufferLength)
 					{
 						// Buffer overflow
 						if (m_currentMessage == m_firstNewMessage)
@@ -217,7 +225,7 @@ void SocketServer::run()
 						}
 						// Throw away oldest message
 						m_resultLength[m_currentMessage] = 0;
-						m_currentMessage = (m_currentMessage + 1) % SocketData::BUFFER_LENGTH;
+						m_currentMessage = (m_currentMessage + 1) % m_bufferLength;
 						m_numMessages--;
 					}
 					if (m_firstNewMessage == -1)
@@ -229,11 +237,19 @@ void SocketServer::run()
 					m_clients_socket.erase(m_clients_socket.begin() + i);
 					i--;
 				}
+#ifdef PRINT_SOCKET_ERRORS
 				else
 				{
 					// negative value means error
-					//printSocketError(WSAGetLastError());
+					int error = WSAGetLastError();
+					if (error != WSAEWOULDBLOCK)
+					{
+						// WSAWOULDBLOCK happens, if there is nothing more to receive
+							printf("Error in ServerReceive - ");
+							printSocketError(WSAGetLastError());
+					}
 				}
+#endif
 			}
 		} while(somethingReceived);
 	}
@@ -248,12 +264,30 @@ void SocketServer::sendSocketData(const char *data)
 		if(m_protocol == SocketProtocol::UDP)
 		{
 			for (iter = m_clients_addr.begin(); iter != end; iter++)
-				sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&iter->m_address , sizeof(iter->m_address));
+			{
+				int rc = sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&iter->m_address , sizeof(iter->m_address));
+#ifdef PRINT_SOCKET_ERRORS
+				if (rc < 0)
+				{
+					printf("Error in Server Send - ");
+					printSocketError(WSAGetLastError());
+				}
+#endif
+			}
 		}
 		else
 		{	//broadcast to all clients
 			for(unsigned int i=0; i<m_clients_socket.size(); i++)
-				send(m_clients_socket[i], data, strlen(data) + 1, 0);
+			{
+				int rc = send(m_clients_socket[i], data, strlen(data) + 1, 0);
+#ifdef PRINT_SOCKET_ERRORS
+				if (rc < 0)
+				{
+					printf("Error in Server Send - ");
+					printSocketError(WSAGetLastError());
+				}
+#endif
+			}
 		}
 	}
 }

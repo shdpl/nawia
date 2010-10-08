@@ -35,7 +35,7 @@
 class SocketServer : public SocketClientServer
 {
 public:
-	SocketServer(const char* server_name, int port, SocketProtocol::List protocol);
+	SocketServer(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol);
 	virtual ~SocketServer();
 
 	//** functions

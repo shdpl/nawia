@@ -32,7 +32,7 @@
 class SocketClientServer
 {
 public:
-	SocketClientServer(const char* server_name, int port, SocketProtocol::List protocol);
+	SocketClientServer(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol);
 	virtual ~SocketClientServer(void);
 
 	//** functions
@@ -70,7 +70,7 @@ protected:
 	SocketProtocol::List m_protocol;
 
 	///length of the buffer that stores received data
-	int			m_resultLength[SocketData::BUFFER_LENGTH];
+	int*		m_resultLength;
 	///number of received messages
 	int			m_numMessages;
 	///last received message
@@ -81,14 +81,11 @@ protected:
 	int			m_numNewMessages;
 	///size of the messages received by the last run() call
 	unsigned int m_sizeOfNewMessages;
-	// Acces data per char or per message
-	union
-	{
-		///buffer storing received messages
-		char m_messages[SocketData::BUFFER_LENGTH][SocketData::MAX_MSG_LENGTH];
-		///buffer storing received data
-		char m_data[SocketData::MAX_DATA_LENGTH];
-	};	
+	// The received messages
+	char* m_messages;
+
+	int m_maxMsgLength;
+	int m_bufferLength;
 };
 
 #endif
