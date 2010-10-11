@@ -51,6 +51,10 @@ private:
 	char m_name[32];
 	///Horde ID of the joint
 	H3DNode m_horde_id;
+	///Horde ID of the joint's model (agent)
+	H3DNode m_model_hID;
+	///GameEngine entity ID of the joint's model (agent)
+	unsigned int m_model_eID;
 	///DOFR of the joint
 	DOFRestrictions m_dofr;
 
@@ -59,21 +63,23 @@ private:
 	///the relative (local) transformation matrix of this joint
 	Horde3D::Matrix4f m_transf_rel;
 
-	///constructor 1
-	Joint(H3DNode model, const char* name);	
-	///constructor 2
-	Joint(H3DNode id);
-
 public:
 	//** public container elements
 	///returns a pointer to the requested joint
 	static Joint* getInstance(H3DNode model, const char* name);
 	///returns a pointer to the requested joint
 	static Joint* getInstance(H3DNode id);
-	static void updateAll();
-	static void deleteAll();
+	//updates all nodes of a specified model (agent)
+	static void updateAll(unsigned int model_hID);
+	//updates all nodes of a specified model (agent)
+	static void deleteAll(unsigned int model_hID);
 
 	//** public instance elements
+	///constructor 1
+	Joint(H3DNode model, const char* name);	
+	///constructor 2
+	Joint(H3DNode id);
+
 	///update dynamic values of the joint (transformation matrices, ...)
 	void update();
 

@@ -228,5 +228,5 @@ void IKComponent::release()
 {
 	delete m_gaze;
 	delete m_anim;
-	Joint::deleteAll();
+	Joint::deleteAll(hordeID);
 }

@@ -47,7 +47,9 @@ Joint* Joint::getInstance(H3DNode model, const char *name)
 	h3dFindNodes( model, name, H3DNodeTypes::Joint );
 	H3DNode id = h3dGetNodeFindResult(0);
 
-	return getInstance(id);
+	Joint* j = getInstance(id);
+
+	return j;
 }
 
 Joint* Joint::find(H3DNode id)
@@ -60,23 +62,34 @@ Joint* Joint::find(H3DNode id)
 		return iter->second;
 }
 
-void Joint::deleteAll()
+void Joint::deleteAll(unsigned int model_hID)
 {
 	std::map<H3DNode, Joint*>::iterator iter = m_joints.begin();
 	while(iter != m_joints.end())
 	{
+		if(iter->second == 0 || iter->second->m_model_hID != model_hID)
+		{
+			iter++;
+			continue;
+		}
+
 		delete iter->second;
 		iter->second = 0;
 		iter++;
 	}
-	m_joints.clear();
 }
 
-void Joint::updateAll()
+void Joint::updateAll(unsigned int model_hID)
 {
 	std::map<H3DNode, Joint*>::iterator iter = m_joints.begin();
 	while(iter != m_joints.end())
 	{
+		if(iter->second == 0 || iter->second->m_model_hID != model_hID)
+		{
+			iter++;
+			continue;
+		}
+
 		iter->second->update();
 		iter++;
 	}
@@ -84,9 +97,16 @@ void Joint::updateAll()
 
 //////////////////////////
 //Instance funcitons
-Joint::Joint(H3DNode id) : m_horde_id(id), m_dofr( DOFRestrictions::FULL_FREEDOM )
+Joint::Joint(H3DNode id) : m_horde_id(id), m_dofr( DOFRestrictions::FULL_FREEDOM ), m_model_hID(0)
 {
 	memcpy_s(m_name, 32, h3dGetNodeParamStr( id, H3DNodeParams::NameStr ), 32);
+	
+	//find joint's model (agent)
+	H3DNode node = m_horde_id;
+	while(h3dGetNodeType(node) != H3DNodeTypes::Model)
+		node = h3dGetNodeParent(node);
+	m_model_hID = node;
+
 	update();
 }
 
