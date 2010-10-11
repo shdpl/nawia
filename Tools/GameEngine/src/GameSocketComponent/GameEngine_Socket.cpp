@@ -59,4 +59,29 @@ namespace GameEngine
 			component->sendSocketData(data);
 		}
 	}
+
+	SOCKETPLUGINEXP int getMaxMessageLength( unsigned int entityWorldID)
+	{
+		SocketComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( component = static_cast<SocketComponent*>(entity->component("SocketComponent")) ) != 0 )
+		{
+			return component->getMaxMsgLength();
+		}
+		return -1;
+	}
+
+	///Get the socket buffer length
+	///@param entityWorldID the entity we want to use the function on
+	///@return the buffer length in number of messages, -1 if an error occured
+	SOCKETPLUGINEXP int getMaxBufferLength( unsigned int entityWorldID)
+	{
+		SocketComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( component = static_cast<SocketComponent*>(entity->component("SocketComponent")) ) != 0 )
+		{
+			return component->getBufferLength();
+		}
+		return -1;
+	}
 }

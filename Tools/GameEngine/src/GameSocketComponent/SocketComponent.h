@@ -49,6 +49,11 @@ public:
 	///sends socket data
 	void sendSocketData(const char *data);
 
+	///Gets the maximum message length for udp message based comunnication
+	int getMaxMsgLength();
+	///Gets the buffer length in number of messages --> max data length = bufferLength * maxMessageLength
+	int getBufferLength();
+
 private:
 	SocketClientServer* m_clientServer;
 

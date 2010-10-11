@@ -61,10 +61,10 @@ public:
 
 	///Gets the maximum message length for udp message based comunnication
 	///TCP data will also be split at this length
-	unsigned int getMaxMsgLength() { return m_maxMsgLength; }
+	int getMaxMsgLength() { return m_maxMsgLength; }
 	///Gets the buffer length in number of messages --> max data length = bufferLength * maxMessageLength
 	// If the buffer overflows, the oldest messges will be thrown away
-	unsigned int getBufferLength() { return m_bufferLength; }
+	int getBufferLength() { return m_bufferLength; }
 
 protected:
 	// Print the descriptions to an error code from winsocket

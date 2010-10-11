@@ -67,6 +67,16 @@ namespace GameEngine
 	///@param entityWorldID the entity we want to use the function on
 	///@param data pointer to char array that contains the data to be sent
 	SOCKETPLUGINEXP void sendSocketData( unsigned int entityWorldID, const char *data );
+
+	///Get the socket max message length
+	///@param entityWorldID the entity we want to use the function on
+	///@return the max message length in bytes, -1 if an error occured
+	SOCKETPLUGINEXP int getMaxMessageLength( unsigned int entityWorldID);
+
+	///Get the socket buffer length
+	///@param entityWorldID the entity we want to use the function on
+	///@return the buffer length in number of messages, -1 if an error occured
+	SOCKETPLUGINEXP int getMaxMessageLength( unsigned int entityWorldID);
 }
 
 #endif

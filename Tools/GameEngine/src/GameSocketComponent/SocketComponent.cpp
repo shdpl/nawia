@@ -211,3 +211,17 @@ void SocketComponent::sendSocketData(const char *data)
 	if(m_clientServer != 0)
 		m_clientServer->sendSocketData(data);
 }
+
+int SocketComponent::getMaxMsgLength()
+{
+	if (m_clientServer != 0)
+		return m_clientServer->getMaxMsgLength();
+	return -1;
+}
+
+int SocketComponent::getBufferLength()
+{
+	if (m_clientServer != 0)
+		return m_clientServer->getBufferLength();
+	return -1;
+}
