@@ -28,9 +28,9 @@
 //////////////////////////////////////////////
 
 ///flag for turning on debugging features (mostly detailed cmd window output)
-#define AGENTANIMDEBUG false
+#define AGENTANIMDEBUG true
 ///some debugging features will concentrate on the stage defined here
-#define DEBUG_followanimstage 514
+#define DEBUG_followanimstage 5114
 
 ///Number of animaiton stages an agent has
 static const size_t MaxNumAnimStages = 16;

@@ -27,15 +27,17 @@ AnimationNode::AnimationNode():
 		model(0), id(0), file(0), stage(0), mask(0), stroke_start(0), stroke_end(0),
 		scale(0), loop(false), doNotDie(false), sleep(false), finished(false),
 		anim_res(0), frame(0.0f), max_frame(0), fade(0), stroke_reps(0), current_reps(0),
-		noCustomization(false), maxWeight(0), weight(0)
+		noCustomization(false), maxWeight(0), weight(0), nextAnim(0), data(0), 
+		posture_prep(0), posture_stroke(0), posture_ret(0)
 {
 }
 
-AnimationNode::AnimationNode( H3DNode _model, unsigned int _id, const char* _file, int _stage):
+AnimationNode::AnimationNode( H3DNode _model, unsigned int _id, const char* _file, int _stage, AnimationData* _data):
 		model(_model), id(_id), stage(_stage), weight(1), maxWeight(0),
 		scale(1), loop(false), doNotDie(false), sleep(false), finished(false),
 		anim_res(0), frame(0.0f), max_frame(500), fade(0), stroke_reps(1), current_reps(0),
-		noCustomization(false)
+		noCustomization(false), nextAnim(0), data(_data),
+		posture_prep(0), posture_stroke(0), posture_ret(0)
 {
 	file = (char *)malloc(256);
 	mask = (char *)malloc(256);
@@ -68,7 +70,8 @@ void AnimationNode::setType(int _type)
 		loop = true; doNotDie = false;
 		break;
 	case Agent_AnimType::AAT_POSTURE:
-		loop = false; doNotDie = true;
+		//loop = false; doNotDie = true;
+		loop = true; doNotDie = false;
 		break;
 	case Agent_AnimType::AAT_GESTURE:
 		loop = false; doNotDie = false;
@@ -80,6 +83,13 @@ void AnimationNode::setType(int _type)
 		loop = false; doNotDie = false;
 		break;
 	}
+
+	type = _type;
+}
+
+int AnimationNode::getType()
+{
+	return type;
 }
 
 //Returns the farme count
@@ -184,4 +194,12 @@ void AnimationNode::setMask(const char *_mask)
 		mask = 0;
 	else
 		strcpy_s(mask, 256, _mask);
+}
+
+
+void AnimationNode::definePosture(AnimationNode* prep, AnimationNode* stroke, AnimationNode* ret)
+{
+	posture_prep = prep;
+	posture_stroke = stroke;
+	posture_ret = ret;
 }

@@ -46,6 +46,7 @@ struct Agent_AnimType
 		AAT_POSTURE,
 		AAT_GESTURE,
 		AAT_GESTURE_ADDITIVE,
+		AAT_POSTURE_PART
 	};
 };
 

@@ -23,7 +23,8 @@
 #include "AnimationData.h"
 
 AnimationData::AnimationData(int _id, const char* _name, int _type ) :
-	id(_id), type(_type), stroke_end(-1), stroke_start(-1), noCustomization(false)
+	id(_id), type(_type), stroke_end(-1), stroke_start(-1), noCustomization(false),
+	posture_prep(0), posture_stroke(0), posture_ret(0), parent(0)
 {
 	memcpy_s( name, 32, _name, 32 );
 }
@@ -32,6 +33,10 @@ AnimationData::~AnimationData()
 {
 	for(unsigned int i=0; i< m_files.size(); i++)
 		delete m_files[i];
+
+	if(posture_prep != 0) delete posture_prep;
+	if(posture_stroke != 0) delete posture_stroke;
+	if(posture_ret != 0) delete posture_ret;
 }
 
 void AnimationData::addFile(AnimationFile *file)

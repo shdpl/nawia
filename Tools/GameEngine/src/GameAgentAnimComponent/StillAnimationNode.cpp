@@ -24,7 +24,7 @@
 #include "GameEngine\GameEngine.h"
 
 StillAnimationNode::StillAnimationNode( H3DNode _model, unsigned int _id, const char* _file, int _stage):
-AnimationNode(_model, _id, _file, _stage)
+AnimationNode(_model, _id, _file, _stage, 0)
 {
 	t = 0;
 	targetWeight = weight;

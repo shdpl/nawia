@@ -191,6 +191,8 @@ public:
 	Agent_AnimStatus::List getAnimStatus( AnimationNode* anim );
 	///returns the animation node with the specified id
 	AnimationNode* getAnimNode( int anim_id );
+	///returns the i-th animation node with the specified type
+	AnimationNode* getAnimNode( Agent_AnimType::List type, int i );
 	///returns the animation that has the specified value for the noCustomization flag
 	AnimationNode* getAnimNodeWithNoCust( bool noCustomization );
 

@@ -25,6 +25,7 @@
 
 #include "Horde3D/Horde3D.h"
 #include "AnimationBlending.h"
+#include "AnimationData.h"
 #include <string>
 
 class AnimationNode
@@ -44,6 +45,7 @@ public:
 	bool finished;
 	bool noCustomization;
 	H3DRes anim_res;
+	int type;
 
 	float frame;
 	float max_frame;
@@ -55,11 +57,22 @@ public:
 
 	AnimationBlending* fade;
 
-	AnimationNode( H3DNode _model, unsigned int _id, const char* _file, int _stage);
+	///pointer to a previosly loaded animation node that has to be started after this one finishes. Enables generation of animation chains
+	AnimationNode* nextAnim;
+	
+	//for postures
+	AnimationNode* posture_prep;
+	AnimationNode* posture_stroke;
+	AnimationNode* posture_ret;
+
+	AnimationData* data;
+
+	AnimationNode( H3DNode _model, unsigned int _id, const char* _file, int _stage, AnimationData* _data);
 	AnimationNode();
 	~AnimationNode();
 
 	void setType(int _type);
+	int getType();
 
 	float getTotalFrameCount(bool absolute = false);
 
@@ -81,6 +94,7 @@ public:
 	void AnimationNode::setStrokeReps(int _reps);
 	void AnimationNode::setNoCustomization(bool _val);
 	void AnimationNode::setMask(const char* _mask);
+	void AnimationNode::definePosture(AnimationNode* prep, AnimationNode* stroke, AnimationNode* ret);
 };
 
 #endif

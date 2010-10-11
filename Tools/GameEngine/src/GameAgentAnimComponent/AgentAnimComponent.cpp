@@ -230,7 +230,7 @@ void AgentAnimComponent::loadFromXml(const XMLNode* node)
 
 bool AgentAnimComponent::processAnimDB(XMLNode db)
 {
-	//parse gesture data
+	//** Parse gesture data
 	int n = db.nChildNode( "Gesture" );
 	for(int i = 0; i<n; i++)
 	{
@@ -275,6 +275,70 @@ bool AgentAnimComponent::processAnimDB(XMLNode db)
 		}
 
 		XMLNode *restrictnode = &gnode->getChildNode("Restriction", 0);
+		std::string nocust("noCustomization"); 
+		if(!restrictnode->isEmpty() && restrictnode->getText() != 0 )
+			if (std::string( restrictnode->getText() ).find(nocust) != std::string::npos)
+				animdata->noCustomization = true;
+
+
+		m_animationData.push_back( animdata );
+	}
+	
+	//** Parse posture data
+	n = db.nChildNode( "Posture" );
+	for(int i = 0; i<n; i++)
+	{
+		XMLNode *pnode = &db.getChildNode( "Posture", i );
+
+		//ID, Name
+		XMLNode *idnode = &pnode->getChildNode("ID", 0);
+		XMLNode *namenode = &pnode->getChildNode("Name", 0);
+		if(idnode->isEmpty() || namenode->isEmpty())
+			return false;
+
+		AnimationData* animdata = 
+			new AnimationData(	(int)atoi(idnode->getText()),
+								namenode->getText(), 
+								Agent_AnimType::AAT_POSTURE );
+
+		
+		//Filenames
+		int numfiles = pnode->nChildNode("Files");
+		if(numfiles <= 0)
+			return false;
+
+		XMLNode *filenode, *partnode;		
+		animdata->posture_prep = new AnimationData( -1, namenode->getText(), Agent_AnimType::AAT_POSTURE_PART );
+		animdata->posture_stroke = new AnimationData( -1, namenode->getText(), Agent_AnimType::AAT_POSTURE );
+		animdata->posture_ret = new AnimationData( -1, namenode->getText(), Agent_AnimType::AAT_POSTURE_PART );
+		for(int j=0; j< numfiles; j++)
+		{
+			filenode = &pnode->getChildNode("Files", j);
+			//Preparation
+			partnode = &filenode->getChildNode("Preperation", 0);
+			if(partnode->isEmpty())
+				return false;
+			animdata->posture_prep->addFile( new AnimationFile( filenode->getAttribute("gender"), filenode->getAttribute("culture"), partnode->getText() ));
+			animdata->posture_prep->setForm( atof(partnode->getAttribute("blendIn")), atof(partnode->getAttribute("blendOut")), 1);
+			animdata->posture_prep->parent = animdata;
+
+			//Stroke
+			partnode = &filenode->getChildNode("Stroke", 0);
+			if(partnode->isEmpty())
+				return false;
+			animdata->posture_stroke->addFile( new AnimationFile( filenode->getAttribute("gender"), filenode->getAttribute("culture"), partnode->getText() ));
+			animdata->posture_stroke->parent = animdata;
+
+			//Retraction
+			partnode = &filenode->getChildNode("Retraction", 0);
+			if(partnode->isEmpty())
+				return false;
+			animdata->posture_ret->addFile( new AnimationFile( filenode->getAttribute("gender"), filenode->getAttribute("culture"), partnode->getText() ));			
+			animdata->posture_ret->setForm( atof(partnode->getAttribute("blendIn")), atof(partnode->getAttribute("blendOut")), 1);
+			animdata->posture_ret->parent = animdata;
+		}
+
+		XMLNode *restrictnode = &pnode->getChildNode("Restriction", 0);
 		std::string nocust("noCustomization"); 
 		if(!restrictnode->isEmpty() && restrictnode->getText() != 0 )
 			if (std::string( restrictnode->getText() ).find(nocust) != std::string::npos)
@@ -414,7 +478,7 @@ int AgentAnimComponent::loadAnimationFile( AnimationData* data, char* mask )
 		++iter;
 	}
 	
-	animNode = new AnimationNode( m_model, m_nextAnimID, anim_file, _stage );
+	animNode = new AnimationNode( m_model, m_nextAnimID, anim_file, _stage, data );
 	animNode->setType(data->type);
 	animNode->setMask(mask);
 	animNode->anim_res = old_res;
@@ -434,6 +498,8 @@ int AgentAnimComponent::loadAnimationFile( AnimationData* data, char* mask )
 
 	//setup animation stage
 	h3dSetupModelAnimStage( animNode->model, animNode->stage, animNode->anim_res, _layer, animNode->mask, false );
+	//force an immediate update with 0 weight
+	h3dSetModelAnimParams( animNode->model, animNode->stage, 0, 0 );
 
 	/*
 	 * Configure additional animation parameters
@@ -551,8 +617,49 @@ int AgentAnimComponent::preloadAnimByRes( int anim_res, int type, char* mask )
 
 int AgentAnimComponent::loadAnim( AnimationData* data, char* mask, char* syncWord )
 {
-	//load animation
-	int id = loadAnimationFile( data, mask );
+	int id, id_prep, id_stroke, id_ret;
+	if(data->type == Agent_AnimType::AAT_POSTURE)
+	{
+		if(data->posture_prep == 0 || data->posture_stroke == 0 || data->posture_ret == 0)
+			return -1;
+		//we load the prep
+		id_prep = loadAnimationFile( data->posture_prep, 0 ); //additive postures are disabled for now
+		if(id_prep < 0)
+			return -1;
+
+		//load the stroke
+		id_stroke = loadAnimationFile( data->posture_stroke, 0 ); //additive postures are disabled for now
+		if(id_stroke < 0)
+			return -1;
+
+		//..but we put it asleep for now
+		m_animations[id_stroke]->sleep = true;
+		m_animations[id_stroke]->setWeight(0.0f);
+
+		//load the ret
+		id_ret = loadAnimationFile( data->posture_ret, 0 ); //additive postures are disabled for now
+		if(id_ret < 0)
+			return -1;
+
+		//.. but we put it asleep for now
+		m_animations[id_ret]->sleep = true;
+		m_animations[id_ret]->setWeight(0.0f);
+
+		//link the nodes together
+		m_animations[id_prep]->definePosture(m_animations[id_prep], m_animations[id_stroke], m_animations[id_ret]);
+		m_animations[id_stroke]->definePosture(m_animations[id_prep], m_animations[id_stroke], m_animations[id_ret]);
+		m_animations[id_ret]->definePosture(m_animations[id_prep], m_animations[id_stroke], m_animations[id_ret]);
+		//define the chain
+		m_animations[id_prep]->nextAnim = m_animations[id_stroke];
+
+		//proceed with the prep
+		id = id_prep;
+	}
+	else
+	{
+		//load animation
+		id = loadAnimationFile( data, mask );
+	}
 	
 	if (id >= 0)
 	{
@@ -634,65 +741,38 @@ void AgentAnimComponent::startAnim( AnimationNode *animNode )
 	if(animNode == NULL)
 		return;
 
-	//set up posture blending subsystem
-	if(animNode->doNotDie)
-		//set flag: we have postures in the scene
-		postures_loaded = true;
+	animNode->sleep = false;
 
-	if(postures_loaded)
+	//check if there is a posture running on this agent
+	AnimationNode* aPosture = getAnimNode(Agent_AnimType::AAT_POSTURE, 0);
+	if(aPosture != 0 
+		&& animNode->getType() != Agent_AnimType::AAT_POSTURE 
+		&& animNode->getType() != Agent_AnimType::AAT_POSTURE_PART 
+		&& aPosture != animNode)
 	{
-		max_posture_weight = 1.0f;
-		if(BLEND_BETWEEN_POSTURES)
-		{
-			// Blending postures. 
-			nr_postures = 0;
-			vector<AnimationNode*>::iterator iter = m_animations.begin();
-			const vector<AnimationNode*>::iterator end = m_animations.end();
-			while ( iter != end )
-			{
-				if( *iter == NULL )
-				{
-					++iter; continue; 
-				}
-				if( ((*iter)->model == m_model) && ((*iter)->doNotDie) )
-				{
-					nr_postures++;
-					(*iter)->setWeight(1.0f/nr_postures);
-					max_posture_weight = 1.0f/nr_postures;
-				}
-				++iter;
-			}
-		}
-		else
-		{
-			// Overwriting postures. (TODO: still buggy)
-			//Remove any postures from the character
-			//so that the final position won't be an old posture position
-			vector<AnimationNode*>::iterator iter = m_animations.begin();
-			const vector<AnimationNode*>::iterator end = m_animations.end();
-			while ( iter != end )
-			{
-				if( *iter == NULL )
-				{
-					++iter; continue;
-				}
-				if( ((*iter)->model == m_model) && ((*iter)->doNotDie) && ((*iter)->sleep) )
-				{
-					max_posture_weight = 1.0f;
-					killAnim( *iter );
-				}
-				++iter;
-			}
-		}
+		//we put this animation asleep
+		animNode->sleep = true;
+		animNode->setWeight(0.0f);
+		animNode->frame = 0.0f;
+
+		//prepare the retraction
+		int ret_id = loadAnimationFile( aPosture->data->parent->posture_ret, 0 );
+		if(ret_id < 0)
+			return;
+		aPosture->posture_ret = m_animations[ret_id];
+
+		//queue it up after the posture retraction
+		aPosture->posture_ret->nextAnim = animNode;
+
+		//start the posture retraction animation		
+		startAnim(aPosture->posture_ret);
+
+		return;
 	}
 
 	//compute playback weight of animations
-	if(animNode->doNotDie)
-		animNode->setWeight(posture_weight);
-	else
-		//if there is a single anim, we don't blend to it
-		//TODO: shouldn't there be model_max_weight instead of the 1.0f?
-		animNode->setWeight((countAnimations(true) == 1) ? 1.0f : 0.0f); 
+	//if there is a single anim, we don't blend to it
+	animNode->setWeight((countAnimations(true) == 1) ? model_max_weight : 0.0f); 
 
 	//Modify the weight of the still anim
 	if(stillAnim != 0)
@@ -957,29 +1037,55 @@ void AgentAnimComponent::updateAnim( AnimationNode* animNode )
 		&& !animNode->loop && !animNode->doNotDie //no idle anim or posture
 		&& (animNode->mask == 0 || strcmp(animNode->mask, "") == 0)) //this is not an additive animation
 		{
-			if( nr_postures > 0 )
+			if( animNode->nextAnim != 0 )
 			{
-				//blend back to posture
-				if(m_blend_gp != 0)
+				//blend to the next animation in the chain
+				if(m_blend_gg != 0)
 				{
-					m_blend_gp->forceBlendFinish_gp();
-					m_blend_gp->~AnimationBlending();
-					delete m_blend_gp;
-					m_blend_gp = 0;
+					m_blend_gg->forceBlendFinish_gp();
+					m_blend_gg->~AnimationBlending();
+					delete m_blend_gg;
+					m_blend_gg = 0;
 				}
-				m_blend_gp = new AnimationBlending( this, animNode->id, -1, max_posture_weight );
+				animNode->nextAnim->sleep = false;
+				m_blend_gg = new AnimationBlending( this, animNode->id, animNode->nextAnim->id, max_posture_weight );
 			}			
-			else if( findIdleAnim() )
+			else if( findIdleAnim() && animNode->getType() != Agent_AnimType::AAT_POSTURE_PART)
 			{
-				//or to idle
-				if(m_blend_gi != 0)
+				AnimationNode* idle = findIdleAnim();
+				//if the idle is actually a posture, we need to blend to its prep first
+				if(idle->getType() == Agent_AnimType::AAT_POSTURE)
 				{
-					m_blend_gi->forceBlendFinish_gi();
-					m_blend_gi->~AnimationBlending();
-					delete m_blend_gi;
-					m_blend_gi = 0;
+					//load the prep
+					int id_prep = loadAnimationFile( idle->data->parent->posture_prep, 0 );
+					if(id_prep >= 0)
+					{
+						idle->posture_prep = m_animations[id_prep];
+						idle->posture_prep->nextAnim = idle;
+						//startAnim(m_animations[id_prep]);
+
+						if(m_blend_gg != 0)
+						{
+							m_blend_gg->forceBlendFinish_gp();
+							m_blend_gg->~AnimationBlending();
+							delete m_blend_gg;
+							m_blend_gg = 0;
+						}
+						idle->posture_prep->sleep = false;
+						m_blend_gg = new AnimationBlending( this, animNode->id, idle->posture_prep->id, max_posture_weight );
+					}
 				}
-				m_blend_gi = new AnimationBlending( this, animNode->id, findIdleAnim()->id, max_posture_weight );
+				else
+				{
+					if(m_blend_gi != 0)
+					{
+						m_blend_gi->forceBlendFinish_gi();
+						m_blend_gi->~AnimationBlending();
+						delete m_blend_gi;
+						m_blend_gi = 0;
+					}
+					m_blend_gi = new AnimationBlending( this, animNode->id, idle->id, max_posture_weight );
+				}
 			}
 		}
 
@@ -1000,29 +1106,56 @@ void AgentAnimComponent::updateAnim( AnimationNode* animNode )
 		//check if we need a blend out
 		if(LINEAR_ANIM_BLENDING_ENABLED || LINEAR_STROKE_BLENDING_ENABLED)
 		{
-			//blend back to posture (if we're not already doing that)
-			if((m_blend_gp == 0 || m_blend_gp->A_id != animNode->id) && nr_postures > 0)
+			//blend to the next animation in the chain (if we're not already doing that)
+			if((m_blend_gg == 0 || m_blend_gg->A_id != animNode->id) && animNode->nextAnim > 0)
 			{
-				if(m_blend_gp != 0)
+				if(m_blend_gg != 0)
 				{
-					m_blend_gp->forceBlendFinish_gp();
-					m_blend_gp->~AnimationBlending();
-					delete m_blend_gp;
-					m_blend_gp = 0;
+					m_blend_gg->forceBlendFinish_gp();
+					m_blend_gg->~AnimationBlending();
+					delete m_blend_gg;
+					m_blend_gg = 0;
 				}
-				m_blend_gp = new AnimationBlending( this, animNode->id, 0, posture_weight );
+				animNode->nextAnim->sleep = false;
+				m_blend_gg = new AnimationBlending( this, animNode->id, animNode->nextAnim->id, max_posture_weight );
 			}
 			//blend back to idle (if we're not already doing that)
-			else if((m_blend_gi == 0 || m_blend_gi->A_id != animNode->id) && findIdleAnim())
+			else if((m_blend_gi == 0 || m_blend_gi->A_id != animNode->id) && findIdleAnim() && animNode->getType() != Agent_AnimType::AAT_POSTURE_PART)
 			{
-				if(m_blend_gi != 0)
+				AnimationNode* idle = findIdleAnim();
+				//if the idle is actually a posture, we need to blend to its prep first
+				if(idle->getType() == Agent_AnimType::AAT_POSTURE)
 				{
-					m_blend_gi->forceBlendFinish_gi();
-					m_blend_gi->~AnimationBlending();
-					delete m_blend_gi;
-					m_blend_gi = 0;
+					//load the prep
+					int id_prep = loadAnimationFile( idle->data->parent->posture_prep, 0 );
+					if(id_prep >= 0)
+					{
+						idle->posture_prep = m_animations[id_prep];
+						idle->posture_prep->nextAnim = idle;
+						//startAnim(m_animations[id_prep]);
+
+						if(m_blend_gg != 0)
+						{
+							m_blend_gg->forceBlendFinish_gp();
+							m_blend_gg->~AnimationBlending();
+							delete m_blend_gg;
+							m_blend_gg = 0;
+						}
+						idle->posture_prep->sleep = false;
+						m_blend_gg = new AnimationBlending( this, animNode->id, idle->posture_prep->id, max_posture_weight );
+					}
 				}
-				m_blend_gi = new AnimationBlending( this, animNode->id, findIdleAnim()->id, max_posture_weight );
+				else
+				{
+					if(m_blend_gi != 0)
+					{
+						m_blend_gi->forceBlendFinish_gi();
+						m_blend_gi->~AnimationBlending();
+						delete m_blend_gi;
+						m_blend_gi = 0;
+					}
+					m_blend_gi = new AnimationBlending( this, animNode->id, idle->id, max_posture_weight );
+				}
 			}
 		}
 		
@@ -1314,6 +1447,30 @@ AnimationNode* AgentAnimComponent::getAnimNode( int anim_id )
 		
 		if( (*iter)->id == anim_id )
 			return *iter;
+
+		++iter;
+	}
+	return 0;
+}
+
+AnimationNode* AgentAnimComponent::getAnimNode( Agent_AnimType::List type, int i )
+{
+	vector<AnimationNode*>::iterator iter = m_animations.begin();
+	const vector<AnimationNode*>::iterator end = m_animations.end();
+	while ( iter != end )
+	{
+		if( *iter == NULL )
+		{
+			++iter; continue;
+		}
+		
+		if( (*iter)->getType() == type )
+		{
+			if(i == 0)
+				return *iter;
+			else
+				i--;
+		}
 
 		++iter;
 	}

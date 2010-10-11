@@ -20,6 +20,9 @@
 // Copyright (C) 2010 Ionut Damian
 // 
 // ****************************************************************************************  
+#ifndef ANIMATIONDATA_H_
+#define ANIMATIONDATA_H_
+
 #include "AnimationFile.h"
 #include <vector>
 
@@ -41,6 +44,17 @@ public:
 	int stroke_reps;
 	bool noCustomization;
 
+	///special pointer for postures, links the data of the preparation to this object
+	AnimationData* posture_prep;
+	///special pointer for postures, links the data of the stroke to this object
+	AnimationData* posture_stroke;
+	///special pointer for postures, links the data of the retraction to this object
+	AnimationData* posture_ret;
+
+	AnimationData* parent;
+
 private:
 	std::vector<AnimationFile*> m_files;
 };
+
+#endif
