@@ -789,6 +789,7 @@ void CommManager::processDo(char* cmd)
 	char _mask[64] = "";
 	char* mask = 0;
 	char _syncWord[64] = "";
+	char _type[16] = "";
 	Agent_AnimType::List type = Agent_AnimType::AAT_UNKNOWN;
 
 	//** Model
@@ -968,23 +969,27 @@ void CommManager::processDo(char* cmd)
 				strcpy_s(_syncWord, cmd );
 			}
 
+			//type
+			else if(strcmp(cmd, "-type") == 0)
+			{
+				cmd = strtok_s( NULL, " ", &context );
+				strcpy_s(_type, cmd );
+			}
+
 			cmd = strtok_s( NULL, " ", &context );
 		}
 
 		if( strcmp(_mask, "null") != 0 && strcmp(_mask, "") != 0 ) 
 			type = Agent_AnimType::AAT_GESTURE_ADDITIVE;
-		else
-		{
-			_mask[0] = '\0';
-			if( doNotDie ) 
-				type = Agent_AnimType::AAT_POSTURE;
 
-			else if( loop ) 
-				type = Agent_AnimType::AAT_IDLE;
+		else if( strcmp( _type, "posture" ) == 0 ) 
+			type = Agent_AnimType::AAT_POSTURE;
 
-			else 
-				type = Agent_AnimType::AAT_GESTURE;
-		}
+		else if( strcmp( _type, "idle" ) == 0 ) 
+			type = Agent_AnimType::AAT_IDLE;
+
+		else 
+			type = Agent_AnimType::AAT_GESTURE;
 		
 		//Add the animation			
 		agent->animation_id = GameEngine::AgentAnim_loadAnimByName( agent->entity_id, _name, type,
@@ -1048,16 +1053,23 @@ void CommManager::processDo(char* cmd)
 				strcpy_s(_syncWord, cmd );
 			}
 
+			//type
+			else if(strcmp(cmd, "-type") == 0)
+			{
+				cmd = strtok_s( NULL, " ", &context );
+				strcpy_s(_type, cmd );
+			}
+
 			cmd = strtok_s( NULL, " ", &context );
 		}
 
 		if( strcmp(_mask, "null") != 0 && strcmp(_mask, "") != 0 ) 
 			type = Agent_AnimType::AAT_GESTURE_ADDITIVE;
 
-		else if( strstr( _name, "posture" ) != 0 ) 
+		else if( strcmp( _type, "posture" ) == 0 ) 
 			type = Agent_AnimType::AAT_POSTURE;
 
-		else if( strstr( _name, "idle" ) != 0 ) 
+		else if( strcmp( _type, "idle" ) == 0 ) 
 			type = Agent_AnimType::AAT_IDLE;
 
 		else 
