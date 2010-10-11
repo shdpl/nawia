@@ -63,6 +63,11 @@ private:
 	///the relative (local) transformation matrix of this joint
 	Horde3D::Matrix4f m_transf_rel;
 
+	///constructor 1
+	Joint(H3DNode model, const char* name);	
+	///constructor 2
+	Joint(H3DNode id);
+
 public:
 	//** public container elements
 	///returns a pointer to the requested joint
@@ -75,11 +80,6 @@ public:
 	static void deleteAll(unsigned int model_hID);
 
 	//** public instance elements
-	///constructor 1
-	Joint(H3DNode model, const char* name);	
-	///constructor 2
-	Joint(H3DNode id);
-
 	///update dynamic values of the joint (transformation matrices, ...)
 	void update();
 
