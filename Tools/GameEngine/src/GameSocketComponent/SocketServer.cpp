@@ -27,15 +27,8 @@
 
 SocketServer::SocketServer(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol) : SocketClientServer(server_name, port, maxMsgLength, bufferLength, protocol)
 {
-	switch(protocol)
-	{
-	case SocketProtocol::TCP:
-		startTCP();
-		break;
-	case SocketProtocol::UDP:
-		startUDP();
-		break;
-	}
+	// Initialize and start
+	start();
 }
 
 SocketServer::~SocketServer()
@@ -45,65 +38,42 @@ SocketServer::~SocketServer()
 	m_clients_socket.clear();
 }
 
-void SocketServer::startUDP()
+void SocketServer::start()
 {
 	int ret = 0;
 
 	//create socket
-	m_socket = socket(AF_INET, SOCK_DGRAM, 0);
+	m_socket = socket(AF_INET, m_protocol == SocketProtocol::UDP ? SOCK_DGRAM : SOCK_STREAM, 0);
 	if ( m_socket == INVALID_SOCKET )
 	{
 		WSACleanup();
-		GameLog::errorMessage("SocketComponent: INVALID_SOCKET");
+		GameLog::errorMessage("SocketComponent: SOCKET_ERROR - Unable to create socket");
 		return;
 	}
 
 	//bind socket to address and port
-	ret = bind( m_socket, (SOCKADDR *) &m_server_addr->m_address, sizeof(SOCKADDR) );
+	ret = bind( m_socket, (SOCKADDR *) &m_server_addr.m_address, sizeof(SOCKADDR) );
 	if(ret != 0)
 	{
 		WSACleanup();
-		GameLog::errorMessage("SocketComponent: SOCKET_ERROR");
+		GameLog::errorMessage("SocketComponent: SOCKET_ERROR - Unable to bind socket to our adress");
 		return;			
-	}	
+	}
 
 	// enable non-blocking
 	unsigned long mode = 1;
 	ioctlsocket(m_socket, FIONBIO, &mode);
-}
 
-void SocketServer::startTCP()
-{
-	long rc = 0;
-
-	//create socket
-	m_socket = socket(AF_INET, SOCK_STREAM, 0);
-	if ( m_socket == INVALID_SOCKET )
+	if (m_protocol == SocketProtocol::TCP)
 	{
-		WSACleanup();
-		GameLog::errorMessage("SocketComponent: INVALID_SOCKET");
-		return;
-	}
-
-	//bind socket to address and port
-	rc = bind( m_socket, (SOCKADDR *) &m_server_addr->m_address, sizeof(SOCKADDR) );
-	if(rc != 0)
-	{
-		WSACleanup();
-		GameLog::errorMessage("SocketComponent: SOCKET_ERROR");
-		return;			
-	}
-
-	//enable non-blocking
-	unsigned long mode = 1;
-	ioctlsocket(m_socket, FIONBIO, &mode);
-
-	rc = listen(m_socket, SOMAXCONN);
-	if(rc != 0)
-	{
-		WSACleanup();
-		GameLog::errorMessage("SocketComponent: SOCKET_ERROR (can't listen)");
-		return;			
+		// Start lisenting for connecting clients
+		ret = listen(m_socket, SOMAXCONN);
+		if(ret != 0)
+		{
+			WSACleanup();
+			GameLog::errorMessage("SocketComponent: SOCKET_ERROR (can't listen)");
+			return;			
+		}
 	}
 }
 
@@ -263,6 +233,7 @@ void SocketServer::sendSocketData(const char *data)
 		std::set<SocketAddress>::iterator iter;
 		if(m_protocol == SocketProtocol::UDP)
 		{
+			//broadcast to all known client addresses
 			for (iter = m_clients_addr.begin(); iter != end; iter++)
 			{
 				int rc = sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&iter->m_address , sizeof(iter->m_address));
@@ -276,7 +247,7 @@ void SocketServer::sendSocketData(const char *data)
 			}
 		}
 		else
-		{	//broadcast to all clients
+		{	//broadcast to all connected client sockets
 			for(unsigned int i=0; i<m_clients_socket.size(); i++)
 			{
 				int rc = send(m_clients_socket[i], data, strlen(data) + 1, 0);

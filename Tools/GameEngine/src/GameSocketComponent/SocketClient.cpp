@@ -29,51 +29,45 @@
 
 SocketClient::SocketClient(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol) : SocketClientServer(server_name, port, maxMsgLength, bufferLength, protocol)
 {
-	switch(protocol)
-	{
-	case SocketProtocol::TCP:
-		startTCP();
-		break;
-	case SocketProtocol::UDP:
-		startUDP();
-		break;
-	}
+	// Initialize and start
+	start();
 }
 
 SocketClient::~SocketClient()
 {
 }
 
-void SocketClient::startUDP()
+void SocketClient::start()
 {
 	long rc = 0;
 
-	//"connect"
-	m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	rc = sendto(m_socket, "init", 5, 0, (SOCKADDR *) &m_server_addr->m_address, sizeof(m_server_addr->m_address));
-	if(rc==SOCKET_ERROR)
+	if (m_protocol == SocketProtocol::UDP)
 	{
-		WSACleanup();
-		GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to connect to server)");
-		return;
+		// Create socket with the server adress for receiving and sending
+		m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		// Send a hello packet to notify the server
+		rc = sendto(m_socket, "init", 5, 0, (SOCKADDR *) &m_server_addr.m_address, sizeof(m_server_addr.m_address));
+		if(rc==SOCKET_ERROR)
+		{
+			// TODO: Maybe we shouldn't give up yet and try later to connect (or at least send an hello message several times)
+			WSACleanup();
+			GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to send initial message to server)");
+			return;
+		}
 	}
-	// enable non-blocking
-	unsigned long mode = 1;
-	ioctlsocket(m_socket, FIONBIO, &mode);
-}
-
-void SocketClient::startTCP()
-{
-	long rc = 0;
-
-	//"connect"
-	m_socket = socket(AF_INET, SOCK_STREAM, 0);
-	rc = connect( m_socket, (SOCKADDR *)&m_server_addr->m_address, sizeof(m_server_addr->m_address) );
-	if(rc==SOCKET_ERROR)
+	else // TCP
 	{
-		WSACleanup();
-		GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to connect to server)");
-		return;
+		//"connect"
+		// TODO: currently blocking, maybe only start the connection process and check for it's status in the run()-call, until it completed or retry a few times if it failed
+		// Additionally a function for manually connecting could be useful
+		m_socket = socket(AF_INET, SOCK_STREAM, 0);
+		rc = connect( m_socket, (SOCKADDR *)&m_server_addr.m_address, sizeof(m_server_addr.m_address) );
+		if(rc==SOCKET_ERROR)
+		{
+			WSACleanup();
+			GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to connect to server)");
+			return;
+		}
 	}
 	// enable non-blocking
 	unsigned long mode = 1;
@@ -92,8 +86,8 @@ void SocketClient::run()
 		
 		if (m_protocol == SocketProtocol::UDP)
 		{
-			int addrLen = sizeof(m_server_addr->m_address);
-			resultLength = recvfrom(m_socket, &m_messages[messageIndex * m_maxMsgLength], m_maxMsgLength, 0, (SOCKADDR *)&m_server_addr->m_address, &addrLen);
+			int addrLen = sizeof(m_server_addr.m_address);
+			resultLength = recvfrom(m_socket, &m_messages[messageIndex * m_maxMsgLength], m_maxMsgLength, 0, (SOCKADDR *)&m_server_addr.m_address, &addrLen);
 		}
 		else // TCP
 		{
@@ -150,7 +144,7 @@ void SocketClient::sendSocketData(const char *data)
 		int rc = 0;
 		if(m_protocol == SocketProtocol::UDP)
 		{
-			rc = sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&m_server_addr->m_address , sizeof(m_server_addr->m_address));
+			rc = sendto(m_socket, data, strlen(data) + 1, 0, (SOCKADDR *)&m_server_addr.m_address , sizeof(m_server_addr.m_address));
 		}
 		else // TCP
 			rc = send(m_socket, data, strlen(data) + 1 , 0);

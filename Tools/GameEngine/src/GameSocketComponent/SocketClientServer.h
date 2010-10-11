@@ -35,36 +35,47 @@ public:
 	SocketClientServer(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol);
 	virtual ~SocketClientServer(void);
 
-	//** functions
-	///initializes and starts a TCP or UDP Client
-	virtual void startTCP() = 0;
-	virtual void startUDP() = 0;
+	//** Pure virtual functions, have to be implemented in sub classes
+	///initializes and starts a TCP or UDP Client/Server
+	virtual void start() = 0;
 
 	///checks for incomming messages and stores them in a local buffer (in parallel to other components)
 	virtual void run() = 0;
 
-	///get the messages received by the last run() call, but doesn't throw them away
-	///@param data: pointer where the data should be copied to
-	virtual void getNewestMessages(char** data);
-
-	///Gets the size of the messages received by the last run() call
-	virtual unsigned int getNewestMessagesSize() { return m_sizeOfNewMessages; }
-
-	///looks in the local buffer and copies the received messages in the "data" variable, throwing away all old messages
-	virtual int getSocketData(const char **data, bool onlyNewestMessage = false);
-	///sends data to the linked server socket
+	///sends data to the linked server/clients
 	virtual void sendSocketData(const char *data) = 0;
 
+	//** Virtual functions, can be reimplemented in sub classes
+	///looks in the local buffer and returns a pointer to the next not yet received message
+	///@param data: variable which will be set to point to the message
+	///@param onlyNewestMessage: data will be point to the last received message instead of the next, throwing away all older messages
+	virtual int getSocketData(const char **data, bool onlyNewestMessage = false);
+
+	//** Common functions
+	///Copies all messages received at the last run call ordered to the given pointer, but doesn't throw them away
+	///@param data: pointer where the data should be copied to
+	void getNewestMessages(char** data);
+
+	///Gets the size of the messages received by the last run() call (Use to allocate memory before getNewestMessages())
+	unsigned int getNewestMessagesSize() { return m_sizeOfNewMessages; }
+
+	///Gets the maximum message length for udp message based comunnication
+	///TCP data will also be split at this length
+	unsigned int getMaxMsgLength() { return m_maxMsgLength; }
+	///Gets the buffer length in number of messages --> max data length = bufferLength * maxMessageLength
+	// If the buffer overflows, the oldest messges will be thrown away
+	unsigned int getBufferLength() { return m_bufferLength; }
+
 protected:
-	// Print and error code from winsocket
+	// Print the descriptions to an error code from winsocket
 	void printSocketError(int errorCode);
 
 	//** variables
 	///member socket
 	SOCKET m_socket;
 
-	///socket address of the linked server
-	SocketAddress* m_server_addr;
+	///socket address of the linked server or our own adress if we are a server
+	SocketAddress m_server_addr;
 
 	///used communication protocol
 	SocketProtocol::List m_protocol;
@@ -81,10 +92,13 @@ protected:
 	int			m_numNewMessages;
 	///size of the messages received by the last run() call
 	unsigned int m_sizeOfNewMessages;
-	// The received messages
+	// The received messages organized in a ring buffer
 	char* m_messages;
-
+	///The maximum message length for udp message based comunnication
+	///TCP data will also be split at this length
 	int m_maxMsgLength;
+	///The buffer length of the ring buffer in number of messages --> max data length = bufferLength * maxMessageLength
+	// If the buffer overflows, the oldest messges will be thrown away
 	int m_bufferLength;
 };
 

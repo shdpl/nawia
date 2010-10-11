@@ -39,10 +39,8 @@ public:
 	virtual ~SocketServer();
 
 	//** functions
-	///initializes and starts a TCP Server
-	void startTCP();
-	///initializes and starts a UDP Client
-	void startUDP();
+	///initializes and starts a TCP or UDP Server
+	void start();
 
 	///checks for incomming messages and stores them in a local buffer
 	virtual void run();

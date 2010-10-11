@@ -27,29 +27,19 @@
 #include <iostream>
 
 SocketClientServer::SocketClientServer(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol)
+	: m_server_addr(server_name, port), m_numMessages(0), m_currentMessage(0), m_firstNewMessage(-1), m_sizeOfNewMessages(0), m_numNewMessages(0),
+	m_protocol(protocol), m_maxMsgLength(maxMsgLength), m_bufferLength(bufferLength)
 {
-	m_numMessages = 0;
-	m_currentMessage = 0;
-	m_firstNewMessage = -1;
-	m_sizeOfNewMessages = 0;
-	m_numNewMessages = 0;
-	m_protocol = protocol;
-	m_maxMsgLength = maxMsgLength;
-	m_bufferLength = bufferLength;
-
 	m_messages = new char[maxMsgLength * bufferLength];
 
 	m_resultLength = new int[bufferLength];
 	memset(m_resultLength, 0, sizeof(int)*bufferLength);
-
-	m_server_addr = new SocketAddress(server_name, port);
 }
 
 SocketClientServer::~SocketClientServer() 
 {
 	delete[] m_resultLength;
 	delete[] m_messages;
-	delete m_server_addr;
 }
 
 int SocketClientServer::getSocketData(const char** data, bool onlyNewestMessage /*=false*/)
@@ -84,8 +74,9 @@ void SocketClientServer::getNewestMessages(char** data)
 	if (m_numNewMessages > 0)
 	{
 		int bytesCopied = 0;
+		int endMessage = m_firstNewMessage + m_numNewMessages;
 		// We have at least one new message, so copy all to the data pointer
-		for (int i = m_firstNewMessage; i < m_numNewMessages; i++)
+		for (int i = m_firstNewMessage; i < endMessage; i++)
 		{
 			int index = i % m_bufferLength;
 			memcpy(*data + bytesCopied, &m_messages[index * m_maxMsgLength], m_resultLength[index]);
@@ -148,7 +139,7 @@ void SocketClientServer::printSocketError(int errorCode)
 		printf("The virtual circuit was reset by the remote side executing a hard or abortive close. The application should close the socket as it is no longer usable. On a UPD-datagram socket this error would indicate that a previous send operation resulted in an ICMP \"Port Unreachable\" message.\n");
 		break;
 	default:
-		printf("Unknownd socket error!\n");
+		printf("Unknown socket error!\n");
 		break;
 	}
 }
