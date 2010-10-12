@@ -28,6 +28,7 @@
 #include <GameEngine/GameComponentManager.h>
 
 #include <vector>
+#include <set>
 
 class SoundComponent;
 class SoundListenerComponent;
@@ -104,7 +105,7 @@ private:
 	SoundListenerComponent*		m_activeListener;
 
 	// Sounds stopped in the last run call, event will be sent in update
-	std::vector<SoundComponent*> m_stoppedNodes;
+	std::set<SoundComponent*> m_stoppedNodes;
 
 };
 

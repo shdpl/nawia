@@ -153,8 +153,8 @@ SoundManager::~SoundManager()
 
 void SoundManager::update()
 {
-	const std::vector<SoundComponent*>::iterator end = m_stoppedNodes.end();
-	std::vector<SoundComponent*>::iterator iter;
+	const std::set<SoundComponent*>::iterator end = m_stoppedNodes.end();
+	std::set<SoundComponent*>::iterator iter;
 	for (iter = m_stoppedNodes.begin(); iter != end; iter++)
 	{
 		SoundComponent* sound = *iter;
@@ -166,7 +166,7 @@ void SoundManager::update()
 		}
 	}
 	// Clear the stopped nodes
-	m_stoppedNodes.resize(0);
+	m_stoppedNodes.clear();
 
 	for_each(m_soundNodes.begin(), m_soundNodes.end(), UpdateNode());
 }
@@ -368,9 +368,7 @@ void SoundManager::stopSound(SoundComponent* sound, bool delayEvent /*= false*/)
 	if (delayEvent)
 	{
 #pragma omp critical
-		{
-			m_stoppedNodes.push_back(sound);
-		}
+		m_stoppedNodes.insert(sound);
 	}
 	else
 	{
