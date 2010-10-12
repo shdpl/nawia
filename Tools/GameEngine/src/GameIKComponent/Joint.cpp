@@ -79,6 +79,26 @@ void Joint::deleteAll(unsigned int model_hID)
 	}
 }
 
+void Joint::deleteJoint( Joint* j )
+{
+	std::map<H3DNode, Joint*>::iterator iter = m_joints.begin();
+	while(iter != m_joints.end())
+	{
+		if(iter->second == 0)
+		{
+			iter++;
+			continue;
+		}
+
+		if(iter->second->m_horde_id == j->m_horde_id)
+		{
+			delete iter->second;
+			iter->second = 0;
+		}
+		iter++;
+	}
+}
+
 void Joint::updateAll(unsigned int model_hID)
 {
 	std::map<H3DNode, Joint*>::iterator iter = m_joints.begin();

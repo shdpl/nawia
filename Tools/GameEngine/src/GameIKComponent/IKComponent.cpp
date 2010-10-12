@@ -227,6 +227,8 @@ int IKComponent::gaze(unsigned int modelHandle, float targetX, float targetY, fl
 void IKComponent::release() 
 {
 	delete m_gaze;
+	m_gaze = 0;
 	delete m_anim;
+	m_anim = 0;
 	Joint::deleteAll(hordeID);
 }

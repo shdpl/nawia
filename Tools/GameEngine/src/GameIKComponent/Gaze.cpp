@@ -87,11 +87,11 @@ m_head(head), m_leye(lefteye), m_reye(righteye), m_aux_leye(0), m_aux_reye(0), m
 Gaze::~Gaze()
 {
 	h3dRemoveNode( m_aux_leye->getHordeID() );
-	delete m_aux_leye;
+	Joint::deleteJoint(m_aux_leye);
 	m_aux_leye = 0;
 
 	h3dRemoveNode( m_aux_reye->getHordeID() );
-	delete m_aux_reye;
+	Joint::deleteJoint(m_aux_reye);
 	m_aux_reye = 0;
 }
 

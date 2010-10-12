@@ -74,10 +74,12 @@ public:
 	static Joint* getInstance(H3DNode model, const char* name);
 	///returns a pointer to the requested joint
 	static Joint* getInstance(H3DNode id);
-	//updates all nodes of a specified model (agent)
+	///updates all nodes of a specified model (agent)
 	static void updateAll(unsigned int model_hID);
-	//updates all nodes of a specified model (agent)
+	///updates all nodes of a specified model (agent)
 	static void deleteAll(unsigned int model_hID);
+	///deletes the specified joint
+	static void deleteJoint( Joint* j );
 
 	//** public instance elements
 	///update dynamic values of the joint (transformation matrices, ...)
