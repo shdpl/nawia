@@ -31,7 +31,7 @@
 class SocketClient : public SocketClientServer
 {
 public:
-	SocketClient(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol);
+	SocketClient(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol, int maxConnectionTrials);
 	virtual ~SocketClient();
 
 	//** functions
@@ -58,6 +58,7 @@ private:
 	};
 	ConnectionStatus m_connectionStatus;
 	unsigned int m_connectionTrials;
+	unsigned int m_maxConnectionTrials;
 };
 
 #endif

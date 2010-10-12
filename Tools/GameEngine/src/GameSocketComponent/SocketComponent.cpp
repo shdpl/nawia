@@ -100,11 +100,12 @@ void SocketComponent::executeEvent(GameEvent* event)
  *       port = int value
  *       address = alphanumeric value (optional, default 127.0.0.1)
  *       type = "server" / "client"
- *		 maxMsgLength = int value representing the maximum byte length of a message (TCP will split the messages if too long)
- *		 bufferLength = int value representing the buffer length in number of messages
+ *		 maxMsgLength = int value (optional, default 1024) representing the maximum byte length of a message (TCP will split the messages if too long)
+ *		 bufferLength = int value (optional, default 64) representing the buffer length in number of messages
+ *		 maxConnectionTrials = int value which indicates how often a tcp client tries to connect to it's server
  *
  * Example
- *		<Socket protocol="TCP" port="122" address="127.0.0.1" type="server" NrOfClients="6" />
+ *		<Socket protocol="TCP" port="122" address="127.0.0.1" type="server"/>
  */
 void SocketComponent::loadFromXml(const XMLNode* node)
 {
@@ -147,6 +148,7 @@ void SocketComponent::loadFromXml(const XMLNode* node)
 	const char* address = node->getAttribute( "address", "127.0.0.1");
 	int bufferLength = atoi(node->getAttribute("bufferLength", "64"));
 	int maxMsgLength = atoi(node->getAttribute("maxMsgLength", "1024"));
+	int maxConnectionTrials = atoi(node->getAttribute("maxConnectionTrials", "5"));
 
 	/**
 	 * Initialize the component
@@ -166,7 +168,7 @@ void SocketComponent::loadFromXml(const XMLNode* node)
 			}
 			else
 			{
-				m_clientServer = new SocketClient( address, port, maxMsgLength, bufferLength, (strcmp ("UDP", protocol) == 0) ? SocketProtocol::UDP : SocketProtocol::TCP );
+				m_clientServer = new SocketClient( address, port, maxMsgLength, bufferLength, (strcmp ("UDP", protocol) == 0) ? SocketProtocol::UDP : SocketProtocol::TCP, maxConnectionTrials);
 			}
 		}
 	}

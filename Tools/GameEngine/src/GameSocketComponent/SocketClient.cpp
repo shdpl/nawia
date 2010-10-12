@@ -27,8 +27,8 @@
 
 #include "config.h"
 
-SocketClient::SocketClient(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol)
-	: SocketClientServer(server_name, port, maxMsgLength, bufferLength, protocol), m_connectionStatus(NO_CONNECTION), m_connectionTrials(0)
+SocketClient::SocketClient(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol, int maxConnectionTrials)
+	: SocketClientServer(server_name, port, maxMsgLength, bufferLength, protocol), m_connectionStatus(NO_CONNECTION), m_connectionTrials(maxConnectionTrials)
 {
 	// Initialize and start
 	start();
@@ -56,6 +56,7 @@ void SocketClient::start()
 		if(rc==SOCKET_ERROR)
 		{
 			WSACleanup();
+			m_socket = INVALID_SOCKET;
 			GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to send initial message to server with address: %s)", m_server_addr.m_addressString.c_str());
 			return;
 		}
@@ -86,13 +87,14 @@ bool SocketClient::connectToServer()
 		{
 			int error = WSAGetLastError();
 			if (error == WSAEWOULDBLOCK)
-			{
+				// Connection initialised but not yet finished
 				m_connectionStatus = CONNECTING;
-			}
 			else if (error == WSAECONNREFUSED)
+				// Connection was directly refused by the server machine (server not initialised yet?)
 				m_connectionStatus = NO_CONNECTION;
 			else
 			{
+				// Real failure in connect so stop this
 #ifdef PRINT_SOCKET_ERRORS
 				printSocketError(error);
 #endif
@@ -104,6 +106,7 @@ bool SocketClient::connectToServer()
 		}
 		else
 		{
+			// Connection was established directly
 			m_connectionStatus = CONNECTED;
 			GameLog::logMessage("SocketComponent: Connected to server with address: %s)", m_server_addr.m_addressString.c_str());
 		}
@@ -115,6 +118,9 @@ bool SocketClient::connectToServer()
 
 void SocketClient::run()
 {
+	if (m_socket == INVALID_SOCKET)
+		return;
+
 	if (m_protocol == SocketProtocol::TCP && m_connectionStatus != CONNECTED)
 	{
 		// TCP client and no connection
@@ -122,13 +128,17 @@ void SocketClient::run()
 		{
 		case CONNECTING:
 			{
-				// Check for connection
+				// Check if connection has completed
 				fd_set socketSet;
 				socketSet.fd_count = 1;
 				socketSet.fd_array[0] = m_socket; 
-				int result = select(0, 0x0, &socketSet, 0x0, 0);
+				timeval maxWait;
+				maxWait.tv_sec = 0;	// 0 seconds,
+				maxWait.tv_usec = 100000; // but 100 000 microseconds = 0.1 seconds
+				int result = select(0, 0x0, &socketSet, 0x0, &maxWait);
 				if (result == 1)
 				{
+					// Connection completed
 					m_connectionStatus = CONNECTED;
 					GameLog::logMessage("SocketComponent: Connected to server with address: %s)", m_server_addr.m_addressString.c_str());
 				}
@@ -137,8 +147,9 @@ void SocketClient::run()
 					socketSet.fd_count = 1;
 					socketSet.fd_array[0] = m_socket;
 					// Check for failed connection
-					if (select(0, 0x0, 0x0, &socketSet, 0) == 1)
+					if (select(0, 0x0, 0x0, &socketSet, &maxWait) == 1)
 					{
+						// Connection failed
 						// Reconnect next run() call
 						m_connectionStatus = NO_CONNECTION;
 					}
@@ -147,13 +158,14 @@ void SocketClient::run()
 			}
 			break;
 		case NO_CONNECTION:
-			// Try to reconnect
-			if (m_connectionTrials < 5)
+			// Try to reconnect m_maxConnectionTrials times or infinite times if m_maxConnectionTrials < 0
+			if (m_maxConnectionTrials < 0 || m_connectionTrials < m_maxConnectionTrials)
 				connectToServer();
 			else
 			{
 				// Give up with connecting
 				WSACleanup();
+				m_socket = INVALID_SOCKET;
 				GameLog::errorMessage("SocketComponent: Client gave up connecting to server with address: %s after %d trials.", m_server_addr.m_addressString.c_str(), m_connectionTrials);
 				m_connectionStatus = GIVEN_UP;
 			}
@@ -163,6 +175,7 @@ void SocketClient::run()
 	}
 	else
 	{
+		// TCP client already connected or UDP client which doesn't need connecting
 		m_firstNewMessage = -1;
 		m_sizeOfNewMessages = 0;
 		m_numNewMessages = 0;
@@ -227,7 +240,7 @@ void SocketClient::run()
 
 void SocketClient::sendSocketData(const char *data)
 {
-	if (data != 0)
+	if (data != 0 && m_socket != INVALID_SOCKET)
 	{
 		int rc = 0;
 		if(m_protocol == SocketProtocol::UDP)

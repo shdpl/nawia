@@ -28,7 +28,7 @@
 
 SocketClientServer::SocketClientServer(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol)
 	: m_server_addr(server_name, port), m_numMessages(0), m_currentMessage(0), m_firstNewMessage(-1), m_sizeOfNewMessages(0), m_numNewMessages(0),
-	m_protocol(protocol), m_maxMsgLength(maxMsgLength), m_bufferLength(bufferLength)
+	m_protocol(protocol), m_maxMsgLength(maxMsgLength), m_bufferLength(bufferLength), m_socket(INVALID_SOCKET)
 {
 	m_messages = new char[maxMsgLength * bufferLength];
 

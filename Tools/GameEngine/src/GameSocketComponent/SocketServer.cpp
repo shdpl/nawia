@@ -55,6 +55,7 @@ void SocketServer::start()
 	ret = bind( m_socket, (SOCKADDR *) &m_server_addr.m_address, sizeof(SOCKADDR) );
 	if(ret != 0)
 	{
+		m_socket = INVALID_SOCKET;
 		WSACleanup();
 		GameLog::errorMessage("SocketComponent: SOCKET_ERROR - Unable to bind socket to address: %s", m_server_addr.m_addressString.c_str());
 		return;			
@@ -71,6 +72,7 @@ void SocketServer::start()
 		if(ret != 0)
 		{
 			WSACleanup();
+			m_socket = INVALID_SOCKET;
 			GameLog::errorMessage("SocketComponent: SOCKET_ERROR (can't listen)");
 			return;			
 		}
@@ -79,6 +81,9 @@ void SocketServer::start()
 
 void SocketServer::run()
 {
+	if (m_socket == INVALID_SOCKET)
+		return;
+
 	if (m_protocol == SocketProtocol::TCP)
 	{
 		SOCKET acceptSocket;
@@ -233,7 +238,7 @@ void SocketServer::run()
 
 void SocketServer::sendSocketData(const char *data)
 {
-	if (data != 0)
+	if (data != 0 && m_socket != INVALID_SOCKET)
 	{
 		const std::set<SocketAddress>::iterator end = m_clients_addr.end();
 		std::set<SocketAddress>::iterator iter;
