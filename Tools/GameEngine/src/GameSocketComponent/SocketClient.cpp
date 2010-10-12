@@ -49,9 +49,8 @@ void SocketClient::start()
 		rc = sendto(m_socket, "init", 5, 0, (SOCKADDR *) &m_server_addr.m_address, sizeof(m_server_addr.m_address));
 		if(rc==SOCKET_ERROR)
 		{
-			// TODO: Maybe we shouldn't give up yet and try later to connect (or at least send an hello message several times)
 			WSACleanup();
-			GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to send initial message to server)");
+			GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to send initial message to server with address: %s)", m_server_addr.m_addressString);
 			return;
 		}
 	}
@@ -65,7 +64,7 @@ void SocketClient::start()
 		if(rc==SOCKET_ERROR)
 		{
 			WSACleanup();
-			GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to connect to server)");
+			GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to connect to server with address: %s)", m_server_addr.m_addressString);
 			return;
 		}
 	}

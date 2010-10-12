@@ -56,7 +56,7 @@ void SocketServer::start()
 	if(ret != 0)
 	{
 		WSACleanup();
-		GameLog::errorMessage("SocketComponent: SOCKET_ERROR - Unable to bind socket to our adress");
+		GameLog::errorMessage("SocketComponent: SOCKET_ERROR - Unable to bind socket to address: %s", m_server_addr.m_addressString);
 		return;			
 	}
 
@@ -92,7 +92,7 @@ void SocketServer::run()
 				ioctlsocket(acceptSocket, FIONBIO, &mode);
 				// Add new client socket
 				m_clients_socket.push_back( acceptSocket );
-				GameLog::logMessage("SocketServer: Connection established to client %d\r\n", m_clients_socket.size());
+				GameLog::logMessage("SocketServer: Connection established to client %d", m_clients_socket.size()-1);
 			}
 		}
 		while (acceptSocket != INVALID_SOCKET);
@@ -114,7 +114,13 @@ void SocketServer::run()
 			if (resultLength > 0)
 			{
 				//save client address in local client vector
+				unsigned int oldSize = m_clients_addr.size();
 				m_clients_addr.insert( new_addr );
+				if (oldSize != m_clients_addr.size())
+				{
+					// Found new client
+					GameLog::logMessage("SocketComponent: Detected new client %d", oldSize);
+				}
 
 				m_resultLength[messageIndex] = resultLength;
 				m_numMessages++;

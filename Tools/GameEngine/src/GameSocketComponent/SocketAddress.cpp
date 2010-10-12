@@ -24,11 +24,11 @@
 #include "SocketAddress.h"
 
 
-SocketAddress::SocketAddress(const char *servername, int port)
+SocketAddress::SocketAddress(const char *addressString, int port) : m_addressString(addressString)
 {
 	memset(&m_address, 0, sizeof(sockaddr_in));
 
 	m_address.sin_family = AF_INET;
 	m_address.sin_port = htons(port);
-	m_address.sin_addr.s_addr = inet_addr(servername);
+	m_address.sin_addr.s_addr = inet_addr(addressString);
 }

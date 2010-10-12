@@ -29,6 +29,7 @@
 	#include <winsock2.h>
 #endif
 
+#include <string>
 
 /**
  * Class sotring socket addresses
@@ -36,15 +37,16 @@
 class SocketAddress
 {
 public:
-	///member adress
-	sockaddr_in m_address;
-	SocketAddress(const char *servername, int port);
+	SocketAddress(const char *addressString, int port);
 	///function for comparing two socket adresses
 	bool operator<(const SocketAddress& other) const
 	{
 		return memcmp(&m_address, &other.m_address, sizeof(sockaddr_in)) < 0;
 	}
-	//friend Socket;
+
+	///member adress
+	sockaddr_in m_address;
+	std::string m_addressString;
 };
 
 
