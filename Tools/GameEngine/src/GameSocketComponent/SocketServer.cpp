@@ -56,7 +56,7 @@ void SocketServer::start()
 	if(ret != 0)
 	{
 		WSACleanup();
-		GameLog::errorMessage("SocketComponent: SOCKET_ERROR - Unable to bind socket to address: %s", m_server_addr.m_addressString);
+		GameLog::errorMessage("SocketComponent: SOCKET_ERROR - Unable to bind socket to address: %s", m_server_addr.m_addressString.c_str());
 		return;			
 	}
 

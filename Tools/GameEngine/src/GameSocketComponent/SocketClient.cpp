@@ -27,7 +27,8 @@
 
 #include "config.h"
 
-SocketClient::SocketClient(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol) : SocketClientServer(server_name, port, maxMsgLength, bufferLength, protocol)
+SocketClient::SocketClient(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol)
+	: SocketClientServer(server_name, port, maxMsgLength, bufferLength, protocol), m_connectionStatus(NO_CONNECTION), m_connectionTrials(0)
 {
 	// Initialize and start
 	start();
@@ -45,95 +46,183 @@ void SocketClient::start()
 	{
 		// Create socket with the server adress for receiving and sending
 		m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+		// enable non-blocking
+		unsigned long mode = 1;
+		ioctlsocket(m_socket, FIONBIO, &mode);
+
 		// Send a hello packet to notify the server
 		rc = sendto(m_socket, "init", 5, 0, (SOCKADDR *) &m_server_addr.m_address, sizeof(m_server_addr.m_address));
 		if(rc==SOCKET_ERROR)
 		{
 			WSACleanup();
-			GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to send initial message to server with address: %s)", m_server_addr.m_addressString);
+			GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to send initial message to server with address: %s)", m_server_addr.m_addressString.c_str());
 			return;
 		}
+		m_connectionStatus = CONNECTED;
+		m_connectionTrials = 1;
 	}
 	else // TCP
 	{
-		//"connect"
-		// TODO: currently blocking, maybe only start the connection process and check for it's status in the run()-call, until it completed or retry a few times if it failed
-		// Additionally a function for manually connecting could be useful
+		// Create socket
 		m_socket = socket(AF_INET, SOCK_STREAM, 0);
-		rc = connect( m_socket, (SOCKADDR *)&m_server_addr.m_address, sizeof(m_server_addr.m_address) );
+
+		// enable non-blocking
+		unsigned long mode = 1;
+		ioctlsocket(m_socket, FIONBIO, &mode);
+
+		// Try to connect directly
+		connectToServer();
+	}
+}
+
+bool SocketClient::connectToServer()
+{
+	if (m_protocol == SocketProtocol::TCP && m_socket)
+	{
+		m_connectionTrials++;
+		long rc = connect( m_socket, (SOCKADDR *)&m_server_addr.m_address, sizeof(m_server_addr.m_address) );
 		if(rc==SOCKET_ERROR)
 		{
-			WSACleanup();
-			GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to connect to server with address: %s)", m_server_addr.m_addressString);
-			return;
+			int error = WSAGetLastError();
+			if (error == WSAEWOULDBLOCK)
+			{
+				m_connectionStatus = CONNECTING;
+			}
+			else if (error == WSAECONNREFUSED)
+				m_connectionStatus = NO_CONNECTION;
+			else
+			{
+#ifdef PRINT_SOCKET_ERRORS
+				printSocketError(error);
+#endif
+				WSACleanup();
+				GameLog::errorMessage("SocketComponent: SOCKET_ERROR (client failed to connect to server with address: %s)", m_server_addr.m_addressString.c_str());
+				m_connectionStatus = GIVEN_UP;
+				return false;
+			}
 		}
+		else
+		{
+			m_connectionStatus = CONNECTED;
+			GameLog::logMessage("SocketComponent: Connected to server with address: %s)", m_server_addr.m_addressString.c_str());
+		}
+
+		return true;
 	}
-	// enable non-blocking
-	unsigned long mode = 1;
-	ioctlsocket(m_socket, FIONBIO, &mode);
+	return false;
 }
 
 void SocketClient::run()
 {
-	m_firstNewMessage = -1;
-	m_sizeOfNewMessages = 0;
-	m_numNewMessages = 0;
-
-	int resultLength = 0;
-	do {
-		int messageIndex = (m_numMessages + m_currentMessage) % m_bufferLength;
-		
-		if (m_protocol == SocketProtocol::UDP)
+	if (m_protocol == SocketProtocol::TCP && m_connectionStatus != CONNECTED)
+	{
+		// TCP client and no connection
+		switch (m_connectionStatus)
 		{
-			int addrLen = sizeof(m_server_addr.m_address);
-			resultLength = recvfrom(m_socket, &m_messages[messageIndex * m_maxMsgLength], m_maxMsgLength, 0, (SOCKADDR *)&m_server_addr.m_address, &addrLen);
-		}
-		else // TCP
-		{
-			resultLength = recv(m_socket, &m_messages[messageIndex * m_maxMsgLength], m_maxMsgLength, 0);
-		}
-
-		if (resultLength > 0)
-		{
-			m_resultLength[messageIndex] = resultLength;
-			m_numMessages++;
-			m_numNewMessages++;
-			m_sizeOfNewMessages += resultLength;
-			if (m_numMessages == m_bufferLength)
+		case CONNECTING:
 			{
-				// Buffer overflow
-				if (m_currentMessage == m_firstNewMessage)
+				// Check for connection
+				fd_set socketSet;
+				socketSet.fd_count = 1;
+				socketSet.fd_array[0] = m_socket; 
+				int result = select(0, 0x0, &socketSet, 0x0, 0);
+				if (result == 1)
 				{
-					GameLog::warnMessage("WARNING: Buffer overflow in SocketComponent, some data will be lost!");
-					// Also reached the first message received by this run() call
-					// So ignore it
-					m_firstNewMessage++;
-					m_sizeOfNewMessages -= m_resultLength[m_currentMessage];
-					m_numNewMessages--;
+					m_connectionStatus = CONNECTED;
+					GameLog::logMessage("SocketComponent: Connected to server with address: %s)", m_server_addr.m_addressString.c_str());
 				}
-				// Throw away oldest message
-				m_resultLength[m_currentMessage] = 0;
-				m_currentMessage = (m_currentMessage + 1) % m_bufferLength;
-				m_numMessages--;
+				else
+				{
+					socketSet.fd_count = 1;
+					socketSet.fd_array[0] = m_socket;
+					// Check for failed connection
+					if (select(0, 0x0, 0x0, &socketSet, 0) == 1)
+					{
+						// Reconnect next run() call
+						m_connectionStatus = NO_CONNECTION;
+					}
+					// else still connecting...
+				}
 			}
-			if (m_firstNewMessage == -1)
-				m_firstNewMessage = m_currentMessage;			
-		}
-#ifdef PRINT_SOCKET_ERRORS
-		else if (resultLength < 0)
-		{
-			// negative value means error
-			int error = WSAGetLastError();
-			if (error != WSAEWOULDBLOCK)
+			break;
+		case NO_CONNECTION:
+			// Try to reconnect
+			if (m_connectionTrials < 5)
+				connectToServer();
+			else
 			{
-				// WSAWOULDBLOCK happens, if there is nothing more to receive
-				printf("Error in ClientReceive - ");
-				printSocketError(error);
+				// Give up with connecting
+				WSACleanup();
+				GameLog::errorMessage("SocketComponent: Client gave up connecting to server with address: %s after %d trials.", m_server_addr.m_addressString.c_str(), m_connectionTrials);
+				m_connectionStatus = GIVEN_UP;
 			}
+
+			break;
 		}
-#endif
 	}
-	while (resultLength > 0);
+	else
+	{
+		m_firstNewMessage = -1;
+		m_sizeOfNewMessages = 0;
+		m_numNewMessages = 0;
+
+		int resultLength = 0;
+		do {
+			int messageIndex = (m_numMessages + m_currentMessage) % m_bufferLength;
+		
+			if (m_protocol == SocketProtocol::UDP)
+			{
+				int addrLen = sizeof(m_server_addr.m_address);
+				resultLength = recvfrom(m_socket, &m_messages[messageIndex * m_maxMsgLength], m_maxMsgLength, 0, (SOCKADDR *)&m_server_addr.m_address, &addrLen);
+			}
+			else // TCP
+			{
+				resultLength = recv(m_socket, &m_messages[messageIndex * m_maxMsgLength], m_maxMsgLength, 0);
+			}
+
+			if (resultLength > 0)
+			{
+				m_resultLength[messageIndex] = resultLength;
+				m_numMessages++;
+				m_numNewMessages++;
+				m_sizeOfNewMessages += resultLength;
+				if (m_numMessages == m_bufferLength)
+				{
+					// Buffer overflow
+					if (m_currentMessage == m_firstNewMessage)
+					{
+						GameLog::warnMessage("WARNING: Buffer overflow in SocketComponent, some data will be lost!");
+						// Also reached the first message received by this run() call
+						// So ignore it
+						m_firstNewMessage++;
+						m_sizeOfNewMessages -= m_resultLength[m_currentMessage];
+						m_numNewMessages--;
+					}
+					// Throw away oldest message
+					m_resultLength[m_currentMessage] = 0;
+					m_currentMessage = (m_currentMessage + 1) % m_bufferLength;
+					m_numMessages--;
+				}
+				if (m_firstNewMessage == -1)
+					m_firstNewMessage = m_currentMessage;			
+			}
+	#ifdef PRINT_SOCKET_ERRORS
+			else if (resultLength < 0)
+			{
+				// negative value means error
+				int error = WSAGetLastError();
+				if (error != WSAEWOULDBLOCK)
+				{
+					// WSAWOULDBLOCK happens, if there is nothing more to receive
+					printf("Error in ClientReceive - ");
+					printSocketError(error);
+				}
+			}
+	#endif
+		}
+		while (resultLength > 0);
+	}
 }
 
 void SocketClient::sendSocketData(const char *data)

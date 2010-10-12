@@ -45,6 +45,19 @@ public:
 	//virtual int getSocketData(const char **data, bool onlyNewestMessage = false);
 	///sends data to the linked server socket
 	virtual void sendSocketData(const char *data);
+
+	// Try to connect with the server (TCP mode only)
+	bool connectToServer();
+private:
+	enum ConnectionStatus
+	{
+		NO_CONNECTION,
+		CONNECTING,
+		CONNECTED,
+		GIVEN_UP
+	};
+	ConnectionStatus m_connectionStatus;
+	unsigned int m_connectionTrials;
 };
 
 #endif
