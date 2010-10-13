@@ -595,7 +595,7 @@
 	<Posture>
 		<ID>0036</ID>
 		<Name>German_posture_armsCrossed</Name>
-		<Description>300 Frames posture in which the character holds his arms crossed</Description>
+		<Description>300 Frames posture in which the character holds his/her arms crossed</Description>
 		<Files culture="german" gender="female">
 			<Preperation blendIn="7" blendOut="35">Gestures\Ger\Female\Anim\female_ger_armsCrossed_prep.anim</Preperation>
 			<Stroke>Gestures\Ger\Female\Anim\female_ger_armsCrossed_stroke.anim</Stroke>
@@ -608,4 +608,34 @@
 		</Files>
 		<Restriction>Germany</Restriction>		
 	</Posture>
+	<Posture>
+		<ID>0037</ID>
+		<Name>German_posture_handsOnHips</Name>
+		<Description>300 Frames posture in which the character has the hands on his/her hips</Description>
+		<Files culture="german" gender="female">
+			<Preperation blendIn="7" blendOut="25">Gestures\Ger\Female\Anim\female_ger_handsOnHips_prep.anim</Preperation>
+			<Stroke>Gestures\Ger\Female\Anim\female_ger_handsOnHips_stroke.anim</Stroke>
+			<Retraction blendIn="15" blendOut="28">Gestures\Ger\Female\Anim\female_ger_handsOnHips_ret.anim</Retraction>			
+		</Files>
+		<Files culture="german" gender="male">
+			<Preperation blendIn="7" blendOut="25">Gestures\Ger\Male\Anim\male_ger_handsOnHips_prep.anim</Preperation>
+			<Stroke>Gestures\Ger\Male\Anim\male_ger_handsOnHips_stroke.anim</Stroke>
+			<Retraction blendIn="15" blendOut="38">Gestures\Ger\Male\Anim\male_ger_handsOnHips_ret.anim</Retraction>			
+		</Files>
+		<Restriction>Germany</Restriction>		
+	</Posture>
+	<Gesture>
+		<ID>0038</ID>
+		<Name>Pointing_01</Name>
+		<Filename gender="female" culture="german">Gestures\Ger\Female\Anim\female_ger_pointing_01.anim</Filename>
+		<Filename gender="male" culture="german">Gestures\Ger\Male\Anim\male_ger_pointing_01.anim.anim</Filename>
+		<Context>pointing at an imaginary thing</Context>
+		<Function>
+			<McNeil>deictic</McNeil>
+		</Function>
+		<Form>
+			<StrokeStart>7</StrokeStart>
+			<StrokeEnd>68</StrokeEnd>
+		</Form>
+	</Gesture>
 </GestureLexicon>
