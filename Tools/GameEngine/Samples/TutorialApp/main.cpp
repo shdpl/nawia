@@ -51,6 +51,7 @@ int WINAPI WinMain(	HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	glWindow->setKeyboardCB(DemoApp::keyboardCb);
 	glWindow->setMouseCB(DemoApp::mouseCb);
 	glWindow->setResizeCB(DemoApp::resizeCb, app);
+	
 	DemoApp::resizeCb(app, width, height);
 	// Run Event Loop	
 	while( app->isRunning() )
