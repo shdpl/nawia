@@ -27,7 +27,7 @@
 
 //////////////////////////////////////////////
 //Definitions
-//#define IK_DEBUG
+//#define IK_DEBUG //requires gazeaux resource (models/gazeaux/gazeaux.scene.xml)
 #define IK_NumParamI 6
 #define IK_NumParamF 7
 //////////////////////////////////////////////

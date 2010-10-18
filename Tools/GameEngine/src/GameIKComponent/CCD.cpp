@@ -105,7 +105,7 @@ IK_CCDResult::List CCD::execute()
 			float dist = vecDistance(currentVec, targetVec);
 			
 			#ifdef IK_DEBUG
-				printf("[it%d] dist %.5f (%.1f) in %d rotations\n", m_itCnt,dist,Config::getParamF(Config::CCD_MAX_DIST_ERROR),rotPerIt );
+				printf("[it%d] dist %.5f (%.1f) in %d rotations\n", m_itCnt,dist,Config::getParamF(IK_Param::CCDMaxDistError_F),rotPerIt );
 			#endif
 			if(dist <= Config::getParamF(IK_Param::CCDMaxDistError_F)) 
 			{
@@ -179,16 +179,10 @@ bool CCD::applyRotation(Joint *j, Horde3D::Vec3f axis, float angle_rad, AxisLock
 	Horde3D::Matrix4f newTransf = *(j->getRelTransf()) * qmat; 
 	newTransf.decompose( p, r, s );
 
-
-	//h3dSetNodeTransMat( j->getHordeID(), newTransf.x );
-		
 	//convert to degrees
 	r.x = Horde3D::radToDeg( r.x );
 	r.y = Horde3D::radToDeg( r.y );
 	r.z = Horde3D::radToDeg( r.z );
-
-	if(j->getHordeID() == 22)
-		printf("eye - rad: %.2f - eul: %.2f, %.2f, %.2f\n",angle_rad, r.x, r.y, r.z);
 
 	//DOFRestrictions
 	if( Config::getParamI(IK_Param::UseDofr_I) > 0 )

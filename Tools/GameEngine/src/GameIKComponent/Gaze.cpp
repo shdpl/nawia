@@ -202,11 +202,34 @@ bool Gaze::computeHeadRotation( Horde3D::Vec3f *out_axis, float *out_angleRad)
 		m_headpitch - (int)((m_headpitch/2)*(m_headpitch/2));
 	
 	//First, we must temporary position the eye in the center of the face, 
-	//clear its rotations and calculate the endPos		
+	//clear its rotations and calculate the endPos
+	//This computation is skeleton specific. Remove comments from desired aproach (TODO: better implementation)
+	//You MUST also set the DfltEyeRot parameters to correspond to the "looking straight" rotation of the eyes
+
+	//** 1. Eyetype: x-axis goes left (or right), y-axis goes up (or down), z-axis comes out of the eye
+	//		Known skeletons: 
+	//		- Ritchie (some versions, Bip01-Skeleton used at Human Centered Multimedia, Augsburg University)
+	//h3dSetNodeTransform( m_leye->getHordeID(), 
+	//	0, p.y, p.z, 
+	//	(float)(Config::getParamF(IK_Param::DfltEyeRotX_F) + m_headpitch), Config::getParamF(IK_Param::DfltEyeRotY_F), Config::getParamF(IK_Param::DfltEyeRotZ_F),
+	//	1, 1, 1);
+
+	//** 2. Eyetype: x-axis goes up (or down), y-axis goes left (or right), z-axis comes out of the eye
+	//		Known skeletons: 
+	//		- Biergarten Agents (Bip01-Skeleton used at Human Centered Multimedia, Augsburg University)
+	//		- Ritchie (some versions, Bip01-Skeleton used at Human Centered Multimedia, Augsburg University)
 	h3dSetNodeTransform( m_leye->getHordeID(), 
 		p.x, 0, p.z, 
-		0, (float)(90 + m_headpitch), 0, 
+		Config::getParamF(IK_Param::DfltEyeRotX_F), (float)(Config::getParamF(IK_Param::DfltEyeRotY_F) + m_headpitch), Config::getParamF(IK_Param::DfltEyeRotZ_F),
 		1, 1, 1);
+
+	//** 3. Eyetype: x-axis comes out of the eye, y-axis goes up (or down), z-axis goes left (or right)
+	//		Known skeletons:
+	//		- Hamster (CAT-Skeleton used at Human Centered Multimedia, Augsburg University)
+	//h3dSetNodeTransform( m_leye->getHordeID(), 
+	//	p.x, p.y, 0, 
+	//	Config::getParamF(IK_Param::DfltEyeRotX_F), Config::getParamF(IK_Param::DfltEyeRotY_F), (float)(Config::getParamF(IK_Param::DfltEyeRotZ_F) + m_headpitch),
+	//	1, 1, 1);
 
 	m_aux_leye->update();
 	Horde3D::Vec3f endPos = m_aux_leye->getAbsTranslation();
