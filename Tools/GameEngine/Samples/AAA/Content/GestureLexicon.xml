@@ -628,7 +628,9 @@
 		<ID>0038</ID>
 		<Name>Pointing_01</Name>
 		<Filename gender="female" culture="german">Gestures\Ger\Female\Anim\female_ger_pointing_01.anim</Filename>
-		<Filename gender="male" culture="german">Gestures\Ger\Male\Anim\male_ger_pointing_01.anim.anim</Filename>
+		<Filename gender="male" culture="german">Gestures\Ger\Male\Anim\male_ger_pointing_01.anim</Filename>
+		<Filename gender="female" culture="japan">Gestures\Ger\Female\Anim\female_ger_pointing_01.anim</Filename>
+		<Filename gender="male" culture="japan">Gestures\Ger\Male\Anim\male_ger_pointing_01.anim</Filename>
 		<Context>pointing at an imaginary thing</Context>
 		<Function>
 			<McNeil>deictic</McNeil>
