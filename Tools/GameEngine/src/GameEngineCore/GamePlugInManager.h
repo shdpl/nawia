@@ -101,6 +101,12 @@ public:
 	 */ 
 	void registerLuaStack( lua_State* L );
 
+	/**
+	 * \brief Loads plugin from directory in an environment variable
+	 *  
+	 */ 
+	void loadPluginFromEnvVar(std::string dllName, std::string envVarName);
+
 private:
 	/// Private Contstructor ( friend class GameModules )
 	GamePlugInManager(); 

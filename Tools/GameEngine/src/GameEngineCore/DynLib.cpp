@@ -57,7 +57,7 @@ bool DynLib::load()
 	if( m_hInst != 0x0 ) return true;
 
 	// Log library load
-	GameLog::logMessage("Loading library %s", m_name.c_str());
+	//GameLog::logMessage("Loading library %s", m_name.c_str());
 
 	std::string name = m_name;
 #if PLATFORM_LINUX
@@ -70,7 +70,7 @@ bool DynLib::load()
 
 	if( m_hInst == 0x0 )
 	{
-		GameLog::errorMessage( "Could not load dynamic library %s. System Error: %s", m_name.c_str(), dynlibError().c_str() );
+		//GameLog::errorMessage( "Could not load dynamic library %s. System Error: %s", m_name.c_str(), dynlibError().c_str() );
 		return false;
 	}
 
