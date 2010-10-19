@@ -32,7 +32,10 @@ void Config::useDefault()
 	//enum ParamS
 
 	//enum ParamI
-	setParamI(IK_Param::UseDofr_I, 1);
+	//setParamI(IK_Param::UseDofr_I, 1);
+	// Change default to no restrictions
+	setParamI(IK_Param::UseDofr_I, 0);
+	
 	setParamI(IK_Param::UseIkmo_I, 0);
 	setParamI(IK_Param::UseZLock_I, 1);
 	setParamI(IK_Param::CCDMaxIterations_I, 100);
