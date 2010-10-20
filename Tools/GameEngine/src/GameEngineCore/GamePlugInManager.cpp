@@ -29,14 +29,17 @@
 
 #include <fstream>
 
+#ifdef WIN32
 // Includes for plugin loading from environment variables and file status checks
 #include <tchar.h>
 #include <sys/stat.h>
 // 
 typedef std::basic_string<TCHAR, std::char_traits<TCHAR>> TString;
+#endif
 
 void GamePlugInManager::loadPluginFromEnvVar(std::string dllName, std::string envVarName)
-{	
+{
+#ifdef WIN32
 	// Get a pointer to the environment block. 
     LPTCH lpvEnv = GetEnvironmentStrings();
     if (lpvEnv == NULL)
@@ -115,6 +118,7 @@ void GamePlugInManager::loadPluginFromEnvVar(std::string dllName, std::string en
     }
 	// Free environment strings
 	FreeEnvironmentStrings(lpvEnv);
+#endif
 }
 
 
