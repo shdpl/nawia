@@ -28,7 +28,7 @@
 #include "config.h"
 
 SocketClient::SocketClient(const char* server_name, int port, int maxMsgLength, int bufferLength, SocketProtocol::List protocol, int maxConnectionTrials)
-	: SocketClientServer(server_name, port, maxMsgLength, bufferLength, protocol), m_connectionStatus(NO_CONNECTION), m_connectionTrials(maxConnectionTrials)
+	: SocketClientServer(server_name, port, maxMsgLength, bufferLength, protocol), m_connectionStatus(NO_CONNECTION), m_maxConnectionTrials(maxConnectionTrials), m_connectionTrials(0)
 {
 	// Initialize and start
 	start();
