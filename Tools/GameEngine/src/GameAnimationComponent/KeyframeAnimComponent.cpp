@@ -580,7 +580,7 @@ int KeyframeAnimComponent::getJobID(std::string animName)
 	{
 		for(unsigned int i = 0; i < m_animationRegistry.size(); ++i)
 		{
-			if(m_animationRegistry[i]->m_animation = iter->second) return i+1;
+			if(m_animationRegistry[i]->m_animation == iter->second) return i+1;
 		}
 	}
 	return 0;
