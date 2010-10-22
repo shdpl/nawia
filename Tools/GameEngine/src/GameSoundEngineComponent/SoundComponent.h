@@ -78,13 +78,16 @@ public:
 	void setRefDist(const float value);
 	bool setSoundFile(const char* fileName, bool oggStream = true);
 	bool setSoundFromUserData(const char* data, int dataSize, int samplesPerSec, int bitsPerSample, int numChannels);
-	bool loadPhonemesFile(const char* fileName, std::vector<SoundComponent::Viseme>* container = 0x0);
+	// Add phonemes to our viseme container
+	bool loadPhonemesFile(const char* fileName);
+	// Add phonemes to an arbitrary viseme container
+	bool loadPhonemesFile(const char* fileName, std::vector<SoundComponent::Viseme>* container);
 	inline float getDistanceToListener();
 	
 private:
-	void addPhonem(const XMLNode* phonem, std::vector<SoundComponent::Viseme>* container = 0x0);
-	void addTheme(const XMLNode* theme, std::vector<SoundComponent::Viseme>* container = 0x0);
-	void addRheme(const XMLNode* rheme, std::vector<SoundComponent::Viseme>* container = 0x0);
+	// Add the viseme that corresponds to the given phonem to a container
+	void addPhonem(const XMLNode* phonem, std::vector<SoundComponent::Viseme>* container);
+
 	void startVisemes();
 	void stopVisemes();
 	//void resetPreviousViseme();

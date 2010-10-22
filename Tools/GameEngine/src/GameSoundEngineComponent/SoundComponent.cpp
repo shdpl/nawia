@@ -585,26 +585,20 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 	return false;
 }
 
-bool SoundComponent::loadPhonemesFile(const char* fileName, std::vector<SoundComponent::Viseme>* container /*= 0x0*/)
+bool SoundComponent::loadPhonemesFile(const char* fileName)
 {
-	if (!m_visemes.empty())
-	{
-		// Stop old Visemes
-		stopVisemes();
-		// Delete old visemes
-		m_visemes.clear();
-	}
+	// Stop the visemes as we are reloading our container
+	// Stop old Visemes
+	stopVisemes();
+	// Delete old visemes
+	m_visemes.clear();
+	// Load visemes to our container
+	return loadPhonemesFile(fileName, &m_visemes);
+}
 
-	if (container == &m_visemes) // not sure about this...
-	{
-		// Stop old Visemes
-		stopVisemes();
-		// Delete old visemes
-		m_visemes.clear();
-	}
-
-	// If the new file name is empty, the user only wants to
-	// deactivate the phonemes and we are ready
+bool SoundComponent::loadPhonemesFile(const char* fileName, std::vector<SoundComponent::Viseme>* container)
+{
+	// Nothing to do if the filename is empty
 	if( _stricmp(fileName, "") == 0 )
 		return true;
 
@@ -624,25 +618,21 @@ bool SoundComponent::loadPhonemesFile(const char* fileName, std::vector<SoundCom
 			for (int i = 0; i < childs; ++i)
 			{
 				XMLNode child(phonems.getChildNode(i));
-				if(_stricmp(child.getName(),"phn")==0  ) addPhonem(&child, container);
+				if(_stricmp(child.getName(),"phn")==0  || 
+					_stricmp(child.getName(),"theme")==0 ||	_stricmp(child.getName(),"rheme")==0)
+					addPhonem(&child, container);
 				else if( _stricmp(child.getName(),"word")==0  )
 				{
 					int wordChilds = child.nChildNode();
 					for (int j = 0; j < wordChilds; ++j)
 					{
 						XMLNode wordChild(child.getChildNode(j));
-						if( _stricmp(wordChild.getName(),"phn")==0  ) addPhonem(&wordChild, container);
+						if(_stricmp(wordChild.getName(),"phn")==0  || 
+							_stricmp(wordChild.getName(),"theme")==0 ||	_stricmp(wordChild.getName(),"rheme")==0)
+							addPhonem(&wordChild, container);
 						else GameLog::errorMessage("Bad childnode in phonem file %s\n", fileName);
 					}
 
-				}
-				else if ( _stricmp(child.getName(),"theme")==0  )
-				{
-					addTheme(&child);
-				}
-				else if ( _stricmp(child.getName(),"rheme")==0  )
-				{
-					addRheme(&child);
 				}
 				else GameLog::errorMessage("Bad childnode in phonem file %s\n", fileName);
 			}				
@@ -656,82 +646,64 @@ bool SoundComponent::loadPhonemesFile(const char* fileName, std::vector<SoundCom
 	return true;
 }
 
-void SoundComponent::addPhonem(const XMLNode* phonem, std::vector<SoundComponent::Viseme>* container /*= 0x0*/)
+void SoundComponent::addPhonem(const XMLNode* phonem, std::vector<SoundComponent::Viseme>* container)
 {
-	int start = static_cast<int>(atoi(phonem->getAttribute("start","0")));
-	int end = static_cast<int>(atoi(phonem->getAttribute("end","0")));
-	int index = 0;
-	// phonem mapping
-	if( _stricmp(phonem->getAttribute("value",""), "AE")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "AY")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "AH")==0 ) index = 1;
-	else if( _stricmp(phonem->getAttribute("value",""), "AA")==0 ) index=2;
-	else if( _stricmp(phonem->getAttribute("value",""), "AO")==0 ) index=3;
-	else if( _stricmp(phonem->getAttribute("value",""), "EY")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "EH")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "UH")==0 ) index=4;
-	else if( _stricmp(phonem->getAttribute("value",""), "ER")==0 ) index=5;
-	else if( _stricmp(phonem->getAttribute("value",""), "y")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "IY")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "IH")==0 ) index=6;
-	else if( _stricmp(phonem->getAttribute("value",""), "w")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "UW")==0 ) index=7;
-	else if( _stricmp(phonem->getAttribute("value",""), "OW")==0 ) index=8;
-	else if( _stricmp(phonem->getAttribute("value",""), "AW")==0 ) index=9;
-	else if( _stricmp(phonem->getAttribute("value",""), "OY")==0 ) index=10;
-	else if( _stricmp(phonem->getAttribute("value",""), "AY")==0 ) index=11;
-	else if( _stricmp(phonem->getAttribute("value",""), "h")==0 ) index=12;
-	else if( _stricmp(phonem->getAttribute("value",""), "r")==0 ) index=13;
-	else if( _stricmp(phonem->getAttribute("value",""), "l")==0 ) index=14;
-	else if( _stricmp(phonem->getAttribute("value",""), "s")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "z")==0 ) index=15;
-	else if( _stricmp(phonem->getAttribute("value",""), "SH")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "CH")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "j")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "ZH")==0 ) index=16;
-	else if( _stricmp(phonem->getAttribute("value",""), "TH")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "DH")==0 ) index=17;
-	else if( _stricmp(phonem->getAttribute("value",""), "f")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "v")==0 ) index=18;
-	else if( _stricmp(phonem->getAttribute("value",""), "d")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "t")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "n")==0 ) index=19;
-	else if( _stricmp(phonem->getAttribute("value",""), "k")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "g")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "NG")==0 ) index=20;
-	else if( _stricmp(phonem->getAttribute("value",""), "p")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "b")==0 ||
-		_stricmp(phonem->getAttribute("value",""), "m")==0 ) index=21;
-
-	Viseme vis = Viseme(start, end, index);
 	if (container)
+	{
+		int start = static_cast<int>(atoi(phonem->getAttribute("start","0")));
+		int end = static_cast<int>(atoi(phonem->getAttribute("end","0")));
+		int index = 0;
+
+		// Rheme/Theme
+		if (_stricmp(phonem->getName(),"theme")==0)
+			index = 100;
+		else if(_stricmp(phonem->getName(),"rheme")==0)
+			index = 101;
+		// phonem mapping
+		else if( _stricmp(phonem->getAttribute("value",""), "AE")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "AY")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "AH")==0 ) index = 1;
+		else if( _stricmp(phonem->getAttribute("value",""), "AA")==0 ) index=2;
+		else if( _stricmp(phonem->getAttribute("value",""), "AO")==0 ) index=3;
+		else if( _stricmp(phonem->getAttribute("value",""), "EY")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "EH")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "UH")==0 ) index=4;
+		else if( _stricmp(phonem->getAttribute("value",""), "ER")==0 ) index=5;
+		else if( _stricmp(phonem->getAttribute("value",""), "y")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "IY")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "IH")==0 ) index=6;
+		else if( _stricmp(phonem->getAttribute("value",""), "w")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "UW")==0 ) index=7;
+		else if( _stricmp(phonem->getAttribute("value",""), "OW")==0 ) index=8;
+		else if( _stricmp(phonem->getAttribute("value",""), "AW")==0 ) index=9;
+		else if( _stricmp(phonem->getAttribute("value",""), "OY")==0 ) index=10;
+		else if( _stricmp(phonem->getAttribute("value",""), "AY")==0 ) index=11;
+		else if( _stricmp(phonem->getAttribute("value",""), "h")==0 ) index=12;
+		else if( _stricmp(phonem->getAttribute("value",""), "r")==0 ) index=13;
+		else if( _stricmp(phonem->getAttribute("value",""), "l")==0 ) index=14;
+		else if( _stricmp(phonem->getAttribute("value",""), "s")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "z")==0 ) index=15;
+		else if( _stricmp(phonem->getAttribute("value",""), "SH")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "CH")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "j")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "ZH")==0 ) index=16;
+		else if( _stricmp(phonem->getAttribute("value",""), "TH")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "DH")==0 ) index=17;
+		else if( _stricmp(phonem->getAttribute("value",""), "f")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "v")==0 ) index=18;
+		else if( _stricmp(phonem->getAttribute("value",""), "d")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "t")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "n")==0 ) index=19;
+		else if( _stricmp(phonem->getAttribute("value",""), "k")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "g")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "NG")==0 ) index=20;
+		else if( _stricmp(phonem->getAttribute("value",""), "p")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "b")==0 ||
+			_stricmp(phonem->getAttribute("value",""), "m")==0 ) index=21;
+
+		Viseme vis = Viseme(start, end, index);
 		container->push_back(vis);
-	else
-		m_visemes.push_back(vis);
-}
-
-void SoundComponent::addTheme(const XMLNode* phonem, std::vector<SoundComponent::Viseme>* container /*= 0x0*/)
-{
-	int start = static_cast<int>(atoi(phonem->getAttribute("start","0")));
-	int end = static_cast<int>(atoi(phonem->getAttribute("end","0")));
-
-	Viseme vis = Viseme(start, end, 100);
-	if (container)
-		container->push_back(vis);
-	else
-		m_visemes.push_back(vis);
-}
-
-void SoundComponent::addRheme(const XMLNode* phonem, std::vector<SoundComponent::Viseme>* container /*= 0x0*/)
-{
-	int start = static_cast<int>(atoi(phonem->getAttribute("start","0")));
-	int end = static_cast<int>(atoi(phonem->getAttribute("end","0")));
-
-	Viseme vis = Viseme(start, end, 101);
-	if (container)
-		container->push_back(vis);
-	else
-		m_visemes.push_back(vis);
+	}
 }
 
 void SoundComponent::startVisemes()
