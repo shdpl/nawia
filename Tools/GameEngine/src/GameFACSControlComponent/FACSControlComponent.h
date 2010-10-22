@@ -22,20 +22,20 @@
 class FACSControlComponent : public GameComponent
 {
 public:
-	static GameComponent*  createComponent( GameEntity* owner );
+	static GameComponent* createComponent( GameEntity* owner );
 
-	FACSControlComponent(GameEntity* owner);
+	FACSControlComponent( GameEntity* owner );
 	virtual ~FACSControlComponent();
 
 	bool checkEvent(GameEvent* event) { return true; }
-	void executeEvent(GameEvent* event);
-	void loadFromXml(const XMLNode* description);
+	void executeEvent( GameEvent* event );
+	void loadFromXml( const XMLNode* description );
 	void update();
+	void render();
 
 	void setFacialExpression( std::string expression, float intensity );
 	void setFacialExpression( std::string expression, float intensity, float duration );
-	void setFacialExpressionPAD( float p, float a, float d );
-	void getAvailableExpressions( std::vector<std::string> &availableExpressions);
+	void getAvailableExpressions( std::vector<std::string> &availableExpressions );
 
 private:
 	void resetFacialExpression();

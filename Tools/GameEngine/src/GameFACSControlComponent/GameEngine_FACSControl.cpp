@@ -41,16 +41,6 @@ namespace GameEngine
 		}
 	}
 
-	FACSCONTROLPLUGINEXP void setFacialExpressionPAD( unsigned int entityWorldID, float p, float a, float d )
-	{		
-		FACSControlComponent* component = 0;
-		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
-		if( entity && ( component = static_cast<FACSControlComponent*>(entity->component("FACSControlComponent")) ) != 0 )
-		{
-			component->setFacialExpressionPAD( p, a, d );
-		}
-	}
-
 	FACSCONTROLPLUGINEXP void getAvailableExpressions( unsigned int entityWorldID, std::vector<std::string> &availableExpressions )
 	{		
 		FACSControlComponent* component = 0;
