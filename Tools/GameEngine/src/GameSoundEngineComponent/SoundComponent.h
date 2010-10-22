@@ -129,6 +129,8 @@ private:
 	// And the related phoneme files
 	typedef std::map<std::string, std::vector<Viseme>>::iterator VisemeIterator;
 	std::map<std::string, std::vector<Viseme>> m_taggedVisemes;
+
+	float m_startTimeViseme;
 };
 
 

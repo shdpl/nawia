@@ -86,9 +86,9 @@ GameComponent* SoundComponent::createComponent( GameEntity* owner )
 }
 
 SoundComponent::SoundComponent(GameEntity *owner) : GameComponent(owner, "Sound3D"), m_buffer(NULL), 
-m_lastTimeStamp(0), m_sourceID(0), m_startTimestamp(0.0f), m_curViseme(0), m_changedBlending(false), m_time(0),
-m_prevViseme(0), m_visemeBlendFacPrev(1.0f), m_visemeBlendFac(1.0f), m_visemeIndex(-1), m_isSpeaking(false),
-m_bufferCount(0), m_resourceID(0), m_stream(false), m_gain(0.0f), m_initialGain(0.0f), m_FACSmapping(false)
+	m_lastTimeStamp(0), m_sourceID(0), m_startTimestamp(0.0f), m_curViseme(0), m_changedBlending(false), m_time(0),
+	m_prevViseme(0), m_visemeBlendFacPrev(1.0f), m_visemeBlendFac(1.0f), m_visemeIndex(-1), m_isSpeaking(false),
+	m_bufferCount(0), m_resourceID(0), m_stream(false), m_gain(0.0f), m_initialGain(0.0f), m_FACSmapping(false)
 {
 	owner->addListener(GameEvent::E_SET_ENABLED, this);
 	owner->addListener(GameEvent::E_SET_SOUND_GAIN, this);	
@@ -142,8 +142,8 @@ void SoundComponent::executeEvent(GameEvent *event)
 		break;
 	case GameEvent::E_SET_TRANSLATION:
 		{
-			 Vec3f* pos = static_cast<Vec3f*>(event->data());
-			 m_pos[0] = pos->x; m_pos[1] = pos->y; m_pos[2] = pos->z;
+			Vec3f* pos = static_cast<Vec3f*>(event->data());
+			m_pos[0] = pos->x; m_pos[1] = pos->y; m_pos[2] = pos->z;
 		}
 		break;
 	case GameEvent::E_GET_SOUND_DISTANCE:
@@ -174,7 +174,7 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 
 	// stream attribute currently only has influence on ogg files
 	bool oggStream = _stricmp(description->getAttribute("stream", "1"),"true")==0 || _stricmp(description->getAttribute("stream", "1"),"1")==0;
-	
+
 	// To set the gain correctly at loading
 	// You should not change the following order
 	if (file)
@@ -239,129 +239,6 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 	if (childCount > 0)
 		srand((unsigned int) time(0x0));
 }
-/*
-void SoundComponent::update()
-{		
-	if(m_isSpeaking && m_visemes[m_visemeIndex].m_index == 100)
-	{
-		GameEvent theme(GameEvent::SP_THEME_START, NULL, NULL);
-		GameEngine::sendEvent( m_owner->worldId() , &theme );
-
-		m_visemeIndex++;
-		m_curViseme = m_visemes[m_visemeIndex].m_index;
-		update();
-	}
-
-	if(m_isSpeaking && m_visemes[m_visemeIndex].m_index == 101)
-	{
-		GameEvent rheme(GameEvent::SP_RHEME_START, NULL, NULL);
-		GameEngine::sendEvent( m_owner->worldId() , &rheme );
-
-		m_visemeIndex++;
-		m_curViseme = m_visemes[m_visemeIndex].m_index;
-		update();
-	}
-
-	float deltaT = 1.0f / (GameEngine::timeStamp() - m_lastTimeStamp);
-	m_velX = (m_x - m_tx) * deltaT;
-	m_velY = (m_y - m_ty) * deltaT;
-	m_velZ = (m_z - m_tz) * deltaT;
-	m_tx = m_x; m_ty = m_y; m_tz = m_z;
-	m_lastTimeStamp = GameEngine::timeStamp();
-
-	if( m_sourceID != 0 && m_stream)
-		SoundResourceManager::instance()->updateBuffer(m_sourceID, m_resourceID);
-
-	// update visemes
-	if( !m_visemes.empty() && m_isSpeaking)
-	{
-		if( m_visemeChanged )
-		{	
-			m_visemeBlendFacPrev = minf( minf( 1.0f, 2.0f - m_visemeBlendFac), m_visemeBlendFac );
-			m_visemeBlendFac = 0;
-			m_visemeChanged = false;
-		}
-
-		// Calculate interpolation
-		float step = (1.0f / GameEngine::FPS() * 1000) / (m_visemes[m_visemeIndex].m_duration) ;
-		m_visemeBlendFac += step;
-		m_visemeBlendFacPrev -= step;
-
-		if( m_prevViseme != 0 )
-		{
-			if( !m_FACSmapping )
-			{
-				// Fade out previous viseme
-				MorphTarget morphTargetData( visemeMapping[m_prevViseme], minf( m_visemeBlendFacPrev, maxf( 1.0f - m_visemeBlendFac, 0.0f ) ) );
-				if( morphTargetData.Value <= 0.0f )
-					resetPreviousViseme();
-				else
-				{
-					//printf(" Prev vis: %s, %.4f\n", visemeMapping[m_prevViseme], morphTargetData.Value);
-					GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
-					if (m_owner->checkEvent(&event)) m_owner->executeEvent(&event);
-				}
-			}
-			else
-			{
-				float val = minf( m_visemeBlendFacPrev, maxf( 1.0f - m_visemeBlendFac, 0.0f ) );
-				if (val <= 0.0f )
-					resetPreviousViseme();
-				else
-				{
-					updateAUs( visemeMapping[m_prevViseme], val );
-				}
-			}
-		}
-
-		if( !m_FACSmapping )
-		{
-			if( m_curViseme != 0 )
-			{
-				MorphTarget morphTargetData(visemeMapping[m_curViseme], minf( 1.0f, m_visemeBlendFac ) );
-				if( m_visemeBlendFac > 1.0f )
-					morphTargetData.Value = maxf( 2.0f - m_visemeBlendFac, 0.0f );
-				//printf(" Curr vis: %s, %.4f\n", visemeMapping[m_curViseme], morphTargetData.Value);
-				GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);
-				if (m_owner->checkEvent(&event)) m_owner->executeEvent(&event);
-				if( m_visemeBlendFac > 2.0f ) 
-					m_curViseme = 0;
-			}
-		}
-		else
-		{
-			float val = minf( 1.0f, m_visemeBlendFac );
-			if( m_visemeBlendFac > 1.0f )
-				val = maxf( 2.0f - m_visemeBlendFac, 0.0f );
-			updateAUs( visemeMapping[m_curViseme], val );
-			if( m_visemeBlendFac > 2.0f ) 
-				m_curViseme = 0;
-		}
-
-		// Calc current viseme
-		int time = (int)( ( GameEngine::timeStamp() - m_startTimestamp ) * 1000 );
-		//printf("Visemetime: %d", time);
-		if( m_visemes[m_visemeIndex].m_end < time )
-		{
-			m_visemeChanged = true;
-			resetPreviousViseme();
-			m_prevViseme = m_curViseme;
-			m_visemeIndex++;
-			// End of text 	
-			if( m_visemeIndex == m_visemes.size() )
-			{	
-				// Stop visemes
-				stopVisemes();
-				if( m_loop )
-				{
-					//..and start them again if sound loops
-					startVisemes();
-				}
-			}
-			if( m_isSpeaking ) m_curViseme = m_visemes[m_visemeIndex].m_index;
-		}
-	}
-} */
 
 void SoundComponent::update()
 {
@@ -485,7 +362,7 @@ void SoundComponent::run()
 			speed = 2.0f / m_visemes[m_visemeIndex].m_duration;
 			passedPercent = clamp(float(m_time - m_visemes[m_visemeIndex].m_start) / float(m_visemes[m_visemeIndex].m_duration), 0, 1.0f);	
 		}
-		
+
 		m_changedBlending = false;
 		if (passedPercent < 0.5f)
 		{
@@ -533,7 +410,7 @@ void SoundComponent::setEnabled(bool enabled)
 	if( enabled && m_gain == OFF )
 	{
 		m_gain = m_initialGain;
-		
+
 		// If we have a stream we need to reload it
 		if( m_stream && m_resourceID != 0)
 			SoundResourceManager::instance()->reloadResource(m_resourceID);
@@ -541,7 +418,6 @@ void SoundComponent::setEnabled(bool enabled)
 	else if( !enabled )
 		m_gain = OFF;
 }
-
 
 void SoundComponent::setGain(const float gain)
 {
@@ -555,7 +431,7 @@ void SoundComponent::setGain(const float gain)
 		// Users sets the gain of a disabled sound
 		// so enable it first
 		setEnabled(true);
-	
+
 	// now we set the current gain
 	// and the gain for returning after disabled status
 	m_initialGain = m_gain = gain;
@@ -616,7 +492,7 @@ bool SoundComponent::setSoundFromUserData(const char* data, int dataSize, int sa
 
 		// Don't start the sound immediately
 		m_gain= OFF;
-		
+
 		//Old stream already removed
 		if (!oldStream)
 		{
@@ -635,7 +511,7 @@ bool SoundComponent::setSoundFromUserData(const char* data, int dataSize, int sa
 		}
 		return true;
 	}
-	
+
 	GameLog::errorMessage("Error loading sound with user data");
 	return false;
 }
@@ -685,7 +561,7 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 		m_stream = SoundResourceManager::instance()->isStream(m_resourceID); 
 
 		m_gain= m_initialGain;
-		
+
 		//Old stream already removed
 		if (!oldStream)
 		{
@@ -711,14 +587,22 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 
 bool SoundComponent::loadPhonemesFile(const char* fileName, std::vector<SoundComponent::Viseme>* container /*= 0x0*/)
 {
-	if (container == &m_visemes)
+	if (!m_visemes.empty())
 	{
 		// Stop old Visemes
 		stopVisemes();
 		// Delete old visemes
 		m_visemes.clear();
 	}
-	
+
+	if (container == &m_visemes) // not sure about this...
+	{
+		// Stop old Visemes
+		stopVisemes();
+		// Delete old visemes
+		m_visemes.clear();
+	}
+
 	// If the new file name is empty, the user only wants to
 	// deactivate the phonemes and we are ready
 	if( _stricmp(fileName, "") == 0 )
@@ -818,7 +702,7 @@ void SoundComponent::addPhonem(const XMLNode* phonem, std::vector<SoundComponent
 	else if( _stricmp(phonem->getAttribute("value",""), "p")==0 ||
 		_stricmp(phonem->getAttribute("value",""), "b")==0 ||
 		_stricmp(phonem->getAttribute("value",""), "m")==0 ) index=21;
-	
+
 	Viseme vis = Viseme(start, end, index);
 	if (container)
 		container->push_back(vis);
@@ -856,24 +740,7 @@ void SoundComponent::startVisemes()
 	{
 		m_startTimestamp = GameEngine::timeStamp();
 		m_time = 0;
-		// printf("Starting viseme at %d", m_startTimestamp);
 		m_visemeIndex = 0;
-
-		/*if(m_visemes[m_visemeIndex].m_index == 100)
-		{
-			GameEvent theme(GameEvent::SP_THEME_START, NULL, NULL);
-			GameEngine::sendEvent( m_owner->worldId(), &theme );
-
-			m_visemeIndex = 1;
-		}
-
-		if(m_visemes[m_visemeIndex].m_index == 101)
-		{
-			GameEvent rheme(GameEvent::SP_RHEME_START, NULL, NULL);
-			GameEngine::sendEvent( m_owner->worldId(), &rheme );
-
-			m_visemeIndex = 1;
-		}*/
 
 		m_curViseme = m_visemes[m_visemeIndex].m_index;
 		//resetPreviousViseme();
@@ -891,26 +758,6 @@ void SoundComponent::stopVisemes()
 		m_visemeBlendFacPrev = 0;
 		m_visemeBlendFac = 0;
 		m_changedBlending = true;
-		
-		// Will be applied in next update call
-		//resetPreviousViseme();
-		//if(!m_FACSmapping)
-		//{
-		//	if (m_curViseme)
-		//	{
-		//		// Set new morphtarget values for current viseme
-		//		MorphTarget morphTargetData(visemeMapping[m_curViseme], 0);
-		//		GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
-		//		if (m_owner->checkEvent(&event))
-		//			m_owner->executeEvent(&event);
-		//	}
-		//	//Set Silence viseme
-		//	MorphTarget morphTargetData(visemeMapping[0], 1.0);
-		//	GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
-		//	if (m_owner->checkEvent(&event))
-		//		m_owner->executeEvent(&event);
-		//}
-		//m_curViseme = 0;
 
 		m_startTimestamp = 0.0f;
 		m_time = 0;
@@ -919,36 +766,14 @@ void SoundComponent::stopVisemes()
 	}
 }
 
-//void SoundComponent::resetPreviousViseme()
-//{
-//	if( m_prevViseme != 0 )
-//	{
-//		// Set blend fac for previous viseme for the updateAUs() call
-//		m_visemeBlendFacPrev = 0;
-//
-//		if (m_FACSmapping)
-//			updateAUs();
-//		else
-//		{
-//			MorphTarget morphTargetData2(visemeMapping[m_prevViseme], 0);
-//			GameEvent event2(GameEvent::E_MORPH_TARGET, &morphTargetData2, this);		
-//			if (m_owner->checkEvent(&event2))
-//				m_owner->executeEvent(&event2);
-//		}
-//
-//		m_prevViseme = 0;
-//		//printf("Reseted prev viseme\n");
-//	}
-//}
-
 float SoundComponent::getDistanceToListener()
 {
 	SoundListenerComponent* listener = SoundManager::instance()->activeListener();
 	if (listener)
 		return sqrtf(
-			sq(m_pos[0] - listener->m_listenerPos[0]) + 
-			sq(m_pos[1] - listener->m_listenerPos[1]) + 
-			sq(m_pos[2] - listener->m_listenerPos[2]));
+		sq(m_pos[0] - listener->m_listenerPos[0]) + 
+		sq(m_pos[1] - listener->m_listenerPos[1]) + 
+		sq(m_pos[2] - listener->m_listenerPos[2]));
 
 	return 0.0f;
 }
@@ -957,57 +782,13 @@ void SoundComponent::updateVisemes()
 {
 	if (m_FACSmapping)
 	{
-	map<int, float> oldAUs = m_FACSvisemes[visemeMapping[m_curViseme]];
-		map<int, float>::iterator iterOldAUs;
+		//Property data(visemeMapping[m_curViseme], m_visemeBlendFac);
+		//GameEvent event(GameEvent::FACS_SET_EXPRESSION, &data, this);
+		//m_owner->executeEvent(&event);
 
-		map<int, float> newAUs = m_FACSvisemes[visemeMapping[m_prevViseme]];
-		map<int, float>::iterator iterNewAUs;
-
-		// resetting old morph targets
-		for( iterOldAUs = oldAUs.begin(); iterOldAUs != oldAUs.end(); iterOldAUs++ )
-		{
-			char buffer[10];
-			sprintf_s( buffer, 10, "AU_%02i", (*iterOldAUs).first );
-
-			MorphTarget morphTargetData( buffer, (*iterOldAUs).second * m_visemeBlendFacPrev);
-			GameEvent event( GameEvent::E_MORPH_TARGET, &morphTargetData, this );
-			m_owner->executeEvent( &event );
-
-			// Special treatment for AU27
-			if( (*iterOldAUs).first == 27 )
-			{
-				MorphTarget morphTargetData( "bottom_au_27", (*iterOldAUs).second * m_visemeBlendFacPrev );
-				GameEvent event( GameEvent::E_MORPH_TARGET, &morphTargetData, this );
-				m_owner->executeEvent( &event );
-
-				MorphTarget morphTargetData2( "bottomgums_au_27", (*iterOldAUs).second * m_visemeBlendFacPrev );
-				GameEvent event2( GameEvent::E_MORPH_TARGET, &morphTargetData2, this );
-				m_owner->executeEvent( &event2 );
-			}
-		}
-
-		// setting new morph targets
-		for( iterNewAUs = newAUs.begin(); iterNewAUs != newAUs.end(); iterNewAUs++ )
-		{
-			char buffer[10];
-			sprintf_s( buffer, 10, "AU_%02i", (*iterNewAUs).first);
-
-			MorphTarget morphTargetData( buffer, (*iterNewAUs).second * m_visemeBlendFac );
-			GameEvent event( GameEvent::E_MORPH_TARGET, &morphTargetData, this );
-			m_owner->executeEvent( &event );
-
-			// Special treatment for AU27
-			if( (*iterNewAUs).first == 27 )
-			{
-				MorphTarget morphTargetData( "bottom_au_27", (*iterNewAUs).second * m_visemeBlendFac );
-				GameEvent event( GameEvent::E_MORPH_TARGET, &morphTargetData, this );
-				m_owner->executeEvent( &event );
-
-				MorphTarget morphTargetData2( "bottomgums_au_27", (*iterNewAUs).second * m_visemeBlendFac );
-				GameEvent event2( GameEvent::E_MORPH_TARGET, &morphTargetData2, this );
-				m_owner->executeEvent( &event2 );
-			}
-		}
+		MorphTargetAnimation morphTargetAnimData( visemeMapping[m_curViseme], m_visemeBlendFac, 0.06f );
+		GameEvent event( GameEvent::E_SET_FACS, &morphTargetAnimData, this );
+		m_owner->executeEvent( &event );
 	}
 	else
 	{
@@ -1016,6 +797,7 @@ void SoundComponent::updateVisemes()
 		GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
 		if (m_owner->checkEvent(&event))
 			m_owner->executeEvent(&event);
+		
 		// And the previous one
 		MorphTarget morphTargetData2(visemeMapping[m_prevViseme], m_visemeBlendFacPrev);
 		GameEvent event2(GameEvent::E_MORPH_TARGET, &morphTargetData2, this);		
