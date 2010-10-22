@@ -28,7 +28,7 @@
 //////////////////////////////////////////////
 
 ///flag for turning on debugging features (mostly detailed cmd window output)
-#define AGENTANIMDEBUG true
+#define AGENTANIMDEBUG false
 ///some debugging features will concentrate on the stage defined here
 #define DEBUG_followanimstage 5114
 

@@ -219,13 +219,13 @@ void AgentAnimComponent::loadFromXml(const XMLNode* node)
 	/*
 	 * animation database (gesture lexicon)
 	 */
-	if( (node->getAttribute("GestureLexicon") != 0) 
-	 && (strcmp(node->getAttribute("GestureLexicon"), "") != 0) )
+	if( (node->getAttribute("AnimationLexicon") != 0) 
+	 && (strcmp(node->getAttribute("AnimationLexicon"), "") != 0) )
 	{
-		processAnimDB(XMLNode::openFileHelper( node->getAttribute("GestureLexicon"), "GestureLexicon" ));
+		processAnimDB(XMLNode::openFileHelper( node->getAttribute("AnimationLexicon"), "AnimationLexicon" ));
 	}
 	else
-		GameLog::errorMessage( "AgentAnim: error parsing gesture lexicon (file not found?). Loading animations will only be available by filename" );
+		GameLog::errorMessage( "AgentAnim: error parsing animation lexicon (file not found?). Loading animations will only be available by filename" );
 }
 
 bool AgentAnimComponent::processAnimDB(XMLNode db)
