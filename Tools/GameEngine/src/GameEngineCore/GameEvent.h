@@ -312,8 +312,9 @@ public:
 		GB_RESET,				/// reset all collected data
 		SP_START_SCRIPT,		/// starts sn action script
 		IB_EYE_FIXATED,			/// informs about an eye fixation
-		FACS_SET_EXPRESSION,	/// sets a facial expression
+		FACS_SET_EXPRESSION,	/// sets a facial expression /* deprecated */
 		E_SEND_SOCKET_DATA,		/// sends data via the socket component
+		E_SET_FACS,				/// sets a facial expression
 
 		NV_SAY_SENTENCE,		/// sentence to create speaking behavior for
 		NV_HEAR_SENTENCE,		/// sentence to create listening behavior for
