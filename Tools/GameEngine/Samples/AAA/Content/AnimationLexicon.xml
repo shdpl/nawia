@@ -1,4 +1,4 @@
-<GestureLexicon>
+<AnimationLexicon>
 	<Gesture>
 		<ID>0001</ID>
 		<Name>Stand_up</Name>
@@ -638,4 +638,4 @@
 			<StrokeEnd>68</StrokeEnd>
 		</Form>
 	</Gesture>
-</GestureLexicon>
+</AnimationLexicon>

@@ -46,7 +46,7 @@
         <Attachment type="GameEngine" name="agent0" >
             <Socket protocol="UDP" port="343" address="127.0.0.1" type="server" />
             <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female01/female01.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <Sapi voice="Crystal16" />
             <AgentAction WalkAnimFile="female_walk.anim" IdleAnimFile="female_german_idle.anim" >
                 <BufferZone radius="3.6" />
@@ -64,7 +64,7 @@
     <Reference tx="-3" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male01/male01.scene.xml" rz="0" name="agent1" >
         <Attachment type="GameEngine" name="agent1" >
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <Sapi voice="Mike16" />
             <AgentAction WalkAnimFile="female_walk.anim" IdleAnimFile="male_german_idle.anim" >
                 <BufferZone radius="3.6" />
@@ -82,7 +82,7 @@
     <Reference tx="-5" ty="0" sx="0.06" tz="-6" rx="0" sy="0.06" ry="-40" sz="0.06" sceneGraph="models/female02/female02.scene.xml" rz="0" name="agent2" >
         <Attachment type="GameEngine" name="agent2" >
             <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female02/female02.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <Sapi voice="Crystal16" />
             <AgentAction WalkAnimFile="female_walk.anim" IdleAnimFile="female_german_idle.anim" >
                 <BufferZone radius="3.6" />

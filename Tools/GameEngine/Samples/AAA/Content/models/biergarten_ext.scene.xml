@@ -73,7 +73,7 @@
         <Attachment type="GameEngine" name="agent0" >
             <Socket protocol="UDP" port="343" address="127.0.0.1" type="server" />
             <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female04/female04.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <Sapi voice="Crystal16" />
             <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                 <BufferZone radius="3.6" />
@@ -91,7 +91,7 @@
     <Reference tx="-3" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-140" sz="0.06" sceneGraph="models/male01/male01.scene.xml" rz="0" name="agent1" >
         <Attachment type="GameEngine" name="agent1" >
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <Sapi voice="Mike16" />
             <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                 <BufferZone radius="3.6" />
@@ -109,7 +109,7 @@
     <Reference tx="-3.64279" ty="0" sx="0.06" tz="-3.93849" rx="0" sy="0.06" ry="40" sz="0.06" sceneGraph="models/female02/female02.scene.xml" rz="0" name="agent2" >
         <Attachment type="GameEngine" name="agent2" >
             <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female02/female02.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <Sapi voice="Crystal16" />
             <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                 <BufferZone radius="3.6" />
@@ -127,7 +127,7 @@
     <Reference tx="-9.5" ty="0" sx="0.06" tz="-8" rx="0" sy="0.06" ry="180" sz="0.06" sceneGraph="models/male02/male02.scene.xml" rz="0" name="agent3" >
         <Attachment type="GameEngine" name="agent3" >
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male02/male02.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <Sapi voice="Mike16" />
             <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                 <BufferZone radius="3.6" />
@@ -145,7 +145,7 @@
     <Reference tx="3.4528" ty="0" sx="0.06" tz="-5.18323" rx="0" sy="0.06" ry="-100" sz="0.06" sceneGraph="models/male03/male03.scene.xml" rz="0" name="agent4" >
         <Attachment type="GameEngine" name="agent4" >
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male03/male03.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <Sapi voice="Mike16" />
             <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                 <BufferZone radius="3.6" />
@@ -165,7 +165,7 @@
     <Reference tx="1" ty="0" sx="0.06" tz="-9" rx="0" sy="0.06" ry="-80" sz="0.06" sceneGraph="models/male04/male04.scene.xml" rz="0" name="agent5" >
         <Attachment type="GameEngine" name="agent5" >
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male04/male04.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <!--<Sapi voice="Mike16" />-->
             <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                 <BufferZone radius="0.45" />
@@ -176,7 +176,7 @@
     <Reference tx="-1" ty="0" sx="0.06" tz="-9" rx="0" sy="0.06" ry="100" sz="0.06" sceneGraph="models/male02/male02.scene.xml" rz="0" name="agent6" >
         <Attachment type="GameEngine" name="agent6" >
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male02/male02.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <!--<Sapi voice="Mike16" />-->
             <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                 <BufferZone radius="0.45" />
@@ -188,7 +188,7 @@
     <Reference tx="-4.5" ty="0" sx="0.06" tz="4.7" rx="0" sy="0.06" ry="-80" sz="0.06" sceneGraph="models/male04/male04.scene.xml" rz="0" name="agent7" >
         <Attachment type="GameEngine" name="agent7" >
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male04/male04.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <!--<Sapi voice="Mike16" />-->
             <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                 <BufferZone radius="0.45" />
@@ -199,7 +199,7 @@
     <Reference tx="-6.5" ty="0" sx="0.06" tz="4.7" rx="0" sy="0.06" ry="100" sz="0.06" sceneGraph="models/female01/female01.scene.xml" rz="0" name="agent8" >
         <Attachment type="GameEngine" name="agent8" >
             <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female01/female01.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <!--<Sapi voice="Crystal16" />-->
             <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                 <BufferZone radius="0.45" />
@@ -211,7 +211,7 @@
     <Reference tx="-10" ty="0" sx="0.06" tz="-9.2" rx="0" sy="0.06" ry="180" sz="0.06" sceneGraph="models/male04/male04.scene.xml" rz="0" name="agent9" >
         <Attachment type="GameEngine" name="agent9" >
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male04/male04.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <!--<Sapi voice="Mike16" />-->
             <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                 <BufferZone radius="0.45" />
@@ -222,7 +222,7 @@
     <Reference tx="-9.4" ty="0" sx="0.06" tz="-9.2" rx="0" sy="0.06" ry="-90" sz="0.06" sceneGraph="models/female01/female01.scene.xml" rz="0" name="agent10" >
         <Attachment type="GameEngine" name="agent10" >
             <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female01/female01.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <!--<Sapi voice="Crystal16" />-->
             <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                 <BufferZone radius="0.45" />
@@ -233,7 +233,7 @@
     <Reference tx="-8.8" ty="0" sx="0.06" tz="-9.2" rx="0" sy="0.06" ry="-90" sz="0.06" sceneGraph="models/male01/male01.scene.xml" rz="0" name="agent11" >
         <Attachment type="GameEngine" name="agent11" >
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <!--<Sapi voice="Mike16" />-->
             <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                 <BufferZone radius="0.45" />
@@ -245,7 +245,7 @@
     <Reference tx="-10" ty="0" sx="0.06" tz="-10.6" rx="0" sy="0.06" ry="0" sz="0.06" sceneGraph="models/male03/male03.scene.xml" rz="0" name="agent12" >
         <Attachment type="GameEngine" name="agent12" >
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male03/male03.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
             <!--<Sapi voice="Mike16" />-->
             <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                 <BufferZone radius="0.45" />
@@ -377,7 +377,7 @@
         <Reference tx="-10.6286" ty="0" sx="0.06" tz="1.58905" rx="0" sy="0.06" ry="-10" sz="0.06" sceneGraph="models/male01/male01.scene.xml" rz="0" name="agent14" >
             <Attachment type="GameEngine" name="agent14" >
                 <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Mike16" />-->
                 <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                     <BufferZone radius="3.6" />
@@ -395,7 +395,7 @@
         <Reference tx="2.58256" ty="0" sx="0.06" tz="-6.01493" rx="0" sy="0.06" ry="20" sz="0.06" sceneGraph="models/female04/female04.scene.xml" rz="0" name="agent15" >
             <Attachment type="GameEngine" name="agent15" >
                 <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female04/female04.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Crystal16" />-->
                 <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                     <BufferZone radius="3.6" />
@@ -413,7 +413,7 @@
         <Reference tx="1.92132" ty="0" sx="0.06" tz="-5.04858" rx="0" sy="0.06" ry="140" sz="0.06" sceneGraph="models/male02/male02.scene.xml" rz="0" name="agent16" >
             <Attachment type="GameEngine" name="agent16" >
                 <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male02/male02.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Mike16" />-->
                 <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                     <BufferZone radius="3.6" />
@@ -431,7 +431,7 @@
         <Reference tx="-10.6861" ty="0" sx="0.06" tz="2.82798" rx="0" sy="0.06" ry="170" sz="0.06" sceneGraph="models/male04/male04.scene.xml" rz="0" name="agent17" >
             <Attachment type="GameEngine" name="agent17" >
                 <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male04/male04.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Mike16" />-->
                 <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                     <BufferZone radius="0.45" />
@@ -442,7 +442,7 @@
         <Reference tx="-11.4593" ty="0" sx="0.06" tz="2.02006" rx="0" sy="0.06" ry="80" sz="0.06" sceneGraph="models/female02/female02.scene.xml" rz="0" name="agent13" >
             <Attachment type="GameEngine" name="agent13" >
                 <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female02/female02.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Crystal16" />-->
                 <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                     <BufferZone radius="3.6" />
@@ -460,7 +460,7 @@
         <Reference tx="-8.76624" ty="0" sx="0.06" tz="-5.89276" rx="0" sy="0.06" ry="100" sz="0.06" sceneGraph="models/female01/female01.scene.xml" rz="0" name="agent18" >
             <Attachment type="GameEngine" name="agent18" >
                 <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female01/female01.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Crystal16" />-->
                 <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                     <BufferZone radius="0.45" />
@@ -471,7 +471,7 @@
         <Reference tx="-10.8651" ty="0" sx="0.06" tz="-1.16273" rx="0" sy="0.06" ry="170" sz="0.06" sceneGraph="models/male02/male02.scene.xml" rz="0" name="agent19" >
             <Attachment type="GameEngine" name="agent19" >
                 <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male02/male02.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Mike16" />-->
                 <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                     <BufferZone radius="0.45" />
@@ -482,7 +482,7 @@
         <Reference tx="-10.7106" ty="0" sx="0.06" tz="-2.46994" rx="0" sy="0.06" ry="0" sz="0.06" sceneGraph="models/male03/male03.scene.xml" rz="0" name="agent20" >
             <Attachment type="GameEngine" name="agent20" >
                 <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male03/male03.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Mike16" />-->
                 <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                     <BufferZone radius="3.6" />
@@ -500,7 +500,7 @@
         <Reference tx="-4.45514" ty="0" sx="0.06" tz="-1.64778" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male04/male04.scene.xml" rz="0" name="agent21" >
             <Attachment type="GameEngine" name="agent21" >
                 <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male04/male04.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Mike16" />-->
                 <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
                     <BufferZone radius="0.45" />
@@ -511,7 +511,7 @@
         <Reference tx="-10.635" ty="0" sx="0.06" tz="10.224" rx="0" sy="0.06" ry="0" sz="0.06" sceneGraph="models/female01/female01.scene.xml" rz="0" name="agent22" >
             <Attachment type="GameEngine" name="agent22" >
                 <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female01/female01.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Crystal16" />-->
                 <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                     <BufferZone radius="0.45" />
@@ -522,7 +522,7 @@
         <Reference tx="-10.7171" ty="0" sx="0.06" tz="9.57931" rx="0" sy="0.06" ry="10" sz="0.06" sceneGraph="models/female04/female04.scene.xml" rz="0" name="agent23" >
             <Attachment type="GameEngine" name="agent23" >
                 <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female04/female04.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Crystal16" />-->
                 <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                     <BufferZone radius="3.6" />
@@ -540,7 +540,7 @@
         <Reference tx="-10.8207" ty="0" sx="0.06" tz="8.96783" rx="0" sy="0.06" ry="-10" sz="0.06" sceneGraph="models/female03/female03.scene.xml" rz="0" name="agent24" >
             <Attachment type="GameEngine" name="agent24" >
                 <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female01/female01.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Crystal16" />-->
                 <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                     <BufferZone radius="0.45" />
@@ -551,7 +551,7 @@
         <Reference tx="0.236274" ty="0" sx="0.06" tz="-7.76014" rx="0" sy="0.06" ry="-160" sz="0.06" sceneGraph="models/female03/female03.scene.xml" rz="0" name="agent25" >
             <Attachment type="GameEngine" name="agent25" >
                 <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female02/female02.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Crystal16" />-->
                 <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                     <BufferZone radius="3.6" />
@@ -569,7 +569,7 @@
         <Reference tx="-5.85569" ty="0" sx="0.06" tz="3.3201" rx="0" sy="0.06" ry="20" sz="0.06" sceneGraph="models/female03/female03.scene.xml" rz="0" name="agent26" >
             <Attachment type="GameEngine" name="agent26" >
                 <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female04/female04.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Crystal16" />-->
                 <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                     <BufferZone radius="3.6" />
@@ -587,7 +587,7 @@
         <Reference tx="-7.87364" ty="0" sx="0.06" tz="-9.1889" rx="0" sy="0.06" ry="-90" sz="0.06" sceneGraph="models/female03/female03.scene.xml" rz="0" name="agent27" >
             <Attachment type="GameEngine" name="agent27" >
                 <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female02/female02.scene.xml" neck="Bip01_Head" />
-                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" GestureLexicon="GestureLexicon.xml" />
+                <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
                 <!--<Sapi voice="Crystal16" />-->
                 <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
                     <BufferZone radius="3.6" />
