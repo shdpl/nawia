@@ -36,6 +36,10 @@ SocketClient::SocketClient(const char* server_name, int port, int maxMsgLength, 
 
 SocketClient::~SocketClient()
 {
+	if (m_protocol == SocketProtocol::TCP)
+	{
+		closesocket(m_socket);
+	}
 }
 
 void SocketClient::start()
