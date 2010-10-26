@@ -70,6 +70,12 @@ private:
 
 public:
 	//** public container elements
+
+	//******************************
+	// TODO: Doesn't seem that this static methods do really make sense
+	// If you want all joints of one entity, you should move  m_joints and its methods to IKComponent and make them non static
+	//******************************
+
 	///returns a pointer to the requested joint
 	static Joint* getInstance(H3DNode model, const char* name);
 	///returns a pointer to the requested joint

@@ -59,8 +59,13 @@ IKComponent::IKComponent(GameEntity* owner) : GameComponent(owner, "IK")
 	owner->addListener(GameEvent::IK_GETPARAMI, this);
 	owner->addListener(GameEvent::IK_GETPARAMF, this);
 
+	//******************************
 	//initialize configurations
-	Config::useDefault();
+	// static function doesn't need to be called in each instance
+	// is now called in the main.cpp
+	// If you want them to be set for each instance, make it non-static an hold an instance of Config for each component
+	//Config::useDefault();
+	//******************************
 
 	IKManager::instance()->addComponent(this);
 }
@@ -113,6 +118,12 @@ void IKComponent::executeEvent(GameEvent *event)
 			data->result = gaze( hordeID, data->targetX, data->targetY, data->targetZ, data->moveLEye, data->moveREye, data->moveHead, data->head_pitch, data->simulate );
 		}
 		break;
+
+	//******************************
+	// TODO: The Config class is completely static
+	// so its parameters are valid for all instances of IKComponents
+	// if you set the parameter for one IKComponent you set it for all
+	//******************************
 	case GameEvent::IK_SETPARAMI:
 		{
 			IKData* data = static_cast<IKData*>(event->data());

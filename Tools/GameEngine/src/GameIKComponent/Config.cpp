@@ -22,6 +22,7 @@
 // ****************************************************************************************
 #include "Config.h"
 #include <string.h>
+#include <XMLParser/utXMLParser.h>
 
 int Config::m_paramI[IK_NumParamI];
 float Config::m_paramF[IK_NumParamF];
@@ -50,6 +51,26 @@ void Config::useDefault()
 	setParamF(IK_Param::DfltEyeRotX_F, 0);
 	setParamF(IK_Param::DfltEyeRotY_F, 90);
 	setParamF(IK_Param::DfltEyeRotZ_F, 0);
+}
+
+void Config::loadFromXml(const XMLNode& description)
+{
+	//enum ParamI
+	setParamI(IK_Param::UseDofr_I, atoi(description.getAttribute("useDofr", "0")));
+	setParamI(IK_Param::UseIkmo_I,  atoi(description.getAttribute("useIkmo", "0")));
+	setParamI(IK_Param::UseZLock_I,  atoi(description.getAttribute("useZLock", "1")));
+	setParamI(IK_Param::CCDMaxIterations_I,  atoi(description.getAttribute("cCDMaxIterations", "100")));
+	setParamI(IK_Param::CCDTwistJointManipulation_I,  atoi(description.getAttribute("cCDTwistJointManipulation", "1")));
+	setParamI(IK_Param::NumAnimFrames_I,  atoi(description.getAttribute("numAnimFrames", "512")));
+
+	//enum ParamF
+	setParamF(IK_Param::CCDMaxDistError_F,  (float) atof(description.getAttribute("cCDMaxDistError", "0.1f")));
+	setParamF(IK_Param::CCDRotJitterTolerance_F, (float) atof(description.getAttribute("cCDRotJitterTolerance", "0.00001f")));
+	setParamF(IK_Param::H3DAVersion_F, (float) atof(description.getAttribute("h3DAVersion", "2")));
+	setParamF(IK_Param::H3DGVersion_F, (float) atof(description.getAttribute("h3DGVersion", "5")));
+	setParamF(IK_Param::DfltEyeRotX_F, (float) atof(description.getAttribute("dfltEyeRotX", "0")));
+	setParamF(IK_Param::DfltEyeRotY_F, (float) atof(description.getAttribute("dfltEyeRotY", "90")));
+	setParamF(IK_Param::DfltEyeRotZ_F, (float) atof(description.getAttribute("dfltEyeRotZ", "0")));
 }
 
 int Config::getParamI(IK_Param::List p)

@@ -32,6 +32,8 @@
 #define IK_NumParamF 7
 //////////////////////////////////////////////
 
+struct XMLNode;
+
 /**
  * Contains configurations for all IK processes
  *
@@ -50,6 +52,13 @@ public:
 	 * THE DEFAULT VALUES ARE STORED LOCALLY IN THIS FUNCITON
 	 */
 	static void useDefault();
+
+	/**
+	 * \brief Loads the config from an xml node
+	 * 
+	 * @param description xmlnode with ik config
+	 */ 
+	static void			loadFromXml(const XMLNode& description);
 
 	static				int	getParamI(IK_Param::List p);
 	static float		getParamF(IK_Param::List p);

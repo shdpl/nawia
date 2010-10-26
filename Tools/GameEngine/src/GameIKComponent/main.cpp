@@ -24,9 +24,11 @@
 
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameComponentRegistry.h>
+#include <GameEngine/GameLog.h>
 
 #include "IKManager.h"
 #include "IKComponent.h"
+#include "Config.h"
 
 IKPLUGINEXP void dllLoadGamePlugin(void)
 {
@@ -39,6 +41,29 @@ IKPLUGINEXP void dllUnloadGamePlugin(void)
 	GameModules::componentRegistry()->registerComponent( "IK", 0);
 	GameModules::componentRegistry()->unregisterManager( IKManager::instance() );
 	IKManager::release();
+}
+
+IKPLUGINEXP void dllLoadScene(const char* sceneFile)
+{
+	// First set default config
+	Config::useDefault();
+
+
+	XMLResults results;
+	XMLNode scene = XMLNode::parseFile( sceneFile, "Configuration", &results);
+	XMLNode& extras(scene.getChildNode("Extras"));
+	if (!extras.isEmpty())
+	{
+		const XMLNode& ikSettings(extras.getChildNode("IKManager"));
+		if (!ikSettings.isEmpty())
+		{
+			char* xmlString = ikSettings.createXMLString();
+			GameLog::logMessage("- Setting IK options from xml = %s", xmlString);
+			delete xmlString;
+
+			Config::loadFromXml(ikSettings);
+		}
+	}
 }
 
 
