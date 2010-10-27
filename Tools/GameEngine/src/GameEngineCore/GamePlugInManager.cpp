@@ -73,10 +73,19 @@ void GamePlugInManager::loadPluginFromEnvVar(std::string dllName, std::string en
 					// Get the dll directory path
 					TString dllAbsPath = tstring.substr(0, index);
 
+					_tprintf(TEXT("GamePlugInManager inspecting path '%s'\n"), dllAbsPath.c_str());
+
+					if(dllAbsPath.length() > 0) {
 					// Eventually append a path seperator
-					if ((dllAbsPath.at(dllAbsPath.length() - 1) != '\\') && (dllAbsPath.at(dllAbsPath.length() - 1) != '/') )
+						if ((dllAbsPath.at(dllAbsPath.length() - 1) != '\\') && (dllAbsPath.at(dllAbsPath.length() - 1) != '/') )
+						{
+							dllAbsPath.append("\\");
+						} 
+					} else 
 					{
-						dllAbsPath.append("\\");
+						// Erase that part from the path variable string
+						tstring.erase(0, index + 1);
+						continue;
 					}
 
 					// Append the dll file name
@@ -107,9 +116,47 @@ void GamePlugInManager::loadPluginFromEnvVar(std::string dllName, std::string en
 							delete lib;
 						}
 					} 
-
 					// Erase that part from the path variable string
 					tstring.erase(0, index + 1);
+				}
+
+				// Check for remainder
+				if(tstring.length() > 0) {
+					_tprintf(TEXT("GamePlugInManager inspecting path '%s'\n"), tstring.c_str());
+				
+					// Eventually append a path seperator
+					if ((tstring.at(tstring.length() - 1) != '\\') && (tstring.at(tstring.length() - 1) != '/') )
+					{
+						tstring.append("\\");
+					} 
+					// Append the dll file name
+					tstring += dllName;
+
+					// Check if the dll file exists
+					struct stat info;
+					int status = stat(tstring.c_str(), &info); 
+					if(status == 0) { 
+						
+						_tprintf(TEXT("GamePlugInManager trying to load '%s'\n"), tstring.c_str());
+
+						// Try to load the plugin 
+						DynLib* lib = new DynLib(tstring);
+						if( lib->load() )
+						{
+							// Register the new dll plugin
+							GameLog::logMessage("Plugin '%s' loaded", tstring.c_str());
+							m_plugIns.insert(std::make_pair<std::string, DynLib *>(tstring, lib));
+							LOAD_GAME_PLUGIN loadFuncPtr = (LOAD_GAME_PLUGIN) lib->getSymbol("dllLoadGamePlugin");
+							if( loadFuncPtr )
+								loadFuncPtr(); 
+							else
+								GameLog::errorMessage("dllLoadGamePlugIn method not found in plugin '%s'! <br> Ensure extern \"C\" definition!", dllName);
+						}
+						else {
+							// Cannot find the dll in the this path
+							delete lib;
+						}
+					} 
 				}
 			}
 		}

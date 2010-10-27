@@ -408,11 +408,21 @@ public:
 		E_SOUND_STOPPED,		/// the sound of the entity has stopped playing
 		E_SOCKET_NEW_DATA,		/// Sends all data received since the last update call
 
+
+		///////////////////////////////////////////////////////////////////////////////////////////
 		// TODO: move the following events to the right category
 		SP_BOOKMARK,
 		SP_TTS_PAUSE,
 		SP_TTS_RESUME,
 		SP_TTS_SKIP,			///Skip the next n sentences. If n is negative, the speech will skip backwards.
+		///////////////////////////////////////////////////////////////////////////////////////////
+		
+
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
