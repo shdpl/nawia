@@ -266,7 +266,12 @@ void AgentActionComponent::updatePosition()
 	if (m_owner->checkEvent(&translate))
 		m_owner->executeEvent(&translate);
 
-	//printf("db dist: %.5f\n", new_distance);
+	//failsafe
+	if(delta.length() <= 0.001f)
+	{
+		movementFinished();		
+		return;
+	}
 
 	m_distance = new_distance;
 }
