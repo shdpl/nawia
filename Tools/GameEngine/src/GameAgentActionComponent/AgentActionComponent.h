@@ -218,6 +218,8 @@ private:
 	char m_walkFile[128];
 	///idle animation file name
 	char m_idleFile[128];
+
+	int m_idleAnim_ID;
 };
 
 #endif

@@ -62,6 +62,8 @@ AgentActionComponent::AgentActionComponent(GameEntity* owner) : GameComponent(ow
 	m_currentOrientation = 0;	
 	m_init = false;
 	
+	m_idleAnim_ID = -1;
+
 	AgentActionManager::instance()->addComponent(this);
 }
 
@@ -136,7 +138,7 @@ void AgentActionComponent::goToPosition(Vec3f position, float speed, bool posAdj
 {
 	m_destEntityID = -1;
 	m_destination = position;
-	m_distance = calculateVectorTo(position).length();
+	m_distance = calculateVectorTo(position).length() +1;
 	m_movementSpeed = speed * MoveAnimSpeedScale; //scaling the movement speed to match the animation speed
 	
 	//if posAdjustment is true, we don't use orientation or turnTowardsDest
@@ -157,6 +159,7 @@ void AgentActionComponent::goToPosition(Vec3f position, float speed, bool posAdj
 	int walkID = GameEngine::AgentAnim_loadAnim( m_entityID, m_walkFile, Agent_AnimType::AAT_IDLE, 0, 0 );
 	GameEngine::AgentAnim_setSpeedOnAnimf( m_entityID, walkID, speed );
 
+	m_idleAnim_ID = -1;
 	m_walk = true;
 	fade_stopWalk = false;
 	t_stopWalk = 0;
@@ -172,7 +175,7 @@ void AgentActionComponent::goToEntity(int entityID, float speed)
 
 	m_destEntityID = entityID;
 	m_destination = getEntityPosition(entityID);
-	m_distance = calculateVectorTo(entityID).length();
+	m_distance = calculateVectorTo(entityID).length() +1;
 	m_movementSpeed = speed * MoveAnimSpeedScale; //scaling the movement speed to match the animation speed
 	m_posAdjustment = false;
 
@@ -189,6 +192,7 @@ void AgentActionComponent::goToEntity(int entityID, float speed)
 	int walkID = GameEngine::AgentAnim_loadAnim( m_entityID, m_walkFile, Agent_AnimType::AAT_IDLE, 0, 0 );
 	GameEngine::AgentAnim_setSpeedOnAnimf( m_entityID, walkID, speed );
 
+	m_idleAnim_ID = -1;
 	m_walk = true;
 	fade_stopWalk = false;
 	t_stopWalk = 0;
@@ -247,7 +251,8 @@ void AgentActionComponent::updatePosition()
 	
 	//stop the movement
 	if(new_distance <= dest_bufferZones.at(dest_bufferZones.size() -1)
-	|| new_distance > m_distance) 
+	|| new_distance >= m_distance
+	|| new_distance < 0.01f )
 	{
 		movementFinished();		
 		return;
@@ -260,6 +265,8 @@ void AgentActionComponent::updatePosition()
 	GameEvent translate(GameEvent::E_TRANSLATE_GLOBAL, &delta, this);
 	if (m_owner->checkEvent(&translate))
 		m_owner->executeEvent(&translate);
+
+	//printf("db dist: %.5f\n", new_distance);
 
 	m_distance = new_distance;
 }
@@ -315,11 +322,8 @@ void AgentActionComponent::update()
 			m_movementSpeed *= t_stopWalk;
 			t_stopWalk -= 1.0f / GameEngine::FPS();
 			
-			if(t_stopWalk <= 0 || m_movementSpeed <= 0)
+			if(t_stopWalk <= 0 || m_movementSpeed <= 0.1f)
 			{
-				fade_stopWalk = false;
-				t_stopWalk = 0;
-				//m_walk = false;
 				movementFinished();
 			}
 		}
@@ -327,6 +331,12 @@ void AgentActionComponent::update()
 
 	if(m_rotate)
 		updateRotation();
+
+	//check for animation consistency
+	if(!m_walk && !fade_stopWalk && m_idleAnim_ID < 0)
+	{
+		movementFinished();
+	}
 
 	//check for intruders
 	processMyZone();
@@ -376,8 +386,16 @@ void AgentActionComponent::movementFinished()
 	fade_stopWalk = false;
 	t_stopWalk = 0;
 
-	//(re)load idle
-	int animID = GameEngine::AgentAnim_loadAnim( m_entityID, m_idleFile, Agent_AnimType::AAT_IDLE, 0, 0 );
+
+	//failsafe: if the idle still didn't load properly clear the stage and load it again
+	if(m_idleAnim_ID < 0)
+	{
+		GameEngine::AgentAnim_clearStages( m_entityID );
+		if(AGENTACTIONDEBUG)
+			printf("-> %d: CLEAR STAGES\n", m_entityID);
+
+		m_idleAnim_ID = GameEngine::AgentAnim_loadAnim( m_entityID, m_idleFile, Agent_AnimType::AAT_IDLE, 0, 0 );
+	}
 
 	//if this isn't just a postion adjusment
 	//process final position and orientation during the following conversation
@@ -390,7 +408,7 @@ void AgentActionComponent::movementFinished()
 	}
 
 	if(AGENTACTIONDEBUG)
-		printf("-> %d: movement finished /animID=%d\n", m_entityID, animID);
+		printf("-> %d: movement finished /animID=%d\n", m_entityID, m_idleAnim_ID);
 }
 
 void AgentActionComponent::stopWalking()
@@ -398,17 +416,20 @@ void AgentActionComponent::stopWalking()
 	fade_stopWalk = true;
 	t_stopWalk = 1.0f;
 
-	int animID = GameEngine::AgentAnim_loadAnim( m_entityID, m_idleFile, Agent_AnimType::AAT_IDLE, 0, 0 );
-	//if animation was unable to be loaded properly, delete all animations
-	if(animID < 0)
+	m_idleAnim_ID = GameEngine::AgentAnim_loadAnim( m_entityID, m_idleFile, Agent_AnimType::AAT_IDLE, 0, 0 );
+
+	//failsafe: if animation was unable to be loaded properly, delete all animations
+	if(m_idleAnim_ID < 0)
 	{
 		GameEngine::AgentAnim_clearStages( m_entityID );
 		if(AGENTACTIONDEBUG)
 			printf("-> %d: CLEAR STAGES\n", m_entityID);
+
+		m_idleAnim_ID = GameEngine::AgentAnim_loadAnim( m_entityID, m_idleFile, Agent_AnimType::AAT_IDLE, 0, 0 );
 	}
 
 	if(AGENTACTIONDEBUG)
-		printf("-> %d: stopWalk fading started /animID=%d\n", m_entityID, animID);
+		printf("-> %d: stopWalk fading started /animID=%d\n", m_entityID, m_idleAnim_ID);
 }
 
 /**

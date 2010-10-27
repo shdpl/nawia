@@ -54,7 +54,7 @@ void Orientation_C::execute_alphaAction(unsigned int myEntityID, unsigned int ot
 	h3dGetNodeTransMats( (H3DNode)agent1_h3d, &relArray1, &absArray1 );
 	h3dGetNodeTransMats( (H3DNode)agent2_h3d, &relArray2, &absArray2 );
 
-	//decompose them in translation, roation and scale vectors
+	//decompose them in translation, rotaion and scale vectors
 	Matrix4f relMat1(relArray1);
 	relMat1.decompose( pos1, rot1, scale1 );
 	Matrix4f relMat2(relArray2);
