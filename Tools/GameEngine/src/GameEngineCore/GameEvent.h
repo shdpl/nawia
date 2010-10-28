@@ -312,9 +312,8 @@ public:
 		GB_RESET,				/// reset all collected data
 		SP_START_SCRIPT,		/// starts sn action script
 		IB_EYE_FIXATED,			/// informs about an eye fixation
-		FACS_SET_EXPRESSION,	/// sets a facial expression /* deprecated */
+		FACS_SET_EXPRESSION,	/// sets a facial expression
 		E_SEND_SOCKET_DATA,		/// sends data via the socket component
-		E_SET_FACS,				/// sets a facial expression
 
 		NV_SAY_SENTENCE,		/// sentence to create speaking behavior for
 		NV_HEAR_SENTENCE,		/// sentence to create listening behavior for
@@ -408,21 +407,16 @@ public:
 		E_SOUND_STOPPED,		/// the sound of the entity has stopped playing
 		E_SOCKET_NEW_DATA,		/// Sends all data received since the last update call
 
-
-		///////////////////////////////////////////////////////////////////////////////////////////
 		// TODO: move the following events to the right category
 		SP_BOOKMARK,
 		SP_TTS_PAUSE,
 		SP_TTS_RESUME,
 		SP_TTS_SKIP,			///Skip the next n sentences. If n is negative, the speech will skip backwards.
-		///////////////////////////////////////////////////////////////////////////////////////////
-		
 
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////
-
-
+		//EVENTS FOR SUGARCANEISLAND PROJECT
+		SCI_NODEID,
+		SCI_DECISIONID,
+		SCI_DECIDEDID,
 
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
@@ -473,6 +467,9 @@ public:
 		if(in.find("E_ACTIVE_CAM_CHANGE") != std::string::npos) return GameEvent::E_ACTIVE_CAM_CHANGE;
 		if(in.find("GL_DRAW") != std::string::npos) return GameEvent::GL_DRAW;
 		if(in.find("GP_STATE_CHANGE") != std::string::npos) return GameEvent::GP_STATE_CHANGE;
+		if(in.find("SCI_NODEID") != std::string::npos) return GameEvent::SCI_NODEID;
+		if(in.find("SCI_DECISIONID") != std::string::npos) return GameEvent::SCI_DECISIONID;
+		if(in.find("SCI_DECIDEDID") != std::string::npos) return GameEvent::SCI_DECIDEDID;
 		return GameEvent::EVENT_COUNT;
 
 	}
