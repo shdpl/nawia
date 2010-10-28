@@ -542,12 +542,12 @@ void Application::keyHandler()
 
 	if( _keys['T'] )
 	{
-		m_agents[0]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[0]->entity_id, 36, Agent_AnimType::AAT_POSTURE, 0,0 );
+		m_agents[1]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[1]->entity_id, 37, Agent_AnimType::AAT_POSTURE, 0,0 );
 		_keys['T'] = false;
 	}
 	if( _keys['Z'] )
 	{
-		m_agents[0]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[0]->entity_id, 2, Agent_AnimType::AAT_GESTURE, 0,0 );
+		m_agents[1]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[1]->entity_id, 2, Agent_AnimType::AAT_GESTURE, 0,0 );
 		_keys['Z'] = false;
 	}
 
