@@ -312,7 +312,7 @@ void AnimationBlending::blend_gi()
 		running = false;
 		abort = false;
 		if(AGENTANIMDEBUG)
-			printf("[db]-- ABORT B_GI on entity %d --\n",GameEngine::sceneGraphEntityID(A->model));
+			printf("[db]-- ABORT B_GI --\n");
 		return;
 	}
 	//stop if the animations were not found or were deleted
