@@ -149,7 +149,7 @@ void SocketServer::run()
 					m_numMessages--;
 				}
 				if (m_firstNewMessage == -1)
-					m_firstNewMessage = m_currentMessage;
+					m_firstNewMessage = messageIndex;
 			}
 			else if (resultLength == 0)
 			{
@@ -195,7 +195,7 @@ void SocketServer::run()
 					if (m_numMessages == m_bufferLength)
 					{
 						// Buffer overflow
-						if (m_currentMessage == m_firstNewMessage)
+						if (messageIndex == m_firstNewMessage)
 						{
 							GameLog::warnMessage("WARNING: Buffer overflow in SocketComponent, some data will be lost!");
 							// Also reached the first message received by this run() call
@@ -210,7 +210,7 @@ void SocketServer::run()
 						m_numMessages--;
 					}
 					if (m_firstNewMessage == -1)
-						m_firstNewMessage = m_currentMessage;
+						m_firstNewMessage = messageIndex;
 				}
 				else if (resultLength == 0)
 				{

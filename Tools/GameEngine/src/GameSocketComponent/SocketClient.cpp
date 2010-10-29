@@ -222,7 +222,7 @@ void SocketClient::run()
 					m_numMessages--;
 				}
 				if (m_firstNewMessage == -1)
-					m_firstNewMessage = m_currentMessage;			
+					m_firstNewMessage = messageIndex;			
 			}
 	#ifdef PRINT_SOCKET_ERRORS
 			else if (resultLength < 0)

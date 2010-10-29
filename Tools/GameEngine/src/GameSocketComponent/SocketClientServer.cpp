@@ -81,6 +81,10 @@ void SocketClientServer::getNewestMessages(char** data)
 			int index = i % m_bufferLength;
 			memcpy(*data + bytesCopied, &m_messages[index * m_maxMsgLength], m_resultLength[index]);
 			bytesCopied += m_resultLength[index];
+			if (bytesCopied >= m_sizeOfNewMessages)
+			{
+				break;
+			}
 		}
 	}
 }
