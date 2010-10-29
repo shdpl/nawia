@@ -92,7 +92,7 @@ int main()
 
 		//Send
 		//send( s, buffer_send, strlen(buffer_send), 0 );
-		sendto(s, buffer_send, strlen(buffer_send), 0, (struct sockaddr *)&addr, sizeof(addr));
+		sendto(s, buffer_send, (int)strlen(buffer_send), 0, (struct sockaddr *)&addr, sizeof(addr));
 
 		if(rc==SOCKET_ERROR)
 		{
