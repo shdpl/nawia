@@ -68,6 +68,9 @@ A_id(blend_A), B_id(blend_B), running(true), abort(false), t(0), temp_posture_we
 	}
 
 	start_weight = 1;
+
+	//clear A's animation chain
+	if(A != 0) A->nextAnim = 0;
 }
 
 AnimationBlending::AnimationBlending(AgentAnimComponent* comp, int fade_anim_id, float _fade_from, float _fade_to):
@@ -146,6 +149,15 @@ void AnimationBlending::blend_gg()
 
 		t = t + BLENDING_SPEED * (float)(m_component->loopTime/CLOCKS_PER_SEC) * (float)((A->scale > B->scale)? A->scale : B->scale);
 		//t = t + BLENDING_SPEED_PG * 0.1f;		
+
+		if(A->finished)
+		{
+			//We have to manually update the Animation
+			SetAnimFrame setAnimFrame(A->stage, A->max_frame, A->weight);
+			GameEvent event(GameEvent::E_SET_ANIM_FRAME, &setAnimFrame, 0);
+			m_component->owner()->executeEvent(&event);
+			//h3dSetModelAnimParams(A->model, A->stage, A->max_frame -0.1f, A->weight);
+		}
 	}
 	else
 	{
@@ -156,8 +168,14 @@ void AnimationBlending::blend_gg()
 		A->sleep = true;
 		A->frame = A->max_frame -1;
 		A->setWeight(0.0f);		
-		if(!A->loop || B->loop)
+		
+		bool postureToIdle = (A->type == Agent_AnimType::AAT_POSTURE) && (B->nextAnim != 0) && (B->nextAnim->loop);
+		bool idleToPosture = (A->loop) && (B->nextAnim != 0) && (B->nextAnim->type == Agent_AnimType::AAT_POSTURE);
+		
+		if(!A->loop || B->loop || postureToIdle || idleToPosture || A->type == Agent_AnimType::AAT_POSTURE_PART)
 			m_component->killAnim( A );
+
+		
 		
 		//reset blending parameters
 		t = 0;

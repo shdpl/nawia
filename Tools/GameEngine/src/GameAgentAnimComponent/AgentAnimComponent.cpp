@@ -643,19 +643,19 @@ int AgentAnimComponent::loadAnim( AnimationData* data, char* mask, char* syncWor
 		m_animations[id_stroke]->sleep = true;
 		m_animations[id_stroke]->setWeight(0.0f);
 
-		//load the ret
-		id_ret = loadAnimationFile( data->posture_ret, 0 ); //additive postures are disabled for now
-		if(id_ret < 0)
-			return -1;
+		////load the ret
+		//id_ret = loadAnimationFile( data->posture_ret, 0 ); //additive postures are disabled for now
+		//if(id_ret < 0)
+		//	return -1;
 
-		//.. but we put it asleep for now
-		m_animations[id_ret]->sleep = true;
-		m_animations[id_ret]->setWeight(0.0f);
+		////.. but we put it asleep for now
+		//m_animations[id_ret]->sleep = true;
+		//m_animations[id_ret]->setWeight(0.0f);
 
 		//link the nodes together
-		m_animations[id_prep]->definePosture(m_animations[id_prep], m_animations[id_stroke], m_animations[id_ret]);
-		m_animations[id_stroke]->definePosture(m_animations[id_prep], m_animations[id_stroke], m_animations[id_ret]);
-		m_animations[id_ret]->definePosture(m_animations[id_prep], m_animations[id_stroke], m_animations[id_ret]);
+		//m_animations[id_prep]->definePosture(m_animations[id_prep], m_animations[id_stroke], m_animations[id_ret]);
+		//m_animations[id_stroke]->definePosture(m_animations[id_prep], m_animations[id_stroke], m_animations[id_ret]);
+		//m_animations[id_ret]->definePosture(m_animations[id_prep], m_animations[id_stroke], m_animations[id_ret]);
 		//define the chain
 		m_animations[id_prep]->nextAnim = m_animations[id_stroke];
 
@@ -666,6 +666,12 @@ int AgentAnimComponent::loadAnim( AnimationData* data, char* mask, char* syncWor
 	{
 		//load animation
 		id = loadAnimationFile( data, mask );
+
+		//db
+		//if(strcmp(m_animations[id]->file, "male_german_idle.anim") == 0)
+		//{
+		//	printf("db\n");
+		//}
 	}
 	
 	if (id >= 0)
@@ -755,7 +761,9 @@ void AgentAnimComponent::startAnim( AnimationNode *animNode )
 	if(aPosture != 0 
 		&& animNode->getType() != Agent_AnimType::AAT_POSTURE 
 		&& animNode->getType() != Agent_AnimType::AAT_POSTURE_PART 
-		&& aPosture != animNode)
+		&& aPosture != animNode
+		&& !aPosture->sleep
+		&& (m_blend_gg == 0 || m_blend_gg->A_id != aPosture->id)) //this posture is not currently active in a blending process 
 	{
 		//we put this animation asleep
 		animNode->sleep = true;
@@ -860,19 +868,22 @@ void AgentAnimComponent::updateAllAnim()
 	if(m_blend_gi != 0 && m_blend_gi->running)
 		m_blend_gi->blend_gi();
 
-	/*if(blend >= 0 && strcmp(m_animations[blend]->file, "male_german_idle.anim") == 0)
-	{
-		printf("db\n");
-	}
-	if(blend >= 0 && strcmp(m_animations[blend]->file, "char_male_laufen.anim") == 0)
-	{
-		printf("db\n");
-	}*/
+	//if(blend >= 0 && strcmp(m_animations[blend]->file, "male_german_idle.anim") == 0)
+	//{
+	//	printf("db\n");
+	//}
+	//if(blend >= 0 && strcmp(m_animations[blend]->file, "char_male_laufen.anim") == 0)
+	//{
+	//	printf("db\n");
+	//}
+	//if(blend >= 0 && m_animations[blend]->data->id == 4)
+	//{
+	//	printf("db\n");
+	//}
 	
 	anim_count = 0;
 	vector<AnimationNode*>::iterator iter = m_animations.begin();
-	const vector<AnimationNode*>::iterator end = m_animations.end();
-	while ( iter != end )
+	while ( iter != m_animations.end() )
 	{
 		if( *iter == NULL  ) 
 		{
@@ -985,35 +996,6 @@ void AgentAnimComponent::updateAllAnim()
 			//h3dSetModelAnimParams((*iter)->model, (*iter)->stage, (*iter)->frame, 0);
 			++iter; continue;
 		}
-
-		//do some cleanup, we allow only ONE idle per agent
-		if((*iter) != 0 && (*iter)->loop && (*iter)->weight == 1.00f)
-		{
-			//delete all other idles or postures
-			for(int i=0; i< m_animations.size(); i++)
-			{
-				if(m_animations[i] == 0)
-					continue;
-
-				bool partOfBlending = false;
-				if(m_blend_gg == 0)
-					partOfBlending = false;
-				else if((m_blend_gg->A_id == m_animations[i]->id) || (m_blend_gg->B_id == m_animations[i]->id))
-					partOfBlending = true;
-
-				if((m_animations[i]->loop)
-				&& (m_animations[i]->id != (*iter)->id)
-				&& !partOfBlending )
-				{
-					bool del = DELETE_ANIM_ON_FINISH;
-					DELETE_ANIM_ON_FINISH = true;
-
-					killAnim(m_animations[i]);
-
-					DELETE_ANIM_ON_FINISH = del;
-				}
-			}
-		}
 		
 		updateAnim( *iter );
 		++iter;
@@ -1041,6 +1023,34 @@ void AgentAnimComponent::updateAllAnim()
 		else
 		{
 			stillAnim->setWeight(0.0f);
+		}
+	}
+
+	//do some cleanup, we allow only ONE idle per agent
+	//delete all other idles or postures
+	int found = 0;
+	for(int i= m_animations.size() -1; i>=0; i--)
+	{
+		if(m_animations[i] == 0)
+			continue;
+
+		bool partofblending = false;
+		if(m_blend_gg == 0)
+			partofblending = false;
+		else if((m_blend_gg->A_id == m_animations[i]->id) || (m_blend_gg->B_id == m_animations[i]->id))
+			partofblending = true;
+
+		if(m_animations[i]->loop && !partofblending)
+			found++;
+
+		if(m_animations[i]->loop && !partofblending && found > 1)
+		{
+			bool del = DELETE_ANIM_ON_FINISH;
+			DELETE_ANIM_ON_FINISH = true;
+
+			killAnim(m_animations[i]);
+
+			DELETE_ANIM_ON_FINISH = del;
 		}
 	}
 	
@@ -1115,7 +1125,7 @@ void AgentAnimComponent::updateAnim( AnimationNode* animNode )
 				//blend to the next animation in the chain
 				if(m_blend_gg != 0)
 				{
-					m_blend_gg->forceBlendFinish_gp();
+					m_blend_gg->forceBlendFinish_gg();
 					m_blend_gg->~AnimationBlending();
 					delete m_blend_gg;
 					m_blend_gg = 0;
@@ -1139,7 +1149,7 @@ void AgentAnimComponent::updateAnim( AnimationNode* animNode )
 
 						if(m_blend_gg != 0)
 						{
-							m_blend_gg->forceBlendFinish_gp();
+							m_blend_gg->forceBlendFinish_gg();
 							m_blend_gg->~AnimationBlending();
 							delete m_blend_gg;
 							m_blend_gg = 0;
@@ -1184,7 +1194,7 @@ void AgentAnimComponent::updateAnim( AnimationNode* animNode )
 			{
 				if(m_blend_gg != 0)
 				{
-					m_blend_gg->forceBlendFinish_gp();
+					m_blend_gg->forceBlendFinish_gg();
 					m_blend_gg->~AnimationBlending();
 					delete m_blend_gg;
 					m_blend_gg = 0;
@@ -1209,7 +1219,7 @@ void AgentAnimComponent::updateAnim( AnimationNode* animNode )
 
 						if(m_blend_gg != 0)
 						{
-							m_blend_gg->forceBlendFinish_gp();
+							m_blend_gg->forceBlendFinish_gg();
 							m_blend_gg->~AnimationBlending();
 							delete m_blend_gg;
 							m_blend_gg = 0;
