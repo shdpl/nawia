@@ -73,7 +73,7 @@ void GamePlugInManager::loadPluginFromEnvVar(std::string dllName, std::string en
 					// Get the dll directory path
 					TString dllAbsPath = tstring.substr(0, index);
 
-					_tprintf(TEXT("GamePlugInManager inspecting path '%s'\n"), dllAbsPath.c_str());
+					//_tprintf(TEXT("GamePlugInManager inspecting path '%s'\n"), dllAbsPath.c_str());
 
 					if(dllAbsPath.length() > 0) {
 					// Eventually append a path seperator
@@ -96,7 +96,7 @@ void GamePlugInManager::loadPluginFromEnvVar(std::string dllName, std::string en
 					int status = stat(dllAbsPath.c_str(), &info); 
 					if(status == 0) { 
 						
-						_tprintf(TEXT("GamePlugInManager trying to load '%s'\n"), dllAbsPath.c_str());
+						//_tprintf(TEXT("GamePlugInManager trying to load '%s'\n"), dllAbsPath.c_str());
 
 						// Try to load the plugin 
 						DynLib* lib = new DynLib(dllAbsPath);
@@ -122,7 +122,7 @@ void GamePlugInManager::loadPluginFromEnvVar(std::string dllName, std::string en
 
 				// Check for remainder
 				if(tstring.length() > 0) {
-					_tprintf(TEXT("GamePlugInManager inspecting path '%s'\n"), tstring.c_str());
+					//_tprintf(TEXT("GamePlugInManager inspecting path '%s'\n"), tstring.c_str());
 				
 					// Eventually append a path seperator
 					if ((tstring.at(tstring.length() - 1) != '\\') && (tstring.at(tstring.length() - 1) != '/') )
@@ -137,7 +137,7 @@ void GamePlugInManager::loadPluginFromEnvVar(std::string dllName, std::string en
 					int status = stat(tstring.c_str(), &info); 
 					if(status == 0) { 
 						
-						_tprintf(TEXT("GamePlugInManager trying to load '%s'\n"), tstring.c_str());
+						//_tprintf(TEXT("GamePlugInManager trying to load '%s'\n"), tstring.c_str());
 
 						// Try to load the plugin 
 						DynLib* lib = new DynLib(tstring);
