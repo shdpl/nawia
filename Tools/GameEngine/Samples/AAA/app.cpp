@@ -541,16 +541,16 @@ void Application::keyHandler()
 	}
 
 	//debug hotkeys
-	if( _keys['T'] )
-	{
-		m_agents[1]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[1]->entity_id, 37, Agent_AnimType::AAT_POSTURE, 0,0 );
-		_keys['T'] = false;
-	}
-	if( _keys['Z'] )
-	{
-		m_agents[1]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[1]->entity_id, 4, Agent_AnimType::AAT_GESTURE, 0,0 );
-		_keys['Z'] = false;
-	}
+	//if( _keys['T'] )
+	//{
+	//	m_agents[1]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[1]->entity_id, 37, Agent_AnimType::AAT_POSTURE, 0,0 );
+	//	_keys['T'] = false;
+	//}
+	//if( _keys['Z'] )
+	//{
+	//	m_agents[1]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[1]->entity_id, 4, Agent_AnimType::AAT_GESTURE, 0,0 );
+	//	_keys['Z'] = false;
+	//}
 
 	//check number keys
 	for(unsigned int i=0; i<10; i++)
