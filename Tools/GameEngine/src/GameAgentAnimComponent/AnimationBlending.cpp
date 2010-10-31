@@ -421,14 +421,21 @@ void AnimationBlending::forceBlendFinish_gg(bool kill_anim)
 
 	abort = true;
 
-	A->sleep = true;
-	A->weight = 0.0f;
-	A->frame = 0.0f;
+	if(A != 0)
+	{
+		A->sleep = true;
+		A->weight = 0.0f;
+		A->frame = 0.0f;
 
-	if((!A->loop || B->loop) && kill_anim)
-		m_component->killAnim(A);
+		if((!A->loop || B->loop) && kill_anim)
+		{
+			m_component->killAnim(A);
+			A = 0;
+		}
+	}
 
-	B->weight = m_component->model_max_weight;
+	if(B != 0)
+		B->weight = m_component->model_max_weight;
 }
 
 void AnimationBlending::forceBlendFinish_gp(bool kill_anim)
@@ -438,19 +445,21 @@ void AnimationBlending::forceBlendFinish_gp(bool kill_anim)
 
 	abort = true;
 
-	A->sleep = true;
-	A->weight = 0.0f;
-	A->frame = 0.0f;
+	if(A != 0)
+	{
+		A->sleep = true;
+		A->weight = 0.0f;
+		A->frame = 0.0f;
 
+		//kill anim
+		if(kill_anim)
+			m_component->killAnim( A );
+	}
 	m_component->posture_weight = temp_posture_weight;
 	if(m_component->stillAnim != 0)
 		m_component->stillAnim->setMaxWeight(temp_still_max_weight);
 
 	t = 0;
-
-	//kill anim
-	if(kill_anim)
-		m_component->killAnim( A );
 }
 
 void AnimationBlending::forceBlendFinish_pg(bool kill_anim)
@@ -461,20 +470,24 @@ void AnimationBlending::forceBlendFinish_pg(bool kill_anim)
 	abort = true;
 
 	m_component->posture_weight = 0.0f;
-	B->weight = m_component->model_max_weight;
 	if(m_component->stillAnim != 0)
 		m_component->stillAnim->setMaxWeight(temp_still_max_weight);
 
-	if(B->loop && kill_anim)
+	if(B != 0)
 	{
-		//kill all postures
-		for(unsigned int i=0; i< m_component->m_animations.size(); i++)
-		{
-			if(m_component->m_animations[i] == 0)
-				continue;
+		B->weight = m_component->model_max_weight;
 
-			if(m_component->m_animations[i]->doNotDie)
-				m_component->killAnim(m_component->m_animations[i]);
+		if(B->loop && kill_anim)
+		{
+			//kill all postures
+			for(unsigned int i=0; i< m_component->m_animations.size(); i++)
+			{
+				if(m_component->m_animations[i] == 0)
+					continue;
+
+				if(m_component->m_animations[i]->doNotDie)
+					m_component->killAnim(m_component->m_animations[i]);
+			}
 		}
 	}
 	
@@ -488,18 +501,27 @@ void AnimationBlending::forceBlendFinish_gi(bool kill_anim)
 
 	abort = true;
 
-	A->sleep = true;
-	A->weight = 0.0f;
-	A->frame = 0.0f;
+	if(A != 0)
+	{
+		A->sleep = true;
+		A->weight = 0.0f;
+		A->frame = 0.0f;
 
-	B->weight = m_component->model_max_weight;	
+		//kill anim
+		if(kill_anim)
+		{
+			m_component->killAnim( A );
+			A = 0;
+		}
+	}
+
+	if(B != 0)
+	{
+		B->weight = m_component->model_max_weight;	
+	}
+
 	m_component->posture_weight = 0.0f;
-
 	t = 0;
-		
-	//kill anim
-	if(kill_anim)
-		m_component->killAnim( A );
 }
 
 void AnimationBlending::forceFadeFinish(bool kill_anim)
@@ -507,16 +529,22 @@ void AnimationBlending::forceFadeFinish(bool kill_anim)
 	if(!running)
 		return;
 
-	A->weight = fade_to;
-
-	//if this was a fade out, kill anim
-	if(fade_direction < 0)
+	if(A != 0)
 	{
-		A->sleep = true;
-		A->weight = 0.0f;
-		A->frame = 0.0f;
-		if(kill_anim)
-			m_component->killAnim( A );
+		A->weight = fade_to;
+
+		//if this was a fade out, kill anim
+		if(fade_direction < 0)
+		{
+			A->sleep = true;
+			A->weight = 0.0f;
+			A->frame = 0.0f;
+			if(kill_anim)
+			{
+				m_component->killAnim( A );
+				A = 0;
+			}
+		}
 	}
 
 	running = false;

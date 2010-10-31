@@ -259,7 +259,7 @@ void Application::update( float fps )
 
 			
 			if(getAgent(i)->active && (getAgent(i)->animation_id < 0) && (getAgent(i)->movement < 0)
-			&&(rand() % 1000 < 9)) // chance for anim load = 0.9%
+			&&(rand() % 1000 < 250)) // chance for anim load = 25%
 				getAgent(i)->animation_id = GameEngine::AgentAnim_loadAnimByID( getAgent(i)->entity_id, ((int)m_scenario_counter % 29)+1, Agent_AnimType::AAT_GESTURE, 0, 0 );
 
 			////generate speach
@@ -269,18 +269,18 @@ void Application::update( float fps )
 			//	GameEngine::speak( getAgent(i)->entity_id, "Hello!" );
 			//}
 
-			////generate movement
-			//int dest;
-			//if(getAgent(i)->active && (getAgent(i)->animation_id < 0) && (getAgent(i)->movement < 0)
-			//&&(rand() % 1000 < 1)) // chance for anim load = 0.1%
-			//{
-			//	dest = rand() % NR_OF_AGENTS;
-			//	if(getAgent(dest) != 0)
-			//	{
-			//		GameEngine::Agent_goToEntity( getAgent(i)->entity_id, getAgent(dest)->entity_id, 1.0f );
-			//		getAgent(i)->movement = 1;
-			//	}
-			//}
+			//generate movement
+			int dest;
+			if(getAgent(i)->active && (getAgent(i)->animation_id < 0) && (getAgent(i)->movement < 0)
+			&&(rand() % 1000 < 100)) // chance for anim load = 10%
+			{
+				dest = rand() % NR_OF_AGENTS;
+				if(getAgent(dest) != 0)
+				{
+					GameEngine::Agent_goToEntity( getAgent(i)->entity_id, getAgent(dest)->entity_id, 1.0f );
+					getAgent(i)->movement = 1;
+				}
+			}
 
 		}
 	}
@@ -401,7 +401,7 @@ void Application::release()
 	
 	// Release engine
 	GameEngine::release();
-	//h3dRelease();
+	h3dRelease();
 }
 
 
@@ -541,16 +541,16 @@ void Application::keyHandler()
 	}
 
 	//debug hotkeys
-	//if( _keys['T'] )
-	//{
-	//	m_agents[1]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[1]->entity_id, 37, Agent_AnimType::AAT_POSTURE, 0,0 );
-	//	_keys['T'] = false;
-	//}
-	//if( _keys['Z'] )
-	//{
-	//	m_agents[1]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[1]->entity_id, 4, Agent_AnimType::AAT_GESTURE, 0,0 );
-	//	_keys['Z'] = false;
-	//}
+	if( _keys['T'] )
+	{
+		m_agents[1]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[1]->entity_id, 37, Agent_AnimType::AAT_POSTURE, 0,0 );
+		_keys['T'] = false;
+	}
+	if( _keys['Z'] )
+	{
+		m_agents[1]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[1]->entity_id, 4, Agent_AnimType::AAT_GESTURE, 0,0 );
+		_keys['Z'] = false;
+	}
 
 	//check number keys
 	for(unsigned int i=0; i<10; i++)

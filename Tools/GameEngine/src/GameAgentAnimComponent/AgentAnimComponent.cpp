@@ -378,7 +378,7 @@ int AgentAnimComponent::loadAnimationFile( AnimationData* data, char* mask )
 
 	string file_in = anim_file;
 
-	//printf("[db] loading %s ...", anim_file);
+	//printf("[db] loading %s - ", anim_file);
 	
 	file_in = "animations/" + file_in;
 	ifstream inf( file_in.c_str(), ios::binary );
@@ -465,18 +465,26 @@ int AgentAnimComponent::loadAnimationFile( AnimationData* data, char* mask )
 				if (!blending) return -1;
 			}
 
-			//otherwise, wake up old anim and we're done
-			animNode = (*iter);
-			animNode->sleep = false;
-			animNode->finished = false;
-			animNode->frame = animNode->stroke_start;
-			animNode->setWeight(0);
 
-			animNode->setType(data->type);
+			//delete old animation and proceed
+			//printf("found (id=%d, stage=%d)\n", (*iter)->id, (*iter)->stage);
+			killAnim(*iter);
 
-			//printf("[db] restarted with id=%d on stage=%d\n", animNode->id, animNode->stage);
+			//	//otherwise, wake up old anim and we're done
+			//	animNode = (*iter);
+			//	animNode->sleep = false;
+			//	animNode->finished = false;
+			//	animNode->frame = 0;
+			//	animNode->setWeight(0);
 
-			return animNode->id;
+			//	animNode->setType(data->type);
+			//				
+			//	//force an immediate update with 0 weight
+			//	h3dSetModelAnimParams( animNode->model, animNode->stage, 0, 0 );
+
+			//	printf("restarted (id=%d, stage=%d)\n", animNode->id, animNode->stage);
+
+			//	return animNode->id;			
 		}
 
 		++iter;
@@ -549,9 +557,8 @@ int AgentAnimComponent::loadAnimationFile( AnimationData* data, char* mask )
 
 	//add new node to vector
 	m_animations[animNode->id] = animNode;
-
 	
-	//printf("[db] loaded with id=%d on stage=%d\n", animNode->id, animNode->stage);
+	//printf("loaded (id=%d, stage=%d)\n", animNode->id, animNode->stage);
 
 	return animNode->id;
 }
@@ -1105,6 +1112,7 @@ void AgentAnimComponent::updateAnim( AnimationNode* animNode )
 			{
 				animNode->fade->forceFadeFinish(false);
 				delete animNode->fade;
+				animNode->fade = 0;
 				animNode->fade = new AnimationBlending(this, animNode->id, animNode->weight, 0.0f );
 			}
 		}
@@ -1393,8 +1401,8 @@ void AgentAnimComponent::killAnim( AnimationNode* anim )
 	}
 
 	//delete animation or put it asleep?
-	if(DELETE_ANIM_ON_FINISH)
-	{
+	//if(DELETE_ANIM_ON_FINISH)
+	//{
 		anim->setWeight(0.0f);
 		//alter stage counter
 		if( anim->stage == (m_nextFreeAnimStage - 1) ) m_nextFreeAnimStage--;
@@ -1404,17 +1412,20 @@ void AgentAnimComponent::killAnim( AnimationNode* anim )
 		h3dRemoveResource( anim->anim_res );
 		//fill the gap in the animations vector
 		m_animations[anim->id] = NULL;
+
+		//printf("[db] del %s\n", anim->file);
 		
 		//delete anim
 		delete anim;
 		anim = 0;
-	}
-	else
-	{
-		anim->frame = 0.0f;
-		anim->setWeight(0.0f);
-		anim->sleep = true;
-	}
+
+	//}
+	//else
+	//{
+	//	anim->frame = 0.0f;
+	//	anim->setWeight(0.0f);
+	//	anim->sleep = true;
+	//}
 }
 
 //Returns last laoded idle animation
