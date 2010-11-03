@@ -207,12 +207,12 @@ void SocketClient::run()
 				if (m_numMessages == m_bufferLength)
 				{
 					// Buffer overflow
-					if (m_currentMessage == m_firstNewMessage)
+					if (m_numNewMessages == m_bufferLength)
 					{
 						GameLog::warnMessage("WARNING: Buffer overflow in SocketComponent, some data will be lost!");
 						// Also reached the first message received by this run() call
 						// So ignore it
-						m_firstNewMessage++;
+						m_firstNewMessage = (m_firstNewMessage + 1) % m_bufferLength;
 						m_sizeOfNewMessages -= m_resultLength[m_currentMessage];
 						m_numNewMessages--;
 					}
