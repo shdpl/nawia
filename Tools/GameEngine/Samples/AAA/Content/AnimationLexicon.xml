@@ -638,4 +638,20 @@
 			<StrokeEnd>68</StrokeEnd>
 		</Form>
 	</Gesture>
+	<Posture>
+		<ID>0039</ID>
+		<Name>Japanese_posture_handsCrossed</Name>
+		<Description>300 Frames posture in which the character has the hands crossed infront of his Pelvis</Description>
+		<Files culture="japan" gender="female">
+			<Preperation blendIn="7" blendOut="30">Gestures\Jap\Female\Anim\female_jap_handsCrossed_prep.anim</Preperation>
+			<Stroke>Gestures\Jap\Female\Anim\female_jap_handsCrossed_stroke.anim</Stroke>
+			<Retraction blendIn="15" blendOut="36">Gestures\Jap\Female\Anim\female_jap_handsCrossed_ret.anim</Retraction>			
+		</Files>
+		<Files culture="japan" gender="male">
+			<Preperation blendIn="7" blendOut="30">Gestures\Jap\Male\Anim\male_jap_handsCrossed_prep.anim</Preperation>
+			<Stroke>Gestures\Jap\Male\Anim\male_jap_handsCrossed_stroke.anim</Stroke>
+			<Retraction blendIn="15" blendOut="36">Gestures\Jap\Male\Anim\male_jap_handsCrossed_ret.anim</Retraction>			
+		</Files>
+		<Restriction>Germany</Restriction>		
+	</Posture>
 </AnimationLexicon>
