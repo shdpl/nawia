@@ -613,9 +613,9 @@
 		<Name>German_posture_handsOnHips</Name>
 		<Description>300 Frames posture in which the character has the hands on his/her hips</Description>
 		<Files culture="german" gender="female">
-			<Preperation blendIn="7" blendOut="25">Gestures\Ger\Female\Anim\female_ger_handsOnHips_prep.anim</Preperation>
+			<Preperation blendIn="15" blendOut="30">Gestures\Ger\Female\Anim\female_ger_handsOnHips_prep.anim</Preperation>
 			<Stroke>Gestures\Ger\Female\Anim\female_ger_handsOnHips_stroke.anim</Stroke>
-			<Retraction blendIn="15" blendOut="28">Gestures\Ger\Female\Anim\female_ger_handsOnHips_ret.anim</Retraction>			
+			<Retraction blendIn="15" blendOut="35">Gestures\Ger\Female\Anim\female_ger_handsOnHips_ret.anim</Retraction>			
 		</Files>
 		<Files culture="german" gender="male">
 			<Preperation blendIn="7" blendOut="25">Gestures\Ger\Male\Anim\male_ger_handsOnHips_prep.anim</Preperation>
