@@ -23,6 +23,7 @@
 class AnimationFile
 {
 public:
+	AnimationFile( const char* gender, const char* filename );
 	AnimationFile( const char* gender, const char* culture, const char* filename );
 
 	bool isGender(const char* g);

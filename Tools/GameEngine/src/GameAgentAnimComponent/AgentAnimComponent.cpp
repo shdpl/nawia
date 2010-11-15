@@ -303,39 +303,48 @@ bool AgentAnimComponent::processAnimDB(XMLNode db)
 
 		
 		//Filenames
-		int numfiles = pnode->nChildNode("Files");
-		if(numfiles <= 0)
+		int numSuperFiles = pnode->nChildNode("Files");
+		if(numSuperFiles <= 0)
 			return false;
 
-		XMLNode *filenode, *partnode;		
+		XMLNode *fileSuperNode, *fileNode;		
 		animdata->posture_prep = new AnimationData( -1, namenode->getText(), Agent_AnimType::AAT_POSTURE_PART );
 		animdata->posture_stroke = new AnimationData( -1, namenode->getText(), Agent_AnimType::AAT_POSTURE );
 		animdata->posture_ret = new AnimationData( -1, namenode->getText(), Agent_AnimType::AAT_POSTURE_PART );
-		for(int j=0; j< numfiles; j++)
+		
+		for(int j=0; j< numSuperFiles; j++)
 		{
-			filenode = &pnode->getChildNode("Files", j);
-			//Preparation
-			partnode = &filenode->getChildNode("Preperation", 0);
-			if(partnode->isEmpty())
-				return false;
-			animdata->posture_prep->addFile( new AnimationFile( filenode->getAttribute("gender"), filenode->getAttribute("culture"), partnode->getText() ));
-			animdata->posture_prep->setForm( atof(partnode->getAttribute("blendIn")), atof(partnode->getAttribute("blendOut")), 1);
-			animdata->posture_prep->parent = animdata;
+			fileSuperNode = &pnode->getChildNode("Files", j);
+			//parse files
+			int numFilesInSuperFile = fileSuperNode->nChildNode("File");
+			for(int k = 0; k< numFilesInSuperFile; k++)
+			{
+				fileNode = &fileSuperNode->getChildNode("File", k);
 
-			//Stroke
-			partnode = &filenode->getChildNode("Stroke", 0);
-			if(partnode->isEmpty())
-				return false;
-			animdata->posture_stroke->addFile( new AnimationFile( filenode->getAttribute("gender"), filenode->getAttribute("culture"), partnode->getText() ));
-			animdata->posture_stroke->parent = animdata;
+				//get file type
+				const char* type = fileNode->getAttribute("type");
 
-			//Retraction
-			partnode = &filenode->getChildNode("Retraction", 0);
-			if(partnode->isEmpty())
-				return false;
-			animdata->posture_ret->addFile( new AnimationFile( filenode->getAttribute("gender"), filenode->getAttribute("culture"), partnode->getText() ));			
-			animdata->posture_ret->setForm( atof(partnode->getAttribute("blendIn")), atof(partnode->getAttribute("blendOut")), 1);
-			animdata->posture_ret->parent = animdata;
+				//STROKE
+				if((type == 0) || (strcmp(type, "stroke") == 0))
+				{
+					animdata->posture_stroke->addFile( new AnimationFile( fileSuperNode->getAttribute("gender"), fileNode->getText() ));
+					animdata->posture_stroke->parent = animdata;
+				}
+				//PREP
+				if((type != 0) && (strcmp(type, "preparation") == 0))
+				{
+					animdata->posture_prep->addFile( new AnimationFile( fileSuperNode->getAttribute("gender"), fileNode->getText() ));
+					animdata->posture_prep->setForm( atof(fileNode->getAttribute("strokeStart")), atof(fileNode->getAttribute("strokeEnd")), 1);
+					animdata->posture_prep->parent = animdata;
+				}
+				//RET
+				if((type != 0) && (strcmp(type, "retraction") == 0))
+				{					
+					animdata->posture_ret->addFile( new AnimationFile( fileSuperNode->getAttribute("gender"), fileNode->getText() ));			
+					animdata->posture_ret->setForm( atof(fileNode->getAttribute("strokeStart")), atof(fileNode->getAttribute("strokeEnd")), 1);
+					animdata->posture_ret->parent = animdata;
+				}
+			}
 		}
 
 		XMLNode *restrictnode = &pnode->getChildNode("Restriction", 0);

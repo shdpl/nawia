@@ -32,7 +32,17 @@ void AnimationFile::_stringcopy(char* dst, unsigned int dstSize, const char* src
 	dst[i] = '\0';
 }
 
-AnimationFile::AnimationFile(const char *gender, const char *culture, const char *filename)
+AnimationFile::AnimationFile(const char *gender, const char *filename)
+{
+	//memcpy_s(m_filename, 128, filename, 128);
+	//memcpy_s(m_gender, 8, gender, 128);
+	//memcpy_s(m_culture, 16, culture, 128);
+
+	_stringcopy((char *)m_filename, 128, filename);
+	_stringcopy((char *)m_gender, 8, gender);
+}
+
+AnimationFile::AnimationFile(const char *gender, const char* culture, const char *filename)
 {
 	//memcpy_s(m_filename, 128, filename, 128);
 	//memcpy_s(m_gender, 8, gender, 128);
@@ -50,7 +60,8 @@ const char* AnimationFile::getFilename()
 
 bool AnimationFile::isCulture(const char *c)
 {
-	return strcmp(m_culture, c) == 0;
+	//return strcmp(m_culture, c) == 0;
+	return true;
 }
 
 bool AnimationFile::isGender(const char *g)
