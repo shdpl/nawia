@@ -229,92 +229,39 @@ void AgentAnimComponent::loadFromXml(const XMLNode* node)
 }
 
 bool AgentAnimComponent::processAnimDB(XMLNode db)
-{
-	//** Parse gesture data
-	int n = db.nChildNode( "Gesture" );
-	for(int i = 0; i<n; i++)
-	{
-		XMLNode *gnode = &db.getChildNode( "Gesture", i );
-
-		//ID, Name
-		XMLNode *idnode = &gnode->getChildNode("ID", 0);
-		XMLNode *namenode = &gnode->getChildNode("Name", 0);
-		if(idnode->isEmpty() || namenode->isEmpty())
-			return false;
-
-		AnimationData* animdata = 
-			new AnimationData(	(int)atoi(idnode->getText()),
-								namenode->getText(), 
-								Agent_AnimType::AAT_GESTURE );
-		
-		//stroke start/end
-		XMLNode *formnode = &gnode->getChildNode("Form", 0);
-		if(formnode->isEmpty() || formnode->getChildNode("StrokeStart",0).isEmpty() || formnode->getChildNode("StrokeEnd",0).isEmpty())
-			return false;
-
-		//stroke repetitions
-		int stroke_reps = 1;
-		if(!formnode->getChildNode("StrokeReps",0).isEmpty())
-			stroke_reps = atoi(formnode->getChildNode( "StrokeReps",0 ).getText());
-
-		animdata->setForm(	(float)atof(formnode->getChildNode( "StrokeStart",0 ).getText()),
-							(float)atof(formnode->getChildNode( "StrokeEnd",0 ).getText()),
-							stroke_reps);
-		
-		//Filenames
-		int numfiles = gnode->nChildNode("Filename");
-		if(numfiles <= 0)
-			return false;
-
-		XMLNode *filenode;
-
-		for(int j=0; j< numfiles; j++)
-		{
-			filenode = &gnode->getChildNode("Filename", j);
-			animdata->addFile( new AnimationFile( filenode->getAttribute("gender"), filenode->getAttribute("culture"), filenode->getText() ));
-		}
-
-		XMLNode *restrictnode = &gnode->getChildNode("Restriction", 0);
-		std::string nocust("noCustomization"); 
-		if(!restrictnode->isEmpty() && restrictnode->getText() != 0 )
-			if (std::string( restrictnode->getText() ).find(nocust) != std::string::npos)
-				animdata->noCustomization = true;
-
-
-		m_animationData.push_back( animdata );
-	}
-	
+{	
 	//** Parse posture data
-	n = db.nChildNode( "Posture" );
+	int n = db.nChildNode();
 	for(int i = 0; i<n; i++)
 	{
-		XMLNode *pnode = &db.getChildNode( "Posture", i );
+		XMLNode *entry = &db.getChildNode(i);
 
 		//ID, Name
-		XMLNode *idnode = &pnode->getChildNode("ID", 0);
-		XMLNode *namenode = &pnode->getChildNode("Name", 0);
+		XMLNode *idnode = &entry->getChildNode("ID", 0);
+		XMLNode *namenode = &entry->getChildNode("Name", 0);
+
 		if(idnode->isEmpty() || namenode->isEmpty())
 			return false;
 
-		AnimationData* animdata = 
-			new AnimationData(	(int)atoi(idnode->getText()),
-								namenode->getText(), 
-								Agent_AnimType::AAT_POSTURE );
+		//type
+		Agent_AnimType::List type = Agent_AnimType::AAT_UNKNOWN;
+		if( strcmp(entry->getName(), "Gesture") == 0 )
+			type = Agent_AnimType::AAT_GESTURE;
+		else if( strcmp(entry->getName(), "Posture") == 0 )
+			type = Agent_AnimType::AAT_POSTURE;
 
+		AnimationData* animdata = new AnimationData( (int)atoi(idnode->getText()), namenode->getText(), type );
 		
 		//Filenames
-		int numSuperFiles = pnode->nChildNode("Files");
+		int numSuperFiles = entry->nChildNode("Files");
 		if(numSuperFiles <= 0)
 			return false;
 
-		XMLNode *fileSuperNode, *fileNode;		
-		animdata->posture_prep = new AnimationData( -1, namenode->getText(), Agent_AnimType::AAT_POSTURE_PART );
-		animdata->posture_stroke = new AnimationData( -1, namenode->getText(), Agent_AnimType::AAT_POSTURE );
-		animdata->posture_ret = new AnimationData( -1, namenode->getText(), Agent_AnimType::AAT_POSTURE_PART );
-		
+		XMLNode *fileSuperNode, *fileNode;
+
 		for(int j=0; j< numSuperFiles; j++)
 		{
-			fileSuperNode = &pnode->getChildNode("Files", j);
+			fileSuperNode = &entry->getChildNode("Files", j);
 			//parse files
 			int numFilesInSuperFile = fileSuperNode->nChildNode("File");
 			for(int k = 0; k< numFilesInSuperFile; k++)
@@ -327,19 +274,31 @@ bool AgentAnimComponent::processAnimDB(XMLNode db)
 				//STROKE
 				if((type == 0) || (strcmp(type, "stroke") == 0))
 				{
+					if(animdata->posture_stroke == 0)
+						animdata->posture_stroke = new AnimationData( -1, namenode->getText(), Agent_AnimType::AAT_POSTURE );
+
 					animdata->posture_stroke->addFile( new AnimationFile( fileSuperNode->getAttribute("gender"), fileNode->getText() ));
 					animdata->posture_stroke->parent = animdata;
+
+					//add the stroke file to the parent aswell
+					animdata->addFile( new AnimationFile( fileSuperNode->getAttribute("gender"), fileNode->getText() ) );
 				}
 				//PREP
 				if((type != 0) && (strcmp(type, "preparation") == 0))
 				{
+					if(animdata->posture_prep == 0)
+						animdata->posture_prep = new AnimationData( -1, namenode->getText(), Agent_AnimType::AAT_POSTURE_PART );
+
 					animdata->posture_prep->addFile( new AnimationFile( fileSuperNode->getAttribute("gender"), fileNode->getText() ));
 					animdata->posture_prep->setForm( atof(fileNode->getAttribute("strokeStart")), atof(fileNode->getAttribute("strokeEnd")), 1);
 					animdata->posture_prep->parent = animdata;
 				}
 				//RET
 				if((type != 0) && (strcmp(type, "retraction") == 0))
-				{					
+				{	
+					if(animdata->posture_ret == 0)
+						animdata->posture_ret = new AnimationData( -1, namenode->getText(), Agent_AnimType::AAT_POSTURE_PART );
+
 					animdata->posture_ret->addFile( new AnimationFile( fileSuperNode->getAttribute("gender"), fileNode->getText() ));			
 					animdata->posture_ret->setForm( atof(fileNode->getAttribute("strokeStart")), atof(fileNode->getAttribute("strokeEnd")), 1);
 					animdata->posture_ret->parent = animdata;
@@ -347,7 +306,7 @@ bool AgentAnimComponent::processAnimDB(XMLNode db)
 			}
 		}
 
-		XMLNode *restrictnode = &pnode->getChildNode("Restriction", 0);
+		XMLNode *restrictnode = &entry->getChildNode("Restriction", 0);
 		std::string nocust("noCustomization"); 
 		if(!restrictnode->isEmpty() && restrictnode->getText() != 0 )
 			if (std::string( restrictnode->getText() ).find(nocust) != std::string::npos)

@@ -40,6 +40,7 @@ AnimationFile::AnimationFile(const char *gender, const char *filename)
 
 	_stringcopy((char *)m_filename, 128, filename);
 	_stringcopy((char *)m_gender, 8, gender);
+	m_culture[0] = '\0';
 }
 
 AnimationFile::AnimationFile(const char *gender, const char* culture, const char *filename)
