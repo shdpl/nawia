@@ -51,6 +51,8 @@
 			<File strokeStart="12" strokeEnd="77">Gestures\Ger\Female\Anim\female_ger_goAway.anim</File>
 		</Files>
 		<Files gender="male">
+			<File strokeStart="12" strokeEnd="77">Gestures\Ger\Male\Anim\male_ger_goAway.anim</File>
+		</Files>
 		<Context>move-away</Context>
 		<Function>
 			<McNeil>Emblem</McNeil>
@@ -413,6 +415,7 @@
 		</Files>
 		<Files gender="male">
 			<File strokeStart="15" strokeEnd="125">Gestures\Jap\Male\Anim\male_jap_metaphoric_01.anim</File>
+		</Files>
 		<Function>
 			<McNeil>metaphoric</McNeil>
 			<DAMSL>answer</DAMSL>
@@ -570,11 +573,11 @@
 		<Files gender="female">
 			<File strokeStart="0" strokeEnd="300">Gestures\Ger\Female\Anim\female_ger_armsCrossed_stroke.anim</File>
 			<File type="preparation" strokeStart="7" strokeEnd="35">Gestures\Ger\Female\Anim\female_ger_armsCrossed_prep.anim</File>
-			<File type="retraction" strokeStart="15" strokeEnd="40"">Gestures\Ger\Female\Anim\female_ger_armsCrossed_ret.anim</File>			
+			<File type="retraction" strokeStart="15" strokeEnd="40">Gestures\Ger\Female\Anim\female_ger_armsCrossed_ret.anim</File>			
 		</Files>
 		<Files gender="male">
 			<File strokeStart="0" strokeEnd="300">Gestures\Ger\Male\Anim\male_ger_armsCrossed_stroke.anim</File>
-			<File type="preperation" strokeStart="7" strokeEnd="35">Gestures\Ger\Male\Anim\male_ger_armsCrossed_prep.anim</File>
+			<File type="preparation" strokeStart="7" strokeEnd="35">Gestures\Ger\Male\Anim\male_ger_armsCrossed_prep.anim</File>
 			<File type="retraction" strokeStart="15" strokeEnd="40">Gestures\Ger\Male\Anim\male_ger_armsCrossed_ret.anim</File>			
 		</Files>
 		<Restriction>Germany</Restriction>		
@@ -585,12 +588,12 @@
 		<Description>300 Frames posture in which the character has the hands on his/her hips</Description>
 		<Files gender="female">
 			<File strokeStart="0" strokeEnd="300">Gestures\Ger\Female\Anim\female_ger_handsOnHips_stroke.anim</File>
-			<File type="preperation" strokeStart="15" strokeEnd="30">Gestures\Ger\Female\Anim\female_ger_handsOnHips_prep.anim</File>
+			<File type="preparation" strokeStart="15" strokeEnd="30">Gestures\Ger\Female\Anim\female_ger_handsOnHips_prep.anim</File>
 			<File type="retraction" strokeStart="15" strokeEnd="35">Gestures\Ger\Female\Anim\female_ger_handsOnHips_ret.anim</File>			
 		</Files>
 		<Files gender="male">
 			<File strokeStart="0" strokeEnd="300">Gestures\Ger\Male\Anim\male_ger_handsOnHips_stroke.anim</File>
-			<File type="preperation" strokeStart="7" strokeEnd="25">Gestures\Ger\Male\Anim\male_ger_handsOnHips_prep.anim</File>
+			<File type="preparation" strokeStart="7" strokeEnd="25">Gestures\Ger\Male\Anim\male_ger_handsOnHips_prep.anim</File>
 			<File type="retraction" strokeStart="15" strokeEnd="38">Gestures\Ger\Male\Anim\male_ger_handsOnHips_ret.anim</File>			
 		</Files>
 		<Restriction>Germany</Restriction>		
@@ -615,12 +618,12 @@
 		<Description>300 Frames posture in which the character has the hands crossed infront of his Pelvis</Description>
 		<Files gender="female">
 			<File strokeStart="0" strokeEnd="300">Gestures\Jap\Female\Anim\female_jap_handsCrossed_stroke.anim</File>
-			<File type="preperation" strokeStart="7" strokeEnd="30">Gestures\Jap\Female\Anim\female_jap_handsCrossed_prep.anim</File>
+			<File type="preparation" strokeStart="7" strokeEnd="30">Gestures\Jap\Female\Anim\female_jap_handsCrossed_prep.anim</File>
 			<File type="retraction" strokeStart="15" strokeEnd="36">Gestures\Jap\Female\Anim\female_jap_handsCrossed_ret.anim</File>			
 		</Files>
 		<Files gender="male">
 			<File strokeStart="0" strokeEnd="300">Gestures\Jap\Male\Anim\male_jap_handsCrossed_stroke.anim</File>
-			<File type="preperation" strokeStart="7" strokeEnd="30">Gestures\Jap\Male\Anim\male_jap_handsCrossed_prep.anim</File>
+			<File type="preparation" strokeStart="7" strokeEnd="30">Gestures\Jap\Male\Anim\male_jap_handsCrossed_prep.anim</File>
 			<File type="retraction" strokeStart="15" strokeEnd="36">Gestures\Jap\Male\Anim\male_jap_handsCrossed_ret.anim</File>			
 		</Files>
 		<Restriction>Germany</Restriction>		
