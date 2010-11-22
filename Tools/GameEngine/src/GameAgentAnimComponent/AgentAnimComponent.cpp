@@ -520,8 +520,9 @@ int AgentAnimComponent::loadAnimationFile( AnimationData* data, char* mask )
 	m_nextFreeAnimStage++;
 	m_nextAnimID++;
 
-	//check memory usage
-	if( (int)m_animations.size() <= animNode->id ) m_animations.resize(1 + (animNode->id * 2));
+	//check memory space
+	if( animNode->id >= (int)m_animations.size() )
+		return -1;
 
 	//add new node to vector
 	m_animations[animNode->id] = animNode;
@@ -826,7 +827,13 @@ void AgentAnimComponent::startAdditiveAnim( AnimationNode *animNode )
 }
 
 void AgentAnimComponent::updateAllAnim()
-{
+{	
+	//check memory usage
+	//we aproximate that a maximum number of 16 animations can be loaded per frame
+	int maxNewAnimPerFrame = 16;
+	if( m_nextAnimID + maxNewAnimPerFrame >= (int)m_animations.size() ) 
+		m_animations.resize((m_nextAnimID + maxNewAnimPerFrame) * 2);
+
 	//set posture weight
 	//if we had some active animaitons
 	if(anim_count > nr_postures)
@@ -857,15 +864,16 @@ void AgentAnimComponent::updateAllAnim()
 	//}
 	
 	anim_count = 0;
+	int dbcnt = 0;
 	vector<AnimationNode*>::iterator iter = m_animations.begin();
 	while ( iter != m_animations.end() )
 	{
+		++dbcnt;
 		if( *iter == NULL  ) 
 		{
 			++iter;	continue;
 		}
 		anim_count++;
-
 
 		//** Animation blending (morphing)
 		//** Blending between gestures
@@ -911,23 +919,23 @@ void AgentAnimComponent::updateAllAnim()
 				blend = -1;	
 			}				
 		}
-		//If we did not blend between gestures, perhaps we need to blend between a posture and a gesture
-		//** Blending from posture to gesture
-		if(*iter != 0 && blend != -1 && nr_postures > 0 && (*iter)->id == blend)
-		{
-			if(LINEAR_ANIM_BLENDING_ENABLED)
-			{
-				if(m_blend_pg != 0)
-				{
-					m_blend_pg->forceBlendFinish_pg();
-					m_blend_pg->~AnimationBlending();
-					delete m_blend_pg;
-					m_blend_pg = 0;
-				}
-				m_blend_pg = new AnimationBlending( this, -1, blend, max_posture_weight );			
-			}
-			blend = -1;					
-		}
+		////If we did not blend between gestures, perhaps we need to blend between a posture and a gesture
+		////** Blending from posture to gesture
+		//if(*iter != 0 && blend != -1 && nr_postures > 0 && (*iter)->id == blend)
+		//{
+		//	if(LINEAR_ANIM_BLENDING_ENABLED)
+		//	{
+		//		if(m_blend_pg != 0)
+		//		{
+		//			m_blend_pg->forceBlendFinish_pg();
+		//			m_blend_pg->~AnimationBlending();
+		//			delete m_blend_pg;
+		//			m_blend_pg = 0;
+		//		}
+		//		m_blend_pg = new AnimationBlending( this, -1, blend, max_posture_weight );			
+		//	}
+		//	blend = -1;					
+		//}
 
 		//** process fading
 		if(*iter != 0 && (*iter)->fade != 0)
@@ -1377,7 +1385,8 @@ void AgentAnimComponent::killAnim( AnimationNode* anim )
 		
 		//clear stage /* buggy in beta4 ? */
 		h3dSetupModelAnimStage( anim->model, anim->stage, 0, 0, "", false );
-		h3dRemoveResource( anim->anim_res );
+		//h3dRemoveResource( anim->anim_res );
+		h3dUnloadResource( anim->anim_res );
 		//fill the gap in the animations vector
 		m_animations[anim->id] = NULL;
 
