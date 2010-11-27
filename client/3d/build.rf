@@ -1,0 +1,9 @@
+-odbin
+-ofbin/NawiaClient3D
+
+-I
+
+NawiaClient3D.d
+opengl/window.d
+screen/screen.d
+util/cords.d
