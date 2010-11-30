@@ -4,10 +4,10 @@
 //
 // Sample Application
 // --------------------------------------
-// Copyright (C) 2008-2009 Ulf Nilsson Tännström
+// Copyright (C) 2008-2010 Ulf Nilsson TŠnnstršm
 //
 //
-// This sample source file is not covered by the LGPL as the rest of the SDK
+// This sample source file is not covered by the MIT license as the rest of the SDK
 // and may be used without any restrictions
 //
 // *************************************************************************************************

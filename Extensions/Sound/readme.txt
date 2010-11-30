@@ -1,9 +1,9 @@
 Horde3D Sound Extension
 -----------------------
 
-Copyright (C) 2008-2009 Ulf Nilsson Tännström
+Copyright (C) 2008-2010 Ulf Nilsson TŠnnstršm
 
-The Sound Extension is licensed under the terms of the GNU Lesser General Public License (LGPL).
+The Sound Extension is licensed under the terms of the MIT license.
 
 It has the following dependencies:
 	- Ogg, Vorbis and Vorbisfile
