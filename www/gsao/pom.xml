@@ -1,0 +1,29 @@
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>net.nawia.www</groupId>
+   <artifactId>gsao</artifactId>
+   <packaging>ejb</packaging>
+   <version>0.0.1-SNAPSHOT</version>
+   <name>Game Server Access Objects</name>
+   <parent>
+      <groupId>net.nawia</groupId>
+      <artifactId>www</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+   </parent>
+   <build>
+      <plugins>
+         <plugin>
+            <artifactId>maven-ejb-plugin</artifactId>
+            <configuration>
+               <archive>
+                  <manifest>
+                     <addClasspath>true</addClasspath>
+                  </manifest>
+               </archive> 
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+</project>

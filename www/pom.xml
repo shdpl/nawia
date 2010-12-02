@@ -1,0 +1,51 @@
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.nawia</groupId>
+	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>www</artifactId>
+	<packaging>pom</packaging>
+	<name>Nawia Web Server</name>
+	<modules>
+		<module>cms</module>
+		<module>http</module>
+		<module>gsao</module>
+	</modules>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>net.nawia.www</groupId>
+				<artifactId>cms</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>net.nawia.www</groupId>
+				<artifactId>http</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+				<type>war</type>
+			</dependency>
+			<dependency>
+				<groupId>net.nawia.www</groupId>
+				<artifactId>gsao</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+				<type>ejb</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<scm>
+		<connection>git://github.com/shdpl/nawia.git</connection>
+		<developerConnection>git@github.com:shdpl/nawia.git</developerConnection>
+		<url>https://github.com/shdpl/nawia/</url>
+	</scm>
+</project>

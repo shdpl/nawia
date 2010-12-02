@@ -1,9 +1,18 @@
 -odbin
 -ofbin/NawiaClient3D
+-unittest
 
 -I
 
 NawiaClient3D.d
-opengl/window.d
-screen/screen.d
+msg/gen.d
+msg/listener/listener.d
+msg/mediator/mediator.d
+msg/mediator/simple.d
+msg/msg.d
+msg/provider.d
+msg/window/close.d
+screen/cords.d
 util/cords.d
+window/glfw.d
+window/window.d
