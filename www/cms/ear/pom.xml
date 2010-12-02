@@ -15,11 +15,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
       <dependency>
          <groupId>net.nawia.www</groupId>
          <artifactId>gsao</artifactId>
+	 <version>0.0.1-SNAPSHOT</version>
          <type>ejb</type>
       </dependency>
       <dependency>
          <groupId>net.nawia.www.cms</groupId>
          <artifactId>http</artifactId>
+	 <version>0.0.1-SNAPSHOT</version>
          <type>war</type>
       </dependency>
    </dependencies>
