@@ -200,11 +200,16 @@ bool Gaze::computeHeadRotation( Horde3D::Vec3f *out_axis, float *out_angleRad)
 	m_headpitch = (m_headpitch > 0) ?
 		m_headpitch + (int)((m_headpitch/2)*(m_headpitch/2)) :
 		m_headpitch - (int)((m_headpitch/2)*(m_headpitch/2));
+
+	
+	//We simplify the geometric problem by saying that the head's rotational adjustment is the same as the eye's
+	//if we position it at the center of the distance between the two eyes
+	//This, depending on the skeleton, may be inaccurate
 	
 	//First, we must temporary position the eye in the center of the face, 
 	//clear its rotations and calculate the endPos
 	//This computation is skeleton specific. Remove comments from desired aproach (TODO: better implementation)
-	//You MUST also set the DfltEyeRot parameters to correspond to the "looking straight" rotation of the eyes
+	//You MUST also set the DfltEyeRot parameters to correspond to the "looking straight ahead" rotation of the eyes
 
 	//** 1. Eyetype: x-axis goes left (or right), y-axis goes up (or down), z-axis comes out of the eye
 	//		Known skeletons: 
@@ -234,8 +239,8 @@ bool Gaze::computeHeadRotation( Horde3D::Vec3f *out_axis, float *out_angleRad)
 	m_aux_leye->update();
 	Horde3D::Vec3f endPos = m_aux_leye->getAbsTranslation();
 	
-	//Second, we have to align the eye's coordinate system with the neck's coordinate system
-	//Therfor we eliminate all rotations from the eye's coordinate system
+	//Second, we have to align the eye's coordinate system with the head's coordinate system	
+	//We eliminate all rotations from the eye's coordinate system
 	h3dSetNodeTransform( m_leye->getHordeID(), 
 		p.x, 0, p.z, 
 		0, 0, 0, 
