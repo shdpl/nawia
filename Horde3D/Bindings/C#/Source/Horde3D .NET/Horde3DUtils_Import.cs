@@ -20,11 +20,15 @@ namespace Horde3DNET.Utils
     /// <summary>
     /// Separates native methods from managed code.
     /// </summary>
-    internal static class NativeMethodsUtils
+    internal static class NativeMethodsUtils    
     {
-        public const string UTILS_DLL = "Horde3DUtils.dll";
+    #if DEBUG
+            public const string UTILS_DLL = "Horde3DUtilsd.dll";
+    #else
+            public const string UTILS_DLL = "Horde3DUtils.dll";
+    #endif
 
-        [DllImport(UTILS_DLL), SuppressUnmanagedCodeSecurity]
+            [DllImport(UTILS_DLL), SuppressUnmanagedCodeSecurity]
         internal static extern void h3dutFreeMem(IntPtr ptr);
 
         [DllImport(UTILS_DLL), SuppressUnmanagedCodeSecurity]

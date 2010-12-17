@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="GameIKComponent"
 	ProjectGUID="{C767B2A0-CF6F-45CA-AE4B-37DDB759AD23}"
 	RootNamespace="GameIKComponent"
@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib GameEngineCored.lib xmlParserd.lib GameSceneGraphComponentd.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib"
+				AdditionalDependencies="delayimp.lib GameEngineCored.lib xmlParserd.lib GameSceneGraphComponentd.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib"
 				OutputFile="$(SolutionDir)bin\$(ProjectName)d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"

@@ -31,15 +31,20 @@
 #include "egPrerequisites.h"
 #include "egExtensions.h"
 
-namespace Horde3DSound
-{
-	class ExtSound : public Horde3D::IExtension
-	{
-	public:
-		virtual const char *getName();
-		virtual bool init();
-		virtual void release();
-	};
-}
+namespace Horde3DSound {
 
+// =================================================================================================
+// Class ExtSound
+// =================================================================================================
+
+class ExtSound : public Horde3D::IExtension
+{
+public:
+
+	virtual const char *getName();
+	virtual bool init();
+	virtual void release();
+};
+
+}
 #endif	// _Horde3DSound_extension_H_

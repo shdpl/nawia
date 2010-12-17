@@ -111,7 +111,7 @@ public:
 
 
 CheckBoxList::CheckBoxList(QWidget *widget )
-:QComboBox(widget),m_DisplayText(0)
+:QComboBox(widget),m_DisplayText((const char *)0)
 {
 	CheckBoxListDelegate* itemDelegate = new CheckBoxListDelegate(this);
 	//connect( itemDelegate, SIGNAL( commitData( QWidget* ) ), this, SLOT( dataEdited( QWidget* ) ) );

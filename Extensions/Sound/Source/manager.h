@@ -37,50 +37,60 @@
 #include "decode.h"
 #include "listener.h"
 
-namespace Horde3D
+
+namespace Horde3DSound {
+
+// =================================================================================================
+// Class SoundManager
+// =================================================================================================
+
+class SoundManager
 {
-	class SoundManager
+private:
+
+	static SoundManager _instance;
+
+	std::vector< std::string > _devices;
+	std::map< determineCodecFunc, decoderFactoryFunc > _decoders;
+
+	std::string _openDeviceName;
+	ALCdevice *_openDevice;
+	ALCcontext *_openContext;
+
+	ListenerNode *_activeListener;
+
+public:
+
+	static SoundManager *instance()
 	{
-	private:
-		static SoundManager _instance;
+		return &_instance;
+	}
 
-		std::vector< std::string > _devices;
-		std::map< determineCodecFunc, decoderFactoryFunc > _decoders;
+	void init();
+	void release();
 
-		std::string _openDeviceName;
-		ALCdevice *_openDevice;
-		ALCcontext *_openContext;
+	void enumerateDevices();
+	void registerDecoder( determineCodecFunc determineFunc, decoderFactoryFunc factoryFunc );
 
-		ListenerNode *_activeListener;
-	public:
-		static SoundManager *instance()
-		{
-			return &_instance;
-		}
+	SoundDecoder *getDecoder( const char *data, size_t size );
+	void releaseDecoder( SoundDecoder *decoder );
 
-		void init();
-		void release();
+	bool openDevice( const char *device );
+	void closeDevice();
 
-		void enumerateDevices();
-		void registerDecoder( determineCodecFunc determineFunc, decoderFactoryFunc factoryFunc );
+	const char *getOpenDevice();
+	const char *queryDevice( int index );
 
-		SoundDecoder *getDecoder( const char *data, size_t size );
-		void releaseDecoder( SoundDecoder *decoder );
+	Horde3D::SceneNode *getActiveListener();
+	void setActiveListener( ListenerNode *listener );
 
-		bool openDevice( const char *device );
-		void closeDevice();
+	bool checkALCError( ALCdevice *device, const char *description, ... );
+	bool checkALError( const char *description, ... );
 
-		const char *getOpenDevice();
-		const char *queryDevice( int index );
+protected:
 
-		SceneNode *getActiveListener();
-		void setActiveListener( ListenerNode *listener );
+	SoundManager() { }
+};
 
-		bool checkALCError( ALCdevice *device, const char *description, ... );
-		bool checkALError( const char *description, ... );
-	protected:
-		SoundManager() { }
-	};
-}
-
+} // namespace
 #endif // _Horde3DSound_manager_H_

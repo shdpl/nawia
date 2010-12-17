@@ -114,9 +114,16 @@ void GLWidget::resizeGL(int width, int height)
 {	
 	if ( m_initialized )
 	{
-		h3dSetupViewport( 0, 0, width, height, true);
+		// Resize viewport
+		h3dSetNodeParamI( m_cam, H3DCamera::ViewportXI, 0 );
+		h3dSetNodeParamI( m_cam, H3DCamera::ViewportYI, 0 );
+		h3dSetNodeParamI( m_cam, H3DCamera::ViewportWidthI, width );
+		h3dSetNodeParamI( m_cam, H3DCamera::ViewportHeightI, height );
+		
 		// Set virtual camera parameters
 		h3dSetupCameraView( m_cam, 45.0f, (float)width / height, 0.1f, 1000.0f );
+		h3dResizePipelineBuffers( m_hdrPipeRes, width, height );
+		h3dResizePipelineBuffers( m_forwardPipeRes, width, height );
 	}
 }
 
@@ -272,13 +279,14 @@ void GLWidget::paintGL()
 	{	
 		// Display weight
 		QString text = QString::number( m_weight, 103, 2 );		
-		h3dutShowText( qPrintable( text ), 0.03f, 0.24f, 0.026f, 1, 1, 1, m_fontMatRes, 5 );
+		h3dutShowText( qPrintable( text ), 0.03f, 0.24f, 0.026f, 1, 1, 1, m_fontMatRes );
 	}
 
 	// Show logo
-	h3dShowOverlay( 0.75f, 0.8f, 0, 1, 0.75f, 1, 0, 0,
-	                1, 1, 1, 0, 1, 0.8f, 1, 1,
-	                1, 1, 1, 1, m_logoMatRes, 7 );
+	const float ww = (float)h3dGetNodeParamI( m_cam, H3DCamera::ViewportWidthI ) /
+	                 (float)h3dGetNodeParamI( m_cam, H3DCamera::ViewportHeightI );
+	const float ovLogo[] = { ww-0.4f, 0.8f, 0, 1,  ww-0.4f, 1, 0, 0,  ww, 1, 1, 0,  ww, 0.8f, 1, 1 };
+	h3dShowOverlays( ovLogo, 4, 1.f, 1.f, 1.f, 1.f, m_logoMatRes, 0 );
 	
 	// Render scene
 	h3dRender( m_cam );

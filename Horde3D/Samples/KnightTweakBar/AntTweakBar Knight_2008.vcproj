@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="AlfredXpad"
-	ProjectGUID="{E6F87B71-B9B4-405A-812D-350DD5B6E213}"
-	RootNamespace="AlfredXpad"
+	Name="AntTweakBar Knight"
+	ProjectGUID="{F6B50B94-FF5D-4B04-96C7-DEEDD6C6CDB9}"
+	RootNamespace="Sample_Knight"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -18,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)Build\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="$(SolutionDir)Build\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)../../Build/$(ProjectName)/$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)../../Build/$(ProjectName)/$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2"
 			>
@@ -41,11 +41,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)../../Bindings/C++&quot;;&quot;$(ProjectDir)../glfw&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
@@ -62,12 +62,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="GameEngineCored.lib GameSceneGraphComponentd.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib opengl32.lib"
-				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.exe"
+				AdditionalOptions="/ENTRY:mainCRTStartup"
+				AdditionalDependencies="AntTweakBar.lib GLFWd.lib OpenGL32.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib"
+				OutputFile="$(OutDir)\$(ProjectName)d.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)../../Bindings/C++&quot;;&quot;$(ProjectDir)../glfw&quot;"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -92,12 +94,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../Binaries/Win32&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)lib\AntTweakBar.dll&quot; &quot;$(ProjectDir)../../Binaries/Win32&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)Build\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="$(SolutionDir)Build\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)../../Build/$(ProjectName)/$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)../../Build/$(ProjectName)/$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -119,13 +122,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="2"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)../../Bindings/C++&quot;;&quot;$(ProjectDir)../glfw&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -138,12 +141,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="GameEngineCore.lib GameSceneGraphComponent.lib Horde3D_vc9.lib Horde3DUtils_vc9.lib opengl32.lib"
-				OutputFile="$(SolutionDir)/bin/$(ProjectName).exe"
+				AdditionalOptions="/ENTRY:mainCRTStartup"
+				AdditionalDependencies="AntTweakBar.lib GLFW.lib OpenGL32.lib Horde3D_vc9.lib Horde3DUtils_vc9.lib"
+				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(SolutionDir)lib;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)lib&quot;;&quot;$(ProjectDir)../../Bindings/C++&quot;;&quot;$(ProjectDir)../glfw&quot;"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
@@ -170,84 +175,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="MemoryCheck|Win32"
-			OutputDirectory="$(SolutionDir)Build\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="$(SolutionDir)Build\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;MEMORYCHECK"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="4"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="GameEngineCored.lib GameSceneGraphComponentd.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib opengl32.lib"
-				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(SolutionDir)lib;"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
+				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../Binaries/Win32&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)lib/AntTweakBar.dll&quot; &quot;$(ProjectDir)../../Binaries/Win32&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -260,15 +188,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AlfredXpadApp.cpp"
+				RelativePath=".\app.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OpenGlWindow.cpp"
 				>
 			</File>
 		</Filter>
@@ -278,11 +202,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\AlfredXpadApp.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OpenGLWindow.h"
+				RelativePath=".\app.h"
 				>
 			</File>
 		</Filter>

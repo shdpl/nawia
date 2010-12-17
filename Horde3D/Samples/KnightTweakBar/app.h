@@ -37,8 +37,9 @@ private:
 	float			_animTime, _weight;
 	
 	// Engine objects
-	ResHandle		_pipeRes, _fontMatRes, _logoMatRes, _hdrPipeRes, _forwardPipeRes;
-	NodeHandle		_cam, _knight, _particleSys;
+	H3DRes			_fontMatRes, _panelMatRes, _logoMatRes;
+	H3DRes			_pipeRes, _hdrPipeRes, _forwardPipeRes;
+	H3DNode			_cam, _knight, _particleSys;
 
 	std::string			_contentDir;
 
@@ -47,7 +48,7 @@ private:
 public:
 	static Application* App() { return _app; };
 	float			_lightColor[3];
-	NodeHandle		_light;
+	H3DNode			_light;
 	bool			_mouseFree;
 	Application( const std::string &contentDir );
 	bool init();

@@ -94,7 +94,7 @@ void AlfredXpadApp::keyHandler()
 {		
 	if( m_keys[118] )  // F7
 	{
-		h3dSetOption( H3DOptions::DebugViewMode, h3dGetOption(H3DOptions::DebugViewMode) != 0 ? 0 : 1 );
+		h3dSetOption( H3DOptions::DebugViewMode, h3dGetOption(H3DOptions::DebugViewMode) != 0.0f ? 0.0f : 1.0f );
 		m_keys[118] = 0;
 	}
 
@@ -171,12 +171,8 @@ void AlfredXpadApp::render()
 
 	parseAU();
 
-	h3dShowOverlay( 0.6f, 0, 0, 0, 
-		1, 0, 1, 0, 
-		1, 0.2f, 1,	1,
-		0.6f, 0.2f, 0, 1, 
-		1, 1, 1, 1, m_logoMatRes, 0
-		);
+	const float ovLogo[] = { 0.6f, 0, 0, 0,  1, 0, 1, 0,  1, 0.2f, 1, 1,  0.6f, 0.2f, 0, 1 };
+	h3dShowOverlays( ovLogo, 4, 1, 1, 1, 1, m_logoMatRes, 0);
 
 	GameEngine::update();
 
@@ -269,6 +265,15 @@ void AlfredXpadApp::resizeCb(int width, int height, void *userData)
 		app->m_height = height;
 	}
 
-	h3dSetupViewport(0, 0, width, height, true);
-	h3dSetupCameraView( GameEngine::entitySceneGraphID( GameEngine::entityWorldID( "Camera" ) ), 28.6f, (float) width / height, 0.1f, 1000.0f );
+	// Get the handle to the camera
+	H3DNode camID = GameEngine::entitySceneGraphID( GameEngine::entityWorldID( "Camera" ) );
+	// Resize viewport
+	h3dSetNodeParamI( camID, H3DCamera::ViewportXI, 0 );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportYI, 0 );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportWidthI, width );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportHeightI, height );
+
+	// Set virtual camera parameters
+	h3dSetupCameraView( camID, 28.6f, (float) width / height, 0.1f, 1000.0f );
+	h3dResizePipelineBuffers( h3dGetNodeParamI( camID, H3DCamera::PipeResI ), width, height );
 }

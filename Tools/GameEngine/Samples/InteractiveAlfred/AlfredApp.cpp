@@ -125,6 +125,14 @@ void AlfredApp::resizeCb(int width, int height, void *userData)
 		app->m_height = height;
 	}
 
-	h3dSetupViewport(0, 0, width, height,true);
-	h3dSetupCameraView( GameEngine::entitySceneGraphID( GameEngine::entityWorldID( "Camera" ) ), 28.6f, (float) width / height, 0.1f, 1000.0f );
+	// Get the handle to the camera
+	H3DNode camID = GameEngine::entitySceneGraphID( GameEngine::entityWorldID( "Camera" ) );
+	// Resize viewport
+	h3dSetNodeParamI( camID, H3DCamera::ViewportXI, 0 );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportYI, 0 );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportWidthI, width );
+	h3dSetNodeParamI( camID, H3DCamera::ViewportHeightI, height );
+
+	h3dSetupCameraView( camID, 28.6f, (float) width / height, 0.1f, 1000.0f );
+	//h3dResizePipelineBuffers( h3dGetNodeParamI( camID, H3DCamera::PipeResI ), width, height );
 }

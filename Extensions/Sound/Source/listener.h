@@ -33,61 +33,73 @@
 
 #include "egScene.h"
 
-namespace Horde3D
+
+namespace Horde3DSound {
+
+// =================================================================================================
+// Class ListenerNode
+// =================================================================================================
+
+const int SNT_ListenerNode = 201;
+
+struct ListenerNodeParams
 {
-	const int SNT_ListenerNode = 201;
-
-	struct ListenerNodeParams
+	enum List
 	{
-		enum List
-		{
-			MasterGain = 20000,
-			DopplerFactor,
-			SpeedOfSound,
-		};
+		MasterGain = 20000,
+		DopplerFactor,
+		SpeedOfSound,
 	};
+};
 
-	struct ListenerNodeTpl : public SceneNodeTpl
+// =================================================================================================
+
+struct ListenerNodeTpl : public Horde3D::SceneNodeTpl
+{
+	bool active;
+	float gain;
+	float dopplerFactor;
+	float speedOfSound;
+
+	ListenerNodeTpl( const std::string &name ) :
+		SceneNodeTpl( SNT_ListenerNode, name ),
+		active( false ),
+		gain( 1.0f ),
+		dopplerFactor( 1.0f ),
+		speedOfSound( 343.3f )
 	{
-		bool active;
-		float gain;
-		float dopplerFactor;
-		float speedOfSound;
+	}
+};
 
-		ListenerNodeTpl( const std::string &name ) :
-			SceneNodeTpl( SNT_ListenerNode, name ),
-			active( false ),
-			gain( 1.0f ),
-			dopplerFactor( 1.0f ),
-			speedOfSound( 343.3f )
-		{
-		}
-	};
+// =================================================================================================
 
-	class ListenerNode : public SceneNode
-	{
-	protected:
-		float _gain;
-		float _dopplerFactor;
-		float _speedOfSound;
+class ListenerNode : public Horde3D::SceneNode
+{
+protected:
 
-		ListenerNode( const ListenerNodeTpl &listenerTpl );
-	public:
-		~ListenerNode();
+	float _gain;
+	float _dopplerFactor;
+	float _speedOfSound;
 
-		static Horde3D::SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
-		static Horde3D::SceneNode *factoryFunc( const Horde3D::SceneNodeTpl &nodeTpl );
+	ListenerNode( const ListenerNodeTpl &listenerTpl );
 
-		float getParamF( int param, int compIdx );
-		void setParamF( int param, int compIdx, float value );
+public:
 
-		void onPostUpdate();
+	~ListenerNode();
 
-		void activate();
-		void deactivate();
+	static Horde3D::SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
+	static Horde3D::SceneNode *factoryFunc( const Horde3D::SceneNodeTpl &nodeTpl );
 
-		void updatePositionAndOrientation();
-	};
-}
+	float getParamF( int param, int compIdx );
+	void setParamF( int param, int compIdx, float value );
 
+	void onPostUpdate();
+
+	void activate();
+	void deactivate();
+
+	void updatePositionAndOrientation();
+};
+
+} // namespace
 #endif // _Horde3DSound_listener_H_

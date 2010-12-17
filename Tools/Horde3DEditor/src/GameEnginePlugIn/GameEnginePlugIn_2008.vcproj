@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="GameEnginePlugIn"
 	ProjectGUID="{AE98057C-AD68-4F66-A78D-FD0E7D62AC73}"
 	RootNamespace="GameEnginePlugIn"
@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib QtCored4.lib QtGuid4.lib QtXmld4.lib GameEngineCored.lib Horde3d_vc8.lib Horde3DUtils_vc8.lib QPropertyEditord.lib QXmlTreed.lib"
+				AdditionalDependencies="delayimp.lib QtCored4.lib QtGuid4.lib QtXmld4.lib GameEngineCored.lib Horde3d_vc9d.lib Horde3DUtils_vc9d.lib QPropertyEditord.lib QXmlTreed.lib"
 				OutputFile="$(SolutionDir)/bin/PlugIns/$(ProjectName)d.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)/lib&quot;;&quot;$(QTDIR)/lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
@@ -145,7 +145,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib QtCore4.lib QtGui4.lib QtXml4.lib GameEngineCore.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib QPropertyEditor.lib QXmlTree.lib"
+				AdditionalDependencies="delayimp.lib QtCore4.lib QtGui4.lib QtXml4.lib GameEngineCore.lib Horde3D_vc9.lib Horde3DUtils_vc9.lib QPropertyEditor.lib QXmlTree.lib"
 				OutputFile="$(SolutionDir)/bin/PlugIns/$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)/lib&quot;;&quot;$(QTDIR)/lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
@@ -228,7 +228,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib QtCored4.lib QtGuid4.lib QtXmld4.lib GameEngineCored.lib Horde3d_vc8.lib Horde3DUtils_vc8.lib DsShowGrabberd.lib QPropertyEditord.lib QXmlTreed.lib"
+				AdditionalDependencies="delayimp.lib QtCored4.lib QtGuid4.lib QtXmld4.lib GameEngineCored.lib Horde3d_vc9.lib Horde3DUtils_vc9.lib DsShowGrabberd.lib QPropertyEditord.lib QXmlTreed.lib"
 				OutputFile="$(SolutionDir)/bin/PlugIns/$(ProjectName)d.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)/lib&quot;;&quot;$(QTDIR)/lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"

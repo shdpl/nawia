@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Sample Chicago"
 	ProjectGUID="{CF13B766-1AF4-4D3F-A58D-BCFAC38BC92F}"
 	RootNamespace="Sample_Chicago"
@@ -63,8 +63,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/ENTRY:mainCRTStartup"
-				AdditionalDependencies="GLFW.lib OpenGL32.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib"
-				OutputFile="$(OutDir)\$(RootNamespace).exe"
+				AdditionalDependencies="GLFWd.lib OpenGL32.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib"
+				OutputFile="$(OutDir)\$(RootNamespace)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)../../Bindings/C++&quot;;&quot;$(ProjectDir)../glfw&quot;"
 				GenerateDebugInformation="true"
@@ -141,7 +141,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/ENTRY:mainCRTStartup"
-				AdditionalDependencies="GLFW.lib OpenGL32.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib"
+				AdditionalDependencies="GLFW.lib OpenGL32.lib Horde3D_vc9.lib Horde3DUtils_vc9.lib"
 				OutputFile="$(OutDir)\$(RootNamespace).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)../../Bindings/C++&quot;;&quot;$(ProjectDir)../glfw&quot;"

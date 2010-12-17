@@ -34,35 +34,44 @@
 #include "decode.h"
 
 
-	struct VorbisMemoryFile
-	{
-		char *data;
-		size_t size;
-		size_t sizeRead;
-	};
+// =================================================================================================
+// Class VorbisDecoder
+// =================================================================================================
 
-	class VorbisDecoder : public SoundDecoder
-	{
-	public:
-		static size_t VorbisRead( void *ptr, size_t byteSize, size_t sizeToRead, void *datasource );
-		static int VorbisSeek( void *datasource, ogg_int64_t offset, int whence );
-		static int VorbisClose( void *datasource );
-		static long VorbisTell( void *datasource );
+struct VorbisMemoryFile
+{
+	char *data;
+	size_t size;
+	size_t sizeRead;
+};
 
-		static bool determineCodec( const char *data, size_t size );
-		static SoundDecoder *factoryFunc();
+// =================================================================================================
 
-		VorbisDecoder();
+class VorbisDecoder : public SoundDecoder
+{
+public:
 
-		const char *init( const char *data, size_t size, SoundInfo &info );
-		void release();
+	static size_t VorbisRead( void *ptr, size_t byteSize, size_t sizeToRead, void *datasource );
+	static int VorbisSeek( void *datasource, ogg_int64_t offset, int whence );
+	static int VorbisClose( void *datasource );
+	static long VorbisTell( void *datasource );
 
-		size_t decodeData( char *buffer, size_t size );
-	private:
-		bool _initialized;
-		VorbisMemoryFile _vorbisData;
+	static bool determineCodec( const char *data, size_t size );
+	static SoundDecoder *factoryFunc();
 
-		OggVorbis_File _vorbisFile;
-	};
+	VorbisDecoder();
+
+	const char *init( const char *data, size_t size, SoundInfo &info );
+	void release();
+
+	size_t decodeData( char *buffer, size_t size );
+
+private:
+
+	bool _initialized;
+	VorbisMemoryFile _vorbisData;
+
+	OggVorbis_File _vorbisFile;
+};
 
 #endif // _Horde3DSound_decode_vorbis_H_

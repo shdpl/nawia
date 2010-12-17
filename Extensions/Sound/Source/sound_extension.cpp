@@ -38,6 +38,57 @@
 #include "decode_vorbis.h"
 #include "decode_wave.h"
 
+#include "utDebug.h"
+
+
+// Internal extension interface
+namespace Horde3DSound {
+
+using namespace Horde3D;
+
+
+// =================================================================================================
+// Class ExtSound
+// =================================================================================================
+
+const char *ExtSound::getName()
+{
+	return "Sound";
+}
+
+bool ExtSound::init()
+{
+	Modules::resMan().registerType( RST_SoundResource, "Sound", 0x0, 0x0, SoundResource::factoryFunc );
+
+	Modules::sceneMan().registerType( SNT_ListenerNode, "Listener", ListenerNode::parsingFunc, ListenerNode::factoryFunc, 0x0 );
+	Modules::sceneMan().registerType( SNT_SoundNode, "Sound", SoundNode::parsingFunc, SoundNode::factoryFunc, 0x0 );
+
+	SoundManager::instance()->init();
+	SoundManager::instance()->registerDecoder( VorbisDecoder::determineCodec, VorbisDecoder::factoryFunc );
+	SoundManager::instance()->registerDecoder( WaveDecoder::determineCodec, WaveDecoder::factoryFunc );
+
+	return true;
+}
+
+void ExtSound::release()
+{
+	SoundManager::instance()->release();
+}
+
+} // namespace
+
+
+// Public C API
+namespace Horde3DSound {
+
+std::string safeStr( const char *str )
+{
+	if ( str != 0x0 )
+		return str;
+	else
+		return "";
+}
+
 struct H3DDistanceModels
 {
 	enum List
@@ -50,44 +101,6 @@ struct H3DDistanceModels
 		ExponentDistance,
 		ExponentDistanceClamped
 	};
-};
-
-std::string safeStr( const char *str )
-{
-	if ( str != 0x0 )
-		return str;
-	else
-		return "";
-}
-
-using namespace Horde3D;
-
-namespace Horde3DSound
-{
-
-	const char *ExtSound::getName()
-	{
-		return "Sound";
-	}
-
-	bool ExtSound::init()
-	{
-		Modules::resMan().registerType( RST_SoundResource, "Sound", 0x0, 0x0, SoundResource::factoryFunc );
-
-		Modules::sceneMan().registerType( SNT_ListenerNode, "Listener", ListenerNode::parsingFunc, ListenerNode::factoryFunc, 0x0 );
-		Modules::sceneMan().registerType( SNT_SoundNode, "Sound", SoundNode::parsingFunc, SoundNode::factoryFunc, 0x0 );
-
-		SoundManager::instance()->init();
-		SoundManager::instance()->registerDecoder( VorbisDecoder::determineCodec, VorbisDecoder::factoryFunc );
-		SoundManager::instance()->registerDecoder( WaveDecoder::determineCodec, WaveDecoder::factoryFunc );
-
-		return true;
-	}
-
-	void ExtSound::release()
-	{
-		SoundManager::instance()->release();
-	}
 };
 
 DLLEXP bool h3dOpenDevice( const char *device )
@@ -161,7 +174,6 @@ DLLEXP void h3dSetDistanceModel( H3DDistanceModels::List model )
 		return;
 	}
 }
-
 
 DLLEXP int h3dAddListenerNode( int parent, const char *name )
 {
@@ -284,3 +296,5 @@ DLLEXP void h3dRewindSound( int soundNode )
 	if( wasPlaying )
 		((SoundNode *)sn)->play();
 }
+
+} // namespace

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Horde3D Utils"
 	ProjectGUID="{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D}"
 	RootNamespace="Horde3DUtils"
@@ -62,15 +62,15 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib Horde3D_vc8.lib"
-				OutputFile="$(OutDir)\$(RootNamespace).dll"
+				AdditionalDependencies="opengl32.lib Horde3D_vc9d.lib"
+				OutputFile="$(OutDir)\$(RootNamespace)d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)../../Bindings/C++&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(TargetDir)$(RootNamespace)_vc8.lib"
+				ImportLibrary="$(TargetDir)$(RootNamespace)_vc9d.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -93,7 +93,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../Binaries/Win32&quot; /y&#x0D;&#x0A;xcopy &quot;$(TargetDir)$(RootNamespace)_vc8.lib&quot; &quot;$(ProjectDir)../../Bindings/C++&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../Binaries/Win32&quot; /y&#x0D;&#x0A;xcopy &quot;$(TargetDir)$(RootNamespace)_vc9d.lib&quot; &quot;$(ProjectDir)../../Bindings/C++&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -140,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib Horde3D_vc8.lib"
+				AdditionalDependencies="opengl32.lib Horde3D_vc9.lib"
 				OutputFile="$(OutDir)\$(RootNamespace).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)../../Bindings/C++&quot;"
@@ -150,7 +150,7 @@
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(TargetDir)$(RootNamespace)_vc8.lib"
+				ImportLibrary="$(TargetDir)$(RootNamespace)_vc9.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -173,7 +173,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../Binaries/Win32&quot; /y&#x0D;&#x0A;xcopy &quot;$(TargetDir)$(RootNamespace)_vc8.lib&quot; &quot;$(ProjectDir)../../Bindings/C++&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../Binaries/Win32&quot; /y&#x0D;&#x0A;xcopy &quot;$(TargetDir)$(RootNamespace)_vc9.lib&quot; &quot;$(ProjectDir)../../Bindings/C++&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

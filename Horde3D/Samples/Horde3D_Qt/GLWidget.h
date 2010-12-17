@@ -41,7 +41,7 @@ private:
 
 	// Engine objects
 	H3DRes			m_fontMatRes, m_panelMatRes;
-	H3DRes			m_pipeRes, m_logoMatRes, m_hdrPipeRes, m_forwardPipeRes;
+	H3DRes			m_logoMatRes, m_hdrPipeRes, m_forwardPipeRes;
 	H3DNode			m_cam, m_knight, m_particleSys;
 
 	QString			m_contentDir;

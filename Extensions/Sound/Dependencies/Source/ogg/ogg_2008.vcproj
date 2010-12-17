@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="ogg"
 	ProjectGUID="{15CBFEFF-7965-41F5-B4E2-21E8795C9159}"
 	RootNamespace="ogg"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(ProjectDir)..\..\Libs\$(ProjectName).lib"
+				OutputFile="$(ProjectDir)..\..\Libs\$(ProjectName)d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

@@ -242,9 +242,6 @@ void Application::resize( int width, int height )
 	h3dSetupCameraView( _cam, 45.0f, (float)width / height, 0.1f, 1000.0f );
 	h3dResizePipelineBuffers( _hdrPipeRes, width, height );
 	h3dResizePipelineBuffers( _forwardPipeRes, width, height );
-
-	// Set virtual camera parameters
-	h3dSetupCameraView( _cam, 45.0f, (float)width / height, 0.1f, 1000.0f );
 }
 
 void Application::mouseMoveEvent( int deltaX, int deltaY )

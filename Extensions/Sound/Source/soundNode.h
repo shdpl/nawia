@@ -38,84 +38,96 @@
 
 #include "soundResource.h"
 
-namespace Horde3D
+
+namespace Horde3DSound {
+
+// =================================================================================================
+// Class SoundNode
+// =================================================================================================
+
+const int SNT_SoundNode = 202;
+
+struct SoundNodeParams
 {
-	const int SNT_SoundNode = 202;
-
-	struct SoundNodeParams
+	enum List
 	{
-		enum List
-		{
-			SoundRes = 21000,
-			Gain,
-			Pitch,
-			Offset,
-			Loop,
-			MaxDistance,
-			RolloffFactor,
-			ReferenceDistance,
-			MinGain,
-			MaxGain
-		};
+		SoundRes = 21000,
+		Gain,
+		Pitch,
+		Offset,
+		Loop,
+		MaxDistance,
+		RolloffFactor,
+		ReferenceDistance,
+		MinGain,
+		MaxGain
 	};
+};
 
-	struct SoundNodeTpl : public SceneNodeTpl
+// =================================================================================================
+
+struct SoundNodeTpl : public Horde3D::SceneNodeTpl
+{
+	PSoundResource soundRes;
+	bool play;
+	bool loop;
+	float gain;
+	float pitch;
+	float offset;
+	float maxDistance;
+	float rolloffFactor;
+	float referenceDistance;
+	float minGain;
+	float maxGain;
+
+	SoundNodeTpl( const std::string &name, SoundResource *res ) :
+		SceneNodeTpl( SNT_SoundNode, name ),
+		soundRes( res ),
+		play( false ),
+		loop( false ),
+		gain( 1.0f ),
+		pitch( 1.0f ),
+		offset( 0.0f ),
+		maxDistance( FLT_MAX ),
+		rolloffFactor( 1.0f ),
+		referenceDistance( 1.0f ),
+		minGain( 0.0f ),
+		maxGain( 1.0f )
 	{
-		PSoundResource soundRes;
-		bool play;
-		bool loop;
-		float gain;
-		float pitch;
-		float offset;
-		float maxDistance;
-		float rolloffFactor;
-		float referenceDistance;
-		float minGain;
-		float maxGain;
+	}
+};
 
-		SoundNodeTpl( const std::string &name, SoundResource *res ) :
-			SceneNodeTpl( SNT_SoundNode, name ),
-			soundRes( res ),
-			play( false ),
-			loop( false ),
-			gain( 1.0f ),
-			pitch( 1.0f ),
-			offset( 0.0f ),
-			maxDistance( FLT_MAX ),
-			rolloffFactor( 1.0f ),
-			referenceDistance( 1.0f ),
-			minGain( 0.0f ),
-			maxGain( 1.0f )
-		{
-		}
-	};
+// =================================================================================================
 
-	class SoundNode : public SceneNode
-	{
-	protected:
-		ALuint _source;
-		SoundResource *_soundRes;
+class SoundNode : public Horde3D::SceneNode
+{
+protected:
 
-		SoundNode( const SoundNodeTpl &soundTpl );
-	public:
-		~SoundNode();
+	ALuint _source;
+	SoundResource *_soundRes;
 
-		static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
-		static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
+	SoundNode( const SoundNodeTpl &soundTpl );
 
-		float getParamF( int param, int compIdx );
-		void setParamF( int param, int compIdx, float value );
-		int getParamI( int param );
-		void setParamI( int param, int value );
+public:
 
-		void onPostUpdate();
+	~SoundNode();
 
-		bool isPlaying();
+	static Horde3D::SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
+	static Horde3D::SceneNode *factoryFunc( const Horde3D::SceneNodeTpl &nodeTpl );
 
-		void play();
-		void pause();
-		void rewind();
-	};
-}
+	float getParamF( int param, int compIdx );
+	void setParamF( int param, int compIdx, float value );
+	int getParamI( int param );
+	void setParamI( int param, int value );
 
+	void onPostUpdate();
+
+	bool isPlaying();
+
+	void play();
+	void pause();
+	void rewind();
+};
+
+} // namespace
 #endif // _Horde3DSound_soundNode_H_

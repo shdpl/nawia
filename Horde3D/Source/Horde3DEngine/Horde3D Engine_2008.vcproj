@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Horde3D Engine"
 	ProjectGUID="{1D558D7D-DA57-4908-BCFC-902054FE6B63}"
 	RootNamespace="Horde3D"
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)../Shared&quot;;&quot;$(ProjectDir)../../Dependencies/Include&quot;;&quot;$(ProjectDir)../../Extensions&quot;;&quot;$(ProjectDir)../../../Extensions&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)../Shared&quot;;&quot;$(ProjectDir)../../../Extensions&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;HORDE3D_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -49,7 +49,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -63,15 +63,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib"
-				OutputFile="$(OutDir)\$(RootNamespace).dll"
+				OutputFile="$(OutDir)\$(RootNamespace)d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)../../Dependencies/Libs_VC8&quot;;&quot;$(ProjectDir)../../Build&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)../../Build/$(ConfigurationName)&quot;"
 				IgnoreDefaultLibraryNames="libc.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(TargetDir)$(RootNamespace)_vc8.lib"
+				ImportLibrary="$(TargetDir)$(RootNamespace)_vc9d.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -94,7 +94,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../Binaries/Win32&quot; /y&#x0D;&#x0A;xcopy &quot;$(TargetDir)$(RootNamespace)_vc8.lib&quot; &quot;$(ProjectDir)../../Bindings/C++&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../Binaries/Win32&quot; /y&#x0D;&#x0A;xcopy &quot;$(TargetDir)$(RootNamespace)_vc9d.lib&quot; &quot;$(ProjectDir)../../Bindings/C++&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -122,11 +122,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)../Shared&quot;;&quot;$(ProjectDir)../../Dependencies/Include&quot;;&quot;$(ProjectDir)../../Extensions&quot;;&quot;$(ProjectDir)../../../Extensions&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)../Shared&quot;;&quot;$(ProjectDir)../../../Extensions&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;HORDE3D_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
-				ProgramDataBaseFileName="$(IntDir)\vc80.pdb"
+				ProgramDataBaseFileName="$(IntDir)\vc90.pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
@@ -145,7 +145,7 @@
 				AdditionalDependencies="opengl32.lib"
 				OutputFile="$(OutDir)\$(RootNamespace).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)../../Dependencies/Libs_VC8&quot;;&quot;$(ProjectDir)../../Build&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)../../Build/$(ConfigurationName)&quot;"
 				IgnoreDefaultLibraryNames="libc.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -153,7 +153,7 @@
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(TargetDir)$(RootNamespace)_vc8.lib"
+				ImportLibrary="$(TargetDir)$(RootNamespace)_vc9.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -176,7 +176,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../Binaries/Win32&quot; /y&#x0D;&#x0A;xcopy &quot;$(TargetDir)$(RootNamespace)_vc8.lib&quot; &quot;$(ProjectDir)../../Bindings/C++&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../Binaries/Win32&quot; /y&#x0D;&#x0A;xcopy &quot;$(TargetDir)$(RootNamespace)_vc9.lib&quot; &quot;$(ProjectDir)../../Bindings/C++&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

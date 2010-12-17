@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="AlfredXpad"
-	ProjectGUID="{E6F87B71-B9B4-405A-812D-350DD5B6E213}"
-	RootNamespace="AlfredXpad"
+	Name="AAA"
+	ProjectGUID="{24A2E637-8F08-4909-BA55-DFD55219372B}"
+	RootNamespace="AAA"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -25,6 +25,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)include\GLFW\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfwd.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -41,15 +42,16 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="4"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -62,10 +64,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="GameEngineCored.lib GameSceneGraphComponentd.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib opengl32.lib"
+				AdditionalDependencies="OpenGL32.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib ws2_32.lib sapi.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)/Dependencies/lib&quot;;&quot;$(SolutionDir)/lib&quot;"
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
@@ -92,6 +96,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
@@ -104,6 +109,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)include\GLFW\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -119,9 +125,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)/include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;"
 				RuntimeLibrary="2"
+				TreatWChar_tAsBuiltInType="false"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
@@ -138,12 +145,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="GameEngineCore.lib GameSceneGraphComponent.lib Horde3D_vc9.lib Horde3DUtils_vc9.lib opengl32.lib"
+				AdditionalDependencies="OpenGL32.lib Horde3D_vc9.lib Horde3DUtils_vc9.lib ws2_32.lib sapi.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName).exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(SolutionDir)lib;"
-				GenerateDebugInformation="true"
-				SubSystem="1"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)/Dependencies/lib&quot;;&quot;$(SolutionDir)/lib&quot;"
+				IgnoreDefaultLibraryNames=""
+				GenerateDebugInformation="false"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
@@ -170,84 +178,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="MemoryCheck|Win32"
-			OutputDirectory="$(SolutionDir)Build\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="$(SolutionDir)Build\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;MEMORYCHECK"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="4"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="GameEngineCored.lib GameSceneGraphComponentd.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib opengl32.lib"
-				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(SolutionDir)lib;"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>
@@ -260,7 +191,23 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AlfredXpadApp.cpp"
+				RelativePath=".\AgentNode.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\app.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Bayesnet.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CommManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GazeNode.cpp"
 				>
 			</File>
 			<File
@@ -268,7 +215,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\OpenGlWindow.cpp"
+				RelativePath=".\Symbol.cpp"
 				>
 			</File>
 		</Filter>
@@ -278,11 +225,27 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\AlfredXpadApp.h"
+				RelativePath=".\AgentNode.h"
 				>
 			</File>
 			<File
-				RelativePath=".\OpenGLWindow.h"
+				RelativePath=".\app.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Bayesnet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CommManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GazeNode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Symbol.h"
 				>
 			</File>
 		</Filter>

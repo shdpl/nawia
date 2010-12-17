@@ -78,7 +78,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../../Horde3D/Build&quot; /y"
+				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../../Horde3D/Build/$(ConfigurationName)\&quot; /y"
 			/>
 		</Configuration>
 		<Configuration
@@ -141,7 +141,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../../Horde3D/Build&quot; /y"
+				CommandLine="xcopy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)../../../Horde3D/Build/$(ConfigurationName)\&quot; /y"
 			/>
 		</Configuration>
 	</Configurations>

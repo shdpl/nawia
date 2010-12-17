@@ -30,28 +30,38 @@
 
 #include "decode.h"
 
-	class WaveDecoder : public SoundDecoder
-	{
-	private:
-		//returns the offset where the chunk starts (not including the chunk's name and size) or -1 if not found
-		//chunkSize will be set to the chunk's remaining size from the returned offset
-		static size_t findChunk( const char *buffer, size_t bufferSize, const char chunkName[4], size_t &chunkSize );
-	public:
-		static bool determineCodec( const char *data, size_t size );
-		static SoundDecoder *factoryFunc();
 
-		WaveDecoder();
+// =================================================================================================
+// Class WaveDecoder
+// =================================================================================================
 
-		const char *init( const char *data, size_t size, SoundInfo &info );
-		void release();
+class WaveDecoder : public SoundDecoder
+{
+private:
 
-		size_t decodeData( char *buffer, size_t size );
-	private:
-		bool _initialized;
+	//returns the offset where the chunk starts (not including the chunk's name and size) or -1 if not found
+	//chunkSize will be set to the chunk's remaining size from the returned offset
+	static size_t findChunk( const char *buffer, size_t bufferSize, const char chunkName[4], size_t &chunkSize );
 
-		char *_data;
-		size_t _size;
-		size_t _sizeRead;
-	};
+public:
+
+	static bool determineCodec( const char *data, size_t size );
+	static SoundDecoder *factoryFunc();
+
+	WaveDecoder();
+
+	const char *init( const char *data, size_t size, SoundInfo &info );
+	void release();
+
+	size_t decodeData( char *buffer, size_t size );
+
+private:
+
+	bool _initialized;
+
+	char *_data;
+	size_t _size;
+	size_t _sizeRead;
+};
 
 #endif // _Horde3DSound_decode_wave_H_

@@ -36,50 +36,58 @@
 
 #include "decode.h"
 
-namespace Horde3D
+
+namespace Horde3DSound {
+
+// =================================================================================================
+// Class SoundResource
+// =================================================================================================
+
+const int RST_SoundResource = 200;
+
+struct SoundResParams
 {
-
-	const int RST_SoundResource = 200;
-
-	struct SoundResParams
+	enum List
 	{
-		enum List
-		{
-			SoundElem = 20000,
-			SamplingRate,
-			BitDepth,
-			Channels,
-			BitRate,
-			Runtime
-		};
+		SoundElem = 20000,
+		SamplingRate,
+		BitDepth,
+		Channels,
+		BitRate,
+		Runtime
 	};
+};
 
-	class SoundResource : public Resource
-	{
-	private:
-		ALuint _buffer;
-		SoundInfo _soundInfo;
+// =================================================================================================
 
-		bool raiseError( const std::string &msg );
-	public:
-		static Resource *factoryFunc( const std::string &name, int flags );
+class SoundResource : public Horde3D::Resource
+{
+private:
 
-		SoundResource( const std::string &name, int flags );
-		~SoundResource();
+	ALuint _buffer;
+	SoundInfo _soundInfo;
 
-		void initDefault();
-		void release();
-		bool load( const char *data, int size );
+	bool raiseError( const std::string &msg );
 
-		int getElemCount( int elem );
-		int getElemParamI( int elem, int elemIdx, int param );	
-		float getElemParamF( int elem, int elemIdx, int param, int compIdx );
+public:
 
-		ALuint getBuffer();
-	};
+	static Horde3D::Resource *factoryFunc( const std::string &name, int flags );
 
-	typedef SmartResPtr< SoundResource > PSoundResource;
+	SoundResource( const std::string &name, int flags );
+	~SoundResource();
 
-}
+	void initDefault();
+	void release();
+	bool load( const char *data, int size );
 
+	int getElemCount( int elem );
+	int getElemParamI( int elem, int elemIdx, int param );	
+	float getElemParamF( int elem, int elemIdx, int param, int compIdx );
+
+	ALuint getBuffer();
+};
+
+typedef Horde3D::SmartResPtr< SoundResource > PSoundResource;
+
+} // namespace
 #endif // _Horde3DSound_soundResource_H_

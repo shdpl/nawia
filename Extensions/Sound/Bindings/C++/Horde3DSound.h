@@ -55,8 +55,8 @@
 	To install the extension, copy the Extensions directory to the path where the Horde3D SDK resides.
 	In Visual Studio, add the extension, sample, ogg, vorbis and vorbisfile projects to the Horde3D solution.
 	Then add the extension project to the project dependencies of the Horde3D Engine and the Horde3D Engine to
-	the dependencies of the Sound Sample. After that, include 'Sound/Source/extension.h' in 'egExtensions.cpp'
-	of the engine and add the following line to 'egExtensions.cpp' to link against the sound extension (under Windows):
+	the dependencies of the Sound Sample. After that, include 'Sound/Source/sound_extension.h' in 'egModules.cpp'
+	of the engine and add the following line to 'egModules.cpp' to link against the sound extension (under Windows):
 
 	- #pragma comment( lib, "Extension_Sound.lib" )
 

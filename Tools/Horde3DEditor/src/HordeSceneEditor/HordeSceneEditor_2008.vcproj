@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="HordeSceneEditor"
 	ProjectGUID="{E8DB005D-620C-4BBD-902C-1D0F273B5D51}"
 	RootNamespace="HordeSceneEditor"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib QtXmld4.lib QtSqld4.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib EditorLibd.lib QPropertyEditord.lib QXmlTreed.lib Luad.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib QtXmld4.lib QtSqld4.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib EditorLibd.lib QPropertyEditord.lib QXmlTreed.lib Luad.lib opengl32.lib glu32.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.exe"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)/lib&quot;;&quot;$(QTDIR)/lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
 				GenerateDebugInformation="true"
@@ -140,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib QtOpenGl4.lib QtXml4.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib Lua.lib EditorLib.lib QXmlTree.lib QPropertyEditor.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib QtOpenGl4.lib QtXml4.lib Horde3D_vc9.lib Horde3DUtils_vc9.lib Lua.lib EditorLib.lib QXmlTree.lib QPropertyEditor.lib opengl32.lib glu32.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)/lib&quot;;&quot;$(QTDIR)/lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
@@ -221,7 +221,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib QtXmld4.lib QtSqld4.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib EditorLibd.lib QPropertyEditord.lib QXmlTreed.lib Luad.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib QtXmld4.lib QtSqld4.lib Horde3D_vc9.lib Horde3DUtils_vc9.lib EditorLibd.lib QPropertyEditord.lib QXmlTreed.lib Luad.lib opengl32.lib glu32.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)/lib&quot;;&quot;$(QTDIR)/lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"

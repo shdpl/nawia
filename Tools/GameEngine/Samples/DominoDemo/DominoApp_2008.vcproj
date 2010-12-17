@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="DominoApp"
 	ProjectGUID="{AFB8F4F3-5342-4AAE-ACAA-CB6428F6212E}"
 	RootNamespace="DominoApp"
@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="GameEngineCored.lib GameSceneGraphComponentd.lib opengl32.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib"
+				AdditionalDependencies="GameEngineCored.lib GameSceneGraphComponentd.lib opengl32.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(SolutionDir)lib;"
@@ -138,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="GameEngineCore.lib GameSceneGraphComponent.lib opengl32.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib"
+				AdditionalDependencies="GameEngineCore.lib GameSceneGraphComponent.lib opengl32.lib Horde3D_vc9.lib Horde3DUtils_vc9.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(SolutionDir)lib;"
@@ -218,7 +218,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="GameEngined.lib opengl32.lib Horde3D_vc8.lib"
+				AdditionalDependencies="GameEngineCored.lib GameSceneGraphComponentd.lib opengl32.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(SolutionDir)lib;"

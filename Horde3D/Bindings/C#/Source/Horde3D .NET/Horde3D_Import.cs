@@ -22,7 +22,11 @@ namespace Horde3DNET
     /// </summary>
     internal static class NativeMethodsEngine
     {
+    #if DEBUG
+        private const string ENGINE_DLL = "Horde3Dd.dll";
+    #else
         private const string ENGINE_DLL = "Horde3D.dll";
+    #endif
 
         // added (h3d 1.0)        
 

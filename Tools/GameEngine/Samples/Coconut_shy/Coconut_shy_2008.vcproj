@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Coconut_shy"
 	ProjectGUID="{0D5CC932-3AEA-4AB2-802C-D4DA76A3A390}"
 	RootNamespace="Coconut_shy"
@@ -25,7 +25,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfwd.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="glfw.lib GameEngineCored.lib GameSceneGraphComponentd.lib opengl32.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib"
+				AdditionalDependencies="glfwd.lib GameEngineCored.lib GameSceneGraphComponentd.lib opengl32.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(SolutionDir)lib;"
@@ -140,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="GameEngineCore.lib GameSceneGraphComponent.lib opengl32.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib glfw.lib"
+				AdditionalDependencies="GameEngineCore.lib GameSceneGraphComponent.lib opengl32.lib Horde3D_vc9.lib Horde3DUtils_vc9.lib glfw.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(SolutionDir)lib;"
@@ -183,7 +183,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfwd.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)Include\GLFW\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -221,7 +221,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="GameEngineCored.lib opengl32.lib Horde3D_vc8.lib"
+				AdditionalDependencies="glfwd.lib GameEngineCored.lib GameSceneGraphComponentd.lib opengl32.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(SolutionDir)lib;"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="GameSceneGraphComponent"
 	ProjectGUID="{7B21D090-9A12-4E86-8E65-9AAEA2B72AB4}"
 	RootNamespace="GameSceneGraphComponent"
@@ -25,7 +25,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3D.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3DUtils.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3D_vc8.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3DUtils_vc8.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Extensions\Terrain\Bindings\C++\Horde3DTerrain.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32\Horde3D.dll&quot; &quot;$(SolutionDir)bin\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32\Horde3DUtils.dll&quot; &quot;$(SolutionDir)bin\&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3D.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3DUtils.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3D_vc9d.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3DUtils_vc9d.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Extensions\Terrain\Bindings\C++\Horde3DTerrain.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32\Horde3Dd.dll&quot; &quot;$(SolutionDir)bin\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32\Horde3DUtilsd.dll&quot; &quot;$(SolutionDir)bin\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib luad.lib xmlparserd.lib horde3d_vc8.lib horde3dutils_vc8.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib luad.lib xmlparserd.lib horde3d_vc9d.lib horde3dutils_vc9d.lib opengl32.lib"
 				OutputFile="$(SolutionDir)bin\$(ProjectName)d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
@@ -108,7 +108,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3D.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3DUtils.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3D_vc8.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3DUtils_vc8.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Extensions\Terrain\Bindings\C++\Horde3DTerrain.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32\Horde3D.dll&quot; &quot;$(SolutionDir)bin\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32\Horde3DUtils.dll&quot; &quot;$(SolutionDir)bin\&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3D.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3DUtils.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3D_vc9.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Bindings\C++\Horde3DUtils_vc9.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Extensions\Terrain\Bindings\C++\Horde3DTerrain.h&quot; &quot;$(SolutionDir)include\Horde3D\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32\Horde3D.dll&quot; &quot;$(SolutionDir)bin\&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32\Horde3DUtils.dll&quot; &quot;$(SolutionDir)bin\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib lua.lib xmlparser.lib horde3d_vc8.lib horde3dutils_vc8.lib opengl32.lib"
+				AdditionalDependencies="delayimp.lib lua.lib xmlparser.lib horde3d_vc9.lib horde3dutils_vc9.lib opengl32.lib"
 				OutputFile="$(SolutionDir)bin\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)lib&quot;;&quot;$(ProjectDir)..\..\lib&quot;"
