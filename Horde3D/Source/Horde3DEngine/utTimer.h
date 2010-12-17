@@ -15,7 +15,7 @@
 
 #include "utPlatform.h"
 
-#ifdef PLATFORM_WIN
+#if defined( PLATFORM_WIN ) || defined( PLATFORM_WIN_CE )
 #   define WIN32_LEAN_AND_MEAN 1
 #	ifndef NOMINMAX
 #		define NOMINMAX
@@ -35,7 +35,7 @@ protected:
 	double         _startTime;
 	double         _elapsedTime;
 
-#ifdef PLATFORM_WIN
+#if defined( PLATFORM_WIN ) || defined( PLATFORM_WIN_CE )
 	LARGE_INTEGER  _timerFreq;
 	DWORD_PTR      _affMask;
 #endif
@@ -45,7 +45,7 @@ protected:
 
 	double getTime()
 	{
-	#ifdef PLATFORM_WIN
+	#if defined( PLATFORM_WIN ) || defined( PLATFORM_WIN_CE )
 		// Make sure that time is read from the same CPU
 		DWORD_PTR threadAffMask = SetThreadAffinityMask( GetCurrentThread(), _affMask );
 		
@@ -68,7 +68,7 @@ public:
 
 	Timer() : _elapsedTime( 0 ), _enabled( false )
 	{
-	#ifdef PLATFORM_WIN
+	#if defined( PLATFORM_WIN ) 
 		// Find first available CPU
 		DWORD_PTR procMask, sysMask;
 		GetProcessAffinityMask( GetCurrentProcess(), &procMask, &sysMask );
@@ -79,6 +79,8 @@ public:
 		DWORD_PTR threadAffMask = SetThreadAffinityMask( GetCurrentThread(), _affMask );
 		QueryPerformanceFrequency( &_timerFreq );
 		SetThreadAffinityMask( GetCurrentThread(), threadAffMask );
+	#elif defined( PLATFORM_WIN_CE )
+		QueryPerformanceFrequency( &_timerFreq );
 	#endif
 	}
 	

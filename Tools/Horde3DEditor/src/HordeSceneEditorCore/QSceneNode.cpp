@@ -238,7 +238,7 @@ bool QSceneNode::enabled() const
 
 void QSceneNode::setEnabled(bool enabled)
 {
-	h3dSetNodeActivation(m_hordeID, enabled);
+	h3dSetNodeFlags(m_hordeID, enabled ? 0 : H3DNodeFlags::Inactive, true );
 	m_active = enabled;
 }
 

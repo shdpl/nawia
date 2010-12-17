@@ -17,6 +17,7 @@
 #include "egCamera.h"
 #include "egModules.h"
 #include "egCom.h"
+#include <cstring>
 
 #include "utDebug.h"
 
@@ -292,10 +293,10 @@ void Renderer::createPrimitives()
 	_ibCone = gRDI->createIndexBuffer( 22 * 3 * sizeof( uint16 ), coneInds );
 
 	// Fullscreen polygon
-	float fsVerts[3 * 5] = {  // x, y, z
+	float fsVerts[3 * 3] = {  // x, y, z
 		0.f, 0.f, 1.f,   2.f, 0.f, 1.f,   0.f, 2.f, 1.f
 	};
-	_vbFSPoly = gRDI->createVertexBuffer( 3 * 5 * sizeof( float ), fsVerts );
+	_vbFSPoly = gRDI->createVertexBuffer( 3 * 3 * sizeof( float ), fsVerts );
 }
 
 
@@ -787,7 +788,7 @@ void Renderer::setupShadowMap( bool noShadows )
 }
 
 
-Matrix4f Renderer::calcCropMatrix( const Frustum &frustSlice, const Matrix4f &lightViewProjMat )
+Matrix4f Renderer::calcCropMatrix( const Frustum &frustSlice, const Vec3f lightPos, const Matrix4f &lightViewProjMat )
 {
 	float frustMinX =  Math::MaxFloat, bbMinX =  Math::MaxFloat;
 	float frustMinY =  Math::MaxFloat, bbMinY =  Math::MaxFloat;
@@ -797,15 +798,27 @@ Matrix4f Renderer::calcCropMatrix( const Frustum &frustSlice, const Matrix4f &li
 	float frustMaxZ = -Math::MaxFloat, bbMaxZ = -Math::MaxFloat;
 	
 	// Find post-projective space AABB of all objects in frustum
-	Modules::sceneMan().updateQueues( frustSlice, 0x0, RenderingOrder::None, false, true );
+	Modules::sceneMan().updateQueues( frustSlice, 0x0, RenderingOrder::None,
+		SceneNodeFlags::NoDraw | SceneNodeFlags::NoCastShadow, false, true );
 	std::vector< RendQueueItem > &rendQueue = Modules::sceneMan().getRenderableQueue();
-
+	
 	for( size_t i = 0, s = rendQueue.size(); i < s; ++i )
 	{
+		const BoundingBox &aabb = rendQueue[i].node->getBBox();
+		
+		// Check if light is inside AABB
+		if( lightPos.x >= aabb.min.x && lightPos.y >= aabb.min.y && lightPos.z >= aabb.min.z &&
+			lightPos.x <= aabb.max.x && lightPos.y <= aabb.max.y && lightPos.z <= aabb.max.z )
+		{
+			bbMinX = bbMinY = bbMinZ = -1;
+			bbMaxX = bbMaxY = bbMaxZ = 1;
+			break;
+		}
+		
 		for( uint32 j = 0; j < 8; ++j )
 		{
-			Vec4f v1 = lightViewProjMat * Vec4f( rendQueue[i].node->getBBox().getCorner( j ) );
-			v1.w = 1.f / fabs( v1.w );
+			Vec4f v1 = lightViewProjMat * Vec4f( aabb.getCorner( j ) );
+			v1.w = 1.f / fabsf( v1.w );
 			v1.x *= v1.w; v1.y *= v1.w; v1.z *= v1.w;
 			
 			if( v1.x < bbMinX ) bbMinX = v1.x;
@@ -817,20 +830,29 @@ Matrix4f Renderer::calcCropMatrix( const Frustum &frustSlice, const Matrix4f &li
 		}
 	}
 
-	// Get frustum in post-projective space
-	for( uint32 i = 0; i < 8; ++i )
+	// Find post-projective space AABB of frustum slice if light is not inside
+	if( frustSlice.cullSphere( _curLight->_absPos, 0 ) )
 	{
-		// Frustum slice
-		Vec4f v1 = lightViewProjMat * Vec4f( frustSlice.getCorner( i ) );
-		v1.w = 1.f / fabs( v1.w );  // Use absolute value to reduce problems with back projection when v1.w < 0
-		v1.x *= v1.w; v1.y *= v1.w; v1.z *= v1.w;
+		// Get frustum in post-projective space
+		for( uint32 i = 0; i < 8; ++i )
+		{
+			// Frustum slice
+			Vec4f v1 = lightViewProjMat * Vec4f( frustSlice.getCorner( i ) );
+			v1.w = 1.f / fabsf( v1.w );  // Use absolute value to reduce problems with back projection when v1.w < 0
+			v1.x *= v1.w; v1.y *= v1.w; v1.z *= v1.w;
 
-		if( v1.x < frustMinX ) frustMinX = v1.x;
-		if( v1.y < frustMinY ) frustMinY = v1.y;
-		if( v1.z < frustMinZ ) frustMinZ = v1.z;
-		if( v1.x > frustMaxX ) frustMaxX = v1.x;
-		if( v1.y > frustMaxY ) frustMaxY = v1.y;
-		if( v1.z > frustMaxZ ) frustMaxZ = v1.z;
+			if( v1.x < frustMinX ) frustMinX = v1.x;
+			if( v1.y < frustMinY ) frustMinY = v1.y;
+			if( v1.z < frustMinZ ) frustMinZ = v1.z;
+			if( v1.x > frustMaxX ) frustMaxX = v1.x;
+			if( v1.y > frustMaxY ) frustMaxY = v1.y;
+			if( v1.z > frustMaxZ ) frustMaxZ = v1.z;
+		}
+	}
+	else
+	{
+		frustMinX = frustMinY = frustMinZ = -1;
+		frustMaxX = frustMaxY = frustMaxZ = 1;
 	}
 
 	// Merge frustum and AABB bounds and clamp to post-projective range [-1, 1]
@@ -872,8 +894,7 @@ void Renderer::updateShadowMap()
 	
 	glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
 	glDepthMask( GL_TRUE );
-	glClearDepth( 1.0f );
-	glClear( GL_DEPTH_BUFFER_BIT );
+	gRDI->clear( CLR_DEPTH, 0x0, 1.f );
 
 	// ********************************************************************************************
 	// Cascaded Shadow Maps
@@ -882,7 +903,7 @@ void Renderer::updateShadowMap()
 	// Find AABB of lit geometry
 	BoundingBox aabb;
 	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), &_curLight->getFrustum(),
-	                                  RenderingOrder::None, false, true );
+		RenderingOrder::None, SceneNodeFlags::NoDraw | SceneNodeFlags::NoCastShadow, false, true );
 	for( size_t j = 0, s = Modules::sceneMan().getRenderableQueue().size(); j < s; ++j )
 	{
 		aabb.makeUnion( Modules::sceneMan().getRenderableQueue()[j].node->getBBox() ); 
@@ -913,7 +934,7 @@ void Renderer::updateShadowMap()
 	for( uint32 i = 1; i < numMaps; ++i )
 	{
 		float f = (float)i / numMaps;
-		float logDist = nearDist * pow( farDist / nearDist, f );
+		float logDist = nearDist * powf( farDist / nearDist, f );
 		float uniformDist = nearDist + (farDist - nearDist) * f;
 		
 		_splitPlanes[i] = (1 - lambda) * uniformDist + lambda * logDist;  // Lerp
@@ -945,18 +966,19 @@ void Renderer::updateShadowMap()
 		}
 		
 		// Get light projection matrix
-		float ymax = _curCamera->_frustNear * tan( degToRad( _curLight->_fov / 2 ) );
+		float ymax = _curCamera->_frustNear * tanf( degToRad( _curLight->_fov / 2 ) );
 		float xmax = ymax * 1.0f;  // ymax * aspect
 		Matrix4f lightProjMat = Matrix4f::PerspectiveMat(
 			-xmax, xmax, -ymax, ymax, _curCamera->_frustNear, _curLight->_radius );
 		
 		// Build optimized light projection matrix
 		Matrix4f lightViewProjMat = lightProjMat * _curLight->getViewMat();
-		lightProjMat = calcCropMatrix( frustum, lightViewProjMat ) * lightProjMat;
+		lightProjMat = calcCropMatrix( frustum, _curLight->_absPos, lightViewProjMat ) * lightProjMat;
 		
 		// Generate render queue with shadow casters for current slice
 		frustum.buildViewFrustum( _curLight->getViewMat(), lightProjMat );
-		Modules::sceneMan().updateQueues( frustum, 0x0, RenderingOrder::None, false, true );
+		Modules::sceneMan().updateQueues( frustum, 0x0, RenderingOrder::None,
+			SceneNodeFlags::NoDraw | SceneNodeFlags::NoCastShadow, false, true );
 		
 		// Create texture atlas if several splits are enabled
 		if( numMaps > 1 )
@@ -970,7 +992,7 @@ void Renderer::updateShadowMap()
 			// Select quadrant of shadow map
 			lightProjMat.scale( 0.5f, 0.5f, 1.0f );
 			lightProjMat.translate( transXY[i * 2], transXY[i * 2 + 1], 0.0f );
-			glScissor( scissorXY[i * 2], scissorXY[i * 2 + 1], hsm, hsm );
+			gRDI->setScissorRect( scissorXY[i * 2], scissorXY[i * 2 + 1], hsm, hsm );
 		}
 	
 		_lightMats[i] = lightProjMat * _curLight->getViewMat();
@@ -1055,7 +1077,7 @@ void Renderer::drawOccProxies( uint32 list )
 		gRDI->setShaderConst( _curShader->uni_worldMat, CONST_FLOAT44, &mat.x[0] );
 
 		// Draw AABB
-		gRDI->drawIndexed( PRIM_TRILIST, 0, 36, 0, 24 );
+		gRDI->drawIndexed( PRIM_TRILIST, 0, 36, 0, 8 );
 
 		gRDI->endQuery( proxy.queryObj );
 	}
@@ -1184,12 +1206,12 @@ void Renderer::bindPipeBuffer( uint32 rbObj, const string &sampler, uint32 bufIn
 void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
                       float r, float g, float b, float a )
 {
-	int mask = 0;
+	uint32 mask = 0;
 	uint32 prevBuffers[4] = { 0 };
+	float clrColor[] = { r, g, b, a };
 
 	glDisable( GL_BLEND );	// Clearing floating point buffers causes problems when blending is enabled on Radeon 9600
 	glDepthMask( GL_TRUE );
-	glClearColor( r, g, b, a );
 
 	if( gRDI->_curRendBuf != 0x0 )
 	{
@@ -1199,7 +1221,7 @@ void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
 		RDIRenderBuffer &rb = gRDI->_rendBufs.getRef( gRDI->_curRendBuf );
 		uint32 buffers[4], cnt = 0;
 
-		if( depth && rb.depthTex != 0 ) mask |= GL_DEPTH_BUFFER_BIT;
+		if( depth && rb.depthTex != 0 ) mask |= CLR_DEPTH;
 		
 		if( buf0 && rb.colTexs[0] != 0 ) buffers[cnt++] = GL_COLOR_ATTACHMENT0_EXT;
 		if( buf1 && rb.colTexs[1] != 0 ) buffers[cnt++] = GL_COLOR_ATTACHMENT1_EXT;
@@ -1208,19 +1230,19 @@ void Renderer::clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3,
 
 		if( cnt > 0 )
 		{	
-			mask |= GL_COLOR_BUFFER_BIT;
+			mask |= CLR_COLOR;
 			glDrawBuffers( cnt, buffers );
 		}
 	}
 	else
 	{
-		if( depth ) mask |= GL_DEPTH_BUFFER_BIT;
-		if( buf0 ) mask |= GL_COLOR_BUFFER_BIT;
-		glScissor( _curCamera->_vpX, _curCamera->_vpY, _curCamera->_vpWidth, _curCamera->_vpHeight );
+		if( depth ) mask |= CLR_DEPTH;
+		if( buf0 ) mask |= CLR_COLOR;
+		gRDI->setScissorRect( _curCamera->_vpX, _curCamera->_vpY, _curCamera->_vpWidth, _curCamera->_vpHeight );
 		glEnable( GL_SCISSOR_TEST );
 	}
 	
-	if( mask != 0 ) glClear( mask );
+	gRDI->clear( mask, clrColor, 1.f );
 	glDisable( GL_SCISSOR_TEST );
 	
 	// Restore state of glDrawBuffers
@@ -1248,7 +1270,8 @@ void Renderer::drawFSQuad( Resource *matRes, const string &shaderContext )
 void Renderer::drawGeometry( const string &shaderContext, const string &theClass,
                              RenderingOrder::List order, int occSet )
 {
-	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, order, false, true );
+	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, order,
+	                                  SceneNodeFlags::NoDraw , false, true );
 	
 	setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
 	drawRenderables( shaderContext, theClass, false, &_curCamera->getFrustum(), 0x0, order, occSet );
@@ -1258,7 +1281,11 @@ void Renderer::drawGeometry( const string &shaderContext, const string &theClass
 void Renderer::drawLightGeometry( const string &shaderContext, const string &theClass,
                                   bool noShadows, RenderingOrder::List order, int occSet )
 {
-	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None, true, false );
+	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None,
+	                                  SceneNodeFlags::NoDraw, true, false );
+	
+	GPUTimer *timer = Modules::stats().getGPUTimer( EngineStats::FwdLightsGPUTime );
+	if( Modules::config().gatherTimeStats ) timer->beginQuery( _frameID );
 	
 	for( size_t i = 0, s = Modules::sceneMan().getLightQueue().size(); i < s; ++i )
 	{
@@ -1304,27 +1331,40 @@ void Renderer::drawLightGeometry( const string &shaderContext, const string &the
 			}
 		}
 	
+		// Update shadow map
+		if( !noShadows && _curLight->_shadowMapCount > 0 )
+		{
+			timer->endQuery();
+			GPUTimer *timerShadows = Modules::stats().getGPUTimer( EngineStats::ShadowsGPUTime );
+			if( Modules::config().gatherTimeStats ) timerShadows->beginQuery( _frameID );
+
+			updateShadowMap();
+			setupShadowMap( false );
+
+			timerShadows->endQuery();
+			if( Modules::config().gatherTimeStats ) timer->beginQuery( _frameID );
+		}
+		else
+		{
+			setupShadowMap( true );
+		}
+		
 		// Calculate light screen space position
 		float bbx, bby, bbw, bbh;
 		_curLight->calcScreenSpaceAABB( _curCamera->getProjMat() * _curCamera->getViewMat(),
 		                                bbx, bby, bbw, bbh );
 
-		// Update shadow map
-		if( !noShadows && _curLight->_shadowMapCount > 0 ) updateShadowMap();
-
 		// Set scissor rectangle
 		if( bbx != 0 || bby != 0 || bbw != 1 || bbh != 1 )
 		{
-			glScissor( ftoi_r( bbx * gRDI->_fbWidth ), ftoi_r( bby * gRDI->_fbHeight ),
-			           ftoi_r( bbw * gRDI->_fbWidth ), ftoi_r( bbh * gRDI->_fbHeight ) );
+			gRDI->setScissorRect( ftoi_r( bbx * gRDI->_fbWidth ), ftoi_r( bby * gRDI->_fbHeight ),
+			                      ftoi_r( bbw * gRDI->_fbWidth ), ftoi_r( bbh * gRDI->_fbHeight ) );
 			glEnable( GL_SCISSOR_TEST );
 		}
 		
-		setupShadowMap( noShadows );
-		
 		// Render
 		Modules::sceneMan().updateQueues( _curCamera->getFrustum(), &_curLight->getFrustum(),
-		                                  order, false, true );
+		                                  order, SceneNodeFlags::NoDraw, false, true );
 		setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
 		drawRenderables( shaderContext.empty() ? _curLight->_lightingContext : shaderContext,
 		                 theClass, false, &_curCamera->getFrustum(),
@@ -1336,6 +1376,8 @@ void Renderer::drawLightGeometry( const string &shaderContext, const string &the
 	}
 
 	_curLight = 0x0;
+
+	timer->endQuery();
 
 	// Draw occlusion proxies
 	if( occSet >= 0 )
@@ -1350,7 +1392,8 @@ void Renderer::drawLightShapes( const string &shaderContext, bool noShadows, int
 {
 	MaterialResource *curMatRes = 0x0;
 	
-	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None, true, false );
+	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None,
+	                                  SceneNodeFlags::NoDraw, true, false );
 	
 	GPUTimer *timer = Modules::stats().getGPUTimer( EngineStats::DefLightsGPUTime );
 	if( Modules::config().gatherTimeStats ) timer->beginQuery( _frameID );
@@ -1403,9 +1446,14 @@ void Renderer::drawLightShapes( const string &shaderContext, bool noShadows, int
 		if( !noShadows && _curLight->_shadowMapCount > 0 )
 		{	
 			timer->endQuery();
+			GPUTimer *timerShadows = Modules::stats().getGPUTimer( EngineStats::ShadowsGPUTime );
+			if( Modules::config().gatherTimeStats ) timerShadows->beginQuery( _frameID );
+			
 			updateShadowMap();
 			setupShadowMap( false );
 			curMatRes = 0x0;
+			
+			timerShadows->endQuery();
 			if( Modules::config().gatherTimeStats ) timer->beginQuery( _frameID );
 		}
 		else
@@ -1868,7 +1916,8 @@ void Renderer::render( CameraNode *camNode )
 	else if( maxAniso <= 4 ) _maxAnisoMask = SS_ANISO4;
 	else if( maxAniso <= 8 ) _maxAnisoMask = SS_ANISO8;
 	else _maxAnisoMask = SS_ANISO16;
-	
+
+	gRDI->setViewport( _curCamera->_vpX, _curCamera->_vpY, _curCamera->_vpWidth, _curCamera->_vpHeight );
 	if( Modules::config().debugViewMode || _curCamera->_pipelineRes == 0x0 )
 	{
 		renderDebugView();
@@ -1878,7 +1927,6 @@ void Renderer::render( CameraNode *camNode )
 	
 	// Initialize
 	gRDI->_outputBufferIndex = _curCamera->_outputBufferIndex;
-	gRDI->setViewport( _curCamera->_vpX, _curCamera->_vpY, _curCamera->_vpWidth, _curCamera->_vpHeight );
 	if( _curCamera->_outputTex != 0x0 )
 		gRDI->setRenderBuffer( _curCamera->_outputTex->getRBObject() );
 	else 
@@ -2002,10 +2050,10 @@ void Renderer::renderDebugView()
 	setMaterial( 0x0, "" );
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
-	glClearColor( 0, 0, 0, 1 );
-	glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+	gRDI->clear( CLR_DEPTH | CLR_COLOR );
 
-	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None, true, true );
+	Modules::sceneMan().updateQueues( _curCamera->getFrustum(), 0x0, RenderingOrder::None,
+	                                  SceneNodeFlags::NoDraw, true, true );
 
 	// Draw renderable nodes as wireframe
 	setupViewMatrices( _curCamera->getViewMat(), _curCamera->getProjMat() );
@@ -2095,8 +2143,6 @@ void Renderer::finishRendering()
 	setMaterial( 0x0, "" );
 	gRDI->resetStates();
 	glBindBuffer( GL_ARRAY_BUFFER, 0 );
-	
-	//ASSERT( glGetError() == GL_NO_ERROR );
 }
 
 }  // namespace

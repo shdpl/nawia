@@ -535,7 +535,8 @@ void SceneGraphComponent::attach(const Attach* data)
 
 void SceneGraphComponent::setEnabled(bool enable)
 {
-	h3dSetNodeActivation(m_hordeID, enable);
+	// Not sure if we want to use recursive == true or false here
+	h3dSetNodeFlags(m_hordeID, enable ? 0 : H3DNodeFlags::Inactive, true );
 }
 
 void SceneGraphComponent::unloadTerrainGeoRes()

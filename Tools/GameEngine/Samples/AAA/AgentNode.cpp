@@ -162,7 +162,7 @@ void AgentNode::update()
 void AgentNode::setVisibility(bool visible)
 {
 	active = visible;
-	h3dSetNodeActivation( horde_id, visible );
+	h3dSetNodeFlags( horde_id, visible ? 0 : H3DNodeFlags::Inactive, true );
 
 	//if this is the pc we also need to change the visibility of its flag
 	if(m_pc && m_symbol != 0)

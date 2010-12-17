@@ -30,12 +30,6 @@ class ExtensionManager;
 
 
 // =================================================================================================
-// Configuration
-// =================================================================================================
-
-#define DEBUGGER_OUTPUT        // Sends log messages to the debugger for display
-
-// =================================================================================================
 // Modules
 // =================================================================================================
 
@@ -63,7 +57,7 @@ public:
 	static bool init();
 	static void release();
 
-	static void setError( const char *error );
+	static void setError( const char *errorStr1 = 0x0, const char *errorStr2 = 0x0 );
 	static bool getError();
 	
 	static EngineConfig &config() { return *_engineConfig; }
@@ -76,6 +70,29 @@ public:
 };
 
 extern RenderDeviceInterface  *gRDI;
+
+
+// =================================================================================================
+// Useful macros for API functions
+// =================================================================================================
+
+#ifdef H3D_API_VALIDATION
+	#define APIFUNC_VALIDATE_RES( res, func, retVal ) if( res == 0x0 ) { \
+		Modules::setError( "Invalid resource handle in ", func ); return retVal; }
+	#define APIFUNC_VALIDATE_RES_TYPE( res, type, func, retVal ) if( res == 0x0 || res->getType() != type ) { \
+		Modules::setError( "Invalid resource handle in ", func ); return retVal; }
+	#define APIFUNC_VALIDATE_NODE( node, func, retVal ) if( node == 0x0 ) { \
+		Modules::setError( "Invalid node handle in ", func ); return retVal; }
+	#define APIFUNC_VALIDATE_NODE_TYPE( node, type, func, retVal ) if( node == 0x0 || node->getType() != type ) { \
+		Modules::setError( "Invalid node handle in ", func ); return retVal; }
+	#define APIFUNC_RET_VOID
+#else
+	#define APIFUNC_VALIDATE_RES( res, func, retVal )
+	#define APIFUNC_VALIDATE_RES_TYPE( res, type, func, retVal )
+	#define APIFUNC_VALIDATE_NODE( node, func, retVal )
+	#define APIFUNC_VALIDATE_NODE_TYPE( node, type, func, retVal )
+	#define APIFUNC_RET_VOID
+#endif
 
 }
 #endif // _egModules_H_

@@ -21,35 +21,35 @@ namespace Horde3D {
 // Frustum
 // *************************************************************************************************
 
-void Frustum::buildViewFrustum( const Matrix4f &transMat, float fov, float aspect, float near, float far )
+void Frustum::buildViewFrustum( const Matrix4f &transMat, float fov, float aspect, float nearPlane, float farPlane )
 {
-	float ymax = near * tanf( degToRad( fov / 2 ) );
+	float ymax = nearPlane * tanf( degToRad( fov / 2 ) );
 	float xmax = ymax * aspect;
 	
-	buildViewFrustum( transMat, -xmax, xmax, -ymax, ymax, near, far );
+	buildViewFrustum( transMat, -xmax, xmax, -ymax, ymax, nearPlane, farPlane );
 }
 
 
 void Frustum::buildViewFrustum( const Matrix4f &transMat, float left, float right,
-							    float bottom, float top, float near, float far ) 
+							    float bottom, float top, float nearPlane, float farPlane ) 
 {
 	// Use intercept theorem to get params for far plane
-	float left_f = left * far / near;
-	float right_f = right * far / near;
-	float bottom_f = bottom * far / near;
-	float top_f = top * far / near;
+	float left_f = left * farPlane / nearPlane;
+	float right_f = right * farPlane / nearPlane;
+	float bottom_f = bottom * farPlane / nearPlane;
+	float top_f = top * farPlane / nearPlane;
 
 	// Get points on near plane
-	_corners[0] = Vec3f( left, bottom, -near );
-	_corners[1] = Vec3f( right, bottom, -near );
-	_corners[2] = Vec3f( right, top, -near );
-	_corners[3] = Vec3f( left, top, -near );
+	_corners[0] = Vec3f( left, bottom, -nearPlane );
+	_corners[1] = Vec3f( right, bottom, -nearPlane );
+	_corners[2] = Vec3f( right, top, -nearPlane );
+	_corners[3] = Vec3f( left, top, -nearPlane );
 
 	// Get points on far plane
-	_corners[4] = Vec3f( left_f, bottom_f, -far );
-	_corners[5] = Vec3f( right_f, bottom_f, -far );
-	_corners[6] = Vec3f( right_f, top_f, -far );
-	_corners[7] = Vec3f( left_f, top_f, -far );
+	_corners[4] = Vec3f( left_f, bottom_f, -farPlane );
+	_corners[5] = Vec3f( right_f, bottom_f, -farPlane );
+	_corners[6] = Vec3f( right_f, top_f, -farPlane );
+	_corners[7] = Vec3f( left_f, top_f, -farPlane );
 
 	// Transform points to fit camera position and rotation
 	_origin = transMat * Vec3f( 0, 0, 0 );

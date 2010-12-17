@@ -189,12 +189,12 @@ void EngineLog::pushMessage( int level, const char *msg, va_list args )
 		_messages.push( LogMessage( "Message queue is full", 1, time ) );
 	}
 
-#if defined( PLATFORM_WIN ) && defined( DEBUGGER_OUTPUT )
-	const char *headers[6] = {"", "  [h3d-err] ", "  [h3d-warn] ", "[h3d] ", "  [h3d-dbg] ", "[h3d- ] "};
+#if defined( PLATFORM_WIN ) && defined( H3D_DEBUGGER_OUTPUT )
+	const TCHAR *headers[6] = { TEXT(""), TEXT("  [h3d-err] "), TEXT("  [h3d-warn] "), TEXT("[h3d] "), TEXT("  [h3d-dbg] "), TEXT("[h3d- ] ")};
 	
 	OutputDebugString( headers[std::min( (uint32)level, (uint32)5 )] );
-	OutputDebugString( _textBuf );
-	OutputDebugString( "\r\n" );
+	OutputDebugStringA( _textBuf );
+	OutputDebugString( TEXT("\r\n") );
 #endif
 }
 
@@ -268,14 +268,18 @@ StatManager::StatManager()
 
 	_frameTime = 0;
 
+	_fwdLightsGPUTimer = new GPUTimer();
 	_defLightsGPUTimer = new GPUTimer();
+	_shadowsGPUTimer = new GPUTimer();
 	_particleGPUTimer = new GPUTimer();
 }
 
 
 StatManager::~StatManager()
 {
+	delete _fwdLightsGPUTimer;
 	delete _defLightsGPUTimer;
+	delete _shadowsGPUTimer;
 	delete _particleGPUTimer;
 }
 
@@ -314,6 +318,10 @@ float StatManager::getStat( int param, bool reset )
 		value = _particleSimTimer.getElapsedTimeMS();
 		if( reset ) _particleSimTimer.reset();
 		return value;
+	case EngineStats::FwdLightsGPUTime:
+		value = _fwdLightsGPUTimer->getTimeMS();
+		if( reset ) _fwdLightsGPUTimer->reset();
+		return value;
 	case EngineStats::DefLightsGPUTime:
 		value = _defLightsGPUTimer->getTimeMS();
 		if( reset ) _defLightsGPUTimer->reset();
@@ -321,6 +329,10 @@ float StatManager::getStat( int param, bool reset )
 	case EngineStats::ParticleGPUTime:
 		value = _particleGPUTimer->getTimeMS();
 		if( reset ) _particleGPUTimer->reset();
+		return value;
+	case EngineStats::ShadowsGPUTime:
+		value = _shadowsGPUTimer->getTimeMS();
+		if( reset ) _shadowsGPUTimer->reset();
 		return value;
 	case EngineStats::TextureVMem:
 		return (gRDI->getTextureMem() / 1024) / 1024.0f;
@@ -375,8 +387,12 @@ GPUTimer *StatManager::getGPUTimer( int param )
 {
 	switch( param )
 	{
+	case EngineStats::FwdLightsGPUTime:
+		return _fwdLightsGPUTimer;
 	case EngineStats::DefLightsGPUTime:
 		return _defLightsGPUTimer;
+	case EngineStats::ShadowsGPUTime:
+		return _shadowsGPUTimer;
 	case EngineStats::ParticleGPUTime:
 		return _particleGPUTimer;
 	default:

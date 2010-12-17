@@ -92,6 +92,7 @@ bool Application::init()
 	// Add skybox
 	H3DNode sky = h3dAddNodes( H3DRootNode, skyBoxRes );
 	h3dSetNodeTransform( sky, 0, 0, 0, 0, 0, 0, 210, 50, 210 );
+	h3dSetNodeFlags( sky, H3DNodeFlags::NoCastShadow, true );
 	// Add light source
 	H3DNode light = h3dAddLightNode( H3DRootNode, "Light1", lightMatRes, "LIGHTING", "SHADOWMAP" );
 	h3dSetNodeTransform( light, 0, 20, 50, -30, 0, 0, 1, 1, 1 );

@@ -15,6 +15,7 @@
 #include "egModules.h"
 #include "egCom.h"
 #include "utXML.h"
+#include <cstring>
 
 #include "utDebug.h"
 

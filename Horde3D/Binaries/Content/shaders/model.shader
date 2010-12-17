@@ -159,6 +159,7 @@ void main( void )
 
 #include "shaders/utilityLib/fragDeferredWrite.glsl" 
 
+uniform vec3 viewerPos;
 uniform vec4 specParams;
 uniform sampler2D albedoMap;
 
@@ -219,7 +220,7 @@ void main( void )
 #endif
 	
 	setMatID( 1.0 );
-	setPos( newPos );
+	setPos( newPos - viewerPos );
 	setNormal( normalize( normal ) );
 	setAlbedo( albedo.rgb );
 	setSpecMask( specParams.x );
@@ -235,7 +236,7 @@ void main( void )
 uniform mat4 viewProjMat;
 uniform vec4 lightPos;
 attribute vec3 vertPos;
-varying float dist;
+varying vec3 lightVec;
 
 #ifdef _F05_AlphaTest
 	attribute vec2 texCoords0;
@@ -254,7 +255,7 @@ void main( void )
 	texCoords = texCoords0;
 #endif
 
-	dist = length( lightPos.xyz - pos.xyz ) / lightPos.w;
+	lightVec = lightPos.xyz - pos.xyz;
 	gl_Position = viewProjMat * pos;
 }
 	
@@ -262,8 +263,9 @@ void main( void )
 [[FS_SHADOWMAP]]
 // =================================================================================================
 
+uniform vec4 lightPos;
 uniform float shadowBias;
-varying float dist;
+varying vec3 lightVec;
 
 #ifdef _F05_AlphaTest
 	uniform sampler2D albedoMap;
@@ -277,10 +279,11 @@ void main( void )
 	if( albedo.a < 0.01 ) discard;
 #endif
 	
+	float dist = length( lightVec ) / lightPos.w;
 	gl_FragDepth = dist + shadowBias;
 	
 	// Clearly better bias but requires SM 3.0
-	// gl_FragDepth =  dist + abs( dFdx( dist ) ) + abs( dFdy( dist ) ) + shadowBias;
+	//gl_FragDepth = dist + abs( dFdx( dist ) ) + abs( dFdy( dist ) ) + shadowBias;
 }
 
 

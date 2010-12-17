@@ -35,7 +35,7 @@ HordeModelDialog::~HordeModelDialog()
 		h3dReleaseUnusedResources();
 	}
 	if (m_oldScene != 0)
-		h3dSetNodeActivation(m_oldScene, true);
+		h3dSetNodeFlags(m_oldScene, 0, true );
 }
 
 void HordeModelDialog::itemChanged(QListWidgetItem* current, QListWidgetItem* previous)
@@ -89,7 +89,7 @@ void HordeModelDialog::initModelViewer()
 		// Get previously used scene
 		m_oldScene = h3dGetNodeChild(H3DRootNode, 0);
 		// Disable Root scene 
-		h3dSetNodeActivation(m_oldScene, false);	
+		h3dSetNodeFlags(m_oldScene, H3DNodeFlags::Inactive, true );	
 		// Add new scene for model view
 		m_newScene = h3dAddGroupNode(H3DRootNode, "ModelView");		
 

@@ -119,10 +119,11 @@ void main( void )
 	
 	if( getMatID( fragCoord ) == 1.0 )	// Standard phong material
 	{
-		float vsPos = (viewMat * vec4( getPos( fragCoord ), 1.0 )).z;
+		vec3 pos = getPos( fragCoord ) + viewerPos;
+		float vsPos = (viewMat * vec4( pos, 1.0 )).z;
 		
 		gl_FragColor.rgb =
-			calcPhongSpotLight( getPos( fragCoord ), getNormal( fragCoord ),
+			calcPhongSpotLight( pos, getNormal( fragCoord ),
 								getAlbedo( fragCoord ), getSpecMask( fragCoord ), 16.0, -vsPos, 0.3 );
 	}
 	else discard;

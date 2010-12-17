@@ -54,15 +54,6 @@ const char *emptyCString = "";
 std::string emptyString = emptyCString;
 std::string strPool[4];  // String pool for avoiding memory allocations of temporary string objects
 
-#define VALIDATE_RES( res, func, retVal ) if( res == 0x0 ) { \
-	Modules::setError( (std::string( "Invalid resource handle in " ) + func).c_str() ); return retVal; }
-#define VALIDATE_RES_TYPE( res, type, func, retVal ) if( res == 0x0 || res->getType() != type ) { \
-	Modules::setError( (std::string( "Invalid resource handle in " ) + func).c_str() ); return retVal; }
-#define VALIDATE_NODE( node, func, retVal ) if( node == 0x0 ) { \
-	Modules::setError( (std::string( "Invalid node handle in " ) + func).c_str() ); return retVal; }
-#define VALIDATE_NODE_TYPE( node, type, func, retVal ) if( node == 0x0 || node->getType() != type ) { \
-	Modules::setError( (std::string( "Invalid node handle in " ) + func).c_str() ); return retVal; }
-#define EMPTY
 
 inline const string &safeStr( const char *str, int index )
 {
@@ -117,7 +108,7 @@ DLLEXP void h3dRelease()
 DLLEXP void h3dRender( NodeHandle cameraNode )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( cameraNode );
-	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Camera, "h3dRender", EMPTY );
+	APIFUNC_VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Camera, "h3dRender", APIFUNC_RET_VOID );
 	
 	Modules::renderer().render( (CameraNode *)sn );
 }
@@ -178,7 +169,7 @@ DLLEXP void h3dShowOverlays( const float *verts, int vertCount, float colR, floa
                              float colB, float colA, uint32 materialRes, int flags )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( materialRes ); 
-	VALIDATE_RES_TYPE( resObj, ResourceTypes::Material, "h3dShowOverlays", EMPTY );
+	APIFUNC_VALIDATE_RES_TYPE( resObj, ResourceTypes::Material, "h3dShowOverlays", APIFUNC_RET_VOID );
 
 	float rgba[4] = { colR, colG, colB, colA };
 	Modules::renderer().showOverlays( verts, (uint32)vertCount, rgba, (MaterialResource *)resObj, flags );
@@ -198,7 +189,7 @@ DLLEXP void h3dClearOverlays()
 DLLEXP int h3dGetResType( ResHandle res )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dGetResType", ResourceTypes::Undefined );
+	APIFUNC_VALIDATE_RES( resObj, "h3dGetResType", ResourceTypes::Undefined );
 	
 	return resObj->getType();
 }
@@ -207,7 +198,7 @@ DLLEXP int h3dGetResType( ResHandle res )
 DLLEXP const char *h3dGetResName( ResHandle res )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dGetResName", emptyCString );
+	APIFUNC_VALIDATE_RES( resObj, "h3dGetResName", emptyCString );
 	
 	return resObj->getName().c_str();
 }
@@ -238,7 +229,7 @@ DLLEXP ResHandle h3dAddResource( int type, const char *name, int flags )
 DLLEXP ResHandle h3dCloneResource( ResHandle sourceRes, const char *name )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( sourceRes );
-	VALIDATE_RES( resObj, "h3dCloneResource", 0 );
+	APIFUNC_VALIDATE_RES( resObj, "h3dCloneResource", 0 );
 	
 	return Modules::resMan().cloneResource( *resObj, safeStr( name, 0 ) );
 }
@@ -247,7 +238,7 @@ DLLEXP ResHandle h3dCloneResource( ResHandle sourceRes, const char *name )
 DLLEXP int h3dRemoveResource( ResHandle res )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dRemoveResource", -1 );
+	APIFUNC_VALIDATE_RES( resObj, "h3dRemoveResource", -1 );
 	
 	return Modules::resMan().removeResource( *resObj, true );
 }
@@ -256,7 +247,7 @@ DLLEXP int h3dRemoveResource( ResHandle res )
 DLLEXP bool h3dIsResLoaded( ResHandle res )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dIsResLoaded", false );
+	APIFUNC_VALIDATE_RES( resObj, "h3dIsResLoaded", false );
 	
 	return resObj->isLoaded();
 }
@@ -265,7 +256,7 @@ DLLEXP bool h3dIsResLoaded( ResHandle res )
 DLLEXP bool h3dLoadResource( ResHandle res, const char *data, int size )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dLoadResource", false );
+	APIFUNC_VALIDATE_RES( resObj, "h3dLoadResource", false );
 	
 	Modules::log().writeInfo( "Loading resource '%s'", resObj->getName().c_str() );
 	return resObj->load( data, size );
@@ -275,7 +266,7 @@ DLLEXP bool h3dLoadResource( ResHandle res, const char *data, int size )
 DLLEXP void h3dUnloadResource( ResHandle res )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dUnloadResource", EMPTY );
+	APIFUNC_VALIDATE_RES( resObj, "h3dUnloadResource", APIFUNC_RET_VOID );
 
 	resObj->unload();
 }
@@ -284,7 +275,7 @@ DLLEXP void h3dUnloadResource( ResHandle res )
 DLLEXP int h3dGetResElemCount( ResHandle res, int elem )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dGetResElemCount", 0 );
+	APIFUNC_VALIDATE_RES( resObj, "h3dGetResElemCount", 0 );
 
 	return resObj->getElemCount( elem );
 }
@@ -293,7 +284,7 @@ DLLEXP int h3dGetResElemCount( ResHandle res, int elem )
 DLLEXP int h3dFindResElem( ResHandle res, int elem, int param, const char *value )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dFindResElem", -1 );
+	APIFUNC_VALIDATE_RES( resObj, "h3dFindResElem", -1 );
 
 	return resObj->findElem( elem, param, value != 0x0 ? value : emptyCString );
 }
@@ -302,7 +293,7 @@ DLLEXP int h3dFindResElem( ResHandle res, int elem, int param, const char *value
 DLLEXP int h3dGetResParamI( ResHandle res, int elem, int elemIdx, int param )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dGetResParamI", Math::MinInt32 );
+	APIFUNC_VALIDATE_RES( resObj, "h3dGetResParamI", Math::MinInt32 );
 	
 	return resObj->getElemParamI( elem, elemIdx, param );
 }
@@ -311,7 +302,7 @@ DLLEXP int h3dGetResParamI( ResHandle res, int elem, int elemIdx, int param )
 DLLEXP void h3dSetResParamI( ResHandle res, int elem, int elemIdx, int param, int value )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dSetResParamI", EMPTY );
+	APIFUNC_VALIDATE_RES( resObj, "h3dSetResParamI", APIFUNC_RET_VOID );
 
 	resObj->setElemParamI( elem, elemIdx, param, value );
 }
@@ -320,7 +311,7 @@ DLLEXP void h3dSetResParamI( ResHandle res, int elem, int elemIdx, int param, in
 DLLEXP float h3dGetResParamF( ResHandle res, int elem, int elemIdx, int param, int compIdx )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dGetResParamF", Math::NaN );
+	APIFUNC_VALIDATE_RES( resObj, "h3dGetResParamF", Math::NaN );
 
 	return resObj->getElemParamF( elem, elemIdx, param, compIdx );
 }
@@ -329,7 +320,7 @@ DLLEXP float h3dGetResParamF( ResHandle res, int elem, int elemIdx, int param, i
 DLLEXP void h3dSetResParamF( ResHandle res, int elem, int elemIdx, int param, int compIdx, float value )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dSetResParamF", EMPTY );
+	APIFUNC_VALIDATE_RES( resObj, "h3dSetResParamF", APIFUNC_RET_VOID );
 
 	resObj->setElemParamF( elem, elemIdx, param, compIdx, value );
 }
@@ -338,7 +329,7 @@ DLLEXP void h3dSetResParamF( ResHandle res, int elem, int elemIdx, int param, in
 DLLEXP const char *h3dGetResParamStr( ResHandle res, int elem, int elemIdx, int param )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dGetResParamStr", emptyCString );
+	APIFUNC_VALIDATE_RES( resObj, "h3dGetResParamStr", emptyCString );
 
 	return resObj->getElemParamStr( elem, elemIdx, param );
 }
@@ -347,7 +338,7 @@ DLLEXP const char *h3dGetResParamStr( ResHandle res, int elem, int elemIdx, int 
 DLLEXP void h3dSetResParamStr( ResHandle res, int elem, int elemIdx, int param, const char *value )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dSetResParamStr", EMPTY );
+	APIFUNC_VALIDATE_RES( resObj, "h3dSetResParamStr", APIFUNC_RET_VOID );
 	
 	resObj->setElemParamStr( elem, elemIdx, param, value != 0x0 ? value : emptyCString );
 }
@@ -356,7 +347,7 @@ DLLEXP void h3dSetResParamStr( ResHandle res, int elem, int elemIdx, int param, 
 DLLEXP void *h3dMapResStream( ResHandle res, int elem, int elemIdx, int stream, bool read, bool write )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dMapResStream", 0x0 );
+	APIFUNC_VALIDATE_RES( resObj, "h3dMapResStream", 0x0 );
 
 	return resObj->mapStream( elem, elemIdx, stream, read, write );
 }
@@ -365,7 +356,7 @@ DLLEXP void *h3dMapResStream( ResHandle res, int elem, int elemIdx, int stream, 
 DLLEXP void h3dUnmapResStream( ResHandle res )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( res );
-	VALIDATE_RES( resObj, "h3dUnmapResStream", EMPTY );
+	APIFUNC_VALIDATE_RES( resObj, "h3dUnmapResStream", APIFUNC_RET_VOID );
 
 	resObj->unmapStream();
 }
@@ -408,7 +399,7 @@ DLLEXP void h3dSetShaderPreambles( const char *vertPreamble, const char *fragPre
 DLLEXP bool h3dSetMaterialUniform( ResHandle materialRes, const char *name, float a, float b, float c, float d )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( materialRes );
-	VALIDATE_RES_TYPE( resObj, ResourceTypes::Material, "h3dSetMaterialUniform", false );
+	APIFUNC_VALIDATE_RES_TYPE( resObj, ResourceTypes::Material, "h3dSetMaterialUniform", false );
 
 	return ((MaterialResource *)resObj)->setUniform( safeStr( name, 0 ), a, b, c, d );
 }
@@ -417,7 +408,7 @@ DLLEXP bool h3dSetMaterialUniform( ResHandle materialRes, const char *name, floa
 DLLEXP void h3dResizePipelineBuffers( ResHandle pipeRes, int width, int height )
 {
 	Resource *resObj = Modules::resMan().resolveResHandle( pipeRes );
-	VALIDATE_RES_TYPE( resObj, ResourceTypes::Pipeline, "h3dResizePipelineBuffers", EMPTY );
+	APIFUNC_VALIDATE_RES_TYPE( resObj, ResourceTypes::Pipeline, "h3dResizePipelineBuffers", APIFUNC_RET_VOID );
 
 	PipelineResource *pipeResObj = (PipelineResource *)resObj;
 	pipeResObj->resize( width, height );
@@ -430,7 +421,7 @@ DLLEXP bool h3dGetRenderTargetData( ResHandle pipelineRes, const char *targetNam
 	if( pipelineRes != 0 )
 	{
 		Resource *resObj = Modules::resMan().resolveResHandle( pipelineRes );
-		VALIDATE_RES_TYPE( resObj, ResourceTypes::Pipeline, "h3dGetRenderTargetData", false );
+		APIFUNC_VALIDATE_RES_TYPE( resObj, ResourceTypes::Pipeline, "h3dGetRenderTargetData", false );
 		
 		return ((PipelineResource *)resObj)->getRenderTargetData( safeStr( targetName, 0 ), bufIndex,
 			width, height, compCount, dataBuffer, bufferSize );
@@ -449,7 +440,7 @@ DLLEXP bool h3dGetRenderTargetData( ResHandle pipelineRes, const char *targetNam
 DLLEXP int h3dGetNodeType( NodeHandle node )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dGetNodeType", SceneNodeTypes::Undefined );
+	APIFUNC_VALIDATE_NODE( sn, "h3dGetNodeType", SceneNodeTypes::Undefined );
 	
 	return sn->getType();
 }
@@ -458,7 +449,7 @@ DLLEXP int h3dGetNodeType( NodeHandle node )
 DLLEXP NodeHandle h3dGetNodeParent( NodeHandle node )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dGetNodeParent", 0 );
+	APIFUNC_VALIDATE_NODE( sn, "h3dGetNodeParent", 0 );
 	
 	return sn->getParent() != 0x0 ? sn->getParent()->getHandle() : 0;
 }
@@ -467,9 +458,9 @@ DLLEXP NodeHandle h3dGetNodeParent( NodeHandle node )
 DLLEXP bool h3dSetNodeParent( NodeHandle node, NodeHandle parent )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dSetNodeParent", false );
+	APIFUNC_VALIDATE_NODE( sn, "h3dSetNodeParent", false );
 	SceneNode *snp = Modules::sceneMan().resolveNodeHandle( parent );
-	VALIDATE_NODE( sn, "h3dSetNodeParent", false );
+	APIFUNC_VALIDATE_NODE( sn, "h3dSetNodeParent", false );
 	
 	return Modules::sceneMan().relocateNode( *sn, *snp );
 }
@@ -478,7 +469,7 @@ DLLEXP bool h3dSetNodeParent( NodeHandle node, NodeHandle parent )
 DLLEXP NodeHandle h3dGetNodeChild( NodeHandle parent, int index )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( parent );
-	VALIDATE_NODE( sn, "h3dGetNodeChild", 0 );
+	APIFUNC_VALIDATE_NODE( sn, "h3dGetNodeChild", 0 );
 
 	if( (unsigned)index < sn->getChildren().size() )
 		return sn->getChildren()[index]->getHandle();
@@ -490,10 +481,10 @@ DLLEXP NodeHandle h3dGetNodeChild( NodeHandle parent, int index )
 DLLEXP NodeHandle h3dAddNodes( NodeHandle parent, ResHandle sceneGraphRes )
 {
 	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-	VALIDATE_NODE( parentNode, "h3dAddNodes", 0 );
+	APIFUNC_VALIDATE_NODE( parentNode, "h3dAddNodes", 0 );
 	
 	Resource *sgRes = Modules::resMan().resolveResHandle( sceneGraphRes );
-	VALIDATE_RES_TYPE( sgRes, ResourceTypes::SceneGraph, "h3dAddNodes", 0 );
+	APIFUNC_VALIDATE_RES_TYPE( sgRes, ResourceTypes::SceneGraph, "h3dAddNodes", 0 );
 
 	if( !sgRes->isLoaded() )
 	{
@@ -509,26 +500,17 @@ DLLEXP NodeHandle h3dAddNodes( NodeHandle parent, ResHandle sceneGraphRes )
 DLLEXP void h3dRemoveNode( NodeHandle node )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dRemoveNode", EMPTY );
+	APIFUNC_VALIDATE_NODE( sn, "h3dRemoveNode", APIFUNC_RET_VOID );
 
 	//Modules::log().writeInfo( "Removing node %i", node );
 	Modules::sceneMan().removeNode( *sn );
 }
 
 
-DLLEXP void h3dSetNodeActivation( NodeHandle node, bool active )
-{
-	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dSetNodeActivation", EMPTY );
-
-	sn->setActivation( active );
-}
-
-
 DLLEXP bool h3dCheckNodeTransFlag( NodeHandle node, bool reset )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dCheckNodeTransFlag", false );
+	APIFUNC_VALIDATE_NODE( sn, "h3dCheckNodeTransFlag", false );
 	
 	return sn->checkTransformFlag( reset );
 }
@@ -538,7 +520,7 @@ DLLEXP void h3dGetNodeTransform( NodeHandle node, float *tx, float *ty, float *t
                                  float *rx, float *ry, float *rz, float *sx, float *sy, float *sz )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dGetNodeTransform", EMPTY );
+	APIFUNC_VALIDATE_NODE( sn, "h3dGetNodeTransform", APIFUNC_RET_VOID );
 	
 	Vec3f trans, rot, scale;
 	sn->getTransform( trans, rot, scale );
@@ -553,7 +535,7 @@ DLLEXP void h3dSetNodeTransform( NodeHandle node, float tx, float ty, float tz,
                                  float rx, float ry, float rz, float sx, float sy, float sz )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dSetNodeTransform", EMPTY );
+	APIFUNC_VALIDATE_NODE( sn, "h3dSetNodeTransform", APIFUNC_RET_VOID );
 	
 	sn->setTransform( Vec3f( tx, ty, tz ), Vec3f( rx, ry, rz ), Vec3f( sx, sy, sz ) );
 }
@@ -562,7 +544,7 @@ DLLEXP void h3dSetNodeTransform( NodeHandle node, float tx, float ty, float tz,
 DLLEXP void h3dGetNodeTransMats( NodeHandle node, const float **relMat, const float **absMat )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dGetNodeTransMats", EMPTY );
+	APIFUNC_VALIDATE_NODE( sn, "h3dGetNodeTransMats", APIFUNC_RET_VOID );
 	
 	sn->getTransMatrices( relMat, absMat );
 }
@@ -573,7 +555,7 @@ DLLEXP void h3dSetNodeTransMat( NodeHandle node, const float *mat4x4 )
 	static Matrix4f mat;
 	
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dSetNodeTransMat", EMPTY );
+	APIFUNC_VALIDATE_NODE( sn, "h3dSetNodeTransMat", APIFUNC_RET_VOID );
 	if( mat4x4 == 0x0 )
 	{	
 		Modules::setError( "Invalid pointer in h3dSetNodeTransMat" );
@@ -588,7 +570,7 @@ DLLEXP void h3dSetNodeTransMat( NodeHandle node, const float *mat4x4 )
 DLLEXP int h3dGetNodeParamI( NodeHandle node, int param )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dGetNodeParamI", Math::MinInt32 );
+	APIFUNC_VALIDATE_NODE( sn, "h3dGetNodeParamI", Math::MinInt32 );
 
 	return sn->getParamI( param );
 }
@@ -597,7 +579,7 @@ DLLEXP int h3dGetNodeParamI( NodeHandle node, int param )
 DLLEXP void h3dSetNodeParamI( NodeHandle node, int param, int value )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dSetNodeParamI", EMPTY );
+	APIFUNC_VALIDATE_NODE( sn, "h3dSetNodeParamI", APIFUNC_RET_VOID );
 
 	sn->setParamI( param, value );
 }
@@ -606,7 +588,7 @@ DLLEXP void h3dSetNodeParamI( NodeHandle node, int param, int value )
 DLLEXP float h3dGetNodeParamF( NodeHandle node, int param, int compIdx )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dGetNodeParamF", Math::NaN );
+	APIFUNC_VALIDATE_NODE( sn, "h3dGetNodeParamF", Math::NaN );
 	
 	return sn->getParamF( param, compIdx );
 }
@@ -615,7 +597,7 @@ DLLEXP float h3dGetNodeParamF( NodeHandle node, int param, int compIdx )
 DLLEXP void h3dSetNodeParamF( NodeHandle node, int param, int compIdx, float value )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dSetNodeParamF", EMPTY );
+	APIFUNC_VALIDATE_NODE( sn, "h3dSetNodeParamF", APIFUNC_RET_VOID );
 
 	sn->setParamF( param, compIdx, value );
 }
@@ -624,7 +606,7 @@ DLLEXP void h3dSetNodeParamF( NodeHandle node, int param, int compIdx, float val
 DLLEXP const char *h3dGetNodeParamStr( NodeHandle node, int param )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dGetNodeParamStr", emptyCString );
+	APIFUNC_VALIDATE_NODE( sn, "h3dGetNodeParamStr", emptyCString );
 	
 	return sn->getParamStr( param );
 }
@@ -633,9 +615,25 @@ DLLEXP const char *h3dGetNodeParamStr( NodeHandle node, int param )
 DLLEXP void h3dSetNodeParamStr( NodeHandle node, int param, const char *name )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dSetNodeParamStr", EMPTY );
+	APIFUNC_VALIDATE_NODE( sn, "h3dSetNodeParamStr", APIFUNC_RET_VOID );
 	
 	sn->setParamStr( param, name != 0x0 ? name : emptyCString );
+}
+
+
+DLLEXP int h3dGetNodeFlags( NodeHandle node )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	APIFUNC_VALIDATE_NODE( sn, "h3dGetNodeFlags", 0 );
+	return sn->getFlags();
+}
+
+
+DLLEXP void h3dSetNodeFlags( NodeHandle node, int flags, bool recursive )
+{
+	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
+	APIFUNC_VALIDATE_NODE( sn, "h3dSetNodeFlags", APIFUNC_RET_VOID );
+	sn->setFlags( flags, recursive );
 }
 
 
@@ -643,7 +641,7 @@ DLLEXP void h3dGetNodeAABB( NodeHandle node, float *minX, float *minY, float *mi
                             float *maxX, float *maxY, float *maxZ )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dGetNodeAABB", EMPTY );
+	APIFUNC_VALIDATE_NODE( sn, "h3dGetNodeAABB", APIFUNC_RET_VOID );
 
 	Modules::sceneMan().updateNodes();
 	if( minX != 0x0 ) *minX = sn->getBBox().min.x;
@@ -658,7 +656,7 @@ DLLEXP void h3dGetNodeAABB( NodeHandle node, float *minX, float *minY, float *mi
 DLLEXP int h3dFindNodes( NodeHandle startNode, const char *name, int type )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( startNode );
-	VALIDATE_NODE( sn, "h3dFindNodes", 0 );
+	APIFUNC_VALIDATE_NODE( sn, "h3dFindNodes", 0 );
 
 	Modules::sceneMan().clearFindResults();
 	return Modules::sceneMan().findNodes( *sn, safeStr( name, 0 ), type );
@@ -676,7 +674,7 @@ DLLEXP NodeHandle h3dGetNodeFindResult( int index )
 DLLEXP NodeHandle h3dCastRay( NodeHandle node, float ox, float oy, float oz, float dx, float dy, float dz, int numNearest )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dCastRay", 0 );
+	APIFUNC_VALIDATE_NODE( sn, "h3dCastRay", 0 );
 
 	Modules::sceneMan().updateNodes();
 	return Modules::sceneMan().castRay( *sn, Vec3f( ox, oy, oz ), Vec3f( dx, dy, dz ), numNearest );
@@ -707,9 +705,9 @@ DLLEXP bool h3dGetCastRayResult( int index, NodeHandle *node, float *distance, f
 DLLEXP int h3dCheckNodeVisibility( NodeHandle node, NodeHandle cameraNode, bool checkOcclusion, bool calcLod )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( node );
-	VALIDATE_NODE( sn, "h3dCheckNodeVisibility", -1 );
+	APIFUNC_VALIDATE_NODE( sn, "h3dCheckNodeVisibility", -1 );
 	SceneNode *cam = Modules::sceneMan().resolveNodeHandle( cameraNode );
-	VALIDATE_NODE_TYPE( cam, SceneNodeTypes::Camera, "h3dCheckNodeVisibility", -1 );
+	APIFUNC_VALIDATE_NODE_TYPE( cam, SceneNodeTypes::Camera, "h3dCheckNodeVisibility", -1 );
 	
 	return Modules::sceneMan().checkNodeVisibility( *sn, *(CameraNode *)cam, checkOcclusion, calcLod );
 }
@@ -718,7 +716,7 @@ DLLEXP int h3dCheckNodeVisibility( NodeHandle node, NodeHandle cameraNode, bool 
 DLLEXP NodeHandle h3dAddGroupNode( NodeHandle parent, const char *name )
 {
 	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-	VALIDATE_NODE( parentNode, "h3dAddGroupNode", 0 );
+	APIFUNC_VALIDATE_NODE( parentNode, "h3dAddGroupNode", 0 );
 
 	//Modules::log().writeInfo( "Adding Group node '%s'", safeStr( name ).c_str() );
 	GroupNodeTpl tpl( safeStr( name, 0 ) );
@@ -730,9 +728,9 @@ DLLEXP NodeHandle h3dAddGroupNode( NodeHandle parent, const char *name )
 DLLEXP NodeHandle h3dAddModelNode( NodeHandle parent, const char *name, ResHandle geometryRes )
 {
 	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-	VALIDATE_NODE( parentNode, "h3dAddModelNode", 0 );
+	APIFUNC_VALIDATE_NODE( parentNode, "h3dAddModelNode", 0 );
 	Resource *geoRes = Modules::resMan().resolveResHandle( geometryRes );
-	VALIDATE_RES_TYPE( geoRes, ResourceTypes::Geometry, "h3dAddModelNode", 0 );
+	APIFUNC_VALIDATE_RES_TYPE( geoRes, ResourceTypes::Geometry, "h3dAddModelNode", 0 );
 
 	//Modules::log().writeInfo( "Adding Model node '%s'", safeStr( name ).c_str() );
 	ModelNodeTpl tpl( safeStr( name, 0 ), (GeometryResource *)geoRes );
@@ -745,12 +743,12 @@ DLLEXP void h3dSetupModelAnimStage( NodeHandle modelNode, int stage, ResHandle a
                                     const char *startNode, bool additive )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( modelNode );
-	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Model, "h3dSetupModelAnimStage", EMPTY );
+	APIFUNC_VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Model, "h3dSetupModelAnimStage", APIFUNC_RET_VOID );
 	Resource *animRes = 0x0;
 	if( animationRes != 0 )
 	{
 		animRes = Modules::resMan().resolveResHandle( animationRes );
-		VALIDATE_RES_TYPE( animRes, ResourceTypes::Animation, "h3dSetupModelAnimStage", EMPTY );
+		APIFUNC_VALIDATE_RES_TYPE( animRes, ResourceTypes::Animation, "h3dSetupModelAnimStage", APIFUNC_RET_VOID );
 	}
 	
 	((ModelNode *)sn)->setupAnimStage( stage, (AnimationResource *)animRes, layer,
@@ -761,7 +759,7 @@ DLLEXP void h3dSetupModelAnimStage( NodeHandle modelNode, int stage, ResHandle a
 DLLEXP void h3dSetModelAnimParams( NodeHandle modelNode, int stage, float time, float weight )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( modelNode );
-	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Model, "h3dSetModelAnimParams", EMPTY );
+	APIFUNC_VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Model, "h3dSetModelAnimParams", APIFUNC_RET_VOID );
 	
 	((ModelNode *)sn)->setAnimParams( stage, time, weight );
 }
@@ -770,7 +768,7 @@ DLLEXP void h3dSetModelAnimParams( NodeHandle modelNode, int stage, float time, 
 DLLEXP bool h3dSetModelMorpher( NodeHandle modelNode, const char *target, float weight )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( modelNode );
-	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Model, "h3dSetModelMorpher", false );
+	APIFUNC_VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Model, "h3dSetModelMorpher", false );
 	
 	return ((ModelNode *)sn)->setMorphParam( safeStr( target, 0 ), weight );
 }
@@ -780,9 +778,9 @@ DLLEXP NodeHandle h3dAddMeshNode( NodeHandle parent, const char *name, ResHandle
                                   int batchStart, int batchCount, int vertRStart, int vertREnd )
 {
 	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-	VALIDATE_NODE( parentNode, "h3dAddMeshNode", 0 );
+	APIFUNC_VALIDATE_NODE( parentNode, "h3dAddMeshNode", 0 );
 	Resource *matRes = Modules::resMan().resolveResHandle( materialRes );
-	VALIDATE_RES_TYPE( matRes, ResourceTypes::Material, "h3dAddMeshNode", 0 );
+	APIFUNC_VALIDATE_RES_TYPE( matRes, ResourceTypes::Material, "h3dAddMeshNode", 0 );
 
 	//Modules::log().writeInfo( "Adding Mesh node '%s'", safeStr( name ).c_str() );
 	MeshNodeTpl tpl( safeStr( name, 0 ), (MaterialResource *)matRes, (unsigned)batchStart,
@@ -795,7 +793,7 @@ DLLEXP NodeHandle h3dAddMeshNode( NodeHandle parent, const char *name, ResHandle
 DLLEXP NodeHandle h3dAddJointNode( NodeHandle parent, const char *name, int jointIndex )
 {
 	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-	VALIDATE_NODE( parentNode, "h3dAddJointNode", 0 );
+	APIFUNC_VALIDATE_NODE( parentNode, "h3dAddJointNode", 0 );
 
 	//Modules::log().writeInfo( "Adding Joint node '%s'", safeStr( name ).c_str() );
 	JointNodeTpl tpl( safeStr( name, 0 ), (unsigned)jointIndex );
@@ -808,10 +806,12 @@ DLLEXP NodeHandle h3dAddLightNode( NodeHandle parent, const char *name, ResHandl
                                    const char *lightingContext, const char *shadowContext )
 {
 	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-	VALIDATE_NODE( parentNode, "h3dAddLightNode", 0 );
+	APIFUNC_VALIDATE_NODE( parentNode, "h3dAddLightNode", 0 );
 	Resource *matRes = Modules::resMan().resolveResHandle( materialRes );
 	if(matRes != 0x0 )
-		VALIDATE_RES_TYPE( matRes, ResourceTypes::Material, "h3dAddLightNode", 0 );
+	{
+		APIFUNC_VALIDATE_RES_TYPE( matRes, ResourceTypes::Material, "h3dAddLightNode", 0 );
+	}
 	
 	//Modules::log().writeInfo( "Adding Light node '%s'", safeStr( name ).c_str() );
 	LightNodeTpl tpl( safeStr( name, 0 ), (MaterialResource *)matRes,
@@ -824,9 +824,9 @@ DLLEXP NodeHandle h3dAddLightNode( NodeHandle parent, const char *name, ResHandl
 DLLEXP NodeHandle h3dAddCameraNode( NodeHandle parent, const char *name, ResHandle pipelineRes )
 {
 	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-	VALIDATE_NODE( parentNode, "h3dAddCameraNode", 0 );
+	APIFUNC_VALIDATE_NODE( parentNode, "h3dAddCameraNode", 0 );
 	Resource *pipeRes = Modules::resMan().resolveResHandle( pipelineRes );
-	VALIDATE_RES_TYPE( pipeRes, ResourceTypes::Pipeline, "h3dAddCameraNode", 0 );
+	APIFUNC_VALIDATE_RES_TYPE( pipeRes, ResourceTypes::Pipeline, "h3dAddCameraNode", 0 );
 	
 	//Modules::log().writeInfo( "Adding Camera node '%s'", safeStr( name ).c_str() );
 	CameraNodeTpl tpl( safeStr( name, 0 ), (PipelineResource *)pipeRes );
@@ -838,7 +838,7 @@ DLLEXP NodeHandle h3dAddCameraNode( NodeHandle parent, const char *name, ResHand
 DLLEXP void h3dSetupCameraView( NodeHandle cameraNode, float fov, float aspect, float nearDist, float farDist )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( cameraNode );
-	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Camera, "h3dSetupCameraView", EMPTY );
+	APIFUNC_VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Camera, "h3dSetupCameraView", APIFUNC_RET_VOID );
 	
 	((CameraNode *)sn)->setupViewParams( fov, aspect, nearDist, farDist );
 }
@@ -847,7 +847,7 @@ DLLEXP void h3dSetupCameraView( NodeHandle cameraNode, float fov, float aspect, 
 DLLEXP void h3dGetCameraProjMat( NodeHandle cameraNode, float *projMat )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( cameraNode );
-	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Camera, "h3dGetCameraProjMat", EMPTY );
+	APIFUNC_VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Camera, "h3dGetCameraProjMat", APIFUNC_RET_VOID );
 	if( projMat == 0x0 )
 	{
 		Modules::setError( "Invalid pointer in h3dGetCameraProjMat" );
@@ -863,11 +863,11 @@ DLLEXP NodeHandle h3dAddEmitterNode( NodeHandle parent, const char *name, ResHan
                                      ResHandle particleEffectRes, int maxParticleCount, int respawnCount )
 {
 	SceneNode *parentNode = Modules::sceneMan().resolveNodeHandle( parent );
-	VALIDATE_NODE( parentNode, "h3dAddEmitterNode", 0 );
+	APIFUNC_VALIDATE_NODE( parentNode, "h3dAddEmitterNode", 0 );
 	Resource *matRes = Modules::resMan().resolveResHandle( materialRes );
-	VALIDATE_RES_TYPE( matRes, ResourceTypes::Material, "h3dAddEmitterNode", 0 );
+	APIFUNC_VALIDATE_RES_TYPE( matRes, ResourceTypes::Material, "h3dAddEmitterNode", 0 );
 	Resource *effRes = Modules::resMan().resolveResHandle( particleEffectRes );
-	VALIDATE_RES_TYPE( effRes, ResourceTypes::ParticleEffect, "h3dAddEmitterNode", 0 );
+	APIFUNC_VALIDATE_RES_TYPE( effRes, ResourceTypes::ParticleEffect, "h3dAddEmitterNode", 0 );
 	
 	//Modules::log().writeInfo( "Adding Emitter node '%s'", safeStr( name ).c_str() );
 	EmitterNodeTpl tpl( safeStr( name, 0 ), (MaterialResource *)matRes, (ParticleEffectResource *)effRes,
@@ -880,7 +880,7 @@ DLLEXP NodeHandle h3dAddEmitterNode( NodeHandle parent, const char *name, ResHan
 DLLEXP void h3dAdvanceEmitterTime( NodeHandle emitterNode, float timeDelta )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( emitterNode );
-	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Emitter, "h3dAdvanceEmitterTime", EMPTY );
+	APIFUNC_VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Emitter, "h3dAdvanceEmitterTime", APIFUNC_RET_VOID );
 	
 	((EmitterNode *)sn)->advanceTime( timeDelta );
 }
@@ -889,7 +889,7 @@ DLLEXP void h3dAdvanceEmitterTime( NodeHandle emitterNode, float timeDelta )
 DLLEXP bool h3dHasEmitterFinished( NodeHandle emitterNode )
 {
 	SceneNode *sn = Modules::sceneMan().resolveNodeHandle( emitterNode );
-	VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Emitter, "h3dHasEmitterFinished", false );
+	APIFUNC_VALIDATE_NODE_TYPE( sn, SceneNodeTypes::Emitter, "h3dHasEmitterFinished", false );
 	
 	return ((EmitterNode *)sn)->hasFinished();
 }

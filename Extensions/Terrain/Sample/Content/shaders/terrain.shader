@@ -66,6 +66,7 @@ void main( void )
 
 #include "shaders/utilityLib/fragDeferredWrite.glsl"
 
+uniform vec3 viewerPos;
 uniform vec4 sunDir;
 uniform sampler2D heightNormMap, detailMap;
 varying vec4 pos;
@@ -81,7 +82,7 @@ void main( void )
 	vec3 normal = vec3( texel.b, ny, texel.a );
 	
 	setMatID( 1.0 );
-	setPos( pos.xyz );
+	setPos( pos.xyz - viewerPos );
 	setNormal( normalize( normal ) );
 	setAlbedo( detailCol );
 	setSpecMask( 0.0 );

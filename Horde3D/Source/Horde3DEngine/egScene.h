@@ -58,6 +58,17 @@ struct SceneNodeParams
 	};
 };
 
+struct SceneNodeFlags
+{
+	enum List
+	{
+		NoDraw = 0x1,
+		NoCastShadow = 0x2,
+		NoRayQuery = 0x4,
+		Inactive = 0x7  // NoDraw | NoCastShadow | NoRayQuery
+	};
+};
+
 // =================================================================================================
 
 struct SceneNodeTpl
@@ -90,11 +101,11 @@ protected:
 	int                         _type;
 	NodeHandle                  _handle;
 	uint32                      _sgHandle;  // Spatial graph handle
+	uint32                      _flags;
 	float                       _sortKey;
 	bool                        _dirty;  // Does the node need to be updated?
 	bool                        _transformed;
 	bool                        _renderable;
-	bool                        _active;
 
 	BoundingBox                 _bBox;  // AABB in world space
 
@@ -115,11 +126,13 @@ public:
 	SceneNode( const SceneNodeTpl &tpl );
 	virtual ~SceneNode();
 
-	void setActivation( bool active );
 	void getTransform( Vec3f &trans, Vec3f &rot, Vec3f &scale );	// Not virtual for performance
 	void setTransform( Vec3f trans, Vec3f rot, Vec3f scale );	// Not virtual for performance
 	void setTransform( const Matrix4f &mat );
 	void getTransMatrices( const float **relMat, const float **absMat ) const;
+
+	int getFlags() { return _flags; }
+	void setFlags( int flags, bool recursive );
 
 	virtual int getParamI( int param );
 	virtual void setParamI( int param, int value );
@@ -214,7 +227,7 @@ public:
 	void updateNode( uint32 sgHandle );
 
 	void updateQueues( const Frustum &frustum1, const Frustum *frustum2,
-	                   RenderingOrder::List order, bool lightQueue, bool renderQueue );
+	                   RenderingOrder::List order, uint32 filterIgnore, bool lightQueue, bool renderQueue );
 
 	std::vector< SceneNode * > &getLightQueue() { return _lightQueue; }
 	std::vector< RendQueueItem > &getRenderableQueue() { return _renderableQueue; }
@@ -281,7 +294,7 @@ public:
 	void updateNodes();
 	void updateSpatialNode( uint32 sgHandle ) { _spatialGraph->updateNode( sgHandle ); }
 	void updateQueues( const Frustum &frustum1, const Frustum *frustum2,
-	                   RenderingOrder::List order, bool lightQueue, bool renderableQueue );
+	                   RenderingOrder::List order, uint32 filterIgnore, bool lightQueue, bool renderableQueue );
 	
 	NodeHandle addNode( SceneNode *node, SceneNode &parent );
 	NodeHandle addNodes( SceneNode &parent, SceneGraphResource &sgRes );

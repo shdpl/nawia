@@ -10,12 +10,10 @@
 //
 // *************************************************************************************************
 
+#define _CRT_SECURE_NO_WARNINGS
 #include "utOpenGL.h"
 #include <cstdlib>
 #include <cstring>
-#include <string>
-
-using namespace std;
 
 
 namespace glExt
@@ -29,7 +27,7 @@ namespace glExt
 	bool ARB_texture_non_power_of_two = false;
 	bool ARB_timer_query = false;
 
-	int	majorVersion = 1, minorVersion = 1;
+	int	majorVersion = 1, minorVersion = 0;
 }
 
 
@@ -151,6 +149,9 @@ PFNGLUNIFORMMATRIX4X2FVPROC glUniformMatrix4x2fv = 0x0;
 PFNGLUNIFORMMATRIX3X4FVPROC glUniformMatrix3x4fv = 0x0;
 PFNGLUNIFORMMATRIX4X3FVPROC glUniformMatrix4x3fv = 0x0;
 
+// GL 3.0
+PFNGLGETSTRINGIPROC glGetStringi = 0x0;
+
 // GL_EXT_framebuffer_object
 PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT = 0x0;
 PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT = 0x0;
@@ -183,16 +184,29 @@ PFNGLGETQUERYOBJECTUI64VPROC glGetQueryObjectui64v = 0x0;
 }  // namespace h3dGL
 
 
-bool isExtensionSupported( string extString )
+bool isExtensionSupported( const char *extName )
 {
-	size_t pos = 0;
-	string extensions = (char *)glGetString( GL_EXTENSIONS );
-	
-	while( (pos = extensions.find( extString, pos )) != string::npos )
+	if( glExt::majorVersion < 3 )
 	{
-		char c = extensions.c_str()[pos + extString.length()];
-		if( c == ' ' || c == '\0' ) return true;
-		pos += extString.length();
+		const char *extensions = (char *)glGetString( GL_EXTENSIONS );
+		size_t nameLen = strlen( extName );
+		const char *pos;
+		while( ( pos = strstr( extensions, extName ) ) != 0x0 )
+		{
+			char c = pos[nameLen];
+			if( c == ' ' || c == '\0' ) return true;
+			extensions = pos + nameLen;
+		}
+	}
+	else
+	{
+		GLint numExts;
+		glGetIntegerv( GL_NUM_EXTENSIONS, &numExts );
+		for( int i = 0; i < numExts; ++i )
+		{
+			if( strcmp( extName, (char *)glGetStringi( GL_EXTENSIONS, i ) ) == 0 )
+				return true;
+		}
 	}
 
 	return false;
@@ -201,15 +215,20 @@ bool isExtensionSupported( string extString )
 
 void getOpenGLVersion()
 {
-	string version = (char *)glGetString( GL_VERSION );
+	char version[8];
+	size_t len = strlen( (char *)glGetString( GL_VERSION ) );
+	if( len >= 8 ) len = 7;
 	
-	size_t pos1 = version.find( "." );
-	size_t pos2 = version.find( ".", pos1 + 1 );
-	if( pos2 == string::npos ) pos2 = version.find( " ", pos1 + 1 );
-	if( pos2 == string::npos ) pos2 = version.length();
-	
-	glExt::majorVersion = atoi( version.substr( 0, pos1 ).c_str() );
-	glExt::minorVersion = atoi( version.substr( pos1 + 1, pos2 ).c_str() );
+	strncpy( version, (char *)glGetString( GL_VERSION ), len );
+	version[len] = '\0';
+
+	char *pos1 = strtok( version, "." );
+	if( pos1 )
+	{
+		glExt::majorVersion = atoi( pos1 );
+		char *pos2 = strtok( 0x0, ". " );
+		if( pos2 ) glExt::minorVersion = atoi( pos2 );
+	}
 }
 
 
@@ -217,6 +236,8 @@ void *platGetProcAddress( const char *funcName )
 {
 #if defined( PLATFORM_WIN )
 	return (void *)wglGetProcAddress( funcName );
+#elif defined( PLATFORM_WIN_CE )
+	return (void *)eglGetProcAddress( funcName );
 #elif defined( PLATFORM_MAC )
 	CFStringRef functionName = CFStringCreateWithCString( kCFAllocatorDefault, funcName, kCFStringEncodingASCII );
 	CFURLRef bundleURL = CFURLCreateWithFileSystemPath(
@@ -357,6 +378,12 @@ bool initOpenGLExtensions()
 	r &= (glUniformMatrix4x2fv = (PFNGLUNIFORMMATRIX4X2FVPROC) platGetProcAddress( "glUniformMatrix4x2fv" )) != 0x0;
 	r &= (glUniformMatrix3x4fv = (PFNGLUNIFORMMATRIX3X4FVPROC) platGetProcAddress( "glUniformMatrix3x4fv" )) != 0x0;
 	r &= (glUniformMatrix4x3fv = (PFNGLUNIFORMMATRIX4X3FVPROC) platGetProcAddress( "glUniformMatrix4x3fv" )) != 0x0;*/
+
+	// GL 3.0 
+	if( glExt::majorVersion >= 3 )
+	{
+		r &= (glGetStringi = (PFNGLGETSTRINGIPROC) platGetProcAddress( "glGetStringi" )) != 0x0;
+	}
 	
 	// Extensions
 	glExt::EXT_framebuffer_object = isExtensionSupported( "GL_EXT_framebuffer_object" );

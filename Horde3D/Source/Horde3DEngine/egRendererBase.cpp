@@ -20,6 +20,12 @@
 
 namespace Horde3D {
 
+#ifdef H3D_VALIDATE_DRAWCALLS
+#	define CHECK_GL_ERROR checkGLError();
+#else
+#	define CHECK_GL_ERROR
+#endif
+
 // =================================================================================================
 // GPUTimer
 // =================================================================================================
@@ -121,6 +127,7 @@ void GPUTimer::reset()
 RenderDeviceInterface::RenderDeviceInterface()
 {
 	_vpX = 0; _vpY = 0; _vpWidth = 320; _vpHeight = 240;
+	_scX = 0; _scY = 0; _scWidth = 320; _scHeight = 240;
 	_prevShader = _curShader = 0;
 	_curRendBuf = 0; _outputBufferIndex = 0;
 	_textureMem = 0; _bufferMem = 0;
@@ -225,7 +232,7 @@ bool RenderDeviceInterface::init()
 // Buffers
 // =================================================================================================
 
-uint32 RenderDeviceInterface::createVertexBuffer( uint32 size, void *data )
+uint32 RenderDeviceInterface::createVertexBuffer( uint32 size, const void *data )
 {
 	RDIBuffer buf;
 
@@ -241,7 +248,7 @@ uint32 RenderDeviceInterface::createVertexBuffer( uint32 size, void *data )
 }
 
 
-uint32 RenderDeviceInterface::createIndexBuffer( uint32 size, void *data )
+uint32 RenderDeviceInterface::createIndexBuffer( uint32 size, const void *data )
 {
 	RDIBuffer buf;
 
@@ -1137,6 +1144,17 @@ void RenderDeviceInterface::releaseVertexLayout( uint32 vlObj )
 // Internal state management
 // =================================================================================================
 
+void RenderDeviceInterface::checkGLError()
+{
+	uint32 error = glGetError();
+	ASSERT( error != GL_INVALID_ENUM );
+	ASSERT( error != GL_INVALID_VALUE );
+	ASSERT( error != GL_INVALID_OPERATION );
+	ASSERT( error != GL_OUT_OF_MEMORY );
+	ASSERT( error != GL_STACK_OVERFLOW && error != GL_STACK_UNDERFLOW );
+}
+
+
 bool RenderDeviceInterface::applyVertexLayout()
 {
 	static int maxVertexAttribs = 0;
@@ -1162,7 +1180,7 @@ bool RenderDeviceInterface::applyVertexLayout()
 		RDIVertLayoutElem &elem = vl.elems[i];
 		const RDIVertBufSlot &vbSlot = _vertBufSlots[elem.vbSlot];
 		
-		int attribIndex = itr->second.elemAttribIndices[i];
+		int8 attribIndex = itr->second.elemAttribIndices[i];
 		if( attribIndex >= 0 )
 		{
 			ASSERT( _buffers.getRef( _vertBufSlots[elem.vbSlot].vbObj ).glObj != 0 &&
@@ -1214,69 +1232,83 @@ void RenderDeviceInterface::applySamplerState( RDITexture &tex )
 
 bool RenderDeviceInterface::commitStates( uint32 filter )
 {
-	// Set viewport
-	if( _pendingMask & filter & PM_VIEWPORT )
+	if( _pendingMask & filter )
 	{
-		glViewport( _vpX, _vpY, _vpWidth, _vpHeight );
-		_pendingMask &= ~PM_VIEWPORT;
-	}
+		uint32 mask = _pendingMask & filter;
 	
-	// Bind index buffer
-	if( _pendingMask & filter & PM_INDEXBUF )
-	{
-		if( _newIndexBuf != _curIndexBuf )
+		// Set viewport
+		if( mask & PM_VIEWPORT )
 		{
-			if( _newIndexBuf != 0 )
-				glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _buffers.getRef( _newIndexBuf ).glObj );
-			else
-				glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-			
-			_curIndexBuf = _newIndexBuf;
-			_pendingMask &= ~PM_INDEXBUF;
+			glViewport( _vpX, _vpY, _vpWidth, _vpHeight );
+			_pendingMask &= ~PM_VIEWPORT;
 		}
-	}
-	
-	// Bind vertex buffers
-	if( _pendingMask & filter & PM_VERTLAYOUT )
-	{
-		//if( _newVertLayout != _curVertLayout || _curShader != _prevShader )
+
+		// Set scissor rect
+		if( mask & PM_SCISSOR )
 		{
-			if( !applyVertexLayout() )
-				return false;
-			_curVertLayout = _newVertLayout;
-			_prevShader = _curShader;
-			_pendingMask &= ~PM_VERTLAYOUT;
+			glScissor( _scX, _scY, _scWidth, _scHeight );
+			_pendingMask &= ~PM_SCISSOR;
 		}
-	}
-
-	// Bind textures and set sampler state
-	if( _pendingMask & filter & PM_TEXTURES )
-	{
-		for( uint32 i = 0; i < 16; ++i )
+		
+		// Bind index buffer
+		if( mask & PM_INDEXBUF )
 		{
-			glActiveTexture( GL_TEXTURE0 + i );
-
-			if( _texSlots[i].texObj != 0 )
+			if( _newIndexBuf != _curIndexBuf )
 			{
-				RDITexture &tex = _textures.getRef( _texSlots[i].texObj );
-				glBindTexture( tex.type, tex.glObj );
-
-				// Apply sampler state
-				if( tex.samplerState != _texSlots[i].samplerState )
-				{
-					tex.samplerState = _texSlots[i].samplerState;
-					applySamplerState( tex );
-				}
-			}
-			else
-			{
-				glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
-				glBindTexture( GL_TEXTURE_3D, 0 );
-				glBindTexture( GL_TEXTURE_2D, 0 );
+				if( _newIndexBuf != 0 )
+					glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _buffers.getRef( _newIndexBuf ).glObj );
+				else
+					glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+				
+				_curIndexBuf = _newIndexBuf;
+				_pendingMask &= ~PM_INDEXBUF;
 			}
 		}
 		
-		_pendingMask &= ~PM_TEXTURES;
+		// Bind vertex buffers
+		if( mask & PM_VERTLAYOUT )
+		{
+			//if( _newVertLayout != _curVertLayout || _curShader != _prevShader )
+			{
+				if( !applyVertexLayout() )
+					return false;
+				_curVertLayout = _newVertLayout;
+				_prevShader = _curShader;
+				_pendingMask &= ~PM_VERTLAYOUT;
+			}
+		}
+
+		// Bind textures and set sampler state
+		if( mask & PM_TEXTURES )
+		{
+			for( uint32 i = 0; i < 16; ++i )
+			{
+				glActiveTexture( GL_TEXTURE0 + i );
+
+				if( _texSlots[i].texObj != 0 )
+				{
+					RDITexture &tex = _textures.getRef( _texSlots[i].texObj );
+					glBindTexture( tex.type, tex.glObj );
+
+					// Apply sampler state
+					if( tex.samplerState != _texSlots[i].samplerState )
+					{
+						tex.samplerState = _texSlots[i].samplerState;
+						applySamplerState( tex );
+					}
+				}
+				else
+				{
+					glBindTexture( GL_TEXTURE_CUBE_MAP, 0 );
+					glBindTexture( GL_TEXTURE_3D, 0 );
+					glBindTexture( GL_TEXTURE_2D, 0 );
+				}
+			}
+			
+			_pendingMask &= ~PM_TEXTURES;
+		}
+
+		CHECK_GL_ERROR
 	}
 
 	return true;
@@ -1297,8 +1329,34 @@ void RenderDeviceInterface::resetStates()
 
 
 // =================================================================================================
-// Draw calls
+// Draw calls and clears
 // =================================================================================================
+
+void RenderDeviceInterface::clear( uint32 flags, float *colorRGBA, float depth )
+{
+	uint32 mask = 0;
+	
+	if( flags & CLR_DEPTH )
+	{
+		mask |= GL_DEPTH_BUFFER_BIT;
+		glClearDepth( depth );
+	}
+	if( flags & CLR_COLOR )
+	{
+		mask |= GL_COLOR_BUFFER_BIT;
+		if( colorRGBA ) glClearColor( colorRGBA[0], colorRGBA[1], colorRGBA[2], colorRGBA[3] );
+		else glClearColor( 0, 0, 0, 0 );
+	}
+	
+	if( mask )
+	{	
+		commitStates( PM_VIEWPORT | PM_SCISSOR );
+		glClear( mask );
+	}
+
+	CHECK_GL_ERROR
+}
+
 
 void RenderDeviceInterface::draw( RDIPrimType primType, uint32 firstVert, uint32 numVerts )
 {
@@ -1306,6 +1364,8 @@ void RenderDeviceInterface::draw( RDIPrimType primType, uint32 firstVert, uint32
 	{
 		glDrawArrays( (uint32)primType, firstVert, numVerts );
 	}
+
+	CHECK_GL_ERROR
 }
 
 
@@ -1319,6 +1379,8 @@ void RenderDeviceInterface::drawIndexed( RDIPrimType primType, uint32 firstIndex
 		glDrawRangeElements( (uint32)primType, firstVert, firstVert + numVerts,
 		                     numIndices, _indexFormat, (char *)0 + firstIndex );
 	}
+
+	CHECK_GL_ERROR
 }
 
 }  // namespace

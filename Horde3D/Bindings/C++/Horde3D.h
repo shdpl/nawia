@@ -117,7 +117,9 @@ struct H3DStats
 		AnimationTime     - CPU time in ms spent for animation
 		GeoUpdateTime     - CPU time in ms spent for software skinning and morphing
 		ParticleSimTime   - CPU time in ms spent for particle simulation and updates
+		FwdLightsGPUTime  - GPU time in ms spent for forward lighting passes
 		DefLightsGPUTime  - GPU time in ms spent for drawing deferred light volumes
+		ShadowsGPUTime    - GPU time in ms spent for generating shadow maps
 		ParticleGPUTime   - GPU time in ms spent for drawing particles
 		TextureVMem       - Estimated amount of video memory used by textures (in Mb)
 		GeometryVMem      - Estimated amount of video memory used by geometry (in Mb)
@@ -131,7 +133,9 @@ struct H3DStats
 		AnimationTime,
 		GeoUpdateTime,
 		ParticleSimTime,
+		FwdLightsGPUTime,
 		DefLightsGPUTime,
+		ShadowsGPUTime,
 		ParticleGPUTime,
 		TextureVMem,
 		GeometryVMem
@@ -434,6 +438,26 @@ struct H3DNodeTypes
 		Light,
 		Camera,
 		Emitter
+	};
+};
+
+struct H3DNodeFlags
+{
+	/*	Enum: H3DNodeFlags
+			The available scene node flags.
+
+		NoDraw         - Excludes scene node from all rendering
+		NoCastShadow   - Excludes scene node from list of shadow casters
+		NoRayQuery     - Excludes scene node from ray intersection queries
+		Inactive       - Deactivates scene node so that it is completely ignored
+		                 (combination of all flags above)
+	*/
+	enum List
+	{
+		NoDraw = 1,
+		NoCastShadow = 2,
+		NoRayQuery = 4,
+		Inactive = 7  // NoDraw | NoCastShadow | NoRayQuery
 	};
 };
 
@@ -1456,22 +1480,6 @@ DLL H3DNode h3dAddNodes( H3DNode parent, H3DRes sceneGraphRes );
 */
 DLL void h3dRemoveNode( H3DNode node );
 
-/* Function: h3dSetNodeActivation
-		Sets the activation (visibility) state of a node.
-	
-	Details:
-		This function sets the activation state of the specified node to active or inactive. Inactive
-		nodes with all their children are excluded from rendering.
-	
-	Parameters:
-		node    - handle to the node to be modified
-		active  - boolean value indicating whether node shall be active or inactive
-		
-	Returns:
-		nothing
-*/
-DLL void h3dSetNodeActivation( H3DNode node, bool active );
-
 /* Function: h3dCheckNodeTransFlag
 		Checks if a scene node has been transformed by the engine.
 	
@@ -1671,6 +1679,35 @@ DLL const char *h3dGetNodeParamStr( H3DNode node, int param );
 */
 DLL void h3dSetNodeParamStr( H3DNode node, int param, const char *value );
 
+/* Function: h3dGetNodeFlags
+		Gets the scene node flags.
+
+	Details:
+		This function returns a bit mask containing the set scene node flags.
+	
+	Parameters:
+		node  - handle to the node to be accessed
+		
+	Returns:
+		flag bitmask
+*/
+DLL int h3dGetNodeFlags( H3DNode node );
+
+/* Function: h3dSetNodeFlags
+		Sets the scene node flags.
+	
+	Details:
+		This function sets the flags of the specified scene node.
+	
+	Parameters:
+		node       - handle to the node to be modified
+		flags      - new flag bitmask
+		recursive  - specifies whether flags should be applied recursively to all child nodes
+		
+	Returns:
+		nothing
+*/
+DLL void h3dSetNodeFlags( H3DNode node, int flags, bool recursive );
 
 /* Function: h3dGetNodeAABB
 		Gets the bounding box of a scene node.

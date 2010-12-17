@@ -18,7 +18,11 @@
 #endif
 
 // Detect platform
-#if defined( WIN32 ) || defined( _WINDOWS )
+#if defined( WINCE )
+#	if !defined( PLATFORM_WIN_CE )
+#		define PLATFORM_WIN_CE
+#	endif
+#elif defined( WIN32 ) || defined( _WINDOWS )
 #	if !defined( PLATFORM_WIN )
 #		define PLATFORM_WIN
 #	endif
@@ -47,15 +51,27 @@
 
 
 // Shortcuts for common types
+typedef signed char int8;
 typedef unsigned short uint16;
 typedef unsigned int uint32;
 typedef long long int64;
 typedef unsigned long long uint64;
 
 
-#ifndef PLATFORM_WIN
+#if !defined( PLATFORM_WIN ) && !defined( PLATFORM_WIN_CE )
 #	define _stricmp strcasecmp
 #	define _mkdir( name ) mkdir( name, 0755 )
+#endif
+
+#ifdef PLATFORM_WIN_CE
+#define GetProcessAffinityMask
+#define SetThreadAffinityMask
+#ifndef vsnprintf
+#	define vsnprintf _vsnprintf
+#endif
+#undef ASSERT
+#undef min
+#undef max
 #endif
 
 #ifndef _MSC_VER

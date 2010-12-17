@@ -31,8 +31,8 @@ using namespace std;
 // *************************************************************************************************
 
 SceneNode::SceneNode( const SceneNodeTpl &tpl ) :
-	_parent( 0x0 ), _type( tpl.type ), _handle( 0 ), _sgHandle( 0 ), _sortKey( 0 ),
-	_dirty( true ), _transformed( true ), _renderable( false ), _active( true ),
+	_parent( 0x0 ), _type( tpl.type ), _handle( 0 ), _sgHandle( 0 ), _flags( 0 ), _sortKey( 0 ),
+	_dirty( true ), _transformed( true ), _renderable( false ),
 	_name( tpl.name ), _attachment( tpl.attachmentString )
 {
 	_relTrans = Matrix4f::ScaleMat( tpl.scale.x, tpl.scale.y, tpl.scale.z );
@@ -43,18 +43,6 @@ SceneNode::SceneNode( const SceneNodeTpl &tpl ) :
 
 SceneNode::~SceneNode()
 {
-}
-
-
-void SceneNode::setActivation( bool active )
-{
-	_active = active;
-	
-	// Set same activation state for children
-	for( size_t i = 0, s = _children.size(); i < s; ++i )
-	{
-		if( _children[i]->_active != active ) _children[i]->setActivation( active );
-	}
 }
 
 
@@ -122,6 +110,20 @@ void SceneNode::getTransMatrices( const float **relMat, const float **absMat ) c
 	{
 		if( _dirty ) Modules::sceneMan().updateNodes();
 		*absMat = &_absTrans.x[0];
+	}
+}
+
+
+void SceneNode::setFlags( int flags, bool recursive )
+{
+	_flags = flags;
+
+	if( recursive )
+	{
+		for( size_t i = 0, s = _children.size(); i < s; ++i )
+		{
+			_children[i]->setFlags( flags, true );
+		}
 	}
 }
 
@@ -342,8 +344,8 @@ struct RendQueueItemCompFunc
 };
 
 
-void SpatialGraph::updateQueues( const Frustum &frustum1, const Frustum *frustum2,
-	                             RenderingOrder::List order, bool lightQueue, bool renderQueue )
+void SpatialGraph::updateQueues( const Frustum &frustum1, const Frustum *frustum2, RenderingOrder::List order,
+                                 uint32 filterIgnore, bool lightQueue, bool renderQueue )
 {
 	Modules::sceneMan().updateNodes();
 	
@@ -359,7 +361,7 @@ void SpatialGraph::updateQueues( const Frustum &frustum1, const Frustum *frustum
 	for( size_t i = 0, s = _nodes.size(); i < s; ++i )
 	{
 		SceneNode *node = _nodes[i];
-		if( node == 0x0 || !node->_active ) continue;
+		if( node == 0x0 || (node->_flags & filterIgnore) ) continue;
 
 		if( renderQueue && node->_renderable )
 		{
@@ -469,10 +471,10 @@ void SceneManager::updateNodes()
 }
 
 
-void SceneManager::updateQueues( const Frustum &frustum1, const Frustum *frustum2,
-								 RenderingOrder::List order, bool lightQueue, bool renderableQueue )
+void SceneManager::updateQueues( const Frustum &frustum1, const Frustum *frustum2, RenderingOrder::List order,
+                                 uint32 filterIgnore, bool lightQueue, bool renderableQueue )
 {
-	_spatialGraph->updateQueues( frustum1, frustum2, order, lightQueue, renderableQueue );
+	_spatialGraph->updateQueues( frustum1, frustum2, order, filterIgnore, lightQueue, renderableQueue );
 }
 
 
@@ -675,7 +677,7 @@ int SceneManager::findNodes( SceneNode &startNode, const string &name, int type 
 
 void SceneManager::castRayInternal( SceneNode &node )
 {
-	if( node._active )
+	if( !(node._flags & SceneNodeFlags::NoRayQuery) )
 	{
 		Vec3f intsPos;
 		if( node.checkIntersection( _rayOrigin, _rayDirection, intsPos ) )
@@ -721,7 +723,7 @@ int SceneManager::castRay( SceneNode &node, const Vec3f &rayOrig, const Vec3f &r
 {
 	_castRayResults.resize( 0 );  // Clear without affecting capacity
 
-	if( !node._active ) return 0;
+	if( node._flags & SceneNodeFlags::NoRayQuery ) return 0;
 
 	_rayOrigin = rayOrig;
 	_rayDirection = rayDir;

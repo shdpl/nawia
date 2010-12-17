@@ -15,6 +15,7 @@
 #include "egModules.h"
 #include "egRenderer.h"
 #include "egCom.h"
+#include <cstring>
 
 #include "utDebug.h"
 

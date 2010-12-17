@@ -85,7 +85,7 @@ void Symbol::setParent(int parent_horde_id)
 
 void Symbol::setVisible(bool value)
 {
-	h3dSetNodeActivation( m_horde_id, value );
+	h3dSetNodeFlags( m_horde_id, value ? 0 : H3DNodeFlags::Inactive, true );
 }
 
 void Symbol::setDistanceFromAgent(float dist)

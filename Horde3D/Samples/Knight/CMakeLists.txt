@@ -12,17 +12,19 @@ add_executable(Knight WIN32 MACOSX_BUNDLE
 	main.cpp
 	)
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 target_link_libraries(Knight Horde3D Horde3DUtils glfw)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+FIND_LIBRARY(X11_LIBRARY X11)
+target_link_libraries(Knight Horde3D Horde3DUtils glfw ${X11})
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		
 	   FIND_LIBRARY(COCOA_LIBRARY Cocoa)
        FIND_LIBRARY(APPLICATION_SERVICES_LIBRARY ApplicationServices)
        FIND_LIBRARY(AGL_LIBRARY AGL)
-       IF(COCOA_LIBRARY)   
-         target_link_libraries(Knight ${COCOA_LIBRARY} ${APPLICATION_SERVICES_LIBRARY} ${AGL_LIBRARY})
-       ELSE(COCOA_LIBRARY)
-         FIND_LIBRARY(CARBON_LIBRARY Carbon)
-         target_link_libraries(Knight ${CARBON_LIBRARY} ${APPLICATION_SERVICES_LIBRARY} ${AGL_LIBRARY})
-       ENDIF(COCOA_LIBRARY)
+       target_link_libraries(Knight Horde3D Horde3DUtils glfw ${COCOA_LIBRARY} ${APPLICATION_SERVICES_LIBRARY} ${AGL_LIBRARY})
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

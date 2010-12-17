@@ -34,7 +34,7 @@ struct BoundingBox
 		max = Vec3f( 0, 0, 0 );
 	}
 
-	Vec3f getCorner( uint32 index )
+	Vec3f getCorner( uint32 index ) const
 	{
 		switch( index )
 		{
@@ -130,9 +130,9 @@ public:
 	const Vec3f &getOrigin() const { return _origin; }
 	const Vec3f &getCorner( uint32 index ) const { return _corners[index]; }
 	
-	void buildViewFrustum( const Matrix4f &transMat, float fov, float aspect, float near, float far );
+	void buildViewFrustum( const Matrix4f &transMat, float fov, float aspect, float nearPlane, float farPlane );
 	void buildViewFrustum( const Matrix4f &transMat, float left, float right,
-	                       float bottom, float top, float near, float far );
+	                       float bottom, float top, float nearPlane, float farPlane );
 	void buildViewFrustum( const Matrix4f &viewMat, const Matrix4f &projMat );
 	void buildBoxFrustum( const Matrix4f &transMat, float left, float right,
 	                      float bottom, float top, float front, float back );

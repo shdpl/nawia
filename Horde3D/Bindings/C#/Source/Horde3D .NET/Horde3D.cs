@@ -1249,13 +1249,22 @@ namespace Horde3DNET
         }
 
         /// <summary>
-        /// This function sets the activation state of the specified node to active or inactive. Inactive nodes are excluded from rendering.
+        /// Gets the scene node flags.
+        /// </summary>
+        /// <param name="node">handle to the node to be accessed</param>
+        public static void h3dGetNodeFlags(int node)
+        {
+            NativeMethodsEngine.h3dGetNodeFlags(node);
+        }
+        /// <summary>
+        /// Sets the scene node flags.
         /// </summary>
         /// <param name="node">handle to the node to be modified</param>
-        /// <param name="active">boolean value indicating whether node is active or inactive</param>        
-        public static void setNodeActivation(int node, bool active)
+        /// <param name="flags">new flag bitmask</param>
+        /// <param name="recursive">specifies whether flags should be applied recursively to all child nodes</param>        
+        public static void setNodeFlags(int node, int flags, bool recursive)
         {
-            NativeMethodsEngine.h3dSetNodeActivation(node, active);
+            NativeMethodsEngine.h3dSetNodeFlags(node, flags, recursive);
         }
 
         /// <summary>

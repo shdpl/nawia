@@ -176,11 +176,18 @@ void Modules::release()
 }
 
 
-void Modules::setError( const char *error )
+void Modules::setError( const char *errorStr1, const char *errorStr2 )
 {
+	static std::string msg;
+	msg.resize( 0 );
+
+	if( errorStr1 ) msg.append( errorStr1 );
+	if( errorStr2 ) msg.append( errorStr2 );
+	
 	_errorFlag = true;
-	_engineLog->writeDebugInfo( error );
+	_engineLog->writeDebugInfo( msg.c_str() );
 }
+
 
 bool Modules::getError()
 {

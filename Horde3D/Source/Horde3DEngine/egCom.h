@@ -142,7 +142,9 @@ struct EngineStats
 		AnimationTime,
 		GeoUpdateTime,
 		ParticleSimTime,
+		FwdLightsGPUTime,
 		DefLightsGPUTime,
+		ShadowsGPUTime,
 		ParticleGPUTime,
 		TextureVMem,
 		GeometryVMem
@@ -165,7 +167,9 @@ protected:
 	Timer     _particleSimTimer;
 	float     _frameTime;
 
+	GPUTimer  *_fwdLightsGPUTimer;
 	GPUTimer  *_defLightsGPUTimer;
+	GPUTimer  *_shadowsGPUTimer;
 	GPUTimer  *_particleGPUTimer;
 
 public:

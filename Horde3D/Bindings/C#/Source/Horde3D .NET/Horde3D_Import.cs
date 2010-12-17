@@ -191,8 +191,11 @@ namespace Horde3DNET
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]        
         internal static extern void h3dRemoveNode(int node);
 
+        [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
+        internal static extern int h3dGetNodeFlags(int node);
+
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]        
-        internal static extern void h3dSetNodeActivation(int node, [MarshalAs(UnmanagedType.U1)]bool active);
+        internal static extern void h3dSetNodeFlags(int node, int flags, [MarshalAs(UnmanagedType.U1)]bool recursive);
 
         [DllImport(ENGINE_DLL), SuppressUnmanagedCodeSecurity]
         [return: MarshalAs(UnmanagedType.U1)]   // represents C++ bool type

@@ -27,6 +27,7 @@ set(HORDE3D_SOURCES
 	egTexture.cpp
 	utImage.cpp
 	utOpenGL.cpp
+	config.h
 	egAnimatables.h
 	egAnimation.h
 	egCamera.h
@@ -64,6 +65,9 @@ add_library(Horde3D SHARED
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	IF(MSVC)
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DSECURE_SCL=0")		
+	ENDIF(MSVC)
 	target_link_libraries(Horde3D opengl32)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 

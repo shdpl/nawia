@@ -14,6 +14,7 @@
 #define _egPrerequisites_H_
 
 #include "utPlatform.h"
+#include "config.h"
 
 
 namespace Horde3D {

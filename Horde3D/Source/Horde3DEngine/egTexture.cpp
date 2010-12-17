@@ -15,6 +15,7 @@
 #include "egCom.h"
 #include "egRenderer.h"
 #include "utImage.h"
+#include <cstring>
 
 #include "utDebug.h"
 
@@ -136,8 +137,8 @@ TextureResource::TextureResource( const string &name, uint32 width, uint32 heigh
 	{
 		_flags &= ~ResourceFlags::TexCubemap;
 		_flags &= ~ResourceFlags::TexSRGB;
-		_flags &= ResourceFlags::NoTexCompression;
-		_flags &= ResourceFlags::NoTexMipmaps;
+		_flags |= ResourceFlags::NoTexCompression;
+		_flags |= ResourceFlags::NoTexMipmaps;
 
 		_texType = TextureTypes::Tex2D;
 		_sRGB = false;
@@ -216,219 +217,238 @@ bool TextureResource::raiseError( const string &msg )
 }
 
 
+bool TextureResource::checkDDS( const char *data, int size )
+{
+	return size > 128 && *((uint32 *)data) == FOURCC( 'D', 'D', 'S', ' ' );
+}
+
+
+bool TextureResource::loadDDS( const char *data, int size )
+{
+	ASSERT_STATIC( sizeof( DDSHeader ) == 128 );
+
+	memcpy( &ddsHeader, data, 128 );
+	
+	// Check header
+	// There are some flags that are required to be set for every dds but we don't check them
+	if( ddsHeader.dwSize != 124 )
+	{
+		return raiseError( "Invalid DDS header" );
+	}
+
+	// Store properties
+	_width = ddsHeader.dwWidth;
+	_height = ddsHeader.dwHeight;
+	_depth = 1;
+	_texFormat = TextureFormats::Unknown;
+	_texObject = 0;
+	_sRGB = (_flags & ResourceFlags::TexSRGB) != 0;
+	int mipCount = ddsHeader.dwFlags & DDSD_MIPMAPCOUNT ? ddsHeader.dwMipMapCount : 1;
+	_hasMipMaps = mipCount > 1 ? true : false;
+
+	// Get texture type
+	if( ddsHeader.caps.dwCaps2 == 0 )
+	{
+		_texType = TextureTypes::Tex2D;
+	}
+	else if( ddsHeader.caps.dwCaps2 & DDSCAPS2_CUBEMAP )
+	{
+		if( (ddsHeader.caps.dwCaps2 & DDSCAPS2_CM_COMPLETE) != DDSCAPS2_CM_COMPLETE )
+			raiseError( "DDS cubemap does not contain all cube sides" );
+		_texType = TextureTypes::TexCube;
+	}
+	else if( ddsHeader.caps.dwCaps2 & DDSCAPS2_VOLUME )
+	{
+		_depth = ddsHeader.dwDepth;
+		_texType = TextureTypes::Tex3D;
+	}
+	else
+	{
+		return raiseError( "Unsupported DDS texture type" );
+	}
+	
+	// Get pixel format
+	int blockSize = 1, bytesPerBlock = 4;
+	enum { pfBGRA, pfBGR, pfBGRX, pfRGB, pfRGBX, pfRGBA } pixFmt = pfBGRA;
+	
+	if( ddsHeader.pixFormat.dwFlags & DDPF_FOURCC )
+	{
+		switch( ddsHeader.pixFormat.dwFourCC )
+		{
+		case FOURCC( 'D', 'X', 'T', '1' ):
+			_texFormat = TextureFormats::DXT1;
+			blockSize = 4; bytesPerBlock = 8;
+			break;
+		case FOURCC( 'D', 'X', 'T', '3' ):
+			_texFormat = TextureFormats::DXT3;
+			blockSize = 4; bytesPerBlock = 16;
+			break;
+		case FOURCC( 'D', 'X', 'T', '5' ):
+			_texFormat = TextureFormats::DXT5;
+			blockSize = 4; bytesPerBlock = 16;
+			break;
+		case D3DFMT_A16B16G16R16F: 
+			_texFormat = TextureFormats::RGBA16F;
+			bytesPerBlock = 8;
+			break;
+		case D3DFMT_A32B32G32R32F: 
+			_texFormat = TextureFormats::RGBA32F;
+			bytesPerBlock = 16;
+			break;
+		}
+	}
+	else if( ddsHeader.pixFormat.dwFlags & DDPF_RGB )
+	{
+		bytesPerBlock = ddsHeader.pixFormat.dwRGBBitCount / 8;
+		
+		if( ddsHeader.pixFormat.dwRBitMask == 0x00ff0000 &&
+		    ddsHeader.pixFormat.dwGBitMask == 0x0000ff00 &&
+		    ddsHeader.pixFormat.dwBBitMask == 0x000000ff ) pixFmt = pfBGR;
+		else
+		if( ddsHeader.pixFormat.dwRBitMask == 0x000000ff &&
+		    ddsHeader.pixFormat.dwGBitMask == 0x0000ff00 &&
+		    ddsHeader.pixFormat.dwBBitMask == 0x00ff0000 ) pixFmt = pfRGB;
+
+		if( pixFmt == pfBGR || pixFmt == pfRGB )
+		{
+			if( ddsHeader.pixFormat.dwRGBBitCount == 24 )
+			{
+				_texFormat = TextureFormats::BGRA8;
+			}
+			else if( ddsHeader.pixFormat.dwRGBBitCount == 32 )
+			{
+				if( !(ddsHeader.pixFormat.dwFlags & DDPF_ALPHAPIXELS) ||
+				    ddsHeader.pixFormat.dwABitMask == 0x00000000 )
+				{
+					_texFormat = TextureFormats::BGRA8;
+					pixFmt = pixFmt == pfBGR ? pfBGRX : pfRGBX;
+				}
+				else
+				{	
+					_texFormat = TextureFormats::BGRA8;
+					pixFmt = pixFmt == pfBGR ? pfBGRA : pfRGBA;
+				}
+			}
+		}
+	}
+
+	if( _texFormat == TextureFormats::Unknown )
+		return raiseError( "Unsupported DDS pixel format" );
+
+	// Create texture
+	_texObject = gRDI->createTexture( _texType, _width, _height, _depth, _texFormat,
+	                                  mipCount > 1, false, false, _sRGB );
+	
+	// Upload texture subresources
+	int numSlices = _texType == TextureTypes::TexCube ? 6 : 1;
+	unsigned char *pixels = (unsigned char *)(data + 128);
+
+	for( int i = 0; i < numSlices; ++i )
+	{
+		int width = _width, height = _height, depth = _depth;
+		uint32 *dstBuf = 0x0;
+
+		for( int j = 0; j < mipCount; ++j )
+		{
+			size_t mipSize = std::max( width / blockSize, 1 ) * std::max( height / blockSize, 1 ) *
+			                 depth * bytesPerBlock;
+			
+			if( pixels + mipSize > (unsigned char *)data + size )
+				return raiseError( "Corrupt DDS" );
+
+			if( _texFormat == TextureFormats::BGRA8 && pixFmt != pfBGRA )
+			{
+				// Convert 8 bit DDS formats to BGRA
+				uint32 pixCount = width * height * depth;
+				if( dstBuf == 0x0 ) dstBuf = new uint32[pixCount * 4];
+				uint32 *p = dstBuf;
+
+				if( pixFmt == pfBGR )
+					for( uint32 k = 0; k < pixCount * 3; k += 3 )
+						*p++ = pixels[k+0] | pixels[k+1]<<8 | pixels[k+2]<<16 | 0xFF000000;
+				else if( pixFmt == pfBGRX )
+					for( uint32 k = 0; k < pixCount * 4; k += 4 )
+						*p++ = pixels[k+0] | pixels[k+1]<<8 | pixels[k+2]<<16 | 0xFF000000;
+				else if( pixFmt == pfRGB )
+					for( uint32 k = 0; k < pixCount * 3; k += 3 )
+						*p++ = pixels[k+2] | pixels[k+1]<<8 | pixels[k+0]<<16 | 0xFF000000;
+				else if( pixFmt == pfRGBX )
+					for( uint32 k = 0; k < pixCount * 4; k += 4 )
+						*p++ = pixels[k+2] | pixels[k+1]<<8 | pixels[k+0]<<16 | 0xFF000000;
+				else if( pixFmt == pfRGBA )
+					for( uint32 k = 0; k < pixCount * 4; k += 4 )
+						*p++ = pixels[k+2] | pixels[k+1]<<8 | pixels[k+0]<<16 | pixels[k+3]<<24;
+				
+				gRDI->uploadTextureData( _texObject, i, j, dstBuf );
+			}
+			else
+			{
+				// Upload DDS data directly
+				gRDI->uploadTextureData( _texObject, i, j, pixels );
+			}
+
+			pixels += mipSize;
+			if( width > 1 ) width >>= 1;
+			if( height > 1 ) height >>= 1;
+			if( depth > 1 ) depth >>= 1;
+		}
+
+		if( dstBuf != 0x0 ) delete[] dstBuf;
+	}
+
+	ASSERT( pixels == (unsigned char *)data + size );
+
+	return true;
+}
+
+
+bool TextureResource::loadSTBI( const char *data, int size )
+{
+	bool hdr = false;
+	if( stbi_is_hdr_from_memory( (unsigned char *)data, size ) > 0 ) hdr = true;
+	
+	int comps;
+	void *pixels = 0x0;
+	if( hdr )
+		pixels = stbi_loadf_from_memory( (unsigned char *)data, size, &_width, &_height, &comps, 4 );
+	else
+		pixels = stbi_load_from_memory( (unsigned char *)data, size, &_width, &_height, &comps, 4 );
+
+	if( pixels == 0x0 )
+		return raiseError( "Invalid image format (" + string( stbi_failure_reason() ) + ")" );
+
+	// Swizzle RGBA -> BGRA
+	uint32 *ptr = (uint32 *)pixels;
+	for( uint32 i = 0, si = _width * _height; i < si; ++i )
+	{
+		uint32 col = *ptr;
+		*ptr++ = (col & 0xFF00FF00) | ((col & 0x000000FF) << 16) | ((col & 0x00FF0000) >> 16);
+	}
+	
+	_texType = TextureTypes::Tex2D;
+	_texFormat = hdr ? TextureFormats::RGBA16F : TextureFormats::BGRA8;
+	_sRGB = (_flags & ResourceFlags::TexSRGB) != 0;
+	_hasMipMaps = !(_flags & ResourceFlags::NoTexMipmaps);
+	
+	// Create and upload texture
+	_texObject = gRDI->createTexture( _texType, _width, _height, _depth, _texFormat,
+		_hasMipMaps, _hasMipMaps, !(_flags & ResourceFlags::NoTexCompression), _sRGB );
+	gRDI->uploadTextureData( _texObject, 0, 0, pixels );
+
+	stbi_image_free( pixels );
+
+	return true;
+}
+
+
 bool TextureResource::load( const char *data, int size )
 {
 	if( !Resource::load( data, size ) ) return false;
 
-	// Check if image is a dds
-	if( size > 128 && *((uint32 *)data) == FOURCC( 'D', 'D', 'S', ' ' ) )
-	{
-		// Load dds
-		ASSERT_STATIC( sizeof( DDSHeader ) == 128 );
-
-		memcpy( &ddsHeader, data, 128 );
-		
-		// Check header
-		// There are some flags that are required to be set for every dds but we don't check them
-		if( ddsHeader.dwSize != 124 )
-		{
-			return raiseError( "Invalid DDS header" );
-		}
-
-		// Store properties
-		_width = ddsHeader.dwWidth;
-		_height = ddsHeader.dwHeight;
-		_depth = 1;
-		_texFormat = TextureFormats::Unknown;
-		_texObject = 0;
-		_sRGB = (_flags & ResourceFlags::TexSRGB) != 0;
-		int mipCount = ddsHeader.dwFlags & DDSD_MIPMAPCOUNT ? ddsHeader.dwMipMapCount : 1;
-		_hasMipMaps = mipCount > 1 ? true : false;
-
-		// Get texture type
-		if( ddsHeader.caps.dwCaps2 == 0 )
-		{
-			_texType = TextureTypes::Tex2D;
-		}
-		else if( ddsHeader.caps.dwCaps2 & DDSCAPS2_CUBEMAP )
-		{
-			if( !(ddsHeader.caps.dwCaps2 & DDSCAPS2_CM_COMPLETE) )
-				raiseError( "DDS cubemap does not contain all cube sides" );
-			_texType = TextureTypes::TexCube;
-		}
-		else if( ddsHeader.caps.dwCaps2 & DDSCAPS2_VOLUME )
-		{
-			_depth = ddsHeader.dwDepth;
-			_texType = TextureTypes::Tex3D;
-		}
-		else
-		{
-			return raiseError( "Unsupported DDS texture type" );
-		}
-		
-		// Get pixel format
-		int blockSize = 1, bytesPerBlock = 4;
-		enum { pfBGRA, pfBGR, pfBGRX, pfRGB, pfRGBX, pfRGBA } pixFmt = pfBGRA;
-		
-		if( ddsHeader.pixFormat.dwFlags & DDPF_FOURCC )
-		{
-			switch( ddsHeader.pixFormat.dwFourCC )
-			{
-			case FOURCC( 'D', 'X', 'T', '1' ):
-				_texFormat = TextureFormats::DXT1;
-				blockSize = 4; bytesPerBlock = 8;
-				break;
-			case FOURCC( 'D', 'X', 'T', '3' ):
-				_texFormat = TextureFormats::DXT3;
-				blockSize = 4; bytesPerBlock = 16;
-				break;
-			case FOURCC( 'D', 'X', 'T', '5' ):
-				_texFormat = TextureFormats::DXT5;
-				blockSize = 4; bytesPerBlock = 16;
-				break;
-			case D3DFMT_A16B16G16R16F: 
-				_texFormat = TextureFormats::RGBA16F;
-				bytesPerBlock = 8;
-				break;
-			case D3DFMT_A32B32G32R32F: 
-				_texFormat = TextureFormats::RGBA32F;
-				bytesPerBlock = 16;
-				break;
-			}
-		}
-		else if( ddsHeader.pixFormat.dwFlags & DDPF_RGB )
-		{
-			bytesPerBlock = ddsHeader.pixFormat.dwRGBBitCount / 8;
-			
-			if( ddsHeader.pixFormat.dwRBitMask == 0x00ff0000 &&
-			    ddsHeader.pixFormat.dwGBitMask == 0x0000ff00 &&
-			    ddsHeader.pixFormat.dwBBitMask == 0x000000ff ) pixFmt = pfBGR;
-			else
-			if( ddsHeader.pixFormat.dwRBitMask == 0x00ff0000 &&
-			    ddsHeader.pixFormat.dwGBitMask == 0x0000ff00 &&
-			    ddsHeader.pixFormat.dwBBitMask == 0x000000ff ) pixFmt = pfRGB;
-
-			if( pixFmt == pfBGR || pixFmt == pfRGB )
-			{
-				if( ddsHeader.pixFormat.dwRGBBitCount == 24 )
-				{
-					_texFormat = TextureFormats::BGRA8;
-				}
-				else if( ddsHeader.pixFormat.dwRGBBitCount == 32 )
-				{
-					if( !(ddsHeader.pixFormat.dwFlags & DDPF_ALPHAPIXELS) ||
-					    ddsHeader.pixFormat.dwABitMask == 0x00000000 )
-					{
-						_texFormat = TextureFormats::BGRA8;
-						pixFmt = pixFmt == pfBGR ? pfBGRX : pfRGBX;
-					}
-					else
-					{	
-						_texFormat = TextureFormats::BGRA8;
-						pixFmt = pixFmt == pfBGR ? pfBGRA : pfRGBA;
-					}
-				}
-			}
-		}
-
-		if( _texFormat == TextureFormats::Unknown )
-			return raiseError( "Unsupported DDS pixel format" );
-
-		// Create texture
-		_texObject = gRDI->createTexture( _texType, _width, _height, _depth, _texFormat,
-		                                  mipCount > 1, false, false, _sRGB );
-		
-		// Upload texture subresources
-		int numSlices = _texType == TextureTypes::TexCube ? 6 : 1;
-		unsigned char *pixels = (unsigned char *)(data + 128);
-
-		for( int i = 0; i < numSlices; ++i )
-		{
-			int width = _width, height = _height, depth = _depth;
-			uint32 *dstBuf = 0x0;
-
-			for( int j = 0; j < mipCount; ++j )
-			{
-				size_t mipSize = std::max( width / blockSize, 1 ) * std::max( height / blockSize, 1 ) *
-				                 depth * bytesPerBlock;
-				
-				if( pixels + mipSize > (unsigned char *)data + size )
-					return raiseError( "Corrupt DDS" );
-
-				if( _texFormat == TextureFormats::BGRA8 && pixFmt != pfBGRA )
-				{
-					// Convert 8 bit DDS formats to BGRA
-					uint32 pixCount = width * height * depth;
-					if( dstBuf == 0x0 ) dstBuf = new uint32[pixCount * 4];
-					uint32 *p = dstBuf;
-	
-					if( pixFmt == pfBGR )
-						for( uint32 k = 0; k < pixCount * 3; k += 3 )
-							*p++ = pixels[k+0] | pixels[k+1]<<8 | pixels[k+2]<<16 | 0xFF000000;
-					else if( pixFmt == pfBGRX )
-						for( uint32 k = 0; k < pixCount * 4; k += 4 )
-							*p++ = pixels[k+0] | pixels[k+1]<<8 | pixels[k+2]<<16 | 0xFF000000;
-					else if( pixFmt == pfRGB )
-						for( uint32 k = 0; k < pixCount * 3; k += 3 )
-							*p++ = pixels[k+2] | pixels[k+1]<<8 | pixels[k+0]<<16 | 0xFF000000;
-					else if( pixFmt == pfRGBX )
-						for( uint32 k = 0; k < pixCount * 4; k += 4 )
-							*p++ = pixels[k+2] | pixels[k+1]<<8 | pixels[k+0]<<16 | 0xFF000000;
-					else if( pixFmt == pfRGBA )
-						for( uint32 k = 0; k < pixCount * 4; k += 4 )
-							*p++ = pixels[k+2] | pixels[k+1]<<8 | pixels[k+0]<<16 | pixels[k+3]<<24;
-					
-					gRDI->uploadTextureData( _texObject, i, j, dstBuf );
-				}
-				else
-				{
-					// Upload DDS data directly
-					gRDI->uploadTextureData( _texObject, i, j, pixels );
-				}
-
-				pixels += mipSize;
-				if( width > 1 ) width >>= 1;
-				if( height > 1 ) height >>= 1;
-				if( depth > 1 ) depth >>= 1;
-			}
-
-			if( dstBuf != 0x0 ) delete[] dstBuf;
-		}
-
-		ASSERT( pixels == (unsigned char *)data + size );
-	}
+	if( checkDDS( data, size ) )
+		return loadDDS( data, size );
 	else
-	{
-		// Load image using stbi
-		bool hdr = false;
-		if( stbi_is_hdr_from_memory( (unsigned char *)data, size ) > 0 ) hdr = true;
-		
-		int comps;
-		void *pixels = 0x0;
-		if( hdr )
-			pixels = stbi_loadf_from_memory( (unsigned char *)data, size, &_width, &_height, &comps, 4 );
-		else
-			pixels = stbi_load_from_memory( (unsigned char *)data, size, &_width, &_height, &comps, 4 );
-
-		if( pixels == 0x0 )
-			return raiseError( "Invalid image format (" + string( stbi_failure_reason() ) + ")" );
-		
-		_texType = TextureTypes::Tex2D;
-		_texFormat = hdr ? TextureFormats::RGBA16F : TextureFormats::BGRA8;
-		_sRGB = (_flags & ResourceFlags::TexSRGB) != 0;
-		_hasMipMaps = !(_flags & ResourceFlags::NoTexMipmaps);
-		
-		// Create and upload texture
-		_texObject = gRDI->createTexture( _texType, _width, _height, _depth, _texFormat,
-			_hasMipMaps, _hasMipMaps, !(_flags & ResourceFlags::NoTexCompression), _sRGB );
-		gRDI->uploadTextureData( _texObject, 0, 0, pixels );
-
-		stbi_image_free( pixels );
-	}
-
-	if( _texObject == 0 ) return raiseError( "Failed to upload texture map" );
-
-	return true;
+		return loadSTBI( data, size );
 }
 
 

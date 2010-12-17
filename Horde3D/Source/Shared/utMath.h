@@ -26,7 +26,7 @@
 #ifndef _utMath_H_
 #define _utMath_H_
 
-#include <math.h>
+#include <cmath>
 
 
 namespace Horde3D {
@@ -275,8 +275,8 @@ public:
 		// Assumes that the unrotated view vector is (0, 0, -1)
 		Vec3f v;
 		
-		if( y != 0 ) v.x = atan2( y, sqrtf( x*x + z*z ) );
-		if( x != 0 || z != 0 ) v.y = atan2( -x, -z );
+		if( y != 0 ) v.x = atan2f( y, sqrtf( x*x + z*z ) );
+		if( x != 0 || z != 0 ) v.y = atan2f( -x, -z );
 
 		return v;
 	}
@@ -781,9 +781,9 @@ public:
 		trans = Vec3f( c[3][0], c[3][1], c[3][2] );
 
 		// Scale is length of columns
-		scale.x = sqrt( c[0][0] * c[0][0] + c[0][1] * c[0][1] + c[0][2] * c[0][2] );
-		scale.y = sqrt( c[1][0] * c[1][0] + c[1][1] * c[1][1] + c[1][2] * c[1][2] );
-		scale.z = sqrt( c[2][0] * c[2][0] + c[2][1] * c[2][1] + c[2][2] * c[2][2] );
+		scale.x = sqrtf( c[0][0] * c[0][0] + c[0][1] * c[0][1] + c[0][2] * c[0][2] );
+		scale.y = sqrtf( c[1][0] * c[1][0] + c[1][1] * c[1][1] + c[1][2] * c[1][2] );
+		scale.z = sqrtf( c[2][0] * c[2][0] + c[2][1] * c[2][1] + c[2][2] * c[2][2] );
 
 		if( scale.x == 0 || scale.y == 0 || scale.z == 0 ) return;
 
@@ -837,9 +837,9 @@ public:
 	{
 		Vec3f scale;
 		// Scale is length of columns
-		scale.x = sqrt( c[0][0] * c[0][0] + c[0][1] * c[0][1] + c[0][2] * c[0][2] );
-		scale.y = sqrt( c[1][0] * c[1][0] + c[1][1] * c[1][1] + c[1][2] * c[1][2] );
-		scale.z = sqrt( c[2][0] * c[2][0] + c[2][1] * c[2][1] + c[2][2] * c[2][2] );
+		scale.x = sqrtf( c[0][0] * c[0][0] + c[0][1] * c[0][1] + c[0][2] * c[0][2] );
+		scale.y = sqrtf( c[1][0] * c[1][0] + c[1][1] * c[1][1] + c[1][2] * c[1][2] );
+		scale.z = sqrtf( c[2][0] * c[2][0] + c[2][1] * c[2][1] + c[2][2] * c[2][2] );
 		return scale;
 	}
 };

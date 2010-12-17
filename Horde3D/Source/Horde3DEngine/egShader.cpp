@@ -15,6 +15,7 @@
 #include "egCom.h"
 #include "egRenderer.h"
 #include <fstream>
+#include <cstring>
 
 #include "utDebug.h"
 

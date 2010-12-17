@@ -17,6 +17,7 @@
 #include "egScene.h"
 #include "egPipeline.h"
 #include "egTexture.h"
+#include <cstring>
 
 
 namespace Horde3D {

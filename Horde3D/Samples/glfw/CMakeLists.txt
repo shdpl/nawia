@@ -33,6 +33,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	include_directories(./lib ./lib/x11)
+	FIND_LIBRARY(X11_LIBRARY X11)
 	set(GLFW_SOURCES
 		${GLFW_SOURCES}
 		lib/x11/x11_enable.c
@@ -64,11 +65,25 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		lib/cocoa/cocoa_thread.c
 		lib/cocoa/cocoa_time.m
 		lib/cocoa/cocoa_window.m
-	)	
+	)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 
 add_library(glfw STATIC
 	${GLFW_SOURCES}
 	)
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	FIND_PACKAGE(OpenGL REQUIRED)
+	if(NOT OPENGL_FOUND)
+		message(ERROR " OPENGL not found!")
+	endif(NOT OPENGL_FOUND)	
+	set(CMAKE_REQUIRED_INCLUDES ${OPENGL_INCLUDE_DIR})
+	set(CMAKE_REQUIRED_LIBRARIES ${OPENGL_gl_LIBRARY})
+	include(${CMAKE_ROOT}/Modules/CheckFunctionExists.cmake)
+	CHECK_FUNCTION_EXISTS(glXGetProcAddressARB USE_GLX_GET_PROC_ADDRESS_ARB)
+    	IF (USE_GLX_GET_PROC_ADDRESS_ARB)
+		set_target_properties(glfw PROPERTIES COMPILE_FLAGS -D_GLFW_HAS_GLXGETPROCADDRESSARB)
+   	ENDIF (USE_GLX_GET_PROC_ADDRESS_ARB)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 

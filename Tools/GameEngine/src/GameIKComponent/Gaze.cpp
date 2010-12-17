@@ -60,17 +60,17 @@ m_head(head), m_leye(lefteye), m_reye(righteye), m_aux_leye(0), m_aux_reye(0), m
 	#ifdef IK_DEBUG
 		s = m_leye->getAbsScale();
 		h3dSetNodeTransform( m_aux_leye->getHordeID(), 0.5f, 0, 0, 0, 0, 0, 4.0f/s.x, 0.2f/s.y, 0.2f/s.z );
-		h3dSetNodeActivation( m_aux_leye->getHordeID(), true );
+		h3dSetNodeFlags( m_aux_leye->getHordeID(), 0, true );
 
 		s = m_reye->getAbsScale();
 		h3dSetNodeTransform( m_aux_reye->getHordeID(), 0.5f, 0, 0, 0, 0, 0, 4.0f/s.x, 0.2f/s.y, 0.2f/s.z );
-		h3dSetNodeActivation( m_aux_reye->getHordeID(), true );
+		h3dSetNodeFlags( m_aux_reye->getHordeID(), 0, true );
 	#else
 		h3dSetNodeTransform( m_aux_leye->getHordeID(), 0.5f, 0, 0, 0, 0, 0, 1, 1, 1 );
-		h3dSetNodeActivation( m_aux_leye->getHordeID(), false );
+		h3dSetNodeFlags( m_aux_leye->getHordeID(), H3DNodeFlags::Inactive, true );
 
 		h3dSetNodeTransform( m_aux_reye->getHordeID(), 0.5f, 0, 0, 0, 0, 0, 1, 1, 1 );
-		h3dSetNodeActivation( m_aux_reye->getHordeID(), false );
+		h3dSetNodeFlags( m_aux_reye->getHordeID(), H3DNodeFlags::Inactive, true );
 	#endif
 
 	if(m_head > 0 && m_leye > 0 && m_reye > 0 && m_aux_leye > 0 && m_aux_reye > 0)

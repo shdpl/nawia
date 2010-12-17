@@ -833,18 +833,90 @@ namespace Horde3D
 			return 0;
 		}
 
-	/* 	Function: getNodeParent
-			Returns the parent of a scene node.
-		
-		This function returns the handle to the parent node of a specified scene node. If the specified
-		node handle is invalid or the root node, 0 is returned.
-		
-		Parameters:
-			node	- handle to the scene node
+		/* Function: h3dGetNodeFlags
+		Gets the scene node flags.
+
+			Details:
+				This function returns a bit mask containing the set scene node flags.
 			
-		Returns:
-			handle to parent node or 0 in case of failure
-	*/
+			Parameters:
+				node  - handle to the node to be accessed
+				
+			Returns:
+				flag bitmask
+		*/
+		int  lua_getNodeFlags( lua_State *L )
+		{
+			H3DNode node = luaL_checkint(L, 1);
+			lua_pushinteger( L, h3dGetNodeFlags(node) );
+			return 1;
+		}
+
+		/* 	Function: h3dSetNodeFlags
+				Sets the scene node flags.
+	
+			Details:
+				This function sets the flags of the specified scene node.
+			
+			Parameters:
+				node       - handle to the node to be modified
+				flags      - new flag bitmask
+				recursive  - specifies whether flags should be applied recursively to all child nodes
+				
+			Returns:
+				nothing
+		*/
+		int  lua_setNodeFlags( lua_State *L )
+		{
+			H3DNode node = luaL_checkint(L, 1);
+			int flags = luaL_checkint(L, 2);
+			const bool recursive = luaL_checkint(L, 3) != 0;
+			h3dSetNodeFlags(node, flags, recursive);
+			return 0;
+		}
+
+		/* 	Function: getNodeAABB
+				Gets the bounding box of a scene node.
+			
+			This function stores the world coordinates of the axis aligned bounding box of a specified node in
+			the specified variables. The bounding box is represented using the minimum and maximum coordinates
+			on all three axes.
+			
+			Parameters:
+				node				- handle to the node which will be accessed
+				minX, minY, minZ	- pointers to variables where minimum coordinates will be stored
+				maxX, maxY, maxZ	- pointers to variables where maximum coordinates will be stored
+				
+			Returns:
+				true in case of success otherwise false
+		*/
+		int  lua_getNodeAABB( lua_State *L )
+		{
+			H3DNode  node = luaL_checkint(L,1);
+			float minX = 0, minY = 0, minZ = 0, maxX = 0, maxY = 0, maxZ = 0;
+			h3dGetNodeAABB(node, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);			
+			lua_pushnumber(L, minX);
+			lua_pushnumber(L, minY);
+			lua_pushnumber(L, minZ);
+			lua_pushnumber(L, maxX);
+			lua_pushnumber(L, maxY);
+			lua_pushnumber(L, maxZ);			
+			return 6;
+		}
+
+
+		/* 	Function: getNodeParent
+				Returns the parent of a scene node.
+			
+			This function returns the handle to the parent node of a specified scene node. If the specified
+			node handle is invalid or the root node, 0 is returned.
+			
+			Parameters:
+				node	- handle to the scene node
+				
+			Returns:
+				handle to parent node or 0 in case of failure
+		*/
 		int  lua_getNodeParent( lua_State *L )
 		{
 			H3DNode node = luaL_checkint(L,1);			
@@ -934,29 +1006,7 @@ namespace Horde3D
 			H3DNode node = luaL_checkint(L, 1);
 			h3dRemoveNode(node);
 			return 0;
-		}
-
-
-		/* 	Function: setNodeActivation
-		Sets the activation state of a node.
-
-		This function sets the activation state of the specified node to active or inactive. Inactive
-		nodes with all their children are excluded from rendering.
-
-		Parameters:
-		node	- handle to the node to be modified
-		active	- boolean value indicating whether node shall be active or inactive
-
-		Returns:
-		true in case of success otherwise false
-		*/
-		int  lua_setNodeActivation( lua_State *L )
-		{
-			H3DNode node = luaL_checkint(L, 1);
-			const bool active = luaL_checkint(L, 2) != 0;
-			h3dSetNodeActivation(node, active);
-			return 0;
-		}
+		}		
 
 		/* 	Function: checkNodeTransformFlag
 		Checks if a scene node has been transformed by the engine.
@@ -1222,52 +1272,23 @@ namespace Horde3D
 			h3dSetNodeParamI(node, param, value);
 			return 0;
 		}
-
-		/* 	Function: getNodeAABB
-				Gets the bounding box of a scene node.
+		
 			
-			This function stores the world coordinates of the axis aligned bounding box of a specified node in
-			the specified variables. The bounding box is represented using the minimum and maximum coordinates
-			on all three axes.
+		/* 	Function: findNodes
+				Finds scene nodes with the specified properties.
+			
+			This function loops recursively over all children of startNode and adds them to an internal list
+			of results if they match the specified name and type. The result list is cleared each time this
+			function is called. The function returns the number of nodes which were found and added to the list.
 			
 			Parameters:
-				node				- handle to the node which will be accessed
-				minX, minY, minZ	- pointers to variables where minimum coordinates will be stored
-				maxX, maxY, maxZ	- pointers to variables where maximum coordinates will be stored
+				startNode	- handle to the node where the search begins
+				name		- name of nodes to be searched (empty string for all nodes)
+				type		- type of nodes to be searched (H3DNodeTypes::Undefined for all types)
 				
 			Returns:
-				true in case of success otherwise false
+				number of search results
 		*/
-		int  lua_getNodeAABB( lua_State *L )
-		{
-			H3DNode  node = luaL_checkint(L,1);
-			float minX = 0, minY = 0, minZ = 0, maxX = 0, maxY = 0, maxZ = 0;
-			h3dGetNodeAABB(node, &minX, &minY, &minZ, &maxX, &maxY, &maxZ);			
-			lua_pushnumber(L, minX);
-			lua_pushnumber(L, minY);
-			lua_pushnumber(L, minZ);
-			lua_pushnumber(L, maxX);
-			lua_pushnumber(L, maxY);
-			lua_pushnumber(L, maxZ);			
-			return 6;
-		}
-
-			
-	/* 	Function: findNodes
-			Finds scene nodes with the specified properties.
-		
-		This function loops recursively over all children of startNode and adds them to an internal list
-		of results if they match the specified name and type. The result list is cleared each time this
-		function is called. The function returns the number of nodes which were found and added to the list.
-		
-		Parameters:
-			startNode	- handle to the node where the search begins
-			name		- name of nodes to be searched (empty string for all nodes)
-			type		- type of nodes to be searched (H3DNodeTypes::Undefined for all types)
-			
-		Returns:
-			number of search results
-	*/
 		int  lua_findNodes( lua_State *L )
 		{
 			H3DNode node = luaL_checkint(L, 1);
@@ -1838,7 +1859,8 @@ namespace Horde3D
 			{"getNodeChild", lua_getNodeChild},
 			{"addNodes", lua_addNodes},
 			{"removeNode", lua_removeNode},
-			{"setNodeActivation", lua_setNodeActivation},
+			{"getNodeFlags", lua_getNodeFlags},
+			{"setNodeFlags", lua_setNodeFlags},
 			{"checkNodeTransformFlag", lua_checkNodeTransformFlag},
 			{"getNodeTransform", lua_getNodeTransform},			
 			{"setNodeTransform", lua_setNodeTransform},

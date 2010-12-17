@@ -18,10 +18,8 @@
 #endif
 
 #include "utPlatform.h"
-#include <cstdlib>
-#include <cstring>
 
-#ifdef PLATFORM_WIN
+#if defined( PLATFORM_WIN ) || defined( PLATFORM_WIN_CE )
 #   define WIN32_LEAN_AND_MEAN 1
 #   ifndef NOMINMAX
 #       define NOMINMAX
@@ -31,6 +29,9 @@
 #   define GLAPI __declspec( dllimport )
 #   define GLAPIENTRY _stdcall
 #   define GLAPIENTRYP _stdcall *
+#   ifdef PLATFORM_WIN_CE
+extern "C" GLAPI void* eglGetProcAddress(const char *procname);
+#   endif
 #else
 #   include <stddef.h>
 #   define GLAPI
@@ -901,23 +902,18 @@ extern PFNGLUNIFORMMATRIX3X4FVPROC glUniformMatrix3x4fv;
 extern PFNGLUNIFORMMATRIX4X3FVPROC glUniformMatrix4x3fv;
 
 #endif  // GL_VERSION_2_1
+
+
+#ifndef GL_VERSION_3_0
+#define GL_VERSION_3_0
+
+#define GL_NUM_EXTENSIONS                   0x821D
+
+typedef const GLubyte * (GLAPIENTRYP PFNGLGETSTRINGIPROC) (GLenum, GLuint);
+extern PFNGLGETSTRINGIPROC glGetStringi;
+
+#endif // GL_VERSION_3_0
 }  // namespace h3dGL
-
-
-// =================================================================================================
-// Deprecated OpenGL 1.1 functionality (that is still required by the renderer)
-// =================================================================================================
-
-extern "C"
-{
-GLAPI void GLAPIENTRY glBegin (GLenum mode);
-GLAPI void GLAPIENTRY glEnd (void);
-GLAPI void GLAPIENTRY glVertex3f (GLfloat x, GLfloat y, GLfloat z);
-GLAPI void GLAPIENTRY glVertex3fv (const GLfloat *v);
-GLAPI void GLAPIENTRY glTexCoord2f (GLfloat s, GLfloat t);
-GLAPI void GLAPIENTRY glTexCoord2fv (const GLfloat *v);
-GLAPI void GLAPIENTRY glColor4f (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
-}
 
 
 // =================================================================================================

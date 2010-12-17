@@ -473,7 +473,9 @@ DLLEXP void h3dutShowFrameStats( H3DRes fontMaterialRes, H3DRes boxMaterialRes, 
 	static float animTime = 0;
 	static float geoUpdateTime = 0;
 	static float particleSimTime = 0;
+	static float fwdLightsGPUTime = 0;
 	static float defLightsGPUTime = 0;
+	static float shadowsGPUTime = 0;
 	static float particleGPUTime = 0;
 
 	// Calculate FPS
@@ -488,7 +490,9 @@ DLLEXP void h3dutShowFrameStats( H3DRes fontMaterialRes, H3DRes boxMaterialRes, 
 		animTime = h3dGetStat( H3DStats::AnimationTime, true );
 		geoUpdateTime = h3dGetStat( H3DStats::GeoUpdateTime, true );
 		particleSimTime = h3dGetStat( H3DStats::ParticleSimTime, true );
+		fwdLightsGPUTime = h3dGetStat( H3DStats::FwdLightsGPUTime, true );
 		defLightsGPUTime = h3dGetStat( H3DStats::DefLightsGPUTime, true );
+		shadowsGPUTime = h3dGetStat( H3DStats::ShadowsGPUTime, true );
 		particleGPUTime = h3dGetStat( H3DStats::ParticleGPUTime, true );
 		timer = 0;
 	}
@@ -565,12 +569,17 @@ DLLEXP void h3dutShowFrameStats( H3DRes fontMaterialRes, H3DRes boxMaterialRes, 
 		addInfoBoxRow( "Particles", text.str().c_str() );
 
 		// GPU time
-		beginInfoBox( 0.03f, 0.65f, 0.32f, 2, "GPU Time", fontMaterialRes, boxMaterialRes );
+		beginInfoBox( 0.03f, 0.65f, 0.32f, 3, "GPU Time", fontMaterialRes, boxMaterialRes );
 
-		// Deferred lights
+		// Forward and deferred lights
 		text.str( "" );
-		text << defLightsGPUTime << "ms";
-		addInfoBoxRow( "Def Lights", text.str().c_str() );
+		text << (fwdLightsGPUTime + defLightsGPUTime) << "ms";
+		addInfoBoxRow( "Lights", text.str().c_str() );
+		
+		// Shadows
+		text.str( "" );
+		text << shadowsGPUTime << "ms";
+		addInfoBoxRow( "Shadows", text.str().c_str() );
 
 		// Particles
 		text.str( "" );

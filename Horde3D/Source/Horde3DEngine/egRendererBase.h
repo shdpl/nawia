@@ -117,7 +117,8 @@ enum RDIPendingMask
 	PM_VIEWPORT    = 0x00000001,
 	PM_INDEXBUF    = 0x00000002,
 	PM_VERTLAYOUT  = 0x00000004,
-	PM_TEXTURES    = 0x00000008
+	PM_TEXTURES    = 0x00000008,
+	PM_SCISSOR     = 0x00000010
 };
 
 
@@ -250,7 +251,7 @@ struct RDIVertexLayout
 {
 	struct ShaderData
 	{
-		std::vector< char >  elemAttribIndices;
+		std::vector< int8 >  elemAttribIndices;
 	};
 	
 	std::vector< RDIVertLayoutElem >  elems;
@@ -302,8 +303,14 @@ const uint32 SS_ADDR_MASK = SS_ADDR_CLAMP | SS_ADDR_WRAP | SS_ADDR_CLAMPCOL;
 
 
 // ---------------------------------------------------------
-// Draw calls
+// Draw calls and clears
 // ---------------------------------------------------------
+
+enum RDIClearFlags
+{
+	CLR_COLOR = 0x00000001,
+	CLR_DEPTH = 0x00000002
+};
 
 enum RDIIndexFormat
 {
@@ -327,6 +334,7 @@ protected:
 	int           _caps[RenderCaps::ListSize];
 	uint32        _depthFormat;
 	int           _vpX, _vpY, _vpWidth, _vpHeight;
+	int           _scX, _scY, _scWidth, _scHeight;
 	int           _fbWidth, _fbHeight;
 	std::string   _shaderLog;
 	uint32        _curRendBuf;
@@ -350,6 +358,7 @@ protected:
 	bool linkShader( uint32 shaderId );
 	void resolveRenderBuffer( uint32 rbObj );
 
+	void checkGLError();
 	bool applyVertexLayout();
 	void applySamplerState( RDITexture &tex );
 
@@ -367,8 +376,8 @@ public:
 // -----------------------------------------------------------------------------
 
 	// Buffers
-	uint32 createVertexBuffer( uint32 size, void *data );
-	uint32 createIndexBuffer( uint32 size, void *data );
+	uint32 createVertexBuffer( uint32 size, const void *data );
+	uint32 createIndexBuffer( uint32 size, const void *data );
 	void releaseBuffer( uint32 bufObj );
 	void updateBufferData( uint32 bufObj, uint32 offset, uint32 size, void *data );
 	uint32 cloneBuffer( uint32 bufObj );
@@ -422,6 +431,8 @@ public:
 	
 	void setViewport( int x, int y, int width, int height )
 		{ _vpX = x; _vpY = y; _vpWidth = width; _vpHeight = height; _pendingMask |= PM_VIEWPORT; }
+	void setScissorRect( int x, int y, int width, int height )
+		{ _scX = x; _scY = y; _scWidth = width; _scHeight = height; _pendingMask |= PM_SCISSOR; }
 	void setIndexBuffer( uint32 bufObj, RDIIndexFormat idxFmt )
 		{ _indexFormat = (uint32)idxFmt; _newIndexBuf = bufObj; _pendingMask |= PM_INDEXBUF; }
 	void setVertexBuffer( uint32 slot, uint32 vbObj, uint32 offset, uint32 stride )
@@ -436,11 +447,20 @@ public:
 	bool commitStates( uint32 filter = 0xFFFFFFFF );
 	void resetStates();
 	
-	// Draw calls
+	// Draw calls and clears
+	void clear( uint32 flags, float *colorRGBA = 0x0, float depth = 1.0f );
 	void draw( RDIPrimType primType, uint32 firstVert, uint32 numVerts );
 	void drawIndexed( RDIPrimType primType, uint32 firstIndex, uint32 numIndices,
 	                  uint32 firstVert, uint32 numVerts );
 
+// -----------------------------------------------------------------------------
+// Getters
+// -----------------------------------------------------------------------------
+
+	const RDIBuffer &getBuffer( uint32 bufObj ) { return _buffers.getRef( bufObj ); }
+	const RDITexture &getTexture( uint32 texObj ) { return _textures.getRef( texObj ); }
+	const RDIRenderBuffer &getRenderBuffer( uint32 rbObj ) { return _rendBufs.getRef( rbObj ); }
+	const RDIVertexLayout &getVertexLayout( uint32 vlObj ) { return _vertexLayouts.getRef( vlObj ); }
 
 	friend class Renderer;
 };
