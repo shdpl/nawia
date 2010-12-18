@@ -4,6 +4,8 @@ import msg.msg;
 
 class MsgMediatorSimple() : MsgMediator {
 	
+	MsgHandler[Msg][] _handlers;
+	MsgListener[Msg][] _listeners;
 	
 	override bool addHandler(MsgHandler) {
 		

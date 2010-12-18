@@ -1,34 +1,48 @@
 module util.cords;
 
-class Cords(uint dimension) if (dimension > 0) {
-	int[dimension] cords;
+import cuda.types;
+
+//TODO dirty bitch
+class Cords(T, size_t N) if (N > 0 && N < 4) {
+	private SmallVec!(T, N) c;
 	
-	@property uint x() {
-		return cords[0];
+	this(T x) {
+		c.x = x;
+	}
+
+
+	T x()
+	{
+		return c.x;
 	}
 	
-	@property void x(uint x) {
-		cords[0] = x;
-	}
-	
-	static if (dimension > 1) {
-		@property uint y() {
-			return cords[1];
+	static if(N > 1) {
+		this(T x, T y) {
+			this(x);
+			c.y = y;
 		}
 		
-		@property void y(uint y) {
-				cords[1] = y;
+		T y()
+		{
+			return c.y;
 		}
 	}
-		
-	static if (dimension > 2) {
-		@property uint z() {
-			return cords[2];
+
+	static if(N > 2) {
+		this(T x, T y, T z) {
+			this(x, y);
+			c.z = z;
 		}
 		
-		@property void x(uint x) {
-				cords[0] = x;
+		T z()
+		{
+			return c.z;
 		}
 	}
+	
+	auto opDispatch(string m, args...)() {
+		return mixin("c."~m~"(args)");
+	}
+	
 
 }

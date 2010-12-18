@@ -5,8 +5,13 @@
 -I
 
 NawiaClient3D.d
+cuda/types.d
 msg/gen.d
+msg/handler/handler.d
 msg/listener/listener.d
+msg/listener/window/Close.d
+msg/listener/window/Refresh.d
+msg/listener/window/Resize.d
 msg/mediator/mediator.d
 msg/mediator/simple.d
 msg/msg.d
@@ -15,4 +20,5 @@ msg/window/close.d
 screen/cords.d
 util/cords.d
 window/glfw.d
+window/properties.d
 window/window.d

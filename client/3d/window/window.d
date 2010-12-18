@@ -1,57 +1,58 @@
 module window.window;
 
 public import screen.cords;
+public import window.properties;
+public import msg.listener.window.close;
+public import msg.listener.window.refresh;
+public import msg.listener.window.resize;
 
 protected import msg.mediator.mediator;
-
-struct WindowHints {
-	
-}
 
 interface Window
 {
 	public:
 	
-	@property bool isOpened();
+	string title();
+	void title(in string title);
 	
-	@property bool isFocused();
+	CordsScreen size();
+	void size(CordsScreen size);
 	
-	@property bool isStereo();
+	bool focused();
 	
-	@property bool isResizable();
+	bool stereo();
 	
-	@property bool isIconified();
-	@property void setIconified(bool state);
+	bool resizable();
 	
-	@property bool isVSync();
-	@property void setVSync(bool state);
+	bool iconified();
+	void iconified(bool state);
 	
-	@property uint getRefreshRate();
+	uint refreshRate();
 	
-	@property ubyte[3] getBitsRGB();
-	@property ubyte getBitsAlpha();
+	ubyte[3] bitsRGB();
+	ubyte bitsAlpha();
 	
-	@property ubyte[3] getBitsAccumRGB();
-	@property ubyte getBitsAccumAlpha();
+	ubyte[3] bitsAccumRGB();
+	ubyte bitsAccumAlpha();
 	
-	@property ubyte getBitsStencil();
-	@property ubyte getBitsDepth();
+	ubyte bitsStencil();
+	ubyte bitsDepth();
 	
-	@property ubyte getAuxBufNo();
+	ubyte auxBufNo();
 	
-	@property ubyte getFSAASamplesNo();
+	ubyte FSAASamplesNo();
 	
-	@property CordsScreen getSize();
-	@property void setSize(CordsScreen);
+	CordsScreen size();
+	void size(CordsScreen);
 	
-	void addListenerClose();
-	void delListenerClose();
+	void addListenerClose(MsgListenerWindowClose lstnr);
+	void delListenerClose(MsgListenerWindowClose lstnr);
 	
-	void addListenerResize();
-	void delListenerResize();
+	void addListenerResize(MsgListenerWindowResize lstnr);
+	void delListenerResize(MsgListenerWindowResize lstnr);
 	
-	void addListenerRefresh();
-	void delListenerRefresh();
+	void addListenerRefresh(MsgListenerWindowRefresh lstnr);
+	void delListenerRefresh(MsgListenerWindowRefresh lstnr);
 	
 	void swapBuffers();
 

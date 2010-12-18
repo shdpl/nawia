@@ -1,5 +1,7 @@
 module msg.gen;
 
-class MsgGen(string ev) {//if(is(typeof(ev)==Msg)) : Msg {
+import msg.msg;
+
+static class MsgGen(string msg) : Msg {
 	
 }
