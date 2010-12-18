@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="domain" verbose="0">
+	<test name="Domain">
+		<packages>
+			<package name="net.nawia.gsao.domain" />
+		</packages>
+	</test>
+</suite>
