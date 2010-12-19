@@ -9,7 +9,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Lesser General Public License for more details.
  * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -18,7 +18,8 @@
 module msg.listener.listener;
 
 public import msg.msg;
+public import msg.listener.gen;
 
 interface MsgListener {
-	void msgReceive(Msg msg);
+	void setMsg(Msg msg);
 }

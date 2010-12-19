@@ -9,7 +9,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Lesser General Public License for more details.
  * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -19,9 +19,6 @@ module window.window;
 
 public import screen.cords;
 public import window.properties;
-public import msg.listener.window.close;
-public import msg.listener.window.refresh;
-public import msg.listener.window.resize;
 
 protected import msg.mediator.mediator;
 
@@ -62,14 +59,14 @@ interface Window
 	CordsScreen size();
 	void size(CordsScreen);
 	
-	void addListenerClose(MsgListenerWindowClose lstnr);
-	void delListenerClose(MsgListenerWindowClose lstnr);
+	void setProviderClose(MsgProviderGen!"WindowClose" prvdr);
+	void delProviderClose(MsgProviderGen!"WindowClose" prvdr);
 	
-	void addListenerResize(MsgListenerWindowResize lstnr);
-	void delListenerResize(MsgListenerWindowResize lstnr);
+	void setProviderResize(MsgProviderGen!"WindowResize" prvdr);
+	void delProviderResize(MsgProviderGen!"WindowResize" prvdr);
 	
-	void addListenerRefresh(MsgListenerWindowRefresh lstnr);
-	void delListenerRefresh(MsgListenerWindowRefresh lstnr);
+	void setProviderRefresh(MsgProviderGen!"WindowRefresh" prvdr);
+	void delProviderRefresh(MsgProviderGen!"WindowRefresh" prvdr);
 	
 	void swapBuffers();
 

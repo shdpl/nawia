@@ -9,43 +9,19 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Lesser General Public License for more details.
  * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module msg.mediator.simple;
+module msg.provider.provider;
 
-import msg.msg;
+private import msg.msg;
+protected import msg.provider.gen;
 
-class MsgMediatorSimple() : MsgMediator {
+interface MsgProvider {
 	
-	MsgHandler[Msg][] _handlers;
-	MsgListener[Msg][] _listeners;
-	
-	override bool addHandler(MsgHandler) {
-		
-	}
-	
-	override bool delHandler(MsgHandler) {
-		
-	}
-	
-	override bool addListener(MsgListener) {
-		
-	}
-	
-	override bool delListener(MsgListener) {
-		
-	}
-	
-	override bool addProvider(MsgProvider) {
-		
-	}
-	
-	override bool delProvider(MsgProvider) {
-		
-	}
+	Msg getMsg();
 	
 }

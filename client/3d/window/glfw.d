@@ -9,7 +9,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Lesser General Public License for more details.
  * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -21,8 +21,7 @@ import std.conv;
 
 import glfw;
 
-import window.window;
-import screen.cords;
+public import window.window;
 
 
 class WindowGLFW : Window
@@ -150,20 +149,24 @@ class WindowGLFW : Window
 		glfwSetWindowSize(size.x, size.y);
 	}
 	
-	void addListenerClose()
-	void delListenerClose();
+	override void setProviderClose(MsgProviderGen!"WindowClose" prvdr) {
+		glfwSetWindowCloseCallback(prvdr.getMsg());
+	}
 	
-	void addListenerResize();
-	void delListenerResize();
+	void delProviderClose(MsgProviderGen!"WindowClose" prvdr);
 	
-	void addListenerRefresh();
-	void delListenerRefresh();
+	void setProviderResize(MsgProviderGen!"WindowResize" prvdr);
+	void delProviderResize(MsgProviderGen!"WindowResize" prvdr);
+	
+	void setProviderRefresh(MsgProviderGen!"WindowRefresh" prvdr);
+	void delProviderRefresh(MsgProviderGen!"WindowRefresh" prvdr);
 	
 	override void swapBuffers() {
 		glfwSwapBuffers();
 	}
 	
-	private void applyHints(in WindowProperties p) {
+	private:
+	void applyHints(in WindowProperties p) {
 		with (p) {
 			glfwOpenWindowHint(GLFW_REFRESH_RATE, refresh_rate);
 			glfwOpenWindowHint(GLFW_ACCUM_RED_BITS, accum_rgb[0]);
@@ -179,7 +182,7 @@ class WindowGLFW : Window
 			glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, ogl_ver[0]>=3);
 			debug(glfw)
 				glfwOpenWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-			version(profile)
+			version(D_Coverage)
 				glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GL_TRUE);
 		}
 	}

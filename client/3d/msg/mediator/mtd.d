@@ -15,51 +15,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module util.cords;
+module msg.mediator.mtd;
 
-import cuda.types;
+public import msg.msg;
+public import msg.mediator.mediator;
+public import msg.handler.tmp;
+public import msg.window.close;
 
-//TODO dirty bitch
-class Cords(T, size_t N) if (N > 0 && N < 4) {
-	private SmallVec!(T, N) c;
+class MsgMediatorMtd : MsgMediator {
 	
-	this(T x) {
-		c.x = x;
-	}
-
-
-	T x()
-	{
-		return c.x;
+	MsgHandler[Msg][] _handlers;
+	MsgListener[Msg][] _listeners;
+	
+	this() {
 	}
 	
-	static if(N > 1) {
-		this(T x, T y) {
-			this(x);
-			c.y = y;
-		}
+	override bool addHandler(MsgHandler hndlr) {
+		return false;
+	}
+	
+	override bool delHandler(MsgHandler hndlr) {
+		return false;
+	}
+	
+	override bool addListener(MsgListener lstnr) {
+		return false;
+	}
+	
+	override bool delListener(MsgListener) {
+		return false;
 		
-		T y()
-		{
-			return c.y;
-		}
 	}
-
-	static if(N > 2) {
-		this(T x, T y, T z) {
-			this(x, y);
-			c.z = z;
-		}
+	
+	override bool addProvider(MsgProvider) {
+		return false;
 		
-		T z()
-		{
-			return c.z;
-		}
 	}
 	
-	auto opDispatch(string m, args...)() {
-		return mixin("c."~m~"(args)");
+	override bool delProvider(MsgProvider) {
+		return false;
+		
 	}
 	
-
 }
