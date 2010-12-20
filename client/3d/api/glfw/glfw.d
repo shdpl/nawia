@@ -15,20 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module window.glfw;
+module api.glfw.glfw;
 
-import std.conv;
+import std.conv,
+	std.stdio;
 
 import glfw;
 
-public import window.window;
+private import
+	window.window;
 
+static this() {
+	if (GL_FALSE == glfwInit()) {
+		// TODO:
+	}
+}
 
+static ~this() {
+	glfwTerminate();
+}
+	
 class WindowGLFW : Window
 {
-	private string _title;
-	private CordsScreen _position;
-	private WindowProperties _props;
+	private:
+	string _title;
+	CordsScreen _position;
+	WindowProperties _props;
+	MsgProviderWindowClose _prvdrClose;
+	MsgProviderWindowResize _prvdrResize;
+	MsgProviderWindowRefresh _prvdrRefresh;
 	
 	public:
 	
@@ -36,10 +51,7 @@ class WindowGLFW : Window
 	{
 		int __tmp_i1, __tmp_i2;
 		
-		if (GL_FALSE == glfwInit()) {
-			
-		}
-		glfwDisable(GLFW_AUTO_POLL_EVENTS);
+		//glfwDisable(GLFW_AUTO_POLL_EVENTS);
 		
 		applyHints(hints);
 		with(hints)
@@ -55,8 +67,8 @@ class WindowGLFW : Window
 	~this()
 	{
 		glfwCloseWindow();
-		glfwTerminate();
 	}
+	
 	
 	override void title(in string title) {
 		_title = title;
@@ -65,14 +77,6 @@ class WindowGLFW : Window
 	
 	override string title() {
 		return _title;
-	}
-	
-	override bool focused() {
-		return GL_TRUE == glfwGetWindowParam(GLFW_ACTIVE);
-	}
-	
-	override bool stereo() {
-		return GL_TRUE == glfwGetWindowParam(GLFW_STEREO);
 	}
 	
 	override bool focused() {
@@ -145,27 +149,51 @@ class WindowGLFW : Window
 		glfwGetWindowSize(&tmp1, &tmp2);
 		return new CordsScreen(tmp1, tmp2);
 	}
+	
 	override void size(CordsScreen size) {
 		glfwSetWindowSize(size.x, size.y);
 	}
-	
-	override void setProviderClose(MsgProviderGen!"WindowClose" prvdr) {
-		glfwSetWindowCloseCallback(prvdr.getMsg());
-	}
-	
-	void delProviderClose(MsgProviderGen!"WindowClose" prvdr);
-	
-	void setProviderResize(MsgProviderGen!"WindowResize" prvdr);
-	void delProviderResize(MsgProviderGen!"WindowResize" prvdr);
-	
-	void setProviderRefresh(MsgProviderGen!"WindowRefresh" prvdr);
-	void delProviderRefresh(MsgProviderGen!"WindowRefresh" prvdr);
 	
 	override void swapBuffers() {
 		glfwSwapBuffers();
 	}
 	
+	override bool setMsgProviderClose( MsgProviderWindowClose prvdr ) {
+		_prvdrClose = prvdr;
+		glfwSetWindowCloseCallback(!is(prvdr) ?
+			cast(GLFWwindowclosefun)&onClose : null); /* TODO: better method? */
+		return true;
+	}
+	
+	override bool setMsgProviderResize( MsgProviderWindowResize prvdr ) {
+		_prvdrResize = prvdr;
+		glfwSetWindowSizeCallback(!is(prvdr) ?
+			cast(GLFWwindowsizefun)&onResize : null); /* TODO: better method? */
+		return true;
+	}
+	
+	override bool setMsgProviderRefresh( MsgProviderWindowRefresh prvdr ) {
+		_prvdrRefresh = prvdr;
+		glfwSetWindowRefreshCallback(!is(prvdr) ?
+			cast(GLFWwindowrefreshfun)&onRefresh : null); /* TODO: better method? */
+		return true;
+	}
+	
 	private:
+	extern(C) {	/* Warning! Methods prohibited, and fields might be unitialized */
+		int onClose() {
+			return false;
+		}
+	
+		void onResize(int x, int y) {
+			if (is(title) )
+				{writeln("dupa");}
+		}
+	
+		void onRefresh() {
+		}
+	}
+	
 	void applyHints(in WindowProperties p) {
 		with (p) {
 			glfwOpenWindowHint(GLFW_REFRESH_RATE, refresh_rate);

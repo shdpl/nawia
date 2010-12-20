@@ -19,7 +19,6 @@ module msg.mediator.mtd;
 
 public import msg.msg;
 public import msg.mediator.mediator;
-public import msg.handler.tmp;
 public import msg.window.close;
 
 class MsgMediatorMtd : MsgMediator {

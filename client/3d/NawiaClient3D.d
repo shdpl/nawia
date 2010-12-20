@@ -17,10 +17,22 @@
 
 module nawiaclient3d;
 
-import std.concurrency;
-import msg.mediator.mtd;
+import std.concurrency, std.stdio;
+
+import msg.mediator.mtd, msg.window.close,
+	window.glfw, window.window, screen.cords, glfw;
+
 
 void main(string args[])
 {
 	auto mtd = new MsgMediatorMtd();
+	WindowProperties props = new WindowProperties();
+	props.size = new CordsScreen();
+	Window glc = new WindowGLFW(props);
+	glc.setMsgProviderClose = new MsgProviderWindowClose();
+	glc.setMsgProviderResize = new MsgProviderWindowResize();
+	glc.setMsgProviderRefresh = new MsgProviderWindowRefresh();
+	while(true) {
+		glfwPollEvents();
+	}
 }

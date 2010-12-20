@@ -24,4 +24,5 @@ interface MsgProvider {
 	
 	Msg getMsg();
 	
+	
 }

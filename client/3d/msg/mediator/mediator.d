@@ -41,4 +41,6 @@ interface MsgMediator {
 	
 	bool addProvider(MsgProvider prvdr);
 	bool delProvider(MsgProvider prvdr);
+	
+	//void poll();
 }

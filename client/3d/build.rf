@@ -1,25 +1,24 @@
 -odbin
 -ofbin/NawiaClient3D
 -unittest
+-L-lglfw
 
 -I
 
 NawiaClient3D.d
+api/glfw/glfw.d
 cuda/types.d
-msg/gen.d
 msg/handler/handler.d
-msg/handler/tmp.d
 msg/listener/gen.d
 msg/listener/listener.d
-msg/listener/window/Close.d
-msg/listener/window/Refresh.d
-msg/listener/window/Resize.d
 msg/mediator/mediator.d
 msg/mediator/mtd.d
 msg/msg.d
 msg/provider/gen.d
 msg/provider/provider.d
 msg/window/close.d
+msg/window/refresh.d
+msg/window/resize.d
 screen/cords.d
 util/cords.d
 window/glfw.d

@@ -22,7 +22,7 @@ public import screen.cords;
 
 enum WindowMode { NORMAL, FULLSCREEN, MINIMIZED };
 
-class WindowProperties	//TODO: types in class vs struct
+class WindowProperties	//FIXME: types in class vs struct
 {
 	CordsScreen size;
 	WindowMode mode = WindowMode.NORMAL;

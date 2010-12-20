@@ -17,14 +17,15 @@
 
 module window.window;
 
-public import screen.cords;
-public import window.properties;
-
-protected import msg.mediator.mediator;
+protected import
+	msg.window.close,
+	msg.window.resize,
+	msg.window.refresh,
+	screen.cords,
+	window.properties;
 
 interface Window
 {
-	public:
 	
 	string title();
 	void title(in string title);
@@ -59,16 +60,11 @@ interface Window
 	CordsScreen size();
 	void size(CordsScreen);
 	
-	void setProviderClose(MsgProviderGen!"WindowClose" prvdr);
-	void delProviderClose(MsgProviderGen!"WindowClose" prvdr);
-	
-	void setProviderResize(MsgProviderGen!"WindowResize" prvdr);
-	void delProviderResize(MsgProviderGen!"WindowResize" prvdr);
-	
-	void setProviderRefresh(MsgProviderGen!"WindowRefresh" prvdr);
-	void delProviderRefresh(MsgProviderGen!"WindowRefresh" prvdr);
-	
 	void swapBuffers();
 
+	bool setMsgProviderClose( MsgProviderWindowClose prvdr );
+	bool setMsgProviderResize( MsgProviderWindowResize prvdr );
+	bool setMsgProviderRefresh( MsgProviderWindowRefresh prvdr );
+	
 }
 

@@ -17,13 +17,21 @@
 
 module msg.provider.gen;
 
+import std.traits;
+
 import msg.msg;
-import msg.provider.provider;
+import msg.window.close;
+public import msg.provider.provider;
+import std.traits;
 
-class MsgProviderGen(string MSG) : MsgProvider {
-
-	override Msg getMsg() {
-		return ;
-	}
+mixin template MsgProviderGen(string MSG, Args...) {
+	
+	mixin("class MsgProvider"~MSG~" : MsgProvider {"
+		
+			~"override Msg"~MSG~" getMsg() {"
+				~"return new Msg"~MSG~";"
+			~"}"
+			
+		~"}");
 	
 }

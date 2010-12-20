@@ -17,8 +17,12 @@
 
 module msg.window.close;
 
-import msg.msg;
+private import
+	msg.msg,
+	msg.provider.gen;
 
 class MsgWindowClose : Msg {
 	 
 }
+
+mixin MsgProviderGen!"WindowClose";
