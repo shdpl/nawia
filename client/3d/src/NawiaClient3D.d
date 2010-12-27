@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module msg.listener.gen;
+module nawiaclient3d;
 
-class MsgListenerGen(string MSG) {
-	
-	override void setMsg(MSG msg);
+void main(){
 	
 }

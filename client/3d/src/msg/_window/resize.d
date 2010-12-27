@@ -15,14 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module msg.provider.provider;
+module msg._window.resize;
 
-private import msg.msg;
-protected import msg.provider.gen;
+private import
+	msg.msg,
+	msg.provider.gen,
+	msg.handler.gen;
 
-interface MsgProvider {
-	
-	Msg getMsg();
-	
-	
+class MsgWindowResize : Msg {
+	 
 }
+
+mixin(MsgProviderGen!"WindowResize");
+mixin(MsgHandlerGen!"WindowResize");

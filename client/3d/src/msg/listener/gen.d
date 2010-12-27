@@ -15,23 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module msg.provider.gen;
+module msg.listener.gen;
 
 import std.traits;
 
-import msg.msg;
-import msg.window.close;
-public import msg.provider.provider;
-import std.traits;
-
-mixin template MsgProviderGen(string MSG, Args...) {
+public import msg.msg,
+	msg.listener.listener;
 	
-	mixin("class MsgProvider"~MSG~" : MsgProvider {"
+template MsgListenerGen(string MSG, Args...) {
+	
+	const char[] MsgListenerGen = "class MsgListener"~MSG~" : MsgListener {"
 		
-			~"override Msg"~MSG~" getMsg() {"
+			~"override void setMsg(Msg"~MSG~") {"
 				~"return new Msg"~MSG~";"
 			~"}"
 			
-		~"}");
+		~"}";
 	
 }

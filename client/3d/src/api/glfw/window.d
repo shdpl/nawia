@@ -15,27 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module api.glfw.glfw;
+module api.glfw.window;
 
 import std.conv,
 	std.stdio;
 
 import glfw;
 
-private import
-	window.window;
+import window.window;
 
-static this() {
-	if (GL_FALSE == glfwInit()) {
-		// TODO:
-	}
-}
 
-static ~this() {
-	glfwTerminate();
-}
 	
-class WindowGLFW : Window
+package class WindowGLFW : Window
 {
 	private:
 	string _title;
@@ -51,7 +42,7 @@ class WindowGLFW : Window
 	{
 		int __tmp_i1, __tmp_i2;
 		
-		//glfwDisable(GLFW_AUTO_POLL_EVENTS);
+		glfwDisable(GLFW_AUTO_POLL_EVENTS);
 		
 		applyHints(hints);
 		with(hints)
@@ -72,7 +63,7 @@ class WindowGLFW : Window
 	
 	override void title(in string title) {
 		_title = title;
-		glfwSetWindowTitle(title.dup.ptr);	// TODO: wrong bindings?
+		glfwSetWindowTitle(title);	// TODO: wrong bindings?
 	}
 	
 	override string title() {
@@ -104,35 +95,35 @@ class WindowGLFW : Window
 		return glfwGetWindowParam(GLFW_REFRESH_RATE);
 	}
 	
-	override ubyte[3] bitsRGB() {
-		ubyte[3] ret;
-		ret[0] = to!ubyte(glfwGetWindowParam(GLFW_RED_BITS));
-		ret[1] = to!ubyte(glfwGetWindowParam(GLFW_GREEN_BITS));
-		ret[2] = to!ubyte(glfwGetWindowParam(GLFW_BLUE_BITS));
-		return ret;
+	override ColorRGB fmtMain() {
+		return (new ColorRGB(
+			to!ubyte(glfwGetWindowParam(GLFW_RED_BITS)),
+			to!ubyte(glfwGetWindowParam(GLFW_GREEN_BITS)),
+			to!ubyte(glfwGetWindowParam(GLFW_BLUE_BITS))
+			));
 	}
 	
-	override ubyte bitsAlpha() {
+	override ubyte fmtAlpha() {
 		return to!ubyte(glfwGetWindowParam(GLFW_ALPHA_BITS));
 	}
 	
-	override ubyte[3] bitsAccumRGB() {
-		ubyte[3] ret;
-		ret[0] = to!ubyte(glfwGetWindowParam(GLFW_ACCUM_RED_BITS));
-		ret[1] = to!ubyte(glfwGetWindowParam(GLFW_ACCUM_GREEN_BITS));
-		ret[2] = to!ubyte(glfwGetWindowParam(GLFW_ACCUM_BLUE_BITS));
-		return ret;
+	override ColorRGB fmtAccumMain() {
+		return (new ColorRGB(
+			to!ubyte(glfwGetWindowParam(GLFW_ACCUM_RED_BITS)),
+			to!ubyte(glfwGetWindowParam(GLFW_ACCUM_GREEN_BITS)),
+			to!ubyte(glfwGetWindowParam(GLFW_ACCUM_BLUE_BITS))
+			));
 	}
 	
-	override ubyte bitsAccumAlpha() {
+	override ubyte fmtAccumAlpha() {
 		return to!ubyte(glfwGetWindowParam(GLFW_ACCUM_ALPHA_BITS));
 	}
 	
-	override ubyte bitsStencil() {
+	override ubyte fmtStencil() {
 		return to!ubyte(glfwGetWindowParam(GLFW_STENCIL_BITS));
 	}
 	
-	override ubyte bitsDepth() {
+	override ubyte fmtDepth() {
 		return to!ubyte(glfwGetWindowParam(GLFW_DEPTH_BITS));	
 	}
 	
@@ -156,6 +147,19 @@ class WindowGLFW : Window
 	
 	override void swapBuffers() {
 		glfwSwapBuffers();
+	}
+	
+	override WindowMode[] supportedModes() {
+		WindowMode[] modes = new WindowMode[16];
+		uint len = glfwGetVideoModes(modes, modes.length);
+		modes.length = len;
+		return modes;
+	}
+	
+	override WindowMode desktopMode() {
+		WindowMode ret = new WindowMode;
+		glfwGetDesktopMode(cast(GLFWvidmode*)&ret);
+		return ret;
 	}
 	
 	override bool setMsgProviderClose( MsgProviderWindowClose prvdr ) {

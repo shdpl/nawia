@@ -15,21 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module screen.cords;
+module msg.provider.provider;
 
-import util.cords;
+private import msg.msg;
+protected import msg.provider.gen;
 
-class CordsScreen : Cords!(uint, 2){
-	//Screen.Id id_screen = Screen.Id.DEFAULT; TODO: screen
+abstract class MsgProvider {
 	
-	this(uint x, uint y) {
-		assert(x >= 0 && y >= 0);
-		//assert(x < id_screen.Width && y < id_screen.Heigth); TODO: screen
-		super(x,y);
-	}
-	
-	this() {
-		this(0,0);
-	}
+	Msg getMsg();
 	
 }

@@ -17,12 +17,14 @@
 
 module window.window;
 
-protected import
-	msg.window.close,
-	msg.window.resize,
-	msg.window.refresh,
-	screen.cords,
-	window.properties;
+public import
+	msg._window.close,
+	msg._window.resize,
+	msg._window.refresh,
+	type.screen.cords,
+	type.color.rgb,
+	window.properties,
+	window.mode;
 
 interface Window
 {
@@ -44,14 +46,14 @@ interface Window
 	
 	uint refreshRate();
 	
-	ubyte[3] bitsRGB();
-	ubyte bitsAlpha();
+	ColorRGB fmtMain();
+	ubyte fmtAlpha();
 	
-	ubyte[3] bitsAccumRGB();
-	ubyte bitsAccumAlpha();
+	ColorRGB fmtAccumMain();
+	ubyte fmtAccumAlpha();
 	
-	ubyte bitsStencil();
-	ubyte bitsDepth();
+	ubyte fmtStencil();
+	ubyte fmtDepth();
 	
 	ubyte auxBufNo();
 	
@@ -61,6 +63,9 @@ interface Window
 	void size(CordsScreen);
 	
 	void swapBuffers();
+	
+	WindowMode[] supportedModes();
+	WindowMode desktopMode();
 
 	bool setMsgProviderClose( MsgProviderWindowClose prvdr );
 	bool setMsgProviderResize( MsgProviderWindowResize prvdr );

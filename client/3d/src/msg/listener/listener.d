@@ -15,51 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module util.cords;
+module msg.listener.listener;
 
-import cuda.types;
+public import msg.msg;
+public import msg.listener.gen;
 
-//TODO dirty bitch
-class Cords(T, size_t N) if (N > 0 && N < 4) {
-	private SmallVec!(T, N) c;
-	
-	this(T x) {
-		c.x = x;
-	}
-
-
-	T x()
-	{
-		return c.x;
-	}
-	
-	static if(N > 1) {
-		this(T x, T y) {
-			this(x);
-			c.y = y;
-		}
-		
-		T y()
-		{
-			return c.y;
-		}
-	}
-
-	static if(N > 2) {
-		this(T x, T y, T z) {
-			this(x, y);
-			c.z = z;
-		}
-		
-		T z()
-		{
-			return c.z;
-		}
-	}
-	
-	auto opDispatch(string m, args...)() {
-		return mixin("c."~m~"(args)");
-	}
-	
-
+abstract class MsgListener {
+	void setMsg(Msg msg);
 }

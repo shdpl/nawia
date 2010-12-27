@@ -15,45 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module msg.mediator.mtd;
+module msg.handler.handler;
 
-public import msg.msg;
-public import msg.mediator.mediator;
-public import msg.window.close;
-
-class MsgMediatorMtd : MsgMediator {
+abstract class MsgHandler {
 	
-	MsgHandler[Msg][] _handlers;
-	MsgListener[Msg][] _listeners;
-	
-	this() {
-	}
-	
-	override bool addHandler(MsgHandler hndlr) {
-		return false;
-	}
-	
-	override bool delHandler(MsgHandler hndlr) {
-		return false;
-	}
-	
-	override bool addListener(MsgListener lstnr) {
-		return false;
-	}
-	
-	override bool delListener(MsgListener) {
-		return false;
-		
-	}
-	
-	override bool addProvider(MsgProvider) {
-		return false;
-		
-	}
-	
-	override bool delProvider(MsgProvider) {
-		return false;
-		
-	}
+	/**
+	 * Handle message.
+	 * 
+	 * Params:
+	 * 		msg		= message to handle
+	 *
+	 * Returns:
+	 *		true	= continue delivering
+	 *		false	= ignore message
+	 */
+	bool msgHandle();
 	
 }

@@ -15,9 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module msg.msg;
+module msg._window.close;
 
+private import
+	msg.msg,
+	msg.provider.gen,
+	msg.handler.gen;
 
-interface Msg {
-
+class MsgWindowClose : Msg {
+	 
 }
+
+mixin(MsgProviderGen!"WindowClose");
+mixin(MsgHandlerGen!"WindowClose");

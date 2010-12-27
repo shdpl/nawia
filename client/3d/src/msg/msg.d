@@ -15,32 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module msg.mediator.mediator;
+module msg.msg;
 
-public import msg.msg;
-public import msg.listener.listener;
-public import msg.provider.provider;
-public import msg.handler.handler;
 
-interface MsgMediator {
-	/**
-	 * Add handler, that wants to be invoked each time on every message
-	 * of given type.
-	 *
-	 * It might allow, or block message from being transmitted to listeners,
-	 * or next handlers in chain.
-	 *
-	 * Params:
-	 * 		hndlr =		MsgHandler to add
-	 */
-	bool addHandler(MsgHandler hndlr);
-	bool delHandler(MsgHandler hndlr);
-	
-	bool addListener(MsgListener lst);
-	bool delListener(MsgListener lst);
-	
-	bool addProvider(MsgProvider prvdr);
-	bool delProvider(MsgProvider prvdr);
-	
-	//void poll();
+abstract class Msg {
+
 }

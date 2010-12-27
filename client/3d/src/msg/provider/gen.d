@@ -15,24 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module nawiaclient3d;
+module msg.provider.gen;
 
-import std.concurrency, std.stdio;
+import std.traits;
 
-import msg.mediator.mtd, msg.window.close,
-	window.glfw, window.window, screen.cords, glfw;
+public import msg.msg,
+	msg.provider.provider;
 
-
-void main(string args[])
-{
-	auto mtd = new MsgMediatorMtd();
-	WindowProperties props = new WindowProperties();
-	props.size = new CordsScreen();
-	Window glc = new WindowGLFW(props);
-	glc.setMsgProviderClose = new MsgProviderWindowClose();
-	glc.setMsgProviderResize = new MsgProviderWindowResize();
-	glc.setMsgProviderRefresh = new MsgProviderWindowRefresh();
-	while(true) {
-		glfwPollEvents();
-	}
+template MsgProviderGen(string MSG, Args...) {
+	
+	const char[] MsgProviderGen = "class MsgProvider"~MSG~" : MsgProvider {"
+		
+			~"override Msg"~MSG~" getMsg() {"
+				~"return new Msg"~MSG~";"
+			~"}"
+			
+		~"}";
+	
 }
