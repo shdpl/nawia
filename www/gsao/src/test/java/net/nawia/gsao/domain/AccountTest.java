@@ -16,20 +16,22 @@
  ******************************************************************************/
 package net.nawia.gsao.domain;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.logging.*;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.slf4j.*;
 
 @Test
 public class AccountTest {
 
 	@Test
 	void buildTest() {
-		Account a = new Account();
-		Assert.assertNotNull(a);
+		Logger tmp = LoggerFactory.getLogger(AccountTest.class);
+		tmp.info("Hello World");
+		try {
+			Account a = new Account();
+			Assert.assertNotNull(a);
+		} catch (Exception t) {
+			Assert.assertNotNull(null);
+		}
 	}
-
 }

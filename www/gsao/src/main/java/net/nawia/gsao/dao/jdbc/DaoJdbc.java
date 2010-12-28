@@ -17,8 +17,12 @@
 package net.nawia.gsao.dao.jdbc;
 
 import net.nawia.gsao.dao.Dao;
+import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
@@ -26,22 +30,21 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 public abstract class DaoJdbc<K, E> implements Dao<K, E> {
-	private static DataSource ds;
 	protected Connection con;
+	
+	private static DataSource _ds;
+	private static final String _propFile = "database.properties";
 
-	DaoJdbc() {
-		synchronized (ds) {
-			if (ds == null) {
+	public DaoJdbc() throws ExceptionDaoInit {
+		synchronized (_ds) {
+			if (null == _ds) {
+				Properties properties = new Properties();
 				try {
-					InitialContext ctx = new InitialContext();
-					ds = (DataSource) ctx.lookup("nawia/gsao/db");
-					con = ds.getConnection();
-					ctx.close();
-				} catch (NamingException e) {
-					// throw new ExceptionDaoDb();
-				} catch (SQLException e) {
-					// throw new ExceptionDaoDb();
+				    properties.load(new FileInputStream(_propFile));
+				} catch (IOException e) {
+					throw new ExceptionDaoInit("Could not load " +_propFile, e);
 				}
+				
 			}
 		}
 	}

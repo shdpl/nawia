@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.nawia.gsao.dao;
+package net.nawia.gsao.dao.exceptions;
 
 public class ExceptionDaoNotFound extends ExceptionDao {
 
@@ -22,7 +22,7 @@ public class ExceptionDaoNotFound extends ExceptionDao {
 		super("Not found");
 	}
 	
-	ExceptionDaoNotFound(String s) {
+	public ExceptionDaoNotFound(String s) {
 		super("Not found: " +s);
 	}
 }

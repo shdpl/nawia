@@ -19,9 +19,15 @@ package net.nawia.gsao.dao.jdbc;
 import java.util.List;
 
 import net.nawia.gsao.dao.Dao;
+import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 import net.nawia.gsao.domain.Account;
 
 public class DaoAccount extends DaoJdbc<Integer, Account> implements Dao<Integer, Account> {
+
+	public DaoAccount() throws ExceptionDaoInit {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	public void persist(Account entity) {
 		final String q = "INSERT INTO accounts VALUES ('')";

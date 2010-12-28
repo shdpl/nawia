@@ -18,6 +18,7 @@ package net.nawia.gsao.domain;
 
 import javax.persistence.*;
 import net.nawia.gsao.dao.*;
+import net.nawia.gsao.dao.exceptions.ExceptionDao;
 
 @Entity(name="Accounts")
 public class Account {
@@ -30,13 +31,8 @@ public class Account {
 	short warnings;
 	DaoFactory df;
 	
-	Account() {
-		try {
-			DaoFactory.build(DaoAccount.class).persist(this);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	Account() throws ExceptionDao {
+		DaoFactory.build(DaoAccount.class).persist(this);
 	}
 	
 	

@@ -30,6 +30,18 @@
 						<target>${source-level}</target>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<systemProperties>
+							<property>
+								<name>java.util.logging.config.file</name>
+								<value>${project.build.directory}/target/test-classes/logging.properties</value>
+							</property>
+						</systemProperties>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

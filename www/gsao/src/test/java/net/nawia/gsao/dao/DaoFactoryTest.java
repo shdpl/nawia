@@ -16,6 +16,9 @@
  ******************************************************************************/
 package net.nawia.gsao.dao;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.testng.annotations.*;
 
 @Test
@@ -24,7 +27,11 @@ public class DaoFactoryTest {
 	
 	@BeforeTest
 	void prepareFactory() {
-		f = new DaoFactory();
+		try {
+			f = new DaoFactory();
+		} catch (Throwable t) {
+			assert(false);
+		}
 	}
 	
 	@Test

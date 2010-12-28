@@ -19,6 +19,9 @@ package net.nawia.gsao.dao;
 import java.util.HashMap;
 import java.util.logging.*;
 
+import net.nawia.gsao.dao.exceptions.ExceptionDao;
+import net.nawia.gsao.dao.exceptions.ExceptionDaoMalformed;
+import net.nawia.gsao.dao.exceptions.ExceptionDaoNotFound;
 import net.nawia.gsao.dao.jdbc.DaoJdbc;
 
 public class DaoFactory {
@@ -30,6 +33,7 @@ public class DaoFactory {
 			Class<? extends Dao<K, E>> toBuild) throws ExceptionDao {
 		final String name = toBuild.getSimpleName();
 
+		System.out.println("Tu powinny być logi!");
 		Logger.getLogger(DaoFactory.class.getName()).entering(
 				DaoFactory.class.getName(), "build", (Object) toBuild);
 

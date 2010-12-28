@@ -14,16 +14,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package net.nawia.gsao.dao;
+package net.nawia.gsao.dao.exceptions;
 
-public class ExceptionDaoMalformed extends ExceptionDao {
-
-	ExceptionDaoMalformed() {
-		super("Malformed");
+public class ExceptionDao extends Exception {
+	
+	ExceptionDao() {
+		super("ExceptionDao");
 	}
 	
-	ExceptionDaoMalformed(String s) {
-		super("Malformed: " +s);
-	}	
+	ExceptionDao(String s) {
+		super("ExceptionDao: " +s);
+	}
 	
+	ExceptionDao(String s, Throwable cause) {
+		super(s, cause);
+	}
+
 }
