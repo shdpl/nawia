@@ -16,22 +16,17 @@
  ******************************************************************************/
 package net.nawia.gsao.domain;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import org.slf4j.*;
+import net.nawia.gsao.dao.exceptions.ExceptionDao;
 
-@Test
+import org.testng.annotations.Test;
+
+@Test(groups = "Dao")
 public class AccountTest {
 
-	@Test
-	void buildTest() {
-		Logger tmp = LoggerFactory.getLogger(AccountTest.class);
-		tmp.info("Hello World");
-		try {
-			Account a = new Account();
-			Assert.assertNotNull(a);
-		} catch (Exception t) {
-			Assert.assertNotNull(null);
-		}
+	@Test(dependsOnGroups = "DaoFactory")
+	void buildTest() throws ExceptionDao {
+		Account a = new Account();
 	}
+
+	
 }

@@ -26,11 +26,10 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements Dao<Integer
 
 	public DaoAccount() throws ExceptionDaoInit {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public void persist(Account entity) {
-		final String q = "INSERT INTO accounts VALUES ('')";
+		final String q = "INSERT INTO accounts VALUES ('?,')";
 	}
 
 	public void remove(Account entity) {

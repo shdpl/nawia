@@ -23,17 +23,16 @@ import net.nawia.gsao.dao.exceptions.ExceptionDao;
 import net.nawia.gsao.dao.exceptions.ExceptionDaoMalformed;
 import net.nawia.gsao.dao.exceptions.ExceptionDaoNotFound;
 import net.nawia.gsao.dao.jdbc.DaoJdbc;
+import net.nawia.gsao.dao.jpa.DaoJpa;
 
 public class DaoFactory {
-	private static HashMap<String, Class<Dao<?, ?>>> _instances; // FIXME: Hash
-																	// collisions?
+	private static HashMap<String, Class<Dao<?, ?>>> _instances;
 
 	@SuppressWarnings("unchecked")
 	static synchronized public <K, E> Dao<K, E> build(
 			Class<? extends Dao<K, E>> toBuild) throws ExceptionDao {
 		final String name = toBuild.getSimpleName();
 
-		System.out.println("Tu powinny być logi!");
 		Logger.getLogger(DaoFactory.class.getName()).entering(
 				DaoFactory.class.getName(), "build", (Object) toBuild);
 
@@ -45,7 +44,7 @@ public class DaoFactory {
 			try {
 				final String nameJdbc = "net.nawia.gsao.dao.jdbc." + name;
 				if (DaoJdbc.class == Class.forName(nameJdbc)
-						.getGenericSuperclass()) {
+						.getSuperclass()) {
 					cl = (Class<Dao<?, ?>>) Class.forName(nameJdbc);
 					Logger.getLogger(DaoFactory.class.getName()).info(
 							"building " + nameJdbc);
@@ -55,8 +54,8 @@ public class DaoFactory {
 			} catch (ClassNotFoundException e) {
 				try {
 					final String nameJpa = "net.nawia.gsao.dao.jpa." + name;
-					if (DaoJdbc.class == Class.forName(nameJpa)
-							.getGenericSuperclass()) {
+					if (DaoJpa.class == Class.forName(nameJpa)
+							.getSuperclass()) {
 						cl = (Class<Dao<?, ?>>) Class.forName(nameJpa);
 						Logger.getLogger(DaoFactory.class.getName()).info(
 								"building " + nameJpa);

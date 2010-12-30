@@ -2,7 +2,7 @@ package net.nawia.gsao.dao.exceptions;
 
 public class ExceptionDaoInit extends ExceptionDao {
 
-	ExceptionDaoInit() {
+	public ExceptionDaoInit() {
 		super("Init");
 	}
 	

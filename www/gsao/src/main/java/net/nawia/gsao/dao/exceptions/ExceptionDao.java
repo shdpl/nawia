@@ -19,11 +19,11 @@ package net.nawia.gsao.dao.exceptions;
 public class ExceptionDao extends Exception {
 	
 	ExceptionDao() {
-		super("ExceptionDao");
+		super("Exception in Dao");
 	}
 	
 	ExceptionDao(String s) {
-		super("ExceptionDao: " +s);
+		super("Exception in Dao: " +s);
 	}
 	
 	ExceptionDao(String s, Throwable cause) {

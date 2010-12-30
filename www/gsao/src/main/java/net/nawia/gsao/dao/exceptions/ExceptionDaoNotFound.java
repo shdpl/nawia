@@ -18,7 +18,7 @@ package net.nawia.gsao.dao.exceptions;
 
 public class ExceptionDaoNotFound extends ExceptionDao {
 
-	ExceptionDaoNotFound() {
+	public ExceptionDaoNotFound() {
 		super("Not found");
 	}
 	

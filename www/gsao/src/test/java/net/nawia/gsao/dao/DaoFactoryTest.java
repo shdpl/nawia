@@ -16,37 +16,60 @@
  ******************************************************************************/
 package net.nawia.gsao.dao;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Properties;
+import java.util.logging.LogManager;
+
+import javax.naming.*;
 
 import org.testng.annotations.*;
+import org.apache.commons.dbcp.*;
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.mockejb.*;
+import org.mockejb.jndi.*;
+import org.mockejb.interceptor.*;
 
-@Test
+import net.nawia.gsao.dao.exceptions.ExceptionDao;
+
+@Test(groups = "DaoFactory")
 public class DaoFactoryTest {
-	DaoFactory f;
-	
-	@BeforeTest
-	void prepareFactory() {
-		try {
-			f = new DaoFactory();
-		} catch (Throwable t) {
-			assert(false);
-		}
+	private Context context;
+	private static final String _propFile = "/properties/database.properties";
+
+	@BeforeClass
+	public void setUpJdbc() throws Exception {
+
+		Properties dbInfo = new Properties();
+		dbInfo.load(DaoFactoryTest.class.getResourceAsStream(_propFile));
+
+		GenericObjectPool connectionPool = new GenericObjectPool(null);
+		ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(
+				dbInfo.getProperty("url"), dbInfo);
+		PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(
+				connectionFactory, connectionPool, null, null, false, true);
+		PoolingDataSource ds = new PoolingDataSource(connectionPool);
+
+		MockContextFactory.setAsInitial();
+		context = new InitialContext();
+		context.rebind("java:comp/env/jdbc/gsDB", ds);
 	}
-	
+
 	@Test
-	void testBuildJdbc() {
-		
+	void testBuildJdbc() throws ExceptionDao {
+		DaoFactory.build(DaoTestJdbc.class);
 	}
-	
+
 	@Test
-	void testBuildGeneric() {
-		
+	void testBuildJpa() throws ExceptionDao {
+		DaoFactory.build(DaoTestJpa.class);
 	}
-	
-	@Test
-	void testBuildJpa() {
-		
+
+	// @Test(dependsOnMethods = { "testBuildJdbc", "testBuildJpa" })
+	// void testBuildGeneric() {
+	// }
+
+	@AfterClass
+	public void setDownJdbc() {
+		MockContextFactory.revertSetAsInitial();
 	}
 
 }
