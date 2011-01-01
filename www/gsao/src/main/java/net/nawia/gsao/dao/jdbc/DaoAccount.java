@@ -16,36 +16,150 @@
  ******************************************************************************/
 package net.nawia.gsao.dao.jdbc;
 
-import java.util.List;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
+import java.util.logging.Logger;
 
-import net.nawia.gsao.dao.Dao;
 import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
+import net.nawia.gsao.dao.exceptions.RuntimeExceptionDao;
 import net.nawia.gsao.domain.Account;
 
-public class DaoAccount extends DaoJdbc<Integer, Account> implements Dao<Integer, Account> {
+// "id" SERIAL,
+// "name" VARCHAR(32) NOT NULL,
+// "password" VARCHAR(255) NOT NULL,
+// "email" VARCHAR(255) NOT NULL DEFAULT '',
+// "premend" BIGINT NOT NULL DEFAULT 0,
+// "blocked" SMALLINT NOT NULL DEFAULT 0,
+// "warnings" SMALLINT NOT NULL DEFAULT 0,
+// PRIMARY KEY ("id"),
+// UNIQUE ("name")
+public class DaoAccount extends DaoJdbc<Integer, Account> implements
+		net.nawia.gsao.dao.DaoAccount {
+	static final private Logger _log = Logger.getLogger(DaoAccount.class
+			.getName());
+	private Statement _findAll = null;
+	private PreparedStatement _find = null;
+	private PreparedStatement _remove = null;
+	private PreparedStatement _persistNew = null;
+	private PreparedStatement _persistOld = null;
 
 	public DaoAccount() throws ExceptionDaoInit {
 		super();
+		_log.entering(DaoAccount.class.getName(), "DaoAccount()");
 	}
+
+	// TODO: no continuity with database native sequencer
+	private static final String _qPersistNew = "INSERT INTO accounts "
+			+ "(name, password, email, premend, blocked, warnings) "
+			+ "VALUES (?, ?, ?, ?, ?, ?)";
+	private static final String _qPersistOld = "UPDATE accounts"
+			+ " SET name = ?, password = ?, email = ?,"
+			+ " premend = ?, blocked = ?, warnings = ?" + " WHERE id = ?";
 
 	public void persist(Account entity) {
-		final String q = "INSERT INTO accounts VALUES ('?,')";
+		final int eid = entity.getId();
+		try {
+			if (0 == eid) {
+				if (null == _persistNew)
+					_persistNew = _conn.prepareStatement(
+							_qPersistNew, Statement.RETURN_GENERATED_KEYS);
+				_persistNew.setString(1, entity.getName());
+				_persistNew.setString(2, entity.getPassword());
+				_persistNew.setString(3, entity.getEmail());
+				_persistNew.setLong(4, entity.getPremend().getTime());
+				_persistNew.setShort(5, (short) (entity.isBlocked() ? 1 : 0));
+				_persistNew.setShort(6, entity.getWarnings());
+				if (1 != _persistNew.executeUpdate())
+					throw new RuntimeExceptionDao("Could not add " + entity);
+				ResultSet rs = _persistNew.getGeneratedKeys();
+				if (rs.next())
+					entity.setId(rs.getInt("id"));
+			} else {
+				if (null == _persistOld)
+					_persistOld = _conn.prepareStatement(_qPersistOld);
+				_persistOld.setString(1, entity.getName());
+				_persistOld.setString(2, entity.getPassword());
+				_persistOld.setString(3, entity.getEmail());
+				_persistOld.setLong(4, entity.getPremend().getTime());
+				_persistOld.setShort(5, (short) (entity.isBlocked() ? 1 : 0));
+				_persistOld.setShort(6, entity.getWarnings());
+				_persistOld.setInt(7, entity.getId());
+				if (1 != _persistOld.executeUpdate())
+					throw new IllegalArgumentException("Entity with id = "
+							+ entity.getId() + " does not exists");
+			}
+		} catch (SQLException e) {
+			throw new RuntimeExceptionDao("Error while persisting " +entity, e);
+		}
 	}
+
+	private static final String _qRemove = "DELETE FROM accounts WHERE id = ?";
 
 	public void remove(Account entity) {
-		// TODO Auto-generated method stub
-		
+		try {
+			if (null == _remove)
+				_remove = _conn.prepareStatement(_qRemove);
+			_remove.setInt(1, entity.getId());
+			if (1 != _remove.executeUpdate())
+				throw new IllegalArgumentException(
+						"Non-existing entity passed to remove(): " + entity);
+
+		} catch (SQLException e) {
+			throw new RuntimeExceptionDao();
+		}
 	}
+
+	private static final String _qFind = "SELECT * FROM accounts WHERE id = ?";
 
 	public Account find(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			if (null == _find)
+				_find = _conn.prepareStatement(_qFind);
+			_find.setInt(1, id);
+			ResultSet rs = _find.executeQuery();
+			if (rs.next()) return new Account(rs.getInt("id"), rs.getString("name"),
+					rs.getString("password"), rs.getString("email"), new Date(
+							rs.getLong("premend")),
+					1 == rs.getShort("blocked"), rs.getShort("warnings"));
+			return null;
+		} catch (SQLException e) {
+			throw new RuntimeExceptionDao("Invalid query ", e);
+		}
 	}
+
+	private static final String _qFindAll = "SELECT * FROM accounts";
 
 	public List<Account> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Account> ret = new Vector<Account>();
+
+		try {
+			if (null == _findAll)
+				_findAll = _conn.createStatement();
+			ResultSet rs = _findAll.executeQuery(_qFindAll);
+			while (rs.next()) {
+				ret.add(new Account(rs.getInt("id"), rs.getString("name"), rs
+						.getString("password"), rs.getString("email"),
+						new Date(rs.getLong("premend")), 1 == rs
+								.getShort("blocked"), rs.getShort("warnings")));
+			}
+			return ret;
+		} catch (SQLException e) {
+			throw new RuntimeExceptionDao();
+		}
 	}
 
+	@Override
+	protected void finalize() throws Throwable { // TODO: lack of destructors
+		super.finalize();
+
+		try {
+			_findAll.close();
+		} catch (SQLException e) {
+			_log.severe(this + " couldn't be finalized!");
+		}
+	}
 
 }

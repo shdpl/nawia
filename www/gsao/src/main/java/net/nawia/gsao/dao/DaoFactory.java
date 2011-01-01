@@ -26,15 +26,24 @@ import net.nawia.gsao.dao.jdbc.DaoJdbc;
 import net.nawia.gsao.dao.jpa.DaoJpa;
 
 public class DaoFactory {
+	static final private Logger _log = Logger.getLogger(DaoFactory.class
+			.getName());
 	private static HashMap<String, Class<Dao<?, ?>>> _instances;
 
+	/**
+	 * 
+	 * @param <K>
+	 * @param <E>
+	 * @param toBuild
+	 * @return
+	 * @throws ExceptionDao
+	 */
 	@SuppressWarnings("unchecked")
 	static synchronized public <K, E> Dao<K, E> build(
 			Class<? extends Dao<K, E>> toBuild) throws ExceptionDao {
 		final String name = toBuild.getSimpleName();
 
-		Logger.getLogger(DaoFactory.class.getName()).entering(
-				DaoFactory.class.getName(), "build", (Object) toBuild);
+		_log.entering(DaoFactory.class.getName(), "build", (Object) toBuild);
 
 		if (null == _instances)
 			_instances = new HashMap<String, Class<Dao<?, ?>>>();
@@ -43,22 +52,18 @@ public class DaoFactory {
 			Class<Dao<?, ?>> cl;
 			try {
 				final String nameJdbc = "net.nawia.gsao.dao.jdbc." + name;
-				if (DaoJdbc.class == Class.forName(nameJdbc)
-						.getSuperclass()) {
+				if (DaoJdbc.class == Class.forName(nameJdbc).getSuperclass()) {
 					cl = (Class<Dao<?, ?>>) Class.forName(nameJdbc);
-					Logger.getLogger(DaoFactory.class.getName()).info(
-							"building " + nameJdbc);
+					_log.info("building " + nameJdbc);
 				} else {
 					throw new ExceptionDaoMalformed(name);
 				}
 			} catch (ClassNotFoundException e) {
 				try {
 					final String nameJpa = "net.nawia.gsao.dao.jpa." + name;
-					if (DaoJpa.class == Class.forName(nameJpa)
-							.getSuperclass()) {
+					if (DaoJpa.class == Class.forName(nameJpa).getSuperclass()) {
 						cl = (Class<Dao<?, ?>>) Class.forName(nameJpa);
-						Logger.getLogger(DaoFactory.class.getName()).info(
-								"building " + nameJpa);
+						_log.info("building " + nameJpa);
 					} else {
 						throw new ExceptionDaoMalformed(name);
 					}

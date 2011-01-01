@@ -16,17 +16,13 @@
  ******************************************************************************/
 package net.nawia.gsao.dao.jdbc;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+//import java.io.*;
 import java.sql.*;
-import java.util.Properties;
-import java.util.ResourceBundle;
+//import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.naming.*;
+//import javax.transaction.*;
 import javax.sql.DataSource;
 
 import net.nawia.gsao.dao.Dao;
@@ -41,54 +37,60 @@ public abstract class DaoJdbc<K, E> implements Dao<K, E> {
 	// "/properties/database.properties";
 	private static final String _dbpath = "jdbc/gsDB";
 	private static final String _envpath = "java:comp/env";
+	private static final Logger _log = Logger
+			.getLogger(DaoJdbc.class.getName());
 
 	public DaoJdbc() throws ExceptionDaoInit {
 		synchronized (_dsLock) {
 			if (null == _ds) {
-//				Properties properties = new Properties();
-//				try {
-//					InputStream s = this.getClass().getResourceAsStream(
-//							_propFile);
-//					if (null == s)
-//						throw new ExceptionDaoInit("Could not load "
-//								+ _propFile);
-//					properties.load(s);
-//					_conn = DriverManager.getConnection(
-//							properties.getProperty("url"), properties);
-//					
-//				} catch (SQLException e) {
-//					throw new ExceptionDaoInit("Could not connect to "
-//							+ properties.getProperty("url"), e);
-//					
-//				} catch (IOException e) {
-//					throw new ExceptionDaoInit("Could not load " + _propFile, e);
-//				}
-				
+				// Properties properties = new Properties();
+				// try {
+				// InputStream s = this.getClass().getResourceAsStream(
+				// _propFile);
+				// if (null == s)
+				// throw new ExceptionDaoInit("Could not load "
+				// + _propFile);
+				// properties.load(s);
+				// _conn = DriverManager.getConnection(
+				// properties.getProperty("url"), properties);
+				//
+				// } catch (SQLException e) {
+				// throw new ExceptionDaoInit("Could not connect to "
+				// + properties.getProperty("url"), e);
+				//
+				// } catch (IOException e) {
+				// throw new ExceptionDaoInit("Could not load " + _propFile, e);
+				// }
+
 				try {
 					InitialContext ctx = new InitialContext();
-					Logger.getLogger(DaoJdbc.class.getName()).finest("looking up " +_envpath);
+					_log.finest("looking up " + _envpath);
 					Context envCtx = (Context) ctx.lookup(_envpath);
-					Logger.getLogger(DaoJdbc.class.getName()).finest(_envpath +" looked up properly");
+					_log.finest(_envpath + " looked up properly");
+
 					_ds = (DataSource) envCtx.lookup(_dbpath);
 					ctx.close();
-					_conn = _ds.getConnection();
+
 				} catch (NamingException e) {
-					Logger.getLogger(DaoJdbc.class.getName()).finest("looking up " +_envpath +" failed");
-					 throw new ExceptionDaoInit("Could not find " +_dbpath, e);
-				} catch (SQLException e) {
-					throw new ExceptionDaoInit("Cannot connect to" +_dbpath, e);
+					_log.finest("looking up " + _envpath + " failed");
+					throw new ExceptionDaoInit("Could not find " + _dbpath, e);
 				}
 			}
+		}
+		try {
+			_conn = _ds.getConnection();
+		} catch (SQLException e) {
+			throw new ExceptionDaoInit("Cannot connect to" + _dbpath, e);
 		}
 	}
 
 	@Override
-	protected void finalize() {	//TODO: overcome lack of destructors
+	protected void finalize() throws Throwable { // TODO: overcome lack of destructors
+		super.finalize();
 		try {
 			_conn.close();
 		} catch (SQLException e) {
-			Logger.getLogger(this.getClass().getName()).severe(
-					this + " couldn't be finalized!");
+			_log.severe(this + " couldn't be finalized!");
 		}
 	}
 

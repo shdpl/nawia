@@ -43,13 +43,14 @@ public interface Dao<K, E> {
 	/**
 	 * Find persisted entity by ID
 	 * @param id
-	 * @return
+	 * @return Loaded entity or null if cannot be found.
 	 */
 	E find(K id);
 	
 	/**
+	 * Find all registered accounts.
 	 * 
-	 * @return
+	 * @return List of accounts or null in case of fail
 	 */
 	List<E> findAll();
 }

@@ -17,18 +17,16 @@
 package net.nawia.gsao.dao;
 
 import java.util.Properties;
-import java.util.logging.LogManager;
 
 import javax.naming.*;
 
 import org.testng.annotations.*;
 import org.apache.commons.dbcp.*;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.mockejb.*;
 import org.mockejb.jndi.*;
-import org.mockejb.interceptor.*;
 
 import net.nawia.gsao.dao.exceptions.ExceptionDao;
+import net.nawia.gsao.domain.TestEntityJdbc;
 
 @Test(groups = "DaoFactory")
 public class DaoFactoryTest {
@@ -44,23 +42,35 @@ public class DaoFactoryTest {
 		GenericObjectPool connectionPool = new GenericObjectPool(null);
 		ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(
 				dbInfo.getProperty("url"), dbInfo);
-		PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(
-				connectionFactory, connectionPool, null, null, false, true);
+		new PoolableConnectionFactory(connectionFactory, connectionPool, null, null, false, true);
 		PoolingDataSource ds = new PoolingDataSource(connectionPool);
 
 		MockContextFactory.setAsInitial();
 		context = new InitialContext();
 		context.rebind("java:comp/env/jdbc/gsDB", ds);
 	}
+	
+	@BeforeClass
+	public void setUpTestDb() {
+		// TODO:CREATE TABLE "test"...
+	}
 
 	@Test
 	void testBuildJdbc() throws ExceptionDao {
-		DaoFactory.build(DaoTestJdbc.class);
+		DaoTestEntityJdbc dao = (DaoTestEntityJdbc) DaoFactory.build(DaoTestEntityJdbc.class);
+		
+		TestEntityJdbc orig = new TestEntityJdbc();
+		orig.setExampleVar(13);
+		dao.persist(orig);
+		
+		TestEntityJdbc retrieved = dao.find(orig.getId());
+		assert(retrieved.equals(orig));
 	}
 
 	@Test
 	void testBuildJpa() throws ExceptionDao {
-		DaoFactory.build(DaoTestJpa.class);
+		DaoTestEntityJpa dao = (DaoTestEntityJpa) DaoFactory.build(DaoTestEntityJpa.class);
+		//TODO: JPA
 	}
 
 	// @Test(dependsOnMethods = { "testBuildJdbc", "testBuildJpa" })
