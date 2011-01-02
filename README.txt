@@ -4,8 +4,6 @@
 Because of very early project stage, I'm not going to bother anyone with features and plans.
 On the other side, if nothing in my life gonna seriously go wrong, it will be something big,
 so if You're interested You can subscribe, and go back in let's say one year (2011/2012).
-There are already plenty of people that declared their help, so don't worry - I'm not
-going to make MMORPG alone (I hope, that people will like it and join us too).
 
 Until this time, there are few already implemented projects that might interest You (chronological order):
 - WorldForge (GPL)
@@ -46,7 +44,7 @@ Description of engine packages:
 License - AGPLv3+
 	
 5. Web application
-	Web application language is Java Enterprise Edition. It includes website, project management support,
+	Web application language is Java with Enterprise Edition standards. It includes website, project management support,
 game server administration tools and content editors (not all though). We would like to focus on standards
 compliance and again, modularity. License: AGPLv3+ with CLASSPATH exception. Several goals are:
 * portlet-based CMS
@@ -55,7 +53,7 @@ compliance and again, modularity. License: AGPLv3+ with CLASSPATH exception. Sev
 * WSDL services
 * exteriorisation of users identity 
 * ESAPI incorporation (sorry, authors posteriori)
-* `google living stories` like feeling
+* `google living stories`-like filtering
 
 6. Future
 	There are plans for developing standalone content developing tools and maybe portable website-based
