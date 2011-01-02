@@ -1,5 +1,6 @@
 package net.nawia.gsao.dao.exceptions;
 
+
 public class RuntimeExceptionDao extends RuntimeException {
 
 	public RuntimeExceptionDao() {

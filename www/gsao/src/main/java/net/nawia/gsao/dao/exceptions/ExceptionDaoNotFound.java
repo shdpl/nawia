@@ -16,6 +16,9 @@
  ******************************************************************************/
 package net.nawia.gsao.dao.exceptions;
 
+import javax.ejb.ApplicationException;
+
+@ApplicationException
 public class ExceptionDaoNotFound extends ExceptionDao {
 
 	public ExceptionDaoNotFound() {

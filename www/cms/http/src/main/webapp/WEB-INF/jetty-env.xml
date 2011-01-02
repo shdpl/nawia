@@ -2,6 +2,26 @@
 <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN"
    "http://www.eclipse.org/jetty/configure.dtd">
 <Configure id="webAppCtx" class="org.eclipse.jetty.webapp.WebAppContext">
+
+	<Array id="plusConfig" type="java.lang.String">
+		<Item>org.mortbay.jetty.webapp.WebInfConfiguration</Item>
+		<Item>org.mortbay.jetty.plus.webapp.EnvConfiguration</Item>
+		<Item>org.mortbay.jetty.plus.webapp.Configuration</Item>
+		<Item>org.mortbay.jetty.webapp.JettyWebXmlConfiguration</Item>
+		<Item>org.mortbay.jetty.webapp.TagLibConfiguration</Item>
+	</Array>
+
+	<New id="gsDB" class="org.eclipse.jetty.plus.jndi.Resource">
+		<Arg>java:comp/env/jdbc/gsDB</Arg>
+		<Arg>
+			<New class="org.apache.commons.dbcp.BasicDataSource">
+				<Set name="driverClassName">org.postgresql.Driver</Set>
+				<Set name="url">jdbc:postgresql://10.254.239.1/nawia</Set>
+				<Set name="username">nawia_gs</Set>
+				<Set name="password">NAeGg8SrJjniYDix</Set>
+			</New>
+		</Arg>
+	</New>
 	<New id="BeanManager" class="org.eclipse.jetty.plus.jndi.Resource">
 		<Arg>
 			<Ref id="webAppCtx" />
@@ -15,4 +35,5 @@
 			</New>
 		</Arg>
 	</New>
+
 </Configure> 

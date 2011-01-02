@@ -1,5 +1,8 @@
 package net.nawia.gsao.domain;
 
+import javax.persistence.Entity;
+
+@Entity
 public class TestEntityJdbc {
 	private int id;
 	private int exampleVar;

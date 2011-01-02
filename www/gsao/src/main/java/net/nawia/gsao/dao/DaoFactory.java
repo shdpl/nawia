@@ -19,12 +19,15 @@ package net.nawia.gsao.dao;
 import java.util.HashMap;
 import java.util.logging.*;
 
+import javax.ejb.Stateless;
+
 import net.nawia.gsao.dao.exceptions.ExceptionDao;
 import net.nawia.gsao.dao.exceptions.ExceptionDaoMalformed;
 import net.nawia.gsao.dao.exceptions.ExceptionDaoNotFound;
 import net.nawia.gsao.dao.jdbc.DaoJdbc;
 import net.nawia.gsao.dao.jpa.DaoJpa;
 
+@Stateless
 public class DaoFactory {
 	static final private Logger _log = Logger.getLogger(DaoFactory.class
 			.getName());

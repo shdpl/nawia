@@ -4,14 +4,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+
 import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 import net.nawia.gsao.dao.exceptions.RuntimeExceptionDao;
-import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.domain.TestEntityJdbc;
 
 public class DaoTestEntityJdbc extends DaoJdbc<Integer, TestEntityJdbc> implements net.nawia.gsao.dao.DaoTestEntityJdbc {

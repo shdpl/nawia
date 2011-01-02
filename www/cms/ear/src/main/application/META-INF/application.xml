@@ -9,7 +9,7 @@
   </module>
   <module>
     <web>
-      <web-uri>http-0.0.1-SNAPSHOT.war</web-uri>
+      <web-uri>http.war</web-uri>
       <context-root>/http</context-root>
     </web>
   </module>

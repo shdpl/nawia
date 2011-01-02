@@ -23,12 +23,19 @@ import javax.persistence.*;
 @Entity(name = "Accounts")
 public class Account {
 	@Id
+	@GeneratedValue
 	private int id;
+	@Column(nullable = false)
 	private String name;
+	@Column(nullable = false)
 	private String password;
+	@Column(nullable = false)
 	private String email;
+	@Column(nullable = false)
 	private Date premend;
+	@Column(nullable = false)
 	private boolean blocked;
+	@Column(nullable = false)
 	private short warnings;
 
 	public Account() {

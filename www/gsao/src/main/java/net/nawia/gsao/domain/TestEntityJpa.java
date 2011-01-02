@@ -1,5 +1,8 @@
 package net.nawia.gsao.domain;
 
+import javax.persistence.Entity;
+
+@Entity
 public class TestEntityJpa {
 	private int exampleVar;
 

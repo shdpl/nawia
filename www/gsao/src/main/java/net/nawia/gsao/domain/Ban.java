@@ -1,5 +1,7 @@
 package net.nawia.gsao.domain;
 
+import javax.persistence.Entity;
+
 //"id" SERIAL,
 //"type" BIGINT NOT NULL,
 //"value" INT NOT NULL,
@@ -13,6 +15,7 @@ package net.nawia.gsao.domain;
 //"action" INT DEFAULT 0,
 //"statement" VARCHAR(255) NOT NULL DEFAULT '',
 //PRIMARY KEY ("id")
+@Entity(name = "Bans")
 public class Ban {
 
 }

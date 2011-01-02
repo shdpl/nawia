@@ -13,6 +13,17 @@
 	<name>http</name>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.richfaces</groupId>
+				<artifactId>richfaces-bom</artifactId>
+				<version>4.0.0.20100826-M2</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<properties>
 		<!-- Explicitly declaring the source encoding eliminates the following 
 			message: [WARNING] Using platform encoding (UTF-8 actually) to copy filtered 
@@ -93,6 +104,7 @@
 			<artifactId>jsf-impl</artifactId>
 			<version>2.0.2-FCS</version>
 			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.web</groupId>
@@ -110,6 +122,24 @@
 			<artifactId>esapi</artifactId>
 			<version>2.0_rc10</version>
 			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>net.nawia.www</groupId>
+			<artifactId>gsao</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>ejb</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.richfaces.ui</groupId>
+			<artifactId>richfaces-components-ui</artifactId>
+			<version>4.0.0.20101004-M3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.richfaces.cdk</groupId>
+			<artifactId>annotations</artifactId>
+			<version>4.0.0.20100826-M2</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
