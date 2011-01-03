@@ -2,7 +2,7 @@ package net.nawia.gsao.service;
 
 import net.nawia.gsao.domain.Account;
 
-public interface ManagerAccount {
+public interface ServiceAccount {
 
 	/**
 	 * Adds new account to game server.

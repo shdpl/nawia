@@ -44,6 +44,7 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 															// annotation
 
 	private Statement _findAll = null;
+	private PreparedStatement _findAllName = null;
 	private PreparedStatement _find = null;
 	private PreparedStatement _remove = null;
 	private PreparedStatement _persistNew = null;
@@ -118,37 +119,22 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 
 	private static final String _qFindById = "SELECT * FROM " + _tableName
 			+ " WHERE id = ?";
-	private static final String _qFindByName = "SELECT * FROM " + _tableName
-			+ " WHERE name = ?";
 
 	public Account find(Integer id) {
-		assert(id != null);
+		assert (id != null);
 		try {
-				if (null == _find)
-					_find = _conn.prepareStatement(_qFindById);
-				_find.setInt(1, id);
-				ResultSet rs = _find.executeQuery();
-				if (rs.next())
-					return new Account(rs.getInt("id"), rs.getString("name"),
-							rs.getString("password"), rs.getString("email"),
-							new Date(rs.getLong("premend")),
-							1 == rs.getShort("blocked"),
-							rs.getShort("warnings"));
-				return null;
+			if (null == _find)
+				_find = _conn.prepareStatement(_qFindById);
+			_find.setInt(1, id);
+			ResultSet rs = _find.executeQuery();
+			if (rs.next())
+				return new Account(rs.getInt("id"), rs.getString("name"),
+						rs.getString("password"), rs.getString("email"),
+						new Date(rs.getLong("premend")),
+						1 == rs.getShort("blocked"), rs.getShort("warnings"));
+			return null;
 		} catch (SQLException e) {
-			throw new RuntimeExceptionDao("Invalid query ", e);
-		}
-	}
-	
-	public Account find(Account acc) {
-		//TODO: implement
-		throw new UnsupportedOperationException();
-		if (0 != acc.getId()) {
-			find(acc.getId());
-		} else if (null != acc.getName() || !acc.getName().isEmpty()) {
-			
-		}else{
-			throw new UnsupportedOperationException();
+			throw new RuntimeExceptionDao("", e);
 		}
 	}
 
@@ -171,6 +157,39 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		} catch (SQLException e) {
 			throw new RuntimeExceptionDao();
 		}
+	}
+
+	private static final String _qFindAllByName = "SELECT * FROM " + _tableName
+			+ " WHERE name = ?";
+	/**
+	 * Currently you can choose just one of the following attributes:
+	 * - name
+	 */
+	@Override
+	public List<Account> findAll(Account prototype) {
+		List<Account> ret = new Vector<Account>();
+		if (0 != prototype.getId()) {
+			ret.add(find(prototype.getId()));
+		} else if (null != prototype.getName()
+				|| !prototype.getName().isEmpty()) {
+			try {
+				if (null == _findAllName)
+					_findAllName = _conn.prepareStatement(_qFindAllByName);
+				_findAllName.setString(1, prototype.getName());
+				ResultSet rs = _findAllName.executeQuery();
+				while(rs.next())
+					ret.add(new Account(rs.getInt("id"), rs.getString("name"), rs
+							.getString("password"), rs.getString("email"),
+							new Date(rs.getLong("premend")), 1 == rs
+									.getShort("blocked"), rs.getShort("warnings")));
+			} catch (SQLException e) {
+				throw new RuntimeExceptionDao("", e);
+			}
+			throw new UnsupportedOperationException();
+		} else {
+			throw new UnsupportedOperationException();
+		}
+		return ret;
 	}
 
 	@Override

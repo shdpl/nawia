@@ -20,8 +20,9 @@ import java.util.Date;
 
 import javax.persistence.*;
 
-@Entity(name = "Accounts")
-public class Account {
+@Entity
+@Table (name = "accounts")
+public class Account implements Cloneable {
 	@Id
 	@GeneratedValue
 	private int id;
@@ -37,10 +38,16 @@ public class Account {
 	private boolean blocked;
 	@Column(nullable = false)
 	private short warnings;
-	
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
 	public Account(final int id, final String name, final String password,
 			final String email, final Date premend, final boolean blocked,
 			final short warnings) {
+		super();
 		this.id = id;
 		this.name = name;
 		this.password = password;

@@ -17,8 +17,17 @@
 package net.nawia.gsao.dao;
 
 
+import java.util.List;
+
 import net.nawia.gsao.domain.Account;
 
 public interface DaoAccount extends Dao<Integer, Account> {
 
+	/**
+	 * Find all registered accounts that match prototype.
+	 * @param prototype entity to find, with set-up attributes to search
+	 * @return List of matched accounts
+	 */
+	List<Account> findAll(Account prototype);
+	
 }

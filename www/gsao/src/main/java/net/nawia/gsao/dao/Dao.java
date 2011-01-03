@@ -50,16 +50,9 @@ public interface Dao<K, E> {
 	E find(K id);
 	
 	/**
-	 * 
-	 * @param account
-	 * @return
-	 */
-	K find(E account);
-	
-	/**
 	 * Find all registered accounts.
 	 * 
-	 * @return List of accounts or null in case of fail
+	 * @return List of all entities or null in case of fail
 	 */
 	List<E> findAll();
 }

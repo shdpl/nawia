@@ -141,6 +141,11 @@
 			<version>4.0.0.20100826-M2</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.ejb</groupId>
+			<artifactId>jboss-ejb-api_3.1_spec</artifactId>
+			<version>1.0.0.CR2</version>
+		</dependency>
 	</dependencies>
 
 	<build>

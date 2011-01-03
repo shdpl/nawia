@@ -5,15 +5,16 @@ import javax.ejb.Stateless;
 
 import net.nawia.gsao.dao.DaoAccount;
 import net.nawia.gsao.domain.Account;
-import net.nawia.gsao.service.ManagerAccount;
+import net.nawia.gsao.service.ServiceAccount;
 
 @Stateless
-public class ImplManagerAccount implements ManagerAccount {
+public class ImplServiceAccount implements ServiceAccount {
 	@EJB
 	DaoAccount _daoAcc;
 	
 	@Override
 	public boolean add(Account acc) {
+		assert(null != acc);
 		acc.setId(0);
 		boolean ret = null != _daoAcc.find(acc.getId());
 		if (ret)
@@ -23,6 +24,7 @@ public class ImplManagerAccount implements ManagerAccount {
 
 	@Override
 	public boolean del(Account acc) {
+		assert(null != acc);
 		if (null != _daoAcc.find(acc.getId()))
 			_daoAcc.remove(acc);
 		else
@@ -32,8 +34,8 @@ public class ImplManagerAccount implements ManagerAccount {
 
 	@Override
 	public boolean hasName(String name) {
-		_daoAcc.find(id)
-		return false;
+		assert(null != name && !name.isEmpty());
+		return !_daoAcc.findAll(new Account(0, name, null, null, null, false, (short) 0)).isEmpty();
 	}
 
 }

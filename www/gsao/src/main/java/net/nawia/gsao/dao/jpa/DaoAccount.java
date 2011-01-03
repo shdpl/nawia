@@ -16,8 +16,16 @@
  ******************************************************************************/
 package net.nawia.gsao.dao.jpa;
 
+import java.util.List;
+
 import net.nawia.gsao.domain.Account;
 
 public class DaoAccount extends DaoJpa<Integer, Account> implements net.nawia.gsao.dao.DaoAccount {
+
+	@Override
+	public List<Account> findAll(Account prototype) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
+	}
 
 }

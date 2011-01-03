@@ -23,7 +23,7 @@ import net.nawia.gsao.dao.exceptions.ExceptionDao;
 
 import org.testng.annotations.Test;
 
-@Test(groups = "Dao", dependsOnGroups = "DaoFactory")
+@Test(groups = {"Dao", "Account"}, dependsOnGroups = "DaoFactory")
 public class AccountTest {
 	private static final boolean _blocked = false;
 	private static final String _name = "Jeremy";
