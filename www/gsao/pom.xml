@@ -23,11 +23,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.6</version>
-				<configuration>
-					<systemPropertyVariables>
-						<java.util.logging.config.file>${project.build.directory}/test-classes/logging.properties</java.util.logging.config.file>
-					</systemPropertyVariables>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -107,20 +102,10 @@
 						<goals> <goal>execute</goal> </goals> <configuration> <orderFile>ascending</orderFile> 
 						<fileset> <basedir>${basedir}</basedir> <includes> <include>src/test/sql/test-data2.sql</include> 
 						<include>src/test/sql/test-data1.sql</include> </includes> </fileset> </configuration> 
-						</execution> 
-
-					<execution>
-						<id>drop-db-after-test</id>
-						<phase>test</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<autocommit>true</autocommit>
-							<sqlCommand>drop database nawia</sqlCommand>
-							<delimiterType>row</delimiterType>
-						</configuration>
-					</execution>-->
+						</execution> <execution> <id>drop-db-after-test</id> <phase>test</phase> 
+						<goals> <goal>execute</goal> </goals> <configuration> <autocommit>true</autocommit> 
+						<sqlCommand>drop database nawia</sqlCommand> <delimiterType>row</delimiterType> 
+						</configuration> </execution> -->
 				</executions>
 			</plugin>
 		</plugins>

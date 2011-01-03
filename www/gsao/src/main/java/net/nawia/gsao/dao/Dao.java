@@ -18,6 +18,8 @@ package net.nawia.gsao.dao;
 
 import java.util.List;
 
+import net.nawia.gsao.domain.Account;
+
 /** 
  * Abstract DAO Interface.
  * @author shd
@@ -46,6 +48,13 @@ public interface Dao<K, E> {
 	 * @return Loaded entity or null if cannot be found.
 	 */
 	E find(K id);
+	
+	/**
+	 * 
+	 * @param account
+	 * @return
+	 */
+	K find(E account);
 	
 	/**
 	 * Find all registered accounts.

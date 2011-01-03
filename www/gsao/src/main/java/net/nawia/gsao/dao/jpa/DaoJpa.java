@@ -19,11 +19,13 @@ package net.nawia.gsao.dao.jpa;
 import java.lang.reflect.*;
 import java.util.List;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import net.nawia.gsao.dao.Dao;
 
+@Stateless
 public abstract class DaoJpa<K, E> implements Dao<K, E> {
 
 	protected Class<E> entityClass;

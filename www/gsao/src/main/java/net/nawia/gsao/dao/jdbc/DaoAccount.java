@@ -38,8 +38,11 @@ import net.nawia.gsao.domain.Account;
 // UNIQUE ("name")
 public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		net.nawia.gsao.dao.DaoAccount {
-	static final private Logger _log = Logger.getLogger(DaoAccount.class
+	private static final Logger _log = Logger.getLogger(DaoAccount.class
 			.getName());
+	private static final String _tableName = "accounts"; // TODO: read from
+															// annotation
+
 	private Statement _findAll = null;
 	private PreparedStatement _find = null;
 	private PreparedStatement _remove = null;
@@ -52,10 +55,10 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 	}
 
 	// TODO: no continuity with database native sequencer
-	private static final String _qPersistNew = "INSERT INTO accounts "
-			+ "(name, password, email, premend, blocked, warnings) "
+	private static final String _qPersistNew = "INSERT INTO " + _tableName
+			+ " (name, password, email, premend, blocked, warnings) "
 			+ "VALUES (?, ?, ?, ?, ?, ?)";
-	private static final String _qPersistOld = "UPDATE accounts"
+	private static final String _qPersistOld = "UPDATE " + _tableName
 			+ " SET name = ?, password = ?, email = ?,"
 			+ " premend = ?, blocked = ?, warnings = ?" + " WHERE id = ?";
 
@@ -64,8 +67,8 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		try {
 			if (0 == eid) {
 				if (null == _persistNew)
-					_persistNew = _conn.prepareStatement(
-							_qPersistNew, Statement.RETURN_GENERATED_KEYS);
+					_persistNew = _conn.prepareStatement(_qPersistNew,
+							Statement.RETURN_GENERATED_KEYS);
 				_persistNew.setString(1, entity.getName());
 				_persistNew.setString(2, entity.getPassword());
 				_persistNew.setString(3, entity.getEmail());
@@ -92,11 +95,12 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 							+ entity.getId() + " does not exists");
 			}
 		} catch (SQLException e) {
-			throw new RuntimeExceptionDao("Error while persisting " +entity, e);
+			throw new RuntimeExceptionDao("Error while persisting " + entity, e);
 		}
 	}
 
-	private static final String _qRemove = "DELETE FROM accounts WHERE id = ?";
+	private static final String _qRemove = "DELETE FROM " + _tableName
+			+ " WHERE id = ?";
 
 	public void remove(Account entity) {
 		try {
@@ -112,25 +116,43 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		}
 	}
 
-	private static final String _qFind = "SELECT * FROM accounts WHERE id = ?";
+	private static final String _qFindById = "SELECT * FROM " + _tableName
+			+ " WHERE id = ?";
+	private static final String _qFindByName = "SELECT * FROM " + _tableName
+			+ " WHERE name = ?";
 
 	public Account find(Integer id) {
+		assert(id != null);
 		try {
-			if (null == _find)
-				_find = _conn.prepareStatement(_qFind);
-			_find.setInt(1, id);
-			ResultSet rs = _find.executeQuery();
-			if (rs.next()) return new Account(rs.getInt("id"), rs.getString("name"),
-					rs.getString("password"), rs.getString("email"), new Date(
-							rs.getLong("premend")),
-					1 == rs.getShort("blocked"), rs.getShort("warnings"));
-			return null;
+				if (null == _find)
+					_find = _conn.prepareStatement(_qFindById);
+				_find.setInt(1, id);
+				ResultSet rs = _find.executeQuery();
+				if (rs.next())
+					return new Account(rs.getInt("id"), rs.getString("name"),
+							rs.getString("password"), rs.getString("email"),
+							new Date(rs.getLong("premend")),
+							1 == rs.getShort("blocked"),
+							rs.getShort("warnings"));
+				return null;
 		} catch (SQLException e) {
 			throw new RuntimeExceptionDao("Invalid query ", e);
 		}
 	}
+	
+	public Account find(Account acc) {
+		//TODO: implement
+		throw new UnsupportedOperationException();
+		if (0 != acc.getId()) {
+			find(acc.getId());
+		} else if (null != acc.getName() || !acc.getName().isEmpty()) {
+			
+		}else{
+			throw new UnsupportedOperationException();
+		}
+	}
 
-	private static final String _qFindAll = "SELECT * FROM accounts";
+	private static final String _qFindAll = "SELECT * FROM " + _tableName;
 
 	public List<Account> findAll() {
 		List<Account> ret = new Vector<Account>();

@@ -33,14 +33,8 @@ public class AccountTest {
 	private static final short _warnings = 0;
 
 	private Account buildAccount() {
-		Account ret = new Account();
-		// NO ID
-		ret.setBlocked(_blocked);
-		ret.setName(_name);
-		ret.setPassword(_password);
-		ret.setEmail(_email);
-		ret.setPremend(_premend);
-		ret.setWarnings(_warnings);
+		Account ret = new Account(0, _name, _password, _email, _premend,
+				_blocked, _warnings);
 		return ret;
 	}
 
@@ -122,11 +116,11 @@ public class AccountTest {
 		toCmp.setPremend(newPremend);
 		toCmp.setWarnings(newWarns);
 		daoAcc.persist(toCmp);
-		assert(toCmp.getId() == stored.getId());
-		
+		assert (toCmp.getId() == stored.getId());
+
 		toCmp = daoAcc.find(stored.getId());
 		daoAcc.remove(toCmp);
-		
+
 		assert (newBlocked == toCmp.isBlocked());
 		assert (newEmail.equals(toCmp.getEmail()));
 		assert (stored.getId() == toCmp.getId());

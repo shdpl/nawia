@@ -37,10 +37,6 @@ public class Account {
 	private boolean blocked;
 	@Column(nullable = false)
 	private short warnings;
-
-	public Account() {
-		
-	}
 	
 	public Account(final int id, final String name, final String password,
 			final String email, final Date premend, final boolean blocked,
