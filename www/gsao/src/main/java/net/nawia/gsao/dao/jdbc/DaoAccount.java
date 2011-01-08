@@ -16,12 +16,12 @@
  ******************************************************************************/
 package net.nawia.gsao.dao.jdbc;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
+import java.sql.*;
+import java.util.List;
+import java.util.Vector;
 import java.util.logging.Logger;
+
+import javax.ejb.Stateless;
 
 import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 import net.nawia.gsao.dao.exceptions.RuntimeExceptionDao;
@@ -36,6 +36,7 @@ import net.nawia.gsao.domain.Account;
 // "warnings" SMALLINT NOT NULL DEFAULT 0,
 // PRIMARY KEY ("id"),
 // UNIQUE ("name")
+@Stateless
 public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		net.nawia.gsao.dao.DaoAccount {
 	private static final Logger _log = Logger.getLogger(DaoAccount.class

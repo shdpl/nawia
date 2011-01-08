@@ -21,6 +21,7 @@ import java.sql.*;
 //import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
+import javax.annotation.Resource;
 import javax.naming.*;
 //import javax.transaction.*;
 import javax.sql.DataSource;
@@ -31,18 +32,21 @@ import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 public abstract class DaoJdbc<K, E> implements Dao<K, E> {
 	protected Connection _conn;
 
-	private static DataSource _ds;
-	private static Object _dsLock = new Object();
+	@Resource(mappedName = "jdbc/gsDB")
+	private DataSource _ds;
 	// private static final String _propFile =
 	// "/properties/database.properties";
-	private static final String _dbpath = "jdbc/gsDB";
-	private static final String _envpath = "java:comp/env";
 	private static final Logger _log = Logger
 			.getLogger(DaoJdbc.class.getName());
 
 	public DaoJdbc() throws ExceptionDaoInit {
-		synchronized (_dsLock) {
-			if (null == _ds) {
+		InitialContext ctx;
+		try {
+			ctx = new InitialContext();
+			System.out.println(">>>>>>>>>>> CONTEXT: " +ctx.list("java:comp/env"));
+		} catch (NamingException e1) {
+			e1.printStackTrace();
+		}
 				// Properties properties = new Properties();
 				// try {
 				// InputStream s = this.getClass().getResourceAsStream(
@@ -61,26 +65,10 @@ public abstract class DaoJdbc<K, E> implements Dao<K, E> {
 				// } catch (IOException e) {
 				// throw new ExceptionDaoInit("Could not load " + _propFile, e);
 				// }
-
-				try {
-					InitialContext ctx = new InitialContext();
-					_log.finest("looking up " + _envpath);
-					Context envCtx = (Context) ctx.lookup(_envpath);
-					_log.finest(_envpath + " looked up properly");
-
-					_ds = (DataSource) envCtx.lookup(_dbpath);
-					ctx.close();
-
-				} catch (NamingException e) {
-					_log.finest("looking up " + _envpath + " failed");
-					throw new ExceptionDaoInit("Could not find " + _dbpath, e);
-				}
-			}
-		}
 		try {
 			_conn = _ds.getConnection();
 		} catch (SQLException e) {
-			throw new ExceptionDaoInit("Cannot connect to" + _dbpath, e);
+			throw new ExceptionDaoInit("Cannot connect to Game Server Database", e);
 		}
 	}
 

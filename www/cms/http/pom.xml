@@ -13,21 +13,7 @@
 	<name>http</name>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.richfaces</groupId>
-				<artifactId>richfaces-bom</artifactId>
-				<version>4.0.0.20100826-M2</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 	<properties>
-		<!-- Explicitly declaring the source encoding eliminates the following 
-			message: [WARNING] Using platform encoding (UTF-8 actually) to copy filtered 
-			resources, i.e. build is platform dependent! -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -42,35 +28,44 @@
 		</repository>
 	</repositories>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.richfaces</groupId>
+				<artifactId>richfaces-bom</artifactId>
+				<version>4.0.0.20100826-M2</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
-
-		<!-- Common to JEE and Servlet containers -->
-
-
-		<!-- JSF 2.0 API -->
-
-		<!-- Optional, but pretty useful. -->
-		<!-- <dependency> <groupId>javax.servlet</groupId> <artifactId>jstl</artifactId> 
-			</dependency> -->
-
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<version>1.0.0.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.0-801.jdbc4</version>
+			<type>jar</type>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+			<type>jar</type>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>5.14.2</version>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- Jetty/Tomcat-specific scopes and artifacts -->
-
-		<!-- JSF 2.0 -->
-
-
-		<!-- end Jetty/Tomcat-specific scopes and artifacts -->
-
-		<!-- Bean Validation API (JSR 303) -->
-
-		<!-- Bean Validation Implementation -->
-		<!-- Provides portable constraints such as @NotEmpty, @Email and @Url -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -118,19 +113,6 @@
 			<version>1.0.0.GA</version>
 		</dependency>
 		<dependency>
-			<groupId>org.owasp.esapi</groupId>
-			<artifactId>esapi</artifactId>
-			<version>2.0_rc10</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>net.nawia.www</groupId>
-			<artifactId>gsao</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<type>ejb</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.richfaces.ui</groupId>
 			<artifactId>richfaces-components-ui</artifactId>
 			<version>4.0.0.20100826-M2</version>
@@ -141,15 +123,10 @@
 			<version>4.0.0.20100826-M2</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.jboss.spec.javax.ejb</groupId>
-			<artifactId>jboss-ejb-api_3.1_spec</artifactId>
-			<version>1.0.0.CR2</version>
-		</dependency>
 	</dependencies>
 
 	<build>
-		<finalName>http</finalName>
+		<finalName>servlet</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -165,14 +142,8 @@
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>8.0.0.M2</version>
 				<configuration>
-					<!-- force friendly name instead of artifact name + version -->
 					<contextPath>${project.build.finalName}</contextPath>
-					<!-- Where the BeanManager is constructed. This is where you'll declare 
-						datasources. -->
 					<jettyEnvXml>${basedir}/src/test/resources/jetty-env.xml</jettyEnvXml>
-					<!-- This parameter will auto-deploy modified classes. -->
-					<!-- You can save changes in a file or class and refresh your browser 
-						to view the changes. -->
 					<scanIntervalSeconds>3</scanIntervalSeconds>
 				</configuration>
 			</plugin>
@@ -180,9 +151,90 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.6</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sql-maven-plugin</artifactId>
+				<version>1.4</version>
+
+				<dependencies>
+					<dependency>
+						<groupId>postgresql</groupId>
+						<artifactId>postgresql</artifactId>
+						<version>9.0-801.jdbc4</version>
+					</dependency>
+				</dependencies>
+
+				<!-- common configuration shared by all executions -->
 				<configuration>
-					<enableAssertions>true</enableAssertions>
+					<driver>org.postgresql.Driver</driver>
+					<url>jdbc:postgresql://10.254.239.1/nawia</url>
+					<username>nawia_gs</username>
+					<password>NAeGg8SrJjniYDix</password>
+					<!-- You can comment out username/password configurations and have maven 
+						to look them up in your settings.xml using ${settingsKey} -->
+					<settingsKey>sensibleKey</settingsKey>
+					<!--all executions are ignored if -Dmaven.test.skip=true -->
+					<skip>${maven.test.skip}</skip>
 				</configuration>
+
+				<executions>
+					<execution>
+						<id>drop-db-before-test-if-any</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<!-- need another database to drop the targeted one -->
+							<url>jdbc:postgresql://10.254.239.1/tmp</url>
+							<autocommit>true</autocommit>
+							<sqlCommand>drop database nawia</sqlCommand>
+							<!-- ignore error when database is not avaiable -->
+							<onError>continue</onError>
+							<delimiterType>row</delimiterType>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>create-db</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<url>jdbc:postgresql://10.254.239.1/tmp</url>
+							<!-- no transaction -->
+							<autocommit>true</autocommit>
+							<sqlCommand>create database nawia</sqlCommand>
+							<delimiterType>row</delimiterType>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>create-schema</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<autocommit>true</autocommit>
+							<srcFiles>
+								<srcFile>src/test/sql/schema.sql</srcFile>
+							</srcFiles>
+							<delimiterType>row</delimiterType>
+						</configuration>
+					</execution>
+
+					<!-- <execution> <id>create-data</id> <phase>process-test-resources</phase> 
+						<goals> <goal>execute</goal> </goals> <configuration> <orderFile>ascending</orderFile> 
+						<fileset> <basedir>${basedir}</basedir> <includes> <include>src/test/sql/test-data2.sql</include> 
+						<include>src/test/sql/test-data1.sql</include> </includes> </fileset> </configuration> 
+						</execution> <execution> <id>drop-db-after-test</id> <phase>test</phase> 
+						<goals> <goal>execute</goal> </goals> <configuration> <autocommit>true</autocommit> 
+						<sqlCommand>drop database nawia</sqlCommand> <delimiterType>row</delimiterType> 
+						</configuration> </execution> -->
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

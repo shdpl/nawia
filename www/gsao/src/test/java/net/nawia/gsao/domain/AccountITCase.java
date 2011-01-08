@@ -24,7 +24,7 @@ import net.nawia.gsao.dao.exceptions.ExceptionDao;
 import org.testng.annotations.Test;
 
 @Test(groups = {"Dao", "Account"}, dependsOnGroups = "DaoFactory")
-public class AccountTest {
+public class AccountITCase {
 	private static final boolean _blocked = false;
 	private static final String _name = "Jeremy";
 	private static final String _password = "p4ssw0rd";

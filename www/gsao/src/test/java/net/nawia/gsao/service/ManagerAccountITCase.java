@@ -2,6 +2,7 @@ package net.nawia.gsao.service;
 
 import java.sql.Date;
 
+import org.jboss.arquillian.testng.Arquillian;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -12,7 +13,7 @@ import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.service.impl.ImplServiceAccount;
 
 @Test(dependsOnGroups = "Account")
-public class ManagerAccountTest implements ServiceAccount {
+public class ManagerAccountITCase extends Arquillian implements ServiceAccount {
 	private static final boolean _blocked = false;
 	private static final String _name = "Jeremy";
 	private static final String _password = "p4ssw0rd";

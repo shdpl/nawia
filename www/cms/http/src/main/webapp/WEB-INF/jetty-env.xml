@@ -22,6 +22,17 @@
 			</New>
 		</Arg>
 	</New>
+	<New id="wsDB" class="org.eclipse.jetty.plus.jndi.Resource">
+		<Arg>java:comp/env/jdbc/wsDB</Arg>
+		<Arg>
+			<New class="org.apache.commons.dbcp.BasicDataSource">
+				<Set name="driverClassName">org.postgresql.Driver</Set>
+				<Set name="url">jdbc:postgresql://10.254.239.1/nawia</Set>
+				<Set name="username">nawia_ws</Set>
+				<Set name="password">YD6kTSZhUIJrEZnL</Set>
+			</New>
+		</Arg>
+	</New>
 	<New id="BeanManager" class="org.eclipse.jetty.plus.jndi.Resource">
 		<Arg>
 			<Ref id="webAppCtx" />

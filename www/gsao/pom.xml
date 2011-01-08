@@ -5,24 +5,39 @@
 	<groupId>net.nawia.www</groupId>
 	<artifactId>gsao</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>ejb</packaging>
 	<name>Game Server Access Objects</name>
 	<parent>
 		<groupId>net.nawia</groupId>
 		<artifactId>www</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-ejb-plugin</artifactId>
 				<version>2.3</version>
+				<configuration>
+					<ejbVersion>3.1</ejbVersion>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.6</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jboss-maven-plugin</artifactId>
+				<version>1.4.1</version>
+				<configuration>
+					<hostName>localhost</hostName>
+					<port>8080</port>
+					<fileNames>
+						<fileName>target/gsao-0.0.1-SNAPSHOT.jar</fileName>
+					</fileNames>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -137,19 +152,11 @@
 			<groupId>javax.transaction</groupId>
 			<artifactId>jta</artifactId>
 			<version>1.1</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>5.14.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockejb</groupId> <!-- || arquillian -->
-			<artifactId>mockejb</artifactId>
-			<version>0.6-beta2</version>
-			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 		<!-- <dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-api</artifactId> 
@@ -164,9 +171,42 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.spec.javax.ejb</groupId>
-			<artifactId>jboss-ejb-api_3.1_spec</artifactId>
-			<version>1.0.0.CR2</version>
+			<groupId>org.jboss.arquillian</groupId>
+			<artifactId>arquillian-testng</artifactId>
+			<version>1.0.0.Alpha4.SP1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.ejb3.embedded</groupId>
+			<artifactId>jboss-ejb3-embedded-standalone</artifactId>
+			<version>1.0.0-alpha-2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>3.6.0.CR2</version>
+		</dependency>
+		<!-- <dependency> <groupId>org.jboss.arquillian.container</groupId> <artifactId>arquillian-jbossas-embedded-6</artifactId> 
+			<version>1.0.0.Alpha4.SP1</version> </dependency> <dependency> <groupId>org.jboss.jbossas</groupId> 
+			<artifactId>jboss-as-depchain</artifactId> <version>6.0.0.20100911-M5</version> 
+			<type>pom</type> <scope>compile</scope> </dependency> -->
+		<dependency>
+			<groupId>org.jboss.arquillian.container</groupId>
+			<artifactId>arquillian-jbossas-remote-6</artifactId>
+			<version>1.0.0.Alpha4.SP1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.jbossas</groupId>
+			<artifactId>jboss-as-client</artifactId>
+			<version>6.0.0.20100911-M5</version>
+			<type>pom</type>
+			<exclusions>
+				<exclusion>
+					<artifactId>activation</artifactId>
+					<groupId>javax.activation</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 </project>

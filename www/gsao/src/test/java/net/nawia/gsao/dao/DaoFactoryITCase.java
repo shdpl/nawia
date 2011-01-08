@@ -16,24 +16,29 @@
  ******************************************************************************/
 package net.nawia.gsao.dao;
 
-import java.util.Properties;
+//import java.util.Properties;
 
-import javax.naming.*;
+//import javax.naming.*;
 
+import javax.jms.QueueRequestor;
+
+import org.jboss.arquillian.api.Deployment;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.testng.annotations.*;
-import org.apache.commons.dbcp.*;
-import org.apache.commons.pool.impl.GenericObjectPool;
-import org.mockejb.jndi.*;
+//import org.apache.commons.dbcp.*;
+//import org.apache.commons.pool.impl.GenericObjectPool;
+//import org.mockejb.jndi.*;
 
 import net.nawia.gsao.dao.exceptions.ExceptionDao;
 import net.nawia.gsao.domain.TestEntityJdbc;
 
 @Test(groups = "DaoFactory")
-public class DaoFactoryTest {
-	private Context context;
-	private static final String _propFile = "/properties/database.properties";
+public class DaoFactoryITCase {
+//	private Context context;
+//	private static final String _propFile = "/properties/database.properties";
 
-	@BeforeClass
+/*	@BeforeClass
 	public void setUpJdbc() throws Exception {
 
 		Properties dbInfo = new Properties();
@@ -48,7 +53,7 @@ public class DaoFactoryTest {
 		MockContextFactory.setAsInitial();
 		context = new InitialContext();
 		context.rebind("java:comp/env/jdbc/gsDB", ds);
-	}
+	}*/
 	
 	@BeforeClass
 	public void setUpTestDb() {
@@ -77,9 +82,9 @@ public class DaoFactoryTest {
 	// void testBuildGeneric() {
 	// }
 
-	@AfterClass
+/*	@AfterClass
 	public void setDownJdbc() {
 		MockContextFactory.revertSetAsInitial();
-	}
+	}*/
 
 }
