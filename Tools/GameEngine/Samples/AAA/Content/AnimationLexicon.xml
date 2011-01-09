@@ -628,7 +628,7 @@
 		</Files>
 		<Restriction>Germany</Restriction>		
 	</Posture>
-		<Gesture>
+	<Gesture>
 		<ID>0040</ID>
 		<Name>German_Adaptor_01</Name>
 		<Description>The character strokes through her/his hair</Description>
@@ -642,5 +642,75 @@
 			<McNeil>adaptor</McNeil>
 		</Function>
 		<Restriction></Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0041</ID>
+		<Name>German_Deictic_02</Name>
+		<CorpusName>german-deictic2.wmv</CorpusName>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="6" strokeEnd="44">Gestures\Female\female_ger_deictic_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="6" strokeEnd="44">Gestures\Male\male_ger_deictic_02.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>deictic</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0042</ID>
+		<Name>German_Deictic_03</Name>
+		<CorpusName>germna-deictic.wmv</CorpusName>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="6" strokeEnd="38">Gestures\Female\female_ger_deictic_03.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="6" strokeEnd="38">Gestures\Male\male_ger_deictic_03.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>deictic</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0043</ID>
+		<Name>German_Ranicki_01</Name>
+		<Speech></Speech>
+		<Description>Reich Ranicki, a famous german literary critic</Description>
+		<Files gender="female">
+			<File strokeStart="6" strokeEnd="45">Gestures\Female\female_ger_ranicki_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="6" strokeEnd="45">Gestures\Male\male_ger_ranicki_01.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0044</ID>
+		<Name>German_Ranicki_02</Name>
+		<Speech></Speech>
+		<Description>Reich Ranicki, a famous german literary critic</Description>
+		<Files gender="female">
+			<File strokeStart="6" strokeEnd="57">Gestures\Female\female_ger_ranicki_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="6" strokeEnd="57">Gestures\Male\male_ger_ranicki_02.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>deictic</McNeil>
+		</Function>
+		<Restriction></Restriction>  
 	</Gesture>
 </AnimationLexicon>
