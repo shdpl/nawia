@@ -415,9 +415,14 @@ public:
 		SP_TTS_SKIP,			///Skip the next n sentences. If n is negative, the speech will skip backwards.
 
 		//EVENTS FOR SUGARCANEISLAND PROJECT
-		SCI_NODEID,
-		SCI_DECISIONID,
-		SCI_DECIDEDID,
+		SCI_NODE_ID,
+		SCI_DECISION_ID,
+		SCI_DECIDED_ID,
+		SCI_QUICKTIME_ID,
+		SCI_QUICKTIME_RESULT,
+		SCI_BLACKOUT,
+		SCI_END,
+		SCI_MODE,
 
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
@@ -468,9 +473,14 @@ public:
 		if(in.find("E_ACTIVE_CAM_CHANGE") != std::string::npos) return GameEvent::E_ACTIVE_CAM_CHANGE;
 		if(in.find("GL_DRAW") != std::string::npos) return GameEvent::GL_DRAW;
 		if(in.find("GP_STATE_CHANGE") != std::string::npos) return GameEvent::GP_STATE_CHANGE;
-		if(in.find("SCI_NODEID") != std::string::npos) return GameEvent::SCI_NODEID;
-		if(in.find("SCI_DECISIONID") != std::string::npos) return GameEvent::SCI_DECISIONID;
-		if(in.find("SCI_DECIDEDID") != std::string::npos) return GameEvent::SCI_DECIDEDID;
+		if(in.find("SCI_NODE_ID") != std::string::npos) return GameEvent::SCI_NODE_ID;
+		if(in.find("SCI_DECISION_ID") != std::string::npos) return GameEvent::SCI_DECISION_ID;
+		if(in.find("SCI_DECIDED_ID") != std::string::npos) return GameEvent::SCI_DECIDED_ID;
+		if(in.find("SCI_QUICKTIME_ID") != std::string::npos) return GameEvent::SCI_QUICKTIME_ID;
+		if(in.find("SCI_QUICKTIME_RESULT") != std::string::npos) return GameEvent::SCI_QUICKTIME_RESULT;
+		if(in.find("SCI_BLACKOUT") != std::string::npos) return GameEvent::SCI_BLACKOUT;
+		if(in.find("SCI_END") != std::string::npos) return GameEvent::SCI_END;
+		if(in.find("SCI_MODE") != std::string::npos) return GameEvent::SCI_MODE;
 		return GameEvent::EVENT_COUNT;
 
 	}
@@ -1377,7 +1387,7 @@ class GamepadData : public GameEventData
 
 public:
 	GamepadData() 
-		: GameEventData(CUSTOM), Index(-1), StickLeftX(0), StickLeftY(0), StickRightX(0), StickRightY(0),
+		: GameEventData(CUSTOM), Index(-1), Connected(0), StickLeftX(0), StickLeftY(0), StickRightX(0), StickRightY(0),
 		DigitalPadX(0), DigitalPadY(0), ButtonA(0), ButtonB(0), ButtonX(0), ButtonY(0), ButtonStart(0), ButtonBack(0),
 		TriggerLeft(0), TriggerRight(0), ShoulderRight(0), ShoulderLeft(0), StickLeftClick(0), StickRightClick(0),
 		VibratorLeft(0), VibratorRight(0)
@@ -1385,7 +1395,7 @@ public:
 		m_data.ptr = this;
 	}
 
-	GamepadData( unsigned int gamepadIndex, float thumbStickLX, float thumbStickLY, float thumbStickRX, float thumbStickRY, float dPadX, float dPadY, 
+	GamepadData( unsigned int gamepadIndex, bool connected, float thumbStickLX, float thumbStickLY, float thumbStickRX, float thumbStickRY, float dPadX, float dPadY, 
 		unsigned int butA, unsigned int butB, unsigned int butX, unsigned int butY, unsigned int butStart, unsigned int butBack,
 		float triggerL, float triggerR, unsigned int shoulderR, unsigned int shoulderL, unsigned int thumbStickLClick, unsigned int thumbStickRClick )
 		: GameEventData(CUSTOM), Index(gamepadIndex), StickLeftX(thumbStickLX), StickLeftY(thumbStickLY), StickRightX(thumbStickRX), StickRightY(thumbStickRY),
@@ -1396,7 +1406,7 @@ public:
 		m_data.ptr = this;
 	}
 
-	GamepadData(const GamepadData& copy) : GameEventData(CUSTOM), Index(copy.Index), StickLeftX(copy.StickLeftX), StickLeftY(copy.StickLeftY), StickRightX(copy.StickRightX), StickRightY(copy.StickRightY),
+	GamepadData(const GamepadData& copy) : GameEventData(CUSTOM), Index(copy.Index), Connected(0), StickLeftX(copy.StickLeftX), StickLeftY(copy.StickLeftY), StickRightX(copy.StickRightX), StickRightY(copy.StickRightY),
 		DigitalPadX(copy.DigitalPadX), DigitalPadY(copy.DigitalPadY), ButtonA(copy.ButtonA), ButtonB(copy.ButtonB), ButtonX(copy.ButtonX), ButtonY(copy.ButtonY), ButtonStart(copy.ButtonStart), ButtonBack(copy.ButtonBack),
 		TriggerLeft(copy.TriggerLeft), TriggerRight(copy.TriggerRight), ShoulderRight(copy.ShoulderRight), ShoulderLeft(copy.ShoulderLeft), StickLeftClick( copy.StickLeftClick ), StickRightClick( copy.StickRightClick ),
 		VibratorLeft(copy.VibratorLeft), VibratorRight(copy.VibratorRight)
@@ -1406,6 +1416,7 @@ public:
 	}
 
 	int Index;
+	bool Connected;
 	float StickLeftX;
 	float StickLeftY;
 	float StickRightX;
