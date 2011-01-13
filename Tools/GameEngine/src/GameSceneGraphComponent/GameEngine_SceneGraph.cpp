@@ -178,5 +178,13 @@ namespace GameEngine
 		return false;
 	}
 
+	SCENEGRAPHPLUGINEXP void getEntityBoundingBox(unsigned int entityID, float* minX, float* minY, float* minZ, float* maxX, float* maxY, float* maxZ)
+	{
+		SceneGraphComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityID);
+		if (entity && ( component = static_cast<SceneGraphComponent*>(entity->component("Horde3D")) ) != 0)
+			component->getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+	}
+
 }
 

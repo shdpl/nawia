@@ -154,6 +154,10 @@ namespace GameEngine
 	 * returns whether the entity given by the entityID is currently visible through the active cam
 	 */ 
 	SCENEGRAPHPLUGINEXP bool getEntityVisiblitiy(unsigned int entityID);
+	/**
+	 * returns the bounding box of the entity
+	*/
+	SCENEGRAPHPLUGINEXP void getEntityBoundingBox(unsigned int entityID, float* minX, float* minY, float* minZ, float* maxX, float* maxY, float* maxZ);
 
 	/*! @}*/
 

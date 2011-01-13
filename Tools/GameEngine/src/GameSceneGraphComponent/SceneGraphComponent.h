@@ -165,6 +165,11 @@ public:
 	 */ 
 	bool getVisibility();
 
+	/**
+	 * returns the bounding box of the entity
+	*/
+	void getBoundingBox(float* minX, float* minY, float* minZ, float* maxX, float* maxY, float* maxZ);
+
 private:
 	
 	void getMeshData(MeshData* data);

@@ -567,3 +567,8 @@ bool SceneGraphComponent::getVisibility()
 	}
 	return (m_visibilityFlag == 1);
 }
+
+void SceneGraphComponent::getBoundingBox(float* minX, float* minY, float* minZ, float* maxX, float* maxY, float* maxZ)
+{
+	h3dGetNodeAABB(hordeId(), minX, minY, minZ, maxX, maxY, maxZ);
+}
