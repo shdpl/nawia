@@ -423,6 +423,7 @@ public:
 		SCI_BLACKOUT,
 		SCI_END,
 		SCI_MODE,
+		SCI_ACTIONSOUND,
 
 		EVENT_COUNT				/// Must be the last entry in the enumeration !!!!
 	};
@@ -481,6 +482,7 @@ public:
 		if(in.find("SCI_BLACKOUT") != std::string::npos) return GameEvent::SCI_BLACKOUT;
 		if(in.find("SCI_END") != std::string::npos) return GameEvent::SCI_END;
 		if(in.find("SCI_MODE") != std::string::npos) return GameEvent::SCI_MODE;
+		if(in.find("SCI_ACTIONSOUND") != std::string::npos) return GameEvent::SCI_ACTIONSOUND;
 		return GameEvent::EVENT_COUNT;
 
 	}
