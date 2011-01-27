@@ -308,6 +308,13 @@ void TTSComponent::loadFromXml(const XMLNode* description)
 		|| _stricmp(description->getAttribute("useDistanceModel", "false"),"1") == 0;
 
 	m_rollOff = (float) atof(description->getAttribute("rollOff", "1.0"));
+
+	const char* volume = description->getAttribute("volume");
+	if (volume && m_pVoice)
+	{
+
+		m_pVoice->SetVolume((unsigned short) atoi(volume));
+	}
 }
 
 bool TTSComponent::setVoice(const char* voice)
@@ -462,8 +469,8 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 		case SPEI_TTS_BOOKMARK:
 			{
 				const WCHAR * name = e.BookmarkName();
-				char * value = new char[255];
-				sprintf_s(value, 255, "%ls", name);
+				char * value = new char[1024];
+				sprintf_s(value, 1024, "%ls", name);
 				// Send event
 				GameEvent event(GameEvent::SP_BOOKMARK, &GameEventData(value), obj);
 				if (obj->m_owner->checkEvent(&event))
@@ -473,8 +480,8 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 
 		case SPEI_END_INPUT_STREAM:
 			{
-				char * sentence = new char[255];
-				sprintf_s(sentence, 255, "%ls", obj->m_currentSentence.c_str());
+				char * sentence = new char[1024];
+				sprintf_s(sentence, 1024, "%ls", obj->m_currentSentence.c_str());
 				// Send event
 				GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(sentence), obj);
 				if (obj->m_owner->checkEvent(&event))
@@ -486,8 +493,8 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 			}
 		case SPEI_START_INPUT_STREAM:
 			{
-				char * sentence = new char[255];
-				sprintf_s(sentence, 255, "%ls", obj->m_currentSentence.c_str());
+				char * sentence = new char[1024];
+				sprintf_s(sentence, 1024, "%ls", obj->m_currentSentence.c_str());
 				// Send event
 				GameEvent event(GameEvent::E_SPEAKING_STARTED, &GameEventData(sentence), obj);
 				if (obj->m_owner->checkEvent(&event))
@@ -502,8 +509,8 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 				if (start < obj->m_currentSentence.size())
 				{
 					wstring wstr(obj->m_currentSentence.substr(start, end));
-					char * word = new char[255];
-					sprintf_s(word, 255, "%ls", wstr.c_str());
+					char * word = new char[1024];
+					sprintf_s(word, 1024, "%ls", wstr.c_str());
 					// Send event
 					GameEvent event(GameEvent::SP_SPOKEN_WORD, &GameEventData(word), obj);
 					if (obj->m_owner->checkEvent(&event))
