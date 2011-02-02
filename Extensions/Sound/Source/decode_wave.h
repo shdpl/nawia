@@ -28,6 +28,7 @@
 #ifndef _Horde3DSound_decode_wave_H_
 #define _Horde3DSound_decode_wave_H_
 
+#include <stddef.h>
 #include "decode.h"
 
 

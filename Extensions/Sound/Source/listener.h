@@ -28,11 +28,17 @@
 #ifndef _Horde3DSound_listener_H_
 #define _Horde3DSound_listener_H_
 
+#include <stdlib.h>
 #include <string>
+#include <cstring>
 #include <map>
 
 #include "egScene.h"
 
+
+#ifndef ALC_ALL_DEVICES_SPECIFIER
+# define ALC_ALL_DEVICES_SPECIFIER     0x1013
+#endif
 
 namespace Horde3DSound {
 
