@@ -1,0 +1,310 @@
+<!ELEMENT dataset (
+    accounts*,
+    bans*,
+    environment_killers*,
+    global_storage*,
+    groups*,
+    guild_invites*,
+    guild_members*,
+    guild_ranks*,
+    guild_wars*,
+    guilds*,
+    house_auctions*,
+    house_lists*,
+    houses*,
+    killers*,
+    map_store*,
+    player_deaths*,
+    player_depotitems*,
+    player_items*,
+    player_killers*,
+    player_skills*,
+    player_spells*,
+    player_storage*,
+    player_viplist*,
+    players*,
+    schema_info*,
+    test*,
+    tile_items*,
+    tiles*)>
+
+<!ELEMENT accounts EMPTY>
+<!ATTLIST accounts
+    id CDATA #REQUIRED
+    name CDATA #REQUIRED
+    password CDATA #REQUIRED
+    email CDATA #REQUIRED
+    premend CDATA #REQUIRED
+    blocked CDATA #REQUIRED
+    warnings CDATA #REQUIRED
+>
+
+<!ELEMENT bans EMPTY>
+<!ATTLIST bans
+    id CDATA #REQUIRED
+    type CDATA #REQUIRED
+    value CDATA #REQUIRED
+    param CDATA #REQUIRED
+    active CDATA #IMPLIED
+    expires CDATA #REQUIRED
+    added CDATA #REQUIRED
+    admin_id CDATA #IMPLIED
+    comment CDATA #REQUIRED
+    reason CDATA #IMPLIED
+    action CDATA #IMPLIED
+    statement CDATA #REQUIRED
+>
+
+<!ELEMENT environment_killers EMPTY>
+<!ATTLIST environment_killers
+    kill_id CDATA #REQUIRED
+    name CDATA #REQUIRED
+>
+
+<!ELEMENT global_storage EMPTY>
+<!ATTLIST global_storage
+    key CDATA #REQUIRED
+    value CDATA #REQUIRED
+>
+
+<!ELEMENT groups EMPTY>
+<!ATTLIST groups
+    id CDATA #REQUIRED
+    name CDATA #REQUIRED
+    flags CDATA #REQUIRED
+    access CDATA #REQUIRED
+    violation CDATA #REQUIRED
+    maxdepotitems CDATA #REQUIRED
+    maxviplist CDATA #REQUIRED
+>
+
+<!ELEMENT guild_invites EMPTY>
+<!ATTLIST guild_invites
+    player_id CDATA #REQUIRED
+    guild_id CDATA #REQUIRED
+>
+
+<!ELEMENT guild_members EMPTY>
+<!ATTLIST guild_members
+    player_id CDATA #REQUIRED
+    rank_id CDATA #REQUIRED
+    guild_nick CDATA #REQUIRED
+>
+
+<!ELEMENT guild_ranks EMPTY>
+<!ATTLIST guild_ranks
+    id CDATA #REQUIRED
+    guild_id CDATA #REQUIRED
+    name CDATA #REQUIRED
+    level CDATA #REQUIRED
+>
+
+<!ELEMENT guild_wars EMPTY>
+<!ATTLIST guild_wars
+    id CDATA #REQUIRED
+    guild_id CDATA #REQUIRED
+    opponent_id CDATA #REQUIRED
+    frag_limit CDATA #REQUIRED
+    declaration_date CDATA #REQUIRED
+    end_date CDATA #REQUIRED
+    guild_fee CDATA #REQUIRED
+    opponent_fee CDATA #REQUIRED
+    guild_frags CDATA #REQUIRED
+    opponent_frags CDATA #REQUIRED
+    comment CDATA #REQUIRED
+    status CDATA #REQUIRED
+>
+
+<!ELEMENT guilds EMPTY>
+<!ATTLIST guilds
+    id CDATA #REQUIRED
+    name CDATA #REQUIRED
+    owner_id CDATA #REQUIRED
+    creationdate CDATA #REQUIRED
+>
+
+<!ELEMENT house_auctions EMPTY>
+<!ATTLIST house_auctions
+    id CDATA #REQUIRED
+    house_id CDATA #REQUIRED
+    player_id CDATA #REQUIRED
+    bid CDATA #REQUIRED
+    limit CDATA #REQUIRED
+    endtime CDATA #REQUIRED
+>
+
+<!ELEMENT house_lists EMPTY>
+<!ATTLIST house_lists
+    house_id CDATA #REQUIRED
+    listid CDATA #REQUIRED
+    list CDATA #REQUIRED
+>
+
+<!ELEMENT houses EMPTY>
+<!ATTLIST houses
+    id CDATA #REQUIRED
+    townid CDATA #REQUIRED
+    name CDATA #REQUIRED
+    rent CDATA #REQUIRED
+    guildhall CDATA #REQUIRED
+    tiles CDATA #REQUIRED
+    doors CDATA #REQUIRED
+    beds CDATA #REQUIRED
+    owner CDATA #REQUIRED
+    paid CDATA #REQUIRED
+    clear CDATA #REQUIRED
+    warnings CDATA #REQUIRED
+    lastwarning CDATA #REQUIRED
+>
+
+<!ELEMENT killers EMPTY>
+<!ATTLIST killers
+    id CDATA #REQUIRED
+    death_id CDATA #REQUIRED
+    final_hit CDATA #REQUIRED
+>
+
+<!ELEMENT map_store EMPTY>
+<!ATTLIST map_store
+    house_id CDATA #REQUIRED
+    data CDATA #REQUIRED
+>
+
+<!ELEMENT player_deaths EMPTY>
+<!ATTLIST player_deaths
+    id CDATA #REQUIRED
+    player_id CDATA #REQUIRED
+    date CDATA #REQUIRED
+    level CDATA #REQUIRED
+>
+
+<!ELEMENT player_depotitems EMPTY>
+<!ATTLIST player_depotitems
+    player_id CDATA #REQUIRED
+    sid CDATA #REQUIRED
+    pid CDATA #REQUIRED
+    itemtype CDATA #REQUIRED
+    count CDATA #REQUIRED
+    attributes CDATA #REQUIRED
+>
+
+<!ELEMENT player_items EMPTY>
+<!ATTLIST player_items
+    player_id CDATA #REQUIRED
+    sid CDATA #REQUIRED
+    pid CDATA #REQUIRED
+    itemtype CDATA #REQUIRED
+    count CDATA #REQUIRED
+    attributes CDATA #IMPLIED
+>
+
+<!ELEMENT player_killers EMPTY>
+<!ATTLIST player_killers
+    kill_id CDATA #REQUIRED
+    player_id CDATA #REQUIRED
+    unjustified CDATA #REQUIRED
+>
+
+<!ELEMENT player_skills EMPTY>
+<!ATTLIST player_skills
+    player_id CDATA #REQUIRED
+    skillid CDATA #REQUIRED
+    value CDATA #REQUIRED
+    count CDATA #REQUIRED
+>
+
+<!ELEMENT player_spells EMPTY>
+<!ATTLIST player_spells
+    player_id CDATA #REQUIRED
+    name CDATA #REQUIRED
+>
+
+<!ELEMENT player_storage EMPTY>
+<!ATTLIST player_storage
+    player_id CDATA #REQUIRED
+    key CDATA #REQUIRED
+    value CDATA #REQUIRED
+>
+
+<!ELEMENT player_viplist EMPTY>
+<!ATTLIST player_viplist
+    player_id CDATA #REQUIRED
+    vip_id CDATA #REQUIRED
+>
+
+<!ELEMENT players EMPTY>
+<!ATTLIST players
+    id CDATA #REQUIRED
+    name CDATA #REQUIRED
+    account_id CDATA #REQUIRED
+    group_id CDATA #REQUIRED
+    sex CDATA #REQUIRED
+    vocation CDATA #REQUIRED
+    experience CDATA #REQUIRED
+    level CDATA #REQUIRED
+    maglevel CDATA #REQUIRED
+    health CDATA #REQUIRED
+    healthmax CDATA #REQUIRED
+    mana CDATA #REQUIRED
+    manamax CDATA #REQUIRED
+    manaspent CDATA #REQUIRED
+    soul CDATA #REQUIRED
+    direction CDATA #REQUIRED
+    lookbody CDATA #REQUIRED
+    lookfeet CDATA #REQUIRED
+    lookhead CDATA #REQUIRED
+    looklegs CDATA #REQUIRED
+    looktype CDATA #REQUIRED
+    lookaddons CDATA #REQUIRED
+    posx CDATA #REQUIRED
+    posy CDATA #REQUIRED
+    posz CDATA #REQUIRED
+    cap CDATA #REQUIRED
+    lastlogin CDATA #REQUIRED
+    lastlogout CDATA #REQUIRED
+    lastip CDATA #REQUIRED
+    save CDATA #REQUIRED
+    conditions CDATA #REQUIRED
+    skull_type CDATA #REQUIRED
+    skull_time CDATA #REQUIRED
+    loss_experience CDATA #REQUIRED
+    loss_mana CDATA #REQUIRED
+    loss_skills CDATA #REQUIRED
+    loss_items CDATA #REQUIRED
+    loss_containers CDATA #REQUIRED
+    town_id CDATA #REQUIRED
+    balance CDATA #REQUIRED
+    stamina CDATA #REQUIRED
+    online CDATA #REQUIRED
+    rank_id CDATA #REQUIRED
+    guildnick CDATA #REQUIRED
+>
+
+<!ELEMENT schema_info EMPTY>
+<!ATTLIST schema_info
+    name CDATA #REQUIRED
+    value CDATA #REQUIRED
+>
+
+<!ELEMENT test EMPTY>
+<!ATTLIST test
+    id CDATA #REQUIRED
+    examplevar CDATA #IMPLIED
+>
+
+<!ELEMENT tile_items EMPTY>
+<!ATTLIST tile_items
+    tile_id CDATA #REQUIRED
+    sid CDATA #REQUIRED
+    pid CDATA #REQUIRED
+    itemtype CDATA #REQUIRED
+    count CDATA #REQUIRED
+    attributes CDATA #REQUIRED
+>
+
+<!ELEMENT tiles EMPTY>
+<!ATTLIST tiles
+    id CDATA #REQUIRED
+    house_id CDATA #REQUIRED
+>
+
