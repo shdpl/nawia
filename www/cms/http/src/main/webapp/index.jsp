@@ -1,1 +1,1 @@
-<% response.sendRedirect("home.xhtml"); %>
+<% response.sendRedirect("views/home.xhtml"); %>

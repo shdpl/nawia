@@ -18,6 +18,7 @@ package net.nawia.gsao.dao;
 
 import java.util.List;
 
+import net.nawia.gsao.domain.Account;
 
 /** 
  * Abstract DAO Interface.

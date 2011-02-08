@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.logging.*;
 
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Produces;
 
 import net.nawia.gsao.dao.exceptions.ExceptionDao;
 import net.nawia.gsao.dao.exceptions.ExceptionDaoMalformed;
@@ -41,6 +42,7 @@ public class DaoFactory {
 	 * @return
 	 * @throws ExceptionDao
 	 */
+	@Produces
 	@SuppressWarnings("unchecked")
 	static synchronized public <K, E> Dao<K, E> build(
 			Class<? extends Dao<K, E>> toBuild) throws ExceptionDao {

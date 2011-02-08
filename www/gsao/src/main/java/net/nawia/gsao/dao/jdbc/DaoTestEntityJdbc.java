@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.jfree.util.Log;
+
 
 import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 import net.nawia.gsao.dao.exceptions.RuntimeExceptionDao;
@@ -28,10 +30,10 @@ public class DaoTestEntityJdbc extends DaoJdbc<Integer, TestEntityJdbc> implemen
 	}
 
 	// TODO: no continuity with database native sequencer
-	private static final String _qPersistNew = "INSERT INTO test "
-			+ "(examplevar) VALUES (?)";
-	private static final String _qPersistOld = "UPDATE test"
-			+ " SET examplevar = ? WHERE id = ?";
+	private static final String _qPersistNew = "INSERT INTO \"test\" "
+			+ "(\"examplevar\") VALUES (?)";
+	private static final String _qPersistOld = "UPDATE \"test\""
+			+ " SET \"examplevar\" = ? WHERE \"id\" = ?";
 
 	public void persist(TestEntityJdbc entity) {
 		final int eid = entity.getId();
@@ -45,7 +47,7 @@ public class DaoTestEntityJdbc extends DaoJdbc<Integer, TestEntityJdbc> implemen
 					throw new RuntimeExceptionDao("Could not add " + entity);
 				ResultSet rs = _persistNew.getGeneratedKeys();
 				if (rs.next())
-					entity.setId(rs.getInt("id"));
+					entity.setId(rs.getInt(1));
 			} else {
 				if (null == _persistOld)
 					_persistOld = _conn.prepareStatement(_qPersistOld);
@@ -59,7 +61,7 @@ public class DaoTestEntityJdbc extends DaoJdbc<Integer, TestEntityJdbc> implemen
 		}
 	}
 
-	private static final String _qRemove = "DELETE FROM test WHERE id = ?";
+	private static final String _qRemove = "DELETE FROM \"test\" WHERE \"id\" = ?";
 
 	public void remove(TestEntityJdbc entity) {
 		try {
@@ -75,7 +77,7 @@ public class DaoTestEntityJdbc extends DaoJdbc<Integer, TestEntityJdbc> implemen
 		}
 	}
 
-	private static final String _qFind = "SELECT * FROM test WHERE id = ?";
+	private static final String _qFind = "SELECT * FROM \"test\" WHERE \"id\" = ?";
 
 	public TestEntityJdbc find(Integer id) {
 		try {
@@ -95,7 +97,7 @@ public class DaoTestEntityJdbc extends DaoJdbc<Integer, TestEntityJdbc> implemen
 		}
 	}
 
-	private static final String _qFindAll = "SELECT * FROM accounts";
+	private static final String _qFindAll = "SELECT * FROM \"accounts\"";
 
 	public List<TestEntityJdbc> findAll() {
 		List<TestEntityJdbc> ret = new Vector<TestEntityJdbc>();

@@ -1,67 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
-      http://java.sun.com/xml/ns/javaee
-      http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-      
-	<display-name>Nawia RPG</display-name>
-
-	<listener>
-		<listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
-	</listener>
-
-	<resource-env-ref>
-		<resource-env-ref-name>BeanManager</resource-env-ref-name>
-		<resource-env-ref-type>javax.enterprise.inject.spi.BeanManager</resource-env-ref-type>
-	</resource-env-ref>
-	<welcome-file-list>
-		<welcome-file>views/home.xhtml</welcome-file>
-	</welcome-file-list>
-
-	<!-- Activate the JSF 2.0 servlet -->
-	<servlet>
-		<servlet-name>Faces Servlet</servlet-name>
-		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
-	<!-- Tell the context which URLs to send through JSF -->
-	<servlet-mapping>
-		<servlet-name>Faces Servlet</servlet-name>
-		<url-pattern>*.xhtml</url-pattern>
-	</servlet-mapping>
-
-	<context-param>
-		<param-name>facelets.DEVELOPMENT</param-name>
-		<param-value>true</param-value>
-	</context-param>
-	<context-param>
-		<param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-		<param-value>server</param-value>
-	</context-param>
-
-	<mime-mapping>
-		<extension>ecss</extension>
-		<mime-type>text/css</mime-type>
-	</mime-mapping>
-
-	<session-config>
-		<session-timeout>30</session-timeout>
-	</session-config>
-
-	<context-param>
-		<param-name>org.richfaces.SKIN</param-name>
-		<param-value>DEFAULT</param-value>
-	</context-param><!--
-	
-	<login-config>
-		<auth-method>FORM</auth-method>
-		<realm-name>main</realm-name>
-		<form-login-config>
-			<form-login-page>/views/login.xhtml</form-login-page>
-			<form-error-page>/views/login_fail.xhtml</form-error-page>
-		</form-login-config>
-	</login-config>
-
---></web-app>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  <listener>
+    <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
+  </listener>
+  <resource-env-ref>
+    <resource-env-ref-name>BeanManager</resource-env-ref-name>
+    <resource-env-ref-type>javax.enterprise.inject.spi.BeanManager</resource-env-ref-type>
+  </resource-env-ref>
+  <welcome-file-list>
+    <welcome-file>home.xhtml</welcome-file>
+  </welcome-file-list>
+  <servlet>
+    <servlet-name>Faces Servlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>*.xhtml</url-pattern>
+  </servlet-mapping>
+  <context-param>
+    <param-name>facelets.DEVELOPMENT</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+    <param-value>server</param-value>
+  </context-param>
+  <mime-mapping>
+    <extension>ecss</extension>
+    <mime-type>text/css</mime-type>
+  </mime-mapping>
+  <session-config>
+    <session-timeout>30</session-timeout>
+  </session-config>
+</web-app>

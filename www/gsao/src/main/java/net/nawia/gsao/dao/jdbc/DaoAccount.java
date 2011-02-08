@@ -16,12 +16,12 @@
  ******************************************************************************/
 package net.nawia.gsao.dao.jdbc;
 
-import java.sql.*;
-import java.util.List;
-import java.util.Vector;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
 import java.util.logging.Logger;
-
-import javax.ejb.Stateless;
 
 import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 import net.nawia.gsao.dao.exceptions.RuntimeExceptionDao;
@@ -36,7 +36,6 @@ import net.nawia.gsao.domain.Account;
 // "warnings" SMALLINT NOT NULL DEFAULT 0,
 // PRIMARY KEY ("id"),
 // UNIQUE ("name")
-@Stateless
 public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		net.nawia.gsao.dao.DaoAccount {
 	private static final Logger _log = Logger.getLogger(DaoAccount.class
@@ -57,12 +56,12 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 	}
 
 	// TODO: no continuity with database native sequencer
-	private static final String _qPersistNew = "INSERT INTO " + _tableName
-			+ " (name, password, email, premend, blocked, warnings) "
+	private static final String _qPersistNew = "INSERT INTO \"" + _tableName
+			+ "\" (\"name\", \"password\", \"email\", \"premend\", \"blocked\", \"warnings\") "
 			+ "VALUES (?, ?, ?, ?, ?, ?)";
-	private static final String _qPersistOld = "UPDATE " + _tableName
-			+ " SET name = ?, password = ?, email = ?,"
-			+ " premend = ?, blocked = ?, warnings = ?" + " WHERE id = ?";
+	private static final String _qPersistOld = "UPDATE \"" + _tableName
+			+ "\" SET \"name\" = ?, \"password\" = ?, \"email\" = ?,"
+			+ " \"premend\" = ?, \"blocked\" = ?, \"warnings\" = ?" + " WHERE \"id\" = ?";
 
 	public void persist(Account entity) {
 		final int eid = entity.getId();
@@ -81,7 +80,7 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 					throw new RuntimeExceptionDao("Could not add " + entity);
 				ResultSet rs = _persistNew.getGeneratedKeys();
 				if (rs.next())
-					entity.setId(rs.getInt("id"));
+					entity.setId(rs.getInt(1));
 			} else {
 				if (null == _persistOld)
 					_persistOld = _conn.prepareStatement(_qPersistOld);
@@ -101,8 +100,8 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		}
 	}
 
-	private static final String _qRemove = "DELETE FROM " + _tableName
-			+ " WHERE id = ?";
+	private static final String _qRemove = "DELETE FROM \"" + _tableName
+			+ "\" WHERE \"id\" = ?";
 
 	public void remove(Account entity) {
 		try {
@@ -118,8 +117,8 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		}
 	}
 
-	private static final String _qFindById = "SELECT * FROM " + _tableName
-			+ " WHERE id = ?";
+	private static final String _qFindById = "SELECT * FROM \"" + _tableName
+			+ "\" WHERE \"id\" = ?";
 
 	public Account find(Integer id) {
 		assert (id != null);
@@ -139,7 +138,7 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		}
 	}
 
-	private static final String _qFindAll = "SELECT * FROM " + _tableName;
+	private static final String _qFindAll = "SELECT * FROM \"" + _tableName +"\"";
 
 	public List<Account> findAll() {
 		List<Account> ret = new Vector<Account>();
@@ -160,8 +159,8 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		}
 	}
 
-	private static final String _qFindAllByName = "SELECT * FROM " + _tableName
-			+ " WHERE name = ?";
+	private static final String _qFindAllByName = "SELECT * FROM \"" + _tableName
+			+ "\" WHERE \"name\" = ?";
 	/**
 	 * Currently you can choose just one of the following attributes:
 	 * - name

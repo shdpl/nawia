@@ -229,9 +229,9 @@ CREATE TABLE "bans" (
 CREATE TABLE "tiles" (
 	"id" SERIAL,
 	"house_id" INT NOT NULL DEFAULT 0,
-	"x" INT[6] NOT NULL,
-	"y" INT[6] NOT NULL,
-	"z" INT[3] NOT NULL,
+	"x" INT NOT NULL,
+	"y" INT NOT NULL,
+	"z" INT NOT NULL,
 	PRIMARY KEY("id"),
 	FOREIGN KEY ("house_id") REFERENCES "houses" ("id") ON DELETE NO ACTION
 );
@@ -308,79 +308,7 @@ CREATE TABLE "schema_info" (
 	PRIMARY KEY ("name")
 );
 
---INSERT INTO "schema_info" ("name", "value") VALUES ('version', 24);
-
-CREATE FUNCTION "ondelete_accounts"()
-RETURNS TRIGGER
-AS $$
-BEGIN
-DELETE FROM "bans" WHERE "type" = 3 AND "value" = OLD."id";
-RETURN OLD;
-END $$ LANGUAGE plpgsql;
-
-CREATE TRIGGER "ondelete_accounts"
-BEFORE DELETE
-ON "accounts"
-FOR EACH ROW
-EXECUTE PROCEDURE "ondelete_accounts"();
-
-CREATE FUNCTION "ondelete_players"()
-RETURNS TRIGGER
-AS $$
-BEGIN
-	DELETE FROM "bans" WHERE "type" = 2 AND "value" = OLD."id";
-	UPDATE "houses" SET "owner" = 0 WHERE "owner" = OLD."id";
-
-	RETURN OLD;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER "ondelete_players"
-BEFORE DELETE
-ON "players"
-FOR EACH ROW
-EXECUTE PROCEDURE "ondelete_players"();
-
-CREATE FUNCTION "oncreate_guilds"()
-RETURNS TRIGGER
-AS $$
-BEGIN
-	INSERT INTO "guild_ranks" ("name", "level", "guild_id") VALUES ('Leader', 3, NEW."id");
-	INSERT INTO "guild_ranks" ("name", "level", "guild_id") VALUES ('Vice-Leader', 2, NEW."id");
-	INSERT INTO "guild_ranks" ("name", "level", "guild_id") VALUES ('Member', 1, NEW."id");
-
-	RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER "oncreate_guilds"
-AFTER INSERT
-ON "guilds"
-FOR EACH ROW
-EXECUTE PROCEDURE "oncreate_guilds"();
-
-CREATE FUNCTION "oncreate_players"()
-RETURNS TRIGGER
-AS $$
-BEGIN
-	INSERT INTO "player_skills" ("player_id", "skillid", "value") VALUES (NEW."id", 0, 10);
-	INSERT INTO "player_skills" ("player_id", "skillid", "value") VALUES (NEW."id", 1, 10);
-	INSERT INTO "player_skills" ("player_id", "skillid", "value") VALUES (NEW."id", 2, 10);
-	INSERT INTO "player_skills" ("player_id", "skillid", "value") VALUES (NEW."id", 3, 10);
-	INSERT INTO "player_skills" ("player_id", "skillid", "value") VALUES (NEW."id", 4, 10);
-	INSERT INTO "player_skills" ("player_id", "skillid", "value") VALUES (NEW."id", 5, 10);
-	INSERT INTO "player_skills" ("player_id", "skillid", "value") VALUES (NEW."id", 6, 10);
-
-	RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER "oncreate_players"
-AFTER INSERT
-ON "players"
-FOR EACH ROW
-EXECUTE PROCEDURE "oncreate_players"();
-
 --INSERT INTO "players" VALUES (1, 'Administrator', 1, 6, 2, 1, 0, 1, 0, 185, 185, 35, 35, 0, 100, 2, 10, 10, 10, 10, 75, 0, 200, 200, 6, 435, 0, 0, 1, 1, '', 0, 0, 100, 100, 100, 10, 100, 1, 0, 151200000, 0, 0, '');
 --INSERT INTO "players" VALUES (2, 'Player', 1, 1, 1, 1, 0, 1, 0, 185, 185, 35, 35, 0, 100, 2, 10, 10, 10, 10, 75, 0, 200, 200, 6, 435, 0, 0, 1, 1, '', 0, 0, 100, 100, 100, 10, 100, 1, 0, 151200000, 0, 0, '');
 
+--INSERT INTO "schema_info" ("name", "value") VALUES ('version', 24);
