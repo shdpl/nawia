@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich">
+    
+    			<rich:dropDownMenu>
+				<f:facet name="label">
+					<h:outputText value="#{msg.main}" />
+				</f:facet>
+				<rich:menuItem label="#{msg.menuNews}" action="news" />
+				<rich:menuGroup label="#{msg.menuAbout}">
+					<rich:menuItem label="#{msg.menuGame}" action="game.xhtml"/>
+					<rich:menuItem label="#{msg.menuWorld}" action="views/about/world.xhtml" />
+				</rich:menuGroup>
+				<rich:menuGroup label="#{msg.menuKb}">
+					<rich:menuItem>
+						<h:outputLink value="/views/kb/world.xml">
+                            <h:outputText value="#{msg.menuKbWorld}"></h:outputText>
+                        </h:outputLink>
+					</rich:menuItem>
+					<rich:menuItem label="#{msg.menuKbLanguages}"/>
+					<rich:menuItem label="#{msg.menuKbRaces}" />
+					<rich:menuItem label="#{msg.menuKbProfessions}" />
+					<rich:menuItem label="#{msg.menuKbSkills}" />
+					<rich:menuItem label="#{msg.menuKbMagic}" />
+					<rich:menuItem label="#{msg.menuKbTranscriptions}" />
+					<rich:menuItem label="#{msg.menuKbCharacters}" />
+					<rich:menuItem label="#{msg.menuKbCreatures}" />
+				</rich:menuGroup>
+				<rich:menuGroup label="#{msg.menuDevel}">
+					<rich:menuItem label="#{msg.menuDevelCode}" />
+					<rich:menuItem label="#{msg.menuDevelGraph}" />
+					<rich:menuItem label="#{msg.menuDevelSound}" />
+					<rich:menuItem label="#{msg.menuDevelStory}" />
+					<rich:menuItem label="#{msg.menuDevelWorld}" />
+					<rich:menuItem label="#{msg.menuDevelTranslat}" />
+					<rich:menuItem label="#{msg.menuDevelCommunity}" />
+				</rich:menuGroup>
+				<rich:menuGroup label="#{msg.menuSociety}">
+				</rich:menuGroup>
+			</rich:dropDownMenu>
+    
+</ui:composition>
