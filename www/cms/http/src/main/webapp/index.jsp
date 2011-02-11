@@ -1,1 +1,1 @@
-<% response.sendRedirect("views/home.xhtml"); %>
+<% response.sendRedirect("/nawia/views/about/world.xhtml"); %>

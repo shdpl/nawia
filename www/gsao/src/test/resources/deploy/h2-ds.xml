@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <datasources> 
     <local-tx-datasource> 
-        <jndi-name>internal/test/test/env/jdbc/gsDB</jndi-name> 
+        <jndi-name>internal/test/test/DaoJdbc/env/jdbc/gsDB</jndi-name> 
         <connection-url>jdbc:h2:tcp://localhost/mem:gsdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE</connection-url> 
         <driver-class>org.h2.Driver</driver-class> 
         <user-name>sa</user-name>
         <password></password> 
-    </local-tx-datasource> 
+    </local-tx-datasource>
+    
+    <local-tx-datasource> 
+        <jndi-name>internal/test/test/DaoJdbc/env/jdbc/httpDB</jndi-name> 
+        <connection-url>jdbc:h2:tcp://localhost/mem:httpdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE</connection-url> 
+        <driver-class>org.h2.Driver</driver-class> 
+        <user-name>sa</user-name>
+        <password></password> 
+    </local-tx-datasource>
+    
 </datasources> 

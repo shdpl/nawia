@@ -1,21 +1,36 @@
 <project
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<!-- TODO: rebuild all projects on mvn jetty:run -->
 	<modelVersion>4.0.0</modelVersion>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<source-level>1.6</source-level>
-	</properties>
 	<groupId>net.nawia</groupId>
 	<version>0.0.1-SNAPSHOT</version>
 	<artifactId>www</artifactId>
 	<packaging>pom</packaging>
 	<name>Nawia Web Server</name>
+	
+	<licenses>
+	  <license>
+	    <name>GNU Affero Public License with linking exception</name>
+	    <url>http://www.gnu.org/licenses/agpl.html</url><!--FIXME-->
+	  </license>
+	</licenses>
+	
+	<scm>
+		<connection>scm:git:git://github.com/shdpl/nawia.git</connection>
+		<developerConnection>scm:git:git@github.com:shdpl/nawia.git</developerConnection>
+		<url>https://github.com/shdpl/nawia/</url>
+	</scm>
+	
 	<modules>
 		<module>cms</module>
 		<module>gsao</module>
 	</modules>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<source-level>1.6</source-level>
+	</properties>
+	
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -51,9 +66,4 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	<scm>
-		<connection>git://github.com/shdpl/nawia.git</connection>
-		<developerConnection>git@github.com:shdpl/nawia.git</developerConnection>
-		<url>https://github.com/shdpl/nawia/</url>
-	</scm>
 </project>

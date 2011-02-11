@@ -16,13 +16,17 @@
  ******************************************************************************/
 package net.nawia.gsao.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.*;
 
 @Entity
 @Table (name = "accounts")
-public class Account implements Cloneable {
+public class Account implements Cloneable, Serializable {
+	
+	private static final long serialVersionUID = -5029958322298559966L;
+	
 	@Id
 	@GeneratedValue
 	private int id;

@@ -16,13 +16,10 @@
  ******************************************************************************/
 package net.nawia.gsao.dao.jdbc;
 
-import java.io.*;
 import java.sql.*;
-import java.util.*;
 import java.util.logging.Logger;
 
 import javax.naming.*;
-import javax.transaction.*;
 import javax.sql.DataSource;
 import net.nawia.gsao.dao.Dao;
 import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
@@ -30,28 +27,36 @@ import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 public abstract class DaoJdbc<K, E> implements Dao<K, E> {
 	private static final Logger _log = Logger
 			.getLogger(DaoJdbc.class.getName());
-	private static final String _path = "java:internal/test/test/env/jdbc/gsDB"; //FIXME
+	private static final String _path = "java:jdbc/gsDB"; // FIXME
+	private static final String _testpath = "java:internal/test/test/DaoJdbc/env/jdbc/gsDB";
 	protected Connection _conn;
 
 	private DataSource _ds;
 
 	public DaoJdbc() throws ExceptionDaoInit {
 		InitialContext ctx;
+		
 		try {
 			ctx = new InitialContext();
 		} catch (NamingException e) {
-			throw new ExceptionDaoInit(
-					"Cannot create initial context", e);
+			throw new ExceptionDaoInit("Cannot create initial context", e);
 		}
+		
 		try {
-			_ds = (DataSource) ctx.lookup(_path);
+			_ds = (DataSource) ctx.lookup(_testpath);
+		} catch (NamingException e) {
+			try {
+				_ds = (DataSource) ctx.lookup(_path);
+			} catch (NamingException e2) {
+				throw new ExceptionDaoInit("Cannot lookup " + _path, e2);
+			}
+		}
+
+		try {
 			_conn = _ds.getConnection();
 		} catch (SQLException e) {
 			throw new ExceptionDaoInit(
 					"Cannot connect to Game Server Database", e);
-		} catch (NamingException e) {
-			throw new ExceptionDaoInit(
-					"Cannot lookup " +_path, e);
 		}
 	}
 

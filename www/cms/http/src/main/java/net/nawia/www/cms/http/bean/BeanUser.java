@@ -11,10 +11,11 @@ public class BeanUser {
 	Account _acc;
 	
 	public void setAccount(Account acc) {
+		System.out.println("-------------------------------------");
 		_acc = acc;
 	}
 	
-	public boolean isLoggedIn() {
+	public boolean isLogged() {
 		return _acc != null;
 	}
 

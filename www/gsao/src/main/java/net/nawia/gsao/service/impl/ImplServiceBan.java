@@ -11,21 +11,29 @@ import javax.ejb.*;
 
 import net.nawia.gsao.dao.DaoAccount;
 import net.nawia.gsao.dao.DaoBan;
+import net.nawia.gsao.dao.DaoFactory;
+import net.nawia.gsao.dao.exceptions.ExceptionDao;
 import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.domain.Ban;
 import net.nawia.gsao.domain.Ban.BAN_T;
 import net.nawia.gsao.service.ServiceBan;
 
 @Stateless
-
-@DeclareRoles({"GM"})
-@RolesAllowed({"GM"})
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+//@DeclareRoles({"GM"})
+//@RolesAllowed({"GM"})
+//@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class ImplServiceBan implements ServiceBan {
-	@EJB
 	DaoBan _daoBan;
-	@EJB
 	DaoAccount _daoAcc;
+	
+	public ImplServiceBan() {
+		try {
+			_daoBan = (DaoBan) DaoFactory.build(DaoBan.class);
+			_daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
+		} catch (ExceptionDao e) {
+			throw new RuntimeException(e); //FIXME
+		}
+	}
 
 	@Override
 	public boolean add(Ban ban, Account acc) {

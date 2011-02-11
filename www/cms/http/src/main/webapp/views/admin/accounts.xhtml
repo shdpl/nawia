@@ -1,0 +1,79 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	template="/templates/default.xhtml">
+
+	<ui:define name="title">#{msg.adminPlayers}</ui:define>
+
+	<ui:define name="body">
+
+		<rich:panel id="admin_players_panel">
+			<f:facet name="header">
+				<h:outputText value="#{msg.player_acc}"></h:outputText>
+			</f:facet>
+			<h:form>
+				<h:dataTable value="#{serviceAccount.all}" var="account" columns="6"
+					first="1">
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.name}" />
+						</f:facet>
+						<h:outputText value="#{account.name}" />
+					</h:column>
+
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.email}" />
+						</f:facet>
+						<h:outputText value="#{account.email}" />
+					</h:column>
+
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.premend}" />
+						</f:facet>
+						<h:outputText value="#{account.premend}" />
+					</h:column>
+
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.blocked}" />
+						</f:facet>
+						<h:selectBooleanCheckbox value="#{account.blocked}"/>
+					</h:column>
+
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.warnings}" />
+						</f:facet>
+						<h:outputText value="#{account.warnings}" />
+					</h:column>
+					
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.acc_group}" />
+						</f:facet>
+						<h:outputText value="n/a" />
+					</h:column>
+					
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.ban}" />
+						</f:facet>
+						<h:outputText value="n/a" />
+					</h:column>
+					
+					<f:facet name="footer">
+						<rich:datascroller></rich:datascroller>
+					</f:facet>
+					
+					</rich:dataGrid>
+				</h:dataTable>
+			</h:form>
+
+		</rich:panel>
+	</ui:define>
+</ui:composition>

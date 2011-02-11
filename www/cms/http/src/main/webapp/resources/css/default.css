@@ -1,46 +1,108 @@
 body {
-   margin: 0;
-   padding: 0;
-   background-color: #EAECEE;
-   font-family: Verdana, sans-serif;
-   font-size: 0.9em;
+	margin: 0;
+	padding: 0;
+	background: #000000
+		url(#{request.contextPath}/resources/gfx/background.jpg) no-repeat;
+	font-family: Verdana, sans-serif;
+	font-size: 0.9em;
+	color: white;
+}
+
+#main_view {
+	width: 1024px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 #header {
-	background-image: /gfx/top-bg.png;
-	width: 621px;
-	height: 232px;
+	display: inline-block;
+	height: 271px;
 }
 
-#container {
-   margin: 0 auto;
-   padding: 0 20px 10px 20px;
-   border: 1px solid #666666;
-   width: 865px; /* subtract 40px from banner width for padding */
-   background: #FFFFFF url(#{request.contextPath}/resources/gfx/banner.png) no-repeat;
-   padding-top: 110px;
+#banner {
+	display: inline-block;
+	width: 621px;
+	height: 232px;
+	background: url(#{request.contextPath}/resources/gfx/top-bg.png) no-repeat;
 }
-#sidebar {
-   font-size: 0.9em;
-   width: 225px;
-   float: right;
-   border: 1px solid #666666;
-   background: #EAECEE;
-   padding: 0 15px 5px 15px;
+
+#logo {
+	width: 333px;
+	height: 245px;
 }
-#sidebar ul {
-   padding-left: 30px;
+
+#name {
+	position: absolute;
+	top: 0;
+	width: 230px;
+	height: 76px;
 }
-#footer {
-   clear: both;
-   text-align: center;
-   color: #666666;
-   font-size: 0.85em;
+
+#slogan {
+	position: absolute;
+	top: 76px;
+	width: 249px;
+	height: 111px;
 }
-code {
-   font-size: 1.1em;
+
+#info {
+	position: relative;
+	top: -236px;
+	left: 582px;
+	display: inline-block;
+	width: 463px;
+	height: 271px;
+	background: url(#{request.contextPath}/resources/gfx/info-bg.png) no-repeat;
 }
-span.invalid {
-   padding-left: 3px;
-   color: red;
+
+#info_img {
+	width: 206px;
+	height: 168px;
+}
+
+#on {
+	position: relative;
+	left: 390px;
+	color: #FF0000;
+}
+
+#status {
+	position: absolute;
+	top: 0px;
+	right: 100px;
+}
+
+#status>img {
+	width: 13px;
+	height: 13px;
+}
+
+#menu {
+	position: relative;
+	left: 35px;
+	width: 405px;
+}
+
+#menu>thead {
+	text-align: center;
+}
+
+#login_form {
+	display: block;
+	bottom: 200px;
+	left: 290px;
+	width: 152px;
+	position: relative;
+	text-align: right;
+}
+
+#login_form>input {
+	float: left;
+}
+
+#login_error {
+	color: red;
+	bottom: 190px;
+	position: relative;
+	right: 18px;
 }

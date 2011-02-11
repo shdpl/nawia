@@ -36,6 +36,14 @@
 					<artifactId>sigar-dist</artifactId>
 					<groupId>org.hyperic</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>jbossxts</artifactId>
+					<groupId>org.jboss.jbossts</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jboss-as-depchain</artifactId>
+					<groupId>org.jboss.jbossas</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 	</dependencies>
@@ -50,6 +58,7 @@
 						<webModule>
 							<groupId>net.nawia.www.cms</groupId>
 							<artifactId>http</artifactId>
+							<bundleFileName>http-0.0.1-SNAPSHOT.war</bundleFileName>
 							<contextRoot>/nawia</contextRoot>
 						</webModule>
 						<ejbModule>
@@ -57,9 +66,6 @@
 							<artifactId>gsao</artifactId>
 						</ejbModule>
 					</modules>
-					<jboss>
-						<version>5</version>
-					</jboss>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -67,13 +73,75 @@
 				<artifactId>jboss-maven-plugin</artifactId>
 				<version>1.5.0</version>
 				<configuration>
-					<!-- <jbossHome>${project.build.directory}/../../../gsao/target/jboss-6.0.0.Final/</jbossHome> -->
-					<jbossHome>/opt/jboss</jbossHome>
-					<serverName>jbossweb-standalone</serverName>
+					<jbossHome>${project.build.directory}/../../../gsao/target/jboss-6.0.0.Final/</jbossHome>
+					<serverName>default</serverName>
 					<fileNames>
 						<fileName>${project.build.directory}/${project.build.finalName}.ear</fileName>
 					</fileNames>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.4.3</version>
+				<executions>
+					<execution>
+						<id>copy-db-driver</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/../../gsao/target/jboss-6.0.0.Final/server/default/deploy/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}/{project.build.finalName}/</directory>
+									<includes>
+										<include>h2-*.jar</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution><!-- 
+					<execution>
+						<id>copy-main-ds</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<overwrite>true</overwrite>
+							<outputDirectory>${basedir}/../../gsao/target/jboss-6.0.0.Final/server/default/deploy/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>/usr/src/nawia/www/gsao/src/main/resources/deploy/</directory>
+									<includes>
+										<include> **/*-ds.xml</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-test-ds</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<overwrite>true</overwrite>
+							<outputDirectory>${basedir}/../../gsao/target/jboss-6.0.0.Final/server/default/deploy/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/../../gsao/src/test/resources/deploy/</directory>
+									<includes>
+										<include> **/*-ds.xml</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution> -->
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

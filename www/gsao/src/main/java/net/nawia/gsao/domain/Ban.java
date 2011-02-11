@@ -1,5 +1,6 @@
 package net.nawia.gsao.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -20,7 +21,10 @@ import javax.validation.constraints.NotNull;
 //"statement" VARCHAR(255) NOT NULL DEFAULT '',
 //PRIMARY KEY ("id")
 @Entity(name = "Bans")
-public class Ban {
+public class Ban implements Cloneable, Serializable {
+	
+	private static final long serialVersionUID = 182334564319362991L;
+	
 	@Id
 	@NotNull
 	Integer id;

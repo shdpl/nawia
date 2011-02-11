@@ -1,9 +1,14 @@
 package net.nawia.gsao.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 
 @Entity
-public class TestEntityJdbc {
+public class TestEntityJdbc implements Cloneable, Serializable {
+	
+	private static final long serialVersionUID = -5814892088089095128L;
+	
 	private int id;
 	private int exampleVar;
 

@@ -1,6 +1,9 @@
 package net.nawia.gsao.service;
 
 import java.sql.Date;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import org.jboss.arquillian.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
@@ -16,7 +19,7 @@ import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.service.impl.ImplServiceAccount;
 
 @Test(dependsOnGroups = "Account")
-public class ManagerAccountTest extends Arquillian implements ServiceAccount {
+public class ServiceAccountTest extends Arquillian implements ServiceAccount {
 	private static final boolean _blocked = false;
 	private static final String _name = "Jeremy";
 	private static final String _password = "p4ssw0rd";
@@ -26,6 +29,8 @@ public class ManagerAccountTest extends Arquillian implements ServiceAccount {
 	private static final Account _prototype= new Account(0, _name, _password, _email, _premend, _blocked, _warnings);
 	
 	private DaoAccount _daoAcc;
+	@Inject
+	private ServiceAccount _sAcc;
 	
 	@Deployment
 	public static JavaArchive createDeployment() {
@@ -40,20 +45,22 @@ public class ManagerAccountTest extends Arquillian implements ServiceAccount {
 
 	@Override
 	public boolean add(Account acc) {
-		ImplServiceAccount ma = new ImplServiceAccount();
-		return ma.add(acc);
+		return _sAcc.add(acc);
 	}
 
 	@Override
 	public boolean del(Account acc) {
-		ImplServiceAccount ma = new ImplServiceAccount();
-		return ma.del(acc);
+		return _sAcc.del(acc);
 	}
 
 	@Override
 	public boolean hasName(String name) {
-		ImplServiceAccount ma = new ImplServiceAccount();
-		return ma.hasName(name);
+		return _sAcc.hasName(name);
+	}
+
+	@Override
+	public Account login(String login, String pass) {
+		return _sAcc.login(login, pass);
 	}
 
 	public void addTest() throws ExceptionDao, CloneNotSupportedException {
@@ -76,6 +83,18 @@ public class ManagerAccountTest extends Arquillian implements ServiceAccount {
 		_daoAcc.persist(orig);
 		assert(hasName(orig.getName()));
 		_daoAcc.remove(orig);
+	}
+	
+	public void loginTest() throws CloneNotSupportedException {
+		Account orig = (Account) _prototype.clone();
+		assert(null != login(orig.getName(), orig.getPassword()));
+		assert(null == login(orig.getName(), orig.getPassword() +"a"));
+	}
+
+	@Override
+	public List<Account> getAll() {
+		//TODO
+		return null;
 	}
 
 }

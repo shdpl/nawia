@@ -1,18 +1,22 @@
 package net.nawia.www.cms.http.bean;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Model;
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import net.nawia.www.cms.http.service.ServiceLogin;
+import net.nawia.www.cms.http.service.ServiceAuthenticator;
 
-@Named
-@RequestScoped
+
+@Model
 public class BeanCredentials {
 	private String _login;
 	private String _password;
 	@Inject
-	ServiceLogin sl;
+	ServiceAuthenticator _authenticator;
+	
+	@Inject
+	public BeanCredentials() {
+		
+	}
 	
 	public String getLogin() {
 		return _login;
@@ -30,8 +34,9 @@ public class BeanCredentials {
 		_password = password;
 	}
 
-	void doLogin() {
-		sl.doLogin(_login, _password);
+	public String login() {
+		_authenticator.doLogin(_login, _password);
+		return "login";
 	}
 	
 }

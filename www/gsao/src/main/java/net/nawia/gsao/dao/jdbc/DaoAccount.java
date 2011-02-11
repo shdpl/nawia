@@ -27,15 +27,7 @@ import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 import net.nawia.gsao.dao.exceptions.RuntimeExceptionDao;
 import net.nawia.gsao.domain.Account;
 
-// "id" SERIAL,
-// "name" VARCHAR(32) NOT NULL,
-// "password" VARCHAR(255) NOT NULL,
-// "email" VARCHAR(255) NOT NULL DEFAULT '',
-// "premend" BIGINT NOT NULL DEFAULT 0,
-// "blocked" SMALLINT NOT NULL DEFAULT 0,
-// "warnings" SMALLINT NOT NULL DEFAULT 0,
-// PRIMARY KEY ("id"),
-// UNIQUE ("name")
+
 public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		net.nawia.gsao.dao.DaoAccount {
 	private static final Logger _log = Logger.getLogger(DaoAccount.class
@@ -155,7 +147,7 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 			}
 			return ret;
 		} catch (SQLException e) {
-			throw new RuntimeExceptionDao();
+			throw new RuntimeException(e); //FIXME: chained RuntimeExceptionDao, or remove it
 		}
 	}
 

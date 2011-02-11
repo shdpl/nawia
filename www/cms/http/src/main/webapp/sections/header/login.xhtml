@@ -2,10 +2,15 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:a4j="http://richfaces.org/a4j"
-    xmlns:rich="http://richfaces.org/rich">
-    
-    <h:commandButton value="" action=""/>
-    
-    
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<h:form id="login_form" rendered="#{not beanUser.logged}">
+		<h:inputText id="login" value="#{beanCredentials.login}" required="true" />
+		<h:inputSecret id="password" value="#{beanCredentials.password}" required="true" />
+		<h:commandButton id="login_button" value="${msg.login}" action="#{beanCredentials.login}" />
+		<h:commandLink action="register" value="${msg.register}" />
+	</h:form>
+	<h:message id="login_error" for="login" />
+	
 </ui:composition>

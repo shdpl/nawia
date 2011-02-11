@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import org.jfree.util.Log;
-
 
 import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 import net.nawia.gsao.dao.exceptions.RuntimeExceptionDao;
