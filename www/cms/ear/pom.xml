@@ -87,60 +87,22 @@
 				<executions>
 					<execution>
 						<id>copy-db-driver</id>
-						<phase>generate-resources</phase>
+						<phase>install</phase>
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${basedir}/../../gsao/target/jboss-6.0.0.Final/server/default/deploy/</outputDirectory>
+							<outputDirectory>${project.build.directory}/../../../gsao/target/jboss-6.0.0.Final/server/default/deploy/</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${project.build.directory}/{project.build.finalName}/</directory>
+									<directory>${project.build.directory}/ear-0.0.1-SNAPSHOT</directory>
 									<includes>
-										<include>h2-*.jar</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution><!-- 
-					<execution>
-						<id>copy-main-ds</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<overwrite>true</overwrite>
-							<outputDirectory>${basedir}/../../gsao/target/jboss-6.0.0.Final/server/default/deploy/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>/usr/src/nawia/www/gsao/src/main/resources/deploy/</directory>
-									<includes>
-										<include> **/*-ds.xml</include>
+										<include>*.jar</include>
 									</includes>
 								</resource>
 							</resources>
 						</configuration>
 					</execution>
-					<execution>
-						<id>copy-test-ds</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<overwrite>true</overwrite>
-							<outputDirectory>${basedir}/../../gsao/target/jboss-6.0.0.Final/server/default/deploy/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/../../gsao/src/test/resources/deploy/</directory>
-									<includes>
-										<include> **/*-ds.xml</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution> -->
 				</executions>
 			</plugin>
 		</plugins>

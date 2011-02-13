@@ -6,10 +6,10 @@
 	xmlns:rich="http://richfaces.org/rich">
 
 	<h:form id="login_form" rendered="#{not beanUser.logged}">
-		<h:inputText id="login" value="#{beanCredentials.login}" required="true" />
-		<h:inputSecret id="password" value="#{beanCredentials.password}" required="true" />
-		<h:commandButton id="login_button" value="${msg.login}" action="#{beanCredentials.login}" />
-		<h:commandLink action="register" value="${msg.register}" />
+		<h:inputText id="login" value="#{beanUser.name}" required="true" />
+		<h:inputSecret id="password" value="#{beanUser.password}" required="true" />
+		<h:commandButton id="login_button" value="${msg.login}" action="#{beanUser.login}" />
+		<h:outputLink action="register" value="/nawia/views/register.xhtml">${msg.register}</h:outputLink>
 	</h:form>
 	<h:message id="login_error" for="login" />
 	

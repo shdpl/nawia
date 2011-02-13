@@ -1,0 +1,24 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	template="/templates/default.xhtml">
+
+	<ui:define name="body">
+		<h:form id="register_form">
+		<rich:panel header="#{msg.registerForm}">
+			<h:panelGrid columns="2">
+				<h:outputText value="${msg.registerName}" />
+				<rich:inplaceInput defaultLabel="${msg.registerNameExample}" />
+				<h:outputText value="${msg.registerPassword}" />
+				<h:inputSecret defaultLabel="${msg.registerPasswordExample}" />
+				<h:outputText value="${msg.registerMail}" />
+				<rich:inplaceInput defaultLabel="${msg.registerMailExample}" />
+				<h:commandButton value="#{msg.done}" action="#{beanUser.register}" />
+			</h:panelGrid>
+		</rich:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

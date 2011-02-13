@@ -18,7 +18,7 @@ import net.nawia.gsao.domain.Ban;
 import net.nawia.gsao.domain.Ban.BAN_T;
 import net.nawia.gsao.service.ServiceBan;
 
-@Stateless
+@Stateless(name="ServiceBan")
 //@DeclareRoles({"GM"})
 //@RolesAllowed({"GM"})
 //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

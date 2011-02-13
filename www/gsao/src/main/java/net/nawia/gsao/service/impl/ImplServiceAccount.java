@@ -1,5 +1,7 @@
 package net.nawia.gsao.service.impl;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.DeclareRoles;
@@ -14,7 +16,8 @@ import net.nawia.gsao.dao.exceptions.ExceptionDao;
 import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.service.ServiceAccount;
 
-@Stateless
+
+@Stateless(name="ServiceAccount")
 //@DeclareRoles({"AccountManager"})
 //@RolesAllowed({"AccountManager"})
 //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -30,9 +33,9 @@ public class ImplServiceAccount implements ServiceAccount {
 	}
 	
 	@Override
-	public boolean add(Account acc) {
-		assert(null != acc);
-		acc.setId(0);
+	public boolean register(String name, String password, String email) {
+		assert(null != name && null!= password && null != email);
+		Account acc = new Account(0, name, password, email, new Date(), false, 0);
 		boolean ret = null != _daoAcc.find(acc.getId());
 		if (ret)
 			_daoAcc.persist(acc);
@@ -56,12 +59,13 @@ public class ImplServiceAccount implements ServiceAccount {
 	}
 
 	@Override
-	public Account login(String login, String pass) {
+	public boolean verifyCredentials(String login, String pass) {
+		assert(login != null && !login.isEmpty() && pass != null && !pass.isEmpty());
 		List<Account> accs = _daoAcc.findAll(new Account(0, login, null, null, null, false, (short) 0));
 		assert(accs.size() < 2);
-		if (accs.size() != 0 && accs.get(0).getPassword().equals(pass))
-			return accs.get(0);
-		return null;
+		if (accs.size() != 0)
+			return true;
+		return false;
 	}
 
 	@Override

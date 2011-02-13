@@ -50,7 +50,7 @@ public class Account implements Cloneable, Serializable {
 
 	public Account(final int id, final String name, final String password,
 			final String email, final Date premend, final boolean blocked,
-			final short warnings) {
+			final int warnings) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -58,7 +58,7 @@ public class Account implements Cloneable, Serializable {
 		this.email = email;
 		this.premend = premend;
 		this.blocked = blocked;
-		this.warnings = warnings;
+		this.warnings = (short) warnings;
 	}
 
 	public String getEmail() {

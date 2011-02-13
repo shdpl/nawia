@@ -10,11 +10,11 @@ import net.nawia.gsao.domain.Account;
 public interface ServiceAccount {
 
 	/**
-	 * Adds new account to game server.
+	 * Registers new account on server
 	 * 
-	 * @return Whether account has been added (true), or not (false)
+	 * @return Whether registration succeed (true), or not (false)
 	 */
-	boolean add(Account acc);
+	boolean register(String name, String password, String email);
 	
 	/**
 	 * Deletes account from game server.
@@ -32,12 +32,12 @@ public interface ServiceAccount {
 	boolean hasName(String name);
 	
 	/**
-	 * Verifies credentials, and returns matched Account
+	 * Verifies credentials
 	 * @param login String, that uniquely identifies account
 	 * @param pass Password, that protects account from unauthorized access
-	 * @return Account object if successful, or null if login failed.
+	 * @return True, if matches, false in other case
 	 */
-	Account login(String login, String pass);
+	boolean verifyCredentials(String login, String pass);
 	
 	/**
 	 * Lists every possible accounts on server

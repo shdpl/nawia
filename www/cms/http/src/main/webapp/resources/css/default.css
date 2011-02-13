@@ -78,13 +78,10 @@ body {
 }
 
 #menu {
+	text-align: center;
 	position: relative;
 	left: 35px;
 	width: 405px;
-}
-
-#menu>thead {
-	text-align: center;
 }
 
 #login_form {

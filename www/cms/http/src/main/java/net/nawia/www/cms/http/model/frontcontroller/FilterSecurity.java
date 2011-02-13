@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.User;
 import org.owasp.esapi.errors.AuthenticationException;
-
+/*
 public class FilterSecurity implements Filter {
 
 	@Override
@@ -44,4 +44,4 @@ public class FilterSecurity implements Filter {
 
 	}
 
-}
+}*/

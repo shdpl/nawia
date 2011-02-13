@@ -5,7 +5,7 @@ import javax.ejb.Stateless;
 import net.nawia.gsao.domain.Group;
 import net.nawia.gsao.service.ServiceGroup;
 
-@Stateless
+@Stateless(name="ServiceGroup")
 //@DeclareRoles({"GM"})
 //@RolesAllowed({"GM"})
 //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

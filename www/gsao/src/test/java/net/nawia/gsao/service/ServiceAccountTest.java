@@ -44,8 +44,8 @@ public class ServiceAccountTest extends Arquillian implements ServiceAccount {
 	}
 
 	@Override
-	public boolean add(Account acc) {
-		return _sAcc.add(acc);
+	public boolean register(String name, String password, String email) {
+		return _sAcc.register(name, password, email);
 	}
 
 	@Override
@@ -59,13 +59,13 @@ public class ServiceAccountTest extends Arquillian implements ServiceAccount {
 	}
 
 	@Override
-	public Account login(String login, String pass) {
-		return _sAcc.login(login, pass);
+	public boolean verifyCredentials(String login, String pass) {
+		return _sAcc.verifyCredentials(login, pass);
 	}
 
-	public void addTest() throws ExceptionDao, CloneNotSupportedException {
+	public void registerTest() throws ExceptionDao, CloneNotSupportedException {
 		Account orig = (Account) _prototype.clone();
-		assert(add(orig));
+		assert(register(orig.getName(), orig.getPassword(), orig.getEmail()));
 		assert (orig == _daoAcc.find(orig.getId()));
 		_daoAcc.remove(orig);
 	}
@@ -85,10 +85,10 @@ public class ServiceAccountTest extends Arquillian implements ServiceAccount {
 		_daoAcc.remove(orig);
 	}
 	
-	public void loginTest() throws CloneNotSupportedException {
+	public void verifyCredentialsTest() throws CloneNotSupportedException {
 		Account orig = (Account) _prototype.clone();
-		assert(null != login(orig.getName(), orig.getPassword()));
-		assert(null == login(orig.getName(), orig.getPassword() +"a"));
+		assert(verifyCredentials(orig.getName(), orig.getPassword()));
+		assert(verifyCredentials(orig.getName(), orig.getPassword() +"a"));
 	}
 
 	@Override

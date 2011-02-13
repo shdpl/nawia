@@ -177,9 +177,8 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 			} catch (SQLException e) {
 				throw new RuntimeExceptionDao("", e);
 			}
-			throw new UnsupportedOperationException();
 		} else {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("Following account pattern is not supported: "+ prototype);
 		}
 		return ret;
 	}

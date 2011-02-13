@@ -8,7 +8,7 @@ import javax.ejb.TransactionAttributeType;
 
 import net.nawia.gsao.service.ServiceStats;
 
-@Stateless
+@Stateless(name="ServiceStats")
 //@DeclareRoles({"GM"})
 //@RolesAllowed({"GM"})
 //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
