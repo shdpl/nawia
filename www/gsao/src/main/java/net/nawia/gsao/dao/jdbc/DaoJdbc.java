@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 import net.nawia.gsao.dao.Dao;
 import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 
-public abstract class DaoJdbc<K, E> implements Dao<K, E> {
+public abstract class DaoJdbc<K, E> {
 	private static final Logger _log = Logger
 			.getLogger(DaoJdbc.class.getName());
 	private static final String _path = "java:jdbc/gsDB"; // FIXME
@@ -59,16 +59,9 @@ public abstract class DaoJdbc<K, E> implements Dao<K, E> {
 					"Cannot connect to Game Server Database", e);
 		}
 	}
-
-	@Override
-	protected void finalize() throws Throwable { // TODO: overcome lack of
-													// destructors
-		super.finalize();
-		try {
-			_conn.close();
-		} catch (SQLException e) {
-			_log.severe(this + " couldn't be finalized!");
-		}
+	
+	protected void close() throws SQLException {
+		_conn.close();
 	}
 
 }

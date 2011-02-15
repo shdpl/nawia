@@ -27,7 +27,6 @@ import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 import net.nawia.gsao.dao.exceptions.RuntimeExceptionDao;
 import net.nawia.gsao.domain.Account;
 
-
 public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		net.nawia.gsao.dao.DaoAccount {
 	private static final Logger _log = Logger.getLogger(DaoAccount.class
@@ -36,7 +35,7 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 															// annotation
 
 	private Statement _findAll = null;
-	private PreparedStatement _findAllName = null;
+	private PreparedStatement _findAllByName = null;
 	private PreparedStatement _find = null;
 	private PreparedStatement _remove = null;
 	private PreparedStatement _persistNew = null;
@@ -48,12 +47,14 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 	}
 
 	// TODO: no continuity with database native sequencer
-	private static final String _qPersistNew = "INSERT INTO \"" + _tableName
+	private static final String _qPersistNew = "INSERT INTO \""
+			+ _tableName
 			+ "\" (\"name\", \"password\", \"email\", \"premend\", \"blocked\", \"warnings\") "
 			+ "VALUES (?, ?, ?, ?, ?, ?)";
 	private static final String _qPersistOld = "UPDATE \"" + _tableName
 			+ "\" SET \"name\" = ?, \"password\" = ?, \"email\" = ?,"
-			+ " \"premend\" = ?, \"blocked\" = ?, \"warnings\" = ?" + " WHERE \"id\" = ?";
+			+ " \"premend\" = ?, \"blocked\" = ?, \"warnings\" = ?"
+			+ " WHERE \"id\" = ?";
 
 	public void persist(Account entity) {
 		final int eid = entity.getId();
@@ -130,7 +131,8 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		}
 	}
 
-	private static final String _qFindAll = "SELECT * FROM \"" + _tableName +"\"";
+	private static final String _qFindAll = "SELECT * FROM \"" + _tableName
+			+ "\"";
 
 	public List<Account> findAll() {
 		List<Account> ret = new Vector<Account>();
@@ -147,15 +149,16 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 			}
 			return ret;
 		} catch (SQLException e) {
-			throw new RuntimeException(e); //FIXME: chained RuntimeExceptionDao, or remove it
+			throw new RuntimeException(e); // FIXME: chained
+											// RuntimeExceptionDao, or remove it
 		}
 	}
 
-	private static final String _qFindAllByName = "SELECT * FROM \"" + _tableName
-			+ "\" WHERE \"name\" = ?";
+	private static final String _qFindAllByName = "SELECT * FROM \""
+			+ _tableName + "\" WHERE \"name\" = ?";
+
 	/**
-	 * Currently you can choose just one of the following attributes:
-	 * - name
+	 * Currently you can choose just one of the following attributes: - name
 	 */
 	@Override
 	public List<Account> findAll(Account prototype) {
@@ -165,32 +168,33 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 		} else if (null != prototype.getName()
 				|| !prototype.getName().isEmpty()) {
 			try {
-				if (null == _findAllName)
-					_findAllName = _conn.prepareStatement(_qFindAllByName);
-				_findAllName.setString(1, prototype.getName());
-				ResultSet rs = _findAllName.executeQuery();
-				while(rs.next())
-					ret.add(new Account(rs.getInt("id"), rs.getString("name"), rs
-							.getString("password"), rs.getString("email"),
+				if (null == _findAllByName)
+					_findAllByName = _conn.prepareStatement(_qFindAllByName);
+				_findAllByName.setString(1, prototype.getName());
+				ResultSet rs = _findAllByName.executeQuery();
+				while (rs.next())
+					ret.add(new Account(rs.getInt("id"), rs.getString("name"),
+							rs.getString("password"), rs.getString("email"),
 							new Date(rs.getLong("premend")), 1 == rs
-									.getShort("blocked"), rs.getShort("warnings")));
+									.getShort("blocked"), rs
+									.getShort("warnings")));
 			} catch (SQLException e) {
 				throw new RuntimeExceptionDao("", e);
 			}
 		} else {
-			throw new UnsupportedOperationException("Following account pattern is not supported: "+ prototype);
+			throw new UnsupportedOperationException(
+					"Following account pattern is not supported: " + prototype);
 		}
 		return ret;
 	}
 
 	@Override
-	protected void finalize() throws Throwable { // TODO: lack of destructors
-		super.finalize();
-
+	public void close() {
 		try {
 			_findAll.close();
+			super.close();
 		} catch (SQLException e) {
-			_log.severe(this + " couldn't be finalized!");
+			_log.warning("Could not release Dao resources: "+ e);
 		}
 	}
 

@@ -160,6 +160,28 @@
 							</arguments>
 						</configuration>
 					</execution>
+					<execution>
+						<id>enable-assertions</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>bash</executable>
+							<commandlineArgs>-c 'echo "JAVA_OPTS=\"\$JAVA_OPTS -ea\"" >> ${jboss.home}/bin/run.conf'</commandlineArgs>
+						</configuration>
+					</execution>
+					<execution>
+						<id>chmod</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>bash</executable>
+							<commandlineArgs>-c 'chmod +x ${jboss.home}/bin/{run.sh,shutdown.sh}'</commandlineArgs>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>

@@ -6,7 +6,7 @@ import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
-import net.nawia.gsao.service.ServiceAccount;
+import net.nawia.gsao.service.ServiceAccountRemote;
 
 @Named
 @SessionScoped
@@ -16,8 +16,8 @@ public class BeanUser implements Serializable {
 	private String name;
 	private String password;
 	private String mail;
-	@EJB(name="ServiceAccount",mappedName="ServiceAccountRemote")
-	private ServiceAccount _sa;
+	@EJB
+	private ServiceAccountRemote _sa;
 
 	public boolean isLogged() {
 		return logged;
@@ -48,8 +48,10 @@ public class BeanUser implements Serializable {
 	}
 
 	public String login() {
-		if (_sa.verifyCredentials(name, password))
+		if (_sa.verifyCredentials(name, password)) {
+			logged = true;
 			return "login";
+		}
 		return "login_error";
 		// try {
 		// User u = ESAPI.authenticator().getUser(login);
@@ -60,10 +62,27 @@ public class BeanUser implements Serializable {
 		// }
 	}
 	
+	public String logout() {
+		logged = false;
+		return "logout";
+	}
+	
 	public String register() {
 		if (_sa.register(name, password, mail))
 			return "registered";
 		return "register_failure";
+	}
+	
+	public boolean isInRole(String role) {
+		if (!logged)
+			return false;
+		if (role.equals("admin")) {
+			if (name.equals("nawia"))
+				return true;
+			else
+				return false;
+		}
+		return true;
 	}
 
 }

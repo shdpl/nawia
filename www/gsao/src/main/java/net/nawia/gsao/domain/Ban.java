@@ -3,23 +3,12 @@ package net.nawia.gsao.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.inject.Named;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
-//"id" SERIAL,
-//"type" BIGINT NOT NULL,
-//"value" INT NOT NULL,
-//"param" BIGINT NOT NULL,
-//"active" SMALLINT DEFAULT 0,
-//"expires" BIGINT NOT NULL,
-//"added" BIGINT NOT NULL,
-//"admin_id" INT,
-//"comment" VARCHAR(1024) NOT NULL DEFAULT '',
-//"reason" INT DEFAULT 0,
-//"action" INT DEFAULT 0,
-//"statement" VARCHAR(255) NOT NULL DEFAULT '',
-//PRIMARY KEY ("id")
+@Named
 @Entity(name = "Bans")
 public class Ban implements Cloneable, Serializable {
 	

@@ -3,7 +3,7 @@ package net.nawia.gsao.service;
 import java.sql.Date;
 import java.util.List;
 
-import javax.inject.Inject;
+import javax.ejb.EJB;
 
 import org.jboss.arquillian.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
@@ -19,7 +19,7 @@ import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.service.impl.ImplServiceAccount;
 
 @Test(dependsOnGroups = "Account")
-public class ServiceAccountTest extends Arquillian implements ServiceAccount {
+public class ServiceAccountTest extends Arquillian implements ServiceAccountRemote {
 	private static final boolean _blocked = false;
 	private static final String _name = "Jeremy";
 	private static final String _password = "p4ssw0rd";
@@ -29,8 +29,8 @@ public class ServiceAccountTest extends Arquillian implements ServiceAccount {
 	private static final Account _prototype= new Account(0, _name, _password, _email, _premend, _blocked, _warnings);
 	
 	private DaoAccount _daoAcc;
-	@Inject
-	private ServiceAccount _sAcc;
+	@EJB
+	private ServiceAccountRemote _sAcc;
 	
 	@Deployment
 	public static JavaArchive createDeployment() {
@@ -67,6 +67,7 @@ public class ServiceAccountTest extends Arquillian implements ServiceAccount {
 		Account orig = (Account) _prototype.clone();
 		assert(register(orig.getName(), orig.getPassword(), orig.getEmail()));
 		assert (orig == _daoAcc.find(orig.getId()));
+		assert(!register(orig.getName(), orig.getPassword(), orig.getEmail()));
 		_daoAcc.remove(orig);
 	}
 	

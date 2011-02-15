@@ -53,4 +53,9 @@ public interface Dao<K, E> {
 	 * @return List of all entities or null in case of fail
 	 */
 	List<E> findAll();
+	
+	/**
+	 * Releases acquired resources
+	 */
+	void close();
 }

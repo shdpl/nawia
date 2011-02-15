@@ -117,15 +117,13 @@ public class DaoTestEntityJdbc extends DaoJdbc<Integer, TestEntityJdbc> implemen
 	}
 
 	@Override
-	protected void finalize() throws Throwable { // TODO: lack of destructors
-		super.finalize();
-
+	public void close() {
 		try {
 			_findAll.close();
+			super.close();
 		} catch (SQLException e) {
-			_log.severe(this + " couldn't be finalized!");
+			_log.warning("Could not release Dao resources: "+ e);
 		}
 	}
-
 
 }

@@ -19,8 +19,10 @@ package net.nawia.gsao.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.inject.Named;
 import javax.persistence.*;
 
+@Named
 @Entity
 @Table (name = "accounts")
 public class Account implements Cloneable, Serializable {

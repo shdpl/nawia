@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<h:outputLink id="ll">
+		<rich:componentControl event="click" operation="show" target="lp">
+			<a4j:param name="event" value="event" noEscape="true" />
+			<rich:hashParam>
+				<a4j:param noEscape="true" name="top"
+					value="jQuery(#{rich:element('ll')}.parentNode).offset().top + jQuery(#{rich:element('ll')}.parentNode).height()" />
+				<a4j:param noEscape="true" name="left"
+					value="jQuery(#{rich:element('ll')}.parentNode).offset().left" />
+			</rich:hashParam>
+		</rich:componentControl>
+		<h:outputText value="#{msg.loginVerb}" />
+    </h:outputLink>
+	<rich:popupPanel id="lp" autosized="true" modal="false"
+		moveable="false" resizeable="false">
+		<h:panelGrid columns="2">
+			<h:outputText value="#{msg.loginNoun}" />
+			<h:inputText id="login" value="#{beanUser.name}" required="true" />
+			<h:outputText value="#{msg.password}" />
+			<h:inputSecret id="password" value="#{beanUser.password}"
+				required="true" />
+			<h:outputLink action="register" value="/nawia/views/register.xhtml">${msg.register}</h:outputLink>
+			<h:commandLink
+				onclick="#{rich:component('lp')}.hide(event); return false;"
+				value="#{msg.loginVerb}" action="#{beanUser.login}" />
+		</h:panelGrid>
+	</rich:popupPanel>
+
+</ui:composition>

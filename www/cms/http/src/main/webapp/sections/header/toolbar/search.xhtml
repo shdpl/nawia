@@ -3,7 +3,9 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:a4j="http://richfaces.org/a4j"
-	xmlns:rich="http://richfaces.org/rich"
-	template="/templates/default.xhtml">
-	
+	xmlns:rich="http://richfaces.org/rich">
+
+	<rich:autocomplete mode="cachedAjax" minChars="3"
+		autocompleteMethod="#{beanSearch.autocomplete}" value="#{msg.search}"/>
+
 </ui:composition>

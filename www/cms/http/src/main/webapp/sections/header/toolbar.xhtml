@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<h:form>
+		<rich:toolbar height="25" width="1024" itemSeparator="grid">
+			<rich:toolbarGroup>
+				<ui:include src="/sections/header/menu/main.xhtml" />
+				<ui:include src="/sections/header/menu/group.xhtml" />
+				<ui:include src="/sections/header/menu/personal.xhtml" />
+			</rich:toolbarGroup>
+			<ui:remove>
+			<rich:toolbarGroup>
+				<ui:include src="/sections/header/toolbar/login.xhtml" />
+			</rich:toolbarGroup>
+			</ui:remove>
+			<rich:toolbarGroup>
+				<ui:include src="/sections/header/toolbar/share.xhtml" />
+				<ui:include src="/sections/header/toolbar/subscribe.xhtml" />
+				<ui:include src="/sections/header/toolbar/save.xhtml" />
+			</rich:toolbarGroup>
+			<rich:toolbarGroup>
+				<h:commandLink value="#{msg.edit}" action="edit" rendered="#{beanUser.isInRole('admin')}"/>
+			</rich:toolbarGroup>
+			<rich:toolbarGroup>
+				<ui:include src="/sections/header/toolbar/language.xhtml" />
+			</rich:toolbarGroup>
+			<ui:remove>
+			<rich:toolbarGroup>
+				<ui:include src="/sections/header/toolbar/search.xhtml" />
+			</rich:toolbarGroup>
+			</ui:remove>
+		</rich:toolbar>
+	</h:form>
+	
+</ui:composition>
