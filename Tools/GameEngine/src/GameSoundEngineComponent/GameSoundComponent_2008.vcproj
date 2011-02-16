@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="GameSoundComponent"
 	ProjectGUID="{C93E4376-D274-4D5C-9D4B-597594E5B343}"
 	RootNamespace="GameSoundComponent"
@@ -298,6 +298,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SoundLua.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SoundManager.cpp"
 				>
 			</File>
@@ -329,6 +333,10 @@
 			</File>
 			<File
 				RelativePath=".\SoundListenerComponent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SoundLua.h"
 				>
 			</File>
 			<File

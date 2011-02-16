@@ -180,6 +180,7 @@ xcopy "$(ProjectDir)..\..\..\Dependencies\Ogg\vorbis.dll" "$(SolutionDir)bin" /y
     <ClCompile Include="Ogg.cpp" />
     <ClCompile Include="SoundComponent.cpp" />
     <ClCompile Include="SoundListenerComponent.cpp" />
+    <ClCompile Include="SoundLua.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="SoundResourceManager.cpp" />
   </ItemGroup>
@@ -189,6 +190,7 @@ xcopy "$(ProjectDir)..\..\..\Dependencies\Ogg\vorbis.dll" "$(SolutionDir)bin" /y
     <ClInclude Include="Ogg.h" />
     <ClInclude Include="SoundComponent.h" />
     <ClInclude Include="SoundListenerComponent.h" />
+    <ClInclude Include="SoundLua.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="SoundResourceManager.h" />
   </ItemGroup>

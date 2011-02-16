@@ -37,6 +37,7 @@
 #include "SoundResourceManager.h"
 #include "SoundComponent.h"
 #include "SoundListenerComponent.h"
+#include "SoundLua.h"
 
 #include <XMLParser/utXMLParser.h>
 
@@ -60,7 +61,7 @@ SOUNDPLUGINEXP void dllUnloadGamePlugin(void)
 
 SOUNDPLUGINEXP void dllRegisterLuaStack( lua_State* L )
 {
-	//SceneGraphLua::registerLuaBindings( L );
+	SoundLua::registerLuaBindings( L );
 }
 
 SOUNDPLUGINEXP void dllLoadScene( const char* sceneFile )
