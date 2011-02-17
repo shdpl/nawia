@@ -13,62 +13,69 @@
 					<f:param value="#{beanAccount.num}" />
 				</h:outputText>
 			</f:facet>
-			<rich:dataTable id="players_table" value="#{beanAccount.all}"
-				var="account" columns="6">
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="#{msg.name}" />
+			<h:form>
+				<rich:dataTable id="players_table" value="#{beanAccount.all}"
+					var="account" columns="6">
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.name}" />
+						</f:facet>
+						<h:inputText value="#{account.name}" onchange="submit()" />
+					</h:column>
+
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.email}" />
+						</f:facet>
+						<h:inputText value="#{account.email}" onchange="submit()" />
+					</h:column>
+
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.premend}" />
+						</f:facet>
+						<rich:calendar mode="ajax" value="#{account.premend}"
+							locale="#{beanLocale.current}" popup="true"
+							showApplyButton="false" boundaryDatesMode="scroll" />
+					</h:column>
+
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.blocked}" />
+						</f:facet>
+						<h:selectBooleanCheckbox value="#{account.blocked}"
+							onchange="submit()" />
+					</h:column>
+
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.warnings}" />
+						</f:facet>
+						<rich:inputNumberSpinner mode="ajax" value="#{account.warnings}" />
+					</h:column>
+
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.acc_group}" />
+						</f:facet>
+						<h:outputText value="n/a" />
+					</h:column>
+
+					<h:column>
+						<h:commandButton value="#{msg.modify}"
+							actionListener="#{beanAccount.modify}" />
+					</h:column>
+
+					<h:column>
+						<h:commandButton value="#{msg.delete}"
+							actionListener="#{beanAccount.delete}" />
+					</h:column>
+
+					<f:facet name="footer">
+						<rich:dataScroller for="players_table" maxPages="5" />
 					</f:facet>
-					<h:outputText value="#{account.name}" />
-				</h:column>
-
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="#{msg.email}" />
-					</f:facet>
-					<h:outputText value="#{account.email}" />
-				</h:column>
-
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="#{msg.premend}" />
-					</f:facet>
-					<h:outputText value="#{account.premend}" />
-				</h:column>
-
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="#{msg.blocked}" />
-					</f:facet>
-					<h:selectBooleanCheckbox value="#{account.blocked}" />
-				</h:column>
-
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="#{msg.warnings}" />
-					</f:facet>
-					<h:outputText value="#{account.warnings}" />
-				</h:column>
-
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="#{msg.acc_group}" />
-					</f:facet>
-					<h:outputText value="n/a" />
-				</h:column>
-
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="#{msg.ban}" />
-					</f:facet>
-					<h:outputText value="n/a" />
-				</h:column>
-
-				<f:facet name="footer">
-					<rich:dataScroller for="players_table" maxPages="5"/>
-				</f:facet>
-			</rich:dataTable>
-
+				</rich:dataTable>
+			</h:form>
 		</rich:panel>
 	</ui:define>
 </ui:composition>

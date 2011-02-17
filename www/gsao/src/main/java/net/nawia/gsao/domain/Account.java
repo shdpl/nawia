@@ -21,6 +21,10 @@ import java.util.Date;
 
 import javax.inject.Named;
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Named
 @Entity
@@ -29,19 +33,52 @@ public class Account implements Cloneable, Serializable {
 	
 	private static final long serialVersionUID = -5029958322298559966L;
 	
+	@Min(0)
+	@Max(Integer.MAX_VALUE)
 	@Id
 	@GeneratedValue
 	private int id;
+	
+	/**
+	 * Account name
+	 */
+	@Size(min=3, max=32)
 	@Column(nullable = false)
 	private String name;
+	
+	/**
+	 * Account password
+	 */
+	@Size(min=8, max=255)
+	@Pattern(regexp = "^.*(?=.{8,})(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$")
 	@Column(nullable = false)
 	private String password;
+	
+	/**
+	 * E-mail connected to this account
+	 */
+	@Size(min=5, max=255)
+	@Pattern(regexp = "^[\\w\\-]([\\.\\w])+[\\w]+@([\\w\\-]+\\.)+[a-zA-Z]{2,4}$")
 	@Column(nullable = false)
 	private String email;
+	
+	/**
+	 * Date of premium account expiry
+	 */
 	@Column(nullable = false)
-	private Date premend;
+	private Date premiumEnd;
+	
+	/**
+	 * Whether this account is blocked
+	 */
 	@Column(nullable = false)
 	private boolean blocked;
+	
+	/**
+	 * Number of warnings addressed for this account owner
+	 */
+	@Min(0)
+	@Max(Short.MAX_VALUE)
 	@Column(nullable = false)
 	private short warnings;
 
@@ -58,7 +95,7 @@ public class Account implements Cloneable, Serializable {
 		this.name = name;
 		this.password = password;
 		this.email = email;
-		this.premend = premend;
+		this.premiumEnd = premend;
 		this.blocked = blocked;
 		this.warnings = (short) warnings;
 	}
@@ -80,7 +117,7 @@ public class Account implements Cloneable, Serializable {
 	}
 
 	public Date getPremend() {
-		return premend;
+		return premiumEnd;
 	}
 
 	public short getWarnings() {
@@ -112,7 +149,7 @@ public class Account implements Cloneable, Serializable {
 	}
 
 	public void setPremend(Date premend) {
-		this.premend = premend;
+		this.premiumEnd = premend;
 	}
 
 	public void setWarnings(short warnings) {
@@ -129,7 +166,7 @@ public class Account implements Cloneable, Serializable {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result
 				+ ((password == null) ? 0 : password.hashCode());
-		result = prime * result + ((premend == null) ? 0 : premend.hashCode());
+		result = prime * result + ((premiumEnd == null) ? 0 : premiumEnd.hashCode());
 		result = prime * result + warnings;
 		return result;
 	}
@@ -162,10 +199,10 @@ public class Account implements Cloneable, Serializable {
 				return false;
 		} else if (!password.equals(other.password))
 			return false;
-		if (premend == null) {
-			if (other.premend != null)
+		if (premiumEnd == null) {
+			if (other.premiumEnd != null)
 				return false;
-		} else if (!premend.equals(other.premend))
+		} else if (!premiumEnd.equals(other.premiumEnd))
 			return false;
 		if (warnings != other.warnings)
 			return false;
@@ -175,7 +212,7 @@ public class Account implements Cloneable, Serializable {
 	@Override
 	public String toString() {
 		return "Account [id=" + id + ", name=" + name + ", password="
-				+ password + ", email=" + email + ", premend=" + premend
+				+ password + ", email=" + email + ", premend=" + premiumEnd
 				+ ", blocked=" + blocked + ", warnings=" + warnings + "]";
 	}
 

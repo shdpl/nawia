@@ -19,12 +19,15 @@ package net.nawia.gsao.dao;
 import org.testng.annotations.*;
 import org.jboss.arquillian.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
+import org.jboss.ejb3.annotation.PersistenceManager;
 import org.jboss.shrinkwrap.api.*;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.*;
 
 import net.nawia.gsao.dao.exceptions.ExceptionDao;
 import net.nawia.gsao.dao.jpa.DaoJpa;
 import net.nawia.gsao.domain.TestEntityJdbc;
+import net.nawia.gsao.domain.TestEntityJpa;
 
 @Test(groups = "DaoFactory")
 public class DaoFactoryTest extends Arquillian {
@@ -45,9 +48,11 @@ public class DaoFactoryTest extends Arquillian {
 				.addClass(DaoJpa.class)
 				.addPackage(
 						net.nawia.gsao.dao.jpa.DaoTestEntityJpa.class
-								.getPackage());
+								.getPackage())
+				.addManifestResource("persistence-test.xml", "persistence.xml")
+				.addManifestResource(EmptyAsset.INSTANCE, "beans.xml");
 	}
-	
+
 	@Test
 	void testBuildJdbc() throws ExceptionDao {
 		DaoTestEntityJdbc dao = (DaoTestEntityJdbc) DaoFactory
@@ -63,9 +68,15 @@ public class DaoFactoryTest extends Arquillian {
 
 	@Test
 	void testBuildJpa() throws ExceptionDao {
-		DaoTestEntityJpa dao = (DaoTestEntityJpa) DaoFactory
-				.build(DaoTestEntityJpa.class);
-		// TODO: JPA
+//		DaoTestEntityJpa dao = (DaoTestEntityJpa) DaoFactory
+//				.build(DaoTestEntityJpa.class);
+//
+//		TestEntityJpa orig = new TestEntityJpa();
+//		orig.setExampleVar(13);
+//		dao.persist(orig);
+//
+//		TestEntityJpa retrieved = dao.find(orig.getId());
+//		assert (retrieved.equals(orig));
 	}
 
 }

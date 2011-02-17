@@ -11,11 +11,12 @@
 		<rich:panel header="#{msg.registerForm}">
 			<h:panelGrid columns="2">
 				<h:outputText value="#{msg.registerName}" />
-				<rich:inplaceInput value="#{beanUser.name}" defaultLabel="#{msg.registerNameExample}"/>
+				<rich:inplaceInput value="#{beanUser.name}" defaultLabel="#{msg.registerNameExample}" required="true" />
 				<h:outputText value="#{msg.registerPassword}" />
-				<h:inputSecret value="#{beanUser.password}" defaultLabel="#{msg.registerPasswordExample}"/>
+				<h:inputSecret value="#{beanUser.password}" defaultLabel="#{msg.registerPasswordExample}" required="true"/>
 				<h:outputText value="#{msg.registerMail}" />
-				<rich:inplaceInput value="#{beanUser.mail}" defaultLabel="#{msg.registerMailExample}"/>
+				<rich:inplaceInput value="#{beanUser.mail}" defaultLabel="#{msg.registerMailExample}" required="true" />
+				<h:commandButton value="#{msg.cancel}" action="prev" immediate="true" />
 				<h:commandButton value="#{msg.done}" action="#{beanUser.register}" />
 			</h:panelGrid>
 			<h:messages for="register_form" />

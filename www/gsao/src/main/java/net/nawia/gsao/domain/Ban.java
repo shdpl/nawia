@@ -17,23 +17,66 @@ public class Ban implements Cloneable, Serializable {
 	@Id
 	@NotNull
 	Integer id;
-	@NotNull
-	BAN_T type;
-	/** ID, that depends on type **/
+	
+	/**
+	 * Banned target identifier
+	 */
 	@NotNull
 	Integer value;
+	
+	/**
+	 * Ban parameter
+	 */
 	@NotNull
 	Long param;
+
+	/**
+	 * Ban type
+	 */
+	@NotNull
+	BAN_T type;
+	
+	/**
+	 * Whether ban is active
+	 */
 	Short active;
+	
+	/**
+	 * Expiration date
+	 */
 	@NotNull
 	Date expires;
+	
+	/**
+	 * Addition date
+	 */
 	@NotNull
 	Date added;
+	
+	/**
+	 * ID of administrator, who created ban
+	 */
 	Integer admin_id;
+
+	/**
+	 * Reason, why ban has been added
+	 */
+	Integer reason;
+	
+	/**
+	 * Additional comment
+	 */
 	@NotNull
 	String comment;
-	Integer reason;
+	
+	/**
+	 * Kind of ban action
+	 */
 	Integer action;
+	
+	/**
+	 * Statement
+	 */
 	@NotNull
 	String statement;
 	

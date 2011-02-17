@@ -6,4 +6,50 @@
 	xmlns:rich="http://richfaces.org/rich"
 	template="/templates/default.xhtml">
 
+	<ui:define name="body">
+		<rich:panel>
+			<f:facet name="header">
+				<h:outputText value="#{msg.playerGroupList}">
+					<f:param value="#{beanGroup.num}" />
+				</h:outputText>
+			</f:facet>
+
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="#{msg.groupName}" />
+				</f:facet>
+				<h:outputText value="#{beanGroup.name}" />
+			</h:column>
+
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="#{msg.accessRights}" />
+				</f:facet>
+				<h:outputText value="n/a" />
+			</h:column>
+
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="#{msg.violationLevel}" />
+				</f:facet>
+				<h:outputText value="n/a" />
+			</h:column>
+			
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="#{msg.maxStoredItems}" />
+				</f:facet>
+				<rich:inputNumberSpinner mode="ajax" value="#{beanGroup.maxStoredItems}" />
+			</h:column>
+			
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="#{msg.maxFriends}" />
+				</f:facet>
+				<rich:inputNumberSpinner mode="ajax" value="#{beanGroup.maxFriends}" />
+			</h:column>
+			
+		</rich:panel>
+	</ui:define>
+
 </ui:composition>

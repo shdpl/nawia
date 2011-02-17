@@ -32,5 +32,6 @@
 			<base-name>net.nawia.www.messages</base-name>
 			<var>msg</var>
 		</resource-bundle>
+		<message-bundle>net.nawia.www.error</message-bundle>
 	</application>
 </faces-config>

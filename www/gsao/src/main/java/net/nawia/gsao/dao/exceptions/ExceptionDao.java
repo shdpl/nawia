@@ -19,7 +19,7 @@ package net.nawia.gsao.dao.exceptions;
 import javax.ejb.ApplicationException;
 
 @ApplicationException
-public class ExceptionDao extends Exception {
+public class ExceptionDao extends RuntimeException {
 	
 	ExceptionDao() {
 		super("Exception in Dao");

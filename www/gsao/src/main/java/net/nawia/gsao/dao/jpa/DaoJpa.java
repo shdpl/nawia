@@ -21,27 +21,27 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 
 import net.nawia.gsao.dao.Dao;
 
-@Stateless
 public abstract class DaoJpa<K, E> implements Dao<K, E> {
-
 	protected Class<E> entityClass;
-
-	@PersistenceContext
 	protected EntityManager entityManager;
 
+	@SuppressWarnings("unchecked")
 	public DaoJpa() {
 		ParameterizedType genericSuperclass = (ParameterizedType) getClass()
 				.getGenericSuperclass();	//TODO dziedziczenie po interfejsach
 		Type type = genericSuperclass.getActualTypeArguments()[1];
 		if (type instanceof ParameterizedType) {
-			this.entityClass = (Class) ((ParameterizedType) type).getRawType();
+			this.entityClass = (Class<E>) ((ParameterizedType) type).getRawType();
 		} else {
-			this.entityClass = (Class) type;
+			this.entityClass = (Class<E>) type;
 		}
+		
+		entityManager = Persistence.createEntityManagerFactory("net.nawia.gsao").createEntityManager();
 	}
 
 	public void persist(E entity) {

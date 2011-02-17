@@ -6,13 +6,13 @@ import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
-import net.nawia.gsao.service.ServiceAccountRemote;
+import net.nawia.gsao.service.remote.ServiceAccountRemote;
 
 @Named
 @SessionScoped
 public class BeanUser implements Serializable {
 	private static final long serialVersionUID = 1431411956385831617L;
-	private boolean logged = false;
+	private int id = -1;
 	private String name;
 	private String password;
 	private String mail;
@@ -20,7 +20,7 @@ public class BeanUser implements Serializable {
 	private ServiceAccountRemote _sa;
 
 	public boolean isLogged() {
-		return logged;
+		return id >= 0;
 	}
 
 	public String getName() {
@@ -46,10 +46,38 @@ public class BeanUser implements Serializable {
 	public void setMail(String mail) {
 		this.mail = mail;
 	}
+	
+	public String logout() {
+		id = 0;
+		return "logout";
+	}
+	
+	public String register() {
+		if (_sa.register(name, password, mail))
+			return "registered";
+		return "register_failure";
+	}
+	
+	public boolean isInRole(String role) {
+		if (!isLogged())
+			return false;
+		if (role.equals("admin")) {
+			if (name.equals("nawia"))
+				return true;
+			else
+				return false;
+		}
+		return true;
+	}
 
+	public void changePassword(String password) {
+		if (isLogged())
+			_sa.changePassword(id, password);
+	}
+	
 	public String login() {
-		if (_sa.verifyCredentials(name, password)) {
-			logged = true;
+		id = _sa.login(name, password);
+		if (id >= 0) {
 			return "login";
 		}
 		return "login_error";
@@ -61,28 +89,11 @@ public class BeanUser implements Serializable {
 		// return false;
 		// }
 	}
-	
-	public String logout() {
-		logged = false;
-		return "logout";
-	}
-	
-	public String register() {
-		if (_sa.register(name, password, mail))
-			return "registered";
-		return "register_failure";
-	}
-	
-	public boolean isInRole(String role) {
-		if (!logged)
-			return false;
-		if (role.equals("admin")) {
-			if (name.equals("nawia"))
-				return true;
-			else
-				return false;
-		}
-		return true;
-	}
 
+	public boolean changeEmail(String mail) {
+		if (isLogged())
+			return _sa.changeEmail(id, mail);
+		return false;
+		
+	}
 }

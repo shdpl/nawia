@@ -24,6 +24,7 @@
 	<modules>
 		<module>cms</module>
 		<module>gsao</module>
+		<module>validators</module>
 	</modules>
 
 	<properties>

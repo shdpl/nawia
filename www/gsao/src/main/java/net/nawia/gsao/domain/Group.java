@@ -20,18 +20,43 @@ public class Group implements Cloneable, Serializable {
 	@Id
 	@GeneratedValue
 	private int id;
+	
+	/**
+	 * Group name
+	 */
 	@Column(nullable = false)
 	private String name;
+	
+	/**
+	 * Access flags
+	 */
 	@Column(nullable = false)
 	private Long flags;
+	
+	/**
+	 * Access level
+	 */
 	@Column(nullable = false)
 	private Integer access;
+	
+	/**
+	 * Violation level
+	 */
 	@Column(nullable = false)
 	private Integer violation;
+	
+	/**
+	 * Maximum amount of items in depot
+	 */
 	@Column(nullable = false)
 	private Integer maxdepotitems;
+	
+	/**
+	 * Maximum number of VIP's
+	 */
 	@Column(nullable = false)
 	private Integer maxviplist;
+	
 
 	public Group(int id, String name, Long flags, Integer access,
 			Integer violation, Integer maxdepotitems, Integer maxviplist) {

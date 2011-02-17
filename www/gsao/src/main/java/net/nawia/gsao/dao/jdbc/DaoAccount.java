@@ -191,7 +191,8 @@ public class DaoAccount extends DaoJdbc<Integer, Account> implements
 	@Override
 	public void close() {
 		try {
-			_findAll.close();
+			if ( _findAll != null)
+				_findAll.close();
 			super.close();
 		} catch (SQLException e) {
 			_log.warning("Could not release Dao resources: "+ e);

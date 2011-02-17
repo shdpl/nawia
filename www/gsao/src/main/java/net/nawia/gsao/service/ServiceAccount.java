@@ -2,13 +2,9 @@ package net.nawia.gsao.service;
 
 import java.util.List;
 
-import javax.ejb.Local;
-
 import net.nawia.gsao.domain.Account;
 
-@Local
-public interface ServiceAccountLocal {
-
+public interface ServiceAccount {
 	/**
 	 * Registers new account on server
 	 * 
@@ -32,16 +28,31 @@ public interface ServiceAccountLocal {
 	boolean hasName(String name);
 	
 	/**
-	 * Verifies credentials
+	 * Verifies credentials, and returns proper user ID
 	 * @param login String, that uniquely identifies account
 	 * @param pass Password, that protects account from unauthorized access
-	 * @return True, if matches, false in other case
+	 * @return ID of user if properly verified, or -1 in either case
 	 */
-	boolean verifyCredentials(String login, String pass);
+	int verifyCredentials(String login, String password);
 	
 	/**
 	 * Lists every possible accounts on server
 	 * @return List<Account> list of accounts
 	 */
 	List<Account> getAll();
+
+	/**
+	 * Changes account password
+	 * @param id Account ID
+	 * @param password New password, that will protect account from unauthorized access
+	 */
+	void changePassword(int id, String password);
+
+	/**
+	 * Changes E-Mail associated with account
+	 * @param id Account ID
+	 * @param mail New E-mail, that will be associated with account
+	 * @return true, if e-mail has been successfully changed, or false in other way
+	 */
+	boolean changeEmail(int id, String mail);
 }

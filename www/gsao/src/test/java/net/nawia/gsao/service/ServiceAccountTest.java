@@ -17,6 +17,7 @@ import net.nawia.gsao.dao.DaoFactory;
 import net.nawia.gsao.dao.exceptions.ExceptionDao;
 import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.service.impl.ImplServiceAccount;
+import net.nawia.gsao.service.remote.ServiceAccountRemote;
 
 @Test(dependsOnGroups = "Account")
 public class ServiceAccountTest extends Arquillian implements ServiceAccountRemote {
@@ -59,10 +60,27 @@ public class ServiceAccountTest extends Arquillian implements ServiceAccountRemo
 	}
 
 	@Override
-	public boolean verifyCredentials(String login, String pass) {
+	public int verifyCredentials(String login, String pass) {
 		return _sAcc.verifyCredentials(login, pass);
 	}
 
+	@Override
+	public List<Account> getAll() {
+		//TODO
+		return null;
+	}
+
+	@Override
+	public boolean changeEmail(int id, String mail) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void changePassword(int id, String password) {
+		// TODO Auto-generated method stub
+	}
+	
 	public void registerTest() throws ExceptionDao, CloneNotSupportedException {
 		Account orig = (Account) _prototype.clone();
 		assert(register(orig.getName(), orig.getPassword(), orig.getEmail()));
@@ -88,14 +106,8 @@ public class ServiceAccountTest extends Arquillian implements ServiceAccountRemo
 	
 	public void verifyCredentialsTest() throws CloneNotSupportedException {
 		Account orig = (Account) _prototype.clone();
-		assert(verifyCredentials(orig.getName(), orig.getPassword()));
-		assert(verifyCredentials(orig.getName(), orig.getPassword() +"a"));
-	}
-
-	@Override
-	public List<Account> getAll() {
-		//TODO
-		return null;
+		assert(0 < verifyCredentials(orig.getName(), orig.getPassword()));
+		assert(0 >= verifyCredentials(orig.getName(), orig.getPassword() +"a"));
 	}
 
 }
