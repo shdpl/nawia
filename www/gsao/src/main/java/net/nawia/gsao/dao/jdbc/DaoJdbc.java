@@ -17,16 +17,12 @@
 package net.nawia.gsao.dao.jdbc;
 
 import java.sql.*;
-import java.util.logging.Logger;
 
 import javax.naming.*;
 import javax.sql.DataSource;
-import net.nawia.gsao.dao.Dao;
 import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
 
 public abstract class DaoJdbc<K, E> {
-	private static final Logger _log = Logger
-			.getLogger(DaoJdbc.class.getName());
 	private static final String _path = "java:jdbc/gsDB"; // FIXME
 	private static final String _testpath = "java:internal/test/test/DaoJdbc/env/jdbc/gsDB";
 	protected Connection _conn;

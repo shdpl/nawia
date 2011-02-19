@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.ejb.*;
 
 import net.nawia.gsao.dao.DaoAccount;
@@ -14,15 +12,16 @@ import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.service.local.ServiceAccountLocal;
 import net.nawia.gsao.service.remote.ServiceAccountRemote;
 
-@Stateless(name = "ServiceAccount")
-// @DeclareRoles({"AccountManager"})
-// @RolesAllowed({"AccountManager"})
-// @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-public class ImplServiceAccount implements ServiceAccountLocal,
-		ServiceAccountRemote {
-	private static final Logger _log = Logger
-			.getLogger(ImplServiceAccount.class.getName());
 
+@Stateless(name="ServiceAccount")
+//@DeclareRoles({"AccountManager"})
+//@RolesAllowed({"AccountManager"})
+//@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+public class ImplServiceAccount implements ServiceAccountLocal, ServiceAccountRemote {	private static final Logger _log = Logger
+	.getLogger(ImplServiceAccount.class.getName());
+	DaoAccount _daoAcc;
+	
+	@Override
 	public boolean register(String name, String password, String email) {
 		_log.entering("ImplServiceAccount", "register()");
 		assert (null != name && null != password && null != email);

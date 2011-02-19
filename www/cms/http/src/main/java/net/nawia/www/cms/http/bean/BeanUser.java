@@ -76,7 +76,7 @@ public class BeanUser implements Serializable {
 	}
 	
 	public String login() {
-		id = _sa.login(name, password);
+		id = _sa.verifyCredentials(name, password);
 		if (id >= 0) {
 			return "login";
 		}

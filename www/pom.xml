@@ -16,8 +16,8 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:git://github.com/shdpl/nawia.git</connection>
-		<developerConnection>scm:git:git@github.com:shdpl/nawia.git</developerConnection>
+		<connection>scm:git:git://scm.nawia.net/shdpl/nawia.git</connection>
+		<developerConnection>scm:git:git@scm.nawia.net:shdpl/nawia.git</developerConnection>
 		<url>https://github.com/shdpl/nawia/</url>
 	</scm>
 

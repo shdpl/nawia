@@ -20,7 +20,6 @@ import java.sql.Date;
 
 import net.nawia.gsao.dao.*;
 import net.nawia.gsao.dao.exceptions.ExceptionDao;
-import net.nawia.gsao.service.impl.ImplServiceAccount;
 
 import org.jboss.arquillian.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
@@ -39,22 +38,22 @@ public class AccountTest extends Arquillian {
 
 	@Deployment
 	public static JavaArchive createDeployment() {
-		return ShrinkWrap.create(JavaArchive.class, "test.jar").addClass(ImplServiceAccount.class);
+		return ShrinkWrap.create(JavaArchive.class, "test.jar");
 	}
 	
-	private Account buildAccount() {
+	private Account buildPrototype() {
 		Account ret = new Account(0, _name, _password, _email, _premend,
 				_blocked, _warnings);
 		return ret;
 	}
 
-	private DaoAccount getDaoAccount() throws ExceptionDao {
+	private DaoAccount getDao() throws ExceptionDao {
 		return (DaoAccount) DaoFactory.build(DaoAccount.class);
 	}
 	
 	@Test
 	public void createSingleTest() throws ExceptionDao {
-		Account stored = buildAccount();
+		Account stored = buildPrototype();
 		assert (stored.getEmail().equals(stored.getEmail()));
 		assert (stored.getId() == stored.getId());
 		assert (stored.getName().equals(stored.getName()));
@@ -63,7 +62,7 @@ public class AccountTest extends Arquillian {
 		assert (stored.getWarnings() == stored.getWarnings());
 		assert (stored.equals(stored));
 
-		DaoAccount daoAcc = getDaoAccount();
+		DaoAccount daoAcc = getDao();
 		daoAcc.persist(stored);
 		Account retrieved = daoAcc.find(stored.getId());
 		assert (retrieved.equals(stored));
@@ -75,9 +74,9 @@ public class AccountTest extends Arquillian {
 
 	@Test//(dependsOnMethods = "createSingleTest") TODO: https://issues.jboss.org/browse/ARQ-55
 	public void createMultipleTest() throws ExceptionDao {
-		DaoAccount daoAcc = getDaoAccount();
-		Account a1 = buildAccount();
-		Account a2 = buildAccount();
+		DaoAccount daoAcc = getDao();
+		Account a1 = buildPrototype();
+		Account a2 = buildPrototype();
 		a2.setName("Joseph");
 		assert (!a1.equals(a2));
 
@@ -107,8 +106,8 @@ public class AccountTest extends Arquillian {
 
 	@Test//(dependsOnMethods = "createSingleTest") TODO: https://issues.jboss.org/browse/ARQ-55
 	public void updateSingleTest() throws ExceptionDao {
-		DaoAccount daoAcc = getDaoAccount();
-		Account stored = buildAccount();
+		DaoAccount daoAcc = getDao();
+		Account stored = buildPrototype();
 		daoAcc.persist(stored);
 
 		final boolean newBlocked = !stored.isBlocked();
@@ -142,8 +141,8 @@ public class AccountTest extends Arquillian {
 
 	@Test//(dependsOnMethods = "createMultipleTest") TODO: https://issues.jboss.org/browse/ARQ-55
 	public void updateMultipleTest() throws ExceptionDao {
-		DaoAccount daoAcc = getDaoAccount();
-		Account s[] = { buildAccount(), buildAccount() };
+		DaoAccount daoAcc = getDao();
+		Account s[] = { buildPrototype(), buildPrototype() };
 
 		daoAcc.persist(s[0]);
 		s[1].setName("Joseph");

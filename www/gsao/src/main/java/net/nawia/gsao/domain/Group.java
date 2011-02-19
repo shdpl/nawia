@@ -69,6 +69,17 @@ public class Group implements Cloneable, Serializable {
 		this.maxdepotitems = maxdepotitems;
 		this.maxviplist = maxviplist;
 	}
+	
+	public Group(String name, Long flags, Integer access,
+			Integer violation, Integer maxdepotitems, Integer maxviplist) {
+		super();
+		this.name = name;
+		this.flags = flags;
+		this.access = access;
+		this.violation = violation;
+		this.maxdepotitems = maxdepotitems;
+		this.maxviplist = maxviplist;
+	}
 
 	@Override
 	public int hashCode() {
@@ -129,6 +140,14 @@ public class Group implements Cloneable, Serializable {
 		} else if (!violation.equals(other.violation))
 			return false;
 		return true;
+	}
+
+	protected Group clone() {
+		try {
+			return (Group) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public int getId() {

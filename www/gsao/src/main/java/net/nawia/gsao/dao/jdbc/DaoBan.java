@@ -28,7 +28,6 @@ import net.nawia.gsao.dao.exceptions.RuntimeExceptionDao;
 import net.nawia.gsao.domain.Ban;
 import net.nawia.gsao.domain.Ban.BAN_T;
 
-
 public class DaoBan extends DaoJdbc<Integer, Ban> implements
 		net.nawia.gsao.dao.DaoBan {
 	private static final Logger _log = Logger.getLogger(DaoBan.class.getName());
@@ -66,7 +65,7 @@ public class DaoBan extends DaoJdbc<Integer, Ban> implements
 				_persistNew.setLong(1, entity.getType().ordinal());
 				_persistNew.setInt(2, entity.getValue());
 				_persistNew.setLong(3, entity.getParam());
-				_persistNew.setShort(4, entity.getActive());
+				_persistNew.setShort(4, (short) (entity.getActive() ? 1 : 0));
 				_persistNew.setLong(5, entity.getExpires().getTime());
 				_persistNew.setLong(6, entity.getAdded().getTime());
 				_persistNew.setInt(7, entity.getAdmin_id());
@@ -85,7 +84,7 @@ public class DaoBan extends DaoJdbc<Integer, Ban> implements
 				_persistNew.setLong(1, entity.getType().ordinal());
 				_persistNew.setInt(2, entity.getValue());
 				_persistNew.setLong(3, entity.getParam());
-				_persistNew.setShort(4, entity.getActive());
+				_persistNew.setShort(4, (short) (entity.getActive() ? 1 : 0));
 				_persistNew.setLong(5, entity.getExpires().getTime());
 				_persistNew.setLong(6, entity.getAdded().getTime());
 				_persistNew.setInt(7, entity.getAdmin_id());
@@ -131,19 +130,20 @@ public class DaoBan extends DaoJdbc<Integer, Ban> implements
 			_find.setInt(1, id);
 			ResultSet rs = _find.executeQuery();
 			if (rs.next())
-				return new Ban(rs.getInt("id"), BAN_T.values()[(int) rs.getLong("type")],
-						rs.getInt("value"), rs.getLong("param"),
-						rs.getShort("active"), new Date(rs.getLong("expires")),
-						new Date(rs.getLong("added")), rs.getInt("admin_id"),
-						rs.getString("comment"), rs.getInt("reason"),
-						rs.getInt("action"), rs.getString("statement"));
+				return new Ban(rs.getInt("id"), rs.getLong("param"),
+						BAN_T.values()[(int) rs.getLong("type")],
+						rs.getShort("active") == 1,
+						new Date(rs.getLong("expires")),
+						new Date(rs.getLong("added")), rs.getInt("admin_id"), rs.getInt("reason"),
+						rs.getString("comment"), rs.getInt("action"), rs.getString("statement"));
 			return null;
 		} catch (SQLException e) {
 			throw new RuntimeExceptionDao("", e);
 		}
 	}
 
-	private static final String _qFindAll = "SELECT * FROM \"" + _tableName +"\"";
+	private static final String _qFindAll = "SELECT * FROM \"" + _tableName
+			+ "\"";
 
 	public List<Ban> findAll() {
 		List<Ban> ret = new ArrayList<Ban>();
@@ -153,12 +153,12 @@ public class DaoBan extends DaoJdbc<Integer, Ban> implements
 				_findAll = _conn.createStatement();
 			ResultSet rs = _findAll.executeQuery(_qFindAll);
 			while (rs.next()) {
-				ret.add(new Ban(rs.getInt("id"), BAN_T.values()[(int) rs.getLong("type")], rs
-						.getInt("value"), rs.getLong("param"), rs
-						.getShort("active"), new Date(rs.getLong("expires")),
-						new Date(rs.getLong("added")), rs.getInt("admin_id"),
-						rs.getString("comment"), rs.getInt("reason"), rs
-								.getInt("action"), rs.getString("statement")));
+				ret.add(new Ban(rs.getInt("id"), rs.getLong("param"),
+						BAN_T.values()[(int) rs.getLong("type")],
+						rs.getShort("active") == 1,
+						new Date(rs.getLong("expires")),
+						new Date(rs.getLong("added")), rs.getInt("admin_id"), rs.getInt("reason"),
+						rs.getString("comment"), rs.getInt("action"), rs.getString("statement")));
 			}
 			return ret;
 		} catch (SQLException e) {
@@ -172,7 +172,7 @@ public class DaoBan extends DaoJdbc<Integer, Ban> implements
 			_findAll.close();
 			super.close();
 		} catch (SQLException e) {
-			_log.warning("Could not release Dao resources: "+ e);
+			_log.warning("Could not release Dao resources: " + e);
 		}
 	}
 }
