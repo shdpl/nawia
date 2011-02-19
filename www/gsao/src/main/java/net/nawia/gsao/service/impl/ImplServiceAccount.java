@@ -10,8 +10,8 @@ import net.nawia.gsao.dao.DaoAccount;
 import net.nawia.gsao.dao.DaoFactory;
 import net.nawia.gsao.dao.exceptions.ExceptionDao;
 import net.nawia.gsao.domain.Account;
-import net.nawia.gsao.service.ServiceAccountLocal;
-import net.nawia.gsao.service.ServiceAccountRemote;
+import net.nawia.gsao.service.local.ServiceAccountLocal;
+import net.nawia.gsao.service.remote.ServiceAccountRemote;
 
 
 @Stateless(name="ServiceAccount")

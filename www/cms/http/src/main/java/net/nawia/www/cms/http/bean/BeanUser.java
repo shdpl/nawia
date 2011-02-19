@@ -6,7 +6,7 @@ import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
-import net.nawia.gsao.service.ServiceAccountRemote;
+import net.nawia.gsao.service.remote.ServiceAccountRemote;
 
 @Named
 @SessionScoped

@@ -17,6 +17,7 @@ import net.nawia.gsao.dao.DaoFactory;
 import net.nawia.gsao.dao.exceptions.ExceptionDao;
 import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.service.impl.ImplServiceAccount;
+import net.nawia.gsao.service.remote.ServiceAccountRemote;
 
 @Test(dependsOnGroups = "Account")
 public class ServiceAccountTest extends Arquillian implements ServiceAccountRemote {

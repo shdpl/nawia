@@ -8,7 +8,7 @@ import javax.enterprise.inject.Model;
 import javax.persistence.Column;
 
 import net.nawia.gsao.domain.Account;
-import net.nawia.gsao.service.ServiceAccountRemote;
+import net.nawia.gsao.service.remote.ServiceAccountRemote;
 
 @Model
 public class BeanAccount {

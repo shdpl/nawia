@@ -2,12 +2,9 @@ package net.nawia.gsao.service;
 
 import java.util.List;
 
-import javax.ejb.Local;
-
 import net.nawia.gsao.domain.Account;
 
-@Local
-public interface ServiceAccountLocal {
+public interface ServiceAccount {
 
 	/**
 	 * Registers new account on server
