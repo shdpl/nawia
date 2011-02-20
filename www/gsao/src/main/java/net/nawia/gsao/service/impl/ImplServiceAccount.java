@@ -12,15 +12,15 @@ import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.service.local.ServiceAccountLocal;
 import net.nawia.gsao.service.remote.ServiceAccountRemote;
 
+@Stateless(name = "ServiceAccount")
+// @DeclareRoles({"AccountManager"})
+// @RolesAllowed({"AccountManager"})
+// @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+public class ImplServiceAccount implements ServiceAccountLocal,
+		ServiceAccountRemote {
+	private static final Logger _log = Logger
+			.getLogger(ImplServiceAccount.class.getName());
 
-@Stateless(name="ServiceAccount")
-//@DeclareRoles({"AccountManager"})
-//@RolesAllowed({"AccountManager"})
-//@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-public class ImplServiceAccount implements ServiceAccountLocal, ServiceAccountRemote {	private static final Logger _log = Logger
-	.getLogger(ImplServiceAccount.class.getName());
-	DaoAccount _daoAcc;
-	
 	@Override
 	public boolean register(String name, String password, String email) {
 		_log.entering("ImplServiceAccount", "register()");
@@ -103,15 +103,43 @@ public class ImplServiceAccount implements ServiceAccountLocal, ServiceAccountRe
 	}
 
 	@Override
-	public void changePassword(int id, String password) {
-		// TODO Auto-generated method stub
-		
+	public boolean changePassword(int id, String password) {
+		_log.entering("ImplServiceAccount", "changePassword()", new Object[] {
+				id, password });
+		assert (id >= 0 && password != null);
+		DaoAccount _daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
+		try {
+			Account acc = _daoAcc.find(id);
+			if (acc == null) {
+				_log.severe("Could not find account with ID " + id);
+				return false;
+			}
+			acc.setPassword(password);
+			_daoAcc.persist(acc);
+			return true;
+		} finally {
+			_daoAcc.close();
+		}
 	}
 
 	@Override
-	public boolean changeEmail(int id, String mail) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean changeEmail(int id, String email) {
+		_log.entering("changePassword", "changeEmail",
+				new Object[] { id, email });
+		assert (id >= 0 && email != null);
+		DaoAccount _daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
+		try {
+			Account acc = _daoAcc.find(id);
+			if (acc == null) {
+				_log.severe("Could not find account with ID " + id);
+				return false;
+			}
+			acc.setEmail(email);
+			_daoAcc.persist(acc);
+			return true;
+		} finally {
+			_daoAcc.close();
+		}
 	}
 
 	// @SuppressWarnings("unused")

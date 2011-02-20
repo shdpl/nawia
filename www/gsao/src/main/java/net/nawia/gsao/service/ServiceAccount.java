@@ -45,8 +45,9 @@ public interface ServiceAccount {
 	 * Changes account password
 	 * @param id Account ID
 	 * @param password New password, that will protect account from unauthorized access
+	 * @return true, if password has been successfully changed, or false in other way
 	 */
-	void changePassword(int id, String password);
+	boolean changePassword(int id, String password);
 
 	/**
 	 * Changes E-Mail associated with account

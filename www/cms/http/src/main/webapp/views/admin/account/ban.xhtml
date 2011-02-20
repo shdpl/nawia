@@ -18,7 +18,7 @@
 
 					<h:column>
 						<f:facet name="header">
-							<h:outputText value="#{msg.type}" />
+							<h:outputText value="#{msg.type}:" />
 						</f:facet>
 						<h:selectOneMenu value="#{ban.type}" onchange="submit()">
 							<f:selectItems value="#{ban.allTypes}" />
@@ -27,14 +27,14 @@
 
 					<h:column>
 						<f:facet name="header">
-							<h:outputText value="#{msg.param}" />
+							<h:outputText value="#{msg.param}:" />
 						</f:facet>
 						<h:outputText value="#{ban.param}" />
 					</h:column>
 
 					<h:column>
 						<f:facet name="header">
-							<h:outputText value="#{msg.punishment}" />
+							<h:outputText value="#{msg.punishment}:" />
 						</f:facet>
 						<h:selectOneMenu value="#{ban.punishment}" onchange="submit()">
 							<f:selectItems value="#{ban.allPunishments}" />
@@ -43,7 +43,7 @@
 
 					<h:column rendered="#{ban.active}">
 						<f:facet name="header">
-							<h:outputText value="#{msg.expires}" />
+							<h:outputText value="#{msg.expires}:" />
 						</f:facet>
 						<rich:calendar mode="ajax" value="#{ban.expires}"
 							locale="#{beanLocale.current}" popup="true"
@@ -52,14 +52,14 @@
 
 					<h:column rendered="#{not ban.active}">
 						<f:facet name="header">
-							<h:outputText value="#{msg.active}" />
+							<h:outputText value="#{msg.active}:" />
 						</f:facet>
 						<h:selectBooleanCheckbox value="#{ban.active}" onchange="submit()" />
 					</h:column>
 
 					<h:column>
 						<f:facet name="header">
-							<h:outputText value="#{msg.added}" />
+							<h:outputText value="#{msg.dateAdded}:" />
 						</f:facet>
 						<rich:calendar mode="ajax" value="#{ban.added}"
 							locale="#{beanLocale.current}" popup="true"
@@ -68,28 +68,28 @@
 
 					<h:column>
 						<f:facet name="header">
-							<h:outputText value="#{msg.addedBy}" />
+							<h:outputText value="#{msg.addedBy}:" />
 						</f:facet>
 						<h:outputText value="#{ban.author}" />
 					</h:column>
 
 					<h:column>
 						<f:facet name="header">
-							<h:outputText value="#{msg.reason}" />
+							<h:outputText value="#{msg.reason}:" />
 						</f:facet>
 						<h:outputText value="#{ban.reason}" />
 					</h:column>
 
 					<h:column>
 						<f:facet name="header">
-							<h:outputText value="#{msg.comment}" />
+							<h:outputText value="#{msg.comment}:" />
 						</f:facet>
 						<h:outputText value="#{ban.comment}" />
 					</h:column>
 
 					<h:column>
 						<f:facet name="header">
-							<h:outputText value="#{msg.statement}" />
+							<h:outputText value="#{msg.statement}:" />
 						</f:facet>
 						<h:outputText value="#{ban.statement}" />
 					</h:column>

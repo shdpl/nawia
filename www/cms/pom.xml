@@ -11,9 +11,8 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<modules>
-		<module>ear</module>
 		<module>http</module>
-		<module>core</module>
 		<module>components</module>
+		<module>ear</module>
 	</modules>
 </project>

@@ -9,25 +9,33 @@
 	<ui:define name="body">
 		<rich:panel id="admin_players_panel">
 			<f:facet name="header">
-				<h:outputText value="#{msg.player_acc}">
+				<h:outputFormat value="#{msg.player_acc}">
 					<f:param value="#{beanAccount.num}" />
-				</h:outputText>
+				</h:outputFormat>
 			</f:facet>
 			<h:form>
 				<rich:dataTable id="players_table" value="#{beanAccount.all}"
-					var="account" columns="6">
+					var="account" columns="9">
 					<h:column>
 						<f:facet name="header">
 							<h:outputText value="#{msg.name}" />
 						</f:facet>
-						<h:inputText value="#{account.name}" onchange="submit()" />
+						<h:inputText value="#{account.name}" />
+					</h:column>
+
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg.password}" />
+						</f:facet>
+						<h:commandButton value="#{msg.resetVerb}"
+							action="#{beanAccount.resetPassword(account)}" immediate="true" />
 					</h:column>
 
 					<h:column>
 						<f:facet name="header">
 							<h:outputText value="#{msg.email}" />
 						</f:facet>
-						<h:inputText value="#{account.email}" onchange="submit()" />
+						<h:inputText value="#{account.email}" />
 					</h:column>
 
 					<h:column>
@@ -43,8 +51,7 @@
 						<f:facet name="header">
 							<h:outputText value="#{msg.blocked}" />
 						</f:facet>
-						<h:selectBooleanCheckbox value="#{account.blocked}"
-							onchange="submit()" />
+						<h:selectBooleanCheckbox value="#{account.blocked}" />
 					</h:column>
 
 					<h:column>
@@ -63,12 +70,12 @@
 
 					<h:column>
 						<h:commandButton value="#{msg.modify}"
-							actionListener="#{beanAccount.modify}" />
+							action="#{beanAccount.modify(account)}" />
 					</h:column>
 
 					<h:column>
 						<h:commandButton value="#{msg.delete}"
-							actionListener="#{beanAccount.delete}" />
+							action="#{beanAccount.delete(account)}" immediate="true" />
 					</h:column>
 
 					<f:facet name="footer">

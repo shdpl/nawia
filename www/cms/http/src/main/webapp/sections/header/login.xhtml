@@ -12,13 +12,13 @@
 			<h:outputText value="#{msg.password}" />
 			<h:inputSecret id="password" value="#{beanUser.password}"
 				required="true" />
-			<h:outputLink action="register" value="/nawia/views/register.xhtml">${msg.register}</h:outputLink>
+			<h:commandLink value="${msg.register}" action="/views/register" immediate="true"/>
 			<h:commandButton id="login_button" value="${msg.loginVerb}"
 				action="#{beanUser.login}" />
 		</h:panelGrid>
 		<h:panelGrid id="login_logged" rendered="#{beanUser.logged}">
 			<h:outputText value="#{msg.loggedAs}" />
-			<h:link value="#{beanUser.name}" action="/views/user/panel.xhtml" />
+			<h:commandLink value="#{beanUser.name}" action="/views/user/panel" />
 			<h:commandLink value="#{msg.logout}" action="#{beanUser.logout}" />
 		</h:panelGrid>
 	</h:form>

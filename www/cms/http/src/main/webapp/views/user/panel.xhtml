@@ -7,11 +7,46 @@
 	template="/templates/default.xhtml">
 
 	<ui:define name="body">
-		<h:form>
-			<rich:panel header="#{beanUser.}">
-			
-			</rich:panel>
-		</h:form>
+		<rich:panel header="#{msg.user}: #{beanUser.name}">
+			<h:form id="password_change">
+				<h:panelGrid columns="2">
+					<f:facet name="header">
+						<h:outputText value="#{msg.passwordChangeDialog}" />
+					</f:facet>
+					<h:outputText value="#{msg.passwordChange}" />
+					<h:inputSecret value="#{beanUserData.newPassword}" />
+					
+					<h:outputText value="#{msg.passwordRepeat}" />
+					<h:inputSecret value="#{beanUserData.newPassword2}" />
+					<f:facet name="header">
+						<h:commandButton value="#{msg.change}"
+							action="#{beanUserData.changePass}" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+			<h:message for="password_change" />
+
+			<p />
+
+			<h:form id="email_change">
+				<h:panelGrid columns="2">
+					<f:facet name="header">
+						<h:outputText value="#{msg.emailChangeDialog}" />
+					</f:facet>
+					<h:outputText value="#{msg.mailChange}" />
+					<h:inputText value="#{beanUserData.mail}" />
+
+					<h:outputText value="#{msg.mailRepeat}" />
+					<h:inputText value="#{beanUserData.mail2}" />
+
+					<f:facet name="header">
+						<h:commandButton value="#{msg.change}"
+							action="#{beanUserData.changeMail}" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+			<h:message for="email_change" />
+		</rich:panel>
 	</ui:define>
 
 </ui:composition>

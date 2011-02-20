@@ -6,6 +6,7 @@
 	xmlns:rich="http://richfaces.org/rich">
 
 	<rich:autocomplete mode="cachedAjax" minChars="3"
-		autocompleteMethod="#{beanSearch.autocomplete}" value="#{msg.search}"/>
+		autocompleteMethod="#{beanSearch.autocomplete}"
+		value="#{beanSearch.query}" action="#{beanSearch.search}" />
 
 </ui:composition>

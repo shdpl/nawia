@@ -13,19 +13,22 @@
 </h:head>
 
 <h:body>
-	<rich:popupPanel id="popup" rendered="#{facesContext.maximumSeverity != null}" modal="true"
-		onmaskclick="#{rich:component('popup')}.hide()">
-		<f:facet name="header">
-			<h:outputText value="Simple popup panel" />
-		</f:facet>
-		<f:facet name="controls">
-			<h:outputLink value="#"
-				onclick="#{rich:component('popup')}.hide(); return false;">
+	<ui:remove>
+		<rich:popupPanel id="popup"
+			rendered="#{facesContext.maximumSeverity != null}" modal="true"
+			onmaskclick="#{rich:component('popup')}.hide()">
+			<f:facet name="header">
+				<h:outputText value="Simple popup panel" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:outputLink value="#"
+					onclick="#{rich:component('popup')}.hide(); return false;">
                     X
                 </h:outputLink>
-		</f:facet>
-		<rich:messages ajaxRendered="true" />
-	</rich:popupPanel>
+			</f:facet>
+			<rich:messages ajaxRendered="true" />
+		</rich:popupPanel>
+	</ui:remove>
 	<div id="main_view"><ui:include src="/sections/header.xhtml" />
 	<ui:insert name="body">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 <br />

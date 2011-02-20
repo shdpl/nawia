@@ -48,7 +48,7 @@ public class BeanUser implements Serializable {
 	}
 	
 	public String logout() {
-		id = 0;
+		id = -1;
 		return "logout";
 	}
 	

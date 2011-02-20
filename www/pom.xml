@@ -22,8 +22,8 @@
 	</scm>
 
 	<modules>
-		<module>cms</module>
 		<module>gsao</module>
+		<module>cms</module>
 		<module>validators</module>
 	</modules>
 
