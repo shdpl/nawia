@@ -107,6 +107,7 @@ public class BeanUserData {
 					msgNewPasswordNotMatch);
 			return "failure";
 		}
+		//TODO: CallValidate
 		FacesContext.getCurrentInstance().addMessage(null,
 				msgNewPasswordHasBeenModified);
 		curUser.changePassword(this.password);
@@ -124,6 +125,7 @@ public class BeanUserData {
 					msgNewEmailNotMatch);
 			return "failure";
 		}
+		//TODO: CallValidate
 		FacesContext.getCurrentInstance().addMessage(null,
 				msgNewEmailHasBeenModified);
 		curUser.changeEmail(this.newMail);

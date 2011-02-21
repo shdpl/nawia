@@ -31,6 +31,19 @@ public class BeanAccount {
 			return "failure";
 		if (!_sa.changePassword(which.getId(), which.getPassword()))
 			return "failure";
+		if (!_sa.rename(which.getId(), which.getName()))
+			return "failure";
+		if (!_sa.setPremium(which.getId(), which.getPremend()))
+			return "failure";
+		if (which.isBlocked()) {
+			if (!_sa.lock(which.getId()))
+				return "failure";
+		} else {
+			if (!_sa.unlock(which.getId()))
+				return "failure";
+		}
+		if (!_sa.setWarnings(which.getId(), which.getWarnings()))
+			return "failure";
 		return "success";
 	}
 
@@ -43,7 +56,6 @@ public class BeanAccount {
 	public String resetPassword(Account which) {// TODO: after JavaMail will be
 												// set-up, make it work as it's
 												// intended to
-		System.out.println("resetPassword()");
 		if (!_sa.changePassword(which.getId(), which.getName()))
 			return "failure";
 		return "success";

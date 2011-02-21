@@ -124,8 +124,8 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 
 	@Override
 	public boolean changeEmail(int id, String email) {
-		_log.entering("changePassword", "changeEmail",
-				new Object[] { id, email });
+		_log.entering("ImplServiceAccount", "changeEmail", new Object[] { id,
+				email });
 		assert (id >= 0 && email != null);
 		DaoAccount _daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
 		try {
@@ -142,6 +142,170 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		}
 	}
 
+	@Override
+	public boolean rename(int id, String name) {
+		_log.entering("ImplServiceAccount", "rename", new Object[] { id, name });
+		assert (id >= 0 && name != null);
+		DaoAccount _daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
+		try {
+			Account acc = _daoAcc.find(id);
+			if (acc == null) {
+				_log.severe("Could not find account with ID " + id);
+				return false;
+			}
+			acc.setName(name);
+			_daoAcc.persist(acc);
+			return true;
+		} finally {
+			_daoAcc.close();
+		}
+	}
+
+	@Override
+	public boolean lock(int id) {
+		_log.entering("ImplServiceAccount", "lock", id);
+		assert (id >= 0);
+		DaoAccount _daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
+		try {
+			Account acc = _daoAcc.find(id);
+			if (acc == null) {
+				_log.severe("Could not find account with ID " + id);
+				return false;
+			}
+			acc.setBlocked(true);
+			_daoAcc.persist(acc);
+			return true;
+		} finally {
+			_daoAcc.close();
+		}
+	}
+
+	@Override
+	public boolean unlock(int id) {
+		_log.entering("ImplServiceAccount", "unlock", id);
+		assert (id >= 0);
+		DaoAccount _daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
+		try {
+			Account acc = _daoAcc.find(id);
+			if (acc == null) {
+				_log.severe("Could not find account with ID " + id);
+				return false;
+			}
+			acc.setBlocked(false);
+			_daoAcc.persist(acc);
+			return true;
+		} finally {
+			_daoAcc.close();
+		}
+	}
+
+	@Override
+	public Boolean locked(int id) {
+		_log.entering("ImplServiceAccount", "locked", id);
+		assert (id >= 0);
+		DaoAccount _daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
+		try {
+			Account acc = _daoAcc.find(id);
+			if (acc == null) {
+				_log.severe("Could not find account with ID " + id);
+				return null;
+			}
+			return acc.isBlocked();
+		} finally {
+			_daoAcc.close();
+		}
+	}
+
+	@Override
+	public boolean setWarnings(int id, int warnings) {
+		_log.entering("ImplServiceAccount", "setWarnings", new Object[] { id, warnings });
+		assert (id >= 0 && warnings >= 0);
+		DaoAccount _daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
+		try {
+			Account acc = _daoAcc.find(id);
+			if (acc == null) {
+				_log.severe("Could not find account with ID " + id);
+				return false;
+			}
+			acc.setWarnings((short) warnings);
+			_daoAcc.persist(acc);
+			return true;
+		} finally {
+			_daoAcc.close();
+		}
+	}
+
+	@Override
+	public int getWarnings(int id) {
+		_log.entering("ImplServiceAccount", "getWarnings", id);
+		assert (id >= 0);
+		DaoAccount _daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
+		try {
+			Account acc = _daoAcc.find(id);
+			if (acc == null) {
+				_log.severe("Could not find account with ID " + id);
+				return -1;
+			}
+			return acc.getWarnings();
+		} finally {
+			_daoAcc.close();
+		}
+	}
+
+	@Override
+	public boolean setPremium(int id, Date until) {
+		_log.entering("ImplServiceAccount", "setPremium", new Object[]{id, until});
+		assert (id >= 0) && until != null;
+		DaoAccount _daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
+		try {
+			Account acc = _daoAcc.find(id);
+			if (acc == null) {
+				_log.severe("Could not find account with ID " + id);
+				return false;
+			}
+			acc.setPremend(until);
+			_daoAcc.persist(acc);
+			return true;
+		} finally {
+			_daoAcc.close();
+		}
+	}
+
+	@Override
+	public Date getPremium(int id) {
+		_log.entering("ImplServiceAccount", "getPremium", id);
+		assert (id >= 0);
+		DaoAccount _daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
+		try {
+			Account acc = _daoAcc.find(id);
+			if (acc == null) {
+				_log.severe("Could not find account with ID " + id);
+				return null;
+			}
+			return acc.getPremend();
+		} finally {
+			_daoAcc.close();
+		}
+	}
+
+	@Override
+	public Boolean isPremium(int id) {
+		_log.entering("ImplServiceAccount", "isPremium", id);
+		assert (id >= 0);
+		DaoAccount _daoAcc = (DaoAccount) DaoFactory.build(DaoAccount.class);
+		try {
+			Account acc = _daoAcc.find(id);
+			if (acc == null) {
+				_log.severe("Could not find account with ID " + id);
+				return null;
+			}
+			return !acc.getPremend().before(new Date());
+		} finally {
+			_daoAcc.close();
+		}
+	}
+	
+	
 	// @SuppressWarnings("unused")
 	// @PostConstruct
 	// private void open() {
