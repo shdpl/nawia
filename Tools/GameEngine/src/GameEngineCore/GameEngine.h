@@ -123,12 +123,28 @@ namespace GameEngine
 	 */
 	GAMEENGINE_API bool init();
 
+	/** 
+	 * \brief Returns whether the GameEngine is already initialized
+	 * 
+	 * 
+	 * @return if the engine is initialized
+	 */
+	GAMEENGINE_API bool isInitialized();
+
 	/**
 	 * \brief Releases all Component Managers
 	 * 
 	 * Unloads all plugins and entities
 	 */
 	GAMEENGINE_API void release();
+
+	/**
+	 * \brief Releases all entites
+	 * 
+	 * Releases all entities by deleting the gameWorld
+	 * You should do this before loading a new scene
+	 */
+	GAMEENGINE_API void releaseAllEntities();
 
 	/**	
 	 * Loads the scene specified

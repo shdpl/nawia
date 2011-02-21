@@ -76,6 +76,11 @@ public:
 	 * @return the singleton instance of the GameWorld
 	 */ 
 	static GameWorld*				gameWorld();
+	/**
+	 * \brief Releases the gameworld with all entities in it
+	 * 
+	 */ 
+	static void releaseGameWorld();
 	
 private:
 	/// Singleton instance 

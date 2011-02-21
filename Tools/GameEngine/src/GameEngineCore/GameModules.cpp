@@ -62,3 +62,9 @@ GameWorld* GameModules::gameWorld()
 		m_gameWorld = new GameWorld();
 	return m_gameWorld;
 }
+
+void GameModules::releaseGameWorld()
+{
+	delete m_gameWorld;
+	m_gameWorld = 0x0;
+}

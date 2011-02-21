@@ -78,6 +78,17 @@ namespace GameEngine
 			GameLog::close();
 		}
 	}
+	GAMEENGINE_API void releaseAllEntities()
+	{
+		if (Initialized)
+		{
+			GameModules::releaseGameWorld();
+		}
+	}
+	GAMEENGINE_API bool isInitialized()
+	{
+		return Initialized;
+	}
 
 
 	GAMEENGINE_API void update()
