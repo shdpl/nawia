@@ -13,18 +13,16 @@ public class BeanAccount {
 	@EJB
 	private ServiceAccountRemote _sa;
 	private List<Account> _al;
-
-	public BeanAccount() {
-		_al = _sa.getAll();
-	}
 	
 	public List<Account> getAll() {
-		assert (null != _sa);
+		if (null == _al)
+			_al = _sa.getAll();
 		return _al;
 	}
 
 	public int getNum() {
-		assert (null != _sa);
+		if (null == _al)
+			_al = _sa.getAll();
 		return _al.size();
 	}
 

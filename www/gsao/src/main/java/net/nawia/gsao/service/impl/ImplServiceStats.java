@@ -7,12 +7,14 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
 import net.nawia.gsao.service.ServiceStats;
+import net.nawia.gsao.service.local.ServiceStatsLocal;
+import net.nawia.gsao.service.remote.ServiceStatsRemote;
 
 @Stateless(name="ServiceStats")
 //@DeclareRoles({"GM"})
 //@RolesAllowed({"GM"})
 //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-public class ImplServiceStats implements ServiceStats {
+public class ImplServiceStats implements ServiceStatsLocal, ServiceStatsRemote {
 
 	@Override
 	public boolean isOnline() {

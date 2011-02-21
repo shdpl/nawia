@@ -17,12 +17,14 @@ import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.domain.Ban;
 import net.nawia.gsao.domain.Ban.BAN_T;
 import net.nawia.gsao.service.ServiceBan;
+import net.nawia.gsao.service.local.ServiceBanLocal;
+import net.nawia.gsao.service.remote.ServiceBanRemote;
 
 @Stateless(name = "ServiceBan")
 // @DeclareRoles({"GM"})
 // @RolesAllowed({"GM"})
 // @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-public class ImplServiceBan implements ServiceBan {
+public class ImplServiceBan implements ServiceBanLocal, ServiceBanRemote {
 
 	@Override
 	public boolean add(Ban ban, Account acc) {

@@ -36,10 +36,10 @@ public class BeanUserData {
 					+ "Please, fill both fields with same string,"
 					+ "that will be Your new registered e-mail address");
 	private static final FacesMessage msgNewEmailHasBeenModified = new FacesMessage(
-			FacesMessage.SEVERITY_ERROR, "E-mail modified",
+			FacesMessage.SEVERITY_INFO, "E-mail modified",
 			"Your e-mail address have been modified successfully.");
 	private static final FacesMessage msgNewPasswordHasBeenModified = new FacesMessage(
-			FacesMessage.SEVERITY_ERROR, "Password modified.",
+			FacesMessage.SEVERITY_INFO, "Password modified.",
 			"Your password has been modified successfully.");
 
 	@Inject

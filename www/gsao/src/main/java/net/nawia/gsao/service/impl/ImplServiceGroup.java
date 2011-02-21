@@ -4,12 +4,14 @@ import javax.ejb.Stateless;
 
 import net.nawia.gsao.domain.Group;
 import net.nawia.gsao.service.ServiceGroup;
+import net.nawia.gsao.service.local.ServiceGroupLocal;
+import net.nawia.gsao.service.remote.ServiceGroupRemote;
 
 @Stateless(name="ServiceGroup")
 //@DeclareRoles({"GM"})
 //@RolesAllowed({"GM"})
 //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-public class ImplServiceGroup implements ServiceGroup {
+public class ImplServiceGroup implements ServiceGroupLocal, ServiceGroupRemote {
 
 	@Override
 	public void changeVipLimit(Group g, int num) {
