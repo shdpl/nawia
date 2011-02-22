@@ -276,6 +276,7 @@ bool VideoComponent::openAvi(const std::string& filename)
 	// Opens The AVI Stream
 	if (AVIStreamOpenFromFile(&m_pavi, filename.c_str(), streamtypeVIDEO, 0, OF_READ, NULL) !=0)
 	{
+		GameLog::errorMessage("Error opening avi: %s", filename.c_str());
 		// An Error Occurred Opening The Stream
 		AVIFileExit();								// Release The File
 		return false;
@@ -315,6 +316,7 @@ bool VideoComponent::openAvi(const std::string& filename)
 	m_pgf=AVIStreamGetFrameOpen(m_pavi, &m_bmiavih);// Create The PGETFRAME Using Our Request Mode
 	if (m_pgf==0x0)
 	{
+		GameLog::errorMessage("Error opening first frame of avi: %s", filename.c_str());
 		// An Error Occurred Opening The Frame
 		DeleteObject(m_hBitmap);					// Delete The Device Dependant Bitmap Object
 		AVIStreamRelease(m_pavi);					// Release The Stream
@@ -334,6 +336,7 @@ bool VideoComponent::openAvi(const std::string& filename)
 	m_videoTexture = h3dCreateTexture(filename.c_str(), m_resizeWidth, m_resizeHeight, H3DFormats::TEX_BGRA8, H3DResFlags::NoTexMipmaps);
 	if (m_videoTexture == 0)
 	{
+		GameLog::errorMessage("Error creating texture for playing avi: %s", filename.c_str());
 		// Failure creating the dynamic texture
 		closeAvi();
 		return false;
@@ -343,6 +346,7 @@ bool VideoComponent::openAvi(const std::string& filename)
 	m_samplerIndex = h3dFindResElem(m_material, H3DMatRes::SamplerElem, H3DMatRes::SampNameStr, "albedoMap");	
 	if (m_samplerIndex == -1)
 	{
+		GameLog::errorMessage("Error preparing material with resID %d for playing avi: %s", m_material, filename.c_str());
 		// No sampler found in material
 		closeAvi();
 		return false;
@@ -413,7 +417,10 @@ bool VideoComponent::grabAviFrame(int frame)
 			// (Skip The Header Info To Get To The Data)
 			m_pdata=(unsigned char *)lpbi+lpbi->biSize+lpbi->biClrUsed * sizeof(RGBQUAD);	// Pointer To Data Returned By AVIStreamGetFrame
 			if (!DrawDibDraw (m_hdd, m_hdc, 0, 0, m_resizeWidth, m_resizeHeight, lpbi, m_pdata, 0, 0, m_width, m_height, 0))
+			{
+				GameLog::errorMessage("Error resizing video to requested size: %d x %d", m_resizeWidth, m_resizeHeight);
 				return false;
+			}
 		}
 		else
 		{
