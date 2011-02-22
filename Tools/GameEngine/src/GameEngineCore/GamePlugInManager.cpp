@@ -283,8 +283,8 @@ void GamePlugInManager::registerLuaStack( lua_State *L )
 		REGISTER_LUA_STACK registerFunc = (REGISTER_LUA_STACK) iter->second->getSymbol("dllRegisterLuaStack");
 		if( registerFunc )
 			registerFunc( L );
-		else
-			GameLog::logMessage( "No Lua Bindings for plugin '%s' found!", iter->second->getName().c_str() );
+		/*else
+			GameLog::logMessage( "No Lua Bindings for plugin '%s' found!", iter->second->getName().c_str() );*/
 		++iter;
 	}
 }
