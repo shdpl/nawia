@@ -61,7 +61,7 @@ namespace TimingManager
 	void reset()
 	{
 		m_timer.resetTimer();
-		m_lastTime = m_timer.elapsedTime();
+		m_currentTime = m_lastTime = m_timer.elapsedTime();
 	}
 
 	float FPS()

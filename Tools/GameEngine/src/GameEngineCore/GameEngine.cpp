@@ -169,7 +169,9 @@ namespace GameEngine
 			GameLog::errorMessage("Error loading scene file %s\n", sceneFile);
 			return false;
 		}
-		TimingManager::reset();
+		// Why should we reset the time after loading a scene?
+		// Some components/managers may already have initialized with the current one
+		//TimingManager::reset();
 		// Update to initialize attached entities
 		GameModules::componentRegistry()->updateComponentManagers();
 		return true;
