@@ -78,6 +78,8 @@ VideoComponent::VideoComponent(GameEntity* owner) : GameComponent(owner, "VideoC
 VideoComponent::~VideoComponent()
 {
 	VideoManager::instance()->removeComponent(this);
+	if (m_playing)
+		stopAvi();
 	if (m_pgf)
 		closeAvi();
 	DrawDibClose(m_hdd);			// Closes The DrawDib Device Context
