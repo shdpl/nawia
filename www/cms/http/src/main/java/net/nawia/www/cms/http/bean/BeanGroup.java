@@ -18,8 +18,7 @@ public class BeanGroup {
 
 	public List<Group> getAll() {
 		assert (null != _sg);
-		// _gl = _sg.getAll();
-		_gl = new LinkedList<Group>();
+		_gl = _sg.getAll();
 		return _gl;
 	}
 
@@ -30,7 +29,6 @@ public class BeanGroup {
 	}
 
 	public String modify(Group which) {
-		_sg.rename(which, which.getName());
 		return "failure";
 		// return "success";
 	}

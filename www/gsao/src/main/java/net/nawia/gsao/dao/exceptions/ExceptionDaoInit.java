@@ -5,6 +5,11 @@ import javax.ejb.ApplicationException;
 @ApplicationException
 public class ExceptionDaoInit extends ExceptionDao {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4675705091354618357L;
+
 	public ExceptionDaoInit() {
 		super("Init");
 	}

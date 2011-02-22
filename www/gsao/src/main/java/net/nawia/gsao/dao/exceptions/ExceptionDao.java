@@ -20,7 +20,12 @@ import javax.ejb.ApplicationException;
 
 @ApplicationException
 public class ExceptionDao extends RuntimeException {
-	
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -243246336589194384L;
+
 	ExceptionDao() {
 		super("Exception in Dao");
 	}

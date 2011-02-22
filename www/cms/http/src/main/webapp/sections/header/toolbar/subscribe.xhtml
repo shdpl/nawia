@@ -9,5 +9,8 @@
 		<f:facet name="label">
 			<h:outputText value="#{msg.subscribe}" />
 		</f:facet>
+		<rich:menuItem label="#{msg.byEmail}" action="/subscribe/email" />
+		<rich:menuItem label="#{msg.byATOM}" action="/subscribe/atom" />
+		<rich:menuItem label="#{msg.byRSS}" action="/subscribe/rss" />
 	</rich:dropDownMenu>
 </ui:composition>

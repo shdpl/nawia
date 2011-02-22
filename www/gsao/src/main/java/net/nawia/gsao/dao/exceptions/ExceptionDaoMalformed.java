@@ -21,6 +21,11 @@ import javax.ejb.ApplicationException;
 @ApplicationException
 public class ExceptionDaoMalformed extends ExceptionDao {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1283642650826038958L;
+
 	public ExceptionDaoMalformed() {
 		super("Malformed");
 	}

@@ -1,8 +1,11 @@
 package net.nawia.gsao.service.impl;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 
 import net.nawia.gsao.domain.Group;
+import net.nawia.gsao.domain.Player;
 import net.nawia.gsao.service.ServiceGroup;
 import net.nawia.gsao.service.local.ServiceGroupLocal;
 import net.nawia.gsao.service.remote.ServiceGroupRemote;
@@ -14,22 +17,77 @@ import net.nawia.gsao.service.remote.ServiceGroupRemote;
 public class ImplServiceGroup implements ServiceGroupLocal, ServiceGroupRemote {
 
 	@Override
-	public void changeVipLimit(Group g, int num) {
+	public int add(Group g) {
 		// TODO Auto-generated method stub
-		
+		return 0;
 	}
 
 	@Override
-	public void changeDepotLimit(Group g, int num) {
+	public boolean del(int gid) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
-	public void rename(Group g, String newName) {
+	public List<Group> getAll() {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
+
+	@Override
+	public int getVipLimit(int gid) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getDepotLimit(int gid) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getName(int gid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean setFlags(int gid, long flags) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean unsetFlags(int gid, long flags) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<Player> getPlayers(int gid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean changeVipLimit(int gid, int num) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean changeDepotLimit(int gid, int num) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean rename(int gid, String newName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 	
 }

@@ -21,6 +21,11 @@ import javax.ejb.ApplicationException;
 @ApplicationException
 public class ExceptionDaoNotFound extends ExceptionDao {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3924298594497346366L;
+
 	public ExceptionDaoNotFound() {
 		super("Not found");
 	}

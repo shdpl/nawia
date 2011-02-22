@@ -8,7 +8,6 @@ import javax.ejb.Remote;
 import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.domain.Ban;
 
-@Remote
 public interface ServiceBan {
 
 	/**

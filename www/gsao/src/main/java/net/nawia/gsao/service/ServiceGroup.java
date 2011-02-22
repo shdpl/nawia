@@ -1,13 +1,38 @@
 package net.nawia.gsao.service;
 
+import java.util.List;
+
 import net.nawia.gsao.domain.Group;
+import net.nawia.gsao.domain.Player;
+
 
 public interface ServiceGroup {
+	int add(Group g);
 	
-	void changeVipLimit(Group g, int num);
+	boolean del(int gid);
 	
-	void changeDepotLimit(Group g, int num);
+	List<Group> getAll();
 	
-	void rename(Group g, String newName);
+	int getVipLimit(int gid);
+	
+	boolean changeVipLimit(int gid, int num);
+	
+	int getDepotLimit(int gid);
+	
+	boolean changeDepotLimit(int gid, int num);
+	
+	String getName(int gid);
+	
+	boolean rename(int gid, String newName);
+	
+	boolean setFlags(int gid, long flags);
+
+	boolean unsetFlags(int gid, long flags);
+	
+	List<Player> getPlayers(int gid);
+	
+	//TODO: access
+	
+	//TODO: violation
 
 }
