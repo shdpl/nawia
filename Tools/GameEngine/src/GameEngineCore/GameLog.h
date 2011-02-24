@@ -18,13 +18,14 @@
 //
 // GameEngine Core Library of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Volker Wiendl
+// Copyright (C) 2007-2011 Volker Wiendl, Felix Kistler
 // 
 // ****************************************************************************************
 #ifndef GAMELOG_H_
 #define GAMELOG_H_
 
 #include <GameEngine/config.h>
+
 
 /** \addtogroup GameEngineCore
  * @{
@@ -36,8 +37,8 @@
  * The GameLog module creates a file called GameEnginLog.html in the directory of the GameEngineCore.dll
  * You can add messages to this log file using the GameLog messages
  * 
- * @author Volker Wiendl
- * @date May 2008
+ * @author Volker Wiendl, Felix Kistler
+ * @date May 2008-2011
  */ 
 namespace GameLog
 {
@@ -80,6 +81,18 @@ namespace GameLog
 	 * @return  optional additional parameters representing data referenced in the message	 
 	 */ 
 	GAMEENGINE_API void errorMessage(const char* message, ...);
+
+	/**
+	 * \brief Add log message to a specific logFile
+	 * 
+	 * Call this function to add a standard log message. You can use the printf syntax to include numbers or variable data. <br>
+	 * Example: logMessage("MyLogFile", "Message %s with a number %d ", someString, someNumber);
+	 * @param name name of the used logFile, will be created if not already existent, overwritten in any other case
+	 *			   name should be given without any extension or path, will be created as name.htm in the executable folder
+	 * @param message the message to put into the log file 
+	 * @param ... optional additional parameters representing data referenced in the message	 
+	 */ 
+	GAMEENGINE_API void logToCustomFile(const char* logFileName, const char* message, ...);
 
 	/**
 	 * \brief Closes the logfile

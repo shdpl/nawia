@@ -18,7 +18,7 @@
 //
 // GameEngine Core Library of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Volker Wiendl
+// Copyright (C) 2007-2011 Volker Wiendl, Felix Kistler
 // 
 // ****************************************************************************************
 #include "GameLog.h"
@@ -79,47 +79,58 @@ namespace GameLog
 	/// Start time when loading the application
 	__int32					start = GetTickCount();
 	/// Name of the current log file
-	string					currentLog = "_GameEngineLog";	
+	string					defaultLog = "_GameEngineLog";	
 
 	bool initLog(const string& name)
 	{
-		char path[260];			
-		if (GetExecutablePath(path, sizeof(path))<=0)
+		map<string, ofstream*>::iterator iter = logFiles.find(name);
+		if (iter != logFiles.end() && iter->second != 0)
+		{
+			if (iter->second->is_open() && iter->second->good())
+				return true;
+			else
+			{
+				delete iter->second;
+				iter->second = 0;
+			}
+		}
+
+		char path[MAX_PATH];
+		int pathLen = GetExecutablePath(path, sizeof(path));
+		if (pathLen <= 0)
 			return false;
 
-		map<string, ofstream*>::iterator iter = logFiles.begin();
-		if (iter != logFiles.end())
-		{
-			if (iter->second!=0 && iter->second->is_open() && iter->second->good())
-				return true;
-			else if (iter->second != 0)		
-				delete iter->second;
-			iter->second = 0;
-		}
-		if (path[strlen(path)-1]!='\\' && path[strlen(path)-1]!='/')
-			strcat_s(path, MAX_PATH, "\\");		
-		sprintf_s(path, sizeof(path), "%s%s.htm", path, name.c_str());
-		ofstream* output = 0;
-		if (iter != logFiles.end())
-		{
-			iter->second = new ofstream(path, ios::trunc);
-			output = iter->second;
-		}
-		else
-		{
-			output = new ofstream(path, ios::trunc);
-			logFiles.insert(make_pair<string, ofstream*>(name, output));
-		}		
+		string pathStr(path);
+
+		if (pathStr.back() != '\\' && pathStr.back() != '/')
+			pathStr += "\\";
+
+		pathStr += name + ".htm";
+
+		ofstream* output = new ofstream(pathStr, ios::trunc);
+		if (!output->is_open() || !output->good())
+			return false;
+
+		logFiles[name] = output;
+
 		*output<< 
 			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n"
 			"<html>\n"
 			"<head>\n"
-			"<title>GameEngine Logfile</title>\n"
+			"<title>";
+		if (name.compare(defaultLog) != 0)
+			*output << name << " - ";
+		*output<<
+			"GameEngine Logfile</title>\n"
 			"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\n"
 			"</head>\n"
 			"<body bgcolor=\"#FAF1D3\">\n"
-			"<p align=\"center\"><strong><font size=\"+2\">GameEngine Logfile</font></strong></p>\n"
-			"<p align=\"center\">Created with GameEngine Log 1.0</p>\n"
+			"<p align=\"center\"><strong><font size=\"+2\">";
+		if (name.compare(defaultLog) != 0)
+			*output << name << " - ";
+		*output<<
+			"GameEngine Logfile</font></strong></p>\n"
+			"<p align=\"center\">Created with GameEngine Log 1.1</p>\n"
 			"<hr>\n"
 			"<p>Debuginformation follows:</p>\n"
 			"<center>\n"
@@ -129,33 +140,36 @@ namespace GameLog
 
 	void close()
 	{		
-		map<string, ofstream*>::iterator iter = logFiles.begin();
-		while (iter != logFiles.end())
+		map<string, ofstream*>::iterator iter;
+		map<string, ofstream*>::iterator end = logFiles.end();
+		for (iter = logFiles.begin(); iter != end; ++iter)
 		{		
 			ofstream* output = iter->second;
-			iter->second = 0;
-			++iter;
-			if (output==0) continue;
-			*output << "</table>\n"
-				<< "</center>\n" 
-				<< "<p><font size=\"-2\">GameLog - University of Augsburg (2007)</font></p>\n"
-				<< "</body>\n"
-				<< "</html>\n";
-			output->close();
-			delete output;
+			if (output !=0 )
+			{
+				*output << "</table>\n"
+					<< "</center>\n" 
+					<< "<p><font size=\"-2\">GameLog - University of Augsburg (2011)</font></p>\n"
+					<< "</body>\n"
+					<< "</html>\n";
+				output->close();
+				delete output;
+			}
 		}
 		logFiles.clear();
 	}
 
-	void log(const char* msg, const char* bgcolor)
+	void log(const string& logFileName, const char* bgcolor, const char* msg)
 	{
-		if (!initLog(currentLog))
+		if (!initLog(logFileName))
 		{
 			cerr << "Error writing to log file" << endl;
 			return;
 		}
-		ofstream* output = logFiles[currentLog];
-		std::string cleanMsg = msg;
+		ofstream* output = logFiles[logFileName];
+
+		std::string cleanMsg(msg);
+
 		findandreplace(cleanMsg, ">", "&gt;");
 		findandreplace(cleanMsg, "<", "&lt;");
 		*output << "\t<tr>\n"
@@ -166,18 +180,42 @@ namespace GameLog
 		(*output).flush();
 	}
 
+	void log(const char* bgcolor, const char* msg)
+	{
+		log(defaultLog, bgcolor, msg);
+	}
+
+	GAMEENGINE_API void logToCustomFile(const char* logFileName, const char* message, ...)
+	{
+		if (logFileName)
+		{
+			va_list arglist;
+			va_start( arglist, message );
+			int len = _vscprintf( message, arglist )+ 1;
+			char* buffer = new char[len * sizeof(char)];
+			#pragma warning( push )
+			#pragma warning( disable:4996 )
+			vsprintf( buffer, message, arglist );
+			#pragma warning( pop )
+
+			log(string(logFileName), "#009900", buffer);
+			delete[] buffer;
+		}
+	}
+
 	GAMEENGINE_API void logMessage(const char* message, ...)
 	{
 		va_list arglist;
 		va_start( arglist, message );
 		int len = _vscprintf( message, arglist )+ 1;
-		char* buffer = (char*)malloc( len * sizeof(char) );
+		char* buffer = new char[len * sizeof(char)];
 		#pragma warning( push )
 		#pragma warning( disable:4996 )
 		vsprintf( buffer, message, arglist );
 		#pragma warning( pop )
-		log(buffer, "#009900");
-	    free( buffer );	
+
+		log("#009900", buffer);
+		delete[] buffer;
 	}
 
 	GAMEENGINE_API void warnMessage(const char* message, ...)
@@ -185,13 +223,14 @@ namespace GameLog
 		va_list arglist;
 		va_start( arglist, message );
 		int len = _vscprintf( message, arglist )+ 1;
-		char* buffer = (char*)malloc( len * sizeof(char) );
-	    #pragma warning( push )
+		char* buffer = new char[len * sizeof(char)];
+		#pragma warning( push )
 		#pragma warning( disable:4996 )
 		vsprintf( buffer, message, arglist );
 		#pragma warning( pop )
-		log(buffer, "#FFCC00");
-	    free( buffer );
+
+		log("#FFCC00", buffer);
+		delete[] buffer;
 	}
 
 	GAMEENGINE_API void errorMessage(const char* message, ...)
@@ -199,12 +238,13 @@ namespace GameLog
 		va_list arglist;
 		va_start( arglist, message );
 		int len = _vscprintf( message, arglist )+ 1;
-		char* buffer = (char*)malloc( len * sizeof(char) );
-	    #pragma warning( push )
+		char* buffer = new char[len * sizeof(char)];
+		#pragma warning( push )
 		#pragma warning( disable:4996 )
 		vsprintf( buffer, message, arglist );
 		#pragma warning( pop )
-		log(buffer, "#FF0000");
-	    free( buffer );
+
+		log("#FF0000", buffer);
+		delete[] buffer;
 	}
 }
