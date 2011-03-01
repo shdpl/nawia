@@ -53,6 +53,12 @@ namespace GameEngine
 	VIDEOPLUGINEXP void playAvi( unsigned int entityWorldID);
 
 	/**
+	 * Stop the currently playing avi
+	 * @param entityWorldID the entity we want to use the function on
+	 */
+	VIDEOPLUGINEXP void stopAvi( unsigned int entityWorldID);
+
+	/**
 	 * Load a video file (starts the video automatically if autostart is set)
 	 * @param entityWorldID the entity we want to use the function on
 	 * @param file the filename of the video to be loaded

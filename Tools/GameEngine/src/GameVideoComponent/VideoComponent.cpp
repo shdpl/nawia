@@ -78,10 +78,7 @@ VideoComponent::VideoComponent(GameEntity* owner) : GameComponent(owner, "VideoC
 VideoComponent::~VideoComponent()
 {
 	VideoManager::instance()->removeComponent(this);
-	if (m_playing)
-		stopAvi();
-	if (m_pgf)
-		closeAvi();
+	closeAvi();
 	DrawDibClose(m_hdd);			// Closes The DrawDib Device Context
 	DeleteDC(m_hdc);				// Delete the Dc
 	CoUninitialize();
@@ -112,7 +109,6 @@ void VideoComponent::executeEvent(GameEvent* event)
 
 void VideoComponent::loadFromXml(const XMLNode* node)
 {
-	// TODO: load these from xml
 	const char* rWidth = node->getAttribute("resizeWidth");
 	const char* rHeight = node->getAttribute("resizeHeight");
 	if (rWidth || rHeight)
@@ -130,7 +126,11 @@ void VideoComponent::loadFromXml(const XMLNode* node)
 	m_loop = _stricmp(node->getAttribute("loop", "0"), "true") == 0 
 		|| _stricmp(node->getAttribute("loop", "0"), "1") == 0;
 
-	// TODO: get overlay positions from xml?
+	m_x = (float) atof(node->getAttribute("x", "0"));
+	m_y = (float) atof(node->getAttribute("y", "0"));
+	m_w = (float) atof(node->getAttribute("w", "1"));
+	m_h = (float) atof(node->getAttribute("h", "1"));
+	m_stretchToAspect = _strcmpi(node->getAttribute("stretchToAspect", "1"), "0") != 0 && _strcmpi(node->getAttribute("stretchToAspect", "1"), "false") != 0;
 
 	// Get material name and load it (must be before openAvi)
 	const char* mat = node->getAttribute("material", "materials/video.material.xml");
@@ -201,15 +201,25 @@ void VideoComponent::render()
 {
 	if (m_playing && m_isOverlay)
 	{
-		// Render the overlay (currently in fullscreen)
+		// Render the overlay
 		const float ww = (float)h3dGetNodeParamI( m_camId, H3DCamera::ViewportWidthI ) /
 	                 (float)h3dGetNodeParamI( m_camId, H3DCamera::ViewportHeightI );
+
+		//take the aspectRation into account for the x pos
+		float x = m_x*ww;
+		float w = m_w;
+		if(m_stretchToAspect)
+		{
+			// and for the width if this is wanted
+			w *= ww;
+		}
+						
 		const float coords[] = 
 		{
-			0, 0, 0, 1.0f,
-			0, 1.0f, 0, 0,
-			ww, 1.0f, 1.0f, 0,
-			ww, 0, 1.0f, 1.0f
+			x, m_y, 0, 1.0f,
+			x, m_y+m_h, 0, 0,
+			x+w, m_y+m_h, 1.0f, 0,
+			x+w, m_y, 1.0f, 1.0f
 		};
 		h3dShowOverlays(coords, sizeof(coords), 1.0f,1.0f,1.0f,1.0f, m_material, 0);
 	}
@@ -262,16 +272,9 @@ void VideoComponent::convertFrameData(unsigned char* src, unsigned char* dst)
 
 bool VideoComponent::openAvi(const std::string& filename)
 {
-	if (m_playing)
-	{
-		// Still playing, so stop it
-		stopAvi();
-	}
-	if (m_pgf)
-	{
-		// Already opened a video so close it first
-		closeAvi();
-	}
+	// Stop any currently loaded avi
+	closeAvi();
+
 	AVIFileInit();							// Opens The AVIFile Library
 	// Opens The AVI Stream
 	if (AVIStreamOpenFromFile(&m_pavi, filename.c_str(), streamtypeVIDEO, 0, OF_READ, NULL) !=0)
@@ -436,46 +439,56 @@ bool VideoComponent::grabAviFrame(int frame)
 
 void VideoComponent::stopAvi()
 {
-	if (m_originalSampler != 0 && m_samplerIndex != -1 && m_material != 0)
-		// Reset original sampler texture
-		h3dSetResParamI(m_material, H3DMatRes::SamplerElem, m_samplerIndex, H3DMatRes::SampTexResI, m_originalSampler);
-
-	if (m_hasAudio)
+	if (m_playing)
 	{
-		// Stopping a sound is done by setting the gain to 0
-		GameEvent stopSound(GameEvent::E_SET_SOUND_GAIN, &GameEventData(0.0f), this);
-		m_owner->executeEvent(&stopSound);
+		if (m_originalSampler != 0 && m_samplerIndex != -1 && m_material != 0)
+			// Reset original sampler texture
+			h3dSetResParamI(m_material, H3DMatRes::SamplerElem, m_samplerIndex, H3DMatRes::SampTexResI, m_originalSampler);
+
+		if (m_hasAudio)
+		{
+			// Stopping a sound is done by setting the gain to 0
+			GameEvent stopSound(GameEvent::E_SET_SOUND_GAIN, &GameEventData(0.0f), this);
+			m_owner->executeEvent(&stopSound);
+		}
+		m_playing = false;
 	}
-	m_playing = false;
 }
 
 void VideoComponent::closeAvi()
 {
-	delete[] m_bgraData;
-	m_bgraData = 0x0;
-	if (m_hBitmap)
-		DeleteObject(m_hBitmap);					// Delete The Device Dependant Bitmap Object
+	// Stop it first as it might still be playing
+	stopAvi();
+
+	// Unload the video if there is already one
 	if (m_pgf)
-		AVIStreamGetFrameClose(m_pgf);				// Deallocates The GetFrame Resources
-	m_pgf = 0x0;
-	if (m_pavi)
-		AVIStreamRelease(m_pavi);					// Release The Stream
-	AVIFileExit();								// Release The File
-	if (m_videoTexture)
 	{
-		// Remove video texture
-		h3dRemoveResource(m_videoTexture);
-		// And release it if unused now (should be, else we can't create the same again)
-		h3dReleaseUnusedResources();		
-		m_videoTexture = 0;
-		m_originalSampler = 0;
-		m_samplerIndex = 0;
-	}
-	if (m_hasAudio)
-	{
-		// Set an empty sound for releasing the old one
-		GameEvent clearSound(GameEvent::E_SET_SOUND_FILE, &GameEventData(""), this);
-		m_owner->executeEvent(&clearSound);
-		m_hasAudio = false;
+		delete[] m_bgraData;
+		m_bgraData = 0x0;
+		if (m_hBitmap)
+			DeleteObject(m_hBitmap);					// Delete The Device Dependant Bitmap Object
+		if (m_pgf)
+			AVIStreamGetFrameClose(m_pgf);				// Deallocates The GetFrame Resources
+		m_pgf = 0x0;
+		if (m_pavi)
+			AVIStreamRelease(m_pavi);					// Release The Stream
+		AVIFileExit();								// Release The File
+		if (m_videoTexture)
+		{
+			// Remove video texture
+			h3dRemoveResource(m_videoTexture);
+			// And release it if unused now (should be, else we can't create the same again)
+			h3dReleaseUnusedResources();		
+			m_videoTexture = 0;
+			m_originalSampler = 0;
+			m_samplerIndex = 0;
+		}
+		if (m_hasAudio)
+		{
+			// Set an empty sound for releasing the old one
+			GameEvent clearSound(GameEvent::E_SET_SOUND_FILE, &GameEventData(""), this);
+			m_owner->executeEvent(&clearSound);
+			m_hasAudio = false;
+		}
 	}
 }

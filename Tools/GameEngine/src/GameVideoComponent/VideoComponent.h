@@ -106,6 +106,9 @@ private:
 
 	int					m_camId;							// Current horde camera id
 
+	float				m_x, m_y, m_w, m_h;					// The overlay position and extent
+	bool				m_stretchToAspect;					// Wether the overlay width should be stretched to the aspect
+
 };
 
 #endif

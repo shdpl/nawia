@@ -42,6 +42,16 @@ namespace GameEngine
 		}
 	}
 
+	VIDEOPLUGINEXP void stopAvi( unsigned int entityWorldID)
+	{
+		VideoComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( component = static_cast<VideoComponent*>(entity->component("VideoComponent")) ) != 0 )
+		{
+			component->stopAvi();
+		}
+	}
+
 	VIDEOPLUGINEXP void OpenAvi( unsigned int entityWorldID, const char* file)
 	{
 		VideoComponent* component = 0;
