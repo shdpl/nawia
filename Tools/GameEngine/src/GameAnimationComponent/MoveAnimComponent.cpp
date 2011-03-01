@@ -142,7 +142,7 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 
 	// Rotation offset of 180° is standard, as most characters are modeled looking towards the user from the screen
 	// But walking forward is meant to be walking "into" the screen
-	m_rotationOffset = (float) atof(description->getAttribute("rotationOffset", "180"));
+	m_rotationOffset = degToRad((float) atof(description->getAttribute("rotationOffset", "180")));
 
 
 	// Play animation on stage 10 to not disturb other animations on this model
@@ -175,7 +175,9 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 
 	// Threshold for the speed from which on the run animation is used,
 	// also represents the translation speed at which the setted animation playback speed is applied
-	m_runThreshold = static_cast<float>(atof(description->getAttribute("runThreshold", "999"))); 
+	m_runThreshold = static_cast<float>(atof(description->getAttribute("runThreshold", "999")));
+
+	m_moveThreshold = static_cast<float>(atof(description->getAttribute("moveThreshold", "0.0005"))); 
 	
 	// Idle anims have weight 0, means they are only played if there is no other animation playing
 	m_idleAnimCount = 0;
@@ -220,7 +222,7 @@ void MoveAnimComponent::update(float fps)
 		float speed = m_speed * dist.length()* fps;
 		static const float pi3rd = Math::Pi / 3;
 		
-		if (m_runAnim)
+		//if (m_runAnim)
 		{
 			// Currently the average speed is only used for the run animation
 			m_lastSpeeds[m_currentSpeedIndex] = speed;
@@ -234,11 +236,11 @@ void MoveAnimComponent::update(float fps)
 		}
 
 		// Object is moving
-		if( speed >= 0.0005f )
+		if( m_avgSpeed >= m_moveThreshold && speed > 0)
 		{
 			AnimationSetup* nextAnim = 0x0;
 			// Direction in radiants = angle of walking direction - (y-rotation of the object + rotation offset)
-			float direction = atan2( -dist.x, -dist.z ) - (m_rotation.y + degToRad(m_rotationOffset));
+			float direction = atan2( -dist.x, -dist.z ) - (m_rotation.y + m_rotationOffset);
 			
 			// Normalize direction angle to [-PI, +PI]
 			// To get less if cases
@@ -307,7 +309,7 @@ void MoveAnimComponent::update(float fps)
 		//update animation speed (only none idle animations)
 		if( m_activeAnim != 0x0 && !m_idle)
 		{
-			GameEvent updateAnim(GameEvent::E_UPDATE_ANIM, &AnimationUpdate(m_activeAnim->JobID, GameEngineAnimParams::Speed, m_activeAnim->Speed * speed, 0), 0);
+			GameEvent updateAnim(GameEvent::E_UPDATE_ANIM, &AnimationUpdate(m_activeAnim->JobID, GameEngineAnimParams::Speed, m_activeAnim->Speed * m_avgSpeed, 0), 0);
 			if (m_owner->checkEvent(&updateAnim))
 				m_owner->executeEvent(&updateAnim);
 		}

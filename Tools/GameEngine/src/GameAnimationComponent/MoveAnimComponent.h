@@ -165,8 +165,10 @@ private:
 	/// Constant scale factor for moving animation
 	float m_speed;
 
-	// translation speed at which the run animation is turned on
+	// translation speed at which the run animation is turned on instead of the move animation
 	float m_runThreshold;
+	// translation speed at which the idle animation is switched to the move animation
+	float m_moveThreshold;
 
 
 	enum Constants
