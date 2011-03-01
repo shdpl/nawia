@@ -205,7 +205,7 @@ namespace GameEngine
 					XMLNode& node = attachment.getChildNode(i);
 					GameComponent* component = GameModules::componentRegistry()->createComponent(node.getName(), entity);
 					if( component ) component->loadFromXml( &node );
-					else GameLog::errorMessage( "No plugin found to handle '%s' nodes", node.getName() );
+					else GameLog::warnMessage( "No plugin found to handle '%s' nodes", node.getName() );
 				}
 				// TODO Extras
 				return entity->worldId();
