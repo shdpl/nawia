@@ -57,6 +57,7 @@ namespace GameEngine
 	/***********      Initialization of a new  Scene *********/
 	GAMEENGINE_API bool init()
 	{
+		GameLog::logMessage("----GameEngine initializing...----");
 		if (Initialized)
 		{
 			GameLog::warnMessage("%s, Line %d: GameEngine already initialized", __FILE__, __LINE__);
@@ -66,6 +67,7 @@ namespace GameEngine
 		if( !GameModules::plugInManager()->init() )
 			return false;
 
+		GameLog::logMessage("----GameEngine successfuly initialized----");
 		Initialized = true;
 		return true;
 	}
@@ -129,6 +131,7 @@ namespace GameEngine
 	{
 		if (sceneFile == 0) return false;
 
+		GameLog::logMessage("----Loading scene file %s----", sceneFile);
 		// get path of file loaded
 		std::string fileNameStr = sceneFile;
 		size_t lastSeparator1 = fileNameStr.find_last_of( '/' );
@@ -174,6 +177,7 @@ namespace GameEngine
 		//TimingManager::reset();
 		// Update to initialize attached entities
 		GameModules::componentRegistry()->updateComponentManagers();
+		GameLog::logMessage("----Finished loading scene file %s----", sceneFile);
 		return true;
 	}
 
