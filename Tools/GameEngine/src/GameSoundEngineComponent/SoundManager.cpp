@@ -92,18 +92,33 @@ SoundManager::SoundManager() : m_activeListener(0)
 		return;
 	}
 	alcMakeContextCurrent(soundContext);
-	printf ("Sound device: %s\n",
-		alcGetString(soundDevice, ALC_DEFAULT_DEVICE_SPECIFIER));  
-	//get OpenAL version
+
+	// Get some information about OpenAL and the sound device
+	const char* devName = alcGetString(soundDevice, ALC_DEFAULT_DEVICE_SPECIFIER);
 	ALint lMajor, lMinor;
 	alcGetIntegerv( soundDevice, ALC_MAJOR_VERSION, 1, &lMajor );
 	alcGetIntegerv( soundDevice, ALC_MINOR_VERSION, 1, &lMinor );
-	printf( "\nOpenAL Version %d.%d\n", lMajor, lMinor );
 	if((error_code = alcGetError(soundDevice)) != AL_NO_ERROR) 
 	{
 		DisplayALError("Error getting AL Version: ", error_code);
 		return;
 	}
+	printf("Sound device: %s - OpenAL version %d.%d\n", devName, lMajor, lMinor);
+	GameLog::logMessage("--Sound device: %s - OpenAL version %d.%d--", devName, lMajor, lMinor);
+	ALCint size;
+	alcGetIntegerv( soundDevice, ALC_ATTRIBUTES_SIZE, 1, &size);
+	ALCint* attrs = new ALCint[size];
+	alcGetIntegerv(soundDevice, ALC_ALL_ATTRIBUTES, size, attrs);
+	ALCint maxMono = 0, maxStereo = 0;
+	for (int i=0; i<size; ++i)
+	{
+		if (attrs[i] == ALC_MONO_SOURCES && i+1 < size)
+			maxMono = attrs[i+1];
+		else if (attrs[i] == ALC_STEREO_SOURCES && i+1 < size)
+			maxStereo = attrs[i+1];
+	}
+	delete[] attrs;
+	GameLog::logMessage("--Sound device supports maximally %d mono and %d stereo source(s)--", maxMono, maxStereo);
 
 	// Position of the CAM (Listener).
 	float pos[] = {0.0, 0.0, 0.0};

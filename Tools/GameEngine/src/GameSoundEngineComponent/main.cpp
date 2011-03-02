@@ -66,6 +66,8 @@ SOUNDPLUGINEXP void dllRegisterLuaStack( lua_State* L )
 
 SOUNDPLUGINEXP void dllLoadScene( const char* sceneFile )
 {
+	// Remove unused resources as we are loading a new scene
+	SoundResourceManager::instance()->releaseUnusedResources();
 	XMLResults results;
 	XMLNode scene = XMLNode::parseFile( sceneFile, "Configuration", &results);
 	XMLNode& pathes(scene.getChildNode("EnginePath"));

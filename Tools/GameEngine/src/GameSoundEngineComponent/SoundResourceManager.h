@@ -27,11 +27,28 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 #define SOUNDRESOURCE_NUMBUFFERS 4
 
+/**
+* Includes the viseme timings
+*/
+struct Viseme
+{
+	Viseme::Viseme(int start, int end, int index) : m_start(start), m_end(end), m_index(index)
+	{
+		m_duration = end-start;
+	}
+	int m_start, m_end, m_duration;
+	int m_index;
+};
+
 class CWaves;
 class Ogg;
+struct XMLNode;
+struct XMLResults;
+
 class SoundResourceManager
 {
 public:
@@ -50,8 +67,12 @@ public:
 	bool isStream(unsigned int resourceID);
 	void updateBuffer(unsigned int uiSource, unsigned int resourceID);
 
+	unsigned int addPhonemesFile(const char* fileName);
+	unsigned int removePhonemesFile(unsigned int resourceID);
+	void getVisemes(unsigned int resourceID, std::vector<Viseme>* container);
+
 	// This function would release all sound resources that are not currently playing
-	// It is currently not used. Notice that using it would destroy all tagged, preloaded sound files.
+	// Notice that using it would destroy all tagged, preloaded sound files.
 	void releaseUnusedResources();
 	
 	const char* getResourceFileName(unsigned int resourceID);
@@ -69,6 +90,8 @@ protected:
 	static SoundResourceManager* m_instance;
 	SoundResourceManager();
 
+	static bool checkXMLParseResult(const XMLResults& results);
+
 	int loadWave(const char *szWaveFile, unsigned int * uiBuffer, int bufferCount );
 	bool loadWaveToBuffer(const char *szWaveFile, unsigned int * uiBufferID, int bufferCount );
 
@@ -76,23 +99,46 @@ protected:
 	bool loadOggToBuffer(const char *szOggFile, unsigned int * uiBufferID, int bufferCount, int *pOggFileID);
 	bool loadCompleteOggToBuffer(const char *szOggFile, unsigned int * uiBufferID, int *pOggFileID);
 
+	// Add phonemes to an arbitrary viseme container
+	bool loadPhonemesFile(const char* fileName, std::vector<Viseme>* container);
+	void addPhonem(const XMLNode* phonem, std::vector<Viseme>* container);
+
 	/// Resource directory for sound files
 	std::string				 m_directory;
 
 	struct SoundFile
 	{
+		SoundFile()
+		{
+			refCount = 0;
+			numBuffers = 0;
+		}
 		std::string  filename;
 		unsigned int refCount;
 		unsigned int buffers[SOUNDRESOURCE_NUMBUFFERS];
 		int numBuffers;
 		SOUNDRESOURCE_FILETYPE fileType;
-		unsigned int resourceID;
 		bool stream;
 		int oggID;
 	};
 
+	struct PhonemeFile
+	{
+		PhonemeFile()
+		{
+			refCount = 0;
+		}
+		std::vector<Viseme> visemes;
+		std::string fileName;
+		unsigned int refCount;
+	};
+
+	typedef std::map<unsigned int, PhonemeFile>::iterator PFileIter;
+	std::map<unsigned int, PhonemeFile> m_phonemeFiles;
+
 	/// all loaded sound files
-	std::vector<SoundFile>  m_files;
+	typedef std::map<unsigned int, SoundFile>::iterator SFileIter;
+	std::map<unsigned int, SoundFile>  m_files;
 
 	void DisplayALError(char *szText, int errorcode);
 	
@@ -100,7 +146,7 @@ protected:
 
 	Ogg*	m_oggLoader;
 
-	unsigned int m_resourceCount;
+	unsigned int m_resourceCount, m_nextPResID;
 	
 };
 #endif

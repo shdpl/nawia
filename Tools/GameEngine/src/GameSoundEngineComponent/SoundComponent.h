@@ -31,6 +31,8 @@
 #include <string>
 #include <map>
 
+struct Viseme;
+
 /**
  * Component to enable 3D Sound provided by OpenAL
  */
@@ -40,19 +42,6 @@ class SoundComponent : public GameComponent
 
 public:
 	static const float OFF;
-
-	/**
-	 * Includes the viseme timings
-	 */
-	struct Viseme
-	{
-		Viseme::Viseme(int start, int end, int index) : m_start(start), m_end(end), m_index(index)
-		{
-			m_duration = end-start;
-		}
-		int m_start, m_end, m_duration;
-		int m_index;
-	};
 
 	static GameComponent* createComponent( GameEntity* owner );
 
@@ -80,13 +69,11 @@ public:
 	bool setSoundFromUserData(const char* data, int dataSize, int samplesPerSec, int bitsPerSample, int numChannels);
 	// Add phonemes to our viseme container
 	bool loadPhonemesFile(const char* fileName);
-	// Add phonemes to an arbitrary viseme container
-	bool loadPhonemesFile(const char* fileName, std::vector<SoundComponent::Viseme>* container);
 	inline float getDistanceToListener();
 	
 private:
 	// Add the viseme that corresponds to the given phonem to a container
-	void addPhonem(const XMLNode* phonem, std::vector<SoundComponent::Viseme>* container);
+	void addPhonem(const XMLNode* phonem, std::vector<Viseme>* container);
 
 	void startVisemes();
 	void stopVisemes();
@@ -126,12 +113,9 @@ private:
 	bool				m_FACSmapping;
 	std::map<std::string, std::map<int, float>> m_FACSvisemes;
 
-	// Soundfiles loaded from xml, stored by tag
-	typedef std::map<std::string, std::vector<int>>::iterator SoundFileIterator;
-	std::map<std::string, std::vector<int>> m_taggedSoundFiles;
-	// And the related phoneme files
-	typedef std::map<std::string, std::vector<Viseme>>::iterator VisemeIterator;
-	std::map<std::string, std::vector<Viseme>> m_taggedVisemes;
+	// Soundfiles loaded from xml, stored by tag and with soundResourceID, phonemeResourceID
+	typedef std::map<std::string, std::vector<std::pair<int, int>>>::iterator SoundFileIterator;
+	std::map<std::string, std::vector<std::pair<int, int>>> m_taggedSoundFiles;
 
 	float m_startTimeViseme;
 };
