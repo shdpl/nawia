@@ -737,4 +737,21 @@
 		</Files>
 		<Function>repositioning</Function>
 	</Movement>
+	<Gesture>
+		<ID>0047</ID>
+		<Name>German Scratch Head</Name>
+		<Speech></Speech>
+		<Description>Scratch head</Description>
+		<Files gender="female">
+			<File strokeStart="5" strokeEnd="60">Gestures\Female\female_ger_scratch_head.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="5" strokeEnd="60">Gestures\Male\male_ger_scratch_head.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>adaptor</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
 </AnimationLexicon>
