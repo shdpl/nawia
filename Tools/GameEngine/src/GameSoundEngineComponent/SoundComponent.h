@@ -58,10 +58,18 @@ public:
 	void update();
 	void run();
 
+	bool isPlaying();
+
+	// TODO the following functions can currently conflict with the sound manager, needs fixing
+	void pause();
+	void play();
+	void rewind();
+
 	void setEnabled(const bool enabled);
 	void setGain(const float gain);
 	void setLoop(const bool loop);
 	void setPitch(const float x);
+	void setOffset(const float offset);
 	void setRollOff(const float value);
 	void setMaxDist(const float maxDist);
 	void setRefDist(const float value);
@@ -100,6 +108,8 @@ private:
 	float				m_rollOff;
 	float				m_reference_dist;
 	bool				m_loop;
+	// Offset in seconds at which the sound starts playing
+	float				m_offset;
 
 	// Viseme variables
 	float				m_startTimestamp;

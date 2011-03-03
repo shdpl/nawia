@@ -309,6 +309,8 @@ void SoundManager::run()
 
 		//set properties
 		updateALProperties(node);
+		// Additionally the offset as started to play
+		alSourcef( node->m_sourceID, AL_SEC_OFFSET, (node->m_offset>0) ? node->m_offset : 0);
 
 		// And start playing
 		alSourcePlay(sourceID);		

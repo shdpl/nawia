@@ -99,6 +99,14 @@ namespace GameEngine
 			component->setRefDist( x );
 	}
 
+	SOUNDPLUGINEXP void setSoundOffset(unsigned int entityWorldID, float offset)
+	{
+		SoundComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && (component = static_cast<SoundComponent*>(entity->component("Sound3D"))) != 0 ) 
+			component->setOffset(offset);
+	}
+
 	SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* soundFile, const char* phonemesFile/*=0*/)
 	{
 		if( soundFile != 0 )

@@ -90,6 +90,11 @@ namespace GameEngine
 	SOUNDPLUGINEXP void setSoundRefdist(unsigned int entityWorldID, const float x);
 
 	/**
+	 * Sets the Sound Offset
+	 */
+	SOUNDPLUGINEXP void setSoundOffset(unsigned int entityWorldID, float offset);
+
+	/**
 	 * Sets a Sound File to be played (from the media directory)
 	 */
 	//SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* fileName);

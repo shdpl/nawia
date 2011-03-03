@@ -33,6 +33,9 @@
 
 #include <XMLParser/utXMLParser.h>
 
+#include <al.h>
+#include <alc.h>
+
 #include <string>
 
 #include <time.h>
@@ -193,6 +196,7 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 	setRefDist(static_cast<float>(atof(description->getAttribute("refdist", "15.0"))));
 	setPitch(static_cast<float>(atof(description->getAttribute("pitch", "1.0"))));
 	setRollOff(static_cast<float>(atof(description->getAttribute("rolloff", "1.0"))));	
+	setOffset(static_cast<float>(atof(description->getAttribute("offset", "0"))));	
 
 	const char* pFile = description->getAttribute("phonemes");
 	if( pFile )
@@ -456,9 +460,46 @@ void SoundComponent::setLoop(const bool loop)
 	setEnabled( loop );
 }
 
+void SoundComponent::pause()
+{
+	alSourcePause( m_sourceID );
+}
+
+void SoundComponent::play()
+{
+	alSourcePlay( m_sourceID );
+}
+
+void SoundComponent::rewind()
+{
+	alSourceRewind( m_sourceID );
+}
+
+bool SoundComponent::isPlaying()
+{
+	int state = 0;
+	if (m_sourceID != 0)
+		alGetSourcei( m_sourceID, AL_SOURCE_STATE, &state );
+	return state == AL_PLAYING;
+}
+
 void SoundComponent::setPitch(const float x)
 {
 	m_pitch = x;
+}
+
+void SoundComponent::setOffset(const float offset)
+{
+	// Setting the offset needs special handling as it disturbs already playing sounds
+	bool wasPlaying = isPlaying();
+	if (wasPlaying)
+		pause();
+	m_offset = offset;
+	if (wasPlaying)
+	{
+		alSourcef( m_sourceID, AL_SEC_OFFSET, (offset>0) ? offset : 0);
+		play();
+	}
 }
 
 void SoundComponent::setRollOff(const float value)
