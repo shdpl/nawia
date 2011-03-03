@@ -713,4 +713,28 @@
 		</Function>
 		<Restriction></Restriction>  
 	</Gesture>
+	<Movement>
+		<ID>0045</ID>
+		<Name>Sidestep left</Name>
+		<Description>Sidestep to the left (ca. 20cms)</Description>
+		<Files gender="female">
+			<File strokeStart="3" strokeEnd="27">Gestures\Female\female_ger_step_left.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="3" strokeEnd="27">Gestures\Male\male_ger_step_left.anim</File>
+		</Files>
+		<Function>repositioning</Function>
+	</Movement>
+	<Movement>
+		<ID>0046</ID>
+		<Name>Sidestep right</Name>
+		<Description>Sidestep to the right (ca. 20cms)</Description>
+		<Files gender="female">
+			<File strokeStart="3" strokeEnd="27">Gestures\Female\female_ger_step_right.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="3" strokeEnd="27">Gestures\Male\male_ger_step_right.anim</File>
+		</Files>
+		<Function>repositioning</Function>
+	</Movement>
 </AnimationLexicon>
