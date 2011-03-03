@@ -314,9 +314,10 @@ void SoundResourceManager::releaseUnusedResources()
 			{
 				alDeleteBuffers(iter->second.numBuffers, iter->second.buffers);
 			}
-			m_files.erase(iter);
+			iter = m_files.erase(iter);
 		}
-		++iter;
+		else
+			++iter;
 	}
 }
 
