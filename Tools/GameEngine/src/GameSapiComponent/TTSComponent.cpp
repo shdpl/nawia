@@ -248,11 +248,11 @@ void TTSComponent::executeEvent(GameEvent *event)
 
 void TTSComponent::loadFromXml(const XMLNode* description)
 {
-	const char* voice = description->getAttribute("voice", "Microsoft Sam");
 	if( !init() )
 		GameLog::errorMessage("TTSComponent: Failed to initialize Microsoft Text-To-Speech Api");
-	else if( !setVoice(voice) )
-		GameLog::errorMessage("TTSComponent: Failed setting voice '%s'",voice);
+
+	const char* voice = description->getAttribute("voice", "Microsoft Sam");
+	setVoice(voice);
 
 	const char* visemefile = description->getAttribute( "visemefile" );
 	if( visemefile != 0 )
@@ -349,7 +349,7 @@ bool TTSComponent::setVoice(const char* voice)
 	if(  hr != S_OK ) 
 	{
 		pEnum->Release();
-		GameLog::errorMessage("Error initializing TTS: Voice not found:", voice);
+		GameLog::errorMessage("TTSComponent: Failed setting voice (not found?): '%s'", voice);
 		return false;
 	}
 
