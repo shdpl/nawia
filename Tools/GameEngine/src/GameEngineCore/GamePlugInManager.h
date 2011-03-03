@@ -18,7 +18,7 @@
 //
 // GameEngine Core Library of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Volker Wiendl
+// Copyright (C) 2007-2011 Volker Wiendl, Felix Kistler
 // 
 // ****************************************************************************************
 #ifndef GAMEPLUGINMANAGER_H_
@@ -101,17 +101,38 @@ public:
 	 */ 
 	void registerLuaStack( lua_State* L );
 
-	/**
-	 * \brief Loads plugin from directory in an environment variable
-	 *  
-	 */ 
-	void loadPluginFromEnvVar(std::string dllName, std::string envVarName);
-
 private:
 	/// Private Contstructor ( friend class GameModules )
 	GamePlugInManager(); 
 	/// Priate Destructor (friend class GameModules )
 	~GamePlugInManager();
+
+	/**
+	 * \brief Loads plugin from directory in an environment variable
+	 *
+	 * @param dllname the name of the dll (with extension)
+	 * @param envVarName name of the environment variable
+	 */ 
+	void loadPluginFromEnvVar(const char* dllName, const std::string& envVarName);
+
+	/**
+	 * \brief Searches and loads plugin dlls with their name pattern in the
+	 * given path
+	 * @param path the directory path for the dll (ending with a slash)
+	 * @return true if at least one matching dll was found
+	 * 
+	 */ 
+	bool searchPluginDlls(const char* path);
+
+	/**
+	 * \brief Tries to load the dll with the given filepath
+	 *
+	 * @param path the directory path for the dll (ending with a slash)
+	 * @param dllname the name of the dll (with extension)
+	 * @return true if the loading was successful
+	 * 
+	 */
+	bool loadDll(const char* path, const char* dllname);
 
 	/// All currently loaded plugin instances
 	std::map<std::string, DynLib*> m_plugIns;

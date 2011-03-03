@@ -23,10 +23,6 @@
 // ****************************************************************************************
 #include "GameLog.h"
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 #include <map>
 #include <string>
 #include <fstream>
@@ -41,16 +37,16 @@ namespace GameLog
 	{
 		char* path_end;
 		/* Read the target using GetModuleFileName  */
-#ifdef WIN32
+#ifdef PLATFORM_WIN
 		if (GetModuleFileName(NULL, buffer, (DWORD)len)<= 0)
-#elif defined LINUX
+#elif defined PLATFORM_LINUX
 		if (readlink (“/proc/self/exe”, buffer, len) <= 0)
 #endif
 			return -1;
 		/* Find the last occurrence of a backward slash, the path separator.  */
-#ifdef WIN32
+#ifdef PLATFORM_WIN
 		path_end = strrchr (buffer, '\\');
-#elif defined LINUX
+#elif defined PLATFORM_LINUX
 		path_end = strrchr (buffer, '/');
 #endif  
 		if (path_end == NULL)
