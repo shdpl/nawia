@@ -59,12 +59,12 @@ public:
 	void run();
 
 	bool isPlaying();
+	bool isPaused();
 
 	// Pause an already playing sound
 	void pause();
 	// Resumes a sound that was paused
 	void resume();
-	void rewind();
 
 	void setEnabled(const bool enabled);
 	void setGain(const float gain);
@@ -120,6 +120,7 @@ private:
 	bool				m_isSpeaking;
 	bool				m_changedBlending;
 	int					m_time;
+	float				m_speakingPausedAt;
 
 	// True falls der Sound automatische gestoppt wurde (vom sound manager)
 	bool				m_soundInterrupted;

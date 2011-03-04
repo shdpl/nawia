@@ -78,7 +78,7 @@ SoundComponent::SoundComponent(GameEntity *owner) : GameComponent(owner, "Sound3
 	m_lastTimeStamp(0), m_sourceID(0), m_startTimestamp(0.0f), m_curViseme(0), m_changedBlending(false), m_time(0),
 	m_prevViseme(0), m_visemeBlendFacPrev(1.0f), m_visemeBlendFac(1.0f), m_visemeIndex(-1), m_isSpeaking(false),
 	m_bufferCount(0), m_resourceID(0), m_stream(false), m_gain(0.0f), m_initialGain(0.0f), m_FACSmapping(false),
-	m_soundInterrupted(false)
+	m_soundInterrupted(false), m_speakingPausedAt(0)
 {
 	owner->addListener(GameEvent::E_SET_ENABLED, this);
 	owner->addListener(GameEvent::E_SET_SOUND_GAIN, this);	
@@ -298,7 +298,7 @@ void SoundComponent::update()
 		m_prevViseme = 0;
 	}
 
-	if(m_isSpeaking && m_visemes[m_visemeIndex].m_end < m_time)
+	if(m_isSpeaking && m_speakingPausedAt <= 0 && m_visemes[m_visemeIndex].m_end < m_time)
 	{
 		// Viseme ended
 
@@ -370,10 +370,9 @@ void SoundComponent::run()
 		SoundResourceManager::instance()->updateBuffer(m_sourceID, m_resourceID);
 
 	// update visemes
-	if( !m_visemes.empty() && m_isSpeaking)
+	if( !m_visemes.empty() && m_isSpeaking && m_speakingPausedAt <= 0)
 	{
 		// Calculate interpolation
-		//float step = (1.0f / GameEngine::FPS() * 1000) / (m_visemes[m_visemeIndex].m_duration);
 		float timeStep = (GameEngine::timeStamp() - m_lastTimeStamp) * 1000.0f;
 
 		// Calc current viseme
@@ -448,11 +447,8 @@ void SoundComponent::setEnabled(bool enable)
 		}
 		else
 		{
-			int state = 0;
-			if (m_sourceID != 0)
-				alGetSourcei( m_sourceID, AL_SOURCE_STATE, &state );
-			if (state == AL_PAUSED)
-				alSourcePlay( m_sourceID );
+			// Resume if paused
+			resume();
 		}
 	}	
 	else if( !enable )
@@ -487,26 +483,27 @@ void SoundComponent::setLoop(const bool loop)
 
 void SoundComponent::pause()
 {
-	int state = 0;
-	if (m_sourceID != 0)
-		alGetSourcei( m_sourceID, AL_SOURCE_STATE, &state );
-	if (state == AL_PLAYING)
+	if (isPlaying())
+	{
 		alSourcePause( m_sourceID );
+		if (m_isSpeaking)
+			m_speakingPausedAt = GameEngine::timeStamp() - m_startTimestamp;
+	}
 }
 
 void SoundComponent::resume()
 {
-	int state = 0;
-	if (m_sourceID != 0)
-		alGetSourcei( m_sourceID, AL_SOURCE_STATE, &state );
-	if (state == AL_PAUSED)
+	if (isPaused())
+	{
 		alSourcePlay( m_sourceID );
+		if (m_isSpeaking)
+		{
+			m_startTimestamp = GameEngine::timeStamp() - m_speakingPausedAt;
+			m_speakingPausedAt = 0;
+		}
+	}
 }
 
-void SoundComponent::rewind()
-{
-	alSourceRewind( m_sourceID );
-}
 
 bool SoundComponent::isPlaying()
 {
@@ -514,6 +511,14 @@ bool SoundComponent::isPlaying()
 	if (m_sourceID != 0)
 		alGetSourcei( m_sourceID, AL_SOURCE_STATE, &state );
 	return state == AL_PLAYING;
+}
+
+bool SoundComponent::isPaused()
+{
+	int state = 0;
+	if (m_sourceID != 0)
+		alGetSourcei( m_sourceID, AL_SOURCE_STATE, &state );
+	return state == AL_PAUSED;
 }
 
 void SoundComponent::setPitch(const float x)
@@ -694,10 +699,10 @@ void SoundComponent::startVisemes()
 		m_visemeIndex = 0;
 
 		m_curViseme = m_visemes[m_visemeIndex].m_index;
-		//resetPreviousViseme();
 		m_visemeBlendFacPrev = 0.0f;
 		m_visemeBlendFac = 0.0f;
 		m_isSpeaking = true;
+		m_speakingPausedAt = 0;
 	}
 }
 
@@ -714,6 +719,7 @@ void SoundComponent::stopVisemes()
 		m_time = 0;
 		m_visemeIndex = -1;
 		m_isSpeaking = false;
+		m_speakingPausedAt = 0;
 	}
 }
 

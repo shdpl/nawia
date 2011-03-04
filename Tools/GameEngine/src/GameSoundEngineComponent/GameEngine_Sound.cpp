@@ -90,18 +90,6 @@ namespace GameEngine
 		}		
 	}
 
-	SOUNDPLUGINEXP void rewindSound(unsigned int entityWorldID)
-	{		
-		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
-		if( entity )
-		{
-			SoundComponent* component = static_cast<SoundComponent*>(entity->component("Sound3D"));
-			if( component )
-				component->rewind();
-		}		
-	}
-
-
 	SOUNDPLUGINEXP void setSoundGain(unsigned int entityWorldID, const float gain)
 	{
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_SET_SOUND_GAIN, &GameEventData( gain ), 0) );

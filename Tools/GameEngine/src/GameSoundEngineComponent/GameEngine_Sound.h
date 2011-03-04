@@ -73,12 +73,6 @@ namespace GameEngine
 	SOUNDPLUGINEXP void stopSound(unsigned int entityWorldID);
 
 	/**
-	 * Rewinds a sound
-	 * @param entityWorldID the entity that is playing the sound
-	 */
-	SOUNDPLUGINEXP void rewindSound(unsigned int entityWorldID);
-	
-	/**
 	 * Sets the Sound Velocity
 	 */
 	SOUNDPLUGINEXP void setSoundVelocity(unsigned int entityWorldID, float x, float y, float z);
