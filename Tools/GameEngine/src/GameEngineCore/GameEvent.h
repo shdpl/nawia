@@ -290,8 +290,12 @@ public:
 		E_INTERACT_PARTNER,		/// Informs an Entity that another Entity is interacting with it and causes reactions for the interaction
 		E_SET_SOUND_GAIN,		/// Sets the sound gain
 		E_SET_SOUND_LOOP,		/// Sets the sound to loop
-		E_SET_SOUND_FILE,		/// Sets a sound file
+		E_SET_SOUND_OFFSET,		/// Sets the offset of a sound
+		E_SET_SOUND_FILE,		/// Sets a sound file, also starts playing it
 		E_SET_SOUND_WITH_USER_DATA, /// Sets a sound already providing the decoded data
+		E_PLAY_SOUND,			/// Plays or resumes the currently set sound
+		E_PAUSE_SOUND,			/// Pauses a currently playing sound
+		E_STOP_SOUND,			/// Stops a currently playing sound
 		E_SET_PHONEMES_FILE,	/// Sets a phonemes file
 		E_SET_ENABLED,			/// Enables components (wether the component should be rendered/updated or not)	
 		E_PICKUP,				/// Attaches an entity under the child scene node of another entity

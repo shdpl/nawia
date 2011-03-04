@@ -98,12 +98,13 @@ namespace GameLog
 
 		string pathStr(path);
 
-		if (pathStr.back() != '\\' && pathStr.back() != '/')
+		const char lastChar = pathStr[pathStr.length()-1];
+		if (lastChar != '\\' && lastChar != '/')
 			pathStr += "\\";
 
 		pathStr += name + ".htm";
 
-		ofstream* output = new ofstream(pathStr, ios::trunc);
+		ofstream* output = new ofstream(pathStr.c_str(), ios::trunc);
 		if (!output->is_open() || !output->good())
 			return false;
 
