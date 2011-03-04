@@ -42,8 +42,6 @@
 
 using namespace std;
 
-#define sq(x) (x)*(x)
-
 const float SoundComponent::OFF = 0.0f;
 
 const char *visemeMapping[22] = {
@@ -79,7 +77,8 @@ GameComponent* SoundComponent::createComponent( GameEntity* owner )
 SoundComponent::SoundComponent(GameEntity *owner) : GameComponent(owner, "Sound3D"), m_buffer(NULL), 
 	m_lastTimeStamp(0), m_sourceID(0), m_startTimestamp(0.0f), m_curViseme(0), m_changedBlending(false), m_time(0),
 	m_prevViseme(0), m_visemeBlendFacPrev(1.0f), m_visemeBlendFac(1.0f), m_visemeIndex(-1), m_isSpeaking(false),
-	m_bufferCount(0), m_resourceID(0), m_stream(false), m_gain(0.0f), m_initialGain(0.0f), m_FACSmapping(false)
+	m_bufferCount(0), m_resourceID(0), m_stream(false), m_gain(0.0f), m_initialGain(0.0f), m_FACSmapping(false),
+	m_soundInterrupted(false)
 {
 	owner->addListener(GameEvent::E_SET_ENABLED, this);
 	owner->addListener(GameEvent::E_SET_SOUND_GAIN, this);	
@@ -90,6 +89,10 @@ SoundComponent::SoundComponent(GameEntity *owner) : GameComponent(owner, "Sound3
 	owner->addListener(GameEvent::E_SET_PHONEMES_FILE, this);
 	owner->addListener(GameEvent::E_GET_SOUND_DISTANCE, this);
 	owner->addListener(GameEvent::E_SET_SOUND_WITH_USER_DATA, this);
+	owner->addListener(GameEvent::E_SET_SOUND_OFFSET, this);
+	owner->addListener(GameEvent::E_PLAY_SOUND, this);
+	owner->addListener(GameEvent::E_PAUSE_SOUND, this);
+	owner->addListener(GameEvent::E_STOP_SOUND, this);
 
 	SoundManager::instance()->addComponent(this);
 }
@@ -147,13 +150,13 @@ void SoundComponent::executeEvent(GameEvent *event)
 	case GameEvent::E_SET_TRANSFORMATION:
 		{
 			const float* absTrans = static_cast<const float*>(event->data());
-			m_pos[0] = absTrans[12]; m_pos[1] = absTrans[13]; m_pos[2] = absTrans[14];
+			m_pos.x = absTrans[12]; m_pos.y = absTrans[13]; m_pos.z = absTrans[14];
 		}
 		break;
 	case GameEvent::E_SET_TRANSLATION:
 		{
 			Vec3f* pos = static_cast<Vec3f*>(event->data());
-			m_pos[0] = pos->x; m_pos[1] = pos->y; m_pos[2] = pos->z;
+			m_pos = *pos;
 		}
 		break;
 	case GameEvent::E_GET_SOUND_DISTANCE:
@@ -163,8 +166,22 @@ void SoundComponent::executeEvent(GameEvent *event)
 		}
 		break;
 	case GameEvent::E_SET_SOUND_WITH_USER_DATA:
-		const SoundResourceData* resData = (SoundResourceData*) event->data();
-		setSoundFromUserData(resData->m_userData, resData->m_dataSize, resData->m_samplesPerSec, resData->m_bitsPerSample, resData->m_numChannels);
+		{
+			const SoundResourceData* resData = (SoundResourceData*) event->data();
+			setSoundFromUserData(resData->m_userData, resData->m_dataSize, resData->m_samplesPerSec, resData->m_bitsPerSample, resData->m_numChannels);
+		}
+		break;
+	case GameEvent::E_SET_SOUND_OFFSET:
+		setOffset(*static_cast<const bool*>(event->data()));
+		break;
+	case GameEvent::E_PLAY_SOUND:
+		setEnabled(true);
+		break;
+	case GameEvent::E_PAUSE_SOUND:
+		pause();
+		break;
+	case GameEvent::E_STOP_SOUND:
+		setEnabled(false);
 		break;
 	}
 }
@@ -177,26 +194,23 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 
 	Matrix4f trans;
 	m_owner->executeEvent(&GameEvent(GameEvent::E_TRANSFORMATION, &GameEventData( (float*) trans.x, 16 ), this));
-	m_pos[0] = m_oldPos[0] = trans.x[12];
-	m_pos[1] = m_oldPos[1] = trans.x[13];
-	m_pos[2] = m_oldPos[2] = trans.x[14];
+	m_oldPos = m_pos = Vec3f(trans.x[12], trans.x[13], trans.x[14]);
 	m_lastTimeStamp = GameEngine::timeStamp();
 
 	// stream attribute currently only has influence on ogg files
-	bool oggStream = _stricmp(description->getAttribute("stream", "1"),"true")==0 || _stricmp(description->getAttribute("stream", "1"),"1")==0;
+	bool stream = _stricmp(description->getAttribute("stream", "true"),"true")==0 || _stricmp(description->getAttribute("stream", "1"),"1")==0;
 
 	// To set the gain correctly at loading
 	// You should not change the following order
 	if (file)
-		setSoundFile(file, oggStream);
+		setSoundFile(file, !stream);
 	setGain(static_cast<float>(atof(description->getAttribute("gain", "0.5"))));
 	setLoop(_stricmp(description->getAttribute("loop", "false"),"true")==0 || _stricmp(description->getAttribute("loop", "false"),"1")==0);
-
 	setMaxDist(static_cast<float>(atof(description->getAttribute("maxdist", "9999.0"))));
 	setRefDist(static_cast<float>(atof(description->getAttribute("refdist", "15.0"))));
 	setPitch(static_cast<float>(atof(description->getAttribute("pitch", "1.0"))));
 	setRollOff(static_cast<float>(atof(description->getAttribute("rolloff", "1.0"))));	
-	setOffset(static_cast<float>(atof(description->getAttribute("offset", "0"))));	
+	setOffset(static_cast<float>(atof(description->getAttribute("offset", "0"))));
 
 	const char* pFile = description->getAttribute("phonemes");
 	if( pFile )
@@ -254,6 +268,9 @@ void SoundComponent::loadFromXml(const XMLNode* description)
 	}
 	if (childCount > 0)
 		srand((unsigned int) time(0x0));
+
+	bool enabled = _stricmp(description->getAttribute("autoStart", "1"),"0")!=0 && _stricmp(description->getAttribute("autoStart", "1"),"false")!=0;
+	setEnabled(enabled);
 }
 
 void SoundComponent::update()
@@ -346,12 +363,8 @@ void SoundComponent::update()
 void SoundComponent::run()
 {
 	float deltaT = 1.0f / (GameEngine::timeStamp() - m_lastTimeStamp);
-	m_vel[0] = (m_pos[0] - m_oldPos[0]) * deltaT;
-	m_vel[1] = (m_pos[1] - m_oldPos[1]) * deltaT;
-	m_vel[2] = (m_pos[2] - m_oldPos[2]) * deltaT;
-	m_oldPos[0] = m_pos[0];
-	m_oldPos[1] = m_pos[1];
-	m_oldPos[2] = m_pos[2];	
+	m_vel = (m_pos - m_oldPos) * deltaT;
+	m_oldPos = m_pos;
 
 	if( m_sourceID != 0 && m_stream)
 		SoundResourceManager::instance()->updateBuffer(m_sourceID, m_resourceID);
@@ -421,18 +434,32 @@ void SoundComponent::run()
 	m_lastTimeStamp = GameEngine::timeStamp();
 }
 
-void SoundComponent::setEnabled(bool enabled)
+void SoundComponent::setEnabled(bool enable)
 {	
-	if( enabled && m_gain == OFF )
+	if(enable)
 	{
-		m_gain = m_initialGain;
+		if (m_gain == OFF)
+		{
+			m_gain = m_initialGain;
 
-		// If we have a stream we need to reload it
-		if( m_stream && m_resourceID != 0)
-			SoundResourceManager::instance()->reloadResource(m_resourceID);
+			// If we have a stream we need to reload it
+			if( m_stream && m_resourceID != 0)
+				SoundResourceManager::instance()->reloadResource(m_resourceID);
+		}
+		else
+		{
+			int state = 0;
+			if (m_sourceID != 0)
+				alGetSourcei( m_sourceID, AL_SOURCE_STATE, &state );
+			if (state == AL_PAUSED)
+				alSourcePlay( m_sourceID );
+		}
 	}	
-	else if( !enabled )
+	else if( !enable )
+	{
 		m_gain = OFF;
+		m_soundInterrupted = false;
+	}
 }
 
 void SoundComponent::setGain(const float gain)
@@ -456,18 +483,24 @@ void SoundComponent::setGain(const float gain)
 void SoundComponent::setLoop(const bool loop)
 {
 	m_loop = loop;
-	// Auto start sound if now looping else stop
-	setEnabled( loop );
 }
 
 void SoundComponent::pause()
 {
-	alSourcePause( m_sourceID );
+	int state = 0;
+	if (m_sourceID != 0)
+		alGetSourcei( m_sourceID, AL_SOURCE_STATE, &state );
+	if (state == AL_PLAYING)
+		alSourcePause( m_sourceID );
 }
 
-void SoundComponent::play()
+void SoundComponent::resume()
 {
-	alSourcePlay( m_sourceID );
+	int state = 0;
+	if (m_sourceID != 0)
+		alGetSourcei( m_sourceID, AL_SOURCE_STATE, &state );
+	if (state == AL_PAUSED)
+		alSourcePlay( m_sourceID );
 }
 
 void SoundComponent::rewind()
@@ -498,7 +531,7 @@ void SoundComponent::setOffset(const float offset)
 	if (wasPlaying)
 	{
 		alSourcef( m_sourceID, AL_SEC_OFFSET, (offset>0) ? offset : 0);
-		play();
+		resume();
 	}
 }
 
@@ -543,8 +576,6 @@ bool SoundComponent::setSoundFromUserData(const char* data, int dataSize, int sa
 		memcpy(m_buffer, SoundResourceManager::instance()->getBuffer(m_resourceID), m_bufferCount * sizeof(unsigned int));
 		m_stream = SoundResourceManager::instance()->isStream(m_resourceID); 
 
-		// Don't start the sound immediately
-		m_gain= OFF;
 
 		//Old stream already removed
 		if (!oldStream)
@@ -555,13 +586,17 @@ bool SoundComponent::setSoundFromUserData(const char* data, int dataSize, int sa
 			if (m_resourceID == oldRes)
 				SoundResourceManager::instance()->removeResource(oldRes);
 			// Stop old sound if different
-			else {
+			else
+			{
 				if (m_sourceID != 0)
 					SoundManager::instance()->stopSound(this, true);
 				if (oldRes != 0)
 					SoundResourceManager::instance()->removeResource(oldRes);
 			}
 		}
+
+		// Don't start the sound immediately
+		m_gain= OFF;
 		return true;
 	}
 
@@ -569,7 +604,7 @@ bool SoundComponent::setSoundFromUserData(const char* data, int dataSize, int sa
 	return false;
 }
 
-bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*/)
+bool SoundComponent::setSoundFile(const char* fileName, bool forceNoStream /*= false*/)
 {
 	// Stop old Visemes
 	stopVisemes();
@@ -596,7 +631,7 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 		SoundResourceManager::instance()->getVisemes(resources.second, &m_visemes);
 	}
 	else
-		m_resourceID = SoundResourceManager::instance()->addResource(fileName, !oggStream);
+		m_resourceID = SoundResourceManager::instance()->addResource(fileName, forceNoStream);
 
 	if (m_resourceID != 0)
 	{
@@ -610,8 +645,6 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 		memcpy(m_buffer, SoundResourceManager::instance()->getBuffer(m_resourceID), m_bufferCount * sizeof(unsigned int));
 		m_stream = SoundResourceManager::instance()->isStream(m_resourceID); 
 
-		m_gain= m_initialGain;
-
 		//Old stream already removed
 		if (!oldStream)
 		{
@@ -621,13 +654,15 @@ bool SoundComponent::setSoundFile(const char* fileName, bool oggStream /*= true*
 			if (m_resourceID == oldRes)
 				SoundResourceManager::instance()->removeResource(oldRes);
 			// Stop old sound if different
-			else {
+			else
+			{
 				if (m_sourceID != 0)
 					SoundManager::instance()->stopSound(this, true);
 				if (oldRes != 0)
 					SoundResourceManager::instance()->removeResource(oldRes);
 			}
 		}
+		m_gain= m_initialGain;
 		return true;
 	}
 	else
@@ -686,11 +721,7 @@ float SoundComponent::getDistanceToListener()
 {
 	SoundListenerComponent* listener = SoundManager::instance()->activeListener();
 	if (listener)
-		return sqrtf(
-		sq(m_pos[0] - listener->m_listenerPos[0]) + 
-		sq(m_pos[1] - listener->m_listenerPos[1]) + 
-		sq(m_pos[2] - listener->m_listenerPos[2]));
-
+		return (m_pos - listener->m_listenerPos).length();
 	return 0.0f;
 }
 

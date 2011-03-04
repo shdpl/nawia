@@ -28,29 +28,101 @@ extern "C"
 namespace SoundLua
 {
 	int GameEngine_setSoundFile(lua_State* L)
+	{
+		const int params = lua_gettop(L);
+		if (params < 2)
+			luaL_error(L, "not enough parameters:\nSyntax: setSoundFile(entityWorldID, file)");
+		else
 		{
-			const int params = lua_gettop(L);
-			if (params < 2)
-				luaL_error(L, "not enough parameters:\nSyntax: setSoundFile(entityWorldID, file)");
+			unsigned int entityWorldID = 0;
+			if( lua_type(L, 1) == LUA_TSTRING )
+				entityWorldID = GameEngine::entityWorldID( luaL_checkstring(L,1) );
 			else
+				entityWorldID = static_cast<unsigned int>(luaL_checkint( L, 1 ));
+			if( entityWorldID == 0 )
 			{
-				unsigned int entityWorldID = 0;
-				if( lua_type(L, 1) == LUA_TSTRING )
-					entityWorldID = GameEngine::entityWorldID( luaL_checkstring(L,1) );
-				else
-					entityWorldID = static_cast<unsigned int>(luaL_checkint( L, 1 ));
-				if( entityWorldID == 0 )
-				{
-					luaL_error(L, "Entity %s not found in GameWorld", luaL_checkstring(L, 1));
-					return 0;
-				}
-
-				const char* file = luaL_checkstring(L, 2);
-				GameEngine::setSoundFile(entityWorldID, file);
-				return 1;
+				luaL_error(L, "Entity %s not found in GameWorld", luaL_checkstring(L, 1));
+				return 0;
 			}
-			return 0;
+
+			const char* file = luaL_checkstring(L, 2);
+			GameEngine::setSoundFile(entityWorldID, file);
+			return 1;
 		}
+		return 0;
+	}
+
+	int GameEngine_playSound(lua_State* L)
+	{
+		const int params = lua_gettop(L);
+		if (params < 1)
+			luaL_error(L, "not enough parameters:\nSyntax: playSound(entityWorldID)");
+		else
+		{
+			unsigned int entityWorldID = 0;
+			if( lua_type(L, 1) == LUA_TSTRING )
+				entityWorldID = GameEngine::entityWorldID( luaL_checkstring(L,1) );
+			else
+				entityWorldID = static_cast<unsigned int>(luaL_checkint( L, 1 ));
+			if( entityWorldID == 0 )
+			{
+				luaL_error(L, "Entity %s not found in GameWorld", luaL_checkstring(L, 1));
+				return 0;
+			}
+
+			GameEngine::playSound(entityWorldID);
+			return 1;
+		}
+		return 0;
+	}
+
+	int GameEngine_stopSound(lua_State* L)
+	{
+		const int params = lua_gettop(L);
+		if (params < 1)
+			luaL_error(L, "not enough parameters:\nSyntax: stopSound(entityWorldID)");
+		else
+		{
+			unsigned int entityWorldID = 0;
+			if( lua_type(L, 1) == LUA_TSTRING )
+				entityWorldID = GameEngine::entityWorldID( luaL_checkstring(L,1) );
+			else
+				entityWorldID = static_cast<unsigned int>(luaL_checkint( L, 1 ));
+			if( entityWorldID == 0 )
+			{
+				luaL_error(L, "Entity %s not found in GameWorld", luaL_checkstring(L, 1));
+				return 0;
+			}
+
+			GameEngine::stopSound(entityWorldID);
+			return 1;
+		}
+		return 0;
+	}
+
+	int GameEngine_pauseSound(lua_State* L)
+	{
+		const int params = lua_gettop(L);
+		if (params < 1)
+			luaL_error(L, "not enough parameters:\nSyntax: pauseSound(entityWorldID)");
+		else
+		{
+			unsigned int entityWorldID = 0;
+			if( lua_type(L, 1) == LUA_TSTRING )
+				entityWorldID = GameEngine::entityWorldID( luaL_checkstring(L,1) );
+			else
+				entityWorldID = static_cast<unsigned int>(luaL_checkint( L, 1 ));
+			if( entityWorldID == 0 )
+			{
+				luaL_error(L, "Entity %s not found in GameWorld", luaL_checkstring(L, 1));
+				return 0;
+			}
+
+			GameEngine::pauseSound(entityWorldID);
+			return 1;
+		}
+		return 0;
+	}
 
 
 	static const luaL_reg gameengine_meta_methods[] = {
@@ -59,6 +131,9 @@ namespace SoundLua
 
 	const luaL_reg gameengine_methods[] = {
 		{"setSoundFile",						GameEngine_setSoundFile},
+		{"playSound",							GameEngine_playSound},
+		{"pauseSound",							GameEngine_pauseSound},
+		{"stopSound",							GameEngine_stopSound},
 		{0,0}
 	};
 

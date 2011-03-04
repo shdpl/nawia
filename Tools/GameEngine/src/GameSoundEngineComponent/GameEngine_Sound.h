@@ -53,6 +53,30 @@ namespace GameEngine
 	 * @param enable whether the sound should be enabled or disabled
 	 */
 	SOUNDPLUGINEXP void enableSound(unsigned int entityWorldID, const bool enable);
+
+	/**
+	 * Plays (and enables) or resumes a sound file
+	 * @param entityWorldID the entity that should play the sound
+	 */
+	SOUNDPLUGINEXP void playSound(unsigned int entityWorldID);
+
+	/**
+	 * Pauses a sound file
+	 * @param entityWorldID the entity that is playing the sound
+	 */
+	SOUNDPLUGINEXP void pauseSound(unsigned int entityWorldID);
+
+	/**
+	 * Stops (and disables) a sound file
+	 * @param entityWorldID the entity that is playing the sound
+	 */
+	SOUNDPLUGINEXP void stopSound(unsigned int entityWorldID);
+
+	/**
+	 * Rewinds a sound
+	 * @param entityWorldID the entity that is playing the sound
+	 */
+	SOUNDPLUGINEXP void rewindSound(unsigned int entityWorldID);
 	
 	/**
 	 * Sets the Sound Velocity
@@ -100,7 +124,7 @@ namespace GameEngine
 	//SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* fileName);
 
 	/**
-	 * Sets a Sound and Phonemes File to be played (from the media directory)
+	 * Sets a Sound and Phonemes File and plays them (from the media directory)
 	 * If you only want to set one of them, pass 0 for other argument
 	 */
 	SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* soundFile, const char* phonemesFile=0);

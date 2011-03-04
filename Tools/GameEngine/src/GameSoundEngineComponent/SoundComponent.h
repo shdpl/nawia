@@ -60,9 +60,10 @@ public:
 
 	bool isPlaying();
 
-	// TODO the following functions can currently conflict with the sound manager, needs fixing
+	// Pause an already playing sound
 	void pause();
-	void play();
+	// Resumes a sound that was paused
+	void resume();
 	void rewind();
 
 	void setEnabled(const bool enabled);
@@ -73,7 +74,7 @@ public:
 	void setRollOff(const float value);
 	void setMaxDist(const float maxDist);
 	void setRefDist(const float value);
-	bool setSoundFile(const char* fileName, bool oggStream = true);
+	bool setSoundFile(const char* fileName, bool forceNoStream = false);
 	bool setSoundFromUserData(const char* data, int dataSize, int samplesPerSec, int bitsPerSample, int numChannels);
 	// Add phonemes to our viseme container
 	bool loadPhonemesFile(const char* fileName);
@@ -94,11 +95,11 @@ private:
 	unsigned int		m_resourceID;
 	bool				m_stream;
 	/// Current position of sound 
-	float				m_pos[3];
+	Horde3D::Vec3f		m_pos;
 	/// old position to calculate velocity
-	float				m_oldPos[3];
+	Horde3D::Vec3f		m_oldPos;
 	float				m_lastTimeStamp;
-	float				m_vel[3];
+	Horde3D::Vec3f		m_vel;
 	float				m_pitch;
 	float				m_maxDist;
 	/// current gain of the sound file
@@ -119,6 +120,9 @@ private:
 	bool				m_isSpeaking;
 	bool				m_changedBlending;
 	int					m_time;
+
+	// True falls der Sound automatische gestoppt wurde (vom sound manager)
+	bool				m_soundInterrupted;
 
 	bool				m_FACSmapping;
 	std::map<std::string, std::map<int, float>> m_FACSvisemes;

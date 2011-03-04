@@ -45,8 +45,6 @@
 #include <omp.h>
 #endif
 
-#define sq(x) (x)*(x)
-
 using namespace std;
 
 struct UpdateNode
@@ -191,13 +189,14 @@ void SoundManager::run()
 	if( m_activeListener == 0x0 ) return;
 	
 	m_activeListener->update();
-	alListenerfv(AL_POSITION,		m_activeListener->m_listenerPos);
-	alListenerfv(AL_VELOCITY,		m_activeListener->m_listenerVel);
+	alListenerfv(AL_POSITION,		(float*)&m_activeListener->m_listenerPos);
+	alListenerfv(AL_VELOCITY,		(float*)&m_activeListener->m_listenerVel);
 	alListenerfv(AL_ORIENTATION,    m_activeListener->m_listenerOri);
 	alListenerf(AL_GAIN,			m_activeListener->m_gain);
 	
 	// Create Priority Queue
 	typedef std::pair<float, SoundComponent*> sound;
+	// Priority queue for sounds not playing but with allocated source
 	std::priority_queue<sound> priorityQueue;	
 	
 	// typedef for more readability
@@ -205,7 +204,6 @@ void SoundManager::run()
 	
 	soundIterator end = m_soundNodes.end();
 
-	// fill the priority queue
 	for( soundIterator nodeIter = m_soundNodes.begin(); nodeIter != end; ++nodeIter) 
 	{
 		SoundComponent* node = *nodeIter;	
@@ -214,36 +212,40 @@ void SoundManager::run()
 		if( node->m_resourceID == 0)
 			continue;
 
+		// Let the node update itself
 		node->run();
 
 		// calculate distance between listener and sound node
-		float dist = sqrtf((
-			sq(node->m_pos[0] - m_activeListener->m_listenerPos[0]) + 
-			sq(node->m_pos[1] - m_activeListener->m_listenerPos[1]) + 
-			sq(node->m_pos[2] - m_activeListener->m_listenerPos[2])));	
+		float dist = node->getDistanceToListener();
 
 		//printf("posofsound %f %f %f\n",(*nodeIter)->m_pos.x,(*nodeIter)->m_pos.y,(*nodeIter)->m_pos.z );
-		// check if there are sounds not playing but with allocated source
+		// Now check if there are sounds not playing but with allocated source
 		if (node->m_sourceID != 0)
 		{
 			if( node->m_gain == SoundComponent::OFF // if gain has been set to zero during the last update iteration...
-				|| node->m_maxDist < dist) // or if the node is playing but out of scope
+				|| dist > node->m_maxDist) // or if the node is playing but out of scope
 			{
-				stopSound(node, true); // ...stop the sound
+				stopSound(node, true); // ...stop the sound (but delay event)
+				node->m_soundInterrupted = dist > node->m_maxDist;
 			}
-			ALenum state = AL_STOPPED;
-			if( node->m_sourceID != 0 )
+			else
+			{
+				ALenum state = AL_STOPPED;
 				alGetSourcei(node->m_sourceID, AL_SOURCE_STATE, &state);
-			// set gain of stopped sources to OFF
-			if (state==AL_STOPPED)
-				node->m_gain = SoundComponent::OFF;
-		}				
-		float priority = node->m_gain / ((dist > 0.0) ? dist : 0.00001f);
-		if (priority > 0)	priorityQueue.push(sound(priority, node)); // insert it to the priority queue 
+				// set gain of stopped sources to OFF
+				if (state==AL_STOPPED)
+					node->m_gain = SoundComponent::OFF;
+			}
+		}
+		// for interrupted looping nodes, take the initial gain for the priority, as we my want to start them again
+		float gain = (node->m_soundInterrupted && node->m_loop) ? node->m_initialGain : node->m_gain;
+		float priority = gain / ((dist > 0.0) ? dist : 0.00001f);
+		if (priority > 0)
+			priorityQueue.push(sound(priority, node)); // insert it to the priority queue 
 		//printf("Distance %.4f\n", dist) ;
 	}
 
-	std::vector<SoundComponent*> playingSounds;
+	std::vector<SoundComponent*> soundsToPlay;
 	int accociated = 0;
 	// Configure the first m_sources.size() sounds ( maximum number of parallel sounds )
 	const size_t numSources = m_sources.size();
@@ -252,15 +254,19 @@ void SoundManager::run()
 		SoundComponent* const node = priorityQueue.top().second;
 		priorityQueue.pop(); // Remove node from queue
 		if (node->m_sourceID == 0) // Should be played but not yet started
-			playingSounds.push_back(node); // Push to vector for playing 
+		{
+			// Check again for max distance
+			if (node->getDistanceToListener() < node->m_maxDist)
+				soundsToPlay.push_back(node); // Push to vector for playing 
+		}
 		else // Already playing
 		{
 			// only update properties
 			updateALProperties(node);
 		}
 	}
-	// Check for sounds playing, but with a priority less than the nodes in playingSounds
-	while(!priorityQueue.empty() && m_sourcesAvailable.size() < playingSounds.size())
+	// Check for sounds playing, but with a priority less than the nodes in soundsToPlay
+	while(!priorityQueue.empty() && m_sourcesAvailable.size() < soundsToPlay.size())
 	{
 		SoundComponent* const node = priorityQueue.top().second;
 		priorityQueue.pop();
@@ -268,15 +274,16 @@ void SoundManager::run()
 		{
 			// ...stop the sound
 			stopSound(node, true);
-			node->m_gain = SoundComponent::OFF;
+			// And set interrupted
+			node->m_soundInterrupted = true;
 		}
 	}
 
 	// typedef for more readability
-	typedef std::vector<SoundComponent*>::iterator playingSoundIter;
+	typedef std::vector<SoundComponent*>::iterator SoundsToPlayIter;
 
 	// play the sounds that don't have a source buffer yet
-	for( playingSoundIter iter = playingSounds.begin(); iter < playingSounds.end() && !m_sourcesAvailable.empty(); iter++) 
+	for( SoundsToPlayIter iter = soundsToPlay.begin(); iter < soundsToPlay.end() && !m_sourcesAvailable.empty(); iter++) 
 	{
 
 		SoundComponent* const node = *iter;
@@ -285,6 +292,11 @@ void SoundManager::run()
 
 		// Set source
 		node->m_sourceID = sourceID; 
+
+		node->m_soundInterrupted = false;
+
+		if (node->m_gain == SoundComponent::OFF)
+			node->m_gain = node->m_initialGain;
 		
 		//start Viseme playback
 		node->startVisemes();
@@ -328,13 +340,13 @@ void SoundManager::updateALProperties(SoundComponent* node)
 	// alSourcef (sourceID, AL_MIN_GAIN,			0.0);
 	// alSourcef (sourceID, AL_MAX_GAIN,			1.0	);
 	alSourcef (node->m_sourceID, AL_GAIN,				node->m_gain);
-	alSourcefv(node->m_sourceID, AL_POSITION,			node->m_pos);
-	alSourcefv(node->m_sourceID, AL_VELOCITY,			node->m_vel);
+	alSourcefv(node->m_sourceID, AL_POSITION,			(float*)&node->m_pos);
+	alSourcefv(node->m_sourceID, AL_VELOCITY,			(float*)&node->m_vel);
 	alSourcei (node->m_sourceID, AL_LOOPING,			node->m_loop ? AL_TRUE : AL_FALSE);
 	alSourcef (node->m_sourceID, AL_MAX_DISTANCE,		node->m_maxDist);
 	alSourcef (node->m_sourceID, AL_ROLLOFF_FACTOR,		node->m_rollOff);
 	alSourcef (node->m_sourceID, AL_REFERENCE_DISTANCE,	node->m_reference_dist);
-	//printf("soundparam pos: %f %f %f\n", node->m_pos[0], node->m_pos[1] , node->m_pos[2]);
+	//printf("soundparam pos: %f %f %f\n", node->m_pos.x, node->m_pos.y , node->m_pos.z);
 	//printf("soundparam: id %i gain %f maxdist %f\n", node->m_sourceID, node->m_gain, node->m_maxDist);
 }
 
@@ -353,7 +365,6 @@ void SoundManager::removeComponent(SoundComponent* sound)
 		if( sound->m_sourceID != 0 )
 		{
 			stopSound(sound);
-			sound->m_gain = SoundComponent::OFF;
 		}
 		m_soundNodes.erase(iter);		
 	}
@@ -398,6 +409,9 @@ void SoundManager::stopSound(SoundComponent* sound, bool delayEvent /*= false*/)
 
 	// reset source
 	sound->m_sourceID = 0;
+
+	// And set gain to zero if not already done
+	sound->m_gain = SoundComponent::OFF;
 }
 
 void SoundManager::DisplayALError(const char *szText, int errorcode)

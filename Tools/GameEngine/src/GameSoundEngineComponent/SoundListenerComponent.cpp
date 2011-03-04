@@ -45,15 +45,7 @@ m_gain(1.0f), m_initialGain(1.0f)
 	owner->addListener(GameEvent::E_SET_TRANSFORMATION, this);
 	owner->addListener(GameEvent::E_SET_TRANSLATION, this);
 
-	// Position of the CAM (Listener).
-	m_listenerPos[0] = 0.0;
-	m_listenerPos[1] = 0.0;
-	m_listenerPos[2] = 0.0;
-	// Velocity of the CAM (Listener).
-	m_listenerVel[0] = 0.0;
-	m_listenerVel[1] = 0.0;
-	m_listenerVel[2] = 0.0;
-	// Orientation of the CAM (Listener). (first 3 elements are "at", second 3 are "up" (only 1,0,-1 allowed))
+	// Init Orientation of the CAM (Listener). (first 3 elements are "at", second 3 are "up" (only 1,0,-1 allowed))
 	m_listenerOri[0] = 0.0;
 	m_listenerOri[1] = 0.0;
 	m_listenerOri[2] = -1.0;
@@ -121,9 +113,9 @@ void SoundListenerComponent::loadFromXml(const XMLNode* description)
 void SoundListenerComponent::update()
 {
 	float deltaT = 1.0f / (GameEngine::timeStamp() - m_lastTimeStamp);
-	m_listenerVel[0] = (m_listenerPos[0] - m_tx) * deltaT;
-	m_listenerVel[1] = (m_listenerPos[1] - m_ty) * deltaT;
-	m_listenerVel[2] = (m_listenerPos[2]- m_tz) * deltaT;
+	m_listenerVel.x = (m_listenerPos[0] - m_tx) * deltaT;
+	m_listenerVel.y = (m_listenerPos[1] - m_ty) * deltaT;
+	m_listenerVel.z = (m_listenerPos[2]- m_tz) * deltaT;
 	m_tx = m_listenerPos[0]; m_ty = m_listenerPos[1]; m_tz = m_listenerPos[2];
 	m_lastTimeStamp = GameEngine::timeStamp();
 }

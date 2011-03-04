@@ -67,9 +67,9 @@ private:
 	float m_tx, m_ty, m_tz;
 
 	// Position of the Listener.
-	float				m_listenerPos[3];
+	Horde3D::Vec3f				m_listenerPos;
 	// Velocity of the Listener.
-	float				m_listenerVel[3];
+	Horde3D::Vec3f				m_listenerVel;
 	// Orientation of the Listener. (first 3 elements are "at", second 3 are "up" (only 1,0,-1 allowed))
 	float				m_listenerOri[6];
 

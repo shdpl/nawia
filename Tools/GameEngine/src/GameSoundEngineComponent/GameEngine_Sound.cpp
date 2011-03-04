@@ -55,7 +55,52 @@ namespace GameEngine
 				if( component ) component->setEnabled( enable );
 			}
 		}		
-	}	
+	}
+
+	SOUNDPLUGINEXP void playSound(unsigned int entityWorldID)
+	{		
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity )
+		{
+			SoundComponent* component = static_cast<SoundComponent*>(entity->component("Sound3D"));
+			if( component )
+				component->setEnabled( true );
+		}		
+	}
+
+	SOUNDPLUGINEXP void stopSound(unsigned int entityWorldID)
+	{		
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity )
+		{
+			SoundComponent* component = static_cast<SoundComponent*>(entity->component("Sound3D"));
+			if( component )
+				component->setEnabled( false );
+		}		
+	}
+
+	SOUNDPLUGINEXP void pauseSound(unsigned int entityWorldID)
+	{		
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity )
+		{
+			SoundComponent* component = static_cast<SoundComponent*>(entity->component("Sound3D"));
+			if( component )
+				component->pause();
+		}		
+	}
+
+	SOUNDPLUGINEXP void rewindSound(unsigned int entityWorldID)
+	{		
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity )
+		{
+			SoundComponent* component = static_cast<SoundComponent*>(entity->component("Sound3D"));
+			if( component )
+				component->rewind();
+		}		
+	}
+
 
 	SOUNDPLUGINEXP void setSoundGain(unsigned int entityWorldID, const float gain)
 	{
