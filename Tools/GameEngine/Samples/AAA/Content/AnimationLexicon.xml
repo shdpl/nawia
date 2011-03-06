@@ -787,4 +787,20 @@
 			<File strokeStart="0" strokeEnd="1">Gestures\Male\male_ger_still_high.anim</File>
 		</Files>
 	</Still>
+	<Gesture>
+		<ID>0051</ID>
+		<Name>HeadNod - only head</Name>
+		<Description>Only the head is animated</Description>
+		<Files gender="female">
+			<File strokeStart="4" strokeEnd="16">Gestures\Female\female_jap_headNod_only_head.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="4" strokeEnd="16">Gestures\Male\male_jap_headNod_only_head.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
 </AnimationLexicon>
