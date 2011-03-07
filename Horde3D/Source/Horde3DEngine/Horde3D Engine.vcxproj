@@ -69,20 +69,20 @@
     <Link>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(RootNamespace).dll</OutputFile>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../Dependencies/Libs_VC8;$(ProjectDir)../../Build;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <ImportLibrary>$(TargetDir)$(RootNamespace)_vc8.lib</ImportLibrary>
+      <ImportLibrary>$(TargetDir)$(RootNamespace)_vc$(PlatformToolsetVersion)d.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(TargetDir)$(RootNamespace)_vc8.lib" "$(ProjectDir)../../Bindings/C++" /y
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -92,14 +92,13 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <ProgramDataBaseFileName>$(IntDir)vc80.pdb</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(RootNamespace).dll</OutputFile>
-      <AdditionalLibraryDirectories>$(ProjectDir)../../Dependencies/Libs_VC8;$(ProjectDir)../../Build;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(TargetDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -108,11 +107,11 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <ImportLibrary>$(TargetDir)$(RootNamespace)_vc8.lib</ImportLibrary>
+      <ImportLibrary>$(TargetDir)$(RootNamespace)_vc$(PlatformToolsetVersion).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(TargetDir)$(RootNamespace)_vc8.lib" "$(ProjectDir)../../Bindings/C++" /y
+      <Command>
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
