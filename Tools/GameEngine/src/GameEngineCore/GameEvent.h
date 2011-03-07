@@ -320,6 +320,26 @@ public:
 		E_SEND_SOCKET_DATA,		/// sends data via the socket component
 		E_SET_FACS,				/// sets a facial expression
 
+		AG_ANIM_PLAY,			/// Loads an animation and plays it back 
+		AG_ANIM_STOP,			/// stops an animation's playback 
+		AG_ANIM_SET_EXTENT,		/// Sets an animation's spatial extent
+		AG_ANIM_SET_SPEED,		/// Sets the animation's playback speed
+		AG_ANIM_SET_STROKES,	/// Sets the unmber of strokes an animations should perform
+		AG_ANIM_CLEAR,			/// Clears all animation stages, deleting all loaded animations
+		AG_MOVEMENT,			/// Performs a movement
+		AG_GAZE,				/// Gazes towards the target
+		AG_FORMATION_ADD,		/// Adds a member to the formation
+		AG_FORMATION_DEL,		/// Removes a member from the formation
+		AG_FORMATION_EVENT,		/// Fires an event meant to attract the attention of the members of the formation
+		AG_FORMATION_REACT,		/// Reacts to the specified event
+		AG_SET_IPDIST,			/// Sets the interpersonal distance constraints of the agent
+		AG_SET_DEV,				/// Sets the deviation from the normal orientation of the agent
+		AG_SET_REPOSANIM,		/// Sets the  repositioning animation name
+		AG_SET_PARAM,			/// Sets the value of a component parameter
+		AG_SET_ICON,			/// Sets the name of the icon entity
+		AG_SET_ICONVISIBLE,		/// Sets the visibility of the icon entity
+		AG_SET_VISIBLE,			/// Sets the visibility of the agent
+		
 		NV_SAY_SENTENCE,		/// sentence to create speaking behavior for
 		NV_HEAR_SENTENCE,		/// sentence to create listening behavior for
 		NV_HEAD_ANGLES,			/// manual gaze target for the head (using Vec3f)
@@ -373,6 +393,17 @@ public:
 		IK_GETPARAMI,			/// Gets an IK parameter (IK_Param) of type integer
 		IK_GETPARAMF,			/// Gets an IK parameter (IK_Param) of type float
 		CC_CHECK_CONDITION,		/// Gets sensory input for AI/BT
+		
+		AG_ANIM_GET_STATUS,		/// Gets the animation's status
+		AG_MOVEMENT_GET_STATUS,	/// Gets the animation's status
+		AG_GAZE_GET_STATUS,		/// Gets the gaze node's status
+		AG_FORMATION_GET_AGENTS,/// Gets the members of the formation
+		AG_FORMATION_GET_TYPE,	/// Gets the type of the formation
+		AG_FORMATION_GET_ENTRY,	/// Computes and returns an entry point to the formation
+		AG_GET_IPDIST,			/// Gets the interpersonal distance constraints of the agent
+		AG_GET_DEV,				/// Gets the deviation from the normal orientation of the agent
+		AG_GET_REPOSANIM,		/// Gets the the repositioning animation name
+		AG_GET_PARAM,			/// Gets the value of a component parameter
 		
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
@@ -1244,6 +1275,493 @@ public:
 	int animStage;		float animSpeed;		float animWeight;
 	int result;
 	int ikparam;	float ikparam_valuef;	int ikparam_valuei;
+};
+
+/**
+ * \brief Container for parameters of AgentComponent/Movement
+ * 
+ * @author Ionut Damian
+ * @date  March 2011
+ * 
+ */ 
+class AgentMovementData : public GameEventData
+{
+public:
+	enum Type
+	{
+		GoTo_Location = 0,
+		GoTo_Entity,
+		GoTo_Formation,
+		Locomotion,
+		Orientation,
+		Rotation,
+	};
+
+	AgentMovementData(Vec3f target, Type type, const char* walkAnimName, const char* orientAnimName, float speed, bool putInQueue )
+		: m_targetV(target), m_type(type), m_walkAnimName(walkAnimName), m_orientAnimName(orientAnimName), m_speed(speed), m_putInQueue(putInQueue),
+		m_return(-1)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentMovementData(int target, Type type, const char* walkAnimName, const char* orientAnimName, float speed, bool putInQueue )
+		: m_targetI(target), m_type(type), m_walkAnimName(walkAnimName), m_orientAnimName(orientAnimName), m_speed(speed), m_putInQueue(putInQueue),
+		m_return(-1)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentMovementData(int movementID) : m_movementID(movementID), m_return(-1)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentMovementData(const AgentMovementData& copy) : GameEventData(CUSTOM), 
+		m_targetV(copy.m_targetV), m_targetI(copy.m_targetI), m_type(copy.m_type), 
+		m_return(copy.m_return), m_movementID(copy.m_movementID), m_speed(copy.m_speed), m_putInQueue(copy.m_putInQueue)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+		
+		if(copy.m_walkAnimName != 0)
+		{
+			const size_t len = strlen(copy.m_walkAnimName);
+			m_walkAnimName = new char[len + 1];
+			memcpy( (char*) m_walkAnimName, copy.m_walkAnimName, len );
+			const_cast<char*>(m_walkAnimName)[len] = '\0';
+		}
+		else
+			m_walkAnimName = 0;
+
+		if(copy.m_orientAnimName != 0)
+		{
+			const size_t len = strlen(copy.m_orientAnimName);
+			m_orientAnimName = new char[len + 1];
+			memcpy( (char*) m_orientAnimName, copy.m_orientAnimName, len );
+			const_cast<char*>(m_orientAnimName)[len] = '\0';
+		}
+		else
+			m_orientAnimName = 0;
+
+	}
+
+	~AgentMovementData()
+	{
+		if (m_owner)
+		{
+			if(m_walkAnimName != 0)	delete[] m_walkAnimName;
+			if(m_orientAnimName != 0) delete[] m_orientAnimName;
+		}
+	}
+
+
+	GameEventData* clone() const
+	{
+		return new AgentMovementData(*this);
+	}
+
+	int getReturnValue()
+	{
+		return m_return;
+	}
+
+	Vec3f m_targetV;
+	int m_targetI;
+	Type m_type;
+	float m_speed;
+	bool m_putInQueue;
+	int m_movementID;
+	const char* m_walkAnimName;
+	const char* m_orientAnimName;
+	int m_return;
+};
+
+/**
+ * \brief Container for parameters of AgentComponent/Animation
+ * 
+ * @author Ionut Damian
+ * @date  March 2011
+ * 
+ */ 
+class AgentAnimationData : public GameEventData
+{
+public:
+	enum SourceType
+	{
+		AnimationName = 0,
+		AnimationResource,
+		AnimationFile,
+		AnimationID,
+	};
+
+	AgentAnimationData(const char* source, SourceType sourceType, int animType, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord)
+		: m_sourceS(source), m_sourceType(sourceType), m_animType(animType), m_startNode(startNode), m_syncWord(syncWord), m_speed(speed), m_spatialExtent(spatialExtent), 
+		m_strokeReps(strokeRepetitions), m_return(-1)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentAnimationData(int source, SourceType sourceType, int animType, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord)
+		: m_sourceI(source), m_sourceType(sourceType), m_animType(animType), m_startNode(startNode), m_syncWord(syncWord), m_speed(speed), m_spatialExtent(spatialExtent), 
+		m_strokeReps(strokeRepetitions), m_return(-1)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentAnimationData(int playbackID) : m_playbackID(playbackID), m_return(-1)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentAnimationData(int playbackID, int value) : m_playbackID(playbackID), m_valueI(value), m_return(-1)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentAnimationData(int playbackID, float value) : m_playbackID(playbackID), m_valueF(value), m_return(-1)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentAnimationData(const AgentAnimationData& copy) : GameEventData(CUSTOM), m_sourceI(copy.m_sourceI), m_sourceType(copy.m_sourceType),
+		m_animType(copy.m_animType), m_speed(copy.m_speed), m_spatialExtent(copy.m_spatialExtent),
+		m_strokeReps(copy.m_strokeReps), m_return(copy.m_return), m_valueF(copy.m_valueF), m_valueI(copy.m_valueI),
+		m_playbackID(copy.m_playbackID)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+		
+		if(copy.m_sourceS != 0)
+		{
+			const size_t len = strlen(copy.m_sourceS);
+			m_sourceS = new char[len + 1];
+			memcpy( (char*) m_sourceS, copy.m_sourceS, len );
+			const_cast<char*>(m_sourceS)[len] = '\0';
+		}
+		else
+			m_sourceS = 0;
+
+		if(copy.m_startNode != 0)
+		{
+			const size_t len = strlen(copy.m_startNode);
+			m_startNode = new char[len + 1];
+			memcpy( (char*) m_startNode, copy.m_startNode, len );
+			const_cast<char*>(m_startNode)[len] = '\0';
+		}
+		else
+			m_startNode = 0;
+
+		if(copy.m_syncWord != 0)
+		{
+			const size_t len = strlen(copy.m_syncWord);
+			m_syncWord = new char[len + 1];
+			memcpy( (char*) m_syncWord, copy.m_syncWord, len );
+			const_cast<char*>(m_syncWord)[len] = '\0';
+		}
+		else
+			m_syncWord = 0;
+
+	}
+
+	~AgentAnimationData()
+	{
+		if (m_owner)
+		{
+			if(m_sourceS != 0) delete[] m_sourceS;
+			if(m_startNode != 0) delete[] m_startNode;
+			if(m_syncWord != 0) delete[] m_syncWord;
+		}
+	}
+
+
+	GameEventData* clone() const
+	{
+		return new AgentAnimationData(*this);
+	}
+
+	int getReturnValue()
+	{
+		return m_return;
+	}
+
+	const char* m_sourceS;
+	int m_sourceI;
+	SourceType m_sourceType;
+	int m_animType;
+	int m_valueI;
+	float m_valueF;
+	int m_playbackID;
+	int m_strokeReps;
+	float m_speed;
+	float m_spatialExtent;
+	const char* m_startNode;
+	const char* m_syncWord;
+
+	int m_return;
+};
+
+/**
+ * \brief Container for parameters of AgentComponent/Gaze
+ * 
+ * @author Ionut Damian
+ * @date  March 2011
+ * 
+ */ 
+class AgentGazeData : public GameEventData
+{
+public:;
+
+	AgentGazeData(Vec3f target, float speed, float duration )
+		: m_targetV(target), m_speed(speed), m_duration(duration), m_return(-1)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentGazeData(int target, float speed, float duration )
+		: m_targetI(target), m_speed(speed), m_duration(duration), m_return(-1)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentGazeData(int gazeID) : m_gazeID(gazeID), m_return(-1)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentGazeData(const AgentGazeData& copy) : GameEventData(CUSTOM), 
+		m_targetV(copy.m_targetV), m_targetI(copy.m_targetI), m_return(copy.m_return), m_speed(copy.m_speed), 
+		m_duration(copy.m_duration), m_gazeID(copy.m_gazeID)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+	}
+
+	~AgentGazeData()
+	{}
+
+
+	GameEventData* clone() const
+	{
+		return new AgentGazeData(*this);
+	}
+
+	int getReturnValue()
+	{
+		return m_return;
+	}
+
+	Vec3f m_targetV;
+	int m_targetI;
+	float m_speed;
+	float m_duration;
+	int m_gazeID;
+	int m_return;
+};
+
+/**
+ * \brief Container for parameters of AgentComponent/Formation
+ * 
+ * @author Ionut Damian
+ * @date  March 2011
+ * 
+ */ 
+class AgentFormationData : public GameEventData
+{
+public:;
+
+	AgentFormationData(int entityID, int _event) : m_entityID(entityID), m_event(_event)
+	{
+		m_data.ptr = this;		
+	}
+
+	//GETTER
+	AgentFormationData(int** members) : m_members(members)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentFormationData(int entityID) : m_entityID(entityID)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentFormationData() : m_returnI(-1), m_returnF1(-1), m_returnF2(-1), m_returnS(0)
+	{
+		m_data.ptr = this;		
+	}
+
+	//SETTER
+	AgentFormationData(float min, float max) : m_min(min), m_max(max)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentFormationData(const char* animName) : m_animName(animName)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentFormationData(const AgentFormationData& copy) : GameEventData(CUSTOM), 
+		m_returnV(copy.m_returnV), m_returnI(copy.m_returnI), m_returnF1(copy.m_returnF1), m_returnF2(copy.m_returnF2),
+		m_members(copy.m_members), m_event(copy.m_event), m_entityID(copy.m_entityID), m_min(copy.m_min), m_max(copy.m_max)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+		
+		if(copy.m_returnS != 0)
+		{
+			const size_t len = strlen(copy.m_returnS);
+			m_returnS = new char[len + 1];
+			memcpy( (char*) m_returnS, copy.m_returnS, len );
+			const_cast<char*>(m_returnS)[len] = '\0';
+		}
+		else
+			m_returnS = 0;
+
+		if(copy.m_animName != 0)
+		{
+			const size_t len = strlen(copy.m_animName);
+			m_animName = new char[len + 1];
+			memcpy( (char*) m_animName, copy.m_animName, len );
+			const_cast<char*>(m_animName)[len] = '\0';
+		}
+		else
+			m_animName = 0;
+
+	}
+
+	~AgentFormationData()
+	{
+		if (m_owner)
+		{
+			if(m_returnS != 0) delete[] m_returnS;
+			if(m_animName != 0) delete[] m_animName;
+		}
+	}
+
+	GameEventData* clone() const
+	{
+		return new AgentFormationData(*this);
+	}
+
+	Vec3f getReturnVect()
+	{
+		return m_returnV;
+	}
+
+	int getReturnInt()
+	{
+		return m_returnI;
+	}
+
+	float getReturnFloat1()
+	{
+		return m_returnF1;
+	}
+
+	float getReturnFloat2()
+	{
+		return m_returnF2;
+	}
+
+	Vec3f m_returnV;
+	int m_returnI;
+	float m_returnF1, m_returnF2;
+	const char* m_returnS;
+	const char* m_animName;
+	int** m_members;
+	int m_event;
+	int m_entityID;
+	float m_min, m_max;
+};
+
+/**
+ * \brief Container for parameters of AgentComponent/Config
+ * 
+ * @author Ionut Damian
+ * @date  March 2011
+ * 
+ */ 
+class AgentConfigData : public GameEventData
+{
+public:;
+
+	AgentConfigData(int param, int value) : m_param(param), m_valueI(value), m_returnI(-1), m_returnF(-1), m_returnS(0)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentConfigData(int param, float value) : m_param(param), m_valueF(value), m_returnI(-1), m_returnF(-1), m_returnS(0)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentConfigData(int param, const char* value) : m_param(param), m_valueS(value), m_returnI(-1), m_returnF(-1), m_returnS(0)
+	{
+		m_data.ptr = this;		
+	}
+
+	AgentConfigData(const AgentConfigData& copy) : GameEventData(CUSTOM),
+		m_valueI(copy.m_valueI), m_valueF(copy.m_valueF), m_returnI(copy.m_returnI), m_returnF(copy.m_returnF)
+	{
+		m_data.ptr = this;
+		m_owner = true;
+		
+		if(copy.m_returnS != 0)
+		{
+			const size_t len = strlen(copy.m_returnS);
+			m_returnS = new char[len + 1];
+			memcpy( (char*) m_returnS, copy.m_returnS, len );
+			const_cast<char*>(m_returnS)[len] = '\0';
+		}
+		else
+			m_returnS = 0;
+
+		if(copy.m_valueS != 0)
+		{
+			const size_t len = strlen(copy.m_valueS);
+			m_valueS = new char[len + 1];
+			memcpy( (char*) m_valueS, copy.m_valueS, len );
+			const_cast<char*>(m_valueS)[len] = '\0';
+		}
+		else
+			m_valueS = 0;
+
+	}
+
+	~AgentConfigData()
+	{
+		if (m_owner)
+		{
+			if(m_returnS != 0) delete[] m_returnS;
+			if(m_valueS != 0) delete[] m_valueS;
+		}
+	}
+
+	GameEventData* clone() const
+	{
+		return new AgentConfigData(*this);
+	}
+
+	int getReturnInt()
+	{
+		return m_returnI;
+	}
+
+	float getReturnFloat()
+	{
+		return m_returnF;
+	}
+
+	const char* getReturnString()
+	{
+		return m_returnS;
+	}
+
+	int m_param;
+	int m_returnI, m_valueI;
+	float m_returnF, m_valueF;
+	const char *m_returnS, *m_valueS;
 };
 
 class Vec3fData : public GameEventData
