@@ -320,25 +320,25 @@ public:
 		E_SEND_SOCKET_DATA,		/// sends data via the socket component
 		E_SET_FACS,				/// sets a facial expression
 
-		AG_ANIM_PLAY,			/// Loads an animation and plays it back 
-		AG_ANIM_STOP,			/// stops an animation's playback 
-		AG_ANIM_SET_EXTENT,		/// Sets an animation's spatial extent
-		AG_ANIM_SET_SPEED,		/// Sets the animation's playback speed
-		AG_ANIM_SET_STROKES,	/// Sets the unmber of strokes an animations should perform
-		AG_ANIM_CLEAR,			/// Clears all animation stages, deleting all loaded animations
-		AG_MOVEMENT,			/// Performs a movement
-		AG_GAZE,				/// Gazes towards the target
-		AG_FORMATION_ADD,		/// Adds a member to the formation
-		AG_FORMATION_DEL,		/// Removes a member from the formation
-		AG_FORMATION_EVENT,		/// Fires an event meant to attract the attention of the members of the formation
-		AG_FORMATION_REACT,		/// Reacts to the specified event
-		AG_SET_IPDIST,			/// Sets the interpersonal distance constraints of the agent
-		AG_SET_DEV,				/// Sets the deviation from the normal orientation of the agent
-		AG_SET_REPOSANIM,		/// Sets the  repositioning animation name
-		AG_SET_PARAM,			/// Sets the value of a component parameter
-		AG_SET_ICON,			/// Sets the name of the icon entity
-		AG_SET_ICONVISIBLE,		/// Sets the visibility of the icon entity
-		AG_SET_VISIBLE,			/// Sets the visibility of the agent
+		AG_ANIM_PLAY,			/// Loads an animation and plays it back. Param: AgentAnimationData(const char*/int,SourceType,int,float,float,int,char*,char*), returns:  an int
+		AG_ANIM_STOP,			/// stops an animation's playback. Param: AgentAnimationData(int), returns: int
+		AG_ANIM_SET_EXTENT,		/// Sets an animation's spatial extent. Param: AgentAnimationData(int,float)
+		AG_ANIM_SET_SPEED,		/// Sets the animation's playback speed. Param: AgentAnimationData(int,float)
+		AG_ANIM_SET_STROKES,	/// Sets the unmber of strokes an animations should perform. Param: AgentAnimationData(int,int)
+		AG_ANIM_CLEAR,			/// Clears all animation stages, deleting all loaded animations. No data required
+		AG_MOVEMENT,			/// Performs a movement. Param: AgentMovementData(Vec3f/int,Type,const char*,const char*,float,bool), returns:  an int
+		AG_GAZE,				/// Gazes towards the target. Param: AgentGazeData(Vec3f/int,float,float), returns: int
+		AG_FORMATION_ADD,		/// Adds a member to the formation. Param: int
+		AG_FORMATION_DEL,		/// Removes a member from the formation. Param: int
+		AG_FORMATION_EVENT,		/// Fires an event meant to attract the attention of the members of the formation. Param: int
+		AG_FORMATION_REACT,		/// Reacts to the specified event. Param: AgentFormationData(int,int)
+		AG_SET_IPDIST,			/// Sets the interpersonal distance constraints of the agent. Param: AgentFormationData(float,float)
+		AG_SET_ORIENTCUST,		/// Sets the deviation from the normal orientation of the agent. Param: float
+		AG_SET_REPOSANIM,		/// Sets the  repositioning animation name. Param: const char*
+		AG_SET_PARAM,			/// Sets the value of a component parameter. Param: int/float/const char*
+		AG_SET_ICON,			/// Sets the name of the icon entity. Param: const char*
+		AG_SET_ICONVISIBLE,		/// Sets the visibility of the icon entity. Param: bool
+		AG_SET_VISIBLE,			/// Sets the visibility of the agent. Param: bool
 		
 		NV_SAY_SENTENCE,		/// sentence to create speaking behavior for
 		NV_HEAR_SENTENCE,		/// sentence to create listening behavior for
@@ -394,16 +394,19 @@ public:
 		IK_GETPARAMF,			/// Gets an IK parameter (IK_Param) of type float
 		CC_CHECK_CONDITION,		/// Gets sensory input for AI/BT
 		
-		AG_ANIM_GET_STATUS,		/// Gets the animation's status
-		AG_MOVEMENT_GET_STATUS,	/// Gets the animation's status
-		AG_GAZE_GET_STATUS,		/// Gets the gaze node's status
-		AG_FORMATION_GET_AGENTS,/// Gets the members of the formation
-		AG_FORMATION_GET_TYPE,	/// Gets the type of the formation
-		AG_FORMATION_GET_ENTRY,	/// Computes and returns an entry point to the formation
-		AG_GET_IPDIST,			/// Gets the interpersonal distance constraints of the agent
-		AG_GET_DEV,				/// Gets the deviation from the normal orientation of the agent
-		AG_GET_REPOSANIM,		/// Gets the the repositioning animation name
-		AG_GET_PARAM,			/// Gets the value of a component parameter
+		AG_ANIM_GET_STATUS,		/// Gets the animation's status. Param: AgentAnimationData(int), returns: int
+		AG_ANIM_GET_SPEED,		/// Gets the speed value of an animation. Param: AgentAnimationData(int), returns: float
+		AG_ANIM_GET_EXTENT,		/// Gets the spatial extent value of an animation. Param: AgentAnimationData(int), returns: float
+		AG_ANIM_GET_STROKES,	/// Gets the stroke repetition value of an animation. Param: AgentAnimationData(int), returns: int
+		AG_MOVEMENT_GET_STATUS,	/// Gets the animation's status. Param: AgentMovementData(int), returns: int
+		AG_GAZE_GET_STATUS,		/// Gets the gaze node's status. Param: AgentGazeData(int), returns: int
+		AG_FORMATION_GET_AGENTS,/// Gets the members of the formation. Param: AgentFormationData(int**), returns: int
+		AG_FORMATION_GET_TYPE,	/// Gets the type of the formation. Param: AgentFormationData(), returns: int
+		AG_FORMATION_GET_ENTRY,	/// Computes, returns:  an entry point to the formation. Param: AgentFormationData(int), returns: Vec3f
+		AG_GET_IPDIST,			/// Gets the interpersonal distance constraints of the agent. Param: AgentFormationData(), returns: float,float
+		AG_GET_ORIENTCUST,		/// Gets the deviation value from the normal orientation of the agent. Param: AgentFormationData(), returns: float
+		AG_GET_REPOSANIM,		/// Gets the the repositioning animation name. Param: AgentFormationData(), returns: const char*
+		AG_GET_PARAM,			/// Gets the value of a component parameter. Param: AgentConfigData(), returns: float/int/const char*
 		
 		///////////////////////////////////////////////////////////////////////////////////////////
 		/**
@@ -1297,6 +1300,7 @@ public:
 		Rotation,
 	};
 
+	///Data container constructor for AG_MOVEMENT
 	AgentMovementData(Vec3f target, Type type, const char* walkAnimName, const char* orientAnimName, float speed, bool putInQueue )
 		: m_targetV(target), m_type(type), m_walkAnimName(walkAnimName), m_orientAnimName(orientAnimName), m_speed(speed), m_putInQueue(putInQueue),
 		m_return(-1)
@@ -1304,6 +1308,7 @@ public:
 		m_data.ptr = this;		
 	}
 
+	///Data container constructor for AG_MOVEMENT
 	AgentMovementData(int target, Type type, const char* walkAnimName, const char* orientAnimName, float speed, bool putInQueue )
 		: m_targetI(target), m_type(type), m_walkAnimName(walkAnimName), m_orientAnimName(orientAnimName), m_speed(speed), m_putInQueue(putInQueue),
 		m_return(-1)
@@ -1311,7 +1316,8 @@ public:
 		m_data.ptr = this;		
 	}
 
-	AgentMovementData(int movementID) : m_movementID(movementID), m_return(-1)
+	//Data container constructor for AG_MOVEMENT_GET_STATUS
+	AgentMovementData(int movementID) : m_movementID(movementID), m_return(-1), m_walkAnimName(0), m_orientAnimName(0)
 	{
 		m_data.ptr = this;		
 	}
@@ -1394,38 +1400,43 @@ public:
 		AnimationID,
 	};
 
+	///Data container constructor for AG_ANIM_PLAY
 	AgentAnimationData(const char* source, SourceType sourceType, int animType, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord)
 		: m_sourceS(source), m_sourceType(sourceType), m_animType(animType), m_startNode(startNode), m_syncWord(syncWord), m_speed(speed), m_spatialExtent(spatialExtent), 
-		m_strokeReps(strokeRepetitions), m_return(-1)
+		m_strokeReps(strokeRepetitions), m_returnI(-1)
 	{
 		m_data.ptr = this;		
 	}
 
+	///Data container constructor for AG_ANIM_PLAY
 	AgentAnimationData(int source, SourceType sourceType, int animType, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord)
 		: m_sourceI(source), m_sourceType(sourceType), m_animType(animType), m_startNode(startNode), m_syncWord(syncWord), m_speed(speed), m_spatialExtent(spatialExtent), 
-		m_strokeReps(strokeRepetitions), m_return(-1)
+		m_strokeReps(strokeRepetitions), m_returnI(-1), m_sourceS(0)
 	{
 		m_data.ptr = this;		
 	}
 
-	AgentAnimationData(int playbackID) : m_playbackID(playbackID), m_return(-1)
+	///Data container constructor for AG_ANIM_STOP, AG_ANIM_GET_STATUS, AG_ANIM_GET_SPEED, AG_ANIM_GET_EXTENT, AG_ANIM_GET_STROKES
+	AgentAnimationData(int playbackID) : m_playbackID(playbackID), m_returnI(-1), m_returnF(-1), m_sourceS(0), m_startNode(0), m_syncWord(0)
 	{
 		m_data.ptr = this;		
 	}
 
-	AgentAnimationData(int playbackID, int value) : m_playbackID(playbackID), m_valueI(value), m_return(-1)
+	///Data container constructor for AG_ANIM_SET_STROKES
+	AgentAnimationData(int playbackID, int value) : m_playbackID(playbackID), m_valueI(value), m_returnI(-1), m_sourceS(0), m_startNode(0), m_syncWord(0)
 	{
 		m_data.ptr = this;		
 	}
 
-	AgentAnimationData(int playbackID, float value) : m_playbackID(playbackID), m_valueF(value), m_return(-1)
+	///Data container constructor for AG_ANIM_SET_EXTENT, AG_ANIM_SET_SPEED
+	AgentAnimationData(int playbackID, float value) : m_playbackID(playbackID), m_valueF(value), m_returnI(-1), m_sourceS(0), m_startNode(0), m_syncWord(0)
 	{
 		m_data.ptr = this;		
 	}
 
 	AgentAnimationData(const AgentAnimationData& copy) : GameEventData(CUSTOM), m_sourceI(copy.m_sourceI), m_sourceType(copy.m_sourceType),
 		m_animType(copy.m_animType), m_speed(copy.m_speed), m_spatialExtent(copy.m_spatialExtent),
-		m_strokeReps(copy.m_strokeReps), m_return(copy.m_return), m_valueF(copy.m_valueF), m_valueI(copy.m_valueI),
+		m_strokeReps(copy.m_strokeReps), m_returnI(copy.m_returnI), m_returnF(copy.m_returnF), m_valueF(copy.m_valueF), m_valueI(copy.m_valueI),
 		m_playbackID(copy.m_playbackID)
 	{
 		m_data.ptr = this;
@@ -1479,9 +1490,14 @@ public:
 		return new AgentAnimationData(*this);
 	}
 
-	int getReturnValue()
+	int getReturnInt()
 	{
-		return m_return;
+		return m_returnI;
+	}
+
+	int getReturnFloat()
+	{
+		return m_returnF;
 	}
 
 	const char* m_sourceS;
@@ -1496,8 +1512,8 @@ public:
 	float m_spatialExtent;
 	const char* m_startNode;
 	const char* m_syncWord;
-
-	int m_return;
+	int m_returnI;
+	int m_returnF;
 };
 
 /**
@@ -1510,19 +1526,21 @@ public:
 class AgentGazeData : public GameEventData
 {
 public:;
-
+	///Data container constructor for AG_GAZE
 	AgentGazeData(Vec3f target, float speed, float duration )
 		: m_targetV(target), m_speed(speed), m_duration(duration), m_return(-1)
 	{
 		m_data.ptr = this;		
 	}
 
+	///Data container constructor for AG_GAZE
 	AgentGazeData(int target, float speed, float duration )
 		: m_targetI(target), m_speed(speed), m_duration(duration), m_return(-1)
 	{
 		m_data.ptr = this;		
 	}
 
+	///Data container constructor for AG_GAZE_GET_STATUS
 	AgentGazeData(int gazeID) : m_gazeID(gazeID), m_return(-1)
 	{
 		m_data.ptr = this;		
@@ -1568,35 +1586,26 @@ public:;
 class AgentFormationData : public GameEventData
 {
 public:;
-
-	AgentFormationData(int entityID, int _event) : m_entityID(entityID), m_event(_event)
+	///Data container constructor for AG_FORMATION_REACT
+	AgentFormationData(int entityID, int _event) : m_entityID(entityID), m_event(_event), m_returnS(0)
 	{
 		m_data.ptr = this;		
 	}
 
-	//GETTER
-	AgentFormationData(int** members) : m_members(members)
+	///Data container constructor for AG_FORMATION_GET_AGENTS
+	AgentFormationData(int** members) : m_members(members), m_returnI(-1), m_returnS(0)
 	{
 		m_data.ptr = this;		
 	}
 
-	AgentFormationData(int entityID) : m_entityID(entityID)
-	{
-		m_data.ptr = this;		
-	}
-
+	///Data container constructor for AG_FORMATION_GET_TYPE, AG_FORMATION_GET_ENTRY, AG_GET_IPDIST, AG_GET_ORIENTCUST, AG_GET_REPOSANIM
 	AgentFormationData() : m_returnI(-1), m_returnF1(-1), m_returnF2(-1), m_returnS(0)
 	{
 		m_data.ptr = this;		
 	}
-
-	//SETTER
-	AgentFormationData(float min, float max) : m_min(min), m_max(max)
-	{
-		m_data.ptr = this;		
-	}
-
-	AgentFormationData(const char* animName) : m_animName(animName)
+	
+	///Data container constructor for AG_SET_IPDIST
+	AgentFormationData(float min, float max) : m_min(min), m_max(max), m_returnS(0)
 	{
 		m_data.ptr = this;		
 	}
@@ -1618,16 +1627,6 @@ public:;
 		else
 			m_returnS = 0;
 
-		if(copy.m_animName != 0)
-		{
-			const size_t len = strlen(copy.m_animName);
-			m_animName = new char[len + 1];
-			memcpy( (char*) m_animName, copy.m_animName, len );
-			const_cast<char*>(m_animName)[len] = '\0';
-		}
-		else
-			m_animName = 0;
-
 	}
 
 	~AgentFormationData()
@@ -1635,7 +1634,6 @@ public:;
 		if (m_owner)
 		{
 			if(m_returnS != 0) delete[] m_returnS;
-			if(m_animName != 0) delete[] m_animName;
 		}
 	}
 
@@ -1664,11 +1662,15 @@ public:;
 		return m_returnF2;
 	}
 
+	char* getReturnString()
+	{
+		return m_returnS;
+	}
+
 	Vec3f m_returnV;
 	int m_returnI;
 	float m_returnF1, m_returnF2;
-	const char* m_returnS;
-	const char* m_animName;
+	char* m_returnS;
 	int** m_members;
 	int m_event;
 	int m_entityID;
@@ -1684,18 +1686,20 @@ public:;
  */ 
 class AgentConfigData : public GameEventData
 {
-public:;
-
-	AgentConfigData(int param, int value) : m_param(param), m_valueI(value), m_returnI(-1), m_returnF(-1), m_returnS(0)
+public:
+	///Data container constructor for AG_GET_PARAM
+	AgentConfigData(int param, int value) : m_param(param), m_valueI(value), m_returnI(-1), m_returnF(-1), m_returnS(0), m_valueS(0)
 	{
 		m_data.ptr = this;		
 	}
 
-	AgentConfigData(int param, float value) : m_param(param), m_valueF(value), m_returnI(-1), m_returnF(-1), m_returnS(0)
+	///Data container constructor for AG_GET_PARAM
+	AgentConfigData(int param, float value) : m_param(param), m_valueF(value), m_returnI(-1), m_returnF(-1), m_returnS(0), m_valueS(0)
 	{
 		m_data.ptr = this;		
 	}
 
+	///Data container constructor for AG_GET_PARAM 
 	AgentConfigData(int param, const char* value) : m_param(param), m_valueS(value), m_returnI(-1), m_returnF(-1), m_returnS(0)
 	{
 		m_data.ptr = this;		
