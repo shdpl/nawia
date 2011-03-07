@@ -335,7 +335,7 @@ public:
 		AG_SET_IPDIST,			/// Sets the interpersonal distance constraints of the agent. Param: AgentFormationData(float,float)
 		AG_SET_ORIENTCUST,		/// Sets the deviation from the normal orientation of the agent. Param: float
 		AG_SET_REPOSANIM,		/// Sets the  repositioning animation name. Param: const char*
-		AG_SET_PARAM,			/// Sets the value of a component parameter. Param: int/float/const char*
+		AG_SET_PARAM,			/// Sets the value of a component parameter. Param: AgentConfigParam(int,int/float/const char*) [second value ignored]
 		AG_SET_ICON,			/// Sets the name of the icon entity. Param: const char*
 		AG_SET_ICONVISIBLE,		/// Sets the visibility of the icon entity. Param: bool
 		AG_SET_VISIBLE,			/// Sets the visibility of the agent. Param: bool
@@ -1401,6 +1401,13 @@ public:
 	};
 
 	///Data container constructor for AG_ANIM_PLAY
+	///@param source the filename or the name of the animation
+	///@param sourceType the type of the sources (SourceType)
+	///@param speed desired playback speed of the animation (0 = still, 1 = normal, 2= double, ..), use -1 for agent default
+	///@param spatialExtent the spatial extent of the animation (0 = still, 0.5 = half, 1 = normal), use -1 for agent default
+	///@param strokeRepetitions number of stroke repetitions the animation should perform (0 = normal playback, 1 = one extra stroke is performed, ..), use -1 for agent default
+	///@param startNode the name of the node that represents the starting node of the chain to be animated (ex: startNode=Bip01_L_Clavicle willl result in animating only the left arm). Leave 0 for whole body.
+	///@param syncWord TTS word the animation start should be synchronized with
 	AgentAnimationData(const char* source, SourceType sourceType, int animType, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord)
 		: m_sourceS(source), m_sourceType(sourceType), m_animType(animType), m_startNode(startNode), m_syncWord(syncWord), m_speed(speed), m_spatialExtent(spatialExtent), 
 		m_strokeReps(strokeRepetitions), m_returnI(-1)
@@ -1409,6 +1416,13 @@ public:
 	}
 
 	///Data container constructor for AG_ANIM_PLAY
+	///@param source the animation id or the resource id of the animation
+	///@param sourceType the type of the sources (SourceType)
+	///@param speed desired playback speed of the animation (0 = still, 1 = normal, 2= double, ..), use -1 for agent default
+	///@param spatialExtent the spatial extent of the animation (0 = still, 0.5 = half, 1 = normal), use -1 for agent default
+	///@param strokeRepetitions number of stroke repetitions the animation should perform (0 = normal playback, 1 = one extra stroke is performed, ..), use -1 for agent default
+	///@param startNode the name of the node that represents the starting node of the chain to be animated (ex: startNode=Bip01_L_Clavicle willl result in animating only the left arm). Leave 0 for whole body.
+	///@param syncWord TTS word the animation start should be synchronized with
 	AgentAnimationData(int source, SourceType sourceType, int animType, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord)
 		: m_sourceI(source), m_sourceType(sourceType), m_animType(animType), m_startNode(startNode), m_syncWord(syncWord), m_speed(speed), m_spatialExtent(spatialExtent), 
 		m_strokeReps(strokeRepetitions), m_returnI(-1), m_sourceS(0)
@@ -1687,26 +1701,33 @@ public:;
 class AgentConfigData : public GameEventData
 {
 public:
-	///Data container constructor for AG_GET_PARAM
-	AgentConfigData(int param, int value) : m_param(param), m_valueI(value), m_returnI(-1), m_returnF(-1), m_returnS(0), m_valueS(0)
+	enum Type
+	{
+		INT = 0,
+		FLOAT,
+		STIRNG
+	};
+
+	///Data container constructor for AG_GET_PARAM, AG_SET_PARAM
+	AgentConfigData(int param, int value, Type type) : m_type(type), m_param(param), m_valueI(value), m_returnI(-1), m_returnF(-1), m_returnS(0), m_valueS(0)
 	{
 		m_data.ptr = this;		
 	}
 
-	///Data container constructor for AG_GET_PARAM
-	AgentConfigData(int param, float value) : m_param(param), m_valueF(value), m_returnI(-1), m_returnF(-1), m_returnS(0), m_valueS(0)
+	///Data container constructor for AG_GET_PARAM, AG_SET_PARAM
+	AgentConfigData(int param, float value, Type type) : m_type(type), m_param(param), m_valueF(value), m_returnI(-1), m_returnF(-1), m_returnS(0), m_valueS(0)
 	{
 		m_data.ptr = this;		
 	}
 
-	///Data container constructor for AG_GET_PARAM 
-	AgentConfigData(int param, const char* value) : m_param(param), m_valueS(value), m_returnI(-1), m_returnF(-1), m_returnS(0)
+	///Data container constructor for AG_GET_PARAM, AG_SET_PARAM
+	AgentConfigData(int param, const char* value, Type type) : m_type(type), m_param(param), m_valueS(value), m_returnI(-1), m_returnF(-1), m_returnS(0)
 	{
 		m_data.ptr = this;		
 	}
 
 	AgentConfigData(const AgentConfigData& copy) : GameEventData(CUSTOM),
-		m_valueI(copy.m_valueI), m_valueF(copy.m_valueF), m_returnI(copy.m_returnI), m_returnF(copy.m_returnF)
+		m_valueI(copy.m_valueI), m_valueF(copy.m_valueF), m_returnI(copy.m_returnI), m_returnF(copy.m_returnF), m_type(copy.m_type)
 	{
 		m_data.ptr = this;
 		m_owner = true;
@@ -1766,6 +1787,7 @@ public:
 	int m_returnI, m_valueI;
 	float m_returnF, m_valueF;
 	const char *m_returnS, *m_valueS;
+	Type m_type;
 };
 
 class Vec3fData : public GameEventData
