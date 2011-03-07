@@ -68,8 +68,13 @@
       <OutputFile>$(OutDir)$(RootNameSpace).lib</OutputFile>
     </Lib>
     <PostBuildEvent>
-      <Command>xcopy "$(TargetPath)" "$(ProjectDir)../../../Horde3D/Build" /y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -85,8 +90,13 @@
       <OutputFile>$(OutDir)$(RootNameSpace).lib</OutputFile>
     </Lib>
     <PostBuildEvent>
-      <Command>xcopy "$(TargetPath)" "$(ProjectDir)../../../Horde3D/Build" /y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="extension.cpp" />
