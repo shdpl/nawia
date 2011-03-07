@@ -74,6 +74,7 @@
       <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>true</Profile>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y "src\lua.h" "$(SolutionDir)include\Lua\"
@@ -103,6 +104,7 @@ xcopy /y "src\luaconf.h" "$(SolutionDir)include\Lua\"
       </DataExecutionPrevention>
       <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y "src\lua.h" "$(SolutionDir)include\Lua\"

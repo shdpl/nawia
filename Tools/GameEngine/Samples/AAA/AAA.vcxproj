@@ -54,7 +54,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
       <Command>xcopy "$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.h" "$(SolutionDir)include\GLFW\" /y
-xcopy "$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.lib" "$(SolutionDir)lib\" /y
 </Command>
     </PreBuildEvent>
     <ClCompile>
@@ -71,7 +70,7 @@ xcopy "$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.lib" "$(SolutionDir)lib\" 
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>OpenGL32.lib;Horde3D_vc8.lib;Horde3DUtils_vc8.lib;ws2_32.lib;sapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;ws2_32.lib;sapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)/bin/$(ProjectName)d.exe</OutputFile>
       <AdditionalLibraryDirectories>$(ProjectDir)/Dependencies/lib;$(SolutionDir)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
@@ -103,7 +102,7 @@ xcopy "$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.lib" "$(SolutionDir)lib\" 
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>OpenGL32.lib;Horde3D_vc8.lib;Horde3DUtils_vc8.lib;ws2_32.lib;sapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;ws2_32.lib;sapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)/bin/$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(ProjectDir)/Dependencies/lib;$(SolutionDir)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -142,6 +141,12 @@ xcopy "$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.lib" "$(SolutionDir)lib\" 
     <ProjectReference Include="..\..\..\..\Horde3D\Samples\glfw\glfw.vcxproj">
       <Project>{2a423b83-d582-49ba-a45f-e27148099850}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Horde3D\Source\Horde3DEngine\Horde3D Engine.vcxproj">
+      <Project>{1d558d7d-da57-4908-bcfc-902054fe6b63}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Horde3D\Source\Horde3DUtils\Horde3D Utils.vcxproj">
+      <Project>{ae8eb9b3-d2c2-4372-ab4b-fc980ee69d2d}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Dependencies\XMLParser\XmlParserLib.vcxproj">
       <Project>{3bf9d44f-4a29-46ee-9a04-ee706e602620}</Project>

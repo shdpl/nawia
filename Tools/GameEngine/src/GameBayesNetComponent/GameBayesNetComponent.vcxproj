@@ -82,6 +82,7 @@
       </DataExecutionPrevention>
       <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(ProjectDir)GameEngine_BayesNet.h" "$(SolutionDir)include\GameEngine\" /y
@@ -114,6 +115,7 @@
       </DataExecutionPrevention>
       <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(ProjectDir)GameEngine_BayesNet.h" "$(SolutionDir)include\GameEngine\" /y</Command>

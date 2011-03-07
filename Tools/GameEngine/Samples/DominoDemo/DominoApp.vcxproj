@@ -83,7 +83,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>GameEngineCored.lib;GameSceneGraphComponentd.lib;opengl32.lib;Horde3D_vc8.lib;Horde3DUtils_vc8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)/bin/$(ProjectName)d.exe</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -106,7 +106,7 @@
       </DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>GameEngineCore.lib;GameSceneGraphComponent.lib;opengl32.lib;Horde3D_vc8.lib;Horde3DUtils_vc8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)/bin/$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -154,6 +154,12 @@
     <ClInclude Include="OpenGLWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Horde3D\Source\Horde3DEngine\Horde3D Engine.vcxproj">
+      <Project>{1d558d7d-da57-4908-bcfc-902054fe6b63}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Horde3D\Source\Horde3DUtils\Horde3D Utils.vcxproj">
+      <Project>{ae8eb9b3-d2c2-4372-ab4b-fc980ee69d2d}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\GameEngineCore\GameEngineCore.vcxproj">
       <Project>{db488001-8e98-4724-9787-72da137c4e47}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

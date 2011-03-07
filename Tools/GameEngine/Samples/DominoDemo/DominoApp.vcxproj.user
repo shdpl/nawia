@@ -12,5 +12,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LocalDebuggerCommand>$(TargetPath)</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>DominoSzene/DominoSzene.scn</LocalDebuggerCommandArguments>
   </PropertyGroup>
 </Project>

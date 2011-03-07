@@ -1,6 +1,5 @@
 #include "OpenGLWindow.h"
 #include <GameEngine/GameEngine.h>
-#include <Horde3D/Horde3D.h>
 
 
 #ifdef UNICODE
@@ -190,7 +189,6 @@ bool OpenGLWindow::createWindow() {
 	}
 
 	// Initialize engine
-	//Horde3D::init();
 	SetWindowLongPtr(m_hWnd, GWL_USERDATA, (LONG_PTR) this);
 	ShowWindow( m_hWnd, SW_SHOW );
 	UpdateWindow(m_hWnd);
@@ -204,8 +202,6 @@ void OpenGLWindow::resize(const int width, const int height)
 {
 	if (m_resizeCB)
 		m_resizeCB(m_userDataRS, width, height);
-	// Set virtual camera parameters
-	//Horde3D::setCameraParam( PrimeTimeCam, CameraNodeParams::Aspect, (float)width / height );
 }
 
 /// window related user events can be handeled in this routine 

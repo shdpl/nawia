@@ -185,6 +185,7 @@ unsigned int SoundResourceManager::addPhonemesFile(const char* filename)
 		m_phonemeFiles[newID] = file;
 		return newID;
 	}
+	return 0;
 }
 
 unsigned int SoundResourceManager::addResource(const char* filename, bool forceNoStream /*= false*/)

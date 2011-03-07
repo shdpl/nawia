@@ -71,8 +71,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
-      <Command>xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.lib" "$(SolutionDir)lib\" /y
-xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h" "$(SolutionDir)Include\GLFW\" /y
+      <Command>xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h" "$(SolutionDir)Include\GLFW\" /y
 </Command>
     </PreBuildEvent>
     <ClCompile>
@@ -88,7 +87,7 @@ xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h" "$(SolutionDir)Include\G
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw.lib;GameEngineCored.lib;GameSceneGraphComponentd.lib;opengl32.lib;Horde3D_vc8.lib;Horde3DUtils_vc8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)/bin/$(ProjectName)d.exe</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -101,8 +100,7 @@ xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h" "$(SolutionDir)Include\G
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.lib" "$(SolutionDir)lib\" /y
-xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h" "$(SolutionDir)Include\GLFW\" /y
+      <Command>xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h" "$(SolutionDir)Include\GLFW\" /y
 </Command>
     </PreBuildEvent>
     <ClCompile>
@@ -116,7 +114,7 @@ xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h" "$(SolutionDir)Include\G
       </DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>GameEngineCore.lib;GameSceneGraphComponent.lib;opengl32.lib;Horde3D_vc8.lib;Horde3DUtils_vc8.lib;glfw.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)/bin/$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -148,7 +146,7 @@ xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h" "$(SolutionDir)Include\G
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>GameEngineCored.lib;opengl32.lib;Horde3D_vc8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)/bin/$(ProjectName)d.exe</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -171,6 +169,12 @@ xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h" "$(SolutionDir)Include\G
       <Project>{2a423b83-d582-49ba-a45f-e27148099850}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Horde3D\Source\Horde3DEngine\Horde3D Engine.vcxproj">
+      <Project>{1d558d7d-da57-4908-bcfc-902054fe6b63}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Horde3D\Source\Horde3DUtils\Horde3D Utils.vcxproj">
+      <Project>{ae8eb9b3-d2c2-4372-ab4b-fc980ee69d2d}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\GameBulletPhysicsComponent\GameBulletPhysicsComponent.vcxproj">
       <Project>{015b0ebe-4bce-4c7d-8f27-47a5c78c6b27}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
@@ -178,6 +182,9 @@ xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h" "$(SolutionDir)Include\G
     <ProjectReference Include="..\..\src\GameEngineCore\GameEngineCore.vcxproj">
       <Project>{db488001-8e98-4724-9787-72da137c4e47}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\GameSceneGraphComponent\GameSceneGraphComponent.vcxproj">
+      <Project>{7b21d090-9a12-4e86-8e65-9aaea2b72ab4}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

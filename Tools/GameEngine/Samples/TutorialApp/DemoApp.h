@@ -1,9 +1,6 @@
 #ifndef DEMOAPP_H_
 #define DEMOAPP_H_
 
-#include "Horde3D/Horde3D.h"
-#include "Horde3D/Horde3DUtils.h"
-
 class DemoApp
 {
 public:

@@ -3,6 +3,9 @@
 #include "GameEngine/GameEngine.h"
 #include "GameEngine/GameEngine_SceneGraph.h"
 
+#include "Horde3D/Horde3D.h"
+#include "Horde3D/Horde3DUtils.h"
+
 DemoApp::DemoApp() : m_running(true)
 {
 	memset(m_keys, 0, sizeof(m_keys));

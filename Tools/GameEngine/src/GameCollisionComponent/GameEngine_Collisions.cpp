@@ -50,7 +50,7 @@ namespace GameEngine
 		if( entity && ( component = static_cast<CollisionComponent*>(entity->component("CollisionHandler")) ) != 0 )
 		{
 			size_t size = component->collisionList()->size();
-			if( index < size )
+			if( (unsigned)index < size )
 				return component->collisionList()->at(index);
 		}	
 		return 0;
