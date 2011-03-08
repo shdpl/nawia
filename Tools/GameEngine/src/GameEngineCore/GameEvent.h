@@ -328,6 +328,7 @@ public:
 		AG_ANIM_CLEAR,			/// Clears all animation stages, deleting all loaded animations. No data required
 		AG_MOVEMENT,			/// Performs a movement. Param: AgentMovementData(Vec3f/int,Type,const char*,const char*,float,bool), returns:  an int
 		AG_GAZE,				/// Gazes towards the target. Param: AgentGazeData(Vec3f/int,float,float), returns: int
+		AG_GAZE_SET_SPEED,		/// Sets the agent's default gaze speed. Param: float
 		AG_FORMATION_ADD,		/// Adds a member to the formation. Param: int
 		AG_FORMATION_DEL,		/// Removes a member from the formation. Param: int
 		AG_FORMATION_EVENT,		/// Fires an event meant to attract the attention of the members of the formation. Param: int
@@ -400,6 +401,7 @@ public:
 		AG_ANIM_GET_STROKES,	/// Gets the stroke repetition value of an animation. Param: AgentAnimationData(int), returns: int
 		AG_MOVEMENT_GET_STATUS,	/// Gets the animation's status. Param: AgentMovementData(int), returns: int
 		AG_GAZE_GET_STATUS,		/// Gets the gaze node's status. Param: AgentGazeData(int), returns: int
+		AG_GAZE_GET_SPEED,		/// Gets the agent's default gaze speed. Param: AgentGazeData(), returns: float
 		AG_FORMATION_GET_AGENTS,/// Gets the members of the formation. Param: AgentFormationData(int**), returns: int
 		AG_FORMATION_GET_TYPE,	/// Gets the type of the formation. Param: AgentFormationData(), returns: int
 		AG_FORMATION_GET_ENTRY,	/// Computes, returns:  an entry point to the formation. Param: AgentFormationData(int), returns: Vec3f
@@ -1301,7 +1303,13 @@ public:
 	};
 
 	///Data container constructor for AG_MOVEMENT
-	AgentMovementData(Vec3f target, Type type, const char* walkAnimName, const char* orientAnimName, float speed, bool putInQueue )
+	///@param target the target vector
+	///@param type the movement type
+	///@param speed the movement speed (default 1.0f)
+	///@param putInQueue doesn't start the movement immediately but places it in a queue.
+	///@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played during the orientation (use 0 for default agent walk animation)
+	///@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played during the locomotion (use 0 for default agent walk animation)
+	AgentMovementData(Vec3f target, Type type, float speed, bool putInQueue, const char* walkAnimName, const char* orientAnimName )
 		: m_targetV(target), m_type(type), m_walkAnimName(walkAnimName), m_orientAnimName(orientAnimName), m_speed(speed), m_putInQueue(putInQueue),
 		m_return(-1)
 	{
@@ -1309,6 +1317,12 @@ public:
 	}
 
 	///Data container constructor for AG_MOVEMENT
+	///@param target the target entity id
+	///@param type the movement type
+	///@param speed the movement speed (default 1.0f)
+	///@param putInQueue doesn't start the movement immediately but places it in a queue.
+	///@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played during the orientation (use 0 for default agent walk animation)
+	///@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played during the locomotion (use 0 for default agent walk animation)
 	AgentMovementData(int target, Type type, const char* walkAnimName, const char* orientAnimName, float speed, bool putInQueue )
 		: m_targetI(target), m_type(type), m_walkAnimName(walkAnimName), m_orientAnimName(orientAnimName), m_speed(speed), m_putInQueue(putInQueue),
 		m_return(-1)
@@ -1316,7 +1330,8 @@ public:
 		m_data.ptr = this;		
 	}
 
-	//Data container constructor for AG_MOVEMENT_GET_STATUS
+	///Data container constructor for AG_MOVEMENT_GET_STATUS	
+	///@param movementID the id of the movement, as returned by a movement call-up
 	AgentMovementData(int movementID) : m_movementID(movementID), m_return(-1), m_walkAnimName(0), m_orientAnimName(0)
 	{
 		m_data.ptr = this;		
@@ -1431,18 +1446,23 @@ public:
 	}
 
 	///Data container constructor for AG_ANIM_STOP, AG_ANIM_GET_STATUS, AG_ANIM_GET_SPEED, AG_ANIM_GET_EXTENT, AG_ANIM_GET_STROKES
+	///@param playbackID the playback id of the animation
 	AgentAnimationData(int playbackID) : m_playbackID(playbackID), m_returnI(-1), m_returnF(-1), m_sourceS(0), m_startNode(0), m_syncWord(0)
 	{
 		m_data.ptr = this;		
 	}
 
 	///Data container constructor for AG_ANIM_SET_STROKES
+	///@param playbackID the playback id of the animation
+	///@param value the the value we want to set
 	AgentAnimationData(int playbackID, int value) : m_playbackID(playbackID), m_valueI(value), m_returnI(-1), m_sourceS(0), m_startNode(0), m_syncWord(0)
 	{
 		m_data.ptr = this;		
 	}
 
 	///Data container constructor for AG_ANIM_SET_EXTENT, AG_ANIM_SET_SPEED
+	///@param playbackID the playback id of the animation
+	///@param value the the value we want to set
 	AgentAnimationData(int playbackID, float value) : m_playbackID(playbackID), m_valueF(value), m_returnI(-1), m_sourceS(0), m_startNode(0), m_syncWord(0)
 	{
 		m_data.ptr = this;		
@@ -1539,30 +1559,51 @@ public:
  */ 
 class AgentGazeData : public GameEventData
 {
-public:;
+public:
+	enum Type
+	{
+		GazeToPoint = 0,
+		GazeToEntity
+	};
+
 	///Data container constructor for AG_GAZE
+	///@param entityWorldID the entity we want to use the function on
+	///@param target the coordinates of the target position
+	///@param speed the gazing speed (use -1 for agent default)
+	///@param duration the gazing duration in seconds, use -1 for constant gazing (default 10.0f)
 	AgentGazeData(Vec3f target, float speed, float duration )
-		: m_targetV(target), m_speed(speed), m_duration(duration), m_return(-1)
+		: m_targetV(target), m_speed(speed), m_duration(duration), m_returnI(-1), m_type(GazeToEntity)
 	{
 		m_data.ptr = this;		
 	}
 
 	///Data container constructor for AG_GAZE
+	///@param entityWorldID the entity we want to use the function on
+	///@param targetEntityID the target entity
+	///@param speed the gazing speed (use -1 for agent default)
+	///@param duration the gazing duration in seconds, use -1 for constant gazing (default 10.0f)
 	AgentGazeData(int target, float speed, float duration )
-		: m_targetI(target), m_speed(speed), m_duration(duration), m_return(-1)
+		: m_targetI(target), m_speed(speed), m_duration(duration), m_returnI(-1), m_type(GazeToPoint)
 	{
 		m_data.ptr = this;		
 	}
 
 	///Data container constructor for AG_GAZE_GET_STATUS
-	AgentGazeData(int gazeID) : m_gazeID(gazeID), m_return(-1)
+	///@param gazeID the playback id of the gaze node
+	AgentGazeData(int gazeID) : m_gazeID(gazeID), m_returnI(-1)
+	{
+		m_data.ptr = this;		
+	}
+
+	///Data container constructor for AG_GAZE_GET_SPEED
+	AgentGazeData() : m_returnF(-1)
 	{
 		m_data.ptr = this;		
 	}
 
 	AgentGazeData(const AgentGazeData& copy) : GameEventData(CUSTOM), 
-		m_targetV(copy.m_targetV), m_targetI(copy.m_targetI), m_return(copy.m_return), m_speed(copy.m_speed), 
-		m_duration(copy.m_duration), m_gazeID(copy.m_gazeID)
+		m_targetV(copy.m_targetV), m_targetI(copy.m_targetI), m_returnI(copy.m_returnI), m_returnF(copy.m_returnF), 
+		m_speed(copy.m_speed), m_duration(copy.m_duration), m_gazeID(copy.m_gazeID), m_type(copy.m_type)
 	{
 		m_data.ptr = this;
 		m_owner = true;
@@ -1577,9 +1618,14 @@ public:;
 		return new AgentGazeData(*this);
 	}
 
-	int getReturnValue()
+	int getReturnInt()
 	{
-		return m_return;
+		return m_returnI;
+	}
+
+	float getReturnFloat()
+	{
+		return m_returnF;
 	}
 
 	Vec3f m_targetV;
@@ -1587,7 +1633,9 @@ public:;
 	float m_speed;
 	float m_duration;
 	int m_gazeID;
-	int m_return;
+	int m_returnI;
+	float m_returnF;
+	Type m_type;
 };
 
 /**
@@ -1601,12 +1649,15 @@ class AgentFormationData : public GameEventData
 {
 public:;
 	///Data container constructor for AG_FORMATION_REACT
+	///@param entityID the entity id of the event sender
+	///@param _event the event to react to
 	AgentFormationData(int entityID, int _event) : m_entityID(entityID), m_event(_event), m_returnS(0)
 	{
 		m_data.ptr = this;		
 	}
 
 	///Data container constructor for AG_FORMATION_GET_AGENTS
+	///@param members a pointer to an integer array
 	AgentFormationData(int** members) : m_members(members), m_returnI(-1), m_returnS(0)
 	{
 		m_data.ptr = this;		
@@ -1619,6 +1670,8 @@ public:;
 	}
 	
 	///Data container constructor for AG_SET_IPDIST
+	///@param min the minimal ipdistance value
+	///@param max the maximal ipdistance value
 	AgentFormationData(float min, float max) : m_min(min), m_max(max), m_returnS(0)
 	{
 		m_data.ptr = this;		
@@ -1705,23 +1758,29 @@ public:
 	{
 		INT = 0,
 		FLOAT,
-		STIRNG
+		STRING
 	};
 
 	///Data container constructor for AG_GET_PARAM, AG_SET_PARAM
-	AgentConfigData(int param, int value, Type type) : m_type(type), m_param(param), m_valueI(value), m_returnI(-1), m_returnF(-1), m_returnS(0), m_valueS(0)
+	///@param param the parameter of type Agent_Param
+	///@param value the value to set
+	AgentConfigData(int param, int value) : m_type(INT), m_param(param), m_valueI(value), m_returnI(-1), m_returnF(-1), m_returnS(0), m_valueS(0)
 	{
 		m_data.ptr = this;		
 	}
 
 	///Data container constructor for AG_GET_PARAM, AG_SET_PARAM
-	AgentConfigData(int param, float value, Type type) : m_type(type), m_param(param), m_valueF(value), m_returnI(-1), m_returnF(-1), m_returnS(0), m_valueS(0)
+	///@param param the parameter of type Agent_Param
+	///@param value the value to set
+	AgentConfigData(int param, float value) : m_type(FLOAT), m_param(param), m_valueF(value), m_returnI(-1), m_returnF(-1), m_returnS(0), m_valueS(0)
 	{
 		m_data.ptr = this;		
 	}
 
 	///Data container constructor for AG_GET_PARAM, AG_SET_PARAM
-	AgentConfigData(int param, const char* value, Type type) : m_type(type), m_param(param), m_valueS(value), m_returnI(-1), m_returnF(-1), m_returnS(0)
+	///@param param the parameter of type Agent_Param
+	///@param value the value to set
+	AgentConfigData(int param, const char* value) : m_type(STRING), m_param(param), m_valueS(value), m_returnI(-1), m_returnF(-1), m_returnS(0)
 	{
 		m_data.ptr = this;		
 	}
