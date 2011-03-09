@@ -36,6 +36,7 @@
 class GameEvent;
 struct lua_State;
 struct SQVM;
+struct XMLNode;
 
 /**
  * \mainpage GaBaCo - GameEngine based on Components
@@ -183,6 +184,8 @@ namespace GameEngine
 	 * @return index of the entity within the GameWorld
 	 */
 	GAMEENGINE_API unsigned int createGameEntity( const char *xmlText );
+	GAMEENGINE_API unsigned int createGameEntity( const XMLNode& attachment );
+
 
 	/**
      * Removes an entity from the GameEngine's world

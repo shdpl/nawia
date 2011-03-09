@@ -131,7 +131,7 @@ namespace GameEngine
 	{
 		if (sceneFile == 0) return false;
 
-		GameLog::logMessage("----Loading scene file %s----", sceneFile);
+		GameLog::logMessage("----Loading scene file '%s'----", sceneFile);
 		// get path of file loaded
 		std::string fileNameStr = sceneFile;
 		size_t lastSeparator1 = fileNameStr.find_last_of( '/' );
@@ -152,24 +152,20 @@ namespace GameEngine
 			GameModules::plugInManager()->loadScene( fileNameStr.c_str() );				
 
 			// Load extras
-			XMLNode& extras(scene.getChildNode("Extras"));
+			XMLNode extras(scene.getChildNode("Extras"));
 			if (!extras.isEmpty())
 			{
 				int childs = extras.nChildNode("GameEntity");
 				for (int i = 0; i < childs; ++i)
 				{
-					XMLNode extra(extras.getChildNode("GameEntity", i));
 					// Load extra nodes
-					int size;
-					char* data = extra.createXMLString(0, &size);
-					createGameEntity( data );
-					free(data);
+					createGameEntity(extras.getChildNode("GameEntity", i));
 				}				
 			}
 		}
 		else
 		{				
-			GameLog::errorMessage("Error loading scene file %s\n", sceneFile);
+			GameLog::errorMessage("Error loading scene file '%s'\n", sceneFile);
 			return false;
 		}
 		// Why should we reset the time after loading a scene?
@@ -177,7 +173,7 @@ namespace GameEngine
 		//TimingManager::reset();
 		// Update to initialize attached entities
 		GameModules::componentRegistry()->updateComponentManagers();
-		GameLog::logMessage("----Finished loading scene file %s----", sceneFile);
+		GameLog::logMessage("----Finished loading scene file '%s'----", sceneFile);
 		return true;
 	}
 
@@ -185,38 +181,41 @@ namespace GameEngine
 	{
 		if (xmlText == 0 || strlen(xmlText) == 0)
 			return 0;
-
 		XMLResults results;
 		// parse node attachment
 		XMLNode attachment = XMLNode::parseString(xmlText, "GameEntity", &results);
 		if (results.error == eXMLErrorNone)
-		{
-			const char* entityName = attachment.getAttribute("name");
-			if (entityName == 0)
-			{
-				GameLog::errorMessage("%s, Line %d: The Attachment contains no name attribute!", __FILE__, __LINE__ );
-				return 0;
-			}
-			EntityID entityID = entityName;
-			
-			GameEntity* entity = GameModules::gameWorld()->createEntity(entityID);
-	
-			if (entity)
-			{
-				const int childNodes = attachment.nChildNode();
-				for( int i = 0; i < childNodes; ++i )
-				{
-					XMLNode& node = attachment.getChildNode(i);
-					GameComponent* component = GameModules::componentRegistry()->createComponent(node.getName(), entity);
-					if( component ) component->loadFromXml( &node );
-					else GameLog::warnMessage( "No plugin found to handle '%s' nodes", node.getName() );
-				}
-				// TODO Extras
-				return entity->worldId();
-			}
-		}
+			return createGameEntity(attachment); 
 		else
 			GameLog::errorMessage("Error reading GameEntity\n%s\n", xmlText);
+		return 0;
+	}
+
+	unsigned int createGameEntity( const XMLNode& attachment )
+	{
+		const char* entityName = attachment.getAttribute("name");
+		if (entityName == 0)
+		{
+			entityName = "unnamed";
+			GameLog::warnMessage("The Attachment contains no name attribute, now calling it 'unnamed'!");
+		}
+		EntityID entityID = entityName;
+			
+		GameEntity* entity = GameModules::gameWorld()->createEntity(entityID);
+	
+		if (entity)
+		{
+			const int childNodes = attachment.nChildNode();
+			for( int i = 0; i < childNodes; ++i )
+			{
+				XMLNode& node = attachment.getChildNode(i);
+				GameComponent* component = GameModules::componentRegistry()->createComponent(node.getName(), entity);
+				if( component ) component->loadFromXml( &node );
+				else GameLog::warnMessage( "No plugin found to handle '%s' nodes", node.getName() );
+			}
+			return entity->worldId();
+		}
+
 		return 0;
 	}
 

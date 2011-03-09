@@ -173,13 +173,13 @@ GameEntity* GameWorld::createEntity(const EntityID& id)
 		}
 		if (i < 1000)
 		{
-			GameLog::warnMessage("Entity with name %s already exists, renaming to %s", id.c_str(), idstream.str().c_str());
+			GameLog::warnMessage("Entity with name '%s' already exists, renaming to '%s'", id.c_str(), idstream.str().c_str());
 			newID = idstream.str();
 			changeID = true;
 		}
 		else
 		{
-			GameLog::errorMessage("No free name found for Entity % s!", id.c_str());
+			GameLog::errorMessage("No free name found for Entity '%s'!", id.c_str());
 			return 0x0;
 		}
 	}

@@ -120,7 +120,7 @@ GameEntity::GameEntity(const EntityID& id) : m_id(id), m_worldId(0)
 {
 	m_privateData = new GameEntityPrivate();
 #ifdef _DEBUG
-	GameLog::logMessage("Creating entity %s", id.c_str());
+	GameLog::logMessage("Creating entity '%s'", id.c_str());
 #endif
 
 }
