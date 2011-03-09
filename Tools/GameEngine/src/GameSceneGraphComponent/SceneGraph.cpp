@@ -39,6 +39,13 @@
 
 #include <gl/gl.h>
 
+// Uncomment to print the time taken for each component loading from xml of each entity
+//#define MEASURE_COMPONENT_LOADING
+
+#ifdef MEASURE_COMPONENT_LOADING
+#include <GameEngine/GameEngine.h>
+#endif
+
 using namespace std;
 
 struct UpdateNode
@@ -136,7 +143,7 @@ void SceneGraphManager::update()
 			}
 			m_newSceneNodes.pop();
 		}
-		GameLog::logMessage("%d game entities created", attachments);
+		GameLog::logMessage("%d game entities created from attachments", attachments);
 	}
 
 	if (m_activeCam != m_nextCam)
@@ -172,8 +179,8 @@ unsigned int SceneGraphManager::createGameEntity( const char *xmlText, int horde
 		const char* entityName = attachment.getAttribute("name");
 		if (entityName == 0)
 		{
-			GameLog::errorMessage("The Attachment for the node '%s' contains no name attribute!", h3dGetNodeParamStr(hordeID, H3DNodeParams::NameStr ) );
-			return 0;
+			entityName = h3dGetNodeParamStr(hordeID, H3DNodeParams::NameStr );
+			GameLog::warnMessage("Attachment contains no name attribute, trying to use the Horde3D name: '%s'!",  entityName);
 		}
 		EntityID entityID = entityName;
 
@@ -184,6 +191,10 @@ unsigned int SceneGraphManager::createGameEntity( const char *xmlText, int horde
 			SceneGraphComponent* sceneGraphComponent = new SceneGraphComponent( entity );
 			sceneGraphComponent->setHordeID( hordeID );
 
+#ifdef MEASURE_COMPONENT_LOADING
+			float time = GameEngine::currentTimeStamp();
+			printf("Entity '%s' loading:\n", entity->id().c_str());
+#endif
 			const int childNodes = attachment.nChildNode();
 			for( int i = 0; i < childNodes; ++i )
 			{
@@ -191,7 +202,15 @@ unsigned int SceneGraphManager::createGameEntity( const char *xmlText, int horde
 				GameComponent* component = GameModules::componentRegistry()->createComponent(node.getName(), entity);
 				if( component ) component->loadFromXml( &node );
 				else GameLog::warnMessage( "No plugin found to handle '%s' nodes", node.getName() );
+#ifdef MEASURE_COMPONENT_LOADING
+				float newTime = GameEngine::currentTimeStamp();
+				printf("\tComponent %s: %.4f\n", node.getName(), newTime- time);
+				time = newTime;
+#endif
 			}
+#ifdef MEASURE_COMPONENT_LOADING
+			printf(" ...finished\n");
+#endif
 			return entity->worldId();
 		}
 	}
