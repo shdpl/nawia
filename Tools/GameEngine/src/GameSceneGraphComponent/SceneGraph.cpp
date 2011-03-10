@@ -180,7 +180,13 @@ unsigned int SceneGraphManager::createGameEntity( const char *xmlText, int horde
 		if (entityName == 0)
 		{
 			entityName = h3dGetNodeParamStr(hordeID, H3DNodeParams::NameStr );
-			GameLog::warnMessage("Attachment contains no name attribute, trying to use the Horde3D name: '%s'!",  entityName);
+			if (entityName != 0 && strlen(entityName) > 0)
+				GameLog::warnMessage("Attachment contains no name attribute, trying to use the Horde3D name: '%s'!",  entityName);
+			else
+			{
+				entityName = "unnamed";
+				GameLog::warnMessage("The Attachment contains no name attribute and the entity has no Hord3D name, now calling it 'unnamed'!");
+			}
 		}
 		EntityID entityID = entityName;
 
