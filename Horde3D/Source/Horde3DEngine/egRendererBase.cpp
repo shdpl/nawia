@@ -121,14 +121,16 @@ void GPUTimer::reset()
 
 
 // =================================================================================================
-// RenderDeviceInterface
+// RenderDevice
 // =================================================================================================
 
-RenderDeviceInterface::RenderDeviceInterface()
+RenderDevice::RenderDevice()
 {
+	_numVertexLayouts = 0;
+	
 	_vpX = 0; _vpY = 0; _vpWidth = 320; _vpHeight = 240;
 	_scX = 0; _scY = 0; _scWidth = 320; _scHeight = 240;
-	_prevShader = _curShader = 0;
+	_prevShaderId = _curShaderId = 0;
 	_curRendBuf = 0; _outputBufferIndex = 0;
 	_textureMem = 0; _bufferMem = 0;
 	_curVertLayout = _newVertLayout = 0;
@@ -138,18 +140,18 @@ RenderDeviceInterface::RenderDeviceInterface()
 }
 
 
-RenderDeviceInterface::~RenderDeviceInterface()
+RenderDevice::~RenderDevice()
 {
 }
 
 
-void RenderDeviceInterface::initStates()
+void RenderDevice::initStates()
 {
 	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 }
 
 
-bool RenderDeviceInterface::init()
+bool RenderDevice::init()
 {
 	bool failed = false;
 
@@ -206,9 +208,9 @@ bool RenderDeviceInterface::init()
 	}
 	
 	// Get capabilities
-	_caps[RenderCaps::Tex_Float] = glExt::ARB_texture_float ? 1 : 0;
-	_caps[RenderCaps::Tex_NPOT] = glExt::ARB_texture_non_power_of_two ? 1 : 0;
-	_caps[RenderCaps::RT_Multisampling] = glExt::EXT_framebuffer_multisample ? 1 : 0;
+	_caps.texFloat = glExt::ARB_texture_float ? 1 : 0;
+	_caps.texNPOT = glExt::ARB_texture_non_power_of_two ? 1 : 0;
+	_caps.rtMultisampling = glExt::EXT_framebuffer_multisample ? 1 : 0;
 
 	// Find supported depth format (some old ATI cards only support 16 bit depth for FBOs)
 	_depthFormat = GL_DEPTH_COMPONENT24;
@@ -219,7 +221,7 @@ bool RenderDeviceInterface::init()
 		Modules::log().writeWarning( "Render target depth precision limited to 16 bit" );
 	}
 	else
-		releaseRenderBuffer( testBuf );
+		destroyRenderBuffer( testBuf );
 	
 	initStates();
 	resetStates();
@@ -229,10 +231,28 @@ bool RenderDeviceInterface::init()
 
 
 // =================================================================================================
+// Vertex layouts
+// =================================================================================================
+
+uint32 RenderDevice::registerVertexLayout( uint32 numAttribs, VertexLayoutAttrib *attribs )
+{
+	if( _numVertexLayouts == MaxNumVertexLayouts )
+		return 0;
+	
+	_vertexLayouts[_numVertexLayouts].numAttribs = numAttribs;
+
+	for( uint32 i = 0; i < numAttribs; ++i )
+		_vertexLayouts[_numVertexLayouts].attribs[i] = attribs[i];
+
+	return ++_numVertexLayouts;
+}
+
+
+// =================================================================================================
 // Buffers
 // =================================================================================================
 
-uint32 RenderDeviceInterface::createVertexBuffer( uint32 size, const void *data )
+uint32 RenderDevice::createVertexBuffer( uint32 size, const void *data )
 {
 	RDIBuffer buf;
 
@@ -248,7 +268,7 @@ uint32 RenderDeviceInterface::createVertexBuffer( uint32 size, const void *data 
 }
 
 
-uint32 RenderDeviceInterface::createIndexBuffer( uint32 size, const void *data )
+uint32 RenderDevice::createIndexBuffer( uint32 size, const void *data )
 {
 	RDIBuffer buf;
 
@@ -264,7 +284,7 @@ uint32 RenderDeviceInterface::createIndexBuffer( uint32 size, const void *data )
 }
 
 
-void RenderDeviceInterface::releaseBuffer( uint32 bufObj )
+void RenderDevice::destroyBuffer( uint32 bufObj )
 {
 	if( bufObj == 0 ) return;
 	
@@ -276,7 +296,7 @@ void RenderDeviceInterface::releaseBuffer( uint32 bufObj )
 }
 
 
-void RenderDeviceInterface::updateBufferData( uint32 bufObj, uint32 offset, uint32 size, void *data )
+void RenderDevice::updateBufferData( uint32 bufObj, uint32 offset, uint32 size, void *data )
 {
 	const RDIBuffer &buf = _buffers.getRef( bufObj );
 	ASSERT( offset + size <= buf.size );
@@ -294,30 +314,11 @@ void RenderDeviceInterface::updateBufferData( uint32 bufObj, uint32 offset, uint
 }
 
 
-uint32 RenderDeviceInterface::cloneBuffer( uint32 bufObj )
-{
-	const RDIBuffer &buf = _buffers.getRef( bufObj );
-	int size;
-	
-	glBindBuffer( buf.type, buf.glObj );
-	glGetBufferParameteriv( buf.type, GL_BUFFER_SIZE, &size );
-	char *data = new char[size];
-	glGetBufferSubData( buf.type, 0, size, data );
-	
-	uint32 newBufObj = 0;
-	if( buf.type == GL_ARRAY_BUFFER ) newBufObj = createVertexBuffer( size, data );
-	else if( buf.type == GL_ELEMENT_ARRAY_BUFFER ) newBufObj = createIndexBuffer( size, data );
-	
-	delete[] data;
-	return newBufObj;
-}
-
-
 // =================================================================================================
 // Textures
 // =================================================================================================
 
-uint32 RenderDeviceInterface::calcTextureSize( TextureFormats::List format, int width, int height, int depth )
+uint32 RenderDevice::calcTextureSize( TextureFormats::List format, int width, int height, int depth )
 {
 	switch( format )
 	{
@@ -339,11 +340,11 @@ uint32 RenderDeviceInterface::calcTextureSize( TextureFormats::List format, int 
 }
 
 
-uint32 RenderDeviceInterface::createTexture( TextureTypes::List type, int width, int height, int depth,
-                                             TextureFormats::List format,
-                                             bool hasMips, bool genMips, bool compress, bool sRGB )
+uint32 RenderDevice::createTexture( TextureTypes::List type, int width, int height, int depth,
+                                    TextureFormats::List format,
+                                    bool hasMips, bool genMips, bool compress, bool sRGB )
 {
-	if( !_caps[RenderCaps::Tex_NPOT] )
+	if( !_caps.texNPOT )
 	{
 		// Check if texture is NPOT
 		if( (width & (width-1)) != 0 || (height & (height-1)) != 0 )
@@ -412,7 +413,7 @@ uint32 RenderDeviceInterface::createTexture( TextureTypes::List type, int width,
 }
 
 
-void RenderDeviceInterface::uploadTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels )
+void RenderDevice::uploadTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels )
 {
 	const RDITexture &tex = _textures.getRef( texObj );
 	TextureFormats::List format = tex.format;
@@ -478,7 +479,7 @@ void RenderDeviceInterface::uploadTextureData( uint32 texObj, int slice, int mip
 }
 
 
-void RenderDeviceInterface::releaseTexture( uint32 texObj )
+void RenderDevice::destroyTexture( uint32 texObj )
 {
 	if( texObj == 0 ) return;
 	
@@ -490,13 +491,13 @@ void RenderDeviceInterface::releaseTexture( uint32 texObj )
 }
 
 
-void RenderDeviceInterface::updateTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels )
+void RenderDevice::updateTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels )
 {
 	uploadTextureData( texObj, slice, mipLevel, pixels );
 }
 
 
-bool RenderDeviceInterface::getTextureData( uint32 texObj, int slice, int mipLevel, void *buffer )
+bool RenderDevice::getTextureData( uint32 texObj, int slice, int mipLevel, void *buffer )
 {
 	const RDITexture &tex = _textures.getRef( texObj );
 	
@@ -544,7 +545,7 @@ bool RenderDeviceInterface::getTextureData( uint32 texObj, int slice, int mipLev
 // Shaders
 // =================================================================================================
 
-uint32 RenderDeviceInterface::loadShader( const char *vertexShader, const char *fragmentShader )
+uint32 RenderDevice::createShaderProgram( const char *vertexShaderSrc, const char *fragmentShaderSrc )
 {
 	int infologLength = 0;
 	int charsWritten = 0;
@@ -555,7 +556,7 @@ uint32 RenderDeviceInterface::loadShader( const char *vertexShader, const char *
 
 	// Vertex shader
 	uint32 vs = glCreateShader( GL_VERTEX_SHADER );
-	glShaderSource( vs, 1, &vertexShader, 0x0 );
+	glShaderSource( vs, 1, &vertexShaderSrc, 0x0 );
 	glCompileShader( vs );
 	glGetShaderiv( vs, GL_COMPILE_STATUS, &status );
 	if( !status )
@@ -576,7 +577,7 @@ uint32 RenderDeviceInterface::loadShader( const char *vertexShader, const char *
 
 	// Fragment shader
 	uint32 fs = glCreateShader( GL_FRAGMENT_SHADER );
-	glShaderSource( fs, 1, &fragmentShader, 0x0 );
+	glShaderSource( fs, 1, &fragmentShaderSrc, 0x0 );
 	glCompileShader( fs );
 	glGetShaderiv( fs, GL_COMPILE_STATUS, &status );
 	if( !status )
@@ -606,7 +607,7 @@ uint32 RenderDeviceInterface::loadShader( const char *vertexShader, const char *
 }
 
 
-bool RenderDeviceInterface::linkShader( uint32 shaderId )
+bool RenderDevice::linkShaderProgram( uint32 programObj )
 {
 	int infologLength = 0;
 	int charsWritten = 0;
@@ -615,112 +616,117 @@ bool RenderDeviceInterface::linkShader( uint32 shaderId )
 
 	_shaderLog = "";
 	
-	glLinkProgram( shaderId );
-	glGetProgramiv( shaderId, GL_INFO_LOG_LENGTH, &infologLength );
+	glLinkProgram( programObj );
+	glGetProgramiv( programObj, GL_INFO_LOG_LENGTH, &infologLength );
 	if( infologLength > 1 )
 	{
 		infoLog = new char[infologLength];
-		glGetProgramInfoLog( shaderId, infologLength, &charsWritten, infoLog );
+		glGetProgramInfoLog( programObj, infologLength, &charsWritten, infoLog );
 		_shaderLog = _shaderLog + "[Linking]\n" + infoLog;
 		delete[] infoLog; infoLog = 0x0;
 	}
 	
-	glGetProgramiv( shaderId, GL_LINK_STATUS, &status );
+	glGetProgramiv( programObj, GL_LINK_STATUS, &status );
 	if( !status ) return false;
 
 	return true;
 }
 
 
-uint32 RenderDeviceInterface::createShader( const char *vertexShader, const char *fragmentShader )
+uint32 RenderDevice::createShader( const char *vertexShaderSrc, const char *fragmentShaderSrc )
 {
 	// Compile and link shader
-	uint32 shdObj = loadShader( vertexShader, fragmentShader );
-	if( shdObj == 0 ) return 0;
-	if( !linkShader( shdObj ) ) return 0;
-
-	int attribCount;
-	glGetProgramiv( shdObj, GL_ACTIVE_ATTRIBUTES, &attribCount );
+	uint32 programObj = createShaderProgram( vertexShaderSrc, fragmentShaderSrc );
+	if( programObj == 0 ) return 0;
+	if( !linkShaderProgram( programObj ) ) return 0;
 	
-	// Find vertex layouts that have the same input signature as the shader
-	for( uint32 i = 0; i < _vertexLayouts._objects.size(); ++i )
+	uint32 shaderId = _shaders.add( RDIShader() );
+	RDIShader &shader = _shaders.getRef( shaderId );
+	shader.oglProgramObj = programObj;
+	
+	int attribCount;
+	glGetProgramiv( programObj, GL_ACTIVE_ATTRIBUTES, &attribCount );
+	
+	for( uint32 i = 0; i < _numVertexLayouts; ++i )
 	{
-		RDIVertexLayout &vl = _vertexLayouts._objects[i];
-
-		RDIVertexLayout::ShaderData shdData;
-		shdData.elemAttribIndices.resize( vl.elems.size(), -1 );
-
-		bool matching = true;
+		RDIVertexLayout &vl = _vertexLayouts[i];
+		bool allAttribsFound = true;
+		
+		for( uint32 j = 0; j < 16; ++j )
+			shader.inputLayouts[i].attribIndices[j] = -1;
+		
 		for( int j = 0; j < attribCount; ++j )
 		{
-			uint32 size, type;
 			char name[32];
-			glGetActiveAttrib( shdObj, j, 32, 0x0, (int *)&size, &type, name );
+			uint32 size, type;
+			glGetActiveAttrib( programObj, j, 32, 0x0, (int *)&size, &type, name );
 
-			bool found = false;
-			for( uint32 k = 0; k < vl.elems.size(); ++k )
+			bool attribFound = false;
+			for( uint32 k = 0; k < vl.numAttribs; ++k )
 			{
-				if( vl.elems[k].semanticName == name )
-				{	
-					shdData.elemAttribIndices[k] = glGetAttribLocation( shdObj, name );
-					found = true;
-					break;
+				if( strcmp( vl.attribs[k].semanticName.c_str(), name ) == 0 )
+				{
+					shader.inputLayouts[i].attribIndices[k] = glGetAttribLocation( programObj, name );
+					attribFound = true;
 				}
 			}
 
-			if( !found )
-			{	
-				matching = false;
+			if( !attribFound )
+			{
+				allAttribsFound = false;
 				break;
 			}
 		}
 
-		// Store shader attribute bindings
-		if( matching ) vl.shaderData[shdObj] = shdData;
+		shader.inputLayouts[i].valid = allAttribsFound;
 	}
 
-	return shdObj;
+	return shaderId;
 }
 
 
-void RenderDeviceInterface::releaseShader( uint32 shdObj )
+void RenderDevice::destroyShader( uint32 shaderId )
 {
-	if( shdObj == 0 ) return;
-	
-	// Remove shader data from vertex layouts
-	for( uint32 i = 0; i < _vertexLayouts._objects.size(); ++i )
+	if( shaderId == 0 ) return;
+
+	RDIShader &shader = _shaders.getRef( shaderId );
+	glDeleteProgram( shader.oglProgramObj );
+	_buffers.remove( shaderId );
+}
+
+
+void RenderDevice::bindShader( uint32 shaderId )
+{
+	if( shaderId != 0 )
 	{
-		std::map< uint32, RDIVertexLayout::ShaderData >::iterator itr =
-			_vertexLayouts._objects[i].shaderData.find( shdObj );
-		if( itr != _vertexLayouts._objects[i].shaderData.end() )
-			_vertexLayouts._objects[i].shaderData.erase( itr );
+		RDIShader &shader = _shaders.getRef( shaderId );
+		glUseProgram( shader.oglProgramObj );
 	}
-
-	glDeleteProgram( shdObj );
-}
-
-
-void RenderDeviceInterface::bindShader( uint32 shdObj )
-{
-	_curShader = shdObj;
-	glUseProgram( shdObj );
+	else
+	{
+		glUseProgram( 0 );
+	}
+	
+	_curShaderId = shaderId;
 	_pendingMask |= PM_VERTLAYOUT;
 } 
 
 
-int RenderDeviceInterface::getShaderConstLoc( uint32 shdObj, const char *name )
+int RenderDevice::getShaderConstLoc( uint32 shaderId, const char *name )
 {
-	return glGetUniformLocation( shdObj, name );
+	RDIShader &shader = _shaders.getRef( shaderId );
+	return glGetUniformLocation( shader.oglProgramObj, name );
 }
 
 
-int RenderDeviceInterface::getShaderSamplerLoc( uint32 shdObj, const char *name )
+int RenderDevice::getShaderSamplerLoc( uint32 shaderId, const char *name )
 {
-	return glGetUniformLocation( shdObj, name );
+	RDIShader &shader = _shaders.getRef( shaderId );
+	return glGetUniformLocation( shader.oglProgramObj, name );
 }
 
 
-void RenderDeviceInterface::setShaderConst( int loc, RDIShaderConstType type, void *values, uint32 count )
+void RenderDevice::setShaderConst( int loc, RDIShaderConstType type, void *values, uint32 count )
 {
 	switch( type )
 	{
@@ -746,7 +752,7 @@ void RenderDeviceInterface::setShaderConst( int loc, RDIShaderConstType type, vo
 }
 
 
-void RenderDeviceInterface::setShaderSampler( int loc, uint32 texUnit )
+void RenderDevice::setShaderSampler( int loc, uint32 texUnit )
 {
 	glUniform1i( loc, (int)texUnit );
 }
@@ -756,11 +762,10 @@ void RenderDeviceInterface::setShaderSampler( int loc, uint32 texUnit )
 // Renderbuffers
 // =================================================================================================
 
-uint32 RenderDeviceInterface::createRenderBuffer( uint32 width, uint32 height, TextureFormats::List format,
-                                                  bool depth, uint32 numColBufs, uint32 samples )
+uint32 RenderDevice::createRenderBuffer( uint32 width, uint32 height, TextureFormats::List format,
+                                         bool depth, uint32 numColBufs, uint32 samples )
 {
-	if( (format == TextureFormats::RGBA16F || format == TextureFormats::RGBA32F) &&
-		!_caps[RenderCaps::Tex_Float] )
+	if( (format == TextureFormats::RGBA16F || format == TextureFormats::RGBA32F) && !_caps.texFloat )
 	{
 		return 0;
 	}
@@ -768,7 +773,7 @@ uint32 RenderDeviceInterface::createRenderBuffer( uint32 width, uint32 height, T
 	if( numColBufs > RDIRenderBuffer::MaxColorAttachmentCount ) return 0;
 
 	uint32 maxSamples = 0;
-	if( _caps[RenderCaps::RT_Multisampling] )
+	if( _caps.rtMultisampling )
 	{
 		GLint value;
 		glGetIntegerv( GL_MAX_SAMPLES_EXT, &value );
@@ -888,7 +893,7 @@ uint32 RenderDeviceInterface::createRenderBuffer( uint32 width, uint32 height, T
 
 	if( !valid )
 	{
-		releaseRenderBuffer( rbObj );
+		destroyRenderBuffer( rbObj );
 		return 0;
 	}
 	
@@ -896,19 +901,19 @@ uint32 RenderDeviceInterface::createRenderBuffer( uint32 width, uint32 height, T
 }
 
 
-void RenderDeviceInterface::releaseRenderBuffer( uint32 rbObj )
+void RenderDevice::destroyRenderBuffer( uint32 rbObj )
 {
 	RDIRenderBuffer &rb = _rendBufs.getRef( rbObj );
 	
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 	
-	if( rb.depthTex != 0 ) releaseTexture( rb.depthTex );
+	if( rb.depthTex != 0 ) destroyTexture( rb.depthTex );
 	if( rb.depthBuf != 0 ) glDeleteRenderbuffersEXT( 1, &rb.depthBuf );
 	rb.depthTex = rb.depthBuf = 0;
 		
 	for( uint32 i = 0; i < RDIRenderBuffer::MaxColorAttachmentCount; ++i )
 	{
-		if( rb.colTexs[i] != 0 ) releaseTexture( rb.colTexs[i] );
+		if( rb.colTexs[i] != 0 ) destroyTexture( rb.colTexs[i] );
 		if( rb.colBufs[i] != 0 ) glDeleteRenderbuffersEXT( 1, &rb.colBufs[i] );
 		rb.colTexs[i] = rb.colBufs[i] = 0;
 	}
@@ -921,7 +926,7 @@ void RenderDeviceInterface::releaseRenderBuffer( uint32 rbObj )
 }
 
 
-uint32 RenderDeviceInterface::getRenderBufferTex( uint32 rbObj, uint32 bufIndex )
+uint32 RenderDevice::getRenderBufferTex( uint32 rbObj, uint32 bufIndex )
 {
 	RDIRenderBuffer &rb = _rendBufs.getRef( rbObj );
 	
@@ -931,7 +936,7 @@ uint32 RenderDeviceInterface::getRenderBufferTex( uint32 rbObj, uint32 bufIndex 
 }
 
 
-void RenderDeviceInterface::resolveRenderBuffer( uint32 rbObj )
+void RenderDevice::resolveRenderBuffer( uint32 rbObj )
 {
 	RDIRenderBuffer &rb = _rendBufs.getRef( rbObj );
 	
@@ -971,7 +976,7 @@ void RenderDeviceInterface::resolveRenderBuffer( uint32 rbObj )
 }
 
 
-void RenderDeviceInterface::setRenderBuffer( uint32 rbObj )
+void RenderDevice::setRenderBuffer( uint32 rbObj )
 {
 	// Resolve render buffer if necessary
 	if( _curRendBuf != 0 ) resolveRenderBuffer( _curRendBuf );
@@ -1006,8 +1011,8 @@ void RenderDeviceInterface::setRenderBuffer( uint32 rbObj )
 }
 
 
-bool RenderDeviceInterface::getRenderBufferData( uint32 rbObj, int bufIndex, int *width, int *height,
-                                                 int *compCount, void *dataBuffer, int bufferSize )
+bool RenderDevice::getRenderBufferData( uint32 rbObj, int bufIndex, int *width, int *height,
+                                        int *compCount, void *dataBuffer, int bufferSize )
 {
 	int x, y, w, h;
 	int format = GL_RGBA;
@@ -1071,7 +1076,7 @@ bool RenderDeviceInterface::getRenderBufferData( uint32 rbObj, int bufIndex, int
 // Queries
 // =================================================================================================
 
-uint32 RenderDeviceInterface::createOcclusionQuery()
+uint32 RenderDevice::createOcclusionQuery()
 {
 	uint32 queryObj;
 	glGenQueries( 1, &queryObj );
@@ -1079,7 +1084,7 @@ uint32 RenderDeviceInterface::createOcclusionQuery()
 }
 
 
-void RenderDeviceInterface::releaseQuery( uint32 queryObj )
+void RenderDevice::destroyQuery( uint32 queryObj )
 {
 	if( queryObj == 0 ) return;
 	
@@ -1087,19 +1092,19 @@ void RenderDeviceInterface::releaseQuery( uint32 queryObj )
 }
 
 
-void RenderDeviceInterface::beginQuery( uint32 queryObj )
+void RenderDevice::beginQuery( uint32 queryObj )
 {
 	glBeginQuery( GL_SAMPLES_PASSED, queryObj );
 }
 
 
-void RenderDeviceInterface::endQuery( uint32 /*queryObj*/ )
+void RenderDevice::endQuery( uint32 /*queryObj*/ )
 {
 	glEndQuery( GL_SAMPLES_PASSED );
 }
 
 
-uint32 RenderDeviceInterface::getQueryResult( uint32 queryObj )
+uint32 RenderDevice::getQueryResult( uint32 queryObj )
 {
 	uint32 samples = 0;
 	glGetQueryObjectuiv( queryObj, GL_QUERY_RESULT, &samples );
@@ -1108,43 +1113,10 @@ uint32 RenderDeviceInterface::getQueryResult( uint32 queryObj )
 
 
 // =================================================================================================
-// Vertex declarations
-// =================================================================================================
-
-uint32 RenderDeviceInterface::createVertexLayout( uint32 elemCount )
-{
-	RDIVertexLayout vl;
-	
-	uint32 vlObj = _vertexLayouts.add( vl );
-	_vertexLayouts.getRef( vlObj ).elems.resize( elemCount );
-
-	return vlObj;
-}
-
-void RenderDeviceInterface::setVertexLayoutElem( uint32 vlObj, uint32 slot, const char *semanticName,
-                                                 uint32 vbSlot, uint32 size, uint32 offset )
-{
-	RDIVertexLayout &vl = _vertexLayouts.getRef( vlObj );
-	
-	vl.elems[slot].semanticName = semanticName;
-	vl.elems[slot].vbSlot = vbSlot;
-	vl.elems[slot].size = size;
-	vl.elems[slot].offset = offset;
-}
-
-void RenderDeviceInterface::releaseVertexLayout( uint32 vlObj )
-{
-	if( vlObj == 0 ) return;
-	
-	_vertexLayouts.remove( vlObj );
-}
-
-
-// =================================================================================================
 // Internal state management
 // =================================================================================================
 
-void RenderDeviceInterface::checkGLError()
+void RenderDevice::checkGLError()
 {
 	uint32 error = glGetError();
 	ASSERT( error != GL_INVALID_ENUM );
@@ -1155,49 +1127,54 @@ void RenderDeviceInterface::checkGLError()
 }
 
 
-bool RenderDeviceInterface::applyVertexLayout()
+bool RenderDevice::applyVertexLayout()
 {
-	static int maxVertexAttribs = 0;
-	if( maxVertexAttribs == 0 )
-		glGetIntegerv( GL_MAX_VERTEX_ATTRIBS, &maxVertexAttribs );
-	
-	// Reset previous layout
-	for( int i = 0; i < maxVertexAttribs; ++i )
-		glDisableVertexAttribArray( i );
-	
-	if( _newVertLayout == 0 ) return false;
+	if( _newVertLayout == 0 || _curShaderId == 0 ) return false;
 
-	RDIVertexLayout &vl = _vertexLayouts.getRef( _newVertLayout );
-
-	// Find data for the currently bound shader
-	ASSERT( _curShader != 0 );
-	std::map< uint32, RDIVertexLayout::ShaderData >::iterator itr = vl.shaderData.find( _curShader );
-	if( itr == vl.shaderData.end() ) return false;
+	RDIVertexLayout &vl = _vertexLayouts[_newVertLayout - 1];
+	RDIShader &shader = _shaders.getRef( _curShaderId );
+	RDIInputLayout &inputLayout = shader.inputLayouts[_newVertLayout - 1];
+	
+	if( !inputLayout.valid )
+		return false;
 
 	// Set vertex attrib pointers
-	for( uint32 i = 0; i < vl.elems.size(); ++i )
+	uint32 newVertexAttribMask = 0;
+	for( uint32 i = 0; i < vl.numAttribs; ++i )
 	{
-		RDIVertLayoutElem &elem = vl.elems[i];
-		const RDIVertBufSlot &vbSlot = _vertBufSlots[elem.vbSlot];
-		
-		int8 attribIndex = itr->second.elemAttribIndices[i];
+		int8 attribIndex = inputLayout.attribIndices[i];
 		if( attribIndex >= 0 )
 		{
-			ASSERT( _buffers.getRef( _vertBufSlots[elem.vbSlot].vbObj ).glObj != 0 &&
-			        _buffers.getRef( _vertBufSlots[elem.vbSlot].vbObj ).type == GL_ARRAY_BUFFER );
+			VertexLayoutAttrib &attrib = vl.attribs[i];
+			const RDIVertBufSlot &vbSlot = _vertBufSlots[attrib.vbSlot];
 			
-			glBindBuffer( GL_ARRAY_BUFFER, _buffers.getRef( _vertBufSlots[elem.vbSlot].vbObj ).glObj );
-			glVertexAttribPointer( attribIndex, elem.size, GL_FLOAT, GL_FALSE,
-			                       vbSlot.stride, (char *)0 + vbSlot.offset + elem.offset );
-			glEnableVertexAttribArray( attribIndex );
+			ASSERT( _buffers.getRef( _vertBufSlots[attrib.vbSlot].vbObj ).glObj != 0 &&
+			        _buffers.getRef( _vertBufSlots[attrib.vbSlot].vbObj ).type == GL_ARRAY_BUFFER );
+			
+			glBindBuffer( GL_ARRAY_BUFFER, _buffers.getRef( _vertBufSlots[attrib.vbSlot].vbObj ).glObj );
+			glVertexAttribPointer( attribIndex, attrib.size, GL_FLOAT, GL_FALSE,
+			                       vbSlot.stride, (char *)0 + vbSlot.offset + attrib.offset );
+
+			newVertexAttribMask |= 1 << attribIndex;
 		}
 	}
+	
+	for( uint32 i = 0; i < 16; ++i )
+	{
+		uint32 curBit = 1 << i;
+		if( (newVertexAttribMask & curBit) != (_activeVertexAttribsMask & curBit) )
+		{
+			if( newVertexAttribMask & curBit ) glEnableVertexAttribArray( i );
+			else glDisableVertexAttribArray( i );
+		}
+	}
+	_activeVertexAttribsMask = newVertexAttribMask;
 
 	return true;
 }
 
 
-void RenderDeviceInterface::applySamplerState( RDITexture &tex )
+void RenderDevice::applySamplerState( RDITexture &tex )
 {
 	uint32 state = tex.samplerState;
 	uint32 target = tex.type;
@@ -1230,7 +1207,7 @@ void RenderDeviceInterface::applySamplerState( RDITexture &tex )
 }
 
 
-bool RenderDeviceInterface::commitStates( uint32 filter )
+bool RenderDevice::commitStates( uint32 filter )
 {
 	if( _pendingMask & filter )
 	{
@@ -1273,7 +1250,7 @@ bool RenderDeviceInterface::commitStates( uint32 filter )
 				if( !applyVertexLayout() )
 					return false;
 				_curVertLayout = _newVertLayout;
-				_prevShader = _curShader;
+				_prevShaderId = _curShaderId;
 				_pendingMask &= ~PM_VERTLAYOUT;
 			}
 		}
@@ -1315,13 +1292,22 @@ bool RenderDeviceInterface::commitStates( uint32 filter )
 }
 
 
-void RenderDeviceInterface::resetStates()
+void RenderDevice::resetStates()
 {
+	static int maxVertexAttribs = 0;
+	if( maxVertexAttribs == 0 )
+		glGetIntegerv( GL_MAX_VERTEX_ATTRIBS, &maxVertexAttribs );
+	
 	_curIndexBuf = 1; _newIndexBuf = 0;
 	_curVertLayout = 1; _newVertLayout = 0;
 
 	for( uint32 i = 0; i < 16; ++i )
 		setTexture( i, 0, 0 );
+
+	_activeVertexAttribsMask = 0;
+
+	for( uint32 i = 0; i < (uint32)maxVertexAttribs; ++i )
+		glDisableVertexAttribArray( i );
 
 	_pendingMask = 0xFFFFFFFF;
 	commitStates();
@@ -1332,7 +1318,7 @@ void RenderDeviceInterface::resetStates()
 // Draw calls and clears
 // =================================================================================================
 
-void RenderDeviceInterface::clear( uint32 flags, float *colorRGBA, float depth )
+void RenderDevice::clear( uint32 flags, float *colorRGBA, float depth )
 {
 	uint32 mask = 0;
 	
@@ -1358,7 +1344,7 @@ void RenderDeviceInterface::clear( uint32 flags, float *colorRGBA, float depth )
 }
 
 
-void RenderDeviceInterface::draw( RDIPrimType primType, uint32 firstVert, uint32 numVerts )
+void RenderDevice::draw( RDIPrimType primType, uint32 firstVert, uint32 numVerts )
 {
 	if( commitStates() )
 	{
@@ -1369,8 +1355,8 @@ void RenderDeviceInterface::draw( RDIPrimType primType, uint32 firstVert, uint32
 }
 
 
-void RenderDeviceInterface::drawIndexed( RDIPrimType primType, uint32 firstIndex, uint32 numIndices,
-                                         uint32 firstVert, uint32 numVerts )
+void RenderDevice::drawIndexed( RDIPrimType primType, uint32 firstIndex, uint32 numIndices,
+                                uint32 firstVert, uint32 numVerts )
 {
 	if( commitStates() )
 	{

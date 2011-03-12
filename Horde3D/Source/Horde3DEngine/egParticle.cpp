@@ -326,7 +326,7 @@ EmitterNode::~EmitterNode()
 	for( uint32 i = 0; i < _occQueries.size(); ++i )
 	{
 		if( _occQueries[i] != 0 )
-			gRDI->releaseQuery( _occQueries[i] );
+			gRDI->destroyQuery( _occQueries[i] );
 	}
 	
 	delete[] _particles;

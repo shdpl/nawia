@@ -406,7 +406,7 @@ void ShaderResource::release()
 	{
 		for( uint32 j = 0; j < _contexts[i].shaderCombs.size(); ++j )
 		{
-			gRDI->releaseShader( _contexts[i].shaderCombs[j].shaderObj );
+			gRDI->destroyShader( _contexts[i].shaderCombs[j].shaderObj );
 		}
 	}
 
@@ -848,7 +848,7 @@ void ShaderResource::compileCombination( ShaderContext &context, ShaderCombinati
 	// Unload shader if necessary
 	if( sc.shaderObj != 0 )
 	{
-		gRDI->releaseShader( sc.shaderObj );
+		gRDI->destroyShader( sc.shaderObj );
 		sc.shaderObj = 0;
 	}
 	

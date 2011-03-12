@@ -311,7 +311,7 @@ void PipelineResource::releaseRenderTargets()
 	{
 		RenderTarget &rt = _renderTargets[i];
 		if( rt.rendBuf )
-			gRDI->releaseRenderBuffer( rt.rendBuf );
+			gRDI->destroyRenderBuffer( rt.rendBuf );
 	}
 }
 

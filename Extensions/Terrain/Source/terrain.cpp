@@ -15,7 +15,6 @@
 #include "egRenderer.h"
 #include "egMaterial.h"
 #include "egCamera.h"
-#include "utOpenGL.h"
 
 #include "utDebug.h"
 
@@ -447,8 +446,8 @@ namespace Horde3DTerrain
 
 	void TerrainNode::recreateVertexBuffer()
 	{
-		gRDI->releaseBuffer( _vertexBuffer );
-		gRDI->releaseBuffer( _indexBuffer );
+		gRDI->destroyBuffer( _vertexBuffer );
+		gRDI->destroyBuffer( _indexBuffer );
 		
 		delete[] _heightArray; _heightArray = 0x0;
 		_heightArray = new float[getVertexCount()];

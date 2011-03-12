@@ -24,7 +24,7 @@ class EngineLog;
 class StatManager;
 class SceneManager;
 class ResourceManager;
-class RenderDeviceInterface;
+class RenderDevice;
 class Renderer;
 class ExtensionManager;
 
@@ -44,7 +44,7 @@ private:
 	static StatManager            *_statManager;
 	static SceneManager           *_sceneManager;
 	static ResourceManager        *_resourceManager;
-	static RenderDeviceInterface  *_renderDeviceInterface;
+	static RenderDevice           *_renderDevice;
 	static Renderer               *_renderer;
 	static ExtensionManager       *_extensionManager;
 
@@ -69,7 +69,7 @@ public:
 	static ExtensionManager &extMan() { return *_extensionManager; }
 };
 
-extern RenderDeviceInterface  *gRDI;
+extern RenderDevice  *gRDI;
 
 
 // =================================================================================================

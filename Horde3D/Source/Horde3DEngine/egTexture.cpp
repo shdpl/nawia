@@ -111,9 +111,9 @@ void TextureResource::initializationFunc()
 
 void TextureResource::releaseFunc()
 {
-	gRDI->releaseTexture( defTex2DObject );
-	gRDI->releaseTexture( defTex3DObject );
-	gRDI->releaseTexture( defTexCubeObject );
+	gRDI->destroyTexture( defTex2DObject );
+	gRDI->destroyTexture( defTex3DObject );
+	gRDI->destroyTexture( defTexCubeObject );
 }
 
 
@@ -194,11 +194,11 @@ void TextureResource::release()
 	if( _rbObj != 0 )
 	{
 		// In this case _texObject is just points to the render buffer
-		gRDI->releaseRenderBuffer( _rbObj );
+		gRDI->destroyRenderBuffer( _rbObj );
 	}
 	else if( _texObject != 0 && _texObject != defTex2DObject && _texObject != defTexCubeObject )
 	{
-		gRDI->releaseTexture( _texObject );
+		gRDI->destroyTexture( _texObject );
 	}
 
 	_texObject = 0;

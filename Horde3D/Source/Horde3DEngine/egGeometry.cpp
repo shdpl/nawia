@@ -40,8 +40,8 @@ void GeometryResource::initializationFunc()
 
 void GeometryResource::releaseFunc()
 {
-	gRDI->releaseBuffer( defVertBuffer );
-	gRDI->releaseBuffer( defIndexBuffer );
+	gRDI->destroyBuffer( defVertBuffer );
+	gRDI->destroyBuffer( defIndexBuffer );
 }
 
 
@@ -73,10 +73,10 @@ Resource *GeometryResource::clone()
 	memcpy( res->_vertPosData, _vertPosData, _vertCount * sizeof( Vec3f ) );
 	memcpy( res->_vertTanData, _vertTanData, _vertCount * sizeof( VertexDataTan ) );
 	memcpy( res->_vertStaticData, _vertStaticData, _vertCount * sizeof( VertexDataStatic ) );
-	res->_indexBuf = gRDI->cloneBuffer( _indexBuf );
-	res->_posVBuf = gRDI->cloneBuffer( _posVBuf );
-	res->_tanVBuf = gRDI->cloneBuffer( _tanVBuf );
-	res->_staticVBuf = gRDI->cloneBuffer( _staticVBuf );
+	res->_indexBuf = gRDI->createIndexBuffer( _indexCount * (_16BitIndices ? 2 : 4), _indexData );
+	res->_posVBuf = gRDI->createVertexBuffer( _vertCount * sizeof( Vec3f ), _vertPosData );
+	res->_tanVBuf = gRDI->createVertexBuffer( _vertCount * sizeof( VertexDataTan ), _vertTanData );
+	res->_staticVBuf = gRDI->createVertexBuffer( _vertCount * sizeof( VertexDataStatic ), _vertStaticData );
 	
 	return res;
 }
@@ -105,23 +105,23 @@ void GeometryResource::release()
 {
 	if( _posVBuf != 0 && _posVBuf != defVertBuffer )
 	{
-		gRDI->releaseBuffer( _posVBuf );
+		gRDI->destroyBuffer( _posVBuf );
 		_posVBuf = 0;
 	}
 	if( _tanVBuf != 0 && _tanVBuf != defVertBuffer )
 	{
-		gRDI->releaseBuffer( _tanVBuf );
+		gRDI->destroyBuffer( _tanVBuf );
 		_tanVBuf = 0;
 	}
 	if( _staticVBuf != 0 && _staticVBuf != defVertBuffer )
 	{
-		gRDI->releaseBuffer( _staticVBuf );
+		gRDI->destroyBuffer( _staticVBuf );
 		_staticVBuf = 0;
 	}
 	
 	if( _indexBuf != 0 && _indexBuf != defIndexBuffer )
 	{
-		gRDI->releaseBuffer( _indexBuf );
+		gRDI->destroyBuffer( _indexBuf );
 		_indexBuf = 0;
 	}
 

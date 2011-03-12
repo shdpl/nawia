@@ -69,12 +69,8 @@ Renderer::Renderer()
 Renderer::~Renderer()
 {
 	releaseShadowRB();
-	gRDI->releaseTexture( _defShadowMap );
-	gRDI->releaseBuffer( _particleVBO );
-	gRDI->releaseVertexLayout( _vlPosOnly );
-	gRDI->releaseVertexLayout( _vlOverlay );
-	gRDI->releaseVertexLayout( _vlModel );
-	gRDI->releaseVertexLayout( _vlParticle );
+	gRDI->destroyTexture( _defShadowMap );
+	gRDI->destroyBuffer( _particleVBO );
 	releaseShaderComb( _defColorShader );
 
 	delete[] _scratchBuf;
@@ -105,35 +101,43 @@ bool Renderer::init()
 	if( !gRDI->init() ) return false;
 
 	// Check capabilities
-	if( !gRDI->_caps[RenderCaps::Tex_Float] )
+	if( !gRDI->getCaps().texFloat )
 		Modules::log().writeWarning( "Renderer: No floating point texture support available" );
-	if( !gRDI->_caps[RenderCaps::Tex_NPOT] )
+	if( !gRDI->getCaps().texNPOT )
 		Modules::log().writeWarning( "Renderer: No non-Power-of-two texture support available" );
-	if( !gRDI->_caps[RenderCaps::RT_Multisampling] )
+	if( !gRDI->getCaps().rtMultisampling )
 		Modules::log().writeWarning( "Renderer: No multisampling for render targets available" );
 	
 	// Create vertex layouts
-	_vlPosOnly = gRDI->createVertexLayout( 1 );
-	gRDI->setVertexLayoutElem( _vlPosOnly, 0, "vertPos", 0, 3, 0 );
+	VertexLayoutAttrib attribsPosOnly[1] = {
+		"vertPos", 0, 3, 0
+	};
+	_vlPosOnly = gRDI->registerVertexLayout( 1, attribsPosOnly );
 
-	_vlOverlay = gRDI->createVertexLayout( 2 );
-	gRDI->setVertexLayoutElem( _vlOverlay, 0, "vertPos", 0, 2, 0 );
-	gRDI->setVertexLayoutElem( _vlOverlay, 1, "texCoords0", 0, 2, 8 );
+	VertexLayoutAttrib attribsOverlay[2] = {
+		"vertPos", 0, 2, 0,
+		"texCoords0", 0, 2, 8
+	};
+	_vlOverlay = gRDI->registerVertexLayout( 2, attribsOverlay );
 	
-	_vlModel = gRDI->createVertexLayout( 7 );
-	gRDI->setVertexLayoutElem( _vlModel, 0, "vertPos", 0, 3, 0 );
-	gRDI->setVertexLayoutElem( _vlModel, 1, "normal", 1, 3, 0 );
-	gRDI->setVertexLayoutElem( _vlModel, 2, "tangent", 2, 4, 0 );
-	gRDI->setVertexLayoutElem( _vlModel, 3, "joints", 3, 4, 8 );
-	gRDI->setVertexLayoutElem( _vlModel, 4, "weights", 3, 4, 24 );
-	gRDI->setVertexLayoutElem( _vlModel, 5, "texCoords0", 3, 2, 0 );
-	gRDI->setVertexLayoutElem( _vlModel, 6, "texCoords1", 3, 2, 40 );
+	VertexLayoutAttrib attribsModel[7] = {
+		"vertPos", 0, 3, 0,
+		"normal", 1, 3, 0,
+		"tangent", 2, 4, 0,
+		"joints", 3, 4, 8,
+		"weights", 3, 4, 24,
+		"texCoords0", 3, 2, 0,
+		"texCoords1", 3, 2, 40
+	};
+	_vlModel = gRDI->registerVertexLayout( 7, attribsModel );
 
-	_vlParticle = gRDI->createVertexLayout( 4 );
-	gRDI->setVertexLayoutElem( _vlParticle, 0, "vertPos", 0, 3, 0 );
-	gRDI->setVertexLayoutElem( _vlParticle, 1, "parIdx", 0, 1, 24 );
-	gRDI->setVertexLayoutElem( _vlParticle, 2, "parCornerIdx", 0, 1, 20 );
-	gRDI->setVertexLayoutElem( _vlParticle, 3, "texCoords0", 0, 2, 12 );
+	VertexLayoutAttrib attribsParticle[4] = {
+		"vertPos", 0, 3, 0,
+		"parIdx", 0, 1, 24,
+		"parCornerIdx", 0, 1, 20,
+		"texCoords0", 0, 2, 12
+	};
+	_vlParticle = gRDI->registerVertexLayout( 4, attribsParticle );
 	
 	// Upload default shaders
 	if( !createShaderComb( vsDefColor, fsDefColor, _defColorShader ) )
@@ -404,7 +408,7 @@ bool Renderer::createShaderComb( const char *vertexShader, const char *fragmentS
 
 void Renderer::releaseShaderComb( ShaderCombination &sc )
 {
-	gRDI->releaseShader( sc.shaderObj );
+	gRDI->destroyShader( sc.shaderObj );
 }
 
 
@@ -511,7 +515,7 @@ bool Renderer::setMaterialRec( MaterialResource *materialRes, const string &shad
 		// Set shader combination
 		ShaderCombination *sc = shaderRes->getCombination( *context, materialRes->_combMask );
 		if( sc != _curShader ) setShaderComb( sc );
-		if( _curShader == 0x0 || gRDI->_curShader == 0 ) return false;
+		if( _curShader == 0x0 || gRDI->_curShaderId == 0 ) return false;
 
 		// Setup standard shader uniforms
 		commitGeneralUniforms();
@@ -766,7 +770,7 @@ bool Renderer::createShadowRB( uint32 width, uint32 height )
 
 void Renderer::releaseShadowRB()
 {
-	if( _shadowRB ) gRDI->releaseRenderBuffer( _shadowRB );
+	if( _shadowRB ) gRDI->destroyRenderBuffer( _shadowRB );
 }
 
 

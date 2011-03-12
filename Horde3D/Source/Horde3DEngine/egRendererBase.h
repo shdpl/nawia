@@ -18,10 +18,12 @@
 #include "utOpenGL.h"
 #include <string>
 #include <vector>
-#include <map>
 
 
 namespace Horde3D {
+
+const uint32 MaxNumVertexLayouts = 16;
+
 
 // =================================================================================================
 // GPUTimer
@@ -29,13 +31,6 @@ namespace Horde3D {
 
 class GPUTimer
 {
-private:
-	std::vector < uint32 >  _queryPool;
-	uint32                  _numQueries;
-	uint32                  _queryFrame;
-	float                   _time;
-	bool                    _activeQuery;
-
 public:
 	GPUTimer();
 	~GPUTimer();
@@ -46,6 +41,13 @@ public:
 	
 	void reset();
 	float getTimeMS() { return _time; }
+
+private:
+	std::vector < uint32 >  _queryPool;
+	uint32                  _numQueries;
+	uint32                  _queryFrame;
+	float                   _time;
+	bool                    _activeQuery;
 };
 
 
@@ -59,10 +61,6 @@ public:
 
 template< class T > class RDIObjects
 {
-private:
-	std::vector< T >       _objects;
-	std::vector< uint32 >  _freeList;
-
 public:
 
 	uint32 add( T &obj )
@@ -96,29 +94,38 @@ public:
 		return _objects[handle - 1];
 	}
 
-	friend class RenderDeviceInterface;
+	friend class RenderDevice;
+
+private:
+	std::vector< T >       _objects;
+	std::vector< uint32 >  _freeList;
 };
 
 
-struct RenderCaps
+struct DeviceCaps
 {
-	static const int ListSize = 3;
-	enum List
-	{
-		Tex_Float,
-		Tex_NPOT,
-		RT_Multisampling
-	};
+	bool  texFloat;
+	bool  texNPOT;
+	bool  rtMultisampling;
 };
 
 
-enum RDIPendingMask
+// ---------------------------------------------------------
+// Vertex layout
+// ---------------------------------------------------------
+
+struct VertexLayoutAttrib
 {
-	PM_VIEWPORT    = 0x00000001,
-	PM_INDEXBUF    = 0x00000002,
-	PM_VERTLAYOUT  = 0x00000004,
-	PM_TEXTURES    = 0x00000008,
-	PM_SCISSOR     = 0x00000010
+	std::string  semanticName;
+	uint32       vbSlot;
+	uint32       size;
+	uint32       offset;
+};
+
+struct RDIVertexLayout
+{
+	uint32              numAttribs;
+	VertexLayoutAttrib  attribs[16];
 };
 
 
@@ -212,6 +219,18 @@ enum RDIShaderConstType
 	CONST_FLOAT33
 };
 
+struct RDIInputLayout
+{
+	bool  valid;
+	int8  attribIndices[16];
+};
+
+struct RDIShader
+{
+	uint32          oglProgramObj;
+	RDIInputLayout  inputLayouts[MaxNumVertexLayouts];
+};
+
 
 // ---------------------------------------------------------
 // Render buffers
@@ -232,30 +251,6 @@ struct RDIRenderBuffer
 	{
 		for( uint32 i = 0; i < MaxColorAttachmentCount; ++i ) colTexs[i] = colBufs[i] = 0;
 	}
-};
-
-
-// ---------------------------------------------------------
-// Vertex layout
-// ---------------------------------------------------------
-
-struct RDIVertLayoutElem
-{
-	std::string  semanticName;
-	uint32       vbSlot;
-	uint32       size;
-	uint32       offset;
-};
-
-struct RDIVertexLayout
-{
-	struct ShaderData
-	{
-		std::vector< int8 >  elemAttribIndices;
-	};
-	
-	std::vector< RDIVertLayoutElem >  elems;
-	std::map< uint32, ShaderData >   shaderData;
 };
 
 
@@ -327,47 +322,13 @@ enum RDIPrimType
 // =================================================================================================
 
 
-class RenderDeviceInterface
+class RenderDevice
 {
-protected:
-
-	int           _caps[RenderCaps::ListSize];
-	uint32        _depthFormat;
-	int           _vpX, _vpY, _vpWidth, _vpHeight;
-	int           _scX, _scY, _scWidth, _scHeight;
-	int           _fbWidth, _fbHeight;
-	std::string   _shaderLog;
-	uint32        _curRendBuf;
-	int           _outputBufferIndex;  // Left and right eye for stereo rendering
-	uint32        _textureMem, _bufferMem;
-
-	RDIObjects< RDIBuffer >        _buffers;
-	RDIObjects< RDITexture >       _textures;
-	RDIObjects< RDIRenderBuffer >  _rendBufs;
-	RDIObjects< RDIVertexLayout >  _vertexLayouts;
-
-	RDIVertBufSlot    _vertBufSlots[16];
-	RDITexSlot        _texSlots[16];
-	uint32            _prevShader, _curShader;
-	uint32            _curVertLayout, _newVertLayout;
-	uint32            _curIndexBuf, _newIndexBuf;
-	uint32            _indexFormat;
-	uint32            _pendingMask;
-	
-	uint32 loadShader( const char *vertexShader, const char *fragmentShader );
-	bool linkShader( uint32 shaderId );
-	void resolveRenderBuffer( uint32 rbObj );
-
-	void checkGLError();
-	bool applyVertexLayout();
-	void applySamplerState( RDITexture &tex );
-
 public:
 	
-	RenderDeviceInterface();
-	virtual ~RenderDeviceInterface();
+	RenderDevice();
+	virtual ~RenderDevice();
 	
-	// Rendering functions
 	void initStates();
 	virtual bool init();
 	
@@ -375,12 +336,14 @@ public:
 // Resources
 // -----------------------------------------------------------------------------
 
+	// Vertex layouts
+	uint32 registerVertexLayout( uint32 numAttribs, VertexLayoutAttrib *attribs );
+	
 	// Buffers
 	uint32 createVertexBuffer( uint32 size, const void *data );
 	uint32 createIndexBuffer( uint32 size, const void *data );
-	void releaseBuffer( uint32 bufObj );
+	void destroyBuffer( uint32 bufObj );
 	void updateBufferData( uint32 bufObj, uint32 offset, uint32 size, void *data );
-	uint32 cloneBuffer( uint32 bufObj );
 	uint32 getBufferMem() { return _bufferMem; }
 
 	// Textures
@@ -388,25 +351,25 @@ public:
 	uint32 createTexture( TextureTypes::List type, int width, int height, int depth, TextureFormats::List format,
 	                      bool hasMips, bool genMips, bool compress, bool sRGB );
 	void uploadTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels );
-	void releaseTexture( uint32 texObj );
+	void destroyTexture( uint32 texObj );
 	void updateTextureData( uint32 texObj, int slice, int mipLevel, const void *pixels );
 	bool getTextureData( uint32 texObj, int slice, int mipLevel, void *buffer );
 	uint32 getTextureMem() { return _textureMem; }
 
 	// Shaders
-	uint32 createShader( const char *vertexShader, const char *fragmentShader );
-	void releaseShader( uint32 shdObj );
-	void bindShader( uint32 shdObj );
+	uint32 createShader( const char *vertexShaderSrc, const char *fragmentShaderSrc );
+	void destroyShader( uint32 shaderId );
+	void bindShader( uint32 shaderId );
 	std::string &getShaderLog() { return _shaderLog; }
-	int getShaderConstLoc( uint32 shdObj, const char *name );
-	int getShaderSamplerLoc( uint32 shdObj, const char *name );
+	int getShaderConstLoc( uint32 shaderId, const char *name );
+	int getShaderSamplerLoc( uint32 shaderId, const char *name );
 	void setShaderConst( int loc, RDIShaderConstType type, void *values, uint32 count = 1 );
 	void setShaderSampler( int loc, uint32 texUnit );
 
 	// Renderbuffers
 	uint32 createRenderBuffer( uint32 width, uint32 height, TextureFormats::List format,
 	                           bool depth, uint32 numColBufs, uint32 samples );
-	void releaseRenderBuffer( uint32 rbObj );
+	void destroyRenderBuffer( uint32 rbObj );
 	uint32 getRenderBufferTex( uint32 rbObj, uint32 bufIndex );
 	void setRenderBuffer( uint32 rbObj );
 	bool getRenderBufferData( uint32 rbObj, int bufIndex, int *width, int *height,
@@ -414,16 +377,10 @@ public:
 
 	// Queries
 	uint32 createOcclusionQuery();
-	void releaseQuery( uint32 queryObj );
+	void destroyQuery( uint32 queryObj );
 	void beginQuery( uint32 queryObj );
 	void endQuery( uint32 queryObj );
 	uint32 getQueryResult( uint32 queryObj );
-
-	// Vertex declarations
-	uint32 createVertexLayout( uint32 elemCount );
-	void setVertexLayoutElem( uint32 vlObj, uint32 slot, const char *semanticName,
-	                          uint32 vbSlot, uint32 size, uint32 offset );
-	void releaseVertexLayout( uint32 vlObj );
 
 // -----------------------------------------------------------------------------
 // Commands
@@ -457,12 +414,62 @@ public:
 // Getters
 // -----------------------------------------------------------------------------
 
+	const DeviceCaps &getCaps() { return _caps; }
 	const RDIBuffer &getBuffer( uint32 bufObj ) { return _buffers.getRef( bufObj ); }
 	const RDITexture &getTexture( uint32 texObj ) { return _textures.getRef( texObj ); }
 	const RDIRenderBuffer &getRenderBuffer( uint32 rbObj ) { return _rendBufs.getRef( rbObj ); }
-	const RDIVertexLayout &getVertexLayout( uint32 vlObj ) { return _vertexLayouts.getRef( vlObj ); }
 
 	friend class Renderer;
+
+protected:
+
+	enum RDIPendingMask
+	{
+		PM_VIEWPORT    = 0x00000001,
+		PM_INDEXBUF    = 0x00000002,
+		PM_VERTLAYOUT  = 0x00000004,
+		PM_TEXTURES    = 0x00000008,
+		PM_SCISSOR     = 0x00000010
+	};
+
+protected:
+
+	uint32 createShaderProgram( const char *vertexShaderSrc, const char *fragmentShaderSrc );
+	bool linkShaderProgram( uint32 programObj );
+	void resolveRenderBuffer( uint32 rbObj );
+
+	void checkGLError();
+	bool applyVertexLayout();
+	void applySamplerState( RDITexture &tex );
+
+protected:
+
+	DeviceCaps    _caps;
+	
+	uint32        _depthFormat;
+	int           _vpX, _vpY, _vpWidth, _vpHeight;
+	int           _scX, _scY, _scWidth, _scHeight;
+	int           _fbWidth, _fbHeight;
+	std::string   _shaderLog;
+	uint32        _curRendBuf;
+	int           _outputBufferIndex;  // Left and right eye for stereo rendering
+	uint32        _textureMem, _bufferMem;
+
+	uint32                         _numVertexLayouts;
+	RDIVertexLayout                _vertexLayouts[MaxNumVertexLayouts];
+	RDIObjects< RDIBuffer >        _buffers;
+	RDIObjects< RDITexture >       _textures;
+	RDIObjects< RDIShader >        _shaders;
+	RDIObjects< RDIRenderBuffer >  _rendBufs;
+
+	RDIVertBufSlot    _vertBufSlots[16];
+	RDITexSlot        _texSlots[16];
+	uint32            _prevShaderId, _curShaderId;
+	uint32            _curVertLayout, _newVertLayout;
+	uint32            _curIndexBuf, _newIndexBuf;
+	uint32            _indexFormat;
+	uint32            _activeVertexAttribsMask;
+	uint32            _pendingMask;
 };
 
 }
