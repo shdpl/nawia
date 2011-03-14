@@ -119,14 +119,7 @@ struct BoundingBox
 
 class Frustum
 {
-private:
-	
-	Plane  _planes[6];  // Planes of frustum
-	Vec3f  _origin;
-	Vec3f  _corners[8];  // Corner points
-
 public:
-
 	const Vec3f &getOrigin() const { return _origin; }
 	const Vec3f &getCorner( uint32 index ) const { return _corners[index]; }
 	
@@ -141,6 +134,11 @@ public:
 	bool cullFrustum( const Frustum &frust ) const;
 
 	void calcAABB( Vec3f &mins, Vec3f &maxs ) const;
+
+private:
+	Plane  _planes[6];  // Planes of frustum
+	Vec3f  _origin;
+	Vec3f  _corners[8];  // Corner points
 };
 
 }

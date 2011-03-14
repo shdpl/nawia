@@ -35,25 +35,7 @@ class ExtensionManager;
 
 class Modules
 {
-private:
-
-	static bool                   _errorFlag;
-
-	static EngineConfig           *_engineConfig;
-	static EngineLog              *_engineLog;
-	static StatManager            *_statManager;
-	static SceneManager           *_sceneManager;
-	static ResourceManager        *_resourceManager;
-	static RenderDevice           *_renderDevice;
-	static Renderer               *_renderer;
-	static ExtensionManager       *_extensionManager;
-
-	static void installExtensions();
-
 public:
-
-	static const char *versionString;
-	
 	static bool init();
 	static void release();
 
@@ -67,6 +49,24 @@ public:
 	static ResourceManager &resMan() { return *_resourceManager; }
 	static Renderer &renderer() { return *_renderer; }
 	static ExtensionManager &extMan() { return *_extensionManager; }
+
+public:
+	static const char *versionString;
+
+private:
+	static void installExtensions();
+
+private:
+	static bool                   _errorFlag;
+
+	static EngineConfig           *_engineConfig;
+	static EngineLog              *_engineLog;
+	static StatManager            *_statManager;
+	static SceneManager           *_sceneManager;
+	static ResourceManager        *_resourceManager;
+	static RenderDevice           *_renderDevice;
+	static Renderer               *_renderer;
+	static ExtensionManager       *_extensionManager;
 };
 
 extern RenderDevice  *gRDI;

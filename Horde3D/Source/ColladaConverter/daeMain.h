@@ -27,7 +27,10 @@
 class ColladaDocument
 {
 public:
-	
+	ColladaDocument();
+	bool parseFile( const std::string &fileName );
+
+public:
 	DaeLibImages       libImages;
 	DaeLibEffects      libEffects;
 	DaeLibMaterials    libMaterials;
@@ -39,10 +42,6 @@ public:
 
 	DaeVisualScene     *scene;
 	bool               y_up;
-
-
-	ColladaDocument();
-	bool parseFile( const std::string &fileName );
 };
 
 #endif // _daeMain_H_

@@ -43,18 +43,18 @@ struct Particle
 
 class CrowdSim
 {
-private:
-
-	std::string              _contentDir;
-	std::vector< Particle >  _particles;
-
-	void chooseDestination( Particle &p );
-
 public:
 	CrowdSim( const std::string& contentDir ) : _contentDir( contentDir ) {}
 
 	void init();
 	void update( float fps );
+
+private:
+	void chooseDestination( Particle &p );
+
+private:
+	std::string              _contentDir;
+	std::vector< Particle >  _particles;
 };
 
 #endif // _crowd_H_

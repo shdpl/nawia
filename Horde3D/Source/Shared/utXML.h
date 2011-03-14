@@ -68,6 +68,18 @@ public:
 		return attrib != 0x0 ? (const char *)attrib->value() : defValue;
 	}
 
+	int countChildNodes( const char *name = 0x0 ) const
+	{
+		int numNodes = 0;
+		rapidxml::xml_node<> *node1 = node->first_node( name );
+		while( node1 )
+		{
+			++numNodes;
+			node1 = node1->next_sibling( name );
+		}
+		return numNodes;
+	}
+
 protected:
 	rapidxml::xml_node<>  *node;
 };

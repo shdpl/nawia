@@ -82,30 +82,7 @@ struct MorphTarget
 
 class GeometryResource : public Resource
 {
-private:
-
-	static int                  mappedWriteStream;
-	
-	uint32                      _indexBuf, _posVBuf, _tanVBuf, _staticVBuf;
-
-	uint32                      _indexCount, _vertCount;
-	bool                        _16BitIndices;
-	char                        *_indexData;
-	Vec3f                       *_vertPosData;
-	VertexDataTan               *_vertTanData;
-	VertexDataStatic            *_vertStaticData;
-	
-	std::vector< Joint >        _joints;
-	BoundingBox                 _skelAABB;
-	std::vector< MorphTarget >  _morphTargets;
-	uint32                      _minMorphIndex, _maxMorphIndex;
-
-	bool raiseError( const std::string &msg );
-
 public:
-
-	static uint32 defVertBuffer, defIndexBuffer;
-	
 	static void initializationFunc();
 	static void releaseFunc();
 	static Resource *factoryFunc( const std::string &name, int flags )
@@ -136,6 +113,29 @@ public:
 	uint32 getStaticVBuf() { return _staticVBuf; }
 	uint32 getIndexBuf() { return _indexBuf; }
 	Matrix4f &getInvBindMat( uint32 jointIndex ) { return _joints[jointIndex].invBindMat; }
+
+public:
+	static uint32 defVertBuffer, defIndexBuffer;
+
+private:
+	bool raiseError( const std::string &msg );
+
+private:
+	static int                  mappedWriteStream;
+	
+	uint32                      _indexBuf, _posVBuf, _tanVBuf, _staticVBuf;
+
+	uint32                      _indexCount, _vertCount;
+	bool                        _16BitIndices;
+	char                        *_indexData;
+	Vec3f                       *_vertPosData;
+	VertexDataTan               *_vertTanData;
+	VertexDataStatic            *_vertStaticData;
+	
+	std::vector< Joint >        _joints;
+	BoundingBox                 _skelAABB;
+	std::vector< MorphTarget >  _morphTargets;
+	uint32                      _minMorphIndex, _maxMorphIndex;
 
 	friend class Renderer;
 	friend class ModelNode;

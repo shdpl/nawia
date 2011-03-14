@@ -63,25 +63,7 @@ struct MeshNodeTpl : public SceneNodeTpl
 
 class MeshNode : public SceneNode, public IAnimatableNode
 {
-protected:
-
-	PMaterialResource   _materialRes;
-	uint32              _batchStart, _batchCount;
-	uint32              _vertRStart, _vertREnd;
-	uint32              _lodLevel;
-	
-	ModelNode           *_parentModel;
-	BoundingBox         _localBBox;
-	bool                _ignoreAnim;
-
-	std::vector< uint32 >  _occQueries;
-	std::vector< uint32 >  _lastVisited;
-
-	MeshNode( const MeshNodeTpl &meshTpl );
-	~MeshNode();
-
 public:
-
 	static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
 	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
 
@@ -107,6 +89,23 @@ public:
 	uint32 getVertREnd() { return _vertREnd; }
 	uint32 getLodLevel() { return _lodLevel; }
 	ModelNode *getParentModel() { return _parentModel; }
+
+protected:
+	MeshNode( const MeshNodeTpl &meshTpl );
+	~MeshNode();
+
+protected:
+	PMaterialResource   _materialRes;
+	uint32              _batchStart, _batchCount;
+	uint32              _vertRStart, _vertREnd;
+	uint32              _lodLevel;
+	
+	ModelNode           *_parentModel;
+	BoundingBox         _localBBox;
+	bool                _ignoreAnim;
+
+	std::vector< uint32 >  _occQueries;
+	std::vector< uint32 >  _lastVisited;
 
 	friend class SceneManager;
 	friend class SceneNode;
@@ -143,18 +142,7 @@ struct JointNodeTpl : public SceneNodeTpl
 
 class JointNode : public SceneNode, public IAnimatableNode
 {
-protected:
-
-	uint32     _jointIndex;
-	
-	ModelNode  *_parentModel;
-	Matrix4f   _relModelMat;  // Transformation relative to parent model
-	bool       _ignoreAnim;
-
-	JointNode( const JointNodeTpl &jointTpl );
-
 public:
-	
 	static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
 	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
 	
@@ -170,6 +158,16 @@ public:
 	void onPostUpdate();
 	void onAttach( SceneNode &parentNode );
 	void onDetach( SceneNode &parentNode );
+
+protected:
+	JointNode( const JointNodeTpl &jointTpl );
+
+protected:
+	uint32     _jointIndex;
+	
+	ModelNode  *_parentModel;
+	Matrix4f   _relModelMat;  // Transformation relative to parent model
+	bool       _ignoreAnim;
 
 	friend class SceneNode;
 	friend class ModelNode;

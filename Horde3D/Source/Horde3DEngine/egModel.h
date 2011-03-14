@@ -71,36 +71,11 @@ struct Morpher	// Morph modifier
 
 class ModelNode : public SceneNode
 {
-protected:
-
-	PGeometryResource             _geometryRes;
-	PGeometryResource             _baseGeoRes;	// NULL if model does not have a private geometry copy
-	float                         _lodDist1, _lodDist2, _lodDist3, _lodDist4;
-	
-	std::vector< MeshNode * >     _meshList;  // List of the model's meshes
-	std::vector< JointNode * >    _jointList;
-	std::vector< Vec4f >          _skinMatRows;
-	AnimationController           _animCtrl;
-
-	std::vector< Morpher >        _morphers;
-	bool                          _softwareSkinning, _skinningDirty;
-	bool                          _nodeListDirty;  // An animatable node has been attached to model
-	bool                          _morpherUsed, _morpherDirty;
-
-	ModelNode( const ModelNodeTpl &modelTpl );
-	void recreateNodeListRec( SceneNode *node, bool firstCall );
-	void updateLocalMeshAABBs();
-	void setGeometryRes( GeometryResource &geoRes );
-
-	void onPostUpdate();
-	void onFinishedUpdate();
-
 public:
-
-	~ModelNode();
-	
 	static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
 	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
+
+	~ModelNode();
 
 	void recreateNodeList();
 	void setupAnimStage( int stage, AnimationResource *anim, int layer,
@@ -123,6 +98,31 @@ public:
 		  _skinMatRows[index * 3 + 1] = mat.getRow( 1 );
 		  _skinMatRows[index * 3 + 2] = mat.getRow( 2 ); }
 	void markNodeListDirty() { _nodeListDirty = true; }
+
+protected:
+	ModelNode( const ModelNodeTpl &modelTpl );
+
+	void recreateNodeListRec( SceneNode *node, bool firstCall );
+	void updateLocalMeshAABBs();
+	void setGeometryRes( GeometryResource &geoRes );
+
+	void onPostUpdate();
+	void onFinishedUpdate();
+
+protected:
+	PGeometryResource             _geometryRes;
+	PGeometryResource             _baseGeoRes;	// NULL if model does not have a private geometry copy
+	float                         _lodDist1, _lodDist2, _lodDist3, _lodDist4;
+	
+	std::vector< MeshNode * >     _meshList;  // List of the model's meshes
+	std::vector< JointNode * >    _jointList;
+	std::vector< Vec4f >          _skinMatRows;
+	AnimationController           _animCtrl;
+
+	std::vector< Morpher >        _morphers;
+	bool                          _softwareSkinning, _skinningDirty;
+	bool                          _nodeListDirty;  // An animatable node has been attached to model
+	bool                          _morpherUsed, _morpherDirty;
 
 	friend class SceneManager;
 	friend class SceneNode;

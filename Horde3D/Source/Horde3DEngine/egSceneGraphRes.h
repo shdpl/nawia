@@ -30,15 +30,7 @@ class XMLNode;
 
 class SceneGraphResource : public Resource
 {
-private:
-
-	SceneNodeTpl	*_rootNode;
-
-	void parseBaseAttributes( XMLNode &xmlNode, SceneNodeTpl &nodeTpl );
-	void parseNode( XMLNode &xmlNode, SceneNodeTpl *parentTpl );
-
 public:
-
 	static Resource *factoryFunc( const std::string &name, int flags )
 		{ return new SceneGraphResource( name, flags ); }
 	
@@ -50,6 +42,13 @@ public:
 	bool load( const char *data, int size );
 
 	SceneNodeTpl *getRootNode() { return _rootNode; }
+
+private:
+	void parseBaseAttributes( XMLNode &xmlNode, SceneNodeTpl &nodeTpl );
+	void parseNode( XMLNode &xmlNode, SceneNodeTpl *parentTpl );
+
+private:
+	SceneNodeTpl	*_rootNode;
 
 	friend class SceneManager;
 };

@@ -76,30 +76,11 @@ struct CameraNodeTpl : public SceneNodeTpl
 
 class CameraNode : public SceneNode
 {
-private:
-
-	PPipelineResource   _pipelineRes;
-	PTextureResource    _outputTex;
-	Matrix4f            _viewMat, _projMat;
-	Frustum             _frustum;
-	Vec3f               _absPos;
-	int					_vpX, _vpY, _vpWidth, _vpHeight;
-	float               _frustLeft, _frustRight, _frustBottom, _frustTop;
-	float               _frustNear, _frustFar;
-	int                 _outputBufferIndex;
-	int                 _occSet;
-	bool                _orthographic;  // Perspective or orthographic frustum?
-
-	void onPostUpdate();
-
-	CameraNode( const CameraNodeTpl &cameraTpl );
-
 public:
-	
-	~CameraNode();
-
 	static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
 	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
+
+	~CameraNode();
 	
 	int getParamI( int param );
 	void setParamI( int param, int value );
@@ -112,6 +93,23 @@ public:
 	const Matrix4f &getViewMat() { return _viewMat; }
 	const Matrix4f &getProjMat() { return _projMat; }
 	const Vec3f &getAbsPos() { return _absPos; }
+
+private:
+	CameraNode( const CameraNodeTpl &cameraTpl );
+	void onPostUpdate();
+
+private:
+	PPipelineResource   _pipelineRes;
+	PTextureResource    _outputTex;
+	Matrix4f            _viewMat, _projMat;
+	Frustum             _frustum;
+	Vec3f               _absPos;
+	int					_vpX, _vpY, _vpWidth, _vpHeight;
+	float               _frustLeft, _frustRight, _frustBottom, _frustTop;
+	float               _frustNear, _frustFar;
+	int                 _outputBufferIndex;
+	int                 _occSet;
+	bool                _orthographic;  // Perspective or orthographic frustum?
 
 	friend class SceneManager;
 	friend class Renderer;

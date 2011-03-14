@@ -39,16 +39,14 @@ public:
 
 class ExtensionManager
 {
-protected:
-
-	std::vector< IExtension * >  _extensions;
-
 public:
-
 	~ExtensionManager();
 	
 	bool installExtension( IExtension *extension );
 	bool checkExtension( const std::string &name );
+
+protected:
+	std::vector< IExtension * >  _extensions;
 };
 
 }

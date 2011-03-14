@@ -16,18 +16,19 @@
 #include "egExtensions.h"
 
 
-namespace Horde3DTerrain
+namespace Horde3DTerrain {
+
+using namespace Horde3D;
+
+
+class ExtTerrain: public IExtension
 {
-	using namespace Horde3D;
-	
-	
-	class ExtTerrain: public IExtension
-	{
-	public:
-		virtual const char *getName();
-		virtual bool init();
-		virtual void release();
-	};
+public:
+	virtual const char *getName();
+	virtual bool init();
+	virtual void release();
+};
+
 }
 
 #endif	// _Horde3DTerrain_extension_H_

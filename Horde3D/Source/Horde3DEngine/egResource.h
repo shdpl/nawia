@@ -61,21 +61,7 @@ struct ResourceFlags
 
 class Resource
 {
-protected:
-
-	int                  _type;
-	std::string          _name;
-	ResHandle            _handle;
-	int                  _flags;
-	
-	uint32               _refCount;  // Number of other objects referencing this resource
-	uint32               _userRefCount;  // Number of handles created by user
-
-	bool                 _loaded;
-	bool                 _noQuery;
-
 public:
-
 	Resource( int type, const std::string &name, int flags );
 	virtual ~Resource();
 	virtual Resource *clone();  // TODO: Implement this for all resource types
@@ -104,6 +90,18 @@ public:
 	void addRef() { ++_refCount; }
 	void subRef() { --_refCount; }
 
+protected:
+	int                  _type;
+	std::string          _name;
+	ResHandle            _handle;
+	int                  _flags;
+	
+	uint32               _refCount;  // Number of other objects referencing this resource
+	uint32               _userRefCount;  // Number of handles created by user
+
+	bool                 _loaded;
+	bool                 _noQuery;
+
 	friend class ResourceManager;
 };
 
@@ -111,15 +109,7 @@ public:
 
 template< class T > class SmartResPtr
 {
-private:
-
-    T  *_ptr;
-
-	void addRef() { if( _ptr != 0x0 ) _ptr->addRef(); }
-	void subRef() { if( _ptr != 0x0 ) _ptr->subRef(); }
-
 public:
-	
 	SmartResPtr( T *ptr = 0x0 ) : _ptr( ptr ) { addRef(); }
 	SmartResPtr( const SmartResPtr &smp ) : _ptr( smp._ptr ) { addRef(); }
 	~SmartResPtr() { subRef(); }
@@ -137,6 +127,13 @@ public:
 		subRef(); _ptr = ptr; addRef();
 		return *this;
 	}
+
+private:
+	void addRef() { if( _ptr != 0x0 ) _ptr->addRef(); }
+	void subRef() { if( _ptr != 0x0 ) _ptr->subRef(); }
+
+private:
+    T  *_ptr;
 };
 
 typedef SmartResPtr< Resource > PResource;
@@ -162,15 +159,7 @@ struct ResourceRegEntry
 
 class ResourceManager
 {
-protected:
-
-	std::vector < Resource * >         _resources;
-	std::map< int, ResourceRegEntry >  _registry;  // Registry of resource types
-
-	ResHandle addResource( Resource &res );
-
 public:
-
 	ResourceManager();
 	~ResourceManager();
 
@@ -191,6 +180,13 @@ public:
 		{ return (handle != 0 && (unsigned)(handle - 1) < _resources.size()) ? _resources[handle - 1] : 0x0; }
 
 	std::vector < Resource * > &getResources() { return _resources; }
+
+protected:
+	ResHandle addResource( Resource &res );
+
+protected:
+	std::vector < Resource * >         _resources;
+	std::map< int, ResourceRegEntry >  _registry;  // Registry of resource types
 };
 
 }

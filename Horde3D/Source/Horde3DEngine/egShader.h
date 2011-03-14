@@ -30,17 +30,7 @@ typedef SmartResPtr< CodeResource > PCodeResource;
 
 class CodeResource : public Resource
 {
-private:
-	
-	uint32                                             _flagMask;
-	std::string                                        _code;
-	std::vector< std::pair< PCodeResource, size_t > >  _includes;	// Pair: Included res and location in _code
-
-	bool raiseError( const std::string &msg );
-	void updateShaders();
-
 public:
-	
 	static Resource *factoryFunc( const std::string &name, int flags )
 		{ return new CodeResource( name, flags ); }
 	
@@ -58,6 +48,15 @@ public:
 
 	bool isLoaded() { return _loaded; }
 	const std::string &getCode() { return _code; }
+
+private:
+	bool raiseError( const std::string &msg );
+	void updateShaders();
+
+private:
+	uint32                                             _flagMask;
+	std::string                                        _code;
+	std::vector< std::pair< PCodeResource, size_t > >  _includes;	// Pair: Included res and location in _code
 
 	friend class Renderer;
 };
@@ -202,23 +201,7 @@ struct ShaderUniform
 
 class ShaderResource : public Resource
 {
-private:
-	
-	static std::string            _vertPreamble, _fragPreamble;
-	static std::string            _tmpCode0, _tmpCode1;
-	
-	std::vector< ShaderContext >  _contexts;
-	std::vector< ShaderSampler >  _samplers;
-	std::vector< ShaderUniform >  _uniforms;
-	std::vector< CodeResource >   _codeSections;
-	std::set< uint32 >            _preLoadList;
-
-	bool raiseError( const std::string &msg, int line = -1 );
-	bool parseFXSection( char *data );
-	void compileCombination( ShaderContext &context, ShaderCombination &sc );
-
 public:
-	
 	static Resource *factoryFunc( const std::string &name, int flags )
 		{ return new ShaderResource( name, flags ); }
 
@@ -253,6 +236,21 @@ public:
 
 	std::vector< ShaderContext > &getContexts() { return _contexts; }
 	CodeResource *getCode( uint32 index ) { return &_codeSections[index]; }
+
+private:
+	bool raiseError( const std::string &msg, int line = -1 );
+	bool parseFXSection( char *data );
+	void compileCombination( ShaderContext &context, ShaderCombination &sc );
+	
+private:
+	static std::string            _vertPreamble, _fragPreamble;
+	static std::string            _tmpCode0, _tmpCode1;
+	
+	std::vector< ShaderContext >  _contexts;
+	std::vector< ShaderSampler >  _samplers;
+	std::vector< ShaderUniform >  _uniforms;
+	std::vector< CodeResource >   _codeSections;
+	std::set< uint32 >            _preLoadList;
 
 	friend class Renderer;
 };

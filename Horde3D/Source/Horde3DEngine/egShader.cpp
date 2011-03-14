@@ -263,15 +263,56 @@ void CodeResource::updateShaders()
 
 class Tokenizer
 {
+public:
+	
+	Tokenizer( const char *data ) : _p( data ), _line( 1 ) { getNextToken(); }
+
+	int getLine() { return _line; }
+
+	bool hasToken() { return _token[0] != '\0'; }
+	
+	bool checkToken( const char *token, bool peekOnly = false )
+	{
+		if( _stricmp( _token, token ) == 0 )
+		{
+			if( !peekOnly ) getNextToken();
+			return true;
+		}
+		return false;
+	}
+
+	const char *getToken( const char *charset )
+	{
+		if( charset )
+		{
+			// Validate token
+			const char *p = _token;
+			while( *p )
+			{
+				if( strchr( charset, *p++ ) == 0x0 )
+				{
+					_prevToken[0] = '\0';
+					return _prevToken;
+				}
+			}
+		}
+		
+		memcpy( _prevToken, _token, tokenSize );
+		getNextToken();
+		return _prevToken;
+	}
+
+	bool seekToken( const char *token )
+	{
+		while( _stricmp( getToken( 0x0 ), token ) != 0 )
+		{
+			if( !hasToken() ) return false;
+		}
+		return true;
+	}
+
 protected:	
 	
-	static const ptrdiff_t tokenSize = 128;
-	
-	char        _token[tokenSize], _prevToken[tokenSize];
-	const char  *_p;
-	int         _line;
-
-
 	void checkLineChange()
 	{
 		if( *_p == '\r' && *(_p+1) == '\n' )
@@ -325,53 +366,13 @@ protected:
 		_token[std::min( (ptrdiff_t)(p1 - p0), tokenSize-1 )] = '\0';
 	}
 
-public:
+protected:
+
+	static const ptrdiff_t tokenSize = 128;
 	
-	Tokenizer( const char *data ) : _p( data ), _line( 1 ) { getNextToken(); }
-
-	int getLine() { return _line; }
-
-	bool hasToken() { return _token[0] != '\0'; }
-	
-	bool checkToken( const char *token, bool peekOnly = false )
-	{
-		if( _stricmp( _token, token ) == 0 )
-		{
-			if( !peekOnly ) getNextToken();
-			return true;
-		}
-		return false;
-	}
-
-	const char *getToken( const char *charset )
-	{
-		if( charset )
-		{
-			// Validate token
-			const char *p = _token;
-			while( *p )
-			{
-				if( strchr( charset, *p++ ) == 0x0 )
-				{
-					_prevToken[0] = '\0';
-					return _prevToken;
-				}
-			}
-		}
-		
-		memcpy( _prevToken, _token, tokenSize );
-		getNextToken();
-		return _prevToken;
-	}
-
-	bool seekToken( const char *token )
-	{
-		while( _stricmp( getToken( 0x0 ), token ) != 0 )
-		{
-			if( !hasToken() ) return false;
-		}
-		return true;
-	}
+	char        _token[tokenSize], _prevToken[tokenSize];
+	const char  *_p;
+	int         _line;
 };
 
 // =================================================================================================

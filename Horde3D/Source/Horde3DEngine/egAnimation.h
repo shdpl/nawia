@@ -54,15 +54,7 @@ struct AnimResEntity
 
 class AnimationResource : public Resource
 {
-private:
-
-	uint32                        _numFrames;
-	std::vector< AnimResEntity >  _entities;
-
-	bool raiseError( const std::string &msg );
-
 public:
-
 	static Resource *factoryFunc( const std::string &name, int flags )
 		{ return new AnimationResource( name, flags ); }
 	
@@ -78,6 +70,13 @@ public:
 	int getElemParamI( int elem, int elemIdx, int param );
 
 	AnimResEntity *findEntity( uint32 nameId );
+
+private:
+	bool raiseError( const std::string &msg );
+
+private:
+	uint32                        _numFrames;
+	std::vector< AnimResEntity >  _entities;
 
 	friend class Renderer;
 	friend class ModelNode;
@@ -120,18 +119,7 @@ struct AnimCtrlNode
 
 class AnimationController
 {
-protected:
-
-	std::vector< AnimStage >     _animStages;
-	std::vector< uint32 >        _activeStages;
-	std::vector< AnimCtrlNode >  _nodeList;
-	bool                         _dirty;
-
-	void mapAnimRes( uint32 node, uint32 stage );
-	void updateActiveList();
-
 public:
-	
 	static uint32 hashName( const char *name );
 	
 	AnimationController();
@@ -144,6 +132,16 @@ public:
 	                     const std::string &startNode, bool additive );
 	bool setAnimParams( int stage, float time, float weight );
 	bool animate();
+
+protected:
+	void mapAnimRes( uint32 node, uint32 stage );
+	void updateActiveList();
+
+protected:
+	std::vector< AnimStage >     _animStages;
+	std::vector< uint32 >        _activeStages;
+	std::vector< AnimCtrlNode >  _nodeList;
+	bool                         _dirty;
 };
 
 }

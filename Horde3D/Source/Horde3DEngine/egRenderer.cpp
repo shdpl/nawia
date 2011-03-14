@@ -1955,7 +1955,7 @@ void Renderer::render( CameraNode *camNode )
 				bindPipeBuffer( 0x0, "", 0 );
 				
 				// Bind new render target
-				rt = (RenderTarget *)pc.refParams[0];
+				rt = (RenderTarget *)pc.params[0].getPtr();
 				_curRenderTarget = rt;
 
 				if( rt != 0x0 )
@@ -1974,10 +1974,8 @@ void Renderer::render( CameraNode *camNode )
 				break;
 
 			case PipelineCommands::BindBuffer:
-				rt = (RenderTarget *)pc.refParams[0];
-			
-				bindPipeBuffer( rt->rendBuf, ((PCStringParam *)pc.valParams[0])->get(),
-				            (uint32)((PCIntParam *)pc.valParams[1])->get() );
+				rt = (RenderTarget *)pc.params[0].getPtr();
+				bindPipeBuffer( rt->rendBuf, pc.params[1].getString(), (uint32)pc.params[2].getInt() );
 				break;
 
 			case PipelineCommands::UnbindBuffers:
@@ -1985,44 +1983,40 @@ void Renderer::render( CameraNode *camNode )
 				break;
 
 			case PipelineCommands::ClearTarget:
-				clear( ((PCBoolParam *)pc.valParams[0])->get(), ((PCBoolParam *)pc.valParams[1])->get(),
-				       ((PCBoolParam *)pc.valParams[2])->get(), ((PCBoolParam *)pc.valParams[3])->get(),
-				       ((PCBoolParam *)pc.valParams[4])->get(), ((PCFloatParam *)pc.valParams[5])->get(),
-				       ((PCFloatParam *)pc.valParams[6])->get(), ((PCFloatParam *)pc.valParams[7])->get(),
-				       ((PCFloatParam *)pc.valParams[8])->get() );
+				clear( pc.params[0].getBool(), pc.params[1].getBool(), pc.params[2].getBool(),
+				       pc.params[3].getBool(), pc.params[4].getBool(), pc.params[5].getFloat(),
+				       pc.params[6].getFloat(), pc.params[7].getFloat(), pc.params[8].getFloat() );
 				break;
 
 			case PipelineCommands::DrawGeometry:
-				drawGeometry( ((PCStringParam *)pc.valParams[0])->get(), ((PCStringParam *)pc.valParams[1])->get(),
-					(RenderingOrder::List)((PCIntParam *)pc.valParams[2])->get(), _curCamera->_occSet );
+				drawGeometry( pc.params[0].getString(), pc.params[1].getString(),
+				              (RenderingOrder::List)pc.params[2].getInt(), _curCamera->_occSet );
 				break;
 
 			case PipelineCommands::DrawOverlays:
-				drawOverlays( ((PCStringParam *)pc.valParams[0])->get() );
+				drawOverlays( pc.params[0].getString() );
 				break;
 
 			case PipelineCommands::DrawQuad:
-				drawFSQuad( pc.resParams[0], ((PCStringParam *)pc.valParams[0])->get() );
+				drawFSQuad( pc.params[0].getResource(), pc.params[1].getString() );
 			break;
 
 			case PipelineCommands::DoForwardLightLoop:
-				drawLightGeometry( ((PCStringParam *)pc.valParams[0])->get(), ((PCStringParam *)pc.valParams[1])->get(),
-					((PCBoolParam *)pc.valParams[2])->get(), (RenderingOrder::List)((PCIntParam *)pc.valParams[3])->get(),
+				drawLightGeometry( pc.params[0].getString(), pc.params[1].getString(),
+				                   pc.params[2].getBool(), (RenderingOrder::List)pc.params[3].getInt(),
 					_curCamera->_occSet );
 				break;
 
 			case PipelineCommands::DoDeferredLightLoop:
-				drawLightShapes( ((PCStringParam *)pc.valParams[0])->get(), ((PCBoolParam *)pc.valParams[1])->get(),
-					_curCamera->_occSet );
+				drawLightShapes( pc.params[0].getString(), pc.params[1].getBool(), _curCamera->_occSet );
 				break;
 
 			case PipelineCommands::SetUniform:
-				if( pc.resParams[0] != 0x0 && pc.resParams[0]->getType() == ResourceTypes::Material )
+				if( pc.params[0].getResource() && pc.params[0].getResource()->getType() == ResourceTypes::Material )
 				{
-					((MaterialResource *)pc.resParams[0].getPtr())->setUniform(
-						((PCStringParam *)pc.valParams[0])->get(), ((PCFloatParam *)pc.valParams[1])->get(),
-						((PCFloatParam *)pc.valParams[2])->get(), ((PCFloatParam *)pc.valParams[3])->get(),
-						((PCFloatParam *)pc.valParams[4])->get() );
+					((MaterialResource *)pc.params[0].getResource())->setUniform( pc.params[1].getString(),
+						pc.params[2].getFloat(), pc.params[3].getFloat(),
+						pc.params[4].getFloat(), pc.params[5].getFloat() );
 				}
 				break;
 			}

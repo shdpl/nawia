@@ -23,6 +23,24 @@
 
 class Application
 {
+public:
+	Application( const std::string &appPath );
+	
+	void setKeyState( int key, bool state ) { _prevKeys[key] = _keys[key]; _keys[key] = state; }
+
+	const char *getTitle() { return "Terrain - Horde3D Extension Sample"; }
+	
+	bool init();
+	void mainLoop( float fps );
+	void release();
+	void resize( int width, int height );
+
+	void keyStateHandler();
+	void mouseMoveEvent( float dX, float dY );
+
+private:
+	void keyHandler();
+
 private:
 	bool         _keys[320], _prevKeys[320];
 
@@ -39,23 +57,6 @@ private:
 	H3DNode      _cam;
 
 	std::string  _contentDir;
-
-	void keyHandler();
-
-public:
-	Application( const std::string &appPath );
-	
-	void setKeyState( int key, bool state ) { _prevKeys[key] = _keys[key]; _keys[key] = state; }
-
-	const char *getTitle() { return "Terrain - Horde3D Extension Sample"; }
-	
-	bool init();
-	void mainLoop( float fps );
-	void release();
-	void resize( int width, int height );
-
-	void keyStateHandler();
-	void mouseMoveEvent( float dX, float dY );
 };
 
 #endif // _app_H_

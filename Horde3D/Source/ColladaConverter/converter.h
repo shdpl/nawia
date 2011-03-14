@@ -131,23 +131,18 @@ struct MorphTarget
 
 class Converter
 {
-private:
-
-	ColladaDocument              &_daeDoc;
+public:
+	Converter( ColladaDocument &doc, const std::string &outPath, float *lodDists );
+	~Converter();
 	
-	std::vector< Vertex >        _vertices;
-	std::vector< unsigned int >  _indices;
-	std::vector< Mesh * >        _meshes;
-	std::vector< Joint * >       _joints;
-	std::vector< MorphTarget >   _morphTargets;
+	bool convertModel( bool optimize );
+	
+	bool writeModel( const std::string &assetPath, const std::string &assetName );
+	bool writeMaterials( const std::string &assetPath, bool replace );
+	bool hasAnimation();
+	bool writeAnimation( const std::string &assetPath, const std::string &assetName );
 
-	std::string                  _outPath;
-	float                        _lodDist1, _lodDist2, _lodDist3, _lodDist4;
-	unsigned int                 _frameCount;
-	unsigned int                 _maxLodLevel;
-	bool                         _animNotSampled;
-
-
+private:
 	Matrix4f getNodeTransform( DaeNode &node, unsigned int frame );
 	SceneNode *findNode( const char *name, SceneNode *ignoredNode );
 	void checkNodeName( SceneNode *node );
@@ -162,17 +157,20 @@ private:
 	bool writeSceneGraph( const std::string &assetPath, const std::string &assetName );
 	void writeAnimFrames( SceneNode &node, FILE *f );
 
-public:
+private:
+	ColladaDocument              &_daeDoc;
+	
+	std::vector< Vertex >        _vertices;
+	std::vector< unsigned int >  _indices;
+	std::vector< Mesh * >        _meshes;
+	std::vector< Joint * >       _joints;
+	std::vector< MorphTarget >   _morphTargets;
 
-	Converter( ColladaDocument &doc, const std::string &outPath, float *lodDists );
-	~Converter();
-	
-	bool convertModel( bool optimize );
-	
-	bool writeModel( const std::string &assetPath, const std::string &assetName );
-	bool writeMaterials( const std::string &assetPath, bool replace );
-	bool hasAnimation();
-	bool writeAnimation( const std::string &assetPath, const std::string &assetName );
+	std::string                  _outPath;
+	float                        _lodDist1, _lodDist2, _lodDist3, _lodDist4;
+	unsigned int                 _frameCount;
+	unsigned int                 _maxLodLevel;
+	bool                         _animNotSampled;
 };
 
 #endif // _converter_H_

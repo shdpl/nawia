@@ -54,7 +54,12 @@ struct EngineOptions
 class EngineConfig
 {
 public:
-	
+	EngineConfig();
+
+	float getOption( EngineOptions::List param );
+	bool setOption( EngineOptions::List param, float value );
+
+public:
 	int   maxLogLevel;
 	int   maxAnisotropy;
 	int   shadowMapSize;
@@ -68,11 +73,6 @@ public:
 	bool  debugViewMode;
 	bool  dumpFailedShaders;
 	bool  gatherTimeStats;
-
-
-	EngineConfig();
-	float getOption( EngineOptions::List param );
-	bool setOption( EngineOptions::List param, float value );
 };
 
 
@@ -100,18 +100,7 @@ struct LogMessage
 
 class EngineLog
 {
-protected:
-	
-	Timer                     _timer;
-	char                      _textBuf[2048];
-	uint32                    _maxNumMessages;
-	std::queue< LogMessage >  _messages;
-
-	void pushMessage( const std::string &text, uint32 level );
-	void pushMessage( int level, const char *msg, va_list ap );
-
 public:
-	
 	EngineLog();
 
 	void writeError( const char *msg, ... );
@@ -124,6 +113,15 @@ public:
 	uint32 getMaxNumMessages() { return _maxNumMessages; }
 	void setMaxNumMessages( uint32 maxNumMessages ) { _maxNumMessages = maxNumMessages; }
 	
+protected:
+	void pushMessage( const std::string &text, uint32 level );
+	void pushMessage( int level, const char *msg, va_list ap );
+
+protected:
+	Timer                     _timer;
+	char                      _textBuf[2048];
+	uint32                    _maxNumMessages;
+	std::queue< LogMessage >  _messages;
 };
 
 
@@ -155,8 +153,16 @@ struct EngineStats
 
 class StatManager
 {
-protected:
+public:
+	StatManager();
+	~StatManager();
+	
+	float getStat( int param, bool reset );
+	void incStat( int param, float value );
+	Timer *getTimer( int param );
+	GPUTimer *getGPUTimer( int param );
 
+protected:
 	uint32    _statTriCount;
 	uint32    _statBatchCount;
 	uint32    _statLightPassCount;
@@ -171,16 +177,6 @@ protected:
 	GPUTimer  *_defLightsGPUTimer;
 	GPUTimer  *_shadowsGPUTimer;
 	GPUTimer  *_particleGPUTimer;
-
-public:
-
-	StatManager();
-	~StatManager();
-	
-	float getStat( int param, bool reset );
-	void incStat( int param, float value );
-	Timer *getTimer( int param );
-	GPUTimer *getGPUTimer( int param );
 
 	friend class ProfSample;
 };

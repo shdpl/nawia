@@ -325,7 +325,7 @@ enum RDIPrimType
 class RenderDevice
 {
 public:
-	
+
 	RenderDevice();
 	virtual ~RenderDevice();
 	

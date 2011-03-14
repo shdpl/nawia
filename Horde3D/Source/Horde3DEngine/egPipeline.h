@@ -69,60 +69,48 @@ struct RenderingOrder
 };
 
 
-class PCParam
+class PipeCmdParam
 {
 public:
-	virtual ~PCParam() { }
-};
+	PipeCmdParam() : _string( 0x0 ) { _basic.ptr = 0x0; }
+	PipeCmdParam( const PipeCmdParam &copy )
+		: _basic( copy._basic ), _string( 0x0 ), _resource( copy._resource )
+		{ if( copy._string ) setString( copy._string->c_str() ); }
+	~PipeCmdParam() { delete _string; }
+	
+	float getFloat() { return _basic.f; }
+	int getInt() { return _basic.i; }
+	bool getBool() { return _basic.b; }
+	void *getPtr() { return _basic.ptr; }
+	const char *getString() { return _string ? _string->c_str() : 0x0; }
+	Resource *getResource() { return _resource.getPtr(); }
 
-class PCBoolParam : public PCParam
-{
-protected:
-	bool  _value;
-public:
-	PCBoolParam( bool value ) { _value = value; }
-	bool get() { return _value; }
-	void set( bool value ) { _value = value; }
-};
+	void setFloat( float f ) { _basic.f = f; }
+	void setInt( int i ) { _basic.i = i; }
+	void setBool( bool b ) { _basic.b = b; }
+	void setPtr( void *ptr ) { _basic.ptr = ptr; }
+	void setString( const char *str ) { _string = new std::string( str ); }
+	void setResource( Resource *resource ) { _resource = resource; }
 
-class PCIntParam : public PCParam
-{
 protected:
-	int  _value;
-public:
-	PCIntParam( int value ) { _value = value; }
-	int get() { return _value; }
-	void set( int value ) { _value = value; }
-};
+	union BasicType
+	{
+		float  f;
+		int    i;
+		bool   b;
+		void   *ptr;
+	};
 
-class PCFloatParam : public PCParam
-{
-protected:
-	float  _value;
-public:
-	PCFloatParam( float value ) { _value = value; }
-	float get() { return _value; }
-	void set( float value ) { _value = value; }
-};
-
-class PCStringParam : public PCParam
-{
-protected:
-	std::string  _value;
-public:
-	PCStringParam( const std::string &value ) { _value = value; }
-	const std::string &get() { return _value; }
-	void set( const std::string &value ) { _value = value; }
+	BasicType      _basic;
+	std::string    *_string;
+	PResource      _resource;
 };
 
 
 struct PipelineCommand
 {
-	PipelineCommands::List    command;
-	std::vector< void * >     refParams;  // Pointer to object
-	std::vector< PCParam * >  valParams;  // Newly created object
-	std::vector< PResource >  resParams;  // Pointers to used resources
-
+	PipelineCommands::List       command;
+	std::vector< PipeCmdParam >  params;
 
 	PipelineCommand( PipelineCommands::List	command )
 	{
@@ -165,24 +153,7 @@ struct RenderTarget
 
 class PipelineResource : public Resource
 {
-private:
-
-	std::vector< RenderTarget >   _renderTargets;
-	std::vector< PipelineStage >  _stages;
-	uint32                        _baseWidth, _baseHeight;
-
-	bool raiseError( const std::string &msg, int line = -1 );
-	const std::string parseStage( XMLNode &node, PipelineStage &stage );
-
-	void addRenderTarget( const std::string &id, bool depthBuffer, uint32 numBuffers,
-	                      TextureFormats::List format, uint32 samples,
-	                      uint32 width, uint32 height, float scale );
-	RenderTarget *findRenderTarget( const std::string &id );
-	bool createRenderTargets();
-	void releaseRenderTargets();
-
 public:
-
 	static Resource *factoryFunc( const std::string &name, int flags )
 		{ return new PipelineResource( name, flags ); }
 	
@@ -201,6 +172,22 @@ public:
 
 	bool getRenderTargetData( const std::string &target, int bufIndex, int *width, int *height,
 	                          int *compCount, void *dataBuffer, int bufferSize );
+
+private:
+	bool raiseError( const std::string &msg, int line = -1 );
+	const std::string parseStage( XMLNode &node, PipelineStage &stage );
+
+	void addRenderTarget( const std::string &id, bool depthBuffer, uint32 numBuffers,
+	                      TextureFormats::List format, uint32 samples,
+	                      uint32 width, uint32 height, float scale );
+	RenderTarget *findRenderTarget( const std::string &id );
+	bool createRenderTargets();
+	void releaseRenderTargets();
+
+private:
+	std::vector< RenderTarget >   _renderTargets;
+	std::vector< PipelineStage >  _stages;
+	uint32                        _baseWidth, _baseHeight;
 
 	friend class ResourceManager;
 	friend class Renderer;

@@ -65,17 +65,7 @@ struct ParticleChannel
 
 class ParticleEffectResource : public Resource
 {
-private:
-
-	float            _lifeMin, _lifeMax;
-	ParticleChannel  _moveVel, _rotVel, _drag;
-	ParticleChannel  _size;
-	ParticleChannel  _colR, _colG, _colB, _colA;
-
-	bool raiseError( const std::string &msg, int line = -1 );
-
 public:
-	
 	static Resource *factoryFunc( const std::string &name, int flags )
 		{ return new ParticleEffectResource( name, flags ); }
 	
@@ -89,6 +79,15 @@ public:
 	int getElemCount( int elem );
 	float getElemParamF( int elem, int elemIdx, int param, int compIdx );
 	void setElemParamF( int elem, int elemIdx, int param, int compIdx, float value );
+
+private:
+	bool raiseError( const std::string &msg, int line = -1 );
+
+private:
+	float            _lifeMin, _lifeMax;
+	ParticleChannel  _moveVel, _rotVel, _drag;
+	ParticleChannel  _size;
+	ParticleChannel  _colR, _colG, _colB, _colA;
 
 	friend class EmitterNode;
 };
@@ -154,8 +153,27 @@ struct ParticleData
 
 class EmitterNode : public SceneNode
 {
-protected:
+public:
+	static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
+	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
 
+	~EmitterNode();
+
+	int getParamI( int param );
+	void setParamI( int param, int value );
+	float getParamF( int param, int compIdx );
+	void setParamF( int param, int compIdx, float value );
+
+	void advanceTime( float timeDelta );
+	bool hasFinished();
+
+protected:
+	EmitterNode( const EmitterNodeTpl &emitterTpl );
+	void setMaxParticleCount( uint32 maxParticleCount );
+
+	void onPostUpdate();
+
+protected:
 	// Emitter data
 	float                    _timeDelta;
 	float                    _emissionAccum;
@@ -177,26 +195,6 @@ protected:
 
 	std::vector< uint32 >    _occQueries;
 	std::vector< uint32 >    _lastVisited;
-
-	EmitterNode( const EmitterNodeTpl &emitterTpl );
-	void setMaxParticleCount( uint32 maxParticleCount );
-
-	void onPostUpdate();
-
-public:
-	
-	~EmitterNode();
-
-	static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
-	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
-
-	int getParamI( int param );
-	void setParamI( int param, int value );
-	float getParamF( int param, int compIdx );
-	void setParamF( int param, int compIdx, float value );
-
-	void advanceTime( float timeDelta );
-	bool hasFinished();
 
 	friend class SceneManager;
 	friend class Renderer;

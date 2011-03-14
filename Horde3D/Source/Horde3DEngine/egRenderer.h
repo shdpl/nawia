@@ -104,74 +104,7 @@ struct PipeSamplerBinding
 
 class Renderer
 {
-protected:
-	
-	unsigned char                      *_scratchBuf;
-	uint32                             _scratchBufSize;
-
-	Matrix4f                           _viewMat, _viewMatInv, _projMat, _viewProjMat;
-	
-	std::vector< PipeSamplerBinding >  _pipeSamplerBindings;
-	std::vector< char >                _occSets;  // Actually bool
-	std::vector< OccProxy >            _occProxies[2];  // 0: renderables, 1: lights
-	
-	std::vector< OverlayBatch >        _overlayBatches;
-	OverlayVert                        *_overlayVerts;
-	uint32                             _overlayVB;
-	
-	uint32                             _shadowRB;
-	uint32                             _frameID;
-	uint32                             _defShadowMap;
-	uint32                             _quadIdxBuf;
-	uint32                             _particleVBO;
-	MaterialResource                   *_curStageMatLink;
-	CameraNode                         *_curCamera;
-	LightNode                          *_curLight;
-	ShaderCombination                  *_curShader;
-	RenderTarget                       *_curRenderTarget;
-	uint32                             _curShaderUpdateStamp;
-	
-	uint32                             _maxAnisoMask;
-	float                              _smSize;
-	float                              _splitPlanes[5];
-	Matrix4f                           _lightMats[4];
-
-	uint32                             _vlPosOnly, _vlOverlay, _vlModel, _vlParticle;
-	ShaderCombination                  _defColorShader;
-	int                                _defColShader_color;  // Uniform location
-	
-	uint32                             _vbCube, _ibCube, _vbSphere, _ibSphere;
-	uint32                             _vbCone, _ibCone, _vbFSPoly;
-	
-	void setupViewMatrices( const Matrix4f &viewMat, const Matrix4f &projMat );
-	
-	void createPrimitives();
-	
-	bool setMaterialRec( MaterialResource *materialRes, const std::string &shaderContext, ShaderResource *shaderRes );
-	
-	void setupShadowMap( bool noShadows );
-	Matrix4f calcCropMatrix( const Frustum &frustSlice, const Vec3f lightPos, const Matrix4f &lightViewProjMat );
-	void updateShadowMap();
-
-	void drawOverlays( const std::string &shaderContext );
-
-	void bindPipeBuffer( uint32 rbObj, const std::string &sampler, uint32 bufIndex );
-	void clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3, float r, float g, float b, float a );
-	void drawFSQuad( Resource *matRes, const std::string &shaderContext );
-	void drawGeometry( const std::string &shaderContext, const std::string &theClass,
-	                   RenderingOrder::List order, int occSet );
-	void drawLightGeometry( const std::string &shaderContext, const std::string &theClass,
-	                        bool noShadows, RenderingOrder::List order, int occSet );
-	void drawLightShapes( const std::string &shaderContext, bool noShadows, int occSet );
-	
-	void drawRenderables( const std::string &shaderContext, const std::string &theClass, bool debugView,
-		const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order, int occSet );
-	
-	void renderDebugView();
-	void finishRendering();
-
 public:
-	
 	Renderer();
 	~Renderer();
 	
@@ -216,6 +149,72 @@ public:
 	CameraNode *getCurCamera() { return _curCamera; }
 	uint32 getQuadIdxBuf() { return _quadIdxBuf; }
 	uint32 getParticleVBO() { return _particleVBO; }
+
+protected:
+	void setupViewMatrices( const Matrix4f &viewMat, const Matrix4f &projMat );
+	
+	void createPrimitives();
+	
+	bool setMaterialRec( MaterialResource *materialRes, const std::string &shaderContext, ShaderResource *shaderRes );
+	
+	void setupShadowMap( bool noShadows );
+	Matrix4f calcCropMatrix( const Frustum &frustSlice, const Vec3f lightPos, const Matrix4f &lightViewProjMat );
+	void updateShadowMap();
+
+	void drawOverlays( const std::string &shaderContext );
+
+	void bindPipeBuffer( uint32 rbObj, const std::string &sampler, uint32 bufIndex );
+	void clear( bool depth, bool buf0, bool buf1, bool buf2, bool buf3, float r, float g, float b, float a );
+	void drawFSQuad( Resource *matRes, const std::string &shaderContext );
+	void drawGeometry( const std::string &shaderContext, const std::string &theClass,
+	                   RenderingOrder::List order, int occSet );
+	void drawLightGeometry( const std::string &shaderContext, const std::string &theClass,
+	                        bool noShadows, RenderingOrder::List order, int occSet );
+	void drawLightShapes( const std::string &shaderContext, bool noShadows, int occSet );
+	
+	void drawRenderables( const std::string &shaderContext, const std::string &theClass, bool debugView,
+		const Frustum *frust1, const Frustum *frust2, RenderingOrder::List order, int occSet );
+	
+	void renderDebugView();
+	void finishRendering();
+
+protected:
+	unsigned char                      *_scratchBuf;
+	uint32                             _scratchBufSize;
+
+	Matrix4f                           _viewMat, _viewMatInv, _projMat, _viewProjMat;
+	
+	std::vector< PipeSamplerBinding >  _pipeSamplerBindings;
+	std::vector< char >                _occSets;  // Actually bool
+	std::vector< OccProxy >            _occProxies[2];  // 0: renderables, 1: lights
+	
+	std::vector< OverlayBatch >        _overlayBatches;
+	OverlayVert                        *_overlayVerts;
+	uint32                             _overlayVB;
+	
+	uint32                             _shadowRB;
+	uint32                             _frameID;
+	uint32                             _defShadowMap;
+	uint32                             _quadIdxBuf;
+	uint32                             _particleVBO;
+	MaterialResource                   *_curStageMatLink;
+	CameraNode                         *_curCamera;
+	LightNode                          *_curLight;
+	ShaderCombination                  *_curShader;
+	RenderTarget                       *_curRenderTarget;
+	uint32                             _curShaderUpdateStamp;
+	
+	uint32                             _maxAnisoMask;
+	float                              _smSize;
+	float                              _splitPlanes[5];
+	Matrix4f                           _lightMats[4];
+
+	uint32                             _vlPosOnly, _vlOverlay, _vlModel, _vlParticle;
+	ShaderCombination                  _defColorShader;
+	int                                _defColShader_color;  // Uniform location
+	
+	uint32                             _vbCube, _ibCube, _vbSphere, _ibSphere;
+	uint32                             _vbCone, _ibCone, _vbFSPoly;
 };
 
 }

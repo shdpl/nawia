@@ -94,35 +94,7 @@ struct SceneNodeTpl
 
 class SceneNode
 {
-protected:
-	
-	Matrix4f                    _relTrans, _absTrans;  // Transformation matrices
-	SceneNode                   *_parent;  // Parent node
-	int                         _type;
-	NodeHandle                  _handle;
-	uint32                      _sgHandle;  // Spatial graph handle
-	uint32                      _flags;
-	float                       _sortKey;
-	bool                        _dirty;  // Does the node need to be updated?
-	bool                        _transformed;
-	bool                        _renderable;
-
-	BoundingBox                 _bBox;  // AABB in world space
-
-	std::vector< SceneNode * >  _children;  // Child nodes
-	std::string                 _name;
-	std::string                 _attachment;  // User defined data
-	
-	void markChildrenDirty();
-
-	virtual void onPreUpdate() {}  // Called before absolute transformation is updated
-	virtual void onPostUpdate() {}  // Called after absolute transformation has been updated
-	virtual void onFinishedUpdate() {}  // Called after children have been updated
-	virtual void onAttach( SceneNode &parentNode ) {}  // Called when node is attached to parent
-	virtual void onDetach( SceneNode &parentNode ) {}  // Called when node is detached from parent
-
 public:
-	
 	SceneNode( const SceneNodeTpl &tpl );
 	virtual ~SceneNode();
 
@@ -161,6 +133,33 @@ public:
 	bool checkTransformFlag( bool reset )
 		{ bool b = _transformed; if( reset ) _transformed = false; return b; }
 
+protected:
+	void markChildrenDirty();
+
+	virtual void onPreUpdate() {}  // Called before absolute transformation is updated
+	virtual void onPostUpdate() {}  // Called after absolute transformation has been updated
+	virtual void onFinishedUpdate() {}  // Called after children have been updated
+	virtual void onAttach( SceneNode &parentNode ) {}  // Called when node is attached to parent
+	virtual void onDetach( SceneNode &parentNode ) {}  // Called when node is detached from parent
+
+protected:
+	Matrix4f                    _relTrans, _absTrans;  // Transformation matrices
+	SceneNode                   *_parent;  // Parent node
+	int                         _type;
+	NodeHandle                  _handle;
+	uint32                      _sgHandle;  // Spatial graph handle
+	uint32                      _flags;
+	float                       _sortKey;
+	bool                        _dirty;  // Does the node need to be updated?
+	bool                        _transformed;
+	bool                        _renderable;
+
+	BoundingBox                 _bBox;  // AABB in world space
+
+	std::vector< SceneNode * >  _children;  // Child nodes
+	std::string                 _name;
+	std::string                 _attachment;  // User defined data
+
 	friend class SceneManager;
 	friend class SpatialGraph;
 	friend class Renderer;
@@ -183,17 +182,15 @@ struct GroupNodeTpl : public SceneNodeTpl
 
 class GroupNode : public SceneNode
 {
-protected:
-
-	GroupNode( const GroupNodeTpl &groupTpl );
-
 public:
-
 	static SceneNodeTpl *parsingFunc( std::map< std::string, std::string > &attribs );
 	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
 
 	friend class Renderer;
 	friend class SceneManager;
+
+protected:
+	GroupNode( const GroupNodeTpl &groupTpl );
 };
 
 
@@ -213,12 +210,6 @@ struct RendQueueItem
 
 class SpatialGraph
 {
-protected:
-	std::vector< SceneNode * >     _nodes;		// Renderable nodes and lights
-	std::vector< uint32 >          _freeList;
-	std::vector< SceneNode * >     _lightQueue;
-	std::vector< RendQueueItem >   _renderableQueue;
-
 public:
 	SpatialGraph();
 	
@@ -231,6 +222,12 @@ public:
 
 	std::vector< SceneNode * > &getLightQueue() { return _lightQueue; }
 	std::vector< RendQueueItem > &getRenderableQueue() { return _renderableQueue; }
+
+protected:
+	std::vector< SceneNode * >     _nodes;		// Renderable nodes and lights
+	std::vector< uint32 >          _freeList;
+	std::vector< SceneNode * >     _lightQueue;
+	std::vector< RendQueueItem >   _renderableQueue;
 };
 
 
@@ -263,26 +260,7 @@ struct CastRayResult
 
 class SceneManager
 {
-protected:
-
-	std::vector< SceneNode *>      _nodes;  // _nodes[0] is root node
-	std::vector< uint32 >          _freeList;  // List of free slots
-	std::vector< SceneNode * >     _findResults;
-	std::vector< CastRayResult >   _castRayResults;
-	SpatialGraph                   *_spatialGraph;
-
-	std::map< int, NodeRegEntry >  _registry;  // Registry of node types
-
-	Vec3f                          _rayOrigin;  // Don't put these values on the stack during recursive search
-	Vec3f                          _rayDirection;  // Ditto
-	int                            _rayNum;  // Ditto
-
-	NodeHandle parseNode( SceneNodeTpl &tpl, SceneNode *parent );
-	void removeNodeRec( SceneNode &node );
-
-	void castRayInternal( SceneNode &node );
 public:
-
 	SceneManager();
 	~SceneManager();
 
@@ -317,6 +295,25 @@ public:
 	
 	SceneNode *resolveNodeHandle( NodeHandle handle )
 		{ return (handle != 0 && (unsigned)(handle - 1) < _nodes.size()) ? _nodes[handle - 1] : 0x0; }
+
+protected:
+	NodeHandle parseNode( SceneNodeTpl &tpl, SceneNode *parent );
+	void removeNodeRec( SceneNode &node );
+
+	void castRayInternal( SceneNode &node );
+
+protected:
+	std::vector< SceneNode *>      _nodes;  // _nodes[0] is root node
+	std::vector< uint32 >          _freeList;  // List of free slots
+	std::vector< SceneNode * >     _findResults;
+	std::vector< CastRayResult >   _castRayResults;
+	SpatialGraph                   *_spatialGraph;
+
+	std::map< int, NodeRegEntry >  _registry;  // Registry of node types
+
+	Vec3f                          _rayOrigin;  // Don't put these values on the stack during recursive search
+	Vec3f                          _rayDirection;  // Ditto
+	int                            _rayNum;  // Ditto
 
 	friend class Renderer;
 };

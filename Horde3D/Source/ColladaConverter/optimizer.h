@@ -42,7 +42,6 @@ struct OptFace
 class MeshOptimizer
 {
 public:
-
 	static const int maxCacheSize = 16;
 	
 	static unsigned int removeDegeneratedTriangles( TriGroup &triGroup, std::vector< Vertex > &vertices,

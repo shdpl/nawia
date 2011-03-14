@@ -30,40 +30,6 @@ namespace Horde3D {
 
 class Timer
 {
-protected:
-
-	double         _startTime;
-	double         _elapsedTime;
-
-#if defined( PLATFORM_WIN ) || defined( PLATFORM_WIN_CE )
-	LARGE_INTEGER  _timerFreq;
-	DWORD_PTR      _affMask;
-#endif
-
-	bool           _enabled;
-	
-
-	double getTime()
-	{
-	#if defined( PLATFORM_WIN ) || defined( PLATFORM_WIN_CE )
-		// Make sure that time is read from the same CPU
-		DWORD_PTR threadAffMask = SetThreadAffinityMask( GetCurrentThread(), _affMask );
-		
-		// Read high performance counter
-		LARGE_INTEGER curTick;
-		QueryPerformanceCounter( &curTick );
-
-		// Restore affinity mask
-		SetThreadAffinityMask( GetCurrentThread(), threadAffMask );
-
-		return (double)curTick.QuadPart / (double)_timerFreq.QuadPart * 1000.0;
-	#else
-		timeval tv;
-		gettimeofday( &tv, 0x0 );
-		return (double)tv.tv_sec * 1000.0 + (double)tv.tv_usec / 1000.0;
-	#endif
-	}
-
 public:
 
 	Timer() : _elapsedTime( 0 ), _enabled( false )
@@ -116,6 +82,41 @@ public:
 
 		return (float)_elapsedTime;
 	}
+
+protected:
+
+	double getTime()
+	{
+	#if defined( PLATFORM_WIN ) || defined( PLATFORM_WIN_CE )
+		// Make sure that time is read from the same CPU
+		DWORD_PTR threadAffMask = SetThreadAffinityMask( GetCurrentThread(), _affMask );
+		
+		// Read high performance counter
+		LARGE_INTEGER curTick;
+		QueryPerformanceCounter( &curTick );
+
+		// Restore affinity mask
+		SetThreadAffinityMask( GetCurrentThread(), threadAffMask );
+
+		return (double)curTick.QuadPart / (double)_timerFreq.QuadPart * 1000.0;
+	#else
+		timeval tv;
+		gettimeofday( &tv, 0x0 );
+		return (double)tv.tv_sec * 1000.0 + (double)tv.tv_usec / 1000.0;
+	#endif
+	}
+
+protected:
+
+	double         _startTime;
+	double         _elapsedTime;
+
+#if defined( PLATFORM_WIN ) || defined( PLATFORM_WIN_CE )
+	LARGE_INTEGER  _timerFreq;
+	DWORD_PTR      _affMask;
+#endif
+
+	bool           _enabled;
 };
 
 }

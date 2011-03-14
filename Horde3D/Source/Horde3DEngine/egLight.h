@@ -67,30 +67,7 @@ struct LightNodeTpl : public SceneNodeTpl
 
 class LightNode : public SceneNode
 {
-private:
-
-	Frustum                _frustum;
-	Matrix4f               _viewMat;
-	Vec3f                  _absPos, _spotDir;
-
-	PMaterialResource      _materialRes;
-	std::string            _lightingContext, _shadowContext;
-	float                  _radius, _fov;
-	Vec3f                  _diffuseCol;
-	float                  _diffuseColMult;
-	uint32                 _shadowMapCount;
-	float                  _shadowSplitLambda, _shadowMapBias;
-
-	std::vector< uint32 >  _occQueries;
-	std::vector< uint32 >  _lastVisited;
-
-	void onPostUpdate();
-
-	LightNode( const LightNodeTpl &lightTpl );
-	~LightNode();
-
 public:
-	
 	static SceneNodeTpl *parsingFunc( std::map<std::string, std::string > &attribs );
 	static SceneNode *factoryFunc( const SceneNodeTpl &nodeTpl );
 	
@@ -105,6 +82,28 @@ public:
 
 	const Frustum &getFrustum() { return _frustum; }
 	const Matrix4f &getViewMat() { return _viewMat; }
+
+private:
+	LightNode( const LightNodeTpl &lightTpl );
+	~LightNode();
+
+	void onPostUpdate();
+
+private:
+	Frustum                _frustum;
+	Matrix4f               _viewMat;
+	Vec3f                  _absPos, _spotDir;
+
+	PMaterialResource      _materialRes;
+	std::string            _lightingContext, _shadowContext;
+	float                  _radius, _fov;
+	Vec3f                  _diffuseCol;
+	float                  _diffuseColMult;
+	uint32                 _shadowMapCount;
+	float                  _shadowSplitLambda, _shadowMapBias;
+
+	std::vector< uint32 >  _occQueries;
+	std::vector< uint32 >  _lastVisited;
 
 	friend class SceneManager;
 	friend class Renderer;

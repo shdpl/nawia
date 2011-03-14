@@ -45,31 +45,7 @@ struct TextureResData
 
 class TextureResource : public Resource
 {
-protected:
-	
-	static unsigned char  *mappedData;
-	static int            mappedWriteImage;
-	
-	TextureTypes::List    _texType;
-	TextureFormats::List  _texFormat;
-	int                   _width, _height, _depth;
-	uint32                _texObject;
-	uint32                _rbObj;  // Used when texture is renderable
-	bool                  _sRGB;
-	bool                  _hasMipMaps;
-
-	bool raiseError( const std::string &msg );
-	bool checkDDS( const char *data, int size );
-	bool loadDDS( const char *data, int size );
-	bool loadSTBI( const char *data, int size );
-	int getMipCount();
-
 public:
-	
-	static uint32 defTex2DObject;
-	static uint32 defTex3DObject;
-	static uint32 defTexCubeObject;
-
 	static void initializationFunc();
 	static void releaseFunc();
 	static Resource *factoryFunc( const std::string &name, int flags )
@@ -97,6 +73,30 @@ public:
 	uint32 getTexObject() { return _texObject; }
 	uint32 getRBObject()  { return _rbObj; }
 	bool hasMipMaps() { return _hasMipMaps; }
+
+public:
+	static uint32 defTex2DObject;
+	static uint32 defTex3DObject;
+	static uint32 defTexCubeObject;
+
+protected:
+	bool raiseError( const std::string &msg );
+	bool checkDDS( const char *data, int size );
+	bool loadDDS( const char *data, int size );
+	bool loadSTBI( const char *data, int size );
+	int getMipCount();
+	
+protected:
+	static unsigned char  *mappedData;
+	static int            mappedWriteImage;
+	
+	TextureTypes::List    _texType;
+	TextureFormats::List  _texFormat;
+	int                   _width, _height, _depth;
+	uint32                _texObject;
+	uint32                _rbObj;  // Used when texture is renderable
+	bool                  _sRGB;
+	bool                  _hasMipMaps;
 
 	friend class ResourceManager;
 };

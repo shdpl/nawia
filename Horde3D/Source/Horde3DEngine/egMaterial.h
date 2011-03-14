@@ -70,20 +70,7 @@ typedef SmartResPtr< MaterialResource > PMaterialResource;
 
 class MaterialResource : public Resource
 {
-private:
-
-	PShaderResource             _shaderRes;
-	uint32                      _combMask;
-	std::string                 _class;
-	std::vector< MatSampler >   _samplers;
-	std::vector< MatUniform >   _uniforms;
-	std::vector< std::string >  _shaderFlags;
-	PMaterialResource           _matLink;
-
-	bool raiseError( const std::string &msg, int line = -1 );
-
 public:
-
 	static Resource *factoryFunc( const std::string &name, int flags )
 		{ return new MaterialResource( name, flags ); }
 	
@@ -104,6 +91,18 @@ public:
 	void setElemParamF( int elem, int elemIdx, int param, int compIdx, float value );
 	const char *getElemParamStr( int elem, int elemIdx, int param );
 	void setElemParamStr( int elem, int elemIdx, int param, const char *value );
+
+private:
+	bool raiseError( const std::string &msg, int line = -1 );
+
+private:
+	PShaderResource             _shaderRes;
+	uint32                      _combMask;
+	std::string                 _class;
+	std::vector< MatSampler >   _samplers;
+	std::vector< MatUniform >   _uniforms;
+	std::vector< std::string >  _shaderFlags;
+	PMaterialResource           _matLink;
 
 	friend class ResourceManager;
 	friend class Renderer;
