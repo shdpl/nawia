@@ -1529,7 +1529,7 @@ public:
 		return m_returnI;
 	}
 
-	int getReturnFloat()
+	float getReturnFloat()
 	{
 		return m_returnF;
 	}
@@ -1547,7 +1547,7 @@ public:
 	const char* m_startNode;
 	const char* m_syncWord;
 	int m_returnI;
-	int m_returnF;
+	float m_returnF;
 };
 
 /**
