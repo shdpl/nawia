@@ -755,7 +755,7 @@
 		<Restriction></Restriction>  
 	</Gesture>
 	<Still>
-		<ID></ID>
+		<ID>0048</ID>
 		<Name>Still Animation Low</Name>
 		<Description>Two frames animation for spacial extend feature</Description>
 		<Files gender="female">
@@ -766,7 +766,7 @@
 		</Files>
 	</Still>
 	<Still>
-		<ID></ID>
+		<ID>0049</ID>
 		<Name>Still Animation Medium</Name>
 		<Description>Two frames animation for spacial extend feature</Description>
 		<Files gender="female">
@@ -777,7 +777,7 @@
 		</Files>
 	</Still>
 	<Still>
-		<ID></ID>
+		<ID>0050</ID>
 		<Name>Still Animation High</Name>
 		<Description>Two frames animation for spacial extend feature</Description>
 		<Files gender="female">
@@ -788,7 +788,7 @@
 		</Files>
 	</Still>
 	<Gesture>
-		<ID>0048</ID>
+		<ID>0051</ID>
 		<Name>HeadNod - only head</Name>
 		<Description>Only the head is animated</Description>
 		<Files gender="female">

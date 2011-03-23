@@ -250,7 +250,12 @@ bool AgentAnimComponent::processAnimDB(XMLNode db)
 		else if( strcmp(entry->getName(), "Posture") == 0 )
 			type = Agent_AnimType::AAT_POSTURE;
 
-		AnimationData* animdata = new AnimationData( (int)atoi(idnode->getText()), namenode->getText(), type );
+		const char* id_c = idnode->getText();
+		const char* name_c = namenode->getText();
+		if(id_c == 0 || name_c == 0)
+			continue;
+
+		AnimationData* animdata = new AnimationData( (int)atoi(id_c), name_c, type );
 		
 		//Filenames
 		int numSuperFiles = entry->nChildNode("Files");
@@ -600,7 +605,7 @@ int AgentAnimComponent::preloadAnimByRes( int anim_res, int type, char* mask )
 
 int AgentAnimComponent::loadAnim( AnimationData* data, char* mask, char* syncWord )
 {
-	int id, id_prep, id_stroke, id_ret;
+	int id, id_prep, id_stroke;
 	if(data->type == Agent_AnimType::AAT_POSTURE)
 	{
 		if(data->posture_prep == 0 || data->posture_stroke == 0 || data->posture_ret == 0)
