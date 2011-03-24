@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>7cfb3305-4fb1-49f6-9a2e-5ed3ac543738</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>8ea3dee1-85a9-4dbb-9f6d-3d028fa9ae2a</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>67250890-246f-4326-b0c8-97874ec1dc8c</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Animation">
+      <UniqueIdentifier>{4d3690ac-1533-4382-9c28-f536917aaaef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Movement">
+      <UniqueIdentifier>{bfa1563e-9a9f-44cb-8815-d82d28a604c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Gaze">
+      <UniqueIdentifier>{becae168-edbf-43c5-893f-aedb6bab156c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Interaction">
+      <UniqueIdentifier>{c07a332b-15d7-4f9c-b5be-35aec73f0510}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Communication">
+      <UniqueIdentifier>{2871369b-b645-411c-8f20-6582a55def02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation">
+      <UniqueIdentifier>{5f808bd6-fca8-4687-b35d-f75d2087f272}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Communication">
+      <UniqueIdentifier>{0c722b6a-baca-493b-a0e1-96b4d4e08869}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gaze">
+      <UniqueIdentifier>{5cbe4d6b-f32b-4e57-b0de-975ea8ed8ee0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Interaction">
+      <UniqueIdentifier>{a89d9f2a-16e4-4957-8437-b6e4a1ae77b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Movement">
+      <UniqueIdentifier>{c020047f-9347-4055-b301-644ab1c28706}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GameEngine_Agent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgentComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgentManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\AgentAnimationComponent.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Communication\AgentCommComponent.cpp">
+      <Filter>Source Files\Communication</Filter>
+    </ClCompile>
+    <ClCompile Include="Gaze\AgentGazeComponent.cpp">
+      <Filter>Source Files\Gaze</Filter>
+    </ClCompile>
+    <ClCompile Include="Interaction\AgentInteractionComponent.cpp">
+      <Filter>Source Files\Interaction</Filter>
+    </ClCompile>
+    <ClCompile Include="Movement\AgentMovementComponent.cpp">
+      <Filter>Source Files\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\AnimationData.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GameEngine_Agent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AgentComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AgentManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\AgentAnimationComponent.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Communication\AgentCommComponent.h">
+      <Filter>Header Files\Communication</Filter>
+    </ClInclude>
+    <ClInclude Include="Gaze\AgentGazeComponent.h">
+      <Filter>Header Files\Gaze</Filter>
+    </ClInclude>
+    <ClInclude Include="Interaction\AgentInteractionComponent.h">
+      <Filter>Header Files\Interaction</Filter>
+    </ClInclude>
+    <ClInclude Include="Movement\AgentMovementComponent.h">
+      <Filter>Header Files\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\StillAnimation.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\Posture.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\Animation.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\AnimationData.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\AnimationFile.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\AnimationBlending.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Morph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

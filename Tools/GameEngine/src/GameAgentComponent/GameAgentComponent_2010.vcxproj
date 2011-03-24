@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>GameAgentComponent</ProjectName>
+    <ProjectGuid>{89A7AF08-1212-41AD-BD51-399A51043777}</ProjectGuid>
+    <RootNamespace>GameAgentComponent</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)Build\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)bin\</OutDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)Build\$(ProjectName)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)Build\$(ProjectName)\$(Configuration)\</OutDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)d</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)/include;$(ProjectDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <MinimalRebuild>true</MinimalRebuild>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AGENTCOMPONENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib;$(ProjectDir)..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
+      <OutputFile>$(SolutionDir)bin\$(ProjectName)d.dll</OutputFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)GameEngine_Agent.h" "$(SolutionDir)include\GameEngine\" /y</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)/include;$(ProjectDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;AGENTCOMPONENT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib;$(ProjectDir)..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
+      <OptimizeReferences>true</OptimizeReferences>
+      <OutputFile>$(SolutionDir)bin\$(ProjectName).dll</OutputFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)GameEngine_Agent.h" "$(SolutionDir)include\GameEngine\" /y</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Animation\AgentAnimationComponent.cpp" />
+    <ClCompile Include="Animation\AnimationData.cpp" />
+    <ClCompile Include="Communication\AgentCommComponent.cpp" />
+    <ClCompile Include="GameEngine_Agent.cpp" />
+    <ClCompile Include="AgentComponent.cpp" />
+    <ClCompile Include="AgentManager.cpp" />
+    <ClCompile Include="Gaze\AgentGazeComponent.cpp" />
+    <ClCompile Include="Interaction\AgentInteractionComponent.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Movement\AgentMovementComponent.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Animation\AgentAnimationComponent.h" />
+    <ClInclude Include="Animation\Animation.h" />
+    <ClInclude Include="Animation\AnimationBlending.h" />
+    <ClInclude Include="Animation\AnimationData.h" />
+    <ClInclude Include="Animation\AnimationFile.h" />
+    <ClInclude Include="Animation\Posture.h" />
+    <ClInclude Include="Animation\StillAnimation.h" />
+    <ClInclude Include="Communication\AgentCommComponent.h" />
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="GameEngine_Agent.h" />
+    <ClInclude Include="AgentComponent.h" />
+    <ClInclude Include="AgentManager.h" />
+    <ClInclude Include="Gaze\AgentGazeComponent.h" />
+    <ClInclude Include="Interaction\AgentInteractionComponent.h" />
+    <ClInclude Include="Morph.h" />
+    <ClInclude Include="Movement\AgentMovementComponent.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Horde3D\Source\Horde3DEngine\Horde3D Engine.vcxproj">
+      <Project>{1d558d7d-da57-4908-bcfc-902054fe6b63}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Horde3D\Source\Horde3DUtils\Horde3D Utils.vcxproj">
+      <Project>{ae8eb9b3-d2c2-4372-ab4b-fc980ee69d2d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Dependencies\XMLParser\XmlParserLib.vcxproj">
+      <Project>{3bf9d44f-4a29-46ee-9a04-ee706e602620}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GameBayesNetComponent\GameBayesNetComponent.vcxproj">
+      <Project>{aca0edf7-a6d9-42df-a0c1-29e8d0aacc32}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GameEngineCore\GameEngineCore.vcxproj">
+      <Project>{db488001-8e98-4724-9787-72da137c4e47}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\GameIKComponent\GameIKComponent.vcxproj">
+      <Project>{c767b2a0-cf6f-45ca-ae4b-37ddb759ad23}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GameSapiComponent\GameSapiComponent.vcxproj">
+      <Project>{f606e654-0f08-4b81-8388-5a903bba07e9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GameSceneGraphComponent\GameSceneGraphComponent.vcxproj">
+      <Project>{7b21d090-9a12-4e86-8e65-9aaea2b72ab4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GameSocketComponent\GameSocketComponent.vcxproj">
+      <Project>{46436c34-9e64-4754-a03e-d951849b0830}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
