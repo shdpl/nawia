@@ -103,6 +103,12 @@ INPUT                  = ../src/GameEngine \
                          ../src/GameSoundEngineComponent \
 						 ../src/GameIKComponent \
 						 ../src/GameVideoComponent \
+						 ../src/GameAgentComponent \
+						 ../src/GameAgentComponent/Animation \
+						 ../src/GameAgentComponent/Movement \
+						 ../src/GameAgentComponent/Gaze \
+						 ../src/GameAgentComponent/Formation \
+						 ../src/GameAgentComponent/Comm
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
