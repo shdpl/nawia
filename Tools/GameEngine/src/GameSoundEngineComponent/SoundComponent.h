@@ -133,6 +133,9 @@ private:
 	std::map<std::string, std::vector<std::pair<int, int>>> m_taggedSoundFiles;
 
 	float m_startTimeViseme;
+
+	// The current priority for playback (gain / distance)
+	float				m_currentPriority;
 };
 
 

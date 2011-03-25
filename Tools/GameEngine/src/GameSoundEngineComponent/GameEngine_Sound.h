@@ -132,6 +132,16 @@ namespace GameEngine
 	 * Returns the sound resource directory
 	 */
 	SOUNDPLUGINEXP const char* soundResourceDirectory();
+
+	/**
+	 * Sets the maximum of parallel playing sources
+	 */
+	SOUNDPLUGINEXP void setMaxSoundSources(unsigned int maxSources);
+	/**
+	 * Gets the maximum of parallel playing sources
+	 */
+	SOUNDPLUGINEXP unsigned int getMaxSoundSources();
+
 	/*! @}*/
 }
 

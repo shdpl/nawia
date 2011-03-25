@@ -107,16 +107,17 @@ SoundManager::SoundManager() : m_activeListener(0)
 	alcGetIntegerv( soundDevice, ALC_ATTRIBUTES_SIZE, 1, &size);
 	ALCint* attrs = new ALCint[size];
 	alcGetIntegerv(soundDevice, ALC_ALL_ATTRIBUTES, size, attrs);
-	ALCint maxMono = 0, maxStereo = 0;
+	m_maxMonoSources = 0;
+	m_maxStereoSources = 0;
 	for (int i=0; i<size; ++i)
 	{
 		if (attrs[i] == ALC_MONO_SOURCES && i+1 < size)
-			maxMono = attrs[i+1];
+			m_maxMonoSources = attrs[i+1];
 		else if (attrs[i] == ALC_STEREO_SOURCES && i+1 < size)
-			maxStereo = attrs[i+1];
+			m_maxStereoSources = attrs[i+1];
 	}
 	delete[] attrs;
-	GameLog::logMessage("--Sound device supports maximally %d mono and %d stereo source(s)--", maxMono, maxStereo);
+	GameLog::logMessage("--Sound device supports maximally %d mono and %d stereo source(s)--", m_maxMonoSources, m_maxStereoSources);
 
 	// Position of the CAM (Listener).
 	float pos[] = {0.0, 0.0, 0.0};
@@ -134,9 +135,10 @@ SoundManager::SoundManager() : m_activeListener(0)
 		DisplayALError("Error setting Listener Position: ", error_code);
 	}
 
-	// get all available sources
-	int i=0;
-	while(i++<14)
+	// Create a minimum of 16 available sources
+	// Can be changed later
+	int currentSources = (m_maxMonoSources < 16) ? m_maxMonoSources : 16;
+	for(int i=0; i<currentSources; ++i)
 	{
 		ALuint source;
 		alGenSources(1, &source);
@@ -154,9 +156,17 @@ SoundManager::SoundManager() : m_activeListener(0)
 
 SoundManager::~SoundManager()
 {	
+	while (!m_sources.empty())
+	{
+		// Clear all sources
+		unsigned int source = m_sources.back();
+		m_sources.pop_back();
+		alDeleteSources(1, &source);
+	}
+
+	// Destroy context and close device
 	ALCcontext *pContext = alcGetCurrentContext();
 	ALCdevice *pDevice = alcGetContextsDevice(pContext);
-
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(pContext);
 	alcCloseDevice(pDevice);
@@ -188,6 +198,7 @@ void SoundManager::run()
 {
 	if( m_activeListener == 0x0 ) return;
 	
+	// Update listener
 	m_activeListener->update();
 	alListenerfv(AL_POSITION,		(float*)&m_activeListener->m_listenerPos);
 	alListenerfv(AL_VELOCITY,		(float*)&m_activeListener->m_listenerVel);
@@ -195,16 +206,11 @@ void SoundManager::run()
 	alListenerf(AL_GAIN,			m_activeListener->m_gain);
 	
 	// Create Priority Queue
-	typedef std::pair<float, SoundComponent*> sound;
-	// Priority queue for sounds not playing but with allocated source
-	std::priority_queue<sound> priorityQueue;	
-	
-	// typedef for more readability
-	typedef std::vector<SoundComponent*>::iterator soundIterator;
-	
-	soundIterator end = m_soundNodes.end();
 
-	for( soundIterator nodeIter = m_soundNodes.begin(); nodeIter != end; ++nodeIter) 
+	// Priority queue for sounds to be played (gain > 0)
+	std::priority_queue<PrioritySound> priorityQueue;	
+	SoundIterator end = m_soundNodes.end();
+	for( SoundIterator nodeIter = m_soundNodes.begin(); nodeIter != end; ++nodeIter) 
 	{
 		SoundComponent* node = *nodeIter;	
 
@@ -237,17 +243,19 @@ void SoundManager::run()
 					node->m_gain = SoundComponent::OFF;
 			}
 		}
-		// for interrupted looping nodes, take the initial gain for the priority, as we my want to start them again
+		// for interrupted looping nodes, take the initial gain for the priority, as we may want to start them again
 		float gain = (node->m_soundInterrupted && node->m_loop) ? node->m_initialGain : node->m_gain;
-		float priority = gain / ((dist > 0.0) ? dist : 0.00001f);
-		if (priority > 0)
-			priorityQueue.push(sound(priority, node)); // insert it to the priority queue 
+		node->m_currentPriority = gain / ((dist > 0.0) ? dist : 0.00001f);
+
+		if (node->m_currentPriority > 0)
+			priorityQueue.push(PrioritySound(node->m_currentPriority, node)); // insert it to the priority queue 
 		//printf("Distance %.4f\n", dist) ;
 	}
 
+	// Vector for sounds that are allowed to be played, but aren't yet
 	std::vector<SoundComponent*> soundsToPlay;
 	int accociated = 0;
-	// Configure the first m_sources.size() sounds ( maximum number of parallel sounds )
+	// Choose the sounds for playing (maximum m_sources.size())
 	const size_t numSources = m_sources.size();
 	for (size_t i = 0; i < numSources && !priorityQueue.empty(); ++i)
 	{
@@ -257,7 +265,10 @@ void SoundManager::run()
 		{
 			// Check again for max distance
 			if (node->getDistanceToListener() < node->m_maxDist)
-				soundsToPlay.push_back(node); // Push to vector for playing 
+				soundsToPlay.push_back(node); // Push to vector for playing
+			else
+				i--;	// This one isn't playing, so decrement counter
+
 		}
 		else // Already playing
 		{
@@ -265,27 +276,30 @@ void SoundManager::run()
 			updateALProperties(node);
 		}
 	}
-	// Check for sounds playing, but with a priority less than the nodes in soundsToPlay
-	while(!priorityQueue.empty() && m_sourcesAvailable.size() < soundsToPlay.size())
+	// All remaining sounds in the priority queue should not play
+	while(!priorityQueue.empty())
 	{
 		SoundComponent* const node = priorityQueue.top().second;
 		priorityQueue.pop();
 		if (node->m_sourceID != 0)
 		{
-			// ...stop the sound
+			// Stop the sound as it seems to be playing
 			stopSound(node, true);
 			// And set interrupted
 			node->m_soundInterrupted = true;
 		}
+		else
+		{
+			// Did never play succesfully, so only send a stop event in the next update call
+			m_stoppedNodes.insert(node);
+			// And set the gain to OFF as it has stopped by that
+			node->m_gain = SoundComponent::OFF;
+		}
 	}
 
-	// typedef for more readability
-	typedef std::vector<SoundComponent*>::iterator SoundsToPlayIter;
-
-	// play the sounds that don't have a source buffer yet
-	for( SoundsToPlayIter iter = soundsToPlay.begin(); iter < soundsToPlay.end() && !m_sourcesAvailable.empty(); iter++) 
+	// Now play the sounds that are allowed, but don't have a source buffer yet
+	for( SoundIterator iter = soundsToPlay.begin(); iter < soundsToPlay.end() && !m_sourcesAvailable.empty(); iter++) 
 	{
-
 		SoundComponent* const node = *iter;
 		const unsigned int sourceID = m_sourcesAvailable.back();
 		m_sourcesAvailable.pop_back();
@@ -370,29 +384,36 @@ void SoundManager::removeComponent(SoundComponent* sound)
 	}
 }
 
-void SoundManager::stopSound(SoundComponent* sound, bool delayEvent /*= false*/)
+void SoundManager::stopSource(unsigned int source, bool delayEvent /*= false*/)
 {
-	// Free open al source
 	ALenum error_code = AL_NO_ERROR;
-	alSourceStop(sound->m_sourceID);
+	alSourceStop(source);
 	if ( (error_code = alGetError()) != AL_NO_ERROR)
 			DisplayALError("Error stopping sound: ", error_code);
 
 	int queued;
-	alGetSourcei(sound->m_sourceID, AL_BUFFERS_QUEUED, &queued);	    
+	alGetSourcei(source, AL_BUFFERS_QUEUED, &queued);	    
 	while(queued--)
 	{
 		ALuint buffer;   
-		alSourceUnqueueBuffers(sound->m_sourceID, 1, &buffer);
+		alSourceUnqueueBuffers(source, 1, &buffer);
 		if ( (error_code = alGetError()) != AL_NO_ERROR)
 			DisplayALError("Error unqueuing Buffer: ", error_code);
 	}
-	alSourcei( sound->m_sourceID, AL_BUFFER,	AL_NONE );
+	alSourcei( source, AL_BUFFER,	AL_NONE );
 	if ( (error_code = alGetError()) != AL_NO_ERROR)
 			DisplayALError("Error releasing Buffer: ", error_code);
+}
+
+void SoundManager::stopSound(SoundComponent* sound, bool delayEvent /*= false*/)
+{
+	// Free open al source
+	stopSource(sound->m_sourceID);
+
+	// --> source ID available again
 	m_sourcesAvailable.push_back(sound->m_sourceID);
 
-	// And send event about the stopped sound
+	// Send event about the stopped sound
 	if (delayEvent)
 	{
 #pragma omp critical
@@ -409,6 +430,7 @@ void SoundManager::stopSound(SoundComponent* sound, bool delayEvent /*= false*/)
 
 	// reset source
 	sound->m_sourceID = 0;
+	sound->m_currentPriority = 0;
 
 	// And set gain to zero if not already done
 	sound->m_gain = SoundComponent::OFF;
@@ -418,4 +440,107 @@ void SoundManager::DisplayALError(const char *szText, int errorcode)
 {
 	printf("%s %s\n", szText, alGetString(errorcode));
 	GameLog::errorMessage("%s %s", szText, alGetString(errorcode));
+}
+
+void SoundManager::setMaxSources(unsigned int numSources)
+{
+	int error_code = AL_NO_ERROR;
+	unsigned int maxMono = m_maxMonoSources;
+	unsigned int newSize = (maxMono < numSources) ? maxMono : numSources;
+	
+	// Create new ones if necessary
+	while (m_sources.size() < newSize)
+	{
+		ALuint source;
+		alGenSources(1, &source);
+	    if ((error_code = alGetError()) != AL_NO_ERROR)
+		{
+			DisplayALError("Error creating source: ", error_code);
+			break;
+		}
+		m_sources.push_back(source);
+		m_sourcesAvailable.push_back(source);
+	}
+
+	// Delete old ones if already too much
+	while (m_sources.size() > newSize && m_sourcesAvailable.size() > 0)
+	{
+		// First the unused sources
+		ALuint source = m_sourcesAvailable.back();
+		m_sourcesAvailable.pop_back();
+
+		// Delete the source
+		alDeleteSources(1, &source);
+		if ((error_code = alGetError()) != AL_NO_ERROR)
+		{
+			DisplayALError("Error deleting source: ", error_code);
+		}
+
+		// Remove the source from the list
+		std::vector<unsigned int>::iterator iter;
+		std::vector<unsigned int>::iterator end = m_sources.end();
+		bool found = false;
+		for (iter = m_sources.begin(); iter != end; iter++)
+		{
+			if (*iter == source)
+			{
+				m_sources.erase(iter);
+				break;
+			}
+		}
+	}
+		
+	if (m_sources.size() > newSize)
+	{
+		// Still too much, so delete used sources with the least priority
+		
+		// Create Priority Queue 
+		std::priority_queue<PrioritySound> priorityQueue;	
+		SoundIterator end = m_soundNodes.end();
+		for( SoundIterator iter = m_soundNodes.begin(); iter != end; ++iter) 
+		{
+			SoundComponent* sound = *iter;
+			if (sound->m_sourceID > 0)
+				priorityQueue.push(PrioritySound(sound->m_currentPriority, sound));		
+		}
+
+		// Remove the nodes that can be played from the queue
+		for (unsigned int i = 0; i < newSize && !priorityQueue.empty(); ++i)
+		{
+			priorityQueue.pop();
+		}
+
+		// And delete all others
+		while (!priorityQueue.empty())
+		{
+			SoundComponent* sound = priorityQueue.top().second;
+			unsigned int sourceID = sound->m_sourceID;
+			priorityQueue.pop();
+
+			// Stop the sound
+			stopSound(sound, true);
+			// The deleted source was placed into the available sources again, so clear them
+			m_sourcesAvailable.clear();
+
+			// Delete the source
+			alDeleteSources(1, &sourceID);
+			if ((error_code = alGetError()) != AL_NO_ERROR)
+			{
+				DisplayALError("Error creating source: ", error_code);
+			}
+			
+			// Remove the source from the sources list
+			std::vector<unsigned int>::iterator iter;
+			std::vector<unsigned int>::iterator end = m_sources.end();
+			bool found = false;
+			for (iter = m_sources.begin(); iter != end; iter++)
+			{
+				if (*iter == sourceID)
+				{
+					m_sources.erase(iter);
+					break;
+				}
+			}
+		}
+	}
 }

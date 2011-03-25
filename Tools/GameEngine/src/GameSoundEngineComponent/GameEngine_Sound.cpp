@@ -158,5 +158,15 @@ namespace GameEngine
 		return SoundResourceManager::instance()->getResourceDirectory();
 	}
 
+	SOUNDPLUGINEXP void setMaxSoundSources(unsigned int maxSources)
+	{
+		SoundManager::instance()->setMaxSources(maxSources);
+	}
+
+	SOUNDPLUGINEXP unsigned int getMaxSoundSources()
+	{
+		return SoundManager::instance()->getMaxSources();
+	}
+
 }
 

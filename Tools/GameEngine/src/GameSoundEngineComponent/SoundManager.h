@@ -75,6 +75,16 @@ public:
 	 */
 	void setActiveListener( SoundListenerComponent* listener ) { m_activeListener = listener; }
 
+	/**
+	 * Set maximum number of sound sources (can stop currently playing sources if lower than the number of currently playing sounds)
+	 */
+	void setMaxSources( unsigned int numSources );
+
+	/**
+	 * Get maximum number of parallel playing sound sources
+	 */
+	unsigned int getMaxSources() {	return m_sources.size(); }
+
 	SoundListenerComponent* activeListener() { return m_activeListener; }
 
 	/**
@@ -92,6 +102,7 @@ private:
 
 	void updateALProperties(SoundComponent* node);
 
+	void stopSource(unsigned int source, bool delayEvent = false);
 
 	/// Vector for Sound objects
 	std::vector<SoundComponent*> m_soundNodes;
@@ -106,6 +117,13 @@ private:
 
 	// Sounds stopped in the last run call, event will be sent in update
 	std::set<SoundComponent*> m_stoppedNodes;
+
+	// Maximum number of sources provided by the current sound device
+	int m_maxMonoSources, m_maxStereoSources;
+
+	// typedefs for more readability
+	typedef std::pair<float, SoundComponent*> PrioritySound;
+	typedef std::vector<SoundComponent*>::iterator SoundIterator;
 
 };
 

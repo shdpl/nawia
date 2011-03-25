@@ -76,4 +76,20 @@ SOUNDPLUGINEXP void dllLoadScene( const char* sceneFile )
 		GameLog::logMessage("- Setting Sound Directory = %s", pathes.getAttribute("mediapath", "media"));
 		SoundResourceManager::instance()->setResourceDirectory( pathes.getAttribute("mediapath", "media"));	
 	}
+
+	XMLNode& extras(scene.getChildNode("Extras"));
+	if (!extras.isEmpty())
+	{
+		const XMLNode& settings(extras.getChildNode("SoundManager"));
+		if (!settings.isEmpty())
+		{
+			const char* maxSources = settings.getAttribute("maxSources");
+			if (maxSources)
+			{
+				unsigned int maxS = (unsigned)atoi(maxSources);
+				GameLog::logMessage("- Setting max sound sources: %u", maxS);
+				SoundManager::instance()->setMaxSources(maxS);
+			}
+		}
+	}
 }

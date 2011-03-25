@@ -78,7 +78,7 @@ SoundComponent::SoundComponent(GameEntity *owner) : GameComponent(owner, "Sound3
 	m_lastTimeStamp(0), m_sourceID(0), m_startTimestamp(0.0f), m_curViseme(0), m_changedBlending(false), m_time(0),
 	m_prevViseme(0), m_visemeBlendFacPrev(1.0f), m_visemeBlendFac(1.0f), m_visemeIndex(-1), m_isSpeaking(false),
 	m_bufferCount(0), m_resourceID(0), m_stream(false), m_gain(0.0f), m_initialGain(0.0f), m_FACSmapping(false),
-	m_soundInterrupted(false), m_speakingPausedAt(0)
+	m_soundInterrupted(false), m_speakingPausedAt(0), m_currentPriority(0)
 {
 	owner->addListener(GameEvent::E_SET_ENABLED, this);
 	owner->addListener(GameEvent::E_SET_SOUND_GAIN, this);	
