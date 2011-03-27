@@ -327,6 +327,7 @@ public:
 		AG_ANIM_SET_STROKES,	/// Sets the unmber of strokes an animations should perform. Param: AgentAnimationData(int,int)
 		AG_ANIM_CLEAR,			/// Clears all animation stages, deleting all loaded animations. No data required
 		AG_MOVEMENT,			/// Performs a movement. Param: AgentMovementData(Vec3f/int,Type,const char*,const char*,float,bool), returns:  an int
+		AG_MOVEMENT_SET_SPEED,	/// Sets the default movement speed. Param: float
 		AG_GAZE,				/// Gazes towards the target. Param: AgentGazeData(Vec3f/int,float,float), returns: int
 		AG_GAZE_SET_SPEED,		/// Sets the agent's default gaze speed. Param: float
 		AG_FORMATION_ADD,		/// Adds a member to the formation. Param: int
@@ -399,7 +400,8 @@ public:
 		AG_ANIM_GET_SPEED,		/// Gets the speed value of an animation. Param: AgentAnimationData(int), returns: float
 		AG_ANIM_GET_EXTENT,		/// Gets the spatial extent value of an animation. Param: AgentAnimationData(int), returns: float
 		AG_ANIM_GET_STROKES,	/// Gets the stroke repetition value of an animation. Param: AgentAnimationData(int), returns: int
-		AG_MOVEMENT_GET_STATUS,	/// Gets the animation's status. Param: AgentMovementData(int), returns: int
+		AG_MOVEMENT_GET_STATUS,	/// Gets the movement's status. Param: AgentMovementData(int), returns: int
+		AG_MOVEMENT_GET_SPEED,	/// Gets the default movement speed. Param: AgentMovementData(), returns: float
 		AG_GAZE_GET_STATUS,		/// Gets the gaze node's status. Param: AgentGazeData(int), returns: int
 		AG_GAZE_GET_SPEED,		/// Gets the agent's default gaze speed. Param: AgentGazeData(), returns: float
 		AG_FORMATION_GET_AGENTS,/// Gets the members of the formation. Param: AgentFormationData(int**), returns: int
@@ -1305,7 +1307,7 @@ public:
 	///Data container constructor for AG_MOVEMENT
 	///@param target the target vector
 	///@param type the movement type
-	///@param speed the movement speed (default 1.0f)
+	///@param speed the movement speed (use -1 for agent default)
 	///@param putInQueue doesn't start the movement immediately but places it in a queue.
 	///@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played during the orientation (use 0 for default agent walk animation)
 	///@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played during the locomotion (use 0 for default agent walk animation)
@@ -1319,7 +1321,7 @@ public:
 	///Data container constructor for AG_MOVEMENT
 	///@param target the target entity id
 	///@param type the movement type
-	///@param speed the movement speed (default 1.0f)
+	///@param speed the movement speed (use -1 for agent default)
 	///@param putInQueue doesn't start the movement immediately but places it in a queue.
 	///@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played during the orientation (use 0 for default agent walk animation)
 	///@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played during the locomotion (use 0 for default agent walk animation)
@@ -1333,6 +1335,12 @@ public:
 	///Data container constructor for AG_MOVEMENT_GET_STATUS	
 	///@param movementID the id of the movement, as returned by a movement call-up
 	AgentMovementData(int movementID) : m_movementID(movementID), m_return(-1), m_walkAnimName(0), m_orientAnimName(0)
+	{
+		m_data.ptr = this;		
+	}
+
+	///Data container constructor for AG_MOVEMENT_GET_SPEED	
+	AgentMovementData() : m_returnF(-1), m_walkAnimName(0), m_orientAnimName(0)
 	{
 		m_data.ptr = this;		
 	}
@@ -1381,9 +1389,14 @@ public:
 		return new AgentMovementData(*this);
 	}
 
-	int getReturnValue()
+	int getReturnInt()
 	{
 		return m_return;
+	}
+
+	float getReturnFloat()
+	{
+		return m_returnF;
 	}
 
 	Vec3f m_targetV;
@@ -1395,6 +1408,7 @@ public:
 	const char* m_walkAnimName;
 	const char* m_orientAnimName;
 	int m_return;
+	float m_returnF;
 };
 
 /**
@@ -1446,14 +1460,14 @@ public:
 	}
 
 	///Data container constructor for AG_ANIM_STOP, AG_ANIM_GET_STATUS, AG_ANIM_GET_SPEED, AG_ANIM_GET_EXTENT, AG_ANIM_GET_STROKES
-	///@param playbackID the playback id of the animation
+	///@param playbackID the playback id of the animation (use -1 to get agent default)
 	AgentAnimationData(int playbackID) : m_playbackID(playbackID), m_returnI(-1), m_returnF(-1), m_sourceS(0), m_startNode(0), m_syncWord(0)
 	{
 		m_data.ptr = this;		
 	}
 
 	///Data container constructor for AG_ANIM_SET_STROKES
-	///@param playbackID the playback id of the animation
+	///@param playbackID the playback id of the animation (use -1 to set agent default)
 	///@param value the the value we want to set
 	AgentAnimationData(int playbackID, int value) : m_playbackID(playbackID), m_valueI(value), m_returnI(-1), m_sourceS(0), m_startNode(0), m_syncWord(0)
 	{
@@ -1461,7 +1475,7 @@ public:
 	}
 
 	///Data container constructor for AG_ANIM_SET_EXTENT, AG_ANIM_SET_SPEED
-	///@param playbackID the playback id of the animation
+	///@param playbackID the playback id of the animation (use -1 to set agent default)
 	///@param value the the value we want to set
 	AgentAnimationData(int playbackID, float value) : m_playbackID(playbackID), m_valueF(value), m_returnI(-1), m_sourceS(0), m_startNode(0), m_syncWord(0)
 	{

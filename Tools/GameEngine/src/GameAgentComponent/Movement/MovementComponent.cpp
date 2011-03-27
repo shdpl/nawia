@@ -108,6 +108,20 @@ void MovementComponent::executeEvent(GameEvent *event)
 			data->m_return = getStatus(data->m_movementID);
 			break;
 		}
+		case GameEvent::AG_MOVEMENT_GET_SPEED:
+		{
+			// Get event data
+			AgentMovementData* data = static_cast<AgentMovementData*>(event->data());
+			data->m_returnF = getSpeed();
+			break;
+		}
+		case GameEvent::AG_MOVEMENT_SET_SPEED:
+		{
+			// Get event data
+			float* data = static_cast<float*>(event->data());
+			setSpeed(*data);
+			break;
+		}
 	}
 }
 
@@ -142,6 +156,18 @@ void MovementComponent::loadFromXml(const XMLNode* node)
 			//we use the walk anim
 			utils::strcpy(m_walkAnimName, m_orientAnimName, c_MaxAnimFileSize);
 		}
+	}
+
+	/*
+	 * Movement parameters
+	 */
+	XMLNode* movement = &node->getChildNode( "Movement", 0 );
+	if(!movement->isEmpty())
+	{
+		if( (movement->getAttribute("speed") != 0) && (strcmp(movement->getAttribute("speed"), "") != 0) )
+			m_speed = (float)atof(movement->getAttribute("idleAnimName"));
+		else
+			m_speed = Config::getParamF(Agent_Param::DfltMovementSpeed_F);
 	}
 
 	if(!ok)
@@ -195,9 +221,9 @@ int MovementComponent::goTo(int target_eID, float speed, bool putInQueue, const 
 
 	//if we don't want a queue, we must erase all existent movement nodes
 	if(!putInQueue)
-	{
 		clear();
-	}
+	if(speed < 0)
+		speed = m_speed; //use agent default
 
 	//orient towards the target
 	Orientation* o = new Orientation( m_eID, target, speed );
@@ -217,9 +243,9 @@ int MovementComponent::goTo(float targetX, float targetY, float targetZ, float s
 
 	//if we don't want a queue, we must erase all existent movement nodes
 	if(!putInQueue)
-	{
 		clear();
-	}
+	if(speed < 0)
+		speed = m_speed; //use agent default
 
 	//orient towards the target
 	Orientation* o = new Orientation( m_eID, target, speed );
@@ -239,9 +265,9 @@ int MovementComponent::move(float targetX, float targetY, float targetZ, float s
 
 	//if we don't want a queue, we must erase all existent movement nodes
 	if(!putInQueue)
-	{
 		clear();
-	}
+	if(speed < 0)
+		speed = m_speed; //use agent default
 
 	//move to the target position
 	Locomotion* l =  new Locomotion( m_eID, target, speed );
@@ -257,9 +283,9 @@ int MovementComponent::turnTowards(float targetPosX, float targetPosY, float tar
 
 	//if we don't want a queue, we must erase all existent movement nodes
 	if(!putInQueue)
-	{
 		clear();
-	}
+	if(speed < 0)
+		speed = m_speed; //use agent default
 
 	//orient towards the target
 	Orientation* o = new Orientation( m_eID, target, speed, false );
@@ -275,9 +301,9 @@ int MovementComponent::rotate(float targetRotX, float targetRotY, float targetRo
 
 	//if we don't want a queue, we must erase all existent movement nodes
 	if(!putInQueue)
-	{
 		clear();
-	}
+	if(speed < 0)
+		speed = m_speed; //use agent default
 
 	//rotate until we reach the target rotation
 	Orientation* o = new Orientation( m_eID, target, speed, true );
@@ -321,4 +347,14 @@ int MovementComponent::getEntityID()
 int MovementComponent::getHordeID()
 {
 	return m_hID;
+}
+
+float MovementComponent::getSpeed()
+{
+	return m_speed;
+}
+
+void MovementComponent::setSpeed(float speed)
+{
+	m_speed = speed;
 }

@@ -185,42 +185,60 @@ void AnimationComponent::executeEvent(GameEvent *event)
 		{
 			// Get event data
 			AgentAnimationData* data = static_cast<AgentAnimationData*>(event->data());
-			data->m_returnF = getAnimationExtent(data->m_playbackID);
+			if(data->m_playbackID < 0)
+				data->m_returnF = getAnimationExtent();
+			else
+				data->m_returnF = getAnimationExtent(data->m_playbackID);
 			break;
 		}
 		case GameEvent::AG_ANIM_GET_SPEED:
 		{
 			// Get event data
 			AgentAnimationData* data = static_cast<AgentAnimationData*>(event->data());
-			data->m_returnF = getAnimationSpeed(data->m_playbackID);
+			if(data->m_playbackID < 0)
+				data->m_returnF = getAnimationSpeed();
+			else
+				data->m_returnF = getAnimationSpeed(data->m_playbackID);
 			break;
 		}
 		case GameEvent::AG_ANIM_GET_STROKES:
 		{
 			// Get event data
 			AgentAnimationData* data = static_cast<AgentAnimationData*>(event->data());
-			data->m_returnI = getAnimationStrokeReps(data->m_playbackID);
+			if(data->m_playbackID < 0)
+				data->m_returnI = getAnimationStrokeReps();
+			else
+				data->m_returnI = getAnimationStrokeReps(data->m_playbackID);
 			break;
 		}
 		case GameEvent::AG_ANIM_SET_EXTENT:
 		{
 			// Get event data
 			AgentAnimationData* data = static_cast<AgentAnimationData*>(event->data());
-			setAnimationExtent(data->m_playbackID, data->m_valueF);
+			if(data->m_playbackID < 0)
+				setAnimationExtent(data->m_valueF);
+			else
+				setAnimationExtent(data->m_playbackID, data->m_valueF);
 			break;
 		}
 		case GameEvent::AG_ANIM_SET_SPEED:
 		{
 			// Get event data
 			AgentAnimationData* data = static_cast<AgentAnimationData*>(event->data());
-			setAnimationSpeed(data->m_playbackID, data->m_valueF);
+			if(data->m_playbackID < 0)
+				setAnimationSpeed(data->m_valueF);
+			else
+				setAnimationSpeed(data->m_playbackID, data->m_valueF);
 			break;
 		}
 		case GameEvent::AG_ANIM_SET_STROKES:
 		{
 			// Get event data
 			AgentAnimationData* data = static_cast<AgentAnimationData*>(event->data());
-			setAnimationStrokeReps(data->m_playbackID, data->m_valueI);
+			if(data->m_playbackID < 0)
+				setAnimationStrokeReps(data->m_valueI);
+			else
+				setAnimationStrokeReps(data->m_playbackID, data->m_valueI);
 			break;
 		}
 	}

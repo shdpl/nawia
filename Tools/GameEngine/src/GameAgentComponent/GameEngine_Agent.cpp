@@ -130,14 +130,17 @@ namespace GameEngine
 
 	//Gets the spatial extent of an animation
 	//@param entityWorldID the entity we want to use the function on
-	//@param playbackID the playback id of the animation, as returned by a play or load function
+	//@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to get agent default)
 	//@return spatialExtent value of the Spatial Extent attribute represented by a float between 0 to 1, where 0 is the lowest (still) spatial extent and 1 is the highest spatial extent (normal playback)
 	AGENTPLUGINEXP float Agent_getAnimationExtent( unsigned int entityWorldID, unsigned int playbackID, float spatialExtent ){
 		AgentComponent* c = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
 		{
-			return c->getAnimationComponent()->getAnimationExtent( playbackID );
+			if(playbackID < 0)
+				return c->getAnimationComponent()->getAnimationExtent();
+			else
+				return c->getAnimationComponent()->getAnimationExtent( playbackID );
 		}
 		return -1;
 	}
@@ -145,7 +148,7 @@ namespace GameEngine
 
 	//Gets the playback speed of an animation
 	//@param entityWorldID the entity we want to use the function on
-	//@param playbackID the playback id of the animation, as returned by a play or load function
+	//@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to get agent default)
 	//@return speed the desired value for the playback speed. Values range from 0 to infinite, where "0" represents no playback at all, "1" is normal playback speed, "2" is double speed, ...
 	AGENTPLUGINEXP float Agent_getAnimationSpeed( unsigned int entityWorldID, unsigned int playbackID, float speed )
 	{
@@ -153,14 +156,17 @@ namespace GameEngine
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
 		{
-			return c->getAnimationComponent()->getAnimationSpeed( playbackID );
+			if(playbackID < 0)
+				return c->getAnimationComponent()->getAnimationSpeed();
+			else
+				return c->getAnimationComponent()->getAnimationSpeed( playbackID );
 		}
 		return -1;
 	}
 
 	//Gets the number of stroke repetitions the specified animation should perform
 	//@param entityWorldID the entity we want to use the function on
-	//@param playbackID the playback id of the animation, as returned by a play or load function
+	//@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to get agent default)
 	//@return reps the desired number of stroke repetitions the specified animation should perform
 	AGENTPLUGINEXP int Agent_getAnimationStrokeReps( unsigned int entityWorldID, unsigned int playbackID, unsigned int numStrokeReps )
 	{
@@ -168,7 +174,10 @@ namespace GameEngine
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
 		{
-			c->getAnimationComponent()->getAnimationStrokeReps( playbackID );
+			if(playbackID < 0)
+				return c->getAnimationComponent()->getAnimationStrokeReps();
+			else
+				return c->getAnimationComponent()->getAnimationStrokeReps( playbackID );
 		}
 		return -1;
 	}
@@ -176,7 +185,7 @@ namespace GameEngine
 
 	//Sets the spatial extent of an animation
 	//@param entityWorldID the entity we want to use the function on
-	//@param playbackID the playback id of the animation, as returned by a play or load function
+	//@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to set agent default)
 	//@param spatialExtent value of the Spatial Extent attribute represented by a float between 0 to 1, where 0 is the lowest (still) spatial extent and 1 is the highest spatial extent (normal playback)
 	AGENTPLUGINEXP void Agent_setAnimationExtent( unsigned int entityWorldID, unsigned int playbackID, float spatialExtent )
 	{
@@ -184,13 +193,16 @@ namespace GameEngine
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
 		{
-			c->getAnimationComponent()->setAnimationExtent( playbackID, spatialExtent );
+			if(playbackID < 0)
+				c->getAnimationComponent()->setAnimationExtent( spatialExtent );
+			else
+				c->getAnimationComponent()->setAnimationExtent( playbackID, spatialExtent );
 		}
 	}
 
 	//Sets the playback speed of an animation
 	//@param entityWorldID the entity we want to use the function on
-	//@param playbackID the playback id of the animation, as returned by a play or load function
+	//@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to set agent default)
 	//@param speed the desired value for the playback speed. Values range from 0 to infinite, where "0" represents no playback at all, "1" is normal playback speed, "2" is double speed, ...
 	AGENTPLUGINEXP void Agent_setAnimationSpeed( unsigned int entityWorldID, unsigned int playbackID, float speed )
 	{
@@ -198,13 +210,16 @@ namespace GameEngine
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
 		{
-			c->getAnimationComponent()->setAnimationSpeed( playbackID, speed );
+			if(playbackID < 0)
+				c->getAnimationComponent()->setAnimationSpeed( speed );
+			else
+				c->getAnimationComponent()->setAnimationSpeed( playbackID, speed );
 		}
 	}
 
 	//Sets the number of stroke repetitions the specified animation should perform
 	//@param entityWorldID the entity we want to use the function on
-	//@param playbackID the playback id of the animation, as returned by a play or load function
+	//@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to set agent default)
 	//@param reps the desired number of stroke repetitions the specified animation should perform
 	AGENTPLUGINEXP void Agent_setAnimationStrokeReps( unsigned int entityWorldID, unsigned int playbackID, unsigned int numStrokeReps )
 	{
@@ -212,7 +227,10 @@ namespace GameEngine
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
 		{
-			c->getAnimationComponent()->setAnimationStrokeReps( playbackID, numStrokeReps );
+			if(playbackID < 0)
+				c->getAnimationComponent()->setAnimationStrokeReps( numStrokeReps );
+			else
+				c->getAnimationComponent()->setAnimationStrokeReps( playbackID, numStrokeReps );
 		}
 	}
 
@@ -250,7 +268,7 @@ namespace GameEngine
 	//Queues up the movement: entityWorldID orients towards and then moves to the position of targetEntityID
 	//@param entityWorldID the entity we want to use the function on
 	//@param targetEntityID the destination entity
-	//@param speed the movement speed (default 1.0f)
+	//@param speed the movement speed (use -1 for agent default)
 	//@param putInQueue doesn't start the movement immediately but places it in a queue.
 	//@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played while orienting (use 0 for default agent walk animation)
 	//@param walkAnimName the name, as defined in the animation lexicon, of the animation to be played while moving (use 0 for default agent walk animation)
@@ -270,7 +288,7 @@ namespace GameEngine
 	//@param targetX the x-coordinate of the destination position
 	//@param targetY the y-coordinate of the destination position
 	//@param targetZ the z-coordinate of the destination position
-	//@param speed the movement speed (default 1.0f)
+	//@param speed the movement speed (use -1 for agent default)
 	//@param putInQueue doesn't start the movement immediately but places it in a queue.
 	//@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played while orienting (use 0 for default agent walk animation)
 	//@param walkAnimName the name, as defined in the animation lexicon, of the animation to be played while moving (use 0 for default agent walk animation)
@@ -290,7 +308,7 @@ namespace GameEngine
 	//@param targetX the x-coordinate of the desired target
 	//@param targetY the y-coordinate of the desired target
 	//@param targetZ the z-coordinate of the desired target
-	//@param speed the movement speed (default 1.0f)
+	//@param speed the movement speed (use -1 for agent default)
 	//@param putInQueue doesn't start the movement immediately but places it in a queue.
 	//@param animName the name, as defined in the animation lexicon, of the animation to be played during the movement (use 0 for default agent walk animation)
 	AGENTPLUGINEXP int Agent_turnTowards( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, bool putInQueue, const char* animName /*= 0*/ )
@@ -309,7 +327,7 @@ namespace GameEngine
 	//@param targetX the x-coordinate of the destination position
 	//@param targetY the y-coordinate of the destination position
 	//@param targetZ the z-coordinate of the destination position
-	//@param speed the movement speed (default 1.0f)
+	//@param speed the movement speed (use -1 for agent default)
 	//@param putInQueue doesn't start the movement immediately but places it in a queue.
 	//@param animName the name, as defined in the animation lexicon, of the animation to be played during the movement (use 0 for default agent walk animation)
 	AGENTPLUGINEXP int Agent_move( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, bool putInQueue, const char* animName /*= 0*/ )
@@ -329,7 +347,7 @@ namespace GameEngine
 	//@param targetX the x-coordinate of the desired rotation
 	//@param targetY the y-coordinate of the desired rotation
 	//@param targetZ the z-coordinate of the desired rotation
-	//@param speed the movement speed (default 1.0f)
+	//@param speed the movement speed (use -1 for agent default)
 	//@param putInQueue doesn't start the movement immediately but places it in a queue.
 	//@param animName the name, as defined in the animation lexicon, of the animation to be played during the movement (use 0 for default agent walk animation)
 	AGENTPLUGINEXP int Agent_rotate( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, bool putInQueue, const char* animName /*= 0*/ )
@@ -356,6 +374,33 @@ namespace GameEngine
 			return c->getMovementComponent()->getStatus(movementID);
 		}
 		return -1;
+	}
+
+	//Gets the default agent movement speed
+	//@param entityWorldID the entity we want to use the function on
+	//@return the value of the movement speed
+	AGENTPLUGINEXP float Agent_getMovementSpeed( unsigned int entityWorldID, float speed )
+	{
+		AgentComponent* c = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
+		{
+			return c->getMovementComponent()->getSpeed();
+		}
+		return -1;
+	}
+
+	//Sets the default agent movement speed
+	//@param entityWorldID the entity we want to use the function on
+	//@param speed the desired value for the movement speed
+	AGENTPLUGINEXP void Agent_setMovementSpeed( unsigned int entityWorldID, float speed )
+	{
+		AgentComponent* c = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
+		{
+			c->getMovementComponent()->setSpeed(speed);
+		}
 	}
 
 	/***************************************/
@@ -459,7 +504,7 @@ namespace GameEngine
 	//Starts the movement: entityWorldID moves to join the formation of targetEntityID
 	//@param entityWorldID the entity we want to use the function on
 	//@param targetEntityID the destination entity
-	//@param speed the movement speed (default 1.0f)
+	//@param speed the movement speed (use -1 for agent default)
 	AGENTPLUGINEXP int Agent_gotoF( unsigned int entityWorldID, unsigned int targetEntityID, float speed, const char* orientAnimName, const char* walkAnimName )
 	{
 		AgentComponent* c = 0;

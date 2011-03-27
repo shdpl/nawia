@@ -64,6 +64,9 @@ public:
 
 	int getStatus(int movementID);
 
+	float getSpeed();
+	void setSpeed(float speed);
+
 	///returns local horde ID
 	int getHordeID();
 	///returns local entity ID
@@ -75,6 +78,9 @@ private:
 	int m_hID;
 	///local agent entity ID
 	int m_eID;
+
+	///default movement speed of the agent
+	float m_speed;
 
 	std::list<Movement*> m_movementNodes;
 	Idle* m_idle;
