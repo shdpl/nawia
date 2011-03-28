@@ -18,7 +18,7 @@
 // Advanced Agent Animation
 //
 // -------------------------
-// Copyright (C) 2010 Ionut Damian
+// Copyright (C) 2011 Ionut Damian
 //
 // ****************************************************************************************
 //
@@ -31,8 +31,6 @@
 #ifndef _AGENTNODE_H
 #define _AGENTNODE_H
 
-#include "GazeNode.h"
-#include "Symbol.h"
 #include <stack>
 #include <vector>
 
@@ -45,8 +43,6 @@ class AgentNode
 private:
 	///flag indicating if this is a personal character (user agent)
 	bool m_pc;
-	///agent's symbol
-	Symbol* m_symbol;
 
 public:
 	///local AAA id
@@ -57,11 +53,6 @@ public:
 	unsigned int horde_id;
 	///H3D Node id of the head node
 	unsigned int head_horde_id;
-
-	///vector containng all agents within the buffer zones of the local agent
-	std::vector<AgentNode*> surroundingAgents;
-	///vector containing the current and queued up gaze actions
-	std::stack<GazeNode*> gazeNodes;
 
 	///the ID of the last loaded animation
 	int animation_id;
@@ -84,15 +75,6 @@ public:
 	///updates the active processes of the agent, including gaze and entity interaction
 	void update();
 	
-	///checks if the specified target is "gazeable" (if the agent can look at it)
-	bool checkGaze(Vec3f target);
-
-	///removes the specified agent from the local agent's knowledge (ex: because the agent has left the buffer zones)
-	void removeSurroundingAgent(AgentNode* agent);
-	///sets a new symbol for the agent
-	void setSymbol(Symbol* s);
-	///returns the agent's symbol
-	Symbol* getSymbol();
 	///sets the aagent's visibility and activeness status
 	void setVisibility(bool visible);
 	///makes local agent a personal character (user agent)

@@ -10,12 +10,12 @@
 			>
 			<DebugSettings
 				Command="$(TargetPath)"
-				WorkingDirectory=""
-				CommandArguments="$(ProjectDir)Content\Biergarten.scn"
+				WorkingDirectory="$(ProjectDir)"
+				CommandArguments="Content\Biergarten.scn"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
-				RemoteMachine="STICKER"
+				RemoteMachine="SPIDER-ONE"
 				RemoteCommand=""
 				HttpUrl=""
 				PDBPath=""
@@ -38,12 +38,12 @@
 			>
 			<DebugSettings
 				Command="$(TargetPath)"
-				WorkingDirectory=""
-				CommandArguments="$(ProjectDir)Content\Biergarten.scn"
+				WorkingDirectory="$(ProjectDir)"
+				CommandArguments="Content\Biergarten.scn"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
-				RemoteMachine="STICKER"
+				RemoteMachine="SPIDER-ONE"
 				RemoteCommand=""
 				HttpUrl=""
 				PDBPath=""

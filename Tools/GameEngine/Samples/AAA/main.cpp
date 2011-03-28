@@ -18,7 +18,7 @@
 // Advanced Agent Animation
 //
 // -------------------------
-// Copyright (C) 2010 Ionut Damian
+// Copyright (C) 2011 Ionut Damian
 //
 // ****************************************************************************************
 //
@@ -251,10 +251,9 @@ int WINAPI WinMain(	HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		return -1;
 	}
 	app->resize( appWidth, appHeight );
-
-	//glfwDisable( GLFW_MOUSE_CURSOR );
-
 	glDeleteTextures(1, &texture);
+
+	glfwEnable( GLFW_MOUSE_CURSOR );
 
 	int frames = 0;
 	float fps = 30.0f;
@@ -282,8 +281,6 @@ int WINAPI WinMain(	HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		app->update(fps);
 		glfwSwapBuffers();
 	}
-
-	//glfwEnable( GLFW_MOUSE_CURSOR );
 
 	// Quit	
 	app->release();

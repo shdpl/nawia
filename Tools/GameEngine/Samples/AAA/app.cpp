@@ -18,7 +18,7 @@
 // Advanced Agent Animation
 //
 // -------------------------
-// Copyright (C) 2010 Ionut Damian
+// Copyright (C) 2011 Ionut Damian
 //
 // ****************************************************************************************
 //
@@ -28,24 +28,25 @@
 //
 // ****************************************************************************************
 #include "app.h"
-#include "CommManager.h"
-#include "Symbol.h"
 
 #include "Horde3D/Horde3DUtils.h"
+#include "Horde3D/Horde3D.h"
+
 #include "GameEngine/GameEngine.h"
 #include "GameEngine/GameLog.h"
 #include "GameEngine/GameEngine_SceneGraph.h"
+#include "GameEngine/GameEngine_Agent.h"
+#include "GameEngine/GameEngine_Socket.h"
 #include "GameEngine/GameEngine_IK.h"
-#include "GameEngine/GameEngine_AgentAnim.h"
-#include "GameEngine/GameEngine_AgentAction.h"
-#include "GameEngine\GameEngine_Socket.h"
-#include "GameEngine\GameEngine_Sapi.h"
+#include "GameEngine/GameEngine_Sapi.h"
+#include "GameEngine/utmath.h"
 
 #include <direct.h>
 #include <iostream>
 #include <string.h>
 #include <time.h>
 
+using namespace Horde3D;
 
 Application::Application()
 {
@@ -86,13 +87,11 @@ bool Application::init( const char *fileName )
 	m_leafMaterial = h3dAddResource( H3DResTypes::Material, "models/baumNeu01/aeste.material.xml", 0 );
 	m_bushMaterial = h3dAddResource( H3DResTypes::Material, "models/busch01/aeste.material.xml", 0 );
 	m_counter = 0.0f;
+	m_scenario_counter = 0;
 
 	//** configure AAA with settings from XML file
 	if(!config( getSceneXMLNode(fileName) ))
 		GameLog::errorMessage( "AAA failed to load properly - xml data incomplete, corrupt or missing" );
-
-	//init communication manager (socket communication)
-	m_comm = new CommManager(this);
 
 	return true;
 }
@@ -184,24 +183,6 @@ bool Application::config( XMLNode* scene )
 				}
 			}
 
-			//Agent symbol
-			if(agent_node.getAttribute("symbol") != 0
-			  && strcmp(agent_node.getAttribute("symbol"), "") != 0)
-			{
-				getAgent(i)->setSymbol( Symbol::getInstance((char*)agent_node.getAttribute("symbol")) );
-			}
-			else
-				getAgent(i)->setSymbol( Symbol::getInstance("symb_default") );
-
-			//distance between agent and its symbol
-			if(agent_node.getAttribute("symbol_dist") != 0
-			  && strcmp(agent_node.getAttribute("symbol_dist"), "") != 0)
-			{
-				getAgent(i)->getSymbol()->setDistanceFromAgent((float)atof(agent_node.getAttribute("symbol_dist")));
-			}
-			else
-				getAgent(i)->getSymbol()->setDistanceFromAgent(30); //default
-
 			//Set pc status
 			if(agent_node.getAttribute("pc") != 0
 			  && strcmp(agent_node.getAttribute("pc"), "") != 0)
@@ -223,9 +204,6 @@ void Application::update( float fps )
 {
 	_curFPS = fps;
 
-	//process client commands
-	m_comm->processMessages();
-
 	keyHandler();
 	h3dSetOption( H3DOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
 
@@ -244,30 +222,30 @@ void Application::update( float fps )
 			//check if anim is still playing
 			if(getAgent(i)->animation_id >= 0)
 			{
-				anim_status = GameEngine::AgentAnim_getAnimStatus( getAgent(i)->entity_id, getAgent(i)->animation_id );
+				anim_status = GameEngine::Agent_getAnimationStatus( getAgent(i)->entity_id, getAgent(i)->animation_id );
 				if(anim_status != 2)
 					getAgent(i)->animation_id = -1;
 			}
 
 			//check if agent is walking
-			if(getAgent(i)->animation_id >= 0)
+			if(getAgent(i)->movement >= 0)
 			{				
-				agent_status = GameEngine::Agent_getAgentStatus( getAgent(i)->entity_id );
-				if(agent_status == 4 || agent_status == 5)
+				agent_status = GameEngine::Agent_getMovementStatus( getAgent(i)->entity_id, getAgent(i)->movement );
+				if(agent_status < 0)
 					getAgent(i)->movement = -1;
 			}
 
 			
 			if(getAgent(i)->active && (getAgent(i)->animation_id < 0) && (getAgent(i)->movement < 0)
 			&&(rand() % 1000 < 250)) // chance for anim load = 25%
-				getAgent(i)->animation_id = GameEngine::AgentAnim_loadAnimByID( getAgent(i)->entity_id, ((int)m_scenario_counter % 29)+1, Agent_AnimType::AAT_GESTURE, 0, 0 );
+				getAgent(i)->animation_id = GameEngine::Agent_playAnimationI( getAgent(i)->entity_id, ((int)m_scenario_counter % 29)+1, 1, 1, 1, 0, 0);
 
-			////generate speach
-			//if(getAgent(i)->active &&(rand() % 1000 < 5)) // chance for anim load = 0.5%
-			//{			
-			//	getAgent(i)->speaks = true;
-			//	GameEngine::speak( getAgent(i)->entity_id, "Hello!" );
-			//}
+			//generate speach
+			if(getAgent(i)->active &&(rand() % 1000 < 5)) // chance for anim load = 0.5%
+			{			
+				getAgent(i)->speaks = true;
+				GameEngine::speak( getAgent(i)->entity_id, "Hello!" );
+			}
 
 			//generate movement
 			int dest;
@@ -277,7 +255,7 @@ void Application::update( float fps )
 				dest = rand() % NR_OF_AGENTS;
 				if(getAgent(dest) != 0)
 				{
-					GameEngine::Agent_goToEntity( getAgent(i)->entity_id, getAgent(dest)->entity_id, 1.0f );
+					GameEngine::Agent_gotoF( getAgent(i)->entity_id, getAgent(dest)->entity_id, 1.0f, 0,0 );
 					getAgent(i)->movement = 1;
 				}
 			}
@@ -285,19 +263,6 @@ void Application::update( float fps )
 		}
 	}
 
-	//** Process the agents
-	vector<AgentNode*>::iterator iter = m_agents.begin();
-	const vector<AgentNode*>::iterator end = m_agents.end();
-	while ( iter != end )
-	{
-		// Process the interactions
-		processEntityInteractions(*iter);
-	
-		//update agent node
-		(*iter)->update();
-
-		++iter;
-	}
 	//** Animate fountain
 	h3dFindNodes( 1, "BrunnenWasser",  H3DNodeTypes::Emitter );
 	unsigned int particleSys = h3dGetNodeFindResult(0);
@@ -322,82 +287,15 @@ void Application::update( float fps )
 	h3dutDumpMessages();
 }
 
-void Application::processEntityInteractions(AgentNode* agent)
-{
-	if(agent == 0 || !agent->active || agent->isPC())
-		return;
-
-	int *new_surroundingEntities_id;
-	int new_numSurrEntities;
-	int newcommer = -1;
-	bool exists;
-
-	// Check for newcommers
-	new_numSurrEntities = GameEngine::Agent_getSurroundingEntities( agent->entity_id, (unsigned int**)&new_surroundingEntities_id );
-	if(new_numSurrEntities < 0)
-		return;
-
-	//remove entities outside the agent's field of view
-	for(int i=0; i < new_numSurrEntities; i++)
-	{
-		const float *absArray;
-		h3dFindNodes( GameEngine::entitySceneGraphID(new_surroundingEntities_id[i]), "Bip01_Head", H3DNodeTypes::Joint );
-		int head = h3dGetNodeFindResult(0);
-		h3dGetNodeTransMats( head, 0, &absArray );
-
-		Vec3f target = Matrix4f(absArray) * Vec3f(0,0,0);
-
-		if(!agent->checkGaze(target))
-		{
-			//printf("[AAAd][agent %d] Unable to gaze at (%.2f, %.2f, %.2f)\n", agent->id, target.x, target.y, target.z);
-			new_surroundingEntities_id[i] = -1; //remove entity from this list so it will be ignored
-		}
-	}
-
-	//check for newcommers
-	for(int i=0; i < new_numSurrEntities; i++)
-	{
-		if(new_surroundingEntities_id[i] < 0) //is empty
-			continue;
-
-		exists = false;
-		for(unsigned int j=0; j < agent->surroundingAgents.size(); j++)
-		{
-			if(agent->surroundingAgents[j] != 0 && agent->surroundingAgents[j]->entity_id == new_surroundingEntities_id[i])
-				exists = true;
-		}
-		if(!exists)
-			newcommer = new_surroundingEntities_id[i];
-	}
-
-	//overwrite old array
-	agent->surroundingAgents.resize(0); //remove references only, keep content intact
-	for(int i=0; i<new_numSurrEntities; i++)
-	{
-		if(new_surroundingEntities_id[i] >= 0)
-			agent->surroundingAgents.push_back( findAgent( (unsigned int)new_surroundingEntities_id[i]) );
-	}	
-
-	// Gaze
-	//lookat the newcommer
-	if(newcommer >= 0 && agent->movement <= 0)
-	{
-		setGaze( agent->id, findAgent((unsigned int)newcommer)->id, 0, 10 );
-	}
-}
-
 
 void Application::release()
 {
 	//delete all animations and agents
 	for(int i=0; i< NR_OF_AGENTS; i++)
 	{
-		GameEngine::AgentAnim_clearStages( getAgent(i)->entity_id );
+		//GameEngine::AgentAnim_clearStages( getAgent(i)->entity_id );
 		delete getAgent(i);
 	}
-
-	//delete all symbols
-	Symbol::deleteAll();
 	
 	// Release engine
 	GameEngine::release();
@@ -541,15 +439,41 @@ void Application::keyHandler()
 	}
 
 	//debug hotkeys
-	if( _keys['T'] )
+
+	// ANIM
+	if( _keys['P'] ) //posture
 	{
-		m_agents[1]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[1]->entity_id, 37, Agent_AnimType::AAT_POSTURE, 0,0 );
+		m_agents[0]->animation_id = GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 37, 1, 1, 0, 0, 0 );
+		_keys['P'] = false;
+	}
+	if( _keys['T'] ) //with with stroke reps
+	{
+		m_agents[0]->animation_id = GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 4, 1, 1, 3, 0, 0 );
 		_keys['T'] = false;
 	}
-	if( _keys['Z'] )
+	if( _keys['Z'] ) //with sync word
 	{
-		m_agents[1]->animation_id = GameEngine::AgentAnim_loadAnimByID( m_agents[1]->entity_id, 4, Agent_AnimType::AAT_GESTURE, 0,0 );
+		GameEngine::speak( m_agents[0]->entity_id, "An animation will start when I when i say the word.");
+		m_agents[0]->animation_id = GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 4, 1, 1, 0, 0, "start" );
 		_keys['Z'] = false;
+	}
+	if( _keys['U'] ) //anim with start node
+	{
+		m_agents[0]->animation_id = GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 4, 1, 1, 0, "Bip01_L_Shoulder", 0 );
+		_keys['U'] = false;
+	}
+
+
+	// GAZE
+	if( _keys['G'] ) //gaze at agent 1
+	{
+		GameEngine::Agent_gazeE( m_agents[0]->entity_id, m_agents[1]->entity_id, 1, 30 );
+		_keys['G'] = false;
+	}
+	if( _keys['H'] ) //gaze at agent 1
+	{
+		GameEngine::Agent_gazeE( m_agents[0]->entity_id, m_agents[2]->entity_id, 1, 30 );
+		_keys['H'] = false;
 	}
 
 	//check number keys
@@ -578,6 +502,29 @@ void Application::keyHandler()
 			if(m_agents.size() > i)
 				setPersonalChar(getAgent(i));
 
+			
+			/////////////////////////////////
+			////play an animation
+			/////////////////////////////////
+			//float speed = 1;
+			//float se = 1;
+			//int reps = 0;
+
+			////if shift is pressed, we'll alter anim speed
+			//if(_keys[287]) //Shift
+			//{
+			//	speed = 2;
+			//}
+
+			////if ctrl is pressed, we'll alter SE
+			//if(_keys[289]) //CTRL
+			//{
+			//	se = 0.7f;
+			//}
+
+			//m_agents[0]->animation_id = GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, i, speed, se, 0, 0, 0 );
+			
+
 			_keys[i +48]=false;
 		}
 	}
@@ -588,293 +535,16 @@ void Application::processScenario(int act_id)
 {
 	switch(m_scenario)
 	{
-	case 0: //Intro
-		switch(act_id)
-		{
-		case 1: //scene0_1: agent 1 goes to agent 0 + init
-			GameEngine::Agent_goToEntity( getAgent(1)->entity_id, getAgent(0)->entity_id, 1 );
-			
-			//INIT		
-			for(int i=0; i<NR_OF_AGENTS; i++)
-			{
-				getAgent(i)->setVisibility(true);
-				GameEngine::IK_setParamI( getAgent(i)->entity_id, IK_Param::UseDofr_I, 0 );
-				GameEngine::AgentAnim_setSpeedf( getAgent(i)->entity_id, 1.0 );
-				GameEngine::AgentAnim_setExtenti( getAgent(i)->entity_id, 0, false );
-			}
-			getAgent(3)->setVisibility(false);
-			getAgent(4)->setVisibility(false);
-			//remove PC status from PC
-			getPersonalChar()->makeNPC();
-			//set the camera
-			_x=-8.4f; _y=1.7f; _z=-2.0f; _rx=0; _ry=0; _rz=0;
-			break;
-		case 2: //scene0_2: agent 2 goes to agent 0	
-			GameEngine::Agent_goToEntity( getAgent(2)->entity_id, getAgent(1)->entity_id, 1 );
-			setGaze( 1, 2, 0, 3 );
-			setGaze( 0, 2, 0, 3 );
-			break;
-		case 3: //scene0_3: agent 2 gesticulates, other gaze at it
-			GameEngine::AgentAnim_loadAnimByName( getAgent(2)->entity_id, "Gesture_4", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 1, 2, 0, 3 );
-			setGaze( 0, 2, 0, 3 );
-
-			GameEngine::speak( getAgent(2)->entity_id ,"So, how did this happen ?");
-			break;
-		case 4: //scene0_4: agent 1 gesticulates
-			GameEngine::AgentAnim_loadAnimByName( getAgent(1)->entity_id, "Gesture_1", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 2, 1, 0, 3 );
-			setGaze( 0, 1, 0, 3 );
-
-			GameEngine::speak( getAgent(1)->entity_id ,"Well, I just went straight in there and told them my opinion.");
-			break;
-		case 5: //scene0_5: all agents turn and gaze towards the camera
-			GameEngine::Agent_rotate( getAgent(0)->entity_id, 0,1,0, 1);
-			//getAgent(0)->gazeNodes.top()->defaultGaze();
-			//getAgent(0)->active = false;
-			setGaze( 0, -8.4f, 1.7f, -2, 0, 2 );
-			GameEngine::Agent_rotate( getAgent(1)->entity_id, 0,0,0, 1);
-			//getAgent(1)->gazeNodes.top()->defaultGaze();
-			//getAgent(1)->active = false;
-			setGaze( 1, -8.4f, 1.7f, -2, 0, 2 );
-			GameEngine::Agent_rotate( getAgent(2)->entity_id, 0,1,0, 1);
-			//getAgent(2)->gazeNodes.top()->defaultGaze();
-			//getAgent(2)->active = false;
-			setGaze( 2, -8.4f, 1.7f, -2, 0, 2 );
-			break;
-		case 6: //waving
-			GameEngine::AgentAnim_setSpeedf( getAgent(2)->entity_id, 0.8f );
-
-			GameEngine::AgentAnim_loadAnimByName( getAgent(0)->entity_id, "Becking_1", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			GameEngine::AgentAnim_loadAnimByName( getAgent(1)->entity_id, "Becking_2", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			GameEngine::AgentAnim_loadAnimByName( getAgent(2)->entity_id, "Becking_1", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			break;
-		}
-		break;
-	
-	case 1: //Overview
-		switch(act_id)
-		{
-		case 1: //scene1_1: agent 1 goes to agent 0 + init
-			GameEngine::Agent_goToEntity( getAgent(0)->entity_id, getAgent(2)->entity_id, 1 );
-			getAgent(0)->movement = 1;
-			//move yellow male outside the camera view
-			GameEngine::Agent_goToPosition( getAgent(4)->entity_id, 10, 0, 0, 2 );
-			
-			//INIT			
-			for(int i=0; i<NR_OF_AGENTS; i++)
-			{
-				getAgent(i)->setVisibility(false);
-				GameEngine::IK_setParamI( getAgent(i)->entity_id, IK_Param::UseDofr_I, 1 );
-				GameEngine::AgentAnim_setSpeedf( getAgent(i)->entity_id, 1.0 );
-				GameEngine::AgentAnim_setExtenti( getAgent(i)->entity_id, 0, false );
-			}
-			getAgent(0)->setVisibility(true);
-			getAgent(1)->setVisibility(true);
-			getAgent(2)->setVisibility(true);
-			getAgent(3)->setVisibility(true);
-			getAgent(4)->setVisibility(true);
-			//remove PC status from PC
-			setPersonalChar(getAgent(4));
-			//set the camera
-			//_x=-8.4; _y=1.7f; _z=-2; _rx=0; _ry=0; _rz=0;
-			//slow some agents down
-			GameEngine::AgentAnim_setSpeedf( getAgent(2)->entity_id, 0.8f );
-			GameEngine::AgentAnim_setSpeedf( getAgent(3)->entity_id, 0.8f );
-			break;
-		case 2: //scene1_2: blue male goes to sleeveless male and the females gesticulate	
-			GameEngine::Agent_goToEntity( getAgent(1)->entity_id, getAgent(3)->entity_id, 1 );
-			getAgent(1)->movement = 1;
-
-			GameEngine::AgentAnim_loadAnimByName( getAgent(0)->entity_id, "Me", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 0, 2, 0, 3 );
-			GameEngine::AgentAnim_loadAnimByName( getAgent(2)->entity_id, "Gesture_4", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 2, 0, 0, 3 );
-			break;
-		case 3: //scene1_3: yellow male walks to bathroom_p1 while the other gesticulate
-			GameEngine::Agent_goToPosition( getAgent(4)->entity_id, -9, 0, -5, 1.2f );
-
-			//females
-			GameEngine::AgentAnim_loadAnimByName( getAgent(0)->entity_id, "Gesture_5", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 0, 2, 0, 3 );
-			GameEngine::AgentAnim_loadAnimByName( getAgent(2)->entity_id, "Gesture_6", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 2, 0, 0, 3 );
-
-			//males
-			GameEngine::AgentAnim_loadAnimByName( getAgent(1)->entity_id, "Gesture_1", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 1, 3, 0, 3 );
-			GameEngine::AgentAnim_loadAnimByName( getAgent(3)->entity_id, "Eat_1", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 3, 1, 0, 3 );
-			break;
-		case 4: //scene1_4: yellow male walks to bathroom_p2 while the other gesticulate
-			GameEngine::Agent_goToPosition( getAgent(4)->entity_id, -9, 0, 12, 1.2f );
-
-			//females
-			GameEngine::AgentAnim_loadAnimByName( getAgent(0)->entity_id, "Gesture_1", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 0, 2, 0, 3 );
-			GameEngine::AgentAnim_loadAnimByName( getAgent(2)->entity_id, "Gesture_2", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 2, 0, 0, 3 );
-
-			//males
-			GameEngine::AgentAnim_loadAnimByName( getAgent(1)->entity_id, "Stand_up", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 1, 3, 0, 3 );
-			setGaze( 3, 1, 0, 3 );
-			break;
-		}
-		break;
-
-	case 2: //Animation blending
-		switch(act_id)
-		{
-		case 1: //scene2_1: agent 1 goes to agent 0 + init
-			GameEngine::Agent_goToEntity( getAgent(1)->entity_id, getAgent(0)->entity_id, 1 );
-			
-			//INIT			
-			for(int i=0; i<NR_OF_AGENTS; i++)
-			{
-				getAgent(i)->setVisibility(false);
-				GameEngine::IK_setParamI( getAgent(i)->entity_id, IK_Param::UseDofr_I, 0 );
-				GameEngine::AgentAnim_setSpeedf( getAgent(i)->entity_id, 1.0f );
-				GameEngine::AgentAnim_setExtenti( getAgent(i)->entity_id, 0, false );
-			}
-			getAgent(0)->setVisibility(true);
-			getAgent(1)->setVisibility(true);
-
-			//remove PC status from PC
-			getPersonalChar()->makeNPC();
-			//set the camera
-			_x=-9.7f; _y=1.25f; _z=-5.5f; _rx=0; _ry=-70; _rz=0;
-			break;
-		case 2: //scene2_2: gazing
-			setGaze( 0, 1, 0, 3 );
-			setGaze( 1, 0, 0, 3 );
-			break;
-		case 3: //scene2_3: female gesture1
-			GameEngine::AgentAnim_loadAnimByName( getAgent(0)->entity_id, "Gesture_4", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			break;
-		case 4: //scene2_4: female gesture2
-			GameEngine::AgentAnim_loadAnimByName( getAgent(0)->entity_id, "Gesture_1", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			break;
-		}
-		break;
-
-	case 3: //Animation customization
-		switch(act_id)
-		{
-		case 1: //scene3_1: agent 1 goes to agent 0 + init
-			GameEngine::Agent_goToEntity( getAgent(1)->entity_id, getAgent(0)->entity_id, 1 );
-			
-			//INIT			
-			for(int i=0; i<NR_OF_AGENTS; i++)
-			{
-				getAgent(i)->setVisibility(false);
-				GameEngine::IK_setParamI( getAgent(i)->entity_id, IK_Param::UseDofr_I, 0 );
-				GameEngine::AgentAnim_setSpeedf( getAgent(i)->entity_id, 1.0f); //random speed
-				GameEngine::AgentAnim_setExtenti( getAgent(i)->entity_id, 0, false );
-			}
-			getAgent(0)->setVisibility(true);
-			getAgent(1)->setVisibility(true);
-
-			//remove PC status from PC
-			getPersonalChar()->makeNPC();
-			//set the camera
-			_x=-9.7f; _y=1.25f; _z=-5.5f; _rx=0; _ry=-70; _rz=0;
-			break;
-		case 2: //scene3_2: gazing
-			setGaze( 0, 1, 0, 3 );
-			setGaze( 1, 0, 0, 3 );
-			break;
-		case 3: //scene3_3: female gesture1
-			GameEngine::AgentAnim_setExtenti(getAgent(0)->entity_id, 0, false);
-			GameEngine::AgentAnim_setSpeedf(getAgent(0)->entity_id, 1);
-			GameEngine::AgentAnim_loadAnimByName( getAgent(0)->entity_id, "Gesture_1", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			break;
-		case 4: //scene3_4: female gesture1 with changed speed and SE
-			GameEngine::AgentAnim_setExtenti(getAgent(0)->entity_id, 7, false);
-			GameEngine::AgentAnim_setSpeedf(getAgent(0)->entity_id, 1);
-			GameEngine::AgentAnim_loadAnimByName( getAgent(0)->entity_id, "Gesture_1", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			break;
-		}
-		break;
-
-	case 4: //interaction
-		switch(act_id)
-		{
-		case 1: //scene4_1: init
-			GameEngine::Agent_goToEntity( getAgent(1)->entity_id, getAgent(0)->entity_id, 1 );
-			GameEngine::Agent_goToEntity( getAgent(4)->entity_id, getAgent(0)->entity_id, 1 );
-			GameEngine::Agent_goToPosition( getAgent(2)->entity_id, -8, 0,0, 1 );
-			
-			//INIT		
-			for(int i=0; i<NR_OF_AGENTS; i++)
-			{
-				getAgent(i)->setVisibility(false);
-				GameEngine::IK_setParamI( getAgent(i)->entity_id, IK_Param::UseDofr_I, 0 );
-				GameEngine::AgentAnim_setSpeedf( getAgent(i)->entity_id, 1.0 );
-				GameEngine::AgentAnim_setExtenti( getAgent(i)->entity_id, 0, false );
-			}
-			getAgent(0)->setVisibility(true);
-			getAgent(1)->setVisibility(true);
-			getAgent(2)->setVisibility(true);
-			getAgent(4)->setVisibility(true);
-			//remove PC status from PC
-			getPersonalChar()->makeNPC();
-			//set the camera
-			_x=-10; _y=3.5f; _z=-2; _rx=-30; _ry=-22; _rz=0;
-			break;
-		case 2: //scene4_2: agent 4 goes to agent 0	
-			GameEngine::Agent_goToEntity( getAgent(4)->entity_id, getAgent(1)->entity_id, 1 );
-			setGaze( 1, 4, 0, 3 );
-			setGaze( 0, 4, 0, 3 );
-			setGaze( 4, 0, 0, 3 );			
-			break;
-		case 3: //scene4_3: agent 4 gesticulates, other gaze at it
-			GameEngine::AgentAnim_loadAnimByName( getAgent(4)->entity_id, "Gesture_4", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 1, 4, 0, 3 );
-			setGaze( 0, 4, 0, 3 );
-			setGaze( 4, 1, 0, 3 );
-
-			GameEngine::speak( getAgent(4)->entity_id, "Ben, I heared you got back together with Crystal." );
-			break;
-		case 4: //scene4_4: agent 1 gesticulates
-			GameEngine::AgentAnim_loadAnimByName( getAgent(1)->entity_id, "Me", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 4, 1, 0, 3 );
-			setGaze( 0, 1, 0, 3 );
-			
-			GameEngine::speak( getAgent(1)->entity_id, "What? Me? No way!" );
-			break;	
-		case 5: //scene4_5: agent 0 gesticulates
-			GameEngine::AgentAnim_loadAnimByName( getAgent(0)->entity_id, "Gesture_1", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			setGaze( 1, 0, 0, 3 );
-			setGaze( 4, 0, 0, 3 );
-
-			GameEngine::speak( getAgent(0)->entity_id, "Stop pretending, she told us." );
-			break;
-		case 6: //scene4_6: agent 2 goes to agent 4	(newcommer)
-			GameEngine::Agent_goToEntity( getAgent(2)->entity_id, getAgent(4)->entity_id, 1 );
-			break;
-		case 7: //scene4_7: agent 2 gesticulates
-			GameEngine::AgentAnim_loadAnimByName( getAgent(2)->entity_id, "Becking_1", Agent_AnimType::AAT_GESTURE, 0, 0 );
-			GameEngine::speak( getAgent(2)->entity_id, "Hello guys, what are you talking about?" );
-			break;
-		case 8: //scene4_8: agents welcome newcommer
-			GameEngine::speak( getAgent(0)->entity_id, "Hi Crystal!" );
-			GameEngine::speak( getAgent(1)->entity_id, "Hi Crystal!" );
-			GameEngine::speak( getAgent(4)->entity_id, "Uh, Hello!" );
-			break;
-		}
-		break;
-
 	case 5: //Final scene
 		switch(act_id)
 		{
 		case 1: //scene5_1: init
 			//movement
-			GameEngine::Agent_goToEntity( getAgent(0)->entity_id, getAgent(2)->entity_id, 1 );
-			GameEngine::Agent_goToEntity( getAgent(1)->entity_id, getAgent(4)->entity_id, 1 );
+			GameEngine::Agent_gotoE( getAgent(0)->entity_id, getAgent(2)->entity_id, 1, false, 0, 0 );
+			GameEngine::Agent_gotoE( getAgent(1)->entity_id, getAgent(4)->entity_id, 1, false, 0, 0 );
 
 			//barman gesticulates
-			GameEngine::AgentAnim_loadAnimByName( getAgent(12)->entity_id, "Gesture_2", Agent_AnimType::AAT_IDLE, 0, 0 );
+			GameEngine::Agent_playAnimationN( getAgent(12)->entity_id, "Gesture_2", 1, 1, 0, 0, 0);
 			
 			//INIT	
 			m_scenario_counter = 0;
@@ -882,8 +552,6 @@ void Application::processScenario(int act_id)
 			{
 				getAgent(i)->setVisibility(true);
 				GameEngine::IK_setParamI( getAgent(i)->entity_id, IK_Param::UseDofr_I, 1 );
-				GameEngine::AgentAnim_setSpeedf( getAgent(i)->entity_id, 0.8f + (rand() % 40)/100.0f );
-				GameEngine::AgentAnim_setExtenti( getAgent(i)->entity_id, 0, false );
 			}
 			//set the camera
 			_x=-17; _y=6.1f; _z=15; _rx=-17.8f; _ry=-34.7f; _rz=0;
@@ -937,15 +605,20 @@ void Application::processDestination(const char* nodeName, float x, float y, flo
 	//do nothing if there is no PC in the scene (or PC is inactive)
 	if(getPersonalChar() == 0 || !getPersonalChar()->active)
 		return;
-	
+
+	bool shiftIsPressed = _keys[287];
+	bool ctrlIsPressed = _keys[289];
+	bool queueMovement = shiftIsPressed;
+
 	std::stringstream msg_ss("");
 	if(strcmp(nodeName,"berg")==0)
 	{
 		int agent_id = getPersonalChar()->id;
 
-		GameEngine::Agent_goToPosition(getPersonalChar()->entity_id, x,y,z, 1.3f);
-		getAgent(agent_id)->gazeNodes.top()->active = false;
-		getAgent(agent_id)->movement = 1;
+		GameEngine::Agent_gotoP( getPersonalChar()->entity_id, x,y,z, 1.3f, queueMovement, 0, 0 );
+
+		AgentNode* a = getAgent(agent_id);
+		a->movement = 1;
 
 		//send feedback
 		//generate message
@@ -964,10 +637,15 @@ void Application::processDestination(const char* nodeName, float x, float y, flo
 		AgentNode* dest = findAgent(GameEngine::entityWorldID(nodeName)); 
 		if(dest == 0)
 			return; //if this entity isn't a known agent, break.
-
-		GameEngine::Agent_goToEntity( getPersonalChar()->entity_id, dest->entity_id, 1.3f);
-		getAgent(agent_id)->gazeNodes.top()->active = false;
-		getAgent(agent_id)->movement = 1;
+		
+		//if ctrl is pressed we will use the formation goto
+		if(ctrlIsPressed)
+			GameEngine::Agent_gotoF( getPersonalChar()->entity_id, dest->entity_id, 1.3f, 0, 0 );
+		else
+			GameEngine::Agent_gotoE( getPersonalChar()->entity_id, dest->entity_id, 1.3f, queueMovement, 0, 0 );
+		
+		AgentNode* a = getAgent(agent_id);
+		a->movement = 1;
 
 		//send feedback
 		//generate message		
@@ -1032,29 +710,6 @@ void Application::setPersonalChar(AgentNode* agent)
 	msg_ss << " agent #" << m_pc->id << " is user controlled (pc)";
 	//send message
 	GameEngine::sendSocketData( getAgent(0)->entity_id, msg_ss.str().c_str() );
-}
-
-void Application::setGaze( unsigned int agent_id, unsigned int target_id, int head_pitch, float speed )
-{
-	if(m_agents.size() <= agent_id)
-		return;
-
-	GazeNode* new_gaze = new GazeNode( getAgent(agent_id), getAgent(agent_id)->gazeNodes.top()->morph_curValue, getAgent(target_id), speed );
-
-	getAgent(agent_id)->gazeNodes.push( new_gaze );
-	getAgent(agent_id)->gazeNodes.top()->head_pitch = head_pitch;
-}
-
-
-void Application::setGaze( unsigned int agent_id, float targetX, float targetY, float targetZ, int head_pitch, float speed )
-{
-	if(m_agents.size() <= agent_id)
-		return;
-
-	GazeNode* new_gaze = new GazeNode( getAgent(agent_id), getAgent(agent_id)->gazeNodes.top()->morph_curValue, Vec3f(targetX,targetY,targetZ), speed );
-
-	getAgent(agent_id)->gazeNodes.push( new_gaze );
-	getAgent(agent_id)->gazeNodes.top()->head_pitch = head_pitch;
 }
 
 AgentNode* Application::findAgent(unsigned int entity_id)

@@ -803,4 +803,26 @@
 		</Function>
 		<Restriction></Restriction>  
 	</Gesture>
+	<Posture>
+		<ID>0052</ID>
+		<Name>Idle</Name>
+		<Description></Description>
+		<Files gender="female">
+			<File>female_german_idle.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>male_german_idle.anim</File>			
+		</Files>	
+	</Posture>
+	<Posture>
+		<ID>0053</ID>
+		<Name>Walk</Name>
+		<Description></Description>
+		<Files gender="female">
+			<File>char_female_laufen.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>char_male_laufen.anim</File>			
+		</Files>	
+	</Posture>
 </AnimationLexicon>

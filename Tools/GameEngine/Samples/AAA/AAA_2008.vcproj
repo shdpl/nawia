@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="AAA"
-	ProjectGUID="{24A2E637-8F08-4909-BA55-DFD55219372B}"
+	ProjectGUID="{29BF6357-CD36-419D-817D-CBC80A1C9A9B}"
 	RootNamespace="AAA"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
@@ -25,7 +25,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)include\GLFW\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfwd.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)include\GLFW\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenGL32.lib Horde3D_vc9d.lib Horde3DUtils_vc9d.lib ws2_32.lib sapi.lib"
+				AdditionalDependencies="OpenGL32.lib ws2_32.lib sapi.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)/Dependencies/lib&quot;;&quot;$(SolutionDir)/lib&quot;"
@@ -109,7 +109,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)include\GLFW\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)include\GLFW\&quot; /y"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -145,7 +145,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenGL32.lib Horde3D_vc9.lib Horde3DUtils_vc9.lib ws2_32.lib sapi.lib"
+				AdditionalDependencies="OpenGL32.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib ws2_32.lib sapi.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)/Dependencies/lib&quot;;&quot;$(SolutionDir)/lib&quot;"
@@ -203,19 +203,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CommManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GazeNode.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Symbol.cpp"
 				>
 			</File>
 		</Filter>
@@ -234,18 +222,6 @@
 			</File>
 			<File
 				RelativePath=".\Bayesnet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CommManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GazeNode.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Symbol.h"
 				>
 			</File>
 		</Filter>

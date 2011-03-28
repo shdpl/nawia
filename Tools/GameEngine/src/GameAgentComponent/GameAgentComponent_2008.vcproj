@@ -339,7 +339,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Formation\RespulseNode.cpp"
+					RelativePath=".\Formation\RepulseNode.cpp"
 					>
 				</File>
 			</Filter>

@@ -24,16 +24,7 @@
     <ClCompile Include="Bayesnet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CommManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GazeNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Symbol.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -45,15 +36,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Bayesnet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CommManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GazeNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Symbol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

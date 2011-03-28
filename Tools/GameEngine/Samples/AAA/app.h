@@ -18,7 +18,7 @@
 // Advanced Agent Animation
 //
 // -------------------------
-// Copyright (C) 2010 Ionut Damian
+// Copyright (C) 2011 Ionut Damian
 //
 // ****************************************************************************************
 //
@@ -33,15 +33,14 @@
 
 /************* DEFINITIONS *************/
 /** Current Version of the Application */
-#define APP_VERSION "0.26.2"
-#define APP_VERSION_LEN 6
+#define APP_VERSION "1.0 beta1"
+#define APP_VERSION_LEN 9
 //#define VERSION_HAS_BAYESNET
 /** Maximal number of agents allowed ***/
 #define MAX_AGENTS 256
 /***************************************/
 
 #include "Horde3D/Horde3D.h"
-#include "GazeNode.h"
 #include "AgentNode.h"
 #include <XMLParser/utXMLParser.h>
 
@@ -81,9 +80,6 @@ private:
 	H3DRes        m_leafMaterial;
 	///water material resource, used for shader update (vegetation)
 	H3DRes        m_bushMaterial;
-
-	///socket communication manager
-	CommManager* m_comm;
 	
 	///vector containing all agents
 	vector<AgentNode*> m_agents;

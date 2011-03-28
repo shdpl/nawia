@@ -16,14 +16,14 @@
 		-->
     <AAA>
         <Agents>
-            <Agent symbol_dist="30" pc="flase" visible="true" symbol="symb_bad" name="agent0" />
-            <!-- id = 0 -->
-            <Agent symbol_dist="30" pc="true" visible="true" symbol="symb_host" name="agent1" />
-            <!-- id = 1 -->
-            <Agent symbol_dist="30" pc="false" visible="true" symbol="symb_default" name="agent2" />
-            <!-- id = 2 -->
+            <Agent symbol_dist="30" pc="true" visible="true" symbol="" name="agent0" />	<!-- id = 0 -->
+            <Agent symbol_dist="30" pc="false" visible="true" symbol="" name="agent1" />		<!-- id = 1 -->
+            <Agent symbol_dist="30" pc="false" visible="true" symbol="" name="agent2" />	<!-- id = 2 -->
+            <Agent symbol_dist="30" pc="false" visible="true" symbol="" name="agent3" />	<!-- id = 3 -->
+			<Agent symbol_dist="30" pc="false" visible="true" symbol="" name="agent4" />	<!-- id = 4 -->
         </Agents>
     </AAA>
+	
     <!-- 
 			Symbols
 			Notes: 
@@ -39,64 +39,76 @@
     <Reference tx="0" ty="-3.94617" sx="0.02" tz="0" rx="0" sy="0.02" ry="0" sz="0.02" sceneGraph="models/sektGlaeser/sektGlaeser.scene.xml" rz="0" name="symb_host" >
         <Attachment type="GameEngine" name="symb_host" />
     </Reference>
-    <!--
-			Agents
-		-->
+    
+	<!--
+		Agents
+	-->
     <Reference tx="-8" ty="0" sx="0.06" tz="-6" rx="0" sy="0.06" ry="-80" sz="0.06" sceneGraph="models/female01/female01.scene.xml" rz="0" name="agent0" >
         <Attachment type="GameEngine" name="agent0" >
-            <Socket protocol="UDP" port="343" address="127.0.0.1" type="server" />
-            <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female01/female01.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
+            <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female01/female01.scene.xml" neck="Bip01_Head" />	
+			
+            <Agent gender="female" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="female_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Sidestep left" />
+				<Formation type="V" />
+				<Icon name="symb_default" distance="30" />
+			</Agent>
+			
             <Sapi voice="Crystal16" useDistanceModel="1" rollOff="5.0"/>
-            <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
-                <BufferZone radius="3.6" />
-                <BufferZone radius="1.2" />
-                <BufferZone radius="0.45" />
-                <Orientation name="L" />
-                <Orientation name="C" />
-                <Orientation name="H" />
-                <Orientation name="V" />
-                <Orientation name="I" />
-                <Orientation name="N" />
-            </AgentAction>
         </Attachment>
     </Reference>
+	
     <Reference tx="-3" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male01/male01.scene.xml" rz="0" name="agent1" >
         <Attachment type="GameEngine" name="agent1" >
-            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="male" culture="german" stillAnim="male_still.anim" AnimationLexicon="AnimationLexicon.xml" />
+            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />			
+            <Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Idle" />
+				<Formation type="V" />
+				<Icon name="symb_bad" distance="30" />
+			</Agent>			
             <Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>
-            <AgentAction WalkAnimFile="char_male_laufen.anim" IdleAnimFile="male_german_idle.anim" >
-                <BufferZone radius="3.6" />
-                <BufferZone radius="1.2" />
-                <BufferZone radius="0.45" />
-                <Orientation name="L" />
-                <Orientation name="C" />
-                <Orientation name="V" />
-                <Orientation name="I" />
-                <Orientation name="H" />
-                <Orientation name="N" />
-            </AgentAction>
         </Attachment>
     </Reference>
+	
     <Reference tx="-5" ty="0" sx="0.06" tz="-6" rx="0" sy="0.06" ry="-40" sz="0.06" sceneGraph="models/female02/female02.scene.xml" rz="0" name="agent2" >
         <Attachment type="GameEngine" name="agent2" >
-            <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female02/female02.scene.xml" neck="Bip01_Head" />
-            <AgentAnimation gender="female" culture="german" stillAnim="female_still.anim" AnimationLexicon="AnimationLexicon.xml" />
+            <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female02/female02.scene.xml" neck="Bip01_Head" />	
+			
+            <Agent gender="female" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="female_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Idle" />
+				<Formation type="V" />
+				<Icon name="symb_host" distance="30" />
+			</Agent>
+			
             <Sapi voice="Crystal16" useDistanceModel="1" rollOff="5.0"/>
-            <AgentAction WalkAnimFile="char_female_laufen.anim" IdleAnimFile="female_german_idle.anim" >
-                <BufferZone radius="3.6" />
-                <BufferZone radius="1.2" />
-                <BufferZone radius="0.45" />
-                <Orientation name="L" />
-                <Orientation name="C" />
-                <Orientation name="N" />
-                <Orientation name="I" />
-                <Orientation name="V" />
-                <Orientation name="H" />
-            </AgentAction>
         </Attachment>
     </Reference>
+	
+	<Reference tx="0" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male01/male01.scene.xml" rz="0" name="agent3" >
+        <Attachment type="GameEngine" name="agent3" >
+            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />	
+			
+            <Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Idle" />
+				<Formation type="L" />
+			</Agent>
+			
+            <Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>
+        </Attachment>
+    </Reference>
+	
+	<Reference tx="-10" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male01/male01.scene.xml" rz="0" name="agent4" >
+        <Attachment type="GameEngine" name="agent4" >
+            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />	
+			
+            <Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Idle" />
+				<Formation type="V" />
+			</Agent>
+			
+            <Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>
+        </Attachment>
+    </Reference>
+	
     <Reference tx="-0.0103268" sx="0.0152282" ty="-0.0245461" sy="0.0152282" tz="-8.87617" sceneGraph="models/StehTischMitSchirm/StehTischMitSchirm.scene.xml" sz="0.0152282" name="StehTisch01" />
 	<Group tx="0.16151" ty="1.28678" tz="-2.23071" name="Zaun" >
         <Reference tx="12.4316" sx="0.01" ty="-0.957744" sy="0.01" tz="-11.0741" sceneGraph="models/zaun/zaun.scene.xml" sz="0.01" name="Zaun01" />

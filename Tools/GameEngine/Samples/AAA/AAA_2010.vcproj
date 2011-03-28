@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="AAA"
-	ProjectGUID="{24A2E637-8F08-4909-BA55-DFD55219372B}"
+	ProjectGUID="{29BF6357-CD36-419D-817D-CBC80A1C9A9B}"
 	RootNamespace="AAA"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
@@ -145,7 +145,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenGL32.lib ws2_32.lib sapi.lib"
+				AdditionalDependencies="OpenGL32.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib ws2_32.lib sapi.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)/Dependencies/lib&quot;;&quot;$(SolutionDir)/lib&quot;"
@@ -203,19 +203,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CommManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GazeNode.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Symbol.cpp"
 				>
 			</File>
 		</Filter>
@@ -234,18 +222,6 @@
 			</File>
 			<File
 				RelativePath=".\Bayesnet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CommManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GazeNode.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Symbol.h"
 				>
 			</File>
 		</Filter>
