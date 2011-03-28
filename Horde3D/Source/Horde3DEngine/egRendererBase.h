@@ -63,7 +63,7 @@ template< class T > class RDIObjects
 {
 public:
 
-	uint32 add( T &obj )
+	uint32 add( const T &obj )
 	{
 		if( !_freeList.empty() )
 		{

@@ -867,6 +867,7 @@ void ShaderResource::compileCombination( ShaderContext &context, ShaderCombinati
 			out0.close();
 			out1.close();
 		}
+		return;
 	}
 
 	gRDI->bindShader( sc.shaderObj );
