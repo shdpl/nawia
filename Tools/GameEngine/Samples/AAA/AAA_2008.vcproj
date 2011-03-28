@@ -25,7 +25,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)include\GLFW\&quot; /y&#x0D;&#x0A;xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.lib&quot; &quot;$(SolutionDir)lib\&quot; /y&#x0D;&#x0A;"
+				CommandLine="xcopy &quot;$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.h&quot; &quot;$(SolutionDir)include\GLFW\&quot; /y"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

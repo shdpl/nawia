@@ -238,7 +238,7 @@ void Application::update( float fps )
 			
 			if(getAgent(i)->active && (getAgent(i)->animation_id < 0) && (getAgent(i)->movement < 0)
 			&&(rand() % 1000 < 250)) // chance for anim load = 25%
-				getAgent(i)->animation_id = GameEngine::Agent_playAnimationI( getAgent(i)->entity_id, ((int)m_scenario_counter % 29)+1, 1, 1, 1, 0, 0);
+				getAgent(i)->animation_id = GameEngine::Agent_playAnimationI( getAgent(i)->entity_id, ((int)m_scenario_counter % 29)+1, 1, 1, 1, "Bip01_R_Clavicle", 0);
 
 			//generate speach
 			if(getAgent(i)->active &&(rand() % 1000 < 5)) // chance for anim load = 0.5%
@@ -448,7 +448,7 @@ void Application::keyHandler()
 	}
 	if( _keys['T'] ) //with with stroke reps
 	{
-		m_agents[0]->animation_id = GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 4, 1, 1, 3, 0, 0 );
+		m_agents[0]->animation_id = GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 4, 1, 0.2, 3, "Bip01_R_Clavicle", 0 );
 		_keys['T'] = false;
 	}
 	if( _keys['Z'] ) //with sync word
@@ -541,7 +541,7 @@ void Application::processScenario(int act_id)
 		case 1: //scene5_1: init
 			//movement
 			GameEngine::Agent_gotoE( getAgent(0)->entity_id, getAgent(2)->entity_id, 1, false, 0, 0 );
-			GameEngine::Agent_gotoE( getAgent(1)->entity_id, getAgent(4)->entity_id, 1, false, 0, 0 );
+			//GameEngine::Agent_gotoE( getAgent(1)->entity_id, getAgent(4)->entity_id, 1, false, 0, 0 );
 
 			//barman gesticulates
 			GameEngine::Agent_playAnimationN( getAgent(12)->entity_id, "Gesture_2", 1, 1, 0, 0, 0);

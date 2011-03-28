@@ -35,8 +35,8 @@ static const size_t c_MaxNumAnimStages = 16;
 static const size_t c_MaxAnimNameSize = 64;
 static const size_t c_MaxAnimFileSize = 128;
 static const size_t c_MaxNrAnimsPerMsg = 16;
-static const size_t c_MaxNodeNameSize = 16;
-static const size_t c_MaxSyncWordSize = 16;
+static const size_t c_MaxNodeNameSize = 32;
+static const size_t c_MaxSyncWordSize = 32;
 static const size_t c_MaxSParamSize = 64;
 //////////////////////////////////////////////
 
