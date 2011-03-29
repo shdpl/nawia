@@ -83,9 +83,9 @@
         </Attachment>
     </Reference>
 	
-	<Reference tx="0" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male01/male01.scene.xml" rz="0" name="agent3" >
+	<Reference tx="0" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male02/male02.scene.xml" rz="0" name="agent3" >
         <Attachment type="GameEngine" name="agent3" >
-            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />	
+            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male02/male02.scene.xml" neck="Bip01_Head" />	
 			
             <Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
 				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Idle" />
@@ -96,9 +96,9 @@
         </Attachment>
     </Reference>
 	
-	<Reference tx="-10" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male01/male01.scene.xml" rz="0" name="agent4" >
+	<Reference tx="-10" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male03/male03.scene.xml" rz="0" name="agent4" >
         <Attachment type="GameEngine" name="agent4" >
-            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />	
+            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male03/male03.scene.xml" neck="Bip01_Head" />	
 			
             <Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
 				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Idle" />
