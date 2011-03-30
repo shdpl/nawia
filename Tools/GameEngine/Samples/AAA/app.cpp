@@ -438,44 +438,6 @@ void Application::keyHandler()
 		h3dSetNodeTransform( m_cam_hID, _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
 	}
 
-	//debug hotkeys
-
-	// ANIM
-	if( _keys['P'] ) //posture
-	{
-		m_agents[0]->animation_id = GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 37, 1, 1, 0, 0, 0 );
-		_keys['P'] = false;
-	}
-	if( _keys['T'] ) //with with stroke reps
-	{
-		m_agents[0]->animation_id = GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 4, 1, 0.2, 3, "Bip01_R_Clavicle", 0 );
-		_keys['T'] = false;
-	}
-	if( _keys['Z'] ) //with sync word
-	{
-		GameEngine::speak( m_agents[0]->entity_id, "An animation will start when I when i say the word.");
-		m_agents[0]->animation_id = GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 4, 1, 1, 0, 0, "start" );
-		_keys['Z'] = false;
-	}
-	if( _keys['U'] ) //anim with start node
-	{
-		m_agents[0]->animation_id = GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 4, 1, 1, 0, "Bip01_L_Shoulder", 0 );
-		_keys['U'] = false;
-	}
-
-
-	// GAZE
-	if( _keys['G'] ) //gaze at agent 1
-	{
-		GameEngine::Agent_gazeE( m_agents[0]->entity_id, m_agents[1]->entity_id, 1, 30 );
-		_keys['G'] = false;
-	}
-	if( _keys['H'] ) //gaze at agent 1
-	{
-		GameEngine::Agent_gazeE( m_agents[0]->entity_id, m_agents[2]->entity_id, 1, 30 );
-		_keys['H'] = false;
-	}
-
 	//check number keys
 	for(unsigned int i=0; i<10; i++)
 	{
@@ -500,30 +462,7 @@ void Application::keyHandler()
 
 			//select agent i as user agent (pc)
 			if(m_agents.size() > i)
-				setPersonalChar(getAgent(i));
-
-			
-			/////////////////////////////////
-			////play an animation
-			/////////////////////////////////
-			//float speed = 1;
-			//float se = 1;
-			//int reps = 0;
-
-			////if shift is pressed, we'll alter anim speed
-			//if(_keys[287]) //Shift
-			//{
-			//	speed = 2;
-			//}
-
-			////if ctrl is pressed, we'll alter SE
-			//if(_keys[289]) //CTRL
-			//{
-			//	se = 0.7f;
-			//}
-
-			//m_agents[0]->animation_id = GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, i, speed, se, 0, 0, 0 );
-			
+				setPersonalChar(getAgent(i));			
 
 			_keys[i +48]=false;
 		}
@@ -638,11 +577,7 @@ void Application::processDestination(const char* nodeName, float x, float y, flo
 		if(dest == 0)
 			return; //if this entity isn't a known agent, break.
 		
-		//if ctrl is pressed we will use the formation goto
-		if(ctrlIsPressed)
-			GameEngine::Agent_gotoF( getPersonalChar()->entity_id, dest->entity_id, 1.3f, 0, 0 );
-		else
-			GameEngine::Agent_gotoE( getPersonalChar()->entity_id, dest->entity_id, 1.3f, queueMovement, 0, 0 );
+		GameEngine::Agent_gotoF( getPersonalChar()->entity_id, dest->entity_id, 1.3f, 0, 0 );
 		
 		AgentNode* a = getAgent(agent_id);
 		a->movement = 1;
