@@ -438,6 +438,24 @@ void Application::keyHandler()
 		h3dSetNodeTransform( m_cam_hID, _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
 	}
 
+	if( _keys['T'] )
+	{
+		//GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 51, 1, 1, 1, 0, 0); 
+
+		//head nod
+		//determine a point straight ahead of the agent
+		const float *agent_relArray;
+		h3dGetNodeTransMats( GameEngine::entitySceneGraphID( m_agents[0]->entity_id ), &agent_relArray, 0 );
+		Matrix4f agent_relMat(agent_relArray);
+
+		Vec3f targetGaze = agent_relMat * Vec3f(0,15,20);
+
+		GameEngine::IK_setParamI( m_agents[0]->entity_id, IK_Param::UseDofr_I, 0);
+		GameEngine::Agent_gazeP( m_agents[0]->entity_id, targetGaze.x, targetGaze.y, targetGaze.z, 0.5f, 0.2f );
+
+		_keys['T']=false;
+	}
+
 	//check number keys
 	for(unsigned int i=0; i<10; i++)
 	{
