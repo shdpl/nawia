@@ -454,7 +454,7 @@ void Application::keyHandler()
 		//GameEngine::Agent_gazeP( m_agents[0]->entity_id, targetGaze.x, targetGaze.y, targetGaze.z, 0.5f, 0.2f );
 
 		GameEngine::IK_setParamI( m_agents[0]->entity_id, IK_Param::UseDofr_I, 0);
-		GameEngine::Agent_nod(m_agents[0]->entity_id, 10, 0.5f, 0.2f);
+		GameEngine::Agent_nod(m_agents[0]->entity_id, 1, 0.5f, 2);
 
 		_keys['T']=false;
 	}

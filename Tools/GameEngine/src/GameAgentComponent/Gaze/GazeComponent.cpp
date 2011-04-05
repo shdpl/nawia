@@ -220,9 +220,9 @@ void GazeComponent::nod(float extent, float speed, float duration)
 
 	Vec3f currentGaze = getGazeCoord();
 	Vec3f fwdView = getDfltRelGaze();
-	Vec3f targetGaze = agent_relMat * Vec3f(currentGaze.x + (fwdView.x * extent),
-											currentGaze.y + (fwdView.y * extent), 
-											currentGaze.z + (fwdView.z * extent));
+	Vec3f targetGaze = agent_relMat * Vec3f(currentGaze.x + deviation.x,
+											currentGaze.y + deviation.y, 
+											currentGaze.z + deviation.z);
 
 	//apply gaze
 	gaze(targetGaze.x, targetGaze.y, targetGaze.z, speed, duration);
