@@ -41,7 +41,7 @@ void DOFRestrictions::useDefault(DefaultValues dofr_type, bool weak)
 		maxX = 0; minX = 0; maxY = 120; minY = 60; maxZ = 45; minZ = -45; damp = 30;
 		break;
 	case HEAD:
-		maxX = 60; minX = -60; maxY = 17; minY = -17; maxZ = 30; minZ = -30; damp = 30;
+		maxX = 80; minX = -80; maxY = 17; minY = -17; maxZ = 45; minZ = -45; damp = 30;
 		break;
 
 	default:

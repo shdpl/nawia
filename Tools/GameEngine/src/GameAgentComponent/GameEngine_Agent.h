@@ -367,6 +367,13 @@ namespace GameEngine
 	///@return gaze action ID
 	AGENTPLUGINEXP int Agent_gazeP( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, float duration );
 
+	///Performs a head nod (or head jerk if the extent is negative)
+	///@param entityWorldID the entity we want to use the function on
+	///@param extent the "size" of the nod (use negative values for head jerks)
+	///@param speed the speed of the nod
+	///@param duration the duration of the nod in seconds
+	AGENTPLUGINEXP void Agent_nod( unsigned int entityWorldID, float extent, float speed, float duration );
+
 	///Retrieves the status of a specific gaze node
 	///@param entityWorldID the entity we want to use the function on
 	///@param gazeID the playback id of the gaze node, as returned by a gaze function

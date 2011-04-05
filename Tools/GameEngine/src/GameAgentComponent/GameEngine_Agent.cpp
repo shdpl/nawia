@@ -443,6 +443,21 @@ namespace GameEngine
 		return -1;
 	}
 
+	//Performs a head nod (or head jerk if the extent is negative)
+	//@param entityWorldID the entity we want to use the function on
+	//@param extent the "size" of the nod (use negative values for head jerks)
+	//@param speed the speed of the nod
+	//@param duration the duration of the nod in seconds
+	AGENTPLUGINEXP void Agent_nod( unsigned int entityWorldID, float extent, float speed, float duration )
+	{
+		AgentComponent* c = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
+		{
+			c->getGazeComponent()->nod(extent, speed, duration);
+		}
+	}
+
 	//Retrieves the status of a specific gaze node
 	//@param entityWorldID the entity we want to use the function on
 	//@param gazeID the playback id of the gaze node, as returned by a gaze function

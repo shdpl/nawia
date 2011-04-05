@@ -32,8 +32,10 @@
 #include <GameEngine/GameEngine_IK.h>
 #include "GameEngine/utmath.h"
 #include <XMLParser/utXMLParser.h>
+#include "Horde3D/Horde3D.h"
 
 #include "../Config.h"
+#include "../utils.h"
 
 GameComponent* GazeComponent::createComponent( GameEntity* owner )
 {
@@ -182,6 +184,48 @@ int GazeComponent::gaze(float targetX, float targetY, float targetZ, float speed
 	m_gazeNodes.top()->update();
 
 	return g->getID();
+}
+
+void GazeComponent::nod(float extent, float speed, float duration)
+{
+	//get head position
+	h3dFindNodes( m_hID, Config::getParamS( Agent_Param::HeadName_S ), H3DNodeTypes::Joint );
+	int head_hID = h3dGetNodeFindResult(0);
+	if(head_hID <= 0)
+		return;
+
+	const float *head_absArray;
+	h3dGetNodeTransMats( head_hID, 0, &head_absArray );
+	Vec3f head_pos(head_absArray[12], head_absArray[13], head_absArray[14]);
+
+	//compute gaze deviation for nod based on extent
+	Vec3f deviation(0,0,0);
+	switch(utils::getUpAxis())
+	{
+	case utils::Axis::X:
+		deviation.x = head_pos.x - extent;
+		break;
+	case utils::Axis::Y:
+		deviation.y = head_pos.y - extent;
+		break;
+	case utils::Axis::Z:
+		deviation.z = head_pos.z - extent;
+		break;
+	}
+
+	//compute target
+	const float *agent_relArray;
+	h3dGetNodeTransMats( GameEngine::entitySceneGraphID( m_eID ), &agent_relArray, 0 );
+	Matrix4f agent_relMat(agent_relArray);
+
+	Vec3f currentGaze = getGazeCoord();
+	Vec3f fwdView = getDfltRelGaze();
+	Vec3f targetGaze = agent_relMat * Vec3f(currentGaze.x + (fwdView.x * extent),
+											currentGaze.y + (fwdView.y * extent), 
+											currentGaze.z + (fwdView.z * extent));
+
+	//apply gaze
+	gaze(targetGaze.x, targetGaze.y, targetGaze.z, speed, duration);
 }
 
 int GazeComponent::getStatus(int gazeID)

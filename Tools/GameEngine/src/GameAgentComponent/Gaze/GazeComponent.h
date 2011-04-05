@@ -55,6 +55,8 @@ public:
 	int gaze(int target_eID, float speed, float duration);
 	///starts a gaze action towards a target point in 3D space
 	int gaze(float targetX, float targetY, float targetZ, float speed, float duration);	
+	///performs a head nod (negative extent results in head jerk)
+	void nod(float extent, float speed, float duration);
 
 	int getStatus(int gazeID);
 
