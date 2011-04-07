@@ -88,6 +88,9 @@ bool Application::init( const char *fileName )
 	m_bushMaterial = h3dAddResource( H3DResTypes::Material, "models/busch01/aeste.material.xml", 0 );
 	m_counter = 0.0f;
 	m_scenario_counter = 0;
+	
+	m_fontMatRes = h3dAddResource( H3DResTypes::Material, "materials/font.material.xml", 0 );
+	h3dutLoadResourcesFromDisk(".");
 
 	//** configure AAA with settings from XML file
 	if(!config( getSceneXMLNode(fileName) ))
@@ -210,7 +213,7 @@ void Application::update( float fps )
 	//SCENARIOS PLAYBACK (imported from 0.25.4.video)
 	//continous scenario updates
 	int anim_status, agent_status;
-	if(m_scenario == 5 || m_scenario == 1)
+	if(m_scenario == 5)
 	{
 		m_scenario_counter += 10.0f/_curFPS;		
 
@@ -279,6 +282,11 @@ void Application::update( float fps )
 
 	//** Set camera parameters
 	h3dSetNodeTransform( m_cam_hID, _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
+
+	//show overlay with camera parameters
+	std::stringstream text;
+	text << "Camera: pos(" << _x << ", " << _y << ", " << _z << ") rot(" << _rx << ", " << _ry << ", " << _rz << ")";
+	h3dutShowText(text.str().c_str(), 0.01f, 0.02f, 0.03f, 1, 1, 1, m_fontMatRes);
 
 	//** Render scene
 	GameEngine::update();
@@ -495,6 +503,73 @@ void Application::processScenario(int act_id)
 {
 	switch(m_scenario)
 	{
+	case 1: //3-man formation
+		switch(act_id)
+		{
+		case 1: //init1
+			//movement
+			setPersonalChar(m_agents[4]);
+
+			//ipdist
+			GameEngine::Agent_setIPDistance( getAgent(0)->entity_id, 0.5f, 0.8f );
+			GameEngine::Agent_setIPDistance( getAgent(1)->entity_id, 0.5f, 5.0f );
+			GameEngine::Agent_setIPDistance( getAgent(2)->entity_id, 0.5f, 5.0f );
+			GameEngine::Agent_setIPDistance( getAgent(3)->entity_id, 1.2f, 5.0f );
+
+			GameEngine::Agent_gotoF( getAgent(1)->entity_id, getAgent(0)->entity_id, 1, 0, 0 );
+			GameEngine::Agent_gotoF( getAgent(2)->entity_id, getAgent(0)->entity_id, 1, 0, 0 );
+			GameEngine::Agent_gotoF( getAgent(3)->entity_id, getAgent(0)->entity_id, 1, 0, 0 );
+			
+			//INIT	
+			m_scenario_counter = 0;
+			for(int i=0; i<NR_OF_AGENTS; i++)
+			{
+				getAgent(i)->setVisibility(true);
+				GameEngine::IK_setParamI( getAgent(i)->entity_id, IK_Param::UseDofr_I, 1 );
+			}
+			//set the camera
+			_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0;
+			break;
+
+		case 2: //init2
+			//movement
+			setPersonalChar(m_agents[4]);
+
+			//ipdist
+			GameEngine::Agent_setIPDistance( getAgent(0)->entity_id, 0.5f, 2.2f );
+			GameEngine::Agent_setIPDistance( getAgent(1)->entity_id, 0.5f, 5.0f );
+			GameEngine::Agent_setIPDistance( getAgent(2)->entity_id, 0.5f, 5.0f );
+			GameEngine::Agent_setIPDistance( getAgent(3)->entity_id, 1.2f, 5.0f );
+
+			GameEngine::Agent_gotoF( getAgent(1)->entity_id, getAgent(0)->entity_id, 1, 0, 0 );
+			GameEngine::Agent_gotoF( getAgent(2)->entity_id, getAgent(0)->entity_id, 1, 0, 0 );
+			GameEngine::Agent_gotoF( getAgent(3)->entity_id, getAgent(0)->entity_id, 1, 0, 0 );
+			
+			//INIT	
+			m_scenario_counter = 0;
+			for(int i=0; i<NR_OF_AGENTS; i++)
+			{
+				getAgent(i)->setVisibility(true);
+				GameEngine::IK_setParamI( getAgent(i)->entity_id, IK_Param::UseDofr_I, 1 );
+			}
+			//set the camera
+			_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0;
+			break;
+
+		case 3: //gestures + gaze
+			
+			GameEngine::Agent_gazeE( getAgent(1)->entity_id, getAgent(0)->entity_id, 1, -1 );
+			GameEngine::Agent_gazeE( getAgent(2)->entity_id, getAgent(0)->entity_id, 1, -1 );
+			GameEngine::Agent_gazeE( getAgent(3)->entity_id, getAgent(0)->entity_id, 1, -1 );
+
+			GameEngine::Agent_playAnimationI( getAgent(0)->entity_id, 5, 1, 1, 0, 0, "just" );
+			GameEngine::Agent_playAnimationI( getAgent(0)->entity_id, 16, 1, 1, 0, 0, "standing" );
+			GameEngine::Agent_playAnimationI( getAgent(0)->entity_id, 7, 1, 1, 0, 0, "me" );
+			GameEngine::speak( getAgent(0)->entity_id, "Well I just got there and uhm, I just went straight in there. Next thing I know, Mark was standing in front of me and he was looking straight at me. I had no idea what to say to him.");
+			GameEngine::Agent_playAnimationI( getAgent(1)->entity_id, 12, 1, 1, 0, 0, 0 );
+			break;
+		}
+		break;
 	case 5: //Final scene
 		switch(act_id)
 		{

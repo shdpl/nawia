@@ -84,6 +84,8 @@ private:
 	///vector containing all agents
 	vector<AgentNode*> m_agents;
 
+	int m_fontMatRes;
+
 public:
 	///number of agents in the scene, active or inactive
 	int NR_OF_AGENTS;
