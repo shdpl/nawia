@@ -1,0 +1,47 @@
+<?page title="Look" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<grid>
+		<columns>
+			<column label="Standard look">
+				<radio value="false" />
+			</column>
+			<column label="Extended look">
+				<radio value="true" />
+			</column>
+		</columns>
+		<rows>
+			<row>
+				<label>Type:</label>
+				<intbox />
+			</row>
+			<row>
+				<label>Head:</label>
+				<colorbox width="30px" height="25px" color="#cc0033" />
+			</row>
+			<row>
+				<label>Body:</label>
+				<colorbox width="30px" height="25px" color="#006633" />
+			</row>
+			<row>
+				<label>Legs:</label>
+				<colorbox width="30px" height="25px" color="#330033" />
+			</row>
+			<row>
+				<label>Feet:</label>
+				<colorbox width="30px" height="25px" color="#663333" />
+			</row>
+			<row>
+				<label>Addons:</label>
+				<intbox
+					constraint="/[0-4]/: Addons can be between 0 and 4" value="0" />
+			</row>
+			<row>
+				<label>Corpse:</label>
+				<combobox value="6081">
+					<comboitem label="6081" />
+					<comboitem label="666" />
+				</combobox>
+			</row>
+		</rows>
+	</grid>
+</zk>

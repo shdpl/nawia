@@ -23,8 +23,8 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.logging.Logger;
 
-import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
-import net.nawia.gsao.dao.exceptions.RuntimeExceptionDao;
+import net.nawia.gsao.dao.exception.ExceptionDaoInit;
+import net.nawia.gsao.dao.exception.RuntimeExceptionDao;
 import net.nawia.gsao.domain.Account;
 
 public class DaoAccount extends DaoJdbc<Integer, Account> implements

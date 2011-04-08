@@ -20,7 +20,8 @@ import java.sql.*;
 
 import javax.naming.*;
 import javax.sql.DataSource;
-import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
+
+import net.nawia.gsao.dao.exception.ExceptionDaoInit;
 
 public abstract class DaoJdbc<K, E> {
 	private static final String _path = "java:jdbc/gsDB"; // FIXME

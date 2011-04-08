@@ -1,0 +1,206 @@
+<?page title="Attack" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<grid>
+		<columns>
+			<column />
+			<column />
+		</columns>
+		<rows>
+			<row>
+				<label>Target change interval</label>
+				<intbox value="5000" />
+			</row>
+			<row>
+				<label>Target change chance</label>
+				<intbox value="8" />
+			</row>
+		</rows>
+	</grid>
+
+	<grid hflex="1" sizedByContent="true">
+		<columns>
+			<column />
+			<column>
+				<label>Effect</label>
+			</column>
+			<column sortDirection="ascending">
+				<label>Name</label>
+			</column>
+			<column sortDirection="ascending">
+				<label>Type</label>
+			</column>
+			<column>
+				<label>Interval Between Hits</label>
+			</column>
+			<column>
+				<label>Hitting Chance</label>
+			</column>
+			<column>
+				<label>Combat Value Range</label>
+			</column>
+		</columns>
+		<rows>
+			<row>
+				<detail>
+					<grid sizedByContent="true">
+						<auxhead>
+							<auxheader stubonly="true" />
+							<auxheader label="Script" colspan="4"
+								visible="$scripted" />
+							<auxheader label="Area Effect" /><!-- // visible="!$length" -->
+							<auxheader label="Area Effect" colspan="2"
+								visible="$length" />
+							<auxheader label="Type" /><!-- // visible="!$radius" -->
+							<auxheader label="Type" colspan="2"
+								visible="$radius" />
+							<auxheader stubonly="true"
+								visible="$type!='melee'" />
+						</auxhead>
+						<columns>
+							<!-- //type!= spell -->
+							<column>
+								<label>Scripted</label>
+							</column>
+							<column visible="$scripted">
+								<label>File</label>
+							</column>
+							<column visible="$scripted">
+								<label>Targeted</label>
+							</column>
+							<column visible="$scripted">
+								<label>Directional</label>
+							</column>
+							<column visible="$scripted">
+								<label>Other Parameters</label>
+							</column>
+
+							<column>
+								<label>Length (ms)</label>
+							</column>
+							<column visible="false">
+								<label>Spread</label>
+							</column>
+
+							<column>
+								<label>Radius</label>
+							</column>
+							<column visible="false">
+								<label>Target</label>
+							</column>
+
+							<column visible="$type!='melee'">
+								<label>Range</label>
+							</column>
+							<column visible="$type=='melee'">
+								<label>Attack</label>
+							</column>
+							<column visible="false">
+								<label>Skill</label>
+							</column>
+							<column visible="$type=='melee'">
+								<label>Set Conditions</label>
+							</column>
+							<column visible="$type=='melee'">
+								<label>Condition Tick (ms)</label>
+							</column>
+
+							<column visible="$type=='speed'">
+								<label>Speed modifier</label>
+							</column>
+							<column visible="$type=='speed'">
+								<label>
+									Speed modifier Duration (ms)
+								</label>
+							</column>
+
+							<column visible="$type=='outfit'">
+								<label>Morph to</label>
+							</column>
+							<column visible="$morph_to=='monster'">
+								<label>Monster</label>
+							</column>
+							<column visible="$morph_to=='item'">
+								<label>Item</label>
+							</column>
+							<column visible="$type=='outfit'">
+								<label>Morph duration (ms)</label>
+							</column>
+
+							<column visible="$type=='invisible'">
+								<label>
+									Invisibility duration (ms)
+								</label>
+							</column>
+
+							<column visible="$type=='drunk'">
+								<label>Drunk duration (ms)</label>
+							</column>
+
+							<column visible="$type=='\a+condition'">
+								<label>Condition tick (ms)</label>
+							</column>
+							<column visible="$type=='\a+condition'">
+								<label>Condition start</label>
+							</column>
+						</columns>
+						<rows>
+							<row>
+								<checkbox id="scripted" />
+								<combobox></combobox>
+								<checkbox />
+								<checkbox />
+								<combobox>
+									<comboitem label="param1" />
+								</combobox>
+
+								<spinner />
+								<spinner />
+
+								<spinner id="radius" />
+								<checkbox id="target" />
+
+								<slider id="range" maxpos="22" />
+								<spinner id="attack" />
+								<spinner id="skill" />
+								<combobox></combobox>
+								<spinner id="melee_condition_tick" />
+
+								<spinner id="speed_mod" />
+								<spinner id="speed_mod_time" />
+
+								<intbox id="morph_type" />
+								<intbox id="monster" />
+								<intbox id="item" />
+								<spinner id="morph_time" />
+
+								<spinner id="invisibility_time" />
+
+								<spinner id="drunk_time" />
+
+								<spinner id="element_condition_tick" />
+								<spinner id="element_condition_start" />
+							</row>
+						</rows>
+					</grid>
+				</detail>
+				<image src="" />
+				<textbox />
+				<combobox value="melee">
+					<comboitem label="melee" />
+					<comboitem label="physical" />
+					<comboitem label="poison" />
+					<comboitem label="fire" />
+				</combobox>
+				<spinner value="2000" />
+				<slider curpos="100" />
+				<hbox>
+					<intbox />
+					<label>-</label>
+					<intbox />
+				</hbox>
+			</row>
+		</rows>
+	</grid>
+	<button label="New" onClick="" />
+	<button label="Delete" onClick="" />
+</zk>

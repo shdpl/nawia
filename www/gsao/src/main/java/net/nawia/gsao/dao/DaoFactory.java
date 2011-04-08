@@ -21,9 +21,9 @@ import java.util.logging.*;
 
 import javax.ejb.Singleton;
 
-import net.nawia.gsao.dao.exceptions.ExceptionDao;
-import net.nawia.gsao.dao.exceptions.ExceptionDaoMalformed;
-import net.nawia.gsao.dao.exceptions.ExceptionDaoNotFound;
+import net.nawia.gsao.dao.exception.ExceptionDao;
+import net.nawia.gsao.dao.exception.ExceptionDaoMalformed;
+import net.nawia.gsao.dao.exception.ExceptionDaoNotFound;
 import net.nawia.gsao.dao.jdbc.DaoJdbc;
 import net.nawia.gsao.dao.jpa.DaoJpa;
 

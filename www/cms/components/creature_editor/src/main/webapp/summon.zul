@@ -1,0 +1,33 @@
+<?page title="Summon" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<label>Maximum number of summoned monsters</label>
+	<spinner value="1" />
+	<listbox>
+		<listhead>
+			<listheader label="Name" sort="auto" />
+			<listheader label="Chance" sort="auto" />
+			<listheader label="Summoning Interval" sort="auto" />
+			<listheader label="Maximum summons of this type"
+				sort="auto" />
+		</listhead>
+		<listitem>
+			<listcell>
+				<label value="przydupas" />
+			</listcell>
+			<listcell>
+				<slider />
+			</listcell>
+			<listcell>
+				<spinner step="500" />
+			</listcell>
+			<listcell>
+				<spinner />
+			</listcell>
+		</listitem>
+	</listbox>
+	<button label="New" />
+	<button label="Duplicate" />
+	<button label="Modify" />
+	<button label="Delete" />
+
+</zk>

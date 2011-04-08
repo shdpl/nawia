@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import net.nawia.gsao.dao.exceptions.ExceptionDaoInit;
-import net.nawia.gsao.dao.exceptions.RuntimeExceptionDao;
+import net.nawia.gsao.dao.exception.ExceptionDaoInit;
+import net.nawia.gsao.dao.exception.RuntimeExceptionDao;
 import net.nawia.gsao.domain.Group;
 
 public class DaoGroup extends DaoJdbc<Integer, Group> implements

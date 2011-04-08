@@ -1,0 +1,6 @@
+<?page title="Respawn" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<!--<gmaps></gmaps> -->
+	hunting % for selected markers
+	<chart type="ring" width="100px" height="100px" />
+</zk>

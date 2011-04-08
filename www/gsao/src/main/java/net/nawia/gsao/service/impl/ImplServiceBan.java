@@ -12,7 +12,7 @@ import javax.ejb.*;
 import net.nawia.gsao.dao.DaoAccount;
 import net.nawia.gsao.dao.DaoBan;
 import net.nawia.gsao.dao.DaoFactory;
-import net.nawia.gsao.dao.exceptions.ExceptionDao;
+import net.nawia.gsao.dao.exception.ExceptionDao;
 import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.domain.Ban;
 import net.nawia.gsao.domain.Ban.BAN_T;
