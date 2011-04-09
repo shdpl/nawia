@@ -103,10 +103,10 @@
 		<Speech>"And what else? What do we do here? What did they say? Negotiation?"</Speech>
 		<Description>Subject in German Small Talk conversation wondering about the experimental setting?</Description>
 		<Files gender="female">
-			<File strokeStart="8" strokeEnd="139">Gestures\Female\female_ger_deictic_01.anim</File>
+			<File strokeStart="10" strokeEnd="65">Gestures\Female\female_ger_deictic_01_pureStroke.anim</File>
 		</Files>
 		<Files gender="male">
-			<File strokeStart="8" strokeEnd="139">Gestures\Male\male_ger_deictic_01.anim</File>
+			<File strokeStart="8" strokeEnd="65">Gestures\Male\male_ger_deictic_01_pureStroke.anim</File>
 		</Files>
 		<Context>here-there</Context>
 		<Function>
@@ -137,10 +137,10 @@
 		<ID>0009</ID>
 		<Name>German_Beat_03</Name>
 		<Files gender="female">
-			<File strokeStart="8" strokeEnd="131">Gestures\Female\female_ger_beat_03.anim</File>
+			<File strokeStart="8" strokeEnd="55">Gestures\Female\female_ger_beat_03_pureStroke.anim</File>
 		</Files>
 		<Files gender="male">
-			<File strokeStart="8" strokeEnd="131">Gestures\Male\male_ger_beat_03.anim</File>
+			<File strokeStart="8" strokeEnd="55">Gestures\Male\male_ger_beat_03_pureStroke.anim</File>
 		</Files>
 		<Function>
 			<McNeil>beat</McNeil>
