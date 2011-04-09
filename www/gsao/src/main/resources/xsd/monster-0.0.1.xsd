@@ -99,14 +99,25 @@
 
 				<element name="look">
 					<complexType>
-						<attribute name="type" type="integer" />
+						<attribute name="type" type="integer">
+							<annotation>
+								<documentation>If type is used, You need to fill head, body,
+									legs, feet and addons. You cannot use typeex (use type OR
+									typeex, not both).</documentation>
+							</annotation>
+						</attribute>
 						<attribute name="head" type="integer" /> <!-- FIXME: if ($type) use="required" -->
 						<attribute name="body" type="integer" /> <!-- FIXME: if ($type) use="required" -->
 						<attribute name="legs" type="integer" /> <!-- FIXME: if ($type) use="required" -->
 						<attribute name="feet" type="integer" /> <!-- FIXME: if ($type) use="required" -->
 						<attribute name="addons" type="integer" /> <!-- FIXME: if ($type) use="required" -->
 
-						<attribute name="typeex" type="integer" /> <!-- FIXME: $type ^ $typeex -->
+						<attribute name="typeex" type="integer">
+							<annotation>
+								<documentation>If typeex used, you cannot use type.
+								</documentation>
+							</annotation>
+						</attribute><!-- FIXME: $type ^ $typeex -->
 
 						<attribute name="corpse" type="short" />
 					</complexType>
@@ -179,7 +190,7 @@
 															<enumeration value="eartharrow" />
 															<enumeration value="explosion" />
 															<enumeration value="cake" />
-															
+
 															<enumeration value="redspark" /><!-- magicEffectNames -->
 															<enumeration value="bluebubble" />
 															<enumeration value="poff" />
@@ -257,11 +268,24 @@
 										</element>
 									</sequence>
 
-									<attribute name="script" type="string" />
+									<attribute name="script" type="string">
+										<annotation>
+											<documentation>If 'script' is used, you CAN use 'direction'
+												and you CANNOT use 'length', 'spread', 'radius'.
+											</documentation>
+										</annotation>
+									</attribute>
 									<attribute name="name" use="required">
 										<simpleType>
 											<restriction base="string">
-												<enumeration value="melee" />
+												<enumeration value="melee">
+													<annotation>
+														<documentation>If 'melee' is used, You CAN use 'attack',
+															'fire', 'poison', 'energy', 'drown', 'freeze', 'dazzle',
+															'curse' and 'tick'.
+														</documentation>
+													</annotation>
+												</enumeration>
 												<enumeration value="physical" />
 												<enumeration value="poison" />
 												<enumeration value="fire" />
@@ -273,8 +297,18 @@
 												<enumeration value="lifedrain" />
 												<enumeration value="manadrain" />
 												<enumeration value="healing" />
-												<enumeration value="speed" />
-												<enumeration value="outfit" />
+												<enumeration value="speed">
+													<annotation>
+														<documentation>If 'speed is used, you CAN use
+															'speedchange'.</documentation>
+													</annotation>
+												</enumeration>
+												<enumeration value="outfit">
+													<annotation>
+														<documentation>If 'outfit' is used, you CAN use 'monster'
+															OR 'item'</documentation>
+													</annotation>
+												</enumeration>
 												<enumeration value="invisible" />
 												<enumeration value="drunk" />
 												<enumeration value="firefield" />
@@ -326,7 +360,12 @@
 									<attribute name="spread" type="positiveInteger" />
 									<attribute name="radius" type="integer" />
 									<!-- if $melee -->
-									<attribute name="attack" type="integer" />
+									<attribute name="attack" type="integer">
+										<annotation>
+											<documentation>If 'attack' is used, you CAN use 'skill'
+											</documentation>
+										</annotation>
+									</attribute>
 									<!-- if $attack -->
 									<attribute name="skill" type="integer">
 										<annotation>
@@ -382,7 +421,291 @@
 					<complexType>
 						<sequence>
 							<element name="defense" maxOccurs="unbounded">
-								<!-- TODO: deserializeSpell -->
+								<complexType>
+									<sequence>
+										<element name="parameter" maxOccurs="unbounded">
+											<complexType>
+												<attribute name="key" type="string" />
+												<attribute name="value" type="string" />
+											</complexType>
+										</element>
+										<element name="attribute" maxOccurs="unbounded">
+											<complexType>
+												<attribute name="key">
+													<simpleType>
+														<restriction base="string">
+															<enumeration value="shooteffect" />
+															<enumeration value="areaeffect" />
+														</restriction>
+													</simpleType>
+												</attribute>
+												<attribute name="value">
+													<simpleType>
+														<restriction base="string"> <!-- shootTypeNames -->
+															<enumeration value="spear" />
+															<enumeration value="bolt" />
+															<enumeration value="arrow" />
+															<enumeration value="fire" />
+															<enumeration value="energy" />
+															<enumeration value="poisonarrow" />
+															<enumeration value="burstarrow" />
+															<enumeration value="throwingstar" />
+															<enumeration value="throwingknife" />
+															<enumeration value="smallstone" />
+															<enumeration value="death" />
+															<enumeration value="largerock" />
+															<enumeration value="snowball" />
+															<enumeration value="powerbolt" />
+															<enumeration value="poison" />
+															<enumeration value="infernalbolt" />
+															<enumeration value="huntingspear" />
+															<enumeration value="enchantedspear" />
+															<enumeration value="redstar" />
+															<enumeration value="greenstar" />
+															<enumeration value="royalspear" />
+															<enumeration value="sniperarrow" />
+															<enumeration value="onyxarrow" />
+															<enumeration value="piercingbolt" />
+															<enumeration value="whirlwindsword" />
+															<enumeration value="whirlwindaxe" />
+															<enumeration value="whirlwindclub" />
+															<enumeration value="etherealspear" />
+															<enumeration value="ice" />
+															<enumeration value="earth" />
+															<enumeration value="holy" />
+															<enumeration value="suddendeath" />
+															<enumeration value="flasharrow" />
+															<enumeration value="flammingarrow" />
+															<enumeration value="shiverarrow" />
+															<enumeration value="energyball" />
+															<enumeration value="smallice" />
+															<enumeration value="smallholy" />
+															<enumeration value="smallearth" />
+															<enumeration value="eartharrow" />
+															<enumeration value="explosion" />
+															<enumeration value="cake" />
+
+															<enumeration value="redspark" /><!-- magicEffectNames -->
+															<enumeration value="bluebubble" />
+															<enumeration value="poff" />
+															<enumeration value="yellowspark" />
+															<enumeration value="explosionarea" />
+															<enumeration value="explosion" />
+															<enumeration value="firearea" />
+															<enumeration value="yellowbubble" />
+															<enumeration value="greenbubble" />
+															<enumeration value="blackspark" />
+															<enumeration value="teleport" />
+															<enumeration value="energy" />
+															<enumeration value="blueshimmer" />
+															<enumeration value="redshimmer" />
+															<enumeration value="greenshimmer" />
+															<enumeration value="fire" />
+															<enumeration value="greenspark" />
+															<enumeration value="mortarea" />
+															<enumeration value="greennote" />
+															<enumeration value="rednote" />
+															<enumeration value="poison" />
+															<enumeration value="yellownote" />
+															<enumeration value="purplenote" />
+															<enumeration value="bluenote" />
+															<enumeration value="whitenote" />
+															<enumeration value="bubbles" />
+															<enumeration value="dice" />
+															<enumeration value="giftwraps" />
+															<enumeration value="yellowfirework" />
+															<enumeration value="redfirework" />
+															<enumeration value="bluefirework" />
+															<enumeration value="stun" />
+															<enumeration value="sleep" />
+															<enumeration value="watercreature" />
+															<enumeration value="groundshaker" />
+															<enumeration value="hearts" />
+															<enumeration value="fireattack" />
+															<enumeration value="energyarea" />
+															<enumeration value="smallclouds" />
+															<enumeration value="holydamage" />
+															<enumeration value="bigclouds" />
+															<enumeration value="icearea" />
+															<enumeration value="icetornado" />
+															<enumeration value="iceattack" />
+															<enumeration value="stones" />
+															<enumeration value="smallplants" />
+															<enumeration value="carniphila" />
+															<enumeration value="purpleenergy" />
+															<enumeration value="yellowenergy" />
+															<enumeration value="holyarea" />
+															<enumeration value="bigplants" />
+															<enumeration value="cake" />
+															<enumeration value="giantice" />
+															<enumeration value="watersplash" />
+															<enumeration value="plantattack" />
+															<enumeration value="tutorialarrow" />
+															<enumeration value="tutorialsquare" />
+															<enumeration value="mirrorhorizontal" />
+															<enumeration value="mirrorvertical" />
+															<enumeration value="skullhorizontal" />
+															<enumeration value="skullvertical" />
+															<enumeration value="assassin" />
+															<enumeration value="stepshorizontal" />
+															<enumeration value="bloodysteps" />
+															<enumeration value="stepsvertical" />
+															<enumeration value="yalaharighost" />
+															<enumeration value="bats" />
+															<enumeration value="smoke" />
+															<enumeration value="insects" />
+															<enumeration value="dragonhead" />
+														</restriction>
+													</simpleType>
+												</attribute>
+											</complexType>
+										</element>
+									</sequence>
+
+									<attribute name="script" type="string">
+										<annotation>
+											<documentation>If 'script' is used, you CAN use 'direction'
+												and you CANNOT use 'length', 'spread', 'radius'.
+											</documentation>
+										</annotation>
+									</attribute>
+									<attribute name="name" use="required">
+										<simpleType>
+											<restriction base="string">
+												<enumeration value="melee">
+													<annotation>
+														<documentation>If 'melee' is used, You CAN use 'attack',
+															'fire', 'poison', 'energy', 'drown', 'freeze', 'dazzle',
+															'curse' and 'tick'.
+														</documentation>
+													</annotation>
+												</enumeration>
+												<enumeration value="physical" />
+												<enumeration value="poison" />
+												<enumeration value="fire" />
+												<enumeration value="energy" />
+												<enumeration value="drown" />
+												<enumeration value="ice" />
+												<enumeration value="holy" />
+												<enumeration value="death" />
+												<enumeration value="lifedrain" />
+												<enumeration value="manadrain" />
+												<enumeration value="healing" />
+												<enumeration value="speed">
+													<annotation>
+														<documentation>If 'speed is used, you CAN use
+															'speedchange'.</documentation>
+													</annotation>
+												</enumeration>
+												<enumeration value="outfit">
+													<annotation>
+														<documentation>If 'outfit' is used, you CAN use 'monster'
+															OR 'item'</documentation>
+													</annotation>
+												</enumeration>
+												<enumeration value="invisible" />
+												<enumeration value="drunk" />
+												<enumeration value="firefield" />
+												<enumeration value="poisonfield" />
+												<enumeration value="energyfield" />
+												<enumeration value="firecondition" />
+												<enumeration value="poisoncondition" />
+												<enumeration value="energycondition" />
+												<enumeration value="drowncondition" />
+												<!-- <enumeration value="strength" /> -->
+												<!-- <enumeration value="effect" /> -->
+											</restriction>
+										</simpleType>
+									</attribute>
+									<attribute name="interval"> <!-- use="required" -->
+										<simpleType>
+											<restriction base="positiveInteger">
+												<minInclusive value="1" />
+											</restriction>
+										</simpleType>
+									</attribute>
+									<attribute name="speed"> <!-- FIXME: $interval ^ $speed -->
+										<annotation>
+											<documentation>Deprecated, use interval instead. If both
+												used,
+												only last one is stored.</documentation>
+										</annotation>
+										<simpleType>
+											<restriction base="positiveInteger">
+												<minInclusive value="1" />
+											</restriction>
+										</simpleType>
+									</attribute>
+									<attribute name="chance">
+										<simpleType>
+											<restriction base="positiveInteger">
+												<maxInclusive value="100" />
+											</restriction>
+										</simpleType>
+									</attribute>
+									<attribute name="range" type="positiveInteger" />
+									<attribute name="min" type="integer" />
+									<attribute name="max" type="integer" />
+									<attribute name="target" type="boolean" />
+									<!-- if $script -->
+									<attribute name="direction" type="boolean" />
+									<!-- else $script -->
+									<attribute name="length" type="integer" />
+									<attribute name="spread" type="positiveInteger" />
+									<attribute name="radius" type="integer" />
+									<!-- if $melee -->
+									<attribute name="attack" type="integer">
+										<annotation>
+											<documentation>If 'attack' is used, you CAN use 'skill'
+											</documentation>
+										</annotation>
+									</attribute>
+									<!-- if $attack -->
+									<attribute name="skill" type="integer">
+										<annotation>
+											<documentation>Skill ID</documentation>
+										</annotation>
+									</attribute>
+									<!-- endif $attack -->
+									<attribute name="fire" type="integer" />
+									<attribute name="poison" type="integer" />
+									<attribute name="energy" type="integer" />
+									<attribute name="drown" type="integer" />
+									<attribute name="freeze" type="integer" />
+									<attribute name="dazzle" type="integer" />
+									<attribute name="curse" type="integer" />
+
+									<attribute name="tick">
+										<simpleType>
+											<restriction base="integer">
+												<minExclusive value="0" />
+											</restriction>
+										</simpleType>
+									</attribute>
+									<!-- endif $melee -->
+									<attribute name="duration" type="integer" />
+									<!-- if $speed -->
+									<attribute name="speedchange">
+										<simpleType>
+											<restriction base="integer">
+												<minInclusive value="-1000" />
+											</restriction>
+										</simpleType>
+									</attribute>
+									<!-- endif $speed -->
+									<!-- if $outfit -->
+									<attribute name="monster" type="string" />
+									<attribute name="item" type="integer">
+										<annotation>
+											<documentation>lookTypeEx ID</documentation>
+										</annotation>
+									</attribute>
+									<!-- endif $outfit -->
+									<!-- if $($element)condition; tick > 0 -->
+									<attribute name="start" type="integer" />
+									<!-- endif $($element)condition -->
+
+								</complexType>
 							</element>
 						</sequence>
 						<attribute name="defense" type="integer" />
@@ -454,7 +777,39 @@
 				</element>
 
 				<element name="loot">
-					<!-- TODO: loadLootItem -->
+					<complexType>
+						<sequence>
+							<element name="inside">
+								<annotation>
+									<documentation>Use, if item is a container, and place 'loot'
+										elements inside.</documentation>
+								</annotation>
+								<complexType>
+									<sequence>
+										<any minOccurs="0" />
+									</sequence>
+								</complexType>
+							</element>
+						</sequence>
+						<attribute name="id" type="integer">
+							<annotation>
+								<documentation>Item ID</documentation>
+							</annotation>
+						</attribute>
+						<attribute name="countmax">
+							<simpleType>
+								<restriction base="integer">
+									<minExclusive value="0" />
+								</restriction>
+							</simpleType>
+						</attribute>
+						<attribute name="chance" type="integer" /><!-- TODO: MAX_LOOTCHANCE -->
+						<attribute name="chance1" type="integer" /><!-- TODO: MAX_LOOTCHANCE -->
+						<attribute name="subtype" type="integer" />
+						<attribute name="actionid" type="integer" />
+						<attribute name="text" type="string" />
+						<attribute name="dropempty" type="boolean" />
+					</complexType>
 				</element>
 
 				<element name="elements">
@@ -483,6 +838,11 @@
 					<complexType>
 						<sequence>
 							<element name="summon" maxOccurs="unbounded"><!-- ref=maxSummons -->
+								<annotation>
+									<documentation>Maximum number of summons (every kind summed up)
+										up to maxSummons attribute
+									</documentation>
+								</annotation>
 								<complexType>
 									<attribute name="max" type="integer" />
 									<attribute name="interval"> <!-- use="required" -->

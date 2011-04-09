@@ -17,14 +17,8 @@
 
 module msg._window.refresh;
 
-private import
-	msg.msg,
-	msg.provider.gen,
-	msg.handler.gen;
+private import msg.msg;
 
 class MsgWindowRefresh : Msg {
 	 
 }
-
-mixin(MsgProviderGen!"WindowRefresh");
-mixin(MsgHandlerGen!"WindowRefresh");

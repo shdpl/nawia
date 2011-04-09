@@ -1,3 +1,23 @@
 <?page title="Loot" contentType="text/html;charset=UTF-8"?>
 <zk>
+<listbox >
+	<listhead>
+		<listheader label="Item Type" sort="auto" />
+		<listheader label="Item Subtype" sort="auto" />
+		<listheader label="Maximum Amount" sort="auto" />
+		<listheader label="Chance" sort="auto" />
+		<listheader label="Link with Action" sort="auto" />
+		<listheader label="Message" sort="auto" />
+		<listheader label="Drop if Empty" sort="auto" />
+	</listhead>
+	<listitem>
+		<listcell label="" />
+		<listcell label="" />
+	</listitem>
+	<listitem>
+		<listcell label="" />
+		<listcell label="" />
+	</listitem>
+</listbox>
+
 </zk>

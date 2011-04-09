@@ -17,14 +17,8 @@
 
 module msg._window.resize;
 
-private import
-	msg.msg,
-	msg.provider.gen,
-	msg.handler.gen;
+private import msg.msg;
 
 class MsgWindowResize : Msg {
 	 
 }
-
-mixin(MsgProviderGen!"WindowResize");
-mixin(MsgHandlerGen!"WindowResize");

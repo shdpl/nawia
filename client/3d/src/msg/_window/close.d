@@ -17,14 +17,8 @@
 
 module msg._window.close;
 
-private import
-	msg.msg,
-	msg.provider.gen,
-	msg.handler.gen;
+private import msg.msg;
 
 class MsgWindowClose : Msg {
 	 
 }
-
-mixin(MsgProviderGen!"WindowClose");
-mixin(MsgHandlerGen!"WindowClose");

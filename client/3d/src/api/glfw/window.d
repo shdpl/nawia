@@ -26,40 +26,30 @@ import window.window;
 
 
 	
-package class WindowGLFW : Window
+package class WindowGLFW : Window, MsgProvider!MsgWindowClose, MsgProvider!MsgWindowResize, MsgProvider!MsgWindowRefresh
 {
 	private:
+	static Window hInstance = null;
 	string _title;
 	CordsScreen _position;
 	WindowProperties _props;
-	MsgProviderWindowClose _prvdrClose;
-	MsgProviderWindowResize _prvdrResize;
-	MsgProviderWindowRefresh _prvdrRefresh;
+	MsgListener!MsgWindowClose _lstnrClose;
+	MsgListener!MsgWindowRefresh _lstnrRefresh;
+	MsgListener!MsgWindowResize _lstnrResize;
 	
 	public:
 	
-	this(WindowProperties hints)
-	{
-		int __tmp_i1, __tmp_i2;
+	override static Window getInstance(WindowProperties hints) {
 		
-		glfwDisable(GLFW_AUTO_POLL_EVENTS);
-		
-		applyHints(hints);
-		with(hints)
-			glfwOpenWindow(size.x, size.y,
-				rgb[0], rgb[1], rgb[2],
-				alpha, depth, stencil, GLFW_WINDOW);
-		
-		_props = new WindowProperties();
-		glfwGetWindowSize(&__tmp_i1, &__tmp_i2);
-		_props.size = new CordsScreen(__tmp_i1, __tmp_i2);
+		if (hInstance is null) {
+			hInstance = new WindowGLFW(hints);
+		}
+		return hInstance;
 	}
 	
-	~this()
-	{
-		glfwCloseWindow();
+	override static void delInstance() {
+		hInstance = null;
 	}
-	
 	
 	override void title(in string title) {
 		_title = title;
@@ -151,7 +141,7 @@ package class WindowGLFW : Window
 	
 	override WindowMode[] supportedModes() {
 		WindowMode[] modes = new WindowMode[16];
-		uint len = glfwGetVideoModes(modes, modes.length);
+		uint len = glfwGetVideoModes(cast(GLFWvidmode*)modes, modes.length);
 		modes.length = len;
 		return modes;
 	}
@@ -162,39 +152,63 @@ package class WindowGLFW : Window
 		return ret;
 	}
 	
-	override bool setMsgProviderClose( MsgProviderWindowClose prvdr ) {
-		_prvdrClose = prvdr;
-		glfwSetWindowCloseCallback(!is(prvdr) ?
+	override bool setMsgListener( MsgListener!MsgWindowClose lstnr ) {
+		_lstnrClose = lstnr;
+		glfwSetWindowCloseCallback(!is(lstnr) ?
 			cast(GLFWwindowclosefun)&onClose : null); /* TODO: better method? */
 		return true;
 	}
 	
-	override bool setMsgProviderResize( MsgProviderWindowResize prvdr ) {
-		_prvdrResize = prvdr;
-		glfwSetWindowSizeCallback(!is(prvdr) ?
+	override bool setMsgListener( MsgListener!MsgWindowResize lstnr ) {
+		_lstnrResize = lstnr;
+		glfwSetWindowSizeCallback(!is(lstnr) ?
 			cast(GLFWwindowsizefun)&onResize : null); /* TODO: better method? */
 		return true;
 	}
 	
-	override bool setMsgProviderRefresh( MsgProviderWindowRefresh prvdr ) {
-		_prvdrRefresh = prvdr;
-		glfwSetWindowRefreshCallback(!is(prvdr) ?
+	override bool setMsgListener( MsgListener!MsgWindowRefresh lstnr ) {
+		_lstnrRefresh = lstnr;
+		glfwSetWindowRefreshCallback(!is(lstnr) ?
 			cast(GLFWwindowrefreshfun)&onRefresh : null); /* TODO: better method? */
 		return true;
 	}
 	
 	private:
+
+	this(WindowProperties hints)
+	{
+		int __tmp_i1, __tmp_i2;
+		
+		glfwDisable(GLFW_AUTO_POLL_EVENTS);
+			
+		applyHints(hints);
+		with(hints)
+			glfwOpenWindow(size.x, size.y,
+				rgb[0], rgb[1], rgb[2],
+				alpha, depth, stencil, GLFW_WINDOW);
+		
+		_props = new WindowProperties();
+		glfwGetWindowSize(&__tmp_i1, &__tmp_i2);
+		_props.size = new CordsScreen(__tmp_i1, __tmp_i2);
+	}
+	
+	~this()
+	{
+		glfwCloseWindow();
+	}
+
 	extern(C) {	/* Warning! Methods prohibited, and fields might be unitialized */
 		int onClose() {
-			return false;
+			//TODO:
+			return GL_TRUE;
 		}
 	
 		void onResize(int x, int y) {
-			if (is(title) )
-				{writeln("dupa");}
+			//TODO:
 		}
 	
 		void onRefresh() {
+			//TODO:
 		}
 	}
 	

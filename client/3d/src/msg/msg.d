@@ -18,6 +18,6 @@
 module msg.msg;
 
 
-abstract class Msg {
+interface Msg {
 
 }

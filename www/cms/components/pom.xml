@@ -12,6 +12,6 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 	<modules>
-		<module>forum</module>
+		<module>creature_editor</module>
 	</modules>
 </project>

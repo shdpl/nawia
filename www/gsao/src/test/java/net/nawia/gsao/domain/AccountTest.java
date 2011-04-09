@@ -19,7 +19,7 @@ package net.nawia.gsao.domain;
 import java.sql.Date;
 
 import net.nawia.gsao.dao.*;
-import net.nawia.gsao.dao.exceptions.ExceptionDao;
+import net.nawia.gsao.dao.exception.ExceptionDao;
 
 import org.jboss.arquillian.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
@@ -50,131 +50,131 @@ public class AccountTest extends Arquillian {
 	private DaoAccount getDao() throws ExceptionDao {
 		return (DaoAccount) DaoFactory.build(DaoAccount.class);
 	}
-	
-	@Test
-	public void createSingleTest() throws ExceptionDao {
-		Account stored = buildPrototype();
-		assert (stored.getEmail().equals(stored.getEmail()));
-		assert (stored.getId() == stored.getId());
-		assert (stored.getName().equals(stored.getName()));
-		assert (stored.getPassword().equals(stored.getPassword()));
-		assert (stored.getPremend().equals(stored.getPremend()));
-		assert (stored.getWarnings() == stored.getWarnings());
-		assert (stored.equals(stored));
-
-		DaoAccount daoAcc = getDao();
-		daoAcc.persist(stored);
-		Account retrieved = daoAcc.find(stored.getId());
-		assert (retrieved.equals(stored));
-		assert (stored.getId() == retrieved.getId());
-
-		daoAcc.remove(stored);
-		assert (null == daoAcc.find(stored.getId()));
-	}
-
-	@Test//(dependsOnMethods = "createSingleTest") TODO: https://issues.jboss.org/browse/ARQ-55
-	public void createMultipleTest() throws ExceptionDao {
-		DaoAccount daoAcc = getDao();
-		Account a1 = buildPrototype();
-		Account a2 = buildPrototype();
-		a2.setName("Joseph");
-		assert (!a1.equals(a2));
-
-		daoAcc.persist(a1);
-		daoAcc.persist(a2);
-
-		Account na1 = daoAcc.find(a1.getId());
-		Account na2 = daoAcc.find(a2.getId());
-		assert (na1.equals(a1));
-		assert (na2.equals(a2));
-
-		assert (na1.getEmail().equals(na2.getEmail()));
-		assert (na1.getId() != na2.getId());
-		assert (!na1.getName().equals(na2.getName()));
-		assert (na1.getPassword().equals(na2.getPassword()));
-		assert (na1.getPremend().equals(na2.getPremend()));
-		assert (na1.getWarnings() == na2.getWarnings());
-		assert (!na1.equals(na2));
-
-		daoAcc.remove(a2);
-		assert (null == daoAcc.find(a2.getId()));
-		assert (null != daoAcc.find(a1.getId()));
-
-		daoAcc.remove(a1);
-		assert (null == daoAcc.find(a1.getId()));
-	}
-
-	@Test//(dependsOnMethods = "createSingleTest") TODO: https://issues.jboss.org/browse/ARQ-55
-	public void updateSingleTest() throws ExceptionDao {
-		DaoAccount daoAcc = getDao();
-		Account stored = buildPrototype();
-		daoAcc.persist(stored);
-
-		final boolean newBlocked = !stored.isBlocked();
-		final String newEmail = stored.getEmail().concat("a");
-		final String newName = stored.getName().concat("a");
-		final String newPass = stored.getPassword().concat("0");
-		final Date newPremend = new Date(stored.getPremend().getTime() + 1);
-		final short newWarns = (short) (stored.getWarnings() + 1);
-
-		Account toCmp = stored;
-		toCmp.setBlocked(newBlocked);
-		toCmp.setEmail(newEmail);
-		toCmp.setName(newName);
-		toCmp.setPassword(newPass);
-		toCmp.setPremend(newPremend);
-		toCmp.setWarnings(newWarns);
-		daoAcc.persist(toCmp);
-		assert (toCmp.getId() == stored.getId());
-
-		toCmp = daoAcc.find(stored.getId());
-		daoAcc.remove(toCmp);
-
-		assert (newBlocked == toCmp.isBlocked());
-		assert (newEmail.equals(toCmp.getEmail()));
-		assert (stored.getId() == toCmp.getId());
-		assert (newName.equals(toCmp.getName()));
-		assert (newPass.equals(toCmp.getPassword()));
-		assert (newPremend.equals(toCmp.getPremend()));
-		assert (newWarns == toCmp.getWarnings());
-	}
-
-	@Test//(dependsOnMethods = "createMultipleTest") TODO: https://issues.jboss.org/browse/ARQ-55
-	public void updateMultipleTest() throws ExceptionDao {
-		DaoAccount daoAcc = getDao();
-		Account s[] = { buildPrototype(), buildPrototype() };
-
-		daoAcc.persist(s[0]);
-		s[1].setName("Joseph");
-		daoAcc.persist(s[1]);
-
-		for (Account a : s) {
-			final boolean newBlocked = !a.isBlocked();
-			final String newEmail = a.getEmail().concat("a");
-			final String newName = a.getName().concat("a");
-			final String newPass = a.getPassword().concat("0");
-			final Date newPremend = new Date(a.getPremend().getTime() + 1);
-			final short newWarns = (short) (a.getWarnings() + 1);
-
-			Account toCmp = a;
-			toCmp.setBlocked(newBlocked);
-			toCmp.setEmail(newEmail);
-			toCmp.setName(newName);
-			toCmp.setPassword(newPass);
-			toCmp.setPremend(newPremend);
-			toCmp.setWarnings(newWarns);
-			daoAcc.persist(toCmp);
-			toCmp = daoAcc.find(a.getId());
-
-			assert (newBlocked == toCmp.isBlocked());
-			assert (newEmail.equals(toCmp.getEmail()));
-			assert (a.getId() == toCmp.getId());
-			assert (newName.equals(toCmp.getName()));
-			assert (newPass.equals(toCmp.getPassword()));
-			assert (newPremend.equals(toCmp.getPremend()));
-			assert (newWarns == toCmp.getWarnings());
-		}
-		daoAcc.remove(s[0]);
-		daoAcc.remove(s[1]);
-	}
+//	
+//	@Test
+//	public void createSingleTest() throws ExceptionDao {
+//		Account stored = buildPrototype();
+//		assert (stored.getEmail().equals(stored.getEmail()));
+//		assert (stored.getId() == stored.getId());
+//		assert (stored.getName().equals(stored.getName()));
+//		assert (stored.getPassword().equals(stored.getPassword()));
+//		assert (stored.getPremend().equals(stored.getPremend()));
+//		assert (stored.getWarnings() == stored.getWarnings());
+//		assert (stored.equals(stored));
+//
+//		DaoAccount daoAcc = getDao();
+//		daoAcc.persist(stored);
+//		Account retrieved = daoAcc.find(stored.getId());
+//		assert (retrieved.equals(stored));
+//		assert (stored.getId() == retrieved.getId());
+//
+//		daoAcc.remove(stored);
+//		assert (null == daoAcc.find(stored.getId()));
+//	}
+//
+//	@Test//(dependsOnMethods = "createSingleTest") TODO: https://issues.jboss.org/browse/ARQ-55
+//	public void createMultipleTest() throws ExceptionDao {
+//		DaoAccount daoAcc = getDao();
+//		Account a1 = buildPrototype();
+//		Account a2 = buildPrototype();
+//		a2.setName("Joseph");
+//		assert (!a1.equals(a2));
+//
+//		daoAcc.persist(a1);
+//		daoAcc.persist(a2);
+//
+//		Account na1 = daoAcc.find(a1.getId());
+//		Account na2 = daoAcc.find(a2.getId());
+//		assert (na1.equals(a1));
+//		assert (na2.equals(a2));
+//
+//		assert (na1.getEmail().equals(na2.getEmail()));
+//		assert (na1.getId() != na2.getId());
+//		assert (!na1.getName().equals(na2.getName()));
+//		assert (na1.getPassword().equals(na2.getPassword()));
+//		assert (na1.getPremend().equals(na2.getPremend()));
+//		assert (na1.getWarnings() == na2.getWarnings());
+//		assert (!na1.equals(na2));
+//
+//		daoAcc.remove(a2);
+//		assert (null == daoAcc.find(a2.getId()));
+//		assert (null != daoAcc.find(a1.getId()));
+//
+//		daoAcc.remove(a1);
+//		assert (null == daoAcc.find(a1.getId()));
+//	}
+//
+//	@Test//(dependsOnMethods = "createSingleTest") TODO: https://issues.jboss.org/browse/ARQ-55
+//	public void updateSingleTest() throws ExceptionDao {
+//		DaoAccount daoAcc = getDao();
+//		Account stored = buildPrototype();
+//		daoAcc.persist(stored);
+//
+//		final boolean newBlocked = !stored.isBlocked();
+//		final String newEmail = stored.getEmail().concat("a");
+//		final String newName = stored.getName().concat("a");
+//		final String newPass = stored.getPassword().concat("0");
+//		final Date newPremend = new Date(stored.getPremend().getTime() + 1);
+//		final short newWarns = (short) (stored.getWarnings() + 1);
+//
+//		Account toCmp = stored;
+//		toCmp.setBlocked(newBlocked);
+//		toCmp.setEmail(newEmail);
+//		toCmp.setName(newName);
+//		toCmp.setPassword(newPass);
+//		toCmp.setPremend(newPremend);
+//		toCmp.setWarnings(newWarns);
+//		daoAcc.persist(toCmp);
+//		assert (toCmp.getId() == stored.getId());
+//
+//		toCmp = daoAcc.find(stored.getId());
+//		daoAcc.remove(toCmp);
+//
+//		assert (newBlocked == toCmp.isBlocked());
+//		assert (newEmail.equals(toCmp.getEmail()));
+//		assert (stored.getId() == toCmp.getId());
+//		assert (newName.equals(toCmp.getName()));
+//		assert (newPass.equals(toCmp.getPassword()));
+//		assert (newPremend.equals(toCmp.getPremend()));
+//		assert (newWarns == toCmp.getWarnings());
+//	}
+//
+//	@Test//(dependsOnMethods = "createMultipleTest") TODO: https://issues.jboss.org/browse/ARQ-55
+//	public void updateMultipleTest() throws ExceptionDao {
+//		DaoAccount daoAcc = getDao();
+//		Account s[] = { buildPrototype(), buildPrototype() };
+//
+//		daoAcc.persist(s[0]);
+//		s[1].setName("Joseph");
+//		daoAcc.persist(s[1]);
+//
+//		for (Account a : s) {
+//			final boolean newBlocked = !a.isBlocked();
+//			final String newEmail = a.getEmail().concat("a");
+//			final String newName = a.getName().concat("a");
+//			final String newPass = a.getPassword().concat("0");
+//			final Date newPremend = new Date(a.getPremend().getTime() + 1);
+//			final short newWarns = (short) (a.getWarnings() + 1);
+//
+//			Account toCmp = a;
+//			toCmp.setBlocked(newBlocked);
+//			toCmp.setEmail(newEmail);
+//			toCmp.setName(newName);
+//			toCmp.setPassword(newPass);
+//			toCmp.setPremend(newPremend);
+//			toCmp.setWarnings(newWarns);
+//			daoAcc.persist(toCmp);
+//			toCmp = daoAcc.find(a.getId());
+//
+//			assert (newBlocked == toCmp.isBlocked());
+//			assert (newEmail.equals(toCmp.getEmail()));
+//			assert (a.getId() == toCmp.getId());
+//			assert (newName.equals(toCmp.getName()));
+//			assert (newPass.equals(toCmp.getPassword()));
+//			assert (newPremend.equals(toCmp.getPremend()));
+//			assert (newWarns == toCmp.getWarnings());
+//		}
+//		daoAcc.remove(s[0]);
+//		daoAcc.remove(s[1]);
+//	}
 }

@@ -25,9 +25,9 @@ public import msg.msg,
 
 class MsgMediatorMtD : MsgMediator {
 	
-	MsgHandler[MsgHandler][TypeInfo] _handlers;
-	MsgListener[MsgListener][TypeInfo] _listeners;
-	MsgProvider[MsgProvider][TypeInfo] _providers;
+	MsgHandler!Msg[MsgHandler!Msg][TypeInfo] _handlers;
+	MsgListener!Msg[MsgListener!Msg][TypeInfo] _listeners;
+	MsgProvider!Msg[MsgProvider!Msg][TypeInfo] _providers;
 	
 	this() {
 		_handlers = null;
@@ -37,18 +37,18 @@ class MsgMediatorMtD : MsgMediator {
 		setMaxMailboxSize(thisTid, 1024, OnCrowding.throwException);
 	}
 	
-	override bool addHandler(MsgHandler hndlr) {
+	override bool addHandler(MsgHandler!Msg hndlr) {
 		auto msgtype = typeid(hndlr.getMsg());
-		if ( type !in _handlers )
+		if ( !type in _handlers )
 			_handlers[type] = null;
-		if ( hndlr !in _handlers[type] ) {
+		if ( !hndlr in _handlers[type] ) {
 			_handlers[type][hndlr] = hndlr;
 			return true;
 		} 
 		return false;
 	}
 	
-	override bool delHandler(MsgHandler hndlr)
+	override bool delHandler(MsgHandler!Msg hndlr)
 	in {
 		assert(typeid(hndlr) in _handlers);
 	}body{
@@ -60,18 +60,18 @@ class MsgMediatorMtD : MsgMediator {
 		return false;
 	}
 	
-	override bool addListener(MsgListener lstnr) {
+	override bool addListener(MsgListener!Msg lstnr) {
 		auto type = typeid(lstnr);
-		if ( type !in _listeners )
+		if ( !type in _listeners )
 			_listeners[type] = null;
-		if ( lstnr !in _listeners[type]) {
+		if ( !lstnr in _listeners[type]) {
 			_listeners[type][lstnr] = lstnr;
 			return true;
 		}
 		return false;
 	}
 	
-	override bool delListener(MsgListener lstnr)
+	override bool delListener(MsgListener!Msg lstnr)
 	in {
 		assert(typeid(lstnr) in _listeners);
 	}body{
@@ -83,11 +83,11 @@ class MsgMediatorMtD : MsgMediator {
 		return false;
 	}
 	
-	override bool addProvider(MsgProvider prvdr) {
+	override bool addProvider(MsgProvider!Msg prvdr) {
 		auto type = typeid(prvdr);
-		if ( type !in _providers )
+		if ( !type in _providers )
 			_providers[type] = null;
-		if ( prvdr !in _providers[type] ) {
+		if ( !prvdr in _providers[type] ) {
 			_providers[type][prvdr] = prvdr;
 			return true;
 		}
@@ -95,7 +95,7 @@ class MsgMediatorMtD : MsgMediator {
 		
 	}
 	
-	override bool delProvider(MsgProvider prvdr)
+	override bool delProvider(MsgProvider!Msg prvdr)
 	in {
 		assert(typeid(prvdr) in _providers);
 	}body{

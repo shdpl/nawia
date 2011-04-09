@@ -17,20 +17,14 @@
 
 module msg.handler.recording;
 
-import msg.handler.handler;
+import msg.handler.handler,
+	msg.msg;
 
-class MsgHandlerRecording : MsgHandler {
+class MsgHandlerRecording : MsgHandler!Msg {
 	
-	/**
-	 * Handle message.
-	 * 
-	 * Params:
-	 * 		msg		= message to handle
-	 *
-	 * Returns:
-	 *		true	= continue delivering
-	 *		false	= ignore message
-	 */
-	bool msgHandle();
+	override bool msgHandle(Msg msg) {
+		//TODO:
+		return true;
+	}
 	
 }

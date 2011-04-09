@@ -17,11 +17,10 @@
 
 module msg.provider.provider;
 
-private import msg.msg;
-protected import msg.provider.gen;
+private import msg.listener.listener;
 
-abstract class MsgProvider {
+interface MsgProvider(Msg) {
 	
-	Msg getMsg();
+	 bool setListener(MsgListener!Msg lstnr);
 	
 }

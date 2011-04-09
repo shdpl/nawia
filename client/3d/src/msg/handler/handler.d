@@ -17,7 +17,7 @@
 
 module msg.handler.handler;
 
-abstract class MsgHandler {
+interface MsgHandler(Msg) {
 	
 	/**
 	 * Handle message.
@@ -29,6 +29,6 @@ abstract class MsgHandler {
 	 *		true	= continue delivering
 	 *		false	= ignore message
 	 */
-	bool msgHandle();
+	bool msgHandle(Msg msg);
 	
 }

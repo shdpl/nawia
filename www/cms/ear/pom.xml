@@ -78,6 +78,7 @@
 					<fileNames>
 						<fileName>${project.build.directory}/${project.build.finalName}.ear</fileName>
 					</fileNames>
+					<unpack>true</unpack>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -19,14 +19,17 @@ module window.window;
 
 public import
 	msg._window.close,
-	msg._window.resize,
 	msg._window.refresh,
+	msg._window.resize,
+	msg.listener.listener,
+	msg.provider.provider,
 	type.screen.cords,
 	type.color.rgb,
 	window.properties,
 	window.mode;
 
-interface Window
+interface Window : MsgProvider!MsgWindowRefresh, MsgProvider!MsgWindowResize,
+	MsgProvider!MsgWindowClose
 {
 	
 	string title();
@@ -67,9 +70,9 @@ interface Window
 	WindowMode[] supportedModes();
 	WindowMode desktopMode();
 
-	bool setMsgProviderClose( MsgProviderWindowClose prvdr );
-	bool setMsgProviderResize( MsgProviderWindowResize prvdr );
-	bool setMsgProviderRefresh( MsgProviderWindowRefresh prvdr );
+	bool setMsgListener( MsgListener!MsgWindowClose prvdr );
+	bool setMsgListener( MsgListener!MsgWindowResize prvdr );
+	bool setMsgListener( MsgListener!MsgWindowRefresh prvdr );
 	
 }
 

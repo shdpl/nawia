@@ -33,14 +33,14 @@ abstract class MsgMediator {
 	 * Params:
 	 * 		hndlr =		MsgHandler to add
 	 */
-	bool addHandler(MsgHandler hndlr);
-	bool delHandler(MsgHandler hndlr);
+	bool addHandler(MsgHandler!Msg hndlr);
+	bool delHandler(MsgHandler!Msg hndlr);
 	
-	bool addListener(MsgListener lst);
-	bool delListener(MsgListener lst);
+	bool addListener(MsgListener!Msg lst);
+	bool delListener(MsgListener!Msg lst);
 	
-	bool addProvider(MsgProvider prvdr);
-	bool delProvider(MsgProvider prvdr);
+	bool addProvider(MsgProvider!Msg prvdr);
+	bool delProvider(MsgProvider!Msg prvdr);
 	
 	void poll();
 }

@@ -18,8 +18,7 @@
 module msg.listener.listener;
 
 public import msg.msg;
-public import msg.listener.gen;
 
-abstract class MsgListener {
-	void setMsg(Msg msg);
+interface MsgListener(Msg) {
+	void postMsg(Msg msg);
 }
