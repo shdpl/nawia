@@ -691,7 +691,7 @@ void RenderDevice::destroyShader( uint32 shaderId )
 
 	RDIShader &shader = _shaders.getRef( shaderId );
 	glDeleteProgram( shader.oglProgramObj );
-	_buffers.remove( shaderId );
+	_shaders.remove( shaderId );
 }
 
 

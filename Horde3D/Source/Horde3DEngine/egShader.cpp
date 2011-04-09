@@ -867,29 +867,30 @@ void ShaderResource::compileCombination( ShaderContext &context, ShaderCombinati
 			out0.close();
 			out1.close();
 		}
-		return;
 	}
-
-	gRDI->bindShader( sc.shaderObj );
-
-	// Find samplers in compiled shader
-	sc.customSamplers.reserve( _samplers.size() );
-	for( uint32 i = 0; i < _samplers.size(); ++i )
+	else
 	{
-		int samplerLoc = gRDI->getShaderSamplerLoc( sc.shaderObj, _samplers[i].id.c_str() );
-		sc.customSamplers.push_back( samplerLoc );
+		gRDI->bindShader( sc.shaderObj );
+
+		// Find samplers in compiled shader
+		sc.customSamplers.reserve( _samplers.size() );
+		for( uint32 i = 0; i < _samplers.size(); ++i )
+		{
+			int samplerLoc = gRDI->getShaderSamplerLoc( sc.shaderObj, _samplers[i].id.c_str() );
+			sc.customSamplers.push_back( samplerLoc );
+			
+			// Set texture unit
+			if( samplerLoc >= 0 )
+				gRDI->setShaderSampler( samplerLoc, _samplers[i].texUnit );
+		}
 		
-		// Set texture unit
-		if( samplerLoc >= 0 )
-			gRDI->setShaderSampler( samplerLoc, _samplers[i].texUnit );
-	}
-	
-	// Find uniforms in compiled shader
-	sc.customUniforms.reserve( _uniforms.size() );
-	for( uint32 i = 0; i < _uniforms.size(); ++i )
-	{
-		sc.customUniforms.push_back(
-			gRDI->getShaderConstLoc( sc.shaderObj, _uniforms[i].id.c_str() ) );
+		// Find uniforms in compiled shader
+		sc.customUniforms.reserve( _uniforms.size() );
+		for( uint32 i = 0; i < _uniforms.size(); ++i )
+		{
+			sc.customUniforms.push_back(
+				gRDI->getShaderConstLoc( sc.shaderObj, _uniforms[i].id.c_str() ) );
+		}
 	}
 
 	gRDI->bindShader( 0 );
