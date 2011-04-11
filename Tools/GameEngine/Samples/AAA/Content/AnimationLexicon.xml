@@ -825,4 +825,20 @@
 			<File>char_male_laufen.anim</File>			
 		</Files>	
 	</Posture>
+	<Posture>
+		<ID>0054</ID>
+		<Name>Japanese_posture_JHS</Name>
+		<Description>300 Frames posture in which the character holds the one hand with the other hand infront of his/her stomach</Description>
+		<Files gender="female">
+			<File strokeStart="0" strokeEnd="300">Gestures\Female\female_jap_JHS_stroke.anim</File>
+			<File type="preparation" strokeStart="12" strokeEnd="28">Gestures\Female\female_jap_JHS_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="33">Gestures\Female\female_jap_JHS_ret.anim</File>			
+		</Files>
+		<Files gender="male">
+			<File strokeStart="0" strokeEnd="300">Gestures\Male\male_ger_handsOnHips_stroke.anim</File>
+			<File type="preparation" strokeStart="7" strokeEnd="25">Gestures\Male\male_ger_handsOnHips_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="38">Gestures\Male\male_ger_handsOnHips_ret.anim</File>			
+		</Files>
+		<Restriction>Germany</Restriction>		
+	</Posture>
 </AnimationLexicon>
