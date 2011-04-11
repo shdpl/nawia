@@ -837,7 +837,7 @@
 		<Files gender="male">
 			<File strokeStart="0" strokeEnd="300">Gestures\Male\male_ger_handsOnHips_stroke.anim</File>
 			<File type="preparation" strokeStart="7" strokeEnd="25">Gestures\Male\male_ger_handsOnHips_prep.anim</File>
-			<File type="retraction" strokeStart="15" strokeEnd="38">Gestures\Male\male_ger_handsOnHips_ret.anim</File>			
+			<File type="retraction" strokeStart="15" strokeEnd="30">Gestures\Male\male_ger_handsOnHips_ret.anim</File>			
 		</Files>
 		<Restriction>Germany</Restriction>		
 	</Posture>
