@@ -72,10 +72,6 @@ namespace GameEngine
 	 */
 	SOUNDPLUGINEXP void stopSound(unsigned int entityWorldID);
 
-	/**
-	 * Sets the Sound Velocity
-	 */
-	SOUNDPLUGINEXP void setSoundVelocity(unsigned int entityWorldID, float x, float y, float z);
 	
 	/**
 	 * Sets the Sound Gain
