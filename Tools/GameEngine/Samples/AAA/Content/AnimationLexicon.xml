@@ -841,4 +841,38 @@
 		</Files>
 		<Restriction>Germany</Restriction>		
 	</Posture>
+	<Gesture>
+		<ID>0055</ID>
+		<Name>Wipe Bar</Name>
+		<Speech></Speech>
+		<Description>The character wipes the bar</Description>
+		<Files gender="female">
+			<File strokeStart="14" strokeEnd="110">Gestures\Female\female_ger_barWipe.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="14" strokeEnd="110">Gestures\Male\male_ger_barWipe.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0056</ID>
+		<Name>Pour glas</Name>
+		<Speech></Speech>
+		<Description>The character takes a bottle, a glas and pours the bottle into the glass</Description>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="214">Gestures\Female\female_ger_pourGlas.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="214">Gestures\Male\male_ger_pourGlas.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
 </AnimationLexicon>
