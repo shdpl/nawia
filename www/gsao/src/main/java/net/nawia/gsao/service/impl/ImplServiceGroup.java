@@ -2,7 +2,7 @@ package net.nawia.gsao.service.impl;
 
 import java.util.List;
 
-import javax.ejb.Stateless;
+//import javax.ejb.Stateless;
 
 import net.nawia.gsao.domain.Group;
 import net.nawia.gsao.domain.Player;
@@ -10,7 +10,7 @@ import net.nawia.gsao.service.ServiceGroup;
 import net.nawia.gsao.service.local.ServiceGroupLocal;
 import net.nawia.gsao.service.remote.ServiceGroupRemote;
 
-@Stateless(name="ServiceGroup")
+//@Stateless(name="ServiceGroup")
 //@DeclareRoles({"GM"})
 //@RolesAllowed({"GM"})
 //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

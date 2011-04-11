@@ -3,7 +3,6 @@ package net.nawia.gsao.service;
 import java.util.Map;
 
 
-import javax.ejb.Remote;
 
 import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.domain.Ban;

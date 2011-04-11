@@ -1,8 +1,6 @@
 package net.nawia.gsao.service.exception;
 
-import javax.ejb.ApplicationException;
-
-@ApplicationException
+//@ApplicationException
 public class ExceptionServiceHouse extends Exception {
 	
 	/**

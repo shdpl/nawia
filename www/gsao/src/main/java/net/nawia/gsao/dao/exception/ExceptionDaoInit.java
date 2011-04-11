@@ -1,8 +1,8 @@
 package net.nawia.gsao.dao.exception;
 
-import javax.ejb.ApplicationException;
+//import javax.ejb.ApplicationException;
 
-@ApplicationException
+//@ApplicationException
 public class ExceptionDaoInit extends ExceptionDao {
 
 	/**

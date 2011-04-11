@@ -96,11 +96,5 @@
 			<artifactId>zml</artifactId>
 			<version>${zk.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>net.nawia.www</groupId>
-			<artifactId>gsao</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<type>ejb</type>
-		</dependency>
 	</dependencies>
 </project>

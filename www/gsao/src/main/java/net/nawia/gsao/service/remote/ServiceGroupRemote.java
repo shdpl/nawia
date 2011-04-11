@@ -1,10 +1,10 @@
 package net.nawia.gsao.service.remote;
 
-import javax.ejb.Remote;
+//import javax.ejb.Remote;
 
 import net.nawia.gsao.service.ServiceGroup;
 
-@Remote
+//@Remote
 public interface ServiceGroupRemote extends ServiceGroup {
 
 }

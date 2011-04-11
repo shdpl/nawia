@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.*;
+//import javax.ejb.*;
 
 import net.nawia.gsao.dao.DaoAccount;
 import net.nawia.gsao.dao.DaoBan;
@@ -20,7 +20,7 @@ import net.nawia.gsao.service.ServiceBan;
 import net.nawia.gsao.service.local.ServiceBanLocal;
 import net.nawia.gsao.service.remote.ServiceBanRemote;
 
-@Stateless(name = "ServiceBan")
+//@Stateless(name = "ServiceBan")
 // @DeclareRoles({"GM"})
 // @RolesAllowed({"GM"})
 // @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

@@ -91,9 +91,20 @@
 				</element>
 
 				<element name="strategy">
+					<annotation>
+						<documentation>Deprecated.</documentation>
+					</annotation>
 					<complexType>
-						<attribute name="attack" type="integer" />
-						<attribute name="defence" type="integer" />
+						<attribute name="attack" type="integer">
+							<annotation>
+								<documentation>Deprecated.</documentation>
+							</annotation>
+						</attribute>
+						<attribute name="defence" type="integer">
+							<annotation>
+								<documentation>Deprecated.</documentation>
+							</annotation>
+						</attribute>
 					</complexType>
 				</element>
 
