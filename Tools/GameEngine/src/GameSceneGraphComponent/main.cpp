@@ -21,8 +21,6 @@
 // Copyright (C) 2007 Volker Wiendl
 // 
 // ****************************************************************************************
-#include "GameEngine_SceneGraph.h"
-
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameLog.h>
 #include <GameEngine/GameWorld.h>
@@ -39,6 +37,12 @@
 #include <Horde3D/Horde3DUtils.h>
 
 struct lua_State;
+
+#ifdef PLATFORM_WIN
+#    define SCENEGRAPHPLUGINEXP extern "C" __declspec( dllexport )
+#else
+#	 define SCENEGRAPHPLUGINEXP extern "C"
+#endif
 
 SCENEGRAPHPLUGINEXP void dllLoadGamePlugin(void)
 {

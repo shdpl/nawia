@@ -32,7 +32,7 @@
 
 namespace GameEngine
 {
-	COLLISIONPLUGINEXP size_t numCollisions(unsigned int entityWorldID)
+	COLLISIONAPI size_t numCollisions(unsigned int entityWorldID)
 	{
 		CollisionComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -43,7 +43,7 @@ namespace GameEngine
 		return 0;
 	}
 
-	COLLISIONPLUGINEXP unsigned int collision(unsigned int entityWorldID, int index)
+	COLLISIONAPI unsigned int collision(unsigned int entityWorldID, int index)
 	{		
 		CollisionComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);

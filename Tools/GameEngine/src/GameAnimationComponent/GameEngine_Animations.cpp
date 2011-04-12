@@ -31,7 +31,7 @@
 
 namespace GameEngine
 {
-	ANIMATIONSPLUGINEXP int playAnim(unsigned int entityWorldID, const char* animation, const int stage /*= 0*/, const float weight /*= 1.0f*/, 
+	ANIMATIONSAPI int playAnim(unsigned int entityWorldID, const char* animation, const int stage /*= 0*/, const float weight /*= 1.0f*/, 
 		const float duration /*= -1.0f*/, const float speed /*= 30.0f*/, const float timeoffset /*= 0.0f*/)
 	{		
 		KeyframeAnimComponent* component = 0;
@@ -47,7 +47,7 @@ namespace GameEngine
 		return -1;
 	}
 
-	ANIMATIONSPLUGINEXP void updateAnim(unsigned int entityWorldID, const int jobID, const GameEngineAnimParams::List paramType, const float value, const float timeoffset /*= 0*/)
+	ANIMATIONSAPI void updateAnim(unsigned int entityWorldID, const int jobID, const GameEngineAnimParams::List paramType, const float value, const float timeoffset /*= 0*/)
 	{		
 		KeyframeAnimComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -60,7 +60,7 @@ namespace GameEngine
 		}		
 	}
 
-	ANIMATIONSPLUGINEXP bool isPlaying( unsigned int entityWorldID, const char* animation )
+	ANIMATIONSAPI bool isPlaying( unsigned int entityWorldID, const char* animation )
 	{
 		KeyframeAnimComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -71,7 +71,7 @@ namespace GameEngine
 		return false;
 	}
 
-	ANIMATIONSPLUGINEXP float getAnimLength( unsigned int entityWorldID, const char* animation)
+	ANIMATIONSAPI float getAnimLength( unsigned int entityWorldID, const char* animation)
 	{
 		KeyframeAnimComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -82,7 +82,7 @@ namespace GameEngine
 		return 0;
 	}
 
-	ANIMATIONSPLUGINEXP float getAnimSpeed( unsigned int entityWorldID, const char* animation)
+	ANIMATIONSAPI float getAnimSpeed( unsigned int entityWorldID, const char* animation)
 	{
 		KeyframeAnimComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);

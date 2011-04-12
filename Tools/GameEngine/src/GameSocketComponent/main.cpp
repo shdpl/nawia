@@ -21,13 +21,17 @@
 // authors: Ionut Damian, Nikolaus Bee, Felix Kistler
 // 
 // ****************************************************************************************
-#include "GameEngine_Socket.h"
-
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameComponentRegistry.h>
 
 #include "SocketManager.h"
 #include "SocketComponent.h"
+
+#ifdef PLATFORM_WIN
+#    define SOCKETPLUGINEXP extern "C" __declspec( dllexport )
+#else
+#	 define SOCKETPLUGINEXP extern "C" 
+#endif
 
 SOCKETPLUGINEXP void dllLoadGamePlugin(void)
 {

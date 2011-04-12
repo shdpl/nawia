@@ -17,12 +17,12 @@
 
 #ifdef PLATFORM_WIN
 #	 ifdef FACSCONTROLCOMPONENT_EXPORTS
-#       define FACSCONTROLPLUGINEXP extern "C" __declspec( dllexport )
+#       define FACSCONTROLAPI __declspec( dllexport )
 #	 else
-#       define FACSCONTROLPLUGINEXP extern "C" __declspec( dllimport )
+#       define FACSCONTROLAPI __declspec( dllimport )
 #    endif
 #else
-#	 define FACSCONTROLPLUGINEXP extern "C" 
+#	 define FACSCONTROLAPI
 #endif
 
 #include <string>
@@ -35,10 +35,10 @@ namespace GameEngine
 	 * TODO
 	*/
 
-	//FACSCONTROLPLUGINEXP int getSocketData( unsigned int entityWorldID, const char **data );
-	FACSCONTROLPLUGINEXP void setFacialExpression( unsigned int entityWorldID, const std::string expression, const float intensity = 1.0f );
-	FACSCONTROLPLUGINEXP void setFacialExpressionPAD( unsigned int entityWorldID, float p, float a, float d );
-	FACSCONTROLPLUGINEXP void getAvailableExpressions( unsigned int entityWorldID, std::vector<std::string> &availableExpressions );
+	//FACSCONTROLAPI int getSocketData( unsigned int entityWorldID, const char **data );
+	FACSCONTROLAPI void setFacialExpression( unsigned int entityWorldID, const std::string expression, const float intensity = 1.0f );
+	FACSCONTROLAPI void setFacialExpressionPAD( unsigned int entityWorldID, float p, float a, float d );
+	FACSCONTROLAPI void getAvailableExpressions( unsigned int entityWorldID, std::vector<std::string> &availableExpressions );
 }
 
 #endif

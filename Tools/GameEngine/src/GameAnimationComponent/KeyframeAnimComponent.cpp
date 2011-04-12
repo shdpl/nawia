@@ -444,7 +444,7 @@ void KeyframeAnimComponent::loadFromXml(const XMLNode* description)
 		{
 			// Find size of resource file
 			inf.seekg( 0, std::ios::end );
-			const int size = inf.tellg();
+			const int size = (int) inf.tellg();
 			// Copy resource file to memory
 			char *data = new char[size + 1];
 			inf.seekg( 0 );

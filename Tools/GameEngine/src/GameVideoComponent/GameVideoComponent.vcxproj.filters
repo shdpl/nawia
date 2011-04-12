@@ -9,10 +9,6 @@
       <UniqueIdentifier>1133f8e0-b1f6-489d-84b6-5f146310873d</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>3b35e6e0-c870-40f2-8402-66b9b9d562f2</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine_Video.cpp">

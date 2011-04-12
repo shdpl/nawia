@@ -20,8 +20,6 @@
 // Copyright (C) 2010 Ionut Damian
 // 
 // ****************************************************************************************
-#include "GameEngine_IK.h"
-
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameComponentRegistry.h>
 #include <GameEngine/GameLog.h>
@@ -29,6 +27,12 @@
 #include "IKManager.h"
 #include "IKComponent.h"
 #include "Config.h"
+
+#ifdef PLATFORM_WIN
+#    define IKPLUGINEXP extern "C" __declspec( dllexport )
+#else
+#	 define IKPLUGINEXP extern "C" 
+#endif
 
 IKPLUGINEXP void dllLoadGamePlugin(void)
 {

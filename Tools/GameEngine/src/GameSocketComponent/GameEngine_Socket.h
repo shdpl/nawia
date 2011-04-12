@@ -28,12 +28,12 @@
 
 #ifdef PLATFORM_WIN
 #	 ifdef SOCKETCOMPONENT_EXPORTS
-#       define SOCKETPLUGINEXP extern "C" __declspec( dllexport )
+#       define SOCKETAPI __declspec( dllexport )
 #	 else
-#       define SOCKETPLUGINEXP extern "C" __declspec( dllimport )
+#       define SOCKETAPI __declspec( dllimport )
 #    endif
 #else
-#	 define SOCKETPLUGINEXP extern "C" 
+#	 define SOCKETAPI
 #endif
 
 ///communication protocols
@@ -61,22 +61,22 @@ namespace GameEngine
 	///@param data pointer to char array where the received socket data will be stored
 	///@param onlyNewestMessage flag for receiving only the newest message
 	///@return size of received data
-	SOCKETPLUGINEXP int getSocketData( unsigned int entityWorldID, const char **data, bool onlyNewestMessage = false);
+	SOCKETAPI int getSocketData( unsigned int entityWorldID, const char **data, bool onlyNewestMessage = false);
 
 	///Sends socket data to all known peers
 	///@param entityWorldID the entity we want to use the function on
 	///@param data pointer to char array that contains the data to be sent
-	SOCKETPLUGINEXP void sendSocketData( unsigned int entityWorldID, const char *data );
+	SOCKETAPI void sendSocketData( unsigned int entityWorldID, const char *data );
 
 	///Get the socket max message length
 	///@param entityWorldID the entity we want to use the function on
 	///@return the max message length in bytes, -1 if an error occured
-	SOCKETPLUGINEXP int getMaxMessageLength( unsigned int entityWorldID);
+	SOCKETAPI int getMaxMessageLength( unsigned int entityWorldID);
 
 	///Get the socket buffer length
 	///@param entityWorldID the entity we want to use the function on
 	///@return the buffer length in number of messages, -1 if an error occured
-	SOCKETPLUGINEXP int getMaxMessageLength( unsigned int entityWorldID);
+	SOCKETAPI int getMaxMessageLength( unsigned int entityWorldID);
 }
 
 #endif

@@ -21,14 +21,17 @@
 // Copyright (C) 2010 Felix Kistler
 // 
 // ****************************************************************************************
-    
-#include "GameEngine_Video.h"
-
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameComponentRegistry.h>
 
 #include "VideoManager.h"
 #include "VideoComponent.h"
+
+#ifdef PLATFORM_WIN
+#    define VIDEOPLUGINEXP extern "C" __declspec( dllexport )
+#else
+#	 define VIDEOPLUGINEXP extern "C"
+#endif
 
 VIDEOPLUGINEXP void dllLoadGamePlugin(void)
 {

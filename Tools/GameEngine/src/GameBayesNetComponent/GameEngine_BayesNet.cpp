@@ -35,7 +35,7 @@ namespace GameEngine
 	//@param node_name the name of the node in interest
 	//@param value_index the index of the value we are looking for
 	//@return the value of the node at the specified index
-	BAYESNETPLUGINEXP double Bayes_getNodeValue( unsigned int entityWorldID, const char* node_name, int value_index )
+	BAYESNETAPI double Bayes_getNodeValue( unsigned int entityWorldID, const char* node_name, int value_index )
 	{
 		BayesNetComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -50,7 +50,7 @@ namespace GameEngine
 	//@param entityWorldID the entity we want to use the function on
 	//@param node_name the name of the node in interest
 	//@param value_index the index at which we want to insert the value
-	BAYESNETPLUGINEXP void Bayes_setNodeValue( unsigned int entityWorldID, const char* node_name, int value )
+	BAYESNETAPI void Bayes_setNodeValue( unsigned int entityWorldID, const char* node_name, int value )
 	{
 		BayesNetComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -63,7 +63,7 @@ namespace GameEngine
 	//Sets the culture of the bayes net
 	//@param entityWorldID the entity we want to use the function on
 	//@param culture the index of the culture we want to use
-	BAYESNETPLUGINEXP void Bayes_setCulture( unsigned int entityWorldID, int culture )
+	BAYESNETAPI void Bayes_setCulture( unsigned int entityWorldID, int culture )
 	{
 		BayesNetComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -75,7 +75,7 @@ namespace GameEngine
 
 	//Makes an update of the network
 	//@param entityWorldID the entity we want to use the function on
-	BAYESNETPLUGINEXP void Bayes_updateNetwork( unsigned int entityWorldID )
+	BAYESNETAPI void Bayes_updateNetwork( unsigned int entityWorldID )
 	{
 		BayesNetComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);

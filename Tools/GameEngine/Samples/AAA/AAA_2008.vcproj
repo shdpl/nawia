@@ -145,12 +145,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OpenGL32.lib Horde3D_vc8.lib Horde3DUtils_vc8.lib ws2_32.lib sapi.lib"
+				AdditionalDependencies="OpenGL32.lib ws2_32.lib sapi.lib"
 				OutputFile="$(SolutionDir)/bin/$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)/Dependencies/lib&quot;;&quot;$(SolutionDir)/lib&quot;"
 				IgnoreDefaultLibraryNames=""
-				GenerateDebugInformation="false"
+				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

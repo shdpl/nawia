@@ -29,12 +29,12 @@
 
 #ifdef PLATFORM_WIN
 #	 ifdef VIDEOCOMPONENT_EXPORTS
-#       define VIDEOPLUGINEXP extern "C" __declspec( dllexport )
+#       define VIDEOAPI __declspec( dllexport )
 #	 else
-#       define VIDEOPLUGINEXP extern "C" __declspec( dllimport )
+#       define VIDEOAPI __declspec( dllimport )
 #    endif
 #else
-#	 define VIDEOPLUGINEXP extern "C"
+#	 define VIDEOAPI
 #endif
 
 namespace GameEngine
@@ -50,20 +50,20 @@ namespace GameEngine
 	 * Play the currently loaded avi
 	 * @param entityWorldID the entity we want to use the function on
 	 */
-	VIDEOPLUGINEXP void playAvi( unsigned int entityWorldID);
+	VIDEOAPI void playAvi( unsigned int entityWorldID);
 
 	/**
 	 * Stop the currently playing avi
 	 * @param entityWorldID the entity we want to use the function on
 	 */
-	VIDEOPLUGINEXP void stopAvi( unsigned int entityWorldID);
+	VIDEOAPI void stopAvi( unsigned int entityWorldID);
 
 	/**
 	 * Load a video file (starts the video automatically if autostart is set)
 	 * @param entityWorldID the entity we want to use the function on
 	 * @param file the filename of the video to be loaded
 	 */
-	VIDEOPLUGINEXP void OpenAvi( unsigned int entityWorldID, const char* file);
+	VIDEOAPI void OpenAvi( unsigned int entityWorldID, const char* file);
 	/*! @}*/
 }
 

@@ -27,12 +27,12 @@
 
 #ifdef PLATFORM_WIN
 #	 ifdef IKCOMPONENT_EXPORTS
-#       define IKPLUGINEXP extern "C" __declspec( dllexport )
+#       define IKAPI __declspec( dllexport )
 #	 else
-#       define IKPLUGINEXP extern "C" __declspec( dllimport )
+#       define IKAPI __declspec( dllimport )
 #    endif
 #else
-#	 define IKPLUGINEXP extern "C" 
+#	 define IKAPI
 #endif
 
 ///IK Parameters
@@ -105,7 +105,7 @@ namespace GameEngine
 	///@param animWeight the desired weight of the animation (default 1.0f)
 	///@param animSpeed the desired animation speed (default 30.0f)
 	///@return -1 if an error occurred, a positive value otherwise
-	IKPLUGINEXP int IK_solveWithAnim( unsigned int entityWorldID, const char* endEffectorName, const char* stopName, float targetX, float targetY, float targetZ, int animStage, float animWeight = 1.0f, float animSpeed = 30.0f );
+	IKAPI int IK_solveWithAnim( unsigned int entityWorldID, const char* endEffectorName, const char* stopName, float targetX, float targetY, float targetZ, int animStage, float animWeight = 1.0f, float animSpeed = 30.0f );
 
 	///Generates a keyframe animation by interpolating the current position of the body with the one after solving the IK (does not play the animation)
 	///@param entityWorldID the entity we want to use the function on
@@ -115,7 +115,7 @@ namespace GameEngine
 	///@param targetY The value on the y-axis of the requested position
 	///@param targetZ The value on the z-axis of the requested position
 	///@return Horde3D animation resource
-	IKPLUGINEXP int IK_createIKAnim( unsigned int entityWorldID, const char* endEffectorName, const char* stopName, float targetX, float targetY, float targetZ );
+	IKAPI int IK_createIKAnim( unsigned int entityWorldID, const char* endEffectorName, const char* stopName, float targetX, float targetY, float targetZ );
 	
 	///The main IK function which solves the IK using the CCD Method.
 	///@param entityWorldID the entity we want to use the function on
@@ -125,7 +125,7 @@ namespace GameEngine
 	///@param targetY The value on the y-axis of the requested position
 	///@param targetZ The value on the z-axis of the requested position
 	///@return result code of type IK_CCDResult
-	IKPLUGINEXP int IK_solve( unsigned int entityWorldID, const char* endEffectorName, const char* stopName, float targetX, float targetY, float targetZ );
+	IKAPI int IK_solve( unsigned int entityWorldID, const char* endEffectorName, const char* stopName, float targetX, float targetY, float targetZ );
 
 	///The gaze function which moves the characters body and eyes to create a gaze animation
 	///@param entityWorldID the entity we want to use the function on
@@ -138,26 +138,26 @@ namespace GameEngine
 	///@param head_pitch A value from (-10, 10) representing the pitch the head will sustain during a gaze action
 	///				(where -10 means a higher angle for the "pointing joint" therefor a "less arrogant" gaze and +10 the opposite)
 	///@return status code of type IK_GazeResult
-	IKPLUGINEXP int IK_gaze( unsigned int entityWorldID, float targetX, float targetY, float targetZ, bool moveLEye, bool moveREye, bool moveHead, int head_pitch = 0 );
+	IKAPI int IK_gaze( unsigned int entityWorldID, float targetX, float targetY, float targetZ, bool moveLEye, bool moveREye, bool moveHead, int head_pitch = 0 );
 	
 	///Does same computations like gaze but it doesn't apply them on the SceneGraph. It just returns a status code of type IK_GazeResult
-	IKPLUGINEXP int IK_checkGaze( unsigned int entityWorldID, float targetX, float targetY, float targetZ, bool moveLEye, bool moveREye, bool moveNeck );
+	IKAPI int IK_checkGaze( unsigned int entityWorldID, float targetX, float targetY, float targetZ, bool moveLEye, bool moveREye, bool moveNeck );
 	
 	///Sets an IK parameter of type integer
 	///The IK parameters are defined in IK_Param
-	IKPLUGINEXP void IK_setParamI( unsigned int entityWorldID, IK_Param::List ikparam, int value );
+	IKAPI void IK_setParamI( unsigned int entityWorldID, IK_Param::List ikparam, int value );
 	
 	///Sets an IK parameter of type float
 	///The IK parameters are defined in IK_Param
-	IKPLUGINEXP void IK_setParamF( unsigned int entityWorldID, IK_Param::List ikparam, float value );
+	IKAPI void IK_setParamF( unsigned int entityWorldID, IK_Param::List ikparam, float value );
 	
 	///Gets an IK parameter of type integer
 	///The IK parameters are defined in IK_Param
-	IKPLUGINEXP int IK_getParamI( unsigned int entityWorldID, IK_Param::List ikparam );
+	IKAPI int IK_getParamI( unsigned int entityWorldID, IK_Param::List ikparam );
 	
 	///Gets an IK parameter of type float
 	///The IK parameters are defined in IK_Param
-	IKPLUGINEXP float IK_getParamF( unsigned int entityWorldID, IK_Param::List ikparam );
+	IKAPI float IK_getParamF( unsigned int entityWorldID, IK_Param::List ikparam );
 }
 
 #endif

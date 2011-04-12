@@ -23,7 +23,7 @@
 
 namespace GameEngine
 {
-	SAPIPLUGINEXP void speak(unsigned int entityWorldID, const char* sentence)
+	TTSAPI void speak(unsigned int entityWorldID, const char* sentence)
 	{
 		TTSComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -36,7 +36,7 @@ namespace GameEngine
 		}		
 	}
 
-	SAPIPLUGINEXP void setVoice(unsigned int entityWorldID, const char* voice)
+	TTSAPI void setVoice(unsigned int entityWorldID, const char* voice)
 	{		
 		TTSComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -49,7 +49,7 @@ namespace GameEngine
 		}		
 	}
 
-	SAPIPLUGINEXP bool isSpeaking(unsigned int entityWorldID)
+	TTSAPI bool isSpeaking(unsigned int entityWorldID)
 	{
 		TTSComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);

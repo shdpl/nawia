@@ -42,7 +42,7 @@ namespace GameEngine
 			entity->executeEvent(event);
 	}
 
-	SOUNDPLUGINEXP void enableSound(unsigned int entityWorldID, const bool enable)
+	SOUNDAPI void enableSound(unsigned int entityWorldID, const bool enable)
 	{		
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity )
@@ -57,7 +57,7 @@ namespace GameEngine
 		}		
 	}
 
-	SOUNDPLUGINEXP void playSound(unsigned int entityWorldID)
+	SOUNDAPI void playSound(unsigned int entityWorldID)
 	{		
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity )
@@ -68,7 +68,7 @@ namespace GameEngine
 		}		
 	}
 
-	SOUNDPLUGINEXP void stopSound(unsigned int entityWorldID)
+	SOUNDAPI void stopSound(unsigned int entityWorldID)
 	{		
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity )
@@ -79,7 +79,7 @@ namespace GameEngine
 		}		
 	}
 
-	SOUNDPLUGINEXP void pauseSound(unsigned int entityWorldID)
+	SOUNDAPI void pauseSound(unsigned int entityWorldID)
 	{		
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity )
@@ -90,17 +90,17 @@ namespace GameEngine
 		}		
 	}
 
-	SOUNDPLUGINEXP void setSoundGain(unsigned int entityWorldID, const float gain)
+	SOUNDAPI void setSoundGain(unsigned int entityWorldID, const float gain)
 	{
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_SET_SOUND_GAIN, &GameEventData( gain ), 0) );
 	}
 
-	SOUNDPLUGINEXP void setSoundLoop(unsigned int entityWorldID, const bool loop)
+	SOUNDAPI void setSoundLoop(unsigned int entityWorldID, const bool loop)
 	{
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_SET_SOUND_LOOP, &GameEventData( loop ), 0));
 	}
 
-	SOUNDPLUGINEXP void setSoundPitch(unsigned int entityWorldID, const float x)
+	SOUNDAPI void setSoundPitch(unsigned int entityWorldID, const float x)
 	{
 		SoundComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -108,7 +108,7 @@ namespace GameEngine
 			component->setPitch( x );
 	}
 
-	SOUNDPLUGINEXP void setSoundRolloff(unsigned int entityWorldID, const float x)
+	SOUNDAPI void setSoundRolloff(unsigned int entityWorldID, const float x)
 	{		
 		SoundComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -116,7 +116,7 @@ namespace GameEngine
 			component->setRollOff( x );
 	}
 
-	SOUNDPLUGINEXP void setSoundMaxdist(unsigned int entityWorldID, const float x)
+	SOUNDAPI void setSoundMaxdist(unsigned int entityWorldID, const float x)
 	{
 		SoundComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -124,7 +124,7 @@ namespace GameEngine
 			component->setMaxDist( x );
 	}
 
-	SOUNDPLUGINEXP void setSoundRefdist(unsigned int entityWorldID, const float x)
+	SOUNDAPI void setSoundRefdist(unsigned int entityWorldID, const float x)
 	{
 		SoundComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -132,7 +132,7 @@ namespace GameEngine
 			component->setRefDist( x );
 	}
 
-	SOUNDPLUGINEXP void setSoundOffset(unsigned int entityWorldID, float offset)
+	SOUNDAPI void setSoundOffset(unsigned int entityWorldID, float offset)
 	{
 		SoundComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -140,7 +140,7 @@ namespace GameEngine
 			component->setOffset(offset);
 	}
 
-	SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* soundFile, const char* phonemesFile/*=0*/)
+	SOUNDAPI void setSoundFile(unsigned int entityWorldID, const char* soundFile, const char* phonemesFile/*=0*/)
 	{
 		if( soundFile != 0 )
 			sendEvent(entityWorldID, &GameEvent(GameEvent::E_SET_SOUND_FILE, &GameEventData( soundFile ), 0));
@@ -148,22 +148,22 @@ namespace GameEngine
 			sendEvent(entityWorldID, &GameEvent(GameEvent::E_SET_PHONEMES_FILE, &GameEventData( phonemesFile ), 0));
 	}
 
-	SOUNDPLUGINEXP void setSoundResourceDirectory( const char* directory )
+	SOUNDAPI void setSoundResourceDirectory( const char* directory )
 	{
 		SoundResourceManager::instance()->setResourceDirectory( directory );
 	}
 
-	SOUNDPLUGINEXP const char* soundResourceDirectory()
+	SOUNDAPI const char* soundResourceDirectory()
 	{
 		return SoundResourceManager::instance()->getResourceDirectory();
 	}
 
-	SOUNDPLUGINEXP void setMaxSoundSources(unsigned int maxSources)
+	SOUNDAPI void setMaxSoundSources(unsigned int maxSources)
 	{
 		SoundManager::instance()->setMaxSources(maxSources);
 	}
 
-	SOUNDPLUGINEXP unsigned int getMaxSoundSources()
+	SOUNDAPI unsigned int getMaxSoundSources()
 	{
 		return SoundManager::instance()->getMaxSources();
 	}

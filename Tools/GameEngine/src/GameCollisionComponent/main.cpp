@@ -21,8 +21,6 @@
 // Copyright (C) 2007 Volker Wiendl
 // 
 // ****************************************************************************************
-#include "GameEngine_Collisions.h"
-
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameComponentRegistry.h>
 
@@ -32,6 +30,12 @@
 #include "CollisionComponent.h"
 
 struct lua_State;
+
+#ifdef PLATFORM_WIN
+#    define COLLISIONPLUGINEXP extern "C" __declspec( dllexport )
+#else
+#	 define COLLISIONPLUGINEXP 
+#endif
 
 COLLISIONPLUGINEXP void dllLoadGamePlugin(void)
 {

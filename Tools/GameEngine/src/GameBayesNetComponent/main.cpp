@@ -20,13 +20,17 @@
 // Copyright (C) 2010 Ionut Damian
 // 
 // ****************************************************************************************        
-#include "GameEngine_BayesNet.h"
-
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameComponentRegistry.h>
 
 #include "BayesNetManager.h"
 #include "BayesNetComponent.h"
+
+#ifdef PLATFORM_WIN
+#    define BAYESNETPLUGINEXP extern "C" __declspec( dllexport )
+#else
+#	 define BAYESNETPLUGINEXP extern "C"
+#endif
 
 BAYESNETPLUGINEXP void dllLoadGamePlugin(void)
 {

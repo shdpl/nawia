@@ -25,12 +25,12 @@
 
 #ifdef PLATFORM_WIN
 #	 ifdef AGENTCOMPONENT_EXPORTS
-#       define AGENTPLUGINEXP extern "C" __declspec( dllexport )
+#       define AGENTAPI __declspec( dllexport )
 #	 else
-#       define AGENTPLUGINEXP extern "C" __declspec( dllimport )
+#       define AGENTAPI __declspec( dllimport )
 #    endif
 #else
-#	 define AGENTPLUGINEXP extern "C"
+#	 define AGENTAPI
 #endif
 
 ///Agent Parameters
@@ -188,7 +188,7 @@ namespace GameEngine
 	///@param startNode the name of the node that represents the starting node of the chain to be animated (ex: startNode=Bip01_L_Clavicle willl result in animating only the left arm). Leave 0 for whole body.
 	///@param syncWord TTS word the animation start should be synchronized with
 	///@return negative value if not successful, animation id otherwise
-	AGENTPLUGINEXP int Agent_playAnimationF( unsigned int entityWorldID, const char* file, Agent_AnimType::List type, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord );
+	AGENTAPI int Agent_playAnimationF( unsigned int entityWorldID, const char* file, Agent_AnimType::List type, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord );
 
 	///Loads an animation and plays it back
 	///@param entityWorldID the entity we want to use the function on
@@ -199,7 +199,7 @@ namespace GameEngine
 	///@param startNode the name of the node that represents the starting node of the chain to be animated (ex: startNode=Bip01_L_Clavicle willl result in animating only the left arm). Leave 0 for whole body.
 	///@param syncWord TTS word the animation start should be synchronized with
 	///@return negative value if not successful, animation id otherwise
-	AGENTPLUGINEXP int Agent_playAnimationN( unsigned int entityWorldID, const char* name, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord );
+	AGENTAPI int Agent_playAnimationN( unsigned int entityWorldID, const char* name, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord );
 
 	///Loads an animation and plays it back
 	///@param entityWorldID the entity we want to use the function on
@@ -210,7 +210,7 @@ namespace GameEngine
 	///@param startNode the name of the node that represents the starting node of the chain to be animated (ex: startNode=Bip01_L_Clavicle willl result in animating only the left arm). Leave 0 for whole body.
 	///@param syncWord TTS word the animation start should be synchronized with
 	///@return negative value if not successful, animation id otherwise
-	AGENTPLUGINEXP int Agent_playAnimationI( unsigned int entityWorldID, int id, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord );
+	AGENTAPI int Agent_playAnimationI( unsigned int entityWorldID, int id, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord );
 
 	///Loads an animation and plays it back
 	///@param entityWorldID the entity we want to use the function on
@@ -221,58 +221,58 @@ namespace GameEngine
 	///@param startNode the name of the node that represents the starting node of the chain to be animated (ex: startNode=Bip01_L_Clavicle willl result in animating only the left arm). Leave 0 for whole body.
 	///@param syncWord TTS word the animation start should be synchronized with
 	///@return negative value if not successful, animation id otherwise
-	AGENTPLUGINEXP int Agent_playAnimationR( unsigned int entityWorldID, int resource, Agent_AnimType::List type, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord );
+	AGENTAPI int Agent_playAnimationR( unsigned int entityWorldID, int resource, Agent_AnimType::List type, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord );
 
 	///Stops the playback of an animation
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function
-	AGENTPLUGINEXP void Agent_stopAnimation( unsigned int entityWorldID, unsigned int playbackID );
+	AGENTAPI void Agent_stopAnimation( unsigned int entityWorldID, unsigned int playbackID );
 
 	///Gets the spatial extent of an animation
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to get agent default)
 	///@return spatialExtent value of the Spatial Extent attribute represented by a float between 0 to 1, where 0 is the lowest (still) spatial extent and 1 is the highest spatial extent (normal playback)
-	AGENTPLUGINEXP float Agent_getAnimationExtent( unsigned int entityWorldID, unsigned int playbackID, float spatialExtent );
+	AGENTAPI float Agent_getAnimationExtent( unsigned int entityWorldID, unsigned int playbackID, float spatialExtent );
 
 	///Gets the playback speed of an animation
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to get agent default)
 	///@return speed the desired value for the playback speed. Values range from 0 to infinite, where "0" represents no playback at all, "1" is normal playback speed, "2" is double speed, ...
-	AGENTPLUGINEXP float Agent_getAnimationSpeed( unsigned int entityWorldID, unsigned int playbackID, float speed );
+	AGENTAPI float Agent_getAnimationSpeed( unsigned int entityWorldID, unsigned int playbackID, float speed );
 
 	///Gets the number of stroke repetitions the specified animation should perform
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to get agent default)
 	///@return reps the desired number of stroke repetitions the specified animation should perform
-	AGENTPLUGINEXP int Agent_getAnimationStrokeReps( unsigned int entityWorldID, unsigned int playbackID, unsigned int numStrokeReps );
+	AGENTAPI int Agent_getAnimationStrokeReps( unsigned int entityWorldID, unsigned int playbackID, unsigned int numStrokeReps );
 
 	///Sets the spatial extent of an animation
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to set agent default)
 	///@param spatialExtent value of the Spatial Extent attribute represented by a float between 0 to 1, where 0 is the lowest (still) spatial extent and 1 is the highest spatial extent (normal playback)
-	AGENTPLUGINEXP void Agent_setAnimationExtent( unsigned int entityWorldID, unsigned int playbackID, float spatialExtent );
+	AGENTAPI void Agent_setAnimationExtent( unsigned int entityWorldID, unsigned int playbackID, float spatialExtent );
 
 	///Sets the playback speed of an animation
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to set agent default)
 	///@param speed the desired value for the playback speed. Values range from 0 to infinite, where "0" represents no playback at all, "1" is normal playback speed, "2" is double speed, ...
-	AGENTPLUGINEXP void Agent_setAnimationSpeed( unsigned int entityWorldID, unsigned int playbackID, float speed );
+	AGENTAPI void Agent_setAnimationSpeed( unsigned int entityWorldID, unsigned int playbackID, float speed );
 
 	///Sets the number of stroke repetitions the specified animation should perform
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to set agent default)
 	///@param reps the desired number of stroke repetitions the specified animation should perform
-	AGENTPLUGINEXP void Agent_setAnimationStrokeReps( unsigned int entityWorldID, unsigned int playbackID, unsigned int numStrokeReps );
+	AGENTAPI void Agent_setAnimationStrokeReps( unsigned int entityWorldID, unsigned int playbackID, unsigned int numStrokeReps );
 
 	///Clears all animation stages, deleting all loaded animations
 	///@param entityWorldID the entity we want to use the function on
-	AGENTPLUGINEXP void Agent_clearAnimations( unsigned int entityWorldID );
+	AGENTAPI void Agent_clearAnimations( unsigned int entityWorldID );
 
 	///Returns the status of a specific animation
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function
 	///@return animation status code of type Agent_AnimStatus
-	AGENTPLUGINEXP Agent_AnimStatus::List Agent_getAnimationStatus( unsigned int entityWorldID, unsigned int playbackID );
+	AGENTAPI Agent_AnimStatus::List Agent_getAnimationStatus( unsigned int entityWorldID, unsigned int playbackID );
 
 	/***************************************/
 	/************** MOVEMENT ***************/
@@ -285,7 +285,7 @@ namespace GameEngine
 	///@param putInQueue doesn't start the movement immediately but places it in a queue.
 	///@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played during the orientation (use 0 for default agent walk animation)
 	///@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played during the locomotion (use 0 for default agent walk animation)
-	AGENTPLUGINEXP int Agent_gotoE( unsigned int entityWorldID, unsigned int targetEntityID, float speed, bool putInQueue, const char* orientAnimName, const char* walkAnimName );
+	AGENTAPI int Agent_gotoE( unsigned int entityWorldID, unsigned int targetEntityID, float speed, bool putInQueue, const char* orientAnimName, const char* walkAnimName );
 
 	///Queues up the movement: entityWorldID orients towards and then moves to the position described by targetX, targetY, targetZ
 	///@param entityWorldID the entity we want to use the function on
@@ -296,7 +296,7 @@ namespace GameEngine
 	///@param putInQueue doesn't start the movement immediately but places it in a queue.
 	///@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played during the orientation (use 0 for default agent walk animation)
 	///@param orientAnimName the name, as defined in the animation lexicon, of the animation to be played during the locomotion (use 0 for default agent walk animation)
-	AGENTPLUGINEXP int Agent_gotoP( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, bool putInQueue, const char* orientAnimName, const char* walkAnimName );
+	AGENTAPI int Agent_gotoP( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, bool putInQueue, const char* orientAnimName, const char* walkAnimName );
 
 	///Queues up the movement: entityWorldID rotates until it faces the location targetX, targetY, targetZ
 	///@param entityWorldID the entity we want to use the function on
@@ -306,7 +306,7 @@ namespace GameEngine
 	///@param speed the movement speed (use -1 for agent default)
 	///@param putInQueue doesn't start the movement immediately but places it in a queue.
 	///@param animName the name, as defined in the animation lexicon, of the animation to be played during the movement (use 0 for default agent walk animation)
-	AGENTPLUGINEXP int Agent_turnTowards( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, bool putInQueue, const char* animName );
+	AGENTAPI int Agent_turnTowards( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, bool putInQueue, const char* animName );
 
 	///Queues up the movement: entityWorldID moves to the position described by targetX, targetY, targetZ
 	///@param entityWorldID the entity we want to use the function on
@@ -316,7 +316,7 @@ namespace GameEngine
 	///@param speed the movement speed (use -1 for agent default)
 	///@param putInQueue doesn't start the movement immediately but places it in a queue.
 	///@param animName the name, as defined in the animation lexicon, of the animation to be played during the movement (use 0 for default agent walk animation)
-	AGENTPLUGINEXP int Agent_move( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, bool putInQueue, const char* animName );
+	AGENTAPI int Agent_move( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, bool putInQueue, const char* animName );
 
 	///Queues up the movement: entityWorldID rotates until it reaches the rotation targetX, targetY, targetZ
 	///@param entityWorldID the entity we want to use the function on
@@ -326,23 +326,23 @@ namespace GameEngine
 	///@param speed the movement speed (use -1 for agent default)
 	///@param putInQueue doesn't start the movement immediately but places it in a queue.
 	///@param animName the name, as defined in the animation lexicon, of the animation to be played during the movement (use 0 for default agent walk animation)
-	AGENTPLUGINEXP int Agent_rotate( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, bool putInQueue, const char* animName );
+	AGENTAPI int Agent_rotate( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, bool putInQueue, const char* animName );
 
 	///Retrieves the status of a specific movement node
 	///@param entityWorldID the entity we want to use the function on
 	///@param movementID the id of the movement, as returned by a goto function
 	///@return positive value in case the movement node is active, negative otherwise
-	AGENTPLUGINEXP int Agent_getMovementStatus( unsigned int entityWorldID, unsigned int movementID );
+	AGENTAPI int Agent_getMovementStatus( unsigned int entityWorldID, unsigned int movementID );
 
 	///Gets the default agent movement speed
 	///@param entityWorldID the entity we want to use the function on
 	///@return the value of the movement speed
-	AGENTPLUGINEXP float Agent_getMovementSpeed( unsigned int entityWorldID, float speed );
+	AGENTAPI float Agent_getMovementSpeed( unsigned int entityWorldID, float speed );
 
 	///Sets the default agent movement speed
 	///@param entityWorldID the entity we want to use the function on
 	///@param speed the desired value for the movement speed
-	AGENTPLUGINEXP void Agent_setMovementSpeed( unsigned int entityWorldID, float speed );
+	AGENTAPI void Agent_setMovementSpeed( unsigned int entityWorldID, float speed );
 
 
 	/***************************************/
@@ -355,7 +355,7 @@ namespace GameEngine
 	///@param speed the gazing speed (use -1 for agent default)
 	///@param duration the gazing duration in seconds, use -1 for constant gazing (default 10.0f)
 	///@return gaze action ID
-	AGENTPLUGINEXP int Agent_gazeE( unsigned int entityWorldID, unsigned int targetEntityID, float speed, float duration );
+	AGENTAPI int Agent_gazeE( unsigned int entityWorldID, unsigned int targetEntityID, float speed, float duration );
 
 	///Starts a gaze action towards the specified target
 	///@param entityWorldID the entity we want to use the function on
@@ -365,34 +365,34 @@ namespace GameEngine
 	///@param speed the gazing speed (use -1 for agent default)
 	///@param duration the gazing duration in seconds, use -1 for constant gazing (default 10.0f)
 	///@return gaze action ID
-	AGENTPLUGINEXP int Agent_gazeP( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, float duration );
+	AGENTAPI int Agent_gazeP( unsigned int entityWorldID, float targetX, float targetY, float targetZ, float speed, float duration );
 
 	///Performs a head nod (or head jerk if the extent is negative)
 	///@param entityWorldID the entity we want to use the function on
 	///@param extent the "size" of the nod (use negative values for head jerks)
 	///@param speed the speed of the nod
 	///@param duration the duration of the nod in seconds
-	AGENTPLUGINEXP void Agent_nod( unsigned int entityWorldID, float extent, float speed, float duration );
+	AGENTAPI void Agent_nod( unsigned int entityWorldID, float extent, float speed, float duration );
 
 	///Retrieves the status of a specific gaze node
 	///@param entityWorldID the entity we want to use the function on
 	///@param gazeID the playback id of the gaze node, as returned by a gaze function
 	///@return positive value in case gaze node is active, negative otherwise
-	AGENTPLUGINEXP int Agent_getGazeStatus( unsigned int entityWorldID, unsigned int gazeID );
+	AGENTAPI int Agent_getGazeStatus( unsigned int entityWorldID, unsigned int gazeID );
 
 	///Gets the default agent speed of transitions between gaze targets
 	///@param entityWorldID the entity we want to use the function on
 	///@return the speed we want to set as default (positive value)
-	AGENTPLUGINEXP float Agent_getGazeSpeed( unsigned int entityWorldID );
+	AGENTAPI float Agent_getGazeSpeed( unsigned int entityWorldID );
 
 	///Sets the default agent speed of transitions between gaze targets
 	///@param entityWorldID the entity we want to use the function on
 	///@param speed the speed we want to set as default (positive value)
-	AGENTPLUGINEXP void Agent_setGazeSpeed( unsigned int entityWorldID, float speed );
+	AGENTAPI void Agent_setGazeSpeed( unsigned int entityWorldID, float speed );
 	
 	///Forces the system to update and render the gaze node now
 	///@param entityWorldID the entity we want to use the function on
-	AGENTPLUGINEXP void Agent_forceGazeUpdate( unsigned int entityWorldID );
+	AGENTAPI void Agent_forceGazeUpdate( unsigned int entityWorldID );
 
 	/***************************************/
 	/************** FORMATION **************/
@@ -402,77 +402,77 @@ namespace GameEngine
 	///@param entityWorldID the entity we want to use the function on
 	///@param targetEntityID the destination entity
 	///@param speed the movement speed (use -1 for agent default)
-	AGENTPLUGINEXP int Agent_gotoF( unsigned int entityWorldID, unsigned int targetEntityID, float speed, const char* orientAnimName, const char* walkAnimName );
+	AGENTAPI int Agent_gotoF( unsigned int entityWorldID, unsigned int targetEntityID, float speed, const char* orientAnimName, const char* walkAnimName );
 
 	///Adds a member to entityWorldID's formation
 	///@param entityWorldID the entity we want to alter
 	///@param newMember_eID the entity of the agent that should be added to the formation
-	AGENTPLUGINEXP void Agent_addMemberToFormation( unsigned int entityWorldID, unsigned int newMember_eID );
+	AGENTAPI void Agent_addMemberToFormation( unsigned int entityWorldID, unsigned int newMember_eID );
 
 	///Remove a member from entityWorldID's formation
 	///@param entityWorldID the entity we want to alter
 	///@param newMember_eID the entity of the agent that should be removed from the formation
-	AGENTPLUGINEXP void Agent_removeMemberFromFormation( unsigned int entityWorldID, unsigned int member_eID );
+	AGENTAPI void Agent_removeMemberFromFormation( unsigned int entityWorldID, unsigned int member_eID );
 
 	///Triggers an agent event meant to attract the attention of the members of the formation
 	///@param entityWorldID the entity we want to use the function on
 	///@param e the event type 
-	AGENTPLUGINEXP void Agent_fireEvent( unsigned int entityWorldID, Agent_Event::List e );
+	AGENTAPI void Agent_fireEvent( unsigned int entityWorldID, Agent_Event::List e );
 
 	///Reacts to the specified event
 	///@param entityWorldID the entity we want to use the function on
 	///@param senderEntityID the entity id of the one who fired the event
 	///@param e the event type
-	AGENTPLUGINEXP void Agent_reactOnEvent( unsigned int entityWorldID, unsigned int senderEntityID, Agent_Event::List e );
+	AGENTAPI void Agent_reactOnEvent( unsigned int entityWorldID, unsigned int senderEntityID, Agent_Event::List e );
 	
 	///Returns the members of the formation the agent entityWorldID is part of
 	///@param entityWorldID the entity we want to receive information from
 	///@param members pointer to int array which willl end up pointing towards the member list
 	///@return size of the members list
-	AGENTPLUGINEXP int Agent_getFormationMembers( unsigned int entityWorldID, int** members );
+	AGENTAPI int Agent_getFormationMembers( unsigned int entityWorldID, int** members );
 
 	///Returns the type of the formation 
 	///@param entityWorldID the entity we want to receive information from
 	///@return type from enumeration Agent_FormationType
-	AGENTPLUGINEXP Agent_FormationType::List Agent_getFormationType( unsigned int entityWorldID );
+	AGENTAPI Agent_FormationType::List Agent_getFormationType( unsigned int entityWorldID );
 
 	///computes and returns a possible entry point to the local formation for a foreign agent 
 	///@param entityWorldID the entity we want to receive information from
 	///@param caller_eID the entity ID of the caller
 	///@param entryPoint pointer to a size 3 float array where the computed entry point willl be saved
-	AGENTPLUGINEXP bool Agent_getFormationEntryPoint( unsigned int entityWorldID, unsigned int caller_eID, float** entryPoint );
+	AGENTAPI bool Agent_getFormationEntryPoint( unsigned int entityWorldID, unsigned int caller_eID, float** entryPoint );
 	
 	///Returns the minimal and maximal interpersonal distance of an agent
 	///@param entityWorldID the entity we want to receive information from
 	///@param min pointer to a float where the the minimal interpersonal distance willl be stored	
 	///@param max pointer to a float where the the maximal interpersonal distance willl be stored
-	AGENTPLUGINEXP void Agent_getIPDistance( unsigned int entityWorldID, float* min, float* max );
+	AGENTAPI void Agent_getIPDistance( unsigned int entityWorldID, float* min, float* max );
 
 	///Returns the deviation from the normal orientation of the agent
 	///@param entityWorldID the entity we want to receive information from
 	///@return the deviation in degrees
-	AGENTPLUGINEXP float Agent_getDeviation( unsigned int entityWorldID );
+	AGENTAPI float Agent_getDeviation( unsigned int entityWorldID );
 
 	///Returns the repositioning animation name
 	///@param entityWorldID the entity we want to receive information from
 	///@return the animation name
-	AGENTPLUGINEXP const char* Agent_getReposAnimName( unsigned int entityWorldID );
+	AGENTAPI const char* Agent_getReposAnimName( unsigned int entityWorldID );
 
 	///Sets the minimal and maximal interpersonal distance of an agent
 	///@param entityWorldID the entity we want to customize
 	///@param min the minimal interpersonal distance
 	///@param max the maximal interpersonal distance
-	AGENTPLUGINEXP void Agent_setIPDistance( unsigned int entityWorldID, float min, float max );
+	AGENTAPI void Agent_setIPDistance( unsigned int entityWorldID, float min, float max );
 
 	///Sets the deviation from the normal orientation of the agent
 	///@param entityWorldID the entity we want to customize
 	///@param deviation the deviation in degrees
-	AGENTPLUGINEXP void Agent_setDeviation( unsigned int entityWorldID, float deviation );
+	AGENTAPI void Agent_setDeviation( unsigned int entityWorldID, float deviation );
 
 	///Sets the repositioning animation name
 	///@param entityWorldID the entity we want to receive information from
 	///@param name the name of the animation as written in the AnimationLexicon
-	AGENTPLUGINEXP void Agent_setReposAnimName( unsigned int entityWorldID, const char* name );
+	AGENTAPI void Agent_setReposAnimName( unsigned int entityWorldID, const char* name );
 
 
 	/***************************************/
@@ -482,32 +482,32 @@ namespace GameEngine
 	///Sets the value of a integer parameter (configurations are not entity specific)
 	///@param param a parameter of type Agent_Param
 	///@param value the desired value
-	AGENTPLUGINEXP void Agent_setParamI( Agent_Param::List param, int value );
+	AGENTAPI void Agent_setParamI( Agent_Param::List param, int value );
 
 	///Sets the value of a float parameter (configurations are not entity specific)
 	///@param param a parameter of type Agent_Param
 	///@param value the desired value
-	AGENTPLUGINEXP void Agent_setParamF( Agent_Param::List param, float value );
+	AGENTAPI void Agent_setParamF( Agent_Param::List param, float value );
 
 	///Sets the value of a char array parameter (configurations are not entity specific)
 	///@param param a parameter of type Agent_Param
 	///@param value the desired value
-	AGENTPLUGINEXP void Agent_setParamS( Agent_Param::List param, const char* value );
+	AGENTAPI void Agent_setParamS( Agent_Param::List param, const char* value );
 
 	///Returns the value of a integer parameter (configurations are not entity specific)
 	///@param param a parameter of type Agent_Param
 	///@return the parameter's value
-	AGENTPLUGINEXP int Agent_getParamI( Agent_Param::List param );
+	AGENTAPI int Agent_getParamI( Agent_Param::List param );
 
 	///Returns the value of a float parameter (configurations are not entity specific)
 	///@param param a parameter of type Agent_Param
 	///@return the parameter's value
-	AGENTPLUGINEXP float Agent_getParamF( Agent_Param::List param );
+	AGENTAPI float Agent_getParamF( Agent_Param::List param );
 
 	///Returns the value of a char array parameter (configurations are not entity specific)
 	///@param param a parameter of type Agent_Param
 	///@return the parameter's value
-	AGENTPLUGINEXP const char* Agent_getParamS( Agent_Param::List param );
+	AGENTAPI const char* Agent_getParamS( Agent_Param::List param );
 
 	/***************************************/
 	/**************** ICON *****************/
@@ -516,12 +516,12 @@ namespace GameEngine
 	///Sets the icon of an agent
 	///@param entityWorldID the entity we want to use the function on
 	///@param iconName the name of the icon entity we want to attach to this agent
-	AGENTPLUGINEXP void Agent_setIcon( unsigned int entityWorldID, const char* iconName );
+	AGENTAPI void Agent_setIcon( unsigned int entityWorldID, const char* iconName );
 
 	///Sets the icon visbillity of an agent
 	///@param entityWorldID the entity we want to use the function on
 	///@param visible the desired value for the agent's icon visibility status
-	AGENTPLUGINEXP void Agent_setIconVisible( unsigned int entityWorldID, bool visible );
+	AGENTAPI void Agent_setIconVisible( unsigned int entityWorldID, bool visible );
 
 	/***************************************/
 	/*************** OTHERS ****************/
@@ -530,7 +530,7 @@ namespace GameEngine
 	///Sets an agent visible or invisible
 	///@param entityWorldID the entity we want to use the function on
 	///@param visible the desired value for the agent's visibility status
-	AGENTPLUGINEXP void Agent_setVisible( unsigned int entityWorldID, bool visible );
+	AGENTAPI void Agent_setVisible( unsigned int entityWorldID, bool visible );
 }
 
 #endif

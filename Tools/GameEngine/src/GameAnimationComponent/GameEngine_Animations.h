@@ -29,12 +29,12 @@
 
 #ifdef PLATFORM_WIN
 #	 ifdef ANIMATIONSCOMPONENT_EXPORTS
-#       define ANIMATIONSPLUGINEXP extern "C" __declspec( dllexport )
+#       define ANIMATIONSAPI __declspec( dllexport )
 #	 else
-#       define ANIMATIONSPLUGINEXP extern "C" __declspec( dllimport )
+#       define ANIMATIONSAPI __declspec( dllimport )
 #    endif
 #else
-#	 define ANIMATIONSPLUGINEXP extern "C" 
+#	 define ANIMATIONSAPI
 #endif
 
 struct GameEngineAnimParams
@@ -75,7 +75,7 @@ namespace GameEngine
 	 * @param timeoffset if specified, the animation will be played after timeoffset seconds (default 0)
 	 * @return int an animation job ID that can be used to adjust an animation currently played by using updateAnim
 	 */
-	ANIMATIONSPLUGINEXP int playAnim(
+	ANIMATIONSAPI int playAnim(
 		unsigned int entityWorldID, 
 		const char* animation, 
 		const int stage = 0, 
@@ -94,7 +94,7 @@ namespace GameEngine
 	 * @param value the new value for the specified type
 	 * @param timeoffset offset in time since the start of the animation
 	 */
-	ANIMATIONSPLUGINEXP void updateAnim(unsigned int entityWorldID, const int jobID, const GameEngineAnimParams::List paramType, const float value, const float timeoffset = 0);
+	ANIMATIONSAPI void updateAnim(unsigned int entityWorldID, const int jobID, const GameEngineAnimParams::List paramType, const float value, const float timeoffset = 0);
 
 
 	/**
@@ -106,7 +106,7 @@ namespace GameEngine
 	 * @param animation the animation that may be played
 	 * @return true if the specified animation is currently being played by the given entity
 	 */ 
-	ANIMATIONSPLUGINEXP bool isPlaying( unsigned int entityWorldID, const char* animation);
+	ANIMATIONSAPI bool isPlaying( unsigned int entityWorldID, const char* animation);
 	
 	/**
 	 * \brief Get the length of an animation ( Frames / Speed )
@@ -116,7 +116,7 @@ namespace GameEngine
 	 * @param animation the animation for which you want to get the length
 	 * @return the length of the animation in seconds ( Frames / Speed ) or 0 if it wasn't found.
 	 */ 
-	ANIMATIONSPLUGINEXP float getAnimLength( unsigned int entityWorldID, const char* animation);
+	ANIMATIONSAPI float getAnimLength( unsigned int entityWorldID, const char* animation);
 
 	/**
 	 * \brief Get the speed of an animation
@@ -126,7 +126,7 @@ namespace GameEngine
 	 * @param animation the animation for which you want to get the speed
 	 * @return the speed of the animation or 0 if it wasn't found.
 	 */ 
-	ANIMATIONSPLUGINEXP float getAnimSpeed( unsigned int entityWorldID, const char* animation);
+	ANIMATIONSAPI float getAnimSpeed( unsigned int entityWorldID, const char* animation);
 
 	/*! @}*/
 

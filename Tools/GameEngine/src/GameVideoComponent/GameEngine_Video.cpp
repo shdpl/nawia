@@ -32,7 +32,7 @@
 
 namespace GameEngine
 {
-	VIDEOPLUGINEXP void playAvi( unsigned int entityWorldID)
+	VIDEOAPI void playAvi( unsigned int entityWorldID)
 	{
 		VideoComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -42,7 +42,7 @@ namespace GameEngine
 		}
 	}
 
-	VIDEOPLUGINEXP void stopAvi( unsigned int entityWorldID)
+	VIDEOAPI void stopAvi( unsigned int entityWorldID)
 	{
 		VideoComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -52,7 +52,7 @@ namespace GameEngine
 		}
 	}
 
-	VIDEOPLUGINEXP void OpenAvi( unsigned int entityWorldID, const char* file)
+	VIDEOAPI void OpenAvi( unsigned int entityWorldID, const char* file)
 	{
 		VideoComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);

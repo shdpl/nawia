@@ -28,12 +28,12 @@
 
 #ifdef PLATFORM_WIN
 #	 ifdef COLLISIONCOMPONENT_EXPORTS
-#       define COLLISIONPLUGINEXP extern "C" __declspec( dllexport )
+#       define COLLISIONAPI __declspec( dllexport )
 #	 else
-#       define COLLISIONPLUGINEXP extern "C" __declspec( dllimport )
+#       define COLLISIONAPI __declspec( dllimport )
 #    endif
 #else
-#	 define COLLISIONPLUGINEXP 
+#	 define COLLISIONAPI 
 #endif
 
 namespace GameEngine
@@ -50,7 +50,7 @@ namespace GameEngine
 	 * @param entityWorldID the unique world id of the entity 
 	 * @return unsigned int number of collisions in the last frame
 	 */
-	COLLISIONPLUGINEXP size_t numCollisions(unsigned int entityWorldID);
+	COLLISIONAPI size_t numCollisions(unsigned int entityWorldID);
 
 
 	/**
@@ -59,7 +59,7 @@ namespace GameEngine
 	 * @param index collision number based on the number of collisions provided by collisions()
 	 * @return unsigned int the world id of the entity colliding with the entity specified by entityWorldID
 	 */
-	COLLISIONPLUGINEXP unsigned int collision(unsigned int entityWorldID, int index);
+	COLLISIONAPI unsigned int collision(unsigned int entityWorldID, int index);
 
 	/*! @}*/
 }

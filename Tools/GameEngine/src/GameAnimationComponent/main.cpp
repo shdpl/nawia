@@ -22,8 +22,6 @@
 // Copyright (C) 2007 Volker Wiendl
 // 
 // ****************************************************************************************
-#include "GameEngine_Animations.h"
-
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameLog.h>
 #include <GameEngine/GameComponentRegistry.h>
@@ -41,6 +39,16 @@
 #include "MorphtargetAnimComponent.h"
 #include "MorphtargetAnimManager.h"
 #include "AnimationLua.h"
+
+#ifdef PLATFORM_WIN
+#	 ifdef ANIMATIONSCOMPONENT_EXPORTS
+#       define ANIMATIONSPLUGINEXP extern "C" __declspec( dllexport )
+#	 else
+#       define ANIMATIONSPLUGINEXP extern "C" __declspec( dllimport )
+#    endif
+#else
+#	 define ANIMATIONSPLUGINEXP extern "C" 
+#endif
 
 
 ANIMATIONSPLUGINEXP void dllLoadGamePlugin(void)

@@ -23,8 +23,6 @@
 // 
 // ****************************************************************************************
 
-#include "GameEngine_Sound.h"
-
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameLog.h>
 #include <GameEngine/GameWorld.h>
@@ -41,8 +39,13 @@
 
 #include <XMLParser/utXMLParser.h>
 
-
 struct lua_State;
+
+#ifdef PLATFORM_WIN
+#    define SOUNDPLUGINEXP extern "C" __declspec( dllexport )
+#else
+#	 define SOUNDPLUGINEXP extern "C"
+#endif
 
 SOUNDPLUGINEXP void dllLoadGamePlugin(void)
 {

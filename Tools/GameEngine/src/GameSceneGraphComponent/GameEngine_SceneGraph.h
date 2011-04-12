@@ -27,12 +27,12 @@
 
 #ifdef PLATFORM_WIN
 #	 ifdef GAMESCENEGRAPHCOMPONENT_EXPORTS
-#       define SCENEGRAPHPLUGINEXP extern "C" __declspec( dllexport )
+#       define SCENEGRAPHAPI __declspec( dllexport )
 #	 else
-#       define SCENEGRAPHPLUGINEXP extern "C" __declspec( dllimport )
+#       define SCENEGRAPHAPI __declspec( dllimport )
 #    endif
 #else
-#	 define SCENEGRAPHPLUGINEXP 
+#	 define SCENEGRAPHAPI
 #endif
 
 namespace GameEngine
@@ -52,44 +52,44 @@ namespace GameEngine
 	/**
 	 * Returns the world transformation of the specified entity
 	 */
-	SCENEGRAPHPLUGINEXP const float* getEntityTransformation(unsigned int entityWorldID);
+	SCENEGRAPHAPI const float* getEntityTransformation(unsigned int entityWorldID);
 
 	/**
 	 * Sends an E_SET_TRANSFORMATION event to the Scenegraph component of the given entity
 	 */
-	SCENEGRAPHPLUGINEXP void setEntityTransformation(unsigned int entityWorldID, float* trans);
+	SCENEGRAPHAPI void setEntityTransformation(unsigned int entityWorldID, float* trans);
 
-	SCENEGRAPHPLUGINEXP void setEntityTranslation(unsigned int entityWorldID, float x, float y, float z);
+	SCENEGRAPHAPI void setEntityTranslation(unsigned int entityWorldID, float x, float y, float z);
 
 	/**
 	 * Sends an E_SET_ROTATION event to the Scenegraph component of the given entity
 	 */
-	SCENEGRAPHPLUGINEXP void setEntityRotation(unsigned int entityWorldID, float x, float y, float z);
+	SCENEGRAPHAPI void setEntityRotation(unsigned int entityWorldID, float x, float y, float z);
 
 	/**
 	 * Sends an E_SET_SCLAE event to the Scenegraph component of the given entity
 	 */
-	SCENEGRAPHPLUGINEXP void setEntityScale(unsigned int entityWorldID, float x, float y, float z);
+	SCENEGRAPHAPI void setEntityScale(unsigned int entityWorldID, float x, float y, float z);
 
 	/**
 	 * Translates the entity along it's local coordinate axis
 	 */
-	SCENEGRAPHPLUGINEXP void translateEntityLocal(unsigned int entityWorldID, float x, float y, float z);
+	SCENEGRAPHAPI void translateEntityLocal(unsigned int entityWorldID, float x, float y, float z);
 
 	/**
 	 * Translates the entity along the world's coordinate axis
 	 */
-	SCENEGRAPHPLUGINEXP void translateEntityGlobal(unsigned int entityWorldID, float x, float y, float z);
+	SCENEGRAPHAPI void translateEntityGlobal(unsigned int entityWorldID, float x, float y, float z);
 	 
 	/**
 	 * Rotate the entity about it's local coordinate axis
 	 */
-	SCENEGRAPHPLUGINEXP void rotateEntityLocal(unsigned int entityWorldID, float x, float y, float z);
+	SCENEGRAPHAPI void rotateEntityLocal(unsigned int entityWorldID, float x, float y, float z);
 
 	/**
 	 * Returns the Horde3D ID of the entity
 	 */
-	SCENEGRAPHPLUGINEXP int entitySceneGraphID( unsigned int entityWorldID );
+	SCENEGRAPHAPI int entitySceneGraphID( unsigned int entityWorldID );
 
 	/**
 	 * \brief Sets the Horde3D ID of the scenegraph component
@@ -98,66 +98,66 @@ namespace GameEngine
 	 * @param entityWorldID the id of the GameEntity that contains the scenegraph component
 	 * @param sceneGraphID the new scenegraph id of the component
 	 */
-	SCENEGRAPHPLUGINEXP void setEntitySceneGraphID( unsigned int entityWorldID, int sceneGraphID );
+	SCENEGRAPHAPI void setEntitySceneGraphID( unsigned int entityWorldID, int sceneGraphID );
 
 	/**
 	 * Returns the Entity World ID for the given HordeID
 	 */
-	SCENEGRAPHPLUGINEXP int sceneGraphEntityID( int hordeID );
+	SCENEGRAPHAPI int sceneGraphEntityID( int hordeID );
 
 	/**
 	 * Render scene graph 
 	 */
-	SCENEGRAPHPLUGINEXP void renderSceneGraph();
+	SCENEGRAPHAPI void renderSceneGraph();
 
 		/**
 	 * Updates the scene manager to check for transformation changes done outside of the GameEngine
 	 */
-	SCENEGRAPHPLUGINEXP void updateSceneGraph();
+	SCENEGRAPHAPI void updateSceneGraph();
 
 	/**
 	 * Gets the horde id of the currently active camera 
 	 */
-	SCENEGRAPHPLUGINEXP int getActiveCamera();
+	SCENEGRAPHAPI int getActiveCamera();
 
 	/**
 	 * Sets the current camera to given horde scene node (if valid)
 	 */
-	SCENEGRAPHPLUGINEXP void setActiveCamera( int hordeID );
+	SCENEGRAPHAPI void setActiveCamera( int hordeID );
 
 	/**
 	 * Sends an E_MORPH_TARGET event to the Scenegraph component of the given entity
 	 */
-	SCENEGRAPHPLUGINEXP void setMorphTarget( unsigned int entityWorldID, const char* target, float weight);
+	SCENEGRAPHAPI void setMorphTarget( unsigned int entityWorldID, const char* target, float weight);
 
 	/**
 	 * Enables or deactivates rendering for the entity in Horde
 	 */
-	SCENEGRAPHPLUGINEXP void setVisible( unsigned int entityWorldID, bool enable);
+	SCENEGRAPHAPI void setVisible( unsigned int entityWorldID, bool enable);
 
 	/**
 	 * Checks the attachment of the given horde node for an attachment and creates the corresponding entity and components
 	 */
-	SCENEGRAPHPLUGINEXP void loadHorde3DAttachment( int hordeID );
+	SCENEGRAPHAPI void loadHorde3DAttachment( int hordeID );
 
 	/**
 	 * Sets a new PartentNode for a Node
 	 */
-	SCENEGRAPHPLUGINEXP void setParentNode(unsigned int entityWorldIDChild, unsigned int entityWorldIDNewParent, const char* childInNewParent);
+	SCENEGRAPHAPI void setParentNode(unsigned int entityWorldIDChild, unsigned int entityWorldIDNewParent, const char* childInNewParent);
 
 	/**
 	 * Casts a ray from the provided screen coordinates and returns the name of the node hit. Coords contains the coordinates the node was hit at
 	 */
-	SCENEGRAPHPLUGINEXP const char* pickNodeWithIntersectionCoords(float nwx, float nwy, float* coords);
+	SCENEGRAPHAPI const char* pickNodeWithIntersectionCoords(float nwx, float nwy, float* coords);
 
 	/**
 	 * returns whether the entity given by the entityID is currently visible through the active cam
 	 */ 
-	SCENEGRAPHPLUGINEXP bool getEntityVisiblitiy(unsigned int entityID);
+	SCENEGRAPHAPI bool getEntityVisiblitiy(unsigned int entityID);
 	/**
 	 * returns the bounding box of the entity
 	*/
-	SCENEGRAPHPLUGINEXP void getEntityBoundingBox(unsigned int entityID, float* minX, float* minY, float* minZ, float* maxX, float* maxY, float* maxZ);
+	SCENEGRAPHAPI void getEntityBoundingBox(unsigned int entityID, float* minX, float* minY, float* minZ, float* maxX, float* maxY, float* maxZ);
 
 	/*! @}*/
 

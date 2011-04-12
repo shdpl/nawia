@@ -9,8 +9,6 @@
 // You are not allowed to redistribute the code, if not explicitly authorized by the author
 //
 // ****************************************************************************************
-#include "GameEngine_SAPI.h"
-
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameComponentRegistry.h>
 
@@ -19,6 +17,16 @@
 #include "TTSManager.h"
 #include "TTSComponent.h"
 #include "TTSLua.h"
+
+#ifdef PLATFORM_WIN
+#	 ifdef SAPICOMPONENT_EXPORTS
+#       define SAPIPLUGINEXP extern "C" __declspec( dllexport )
+#	 else
+#       define SAPIPLUGINEXP extern "C" __declspec( dllimport )
+#    endif
+#else
+#	 define SAPIPLUGINEXP 
+#endif
 
 struct lua_State;
 

@@ -30,12 +30,12 @@
 
 #ifdef PLATFORM_WIN
 #	 ifdef GAMESOUNDCOMPONENT_EXPORTS
-#       define SOUNDPLUGINEXP extern "C" __declspec( dllexport )
+#       define SOUNDAPI __declspec( dllexport )
 #	 else
-#       define SOUNDPLUGINEXP extern "C" __declspec( dllimport )
+#       define SOUNDAPI __declspec( dllimport )
 #    endif
 #else
-#	 define SOUNDPLUGINEXP 
+#	 define SOUNDAPI 
 #endif
 
 namespace GameEngine
@@ -52,82 +52,92 @@ namespace GameEngine
 	 * @param entityWorldID the entity that is playing the sound
 	 * @param enable whether the sound should be enabled or disabled
 	 */
-	SOUNDPLUGINEXP void enableSound(unsigned int entityWorldID, const bool enable);
+	SOUNDAPI void enableSound(unsigned int entityWorldID, const bool enable);
 
 	/**
 	 * Plays (and enables) or resumes a sound file
 	 * @param entityWorldID the entity that should play the sound
 	 */
-	SOUNDPLUGINEXP void playSound(unsigned int entityWorldID);
+	SOUNDAPI void playSound(unsigned int entityWorldID);
 
 	/**
 	 * Pauses a sound file
 	 * @param entityWorldID the entity that is playing the sound
 	 */
-	SOUNDPLUGINEXP void pauseSound(unsigned int entityWorldID);
+	SOUNDAPI void pauseSound(unsigned int entityWorldID);
 
 	/**
 	 * Stops (and disables) a sound file
 	 * @param entityWorldID the entity that is playing the sound
 	 */
-	SOUNDPLUGINEXP void stopSound(unsigned int entityWorldID);
+	SOUNDAPI void stopSound(unsigned int entityWorldID);
 
 	
 	/**
 	 * Sets the Sound Gain
 	 */
-	SOUNDPLUGINEXP void setSoundGain(unsigned int entityWorldID, const float gain);
+	SOUNDAPI void setSoundGain(unsigned int entityWorldID, const float gain);
 	
 	/**
 	 * Sets the Sound to loop or not
 	 */
-	SOUNDPLUGINEXP void setSoundLoop(unsigned int entityWorldID, const bool loop);
+	SOUNDAPI void setSoundLoop(unsigned int entityWorldID, const bool loop);
 	
 	/**
 	 * Sets the Sound Pitch
 	 */
-	SOUNDPLUGINEXP void setSoundPitch(unsigned int entityWorldID, const float x);
+	SOUNDAPI void setSoundPitch(unsigned int entityWorldID, const float x);
 
 	/**
 	 * Sets the Sound RollOff
 	 */
-	SOUNDPLUGINEXP void setSoundRolloff(unsigned int entityWorldID, const float x);
+	SOUNDAPI void setSoundRolloff(unsigned int entityWorldID, const float x);
 
 	/**
 	 * Sets the Sound Max Dist
 	 */
-	SOUNDPLUGINEXP void setSoundMaxdist(unsigned int entityWorldID, const float x);
+	SOUNDAPI void setSoundMaxdist(unsigned int entityWorldID, const float x);
 
 	/**
 	 * Sets the Sound Max Ref Dist
 	 */
-	SOUNDPLUGINEXP void setSoundRefdist(unsigned int entityWorldID, const float x);
+	SOUNDAPI void setSoundRefdist(unsigned int entityWorldID, const float x);
 
 	/**
 	 * Sets the Sound Offset
 	 */
-	SOUNDPLUGINEXP void setSoundOffset(unsigned int entityWorldID, float offset);
+	SOUNDAPI void setSoundOffset(unsigned int entityWorldID, float offset);
 
 	/**
 	 * Sets a Sound File to be played (from the media directory)
 	 */
-	//SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* fileName);
+	//SOUNDAPI void setSoundFile(unsigned int entityWorldID, const char* fileName);
 
 	/**
 	 * Sets a Sound and Phonemes File and plays them (from the media directory)
 	 * If you only want to set one of them, pass 0 for other argument
 	 */
-	SOUNDPLUGINEXP void setSoundFile(unsigned int entityWorldID, const char* soundFile, const char* phonemesFile=0);
+	SOUNDAPI void setSoundFile(unsigned int entityWorldID, const char* soundFile, const char* phonemesFile=0);
 
 	/**
 	 * Sets the resource directory for sounds
 	 */
-	SOUNDPLUGINEXP void setSoundResourceDirectory( const char* directory );
+	SOUNDAPI void setSoundResourceDirectory( const char* directory );
 
 	/**
 	 * Returns the sound resource directory
 	 */
-	SOUNDPLUGINEXP const char* soundResourceDirectory();
+	SOUNDAPI const char* soundResourceDirectory();
+
+	/**
+	 * Sets the maximum of parallel playing sources
+	 */
+	SOUNDAPI void setMaxSoundSources(unsigned int maxSources);
+	/**
+	 * Gets the maximum of parallel playing sources
+	 */
+	SOUNDAPI unsigned int getMaxSoundSources();
+
 
 	/**
 	 * Sets the maximum of parallel playing sources

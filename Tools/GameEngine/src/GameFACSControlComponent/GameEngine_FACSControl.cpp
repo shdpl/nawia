@@ -20,7 +20,7 @@
 
 namespace GameEngine
 {
-	/*FACSCONTROLPLUGINEXP int getSocketData(unsigned int entityWorldID, const char **data)
+	/*FACSCONTROLAPI int getSocketData(unsigned int entityWorldID, const char **data)
 	{		
 		FACSControlComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -31,7 +31,7 @@ namespace GameEngine
 		return 0;
 	}*/
 
-	FACSCONTROLPLUGINEXP void setFacialExpression( unsigned int entityWorldID, const std::string expression, const float intensity /* = 1.0f */ )
+	FACSCONTROLAPI void setFacialExpression( unsigned int entityWorldID, const std::string expression, const float intensity /* = 1.0f */ )
 	{		
 		FACSControlComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -41,7 +41,7 @@ namespace GameEngine
 		}
 	}
 
-	FACSCONTROLPLUGINEXP void getAvailableExpressions( unsigned int entityWorldID, std::vector<std::string> &availableExpressions )
+	FACSCONTROLAPI void getAvailableExpressions( unsigned int entityWorldID, std::vector<std::string> &availableExpressions )
 	{		
 		FACSControlComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);

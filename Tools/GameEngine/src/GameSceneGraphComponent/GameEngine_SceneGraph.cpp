@@ -40,7 +40,7 @@ namespace GameEngine
 			entity->executeEvent(event);
 	}
 
-	SCENEGRAPHPLUGINEXP int entitySceneGraphID( unsigned int entityWorldID )
+	SCENEGRAPHAPI int entitySceneGraphID( unsigned int entityWorldID )
 	{
 		GameEntity* entity = GameModules::gameWorld()->entity( entityWorldID );
 		if( entity )
@@ -51,7 +51,7 @@ namespace GameEngine
 		return 0;
 	}
 
-	SCENEGRAPHPLUGINEXP void setEntitySceneGraphID( unsigned int entityWorldID, int sceneGraphID )
+	SCENEGRAPHAPI void setEntitySceneGraphID( unsigned int entityWorldID, int sceneGraphID )
 	{
 		GameEntity* entity = GameModules::gameWorld()->entity( entityWorldID );
 		if( entity )
@@ -61,13 +61,13 @@ namespace GameEngine
 		}		
 	}
 
-	SCENEGRAPHPLUGINEXP int sceneGraphEntityID( int hordeID )
+	SCENEGRAPHAPI int sceneGraphEntityID( int hordeID )
 	{
 		return SceneGraphManager::instance()->findEntity( hordeID );
 	}
 
 
-	SCENEGRAPHPLUGINEXP const float* getEntityTransformation(unsigned int entityWorldID)
+	SCENEGRAPHAPI const float* getEntityTransformation(unsigned int entityWorldID)
 	{
 		SceneGraphComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -77,83 +77,83 @@ namespace GameEngine
 			return 0;
 	}
 
-	SCENEGRAPHPLUGINEXP void setEntityTransformation(unsigned int entityWorldID, float* trans)
+	SCENEGRAPHAPI void setEntityTransformation(unsigned int entityWorldID, float* trans)
 	{
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_SET_TRANSFORMATION, &GameEventData(trans, 16), 0));
 	}	
 
-	SCENEGRAPHPLUGINEXP void setEntityTranslation(unsigned int entityWorldID, float x, float y, float z)
+	SCENEGRAPHAPI void setEntityTranslation(unsigned int entityWorldID, float x, float y, float z)
 	{
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_SET_TRANSLATION, &Vec3fData(x, y, z), 0));
 	}
 
-	SCENEGRAPHPLUGINEXP void setEntityRotation(unsigned int entityWorldID, float x, float y, float z)
+	SCENEGRAPHAPI void setEntityRotation(unsigned int entityWorldID, float x, float y, float z)
 	{
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_SET_ROTATION, &Vec3fData( x,y,z ), 0));
 	}
 
-	SCENEGRAPHPLUGINEXP void setEntityScale(unsigned int entityWorldID, float x, float y, float z)
+	SCENEGRAPHAPI void setEntityScale(unsigned int entityWorldID, float x, float y, float z)
 	{
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_SET_SCALE, &Vec3fData( x,y,z ), 0));
 	}
 
-	SCENEGRAPHPLUGINEXP void translateEntityLocal(unsigned int entityWorldID, float x, float y, float z)
+	SCENEGRAPHAPI void translateEntityLocal(unsigned int entityWorldID, float x, float y, float z)
 	{		
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_TRANSLATE_LOCAL, &Vec3fData( x,y,z ), 0));
 	}
 
-	SCENEGRAPHPLUGINEXP void translateEntityGlobal(unsigned int entityWorldID, float x, float y, float z)
+	SCENEGRAPHAPI void translateEntityGlobal(unsigned int entityWorldID, float x, float y, float z)
 	{		
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_TRANSLATE_GLOBAL, &Vec3fData( x,y,z ), 0));
 	}
 
-	SCENEGRAPHPLUGINEXP void rotateEntityLocal(unsigned int entityWorldID, float x, float y, float z)
+	SCENEGRAPHAPI void rotateEntityLocal(unsigned int entityWorldID, float x, float y, float z)
 	{		
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_ROTATE_LOCAL, &Vec3fData( x,y,z ), 0));
 	}
 
-	SCENEGRAPHPLUGINEXP void setParentNode(unsigned int entityWorldIDChild, unsigned int entityWorldIDNewParent,const char* childInNewParent)
+	SCENEGRAPHAPI void setParentNode(unsigned int entityWorldIDChild, unsigned int entityWorldIDNewParent,const char* childInNewParent)
 	{	
 		Attach attachData = Attach(childInNewParent, entityWorldIDNewParent);
 		sendEvent(entityWorldIDChild,&GameEvent(GameEvent::E_SET_NODE_PARENT,&attachData,0));
 	}
 
-	SCENEGRAPHPLUGINEXP void updateSceneGraph()
+	SCENEGRAPHAPI void updateSceneGraph()
 	{
 		SceneGraphManager::instance()->update();
 	}
 
-	SCENEGRAPHPLUGINEXP int getActiveCamera()
+	SCENEGRAPHAPI int getActiveCamera()
 	{
 		return SceneGraphManager::instance()->getActiveCam();
 	}
 
-	SCENEGRAPHPLUGINEXP void setActiveCamera( int activeCam )
+	SCENEGRAPHAPI void setActiveCamera( int activeCam )
 	{
 		SceneGraphManager::instance()->setActiveCam( activeCam );
 	}
 
-	SCENEGRAPHPLUGINEXP void setMorphTarget(unsigned int entityWorldID, const char* target, float weight)
+	SCENEGRAPHAPI void setMorphTarget(unsigned int entityWorldID, const char* target, float weight)
 	{
 		sendEvent(entityWorldID, &GameEvent(GameEvent::E_MORPH_TARGET, &MorphTarget(target,weight), 0));
 	}
 
-	SCENEGRAPHPLUGINEXP void setVisible( unsigned int entityWorldID, bool enable )
+	SCENEGRAPHAPI void setVisible( unsigned int entityWorldID, bool enable )
 	{
 		sendEvent( entityWorldID, &GameEvent( GameEvent::E_SET_ENABLED, &enable, 0 ) );
 	}
 
-	SCENEGRAPHPLUGINEXP void renderSceneGraph()
+	SCENEGRAPHAPI void renderSceneGraph()
 	{
 		SceneGraphManager::instance()->run();
 	}
 
-	SCENEGRAPHPLUGINEXP void loadHorde3DAttachment( int hordeID )
+	SCENEGRAPHAPI void loadHorde3DAttachment( int hordeID )
 	{
 		SceneGraphManager::instance()->addNewHordeNode( hordeID );
 	}
 
-	SCENEGRAPHPLUGINEXP const char* pickNodeWithIntersectionCoords(float nwx, float nwy, float* coords)
+	SCENEGRAPHAPI const char* pickNodeWithIntersectionCoords(float nwx, float nwy, float* coords)
 	{
 		H3DNode node = h3dutPickNode(SceneGraphManager::instance()->getActiveCam(), nwx, nwy);
 		
@@ -169,7 +169,7 @@ namespace GameEngine
 		return "";
 	}
 
-	SCENEGRAPHPLUGINEXP bool getEntityVisiblitiy(unsigned int entityID)
+	SCENEGRAPHAPI bool getEntityVisiblitiy(unsigned int entityID)
 	{
 		SceneGraphComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityID);
@@ -178,7 +178,7 @@ namespace GameEngine
 		return false;
 	}
 
-	SCENEGRAPHPLUGINEXP void getEntityBoundingBox(unsigned int entityID, float* minX, float* minY, float* minZ, float* maxX, float* maxY, float* maxZ)
+	SCENEGRAPHAPI void getEntityBoundingBox(unsigned int entityID, float* minX, float* minY, float* minZ, float* maxX, float* maxY, float* maxZ)
 	{
 		SceneGraphComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityID);

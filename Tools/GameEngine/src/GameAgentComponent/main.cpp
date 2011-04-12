@@ -19,8 +19,6 @@
 // 
 // ****************************************************************************************
     
-#include "GameEngine_Agent.h"
-
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameComponentRegistry.h>
 #include <GameEngine/GameLog.h>
@@ -30,6 +28,12 @@
 #include "AgentManager.h"
 #include "AgentComponent.h"
 #include "Config.h"
+
+#ifdef PLATFORM_WIN
+#    define AGENTPLUGINEXP extern "C" __declspec( dllexport )
+#else
+#	 define AGENTPLUGINEXP extern "C"
+#endif
 
 AGENTPLUGINEXP void dllLoadGamePlugin(void)
 {

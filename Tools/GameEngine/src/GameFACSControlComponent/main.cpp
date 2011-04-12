@@ -10,13 +10,21 @@
 //
 // *************************************************************************************************
 //
-#include "GameEngine_FACSControl.h"
-
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameComponentRegistry.h>
 
 #include "FACSControlManager.h"
 #include "FACSControlComponent.h"
+
+#ifdef PLATFORM_WIN
+#	 ifdef FACSCONTROLCOMPONENT_EXPORTS
+#       define FACSCONTROLPLUGINEXP extern "C" __declspec( dllexport )
+#	 else
+#       define FACSCONTROLPLUGINEXP extern "C" __declspec( dllimport )
+#    endif
+#else
+#	 define FACSCONTROLPLUGINEXP extern "C" 
+#endif
 
 FACSCONTROLPLUGINEXP void dllLoadGamePlugin(void)
 {

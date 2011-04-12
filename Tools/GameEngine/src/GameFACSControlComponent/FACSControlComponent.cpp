@@ -54,7 +54,7 @@ void FACSControlComponent::executeEvent(GameEvent *event)
 		case GameEvent::FACS_SET_EXPRESSION:
 		{
 			Property* prop =  static_cast<Property*>( event->data() );
-			setFacialExpression( prop->Name, prop->Value );
+			setFacialExpression( prop->Name, (float)prop->Value );
 			break;
 		}
 		case GameEvent::E_SET_FACS:

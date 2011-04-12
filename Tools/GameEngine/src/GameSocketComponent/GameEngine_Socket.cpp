@@ -36,7 +36,7 @@ namespace GameEngine
 	//@param data pointer to char array where the received socket data will be stored
 	//@param onlyNewestMessage flag for receiving only the newest message
 	//@return size of received data
-	SOCKETPLUGINEXP int getSocketData(unsigned int entityWorldID, const char **data, bool onlyNewestMessage /*= false*/)
+	SOCKETAPI int getSocketData(unsigned int entityWorldID, const char **data, bool onlyNewestMessage /*= false*/)
 	{		
 		SocketComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -50,7 +50,7 @@ namespace GameEngine
 	//Sends socket data to all known peers
 	//@param entityWorldID the entity we want to use the function on
 	//@param data pointer to char array that contains the data to be sent
-	SOCKETPLUGINEXP void sendSocketData(unsigned int entityWorldID, const char *data)
+	SOCKETAPI void sendSocketData(unsigned int entityWorldID, const char *data)
 	{		
 		SocketComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -60,7 +60,7 @@ namespace GameEngine
 		}
 	}
 
-	SOCKETPLUGINEXP int getMaxMessageLength( unsigned int entityWorldID)
+	SOCKETAPI int getMaxMessageLength( unsigned int entityWorldID)
 	{
 		SocketComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
@@ -74,7 +74,7 @@ namespace GameEngine
 	///Get the socket buffer length
 	///@param entityWorldID the entity we want to use the function on
 	///@return the buffer length in number of messages, -1 if an error occured
-	SOCKETPLUGINEXP int getMaxBufferLength( unsigned int entityWorldID)
+	SOCKETAPI int getMaxBufferLength( unsigned int entityWorldID)
 	{
 		SocketComponent* component = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);

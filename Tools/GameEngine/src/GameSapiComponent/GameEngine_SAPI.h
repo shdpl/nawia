@@ -20,12 +20,12 @@
 
 #ifdef PLATFORM_WIN
 #	 ifdef SAPICOMPONENT_EXPORTS
-#       define SAPIPLUGINEXP extern "C" __declspec( dllexport )
+#       define TTSAPI __declspec( dllexport )
 #	 else
-#       define SAPIPLUGINEXP extern "C" __declspec( dllimport )
+#       define TTSAPI __declspec( dllimport )
 #    endif
 #else
-#	 define SAPIPLUGINEXP 
+#	 define TTSAPI
 #endif
 
 namespace GameEngine
@@ -43,7 +43,7 @@ namespace GameEngine
 	 * @param entityWorldID 
 	 * @param sentence 
 	 */ 
-	SAPIPLUGINEXP void speak(unsigned int entityWorldID, const char* sentence);
+	TTSAPI void speak(unsigned int entityWorldID, const char* sentence);
 
 	/**
 	 * \brief Sends an E_SET_VOICE event to the TTS component of the given entity
@@ -51,14 +51,14 @@ namespace GameEngine
 	 * @param entityWorldID 
 	 * @param voice 
 	 */ 
-	SAPIPLUGINEXP void setVoice(unsigned int entityWorldID, const char* voice);
+	TTSAPI void setVoice(unsigned int entityWorldID, const char* voice);
 
 	/**
 	 * \brief Checks wether an entitiy is still speaking
 	 * 
 	 * @param entityWorldID 
 	 */ 
-	SAPIPLUGINEXP bool isSpeaking(unsigned int entityWorldID);
+	TTSAPI bool isSpeaking(unsigned int entityWorldID);
 	/*! @}*/
 }
 
