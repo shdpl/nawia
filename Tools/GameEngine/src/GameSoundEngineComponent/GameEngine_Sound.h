@@ -137,18 +137,6 @@ namespace GameEngine
 	 * Gets the maximum of parallel playing sources
 	 */
 	SOUNDAPI unsigned int getMaxSoundSources();
-
-
-	/**
-	 * Sets the maximum of parallel playing sources
-	 */
-	SOUNDPLUGINEXP void setMaxSoundSources(unsigned int maxSources);
-	/**
-	 * Gets the maximum of parallel playing sources
-	 */
-	SOUNDPLUGINEXP unsigned int getMaxSoundSources();
-
-	/*! @}*/
 }
 
 #endif
