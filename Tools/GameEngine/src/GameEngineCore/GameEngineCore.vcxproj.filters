@@ -98,9 +98,6 @@
     <ClInclude Include="TimingManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utmath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\bin\plugin.cfg" />

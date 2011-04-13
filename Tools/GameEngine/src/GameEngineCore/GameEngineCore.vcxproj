@@ -52,13 +52,12 @@
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)Build\$(ProjectName)\$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)Build\$(ProjectName)\$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release OpenMP|Win32'">$(SolutionDir)bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release OpenMP|Win32'">$(SolutionDir)Build\$(ProjectName)\$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release OpenMP|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release OpenMP|Win32'">true</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -69,6 +68,7 @@
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)d</TargetName>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
@@ -95,12 +95,12 @@ xcopy "$(ProjectDir)config.h" "$(SolutionDir)include\GameEngine\" /y
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(SolutionDir)/bin/$(ProjectName)d.dll</OutputFile>
+      <OutputFile>$(SolutionDir)bin\$(ProjectName)d.dll</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)/lib;$(ProjectDir)..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -145,7 +145,7 @@ xcopy "$(ProjectDir)config.h" "$(SolutionDir)include\GameEngine\" /y
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(SolutionDir)/bin/$(ProjectName).dll</OutputFile>
+      <OutputFile>$(SolutionDir)bin\$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)/lib;$(ProjectDir)..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -193,7 +193,7 @@ xcopy "$(ProjectDir)config.h" "$(SolutionDir)include\GameEngine\" /y
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(SolutionDir)/bin/$(ProjectName).dll</OutputFile>
+      <OutputFile>$(SolutionDir)bin\$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)/lib;$(ProjectDir)..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -241,7 +241,6 @@ xcopy "$(ProjectDir)config.h" "$(SolutionDir)include\GameEngine\" /y
     <ClInclude Include="GameWorld.h" />
     <ClInclude Include="PerformanceTimer.h" />
     <ClInclude Include="TimingManager.h" />
-    <ClInclude Include="utmath.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\bin\plugin.cfg" />
