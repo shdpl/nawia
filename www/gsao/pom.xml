@@ -5,7 +5,6 @@
 	<groupId>net.nawia.www</groupId>
 	<artifactId>gsao</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>ejb</packaging>
 	<name>Game Server Access Objects</name>
 	<parent>
 		<groupId>net.nawia</groupId>
