@@ -179,11 +179,11 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 
 	m_moveThreshold = static_cast<float>(atof(description->getAttribute("moveThreshold", "0.0005"))); 
 	
-	// Idle anims have weight 0, means they are only played if there is no other animation playing
+	// Idle anims have weight of 0.01, which means that they are suppressed as soon as another animation is playing
 	m_idleAnimCount = 0;
 	if( _stricmp(idle, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle, 10, 0, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle, 10, 0, -1.0f, 0.01f, 0.0f).clone());
 	
 		//initially start idle animation
 		setAnim(m_idleAnim[m_idleAnimCount], true);
@@ -191,22 +191,22 @@ void MoveAnimComponent::loadFromXml(const XMLNode* description)
 	}
 	if( _stricmp(idle2, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle2, 10, 0, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle2, 10, 0, -1.0f, 0.01f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 	if( _stricmp(idle3, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle3, 10, 0, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle3, 10, 0, -1.0f, 0.01f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 	if( _stricmp(idle4, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle4, 10, 0, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle4, 10, 0, -1.0f, 0.01f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 	if( _stricmp(idle5, "") != 0 )
 	{
-		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle5, 10, 0, -1.0f, 0.0f, 0.0f).clone());
+		m_idleAnim[m_idleAnimCount] = static_cast<AnimationSetup*>(AnimationSetup(idle5, 10, 0, -1.0f, 0.01f, 0.0f).clone());
 		m_idleAnimCount++;
 	}
 }
