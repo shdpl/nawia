@@ -43,6 +43,10 @@ bool CommandAttribute::check(const char *data)
 	if(name.empty() || val.empty())
 		return false;
 
+	//check if the attribute hasn't already been processed
+	if(m_flag != 0 && *m_flag == true)
+		return false;
+
 	//check name
 	if(strcmp(name.c_str(), m_name) != 0)
 		return false;
@@ -59,6 +63,15 @@ bool CommandAttribute::check(const char *data)
 			if(val.find_first_not_of("1234567890.") != string::npos)
 				return false;
 			break;
+
+		case AttributeType::STRING:
+		{
+			bool containsNumbers = (val.find_first_of("1234567890.") != string::npos);
+			bool containsNonNumbers = (val.find_first_not_of("1234567890.") != string::npos);
+			if(containsNumbers && !containsNonNumbers)
+				return false;
+			break;
+		}
 
 		case AttributeType::VEC3F:
 		{
@@ -101,7 +114,7 @@ void CommandAttribute::process(const char *data)
 		break;
 
 	case AttributeType::STRING:		
-		utils::strcpy(val.c_str(), (char *)m_value, m_valueSize); //TODO: does this work ?
+		utils::strcpy(val.c_str(), (char *)m_value, m_valueSize);
 		if(m_flag != 0) *m_flag = true;
 		break;
 
@@ -114,7 +127,7 @@ void CommandAttribute::process(const char *data)
 		float x = (float)atof(val.substr(xpos +1, ypos-xpos -1).c_str());
 		float y = (float)atof(val.substr(ypos +1, zpos-ypos -1).c_str());
 		float z = (float)atof(val.substr(zpos +1).c_str());
-		*((Horde3D::Vec3f*)m_value) = Horde3D::Vec3f(x,y,z); //TODO: does this work ?
+		*((Horde3D::Vec3f*)m_value) = Horde3D::Vec3f(x,y,z);
 
 		if(m_flag != 0) *m_flag = true;
 		break;
