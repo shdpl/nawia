@@ -5,6 +5,7 @@
     <Camera pipeline="pipelines/forward.pipeline.xml" tx="-13" ty="5.63" sx="1" occlusionCulling="0" tz="2" rx="-25" sy="1" ry="-40" sz="1" rz="0" name="camera" >
         <Attachment type="GameEngine" name="camera" >
 			<BayesNet file="../Kultur-Modell_paper.xdsl" />
+			<Socket protocol="UDP" port="343" address="127.0.0.1" type="server"/>
         </Attachment>
     </Camera>
     <Reference tx="0" sx="70" ty="15" sy="50" rx="0" tz="0" sceneGraph="models/skybox/skybox.scene.xml" sz="70" ry="0" rz="0" name="Skybox" />
