@@ -323,7 +323,7 @@ int FormationComponent::gotoE(int target_eID, float speed, const char* orientAni
 		return -1;
 
 	//start movement
-	m_movement_ID = GameEngine::Agent_gotoP( m_eID, dest[0], dest[1], dest[2], 1, false, orientAnimName, walkAnimName );
+	m_movement_ID = GameEngine::Agent_gotoP( m_eID, dest[0], dest[1], dest[2], speed, false, orientAnimName, walkAnimName );
 	
 	m_dest_eID = target_eID;
 	m_destPoint = Vec3f(dest[0], dest[1], dest[2]);

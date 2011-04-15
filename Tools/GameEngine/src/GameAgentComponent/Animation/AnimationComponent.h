@@ -63,13 +63,13 @@ public:
 	int playAnimationR( int resource, Agent_AnimType::List type, float speed, float spatialExtent, int strokeRepetitions, char* startNode, char* syncWord );
 
 	///forces the termination of an animtions (DISABLED)
-	void forceAnimationStop( unsigned int playbackID );
+	void forceAnimationStop( int playbackID );
 
 	///removes and deletes all active and queued up animations of this agent
 	void clear();
 
 	///returns the status of the specified animation
-	Agent_AnimStatus::List getAnimationStatus(unsigned int playbackID);
+	Agent_AnimStatus::List getAnimationStatus(int playbackID);
 
 	// ********************
 	// Getter
@@ -85,7 +85,7 @@ public:
 	 * @return extent the new value of the Spatial Extent attribute represented by a float between 0 and 1,
 	 *               where 0 is the lowest (still) spatial extent and 1 is the highest spatial extent (normal playback)
 	 */
-	float getAnimationExtent(unsigned int playbackID);
+	float getAnimationExtent(int playbackID);
 
 	/**
 	 * Gets the default animation's spatial extent of the agent
@@ -100,7 +100,7 @@ public:
 	 * @return speed the new value of the Speed attribute represented by a positive float value,
 	 *              where 0 is the lowest speed (still) and 2 is double speed.
 	 */
-	float getAnimationSpeed(unsigned int playbackID);
+	float getAnimationSpeed(int playbackID);
 
 	/**
 	 * Gets the default animation's speed of the agent
@@ -115,7 +115,7 @@ public:
 	 * @param playbackID the playback id of the animation to be altered.
 	 * @return reps number of stroke repetitions
 	 */
-	int getAnimationStrokeReps(unsigned int playbackID);
+	int getAnimationStrokeReps(int playbackID);
 
 	/**
 	 * Gets the default number of stroke repetitions an animation should do
@@ -132,7 +132,7 @@ public:
 	 * @param extent the new value of the Spatial Extent attribute represented by a float between 0 and 1,
 	 *               where 0 is the lowest (still) spatial extent and 1 is the highest spatial extent (normal playback)
 	 */
-	void setAnimationExtent(unsigned int playbackID, float extent);
+	void setAnimationExtent(int playbackID, float extent);
 
 	/**
 	 * Sets the default animation's spatial extent of the agent
@@ -147,7 +147,7 @@ public:
 	 * @param speed the new value of the Speed attribute represented by a positive float value,
 	 *              where 0 is the lowest speed (still) and 2 is double speed.
 	 */
-	void setAnimationSpeed(unsigned int playbackID, float speed);
+	void setAnimationSpeed(int playbackID, float speed);
 
 	/**
 	 * Sets the default animation's speed of the agent
@@ -161,7 +161,7 @@ public:
 	 * @param playbackID the playback id of the animation to be altered.
 	 * @param reps number of stroke repetitions
 	 */
-	void setAnimationStrokeReps(unsigned int playbackID, unsigned int reps);
+	void setAnimationStrokeReps(int playbackID, unsigned int reps);
 
 	/**
 	 * Sets the default number of stroke repetitions an animation should do
@@ -233,7 +233,7 @@ private:
 	 * Returns the animation with the specified playback ID. The search starts at the highest layer and proceeds downwards.
 	 * This means that in case of multiple results, the newest animation will be returned
 	 */
-	Animation* findAnimationP(unsigned int playbackID);
+	Animation* findAnimationP(int playbackID);
 	/**
 	 * Returns an animation with the specified type. The search starts at the highest layer and proceeds downwards.
 	 * This means that in case of multiple results, the newest animation will be returned

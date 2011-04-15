@@ -420,7 +420,7 @@ int AnimationComponent::playAnimationR( int resource, Agent_AnimType::List type,
 	return (result) ? a->getPlaybackID() : -2;
 }
 
-void AnimationComponent::forceAnimationStop(unsigned int playbackID)
+void AnimationComponent::forceAnimationStop(int playbackID)
 {
 	std::list<Layer*>::reverse_iterator riter = m_layers.rbegin();
 	while(riter != m_layers.rend())
@@ -759,7 +759,7 @@ void AnimationComponent::killAnimation(Animation* anim)
 		delete anim;
 }
 
-float AnimationComponent::getAnimationExtent(unsigned int playbackID)
+float AnimationComponent::getAnimationExtent(int playbackID)
 {
 	Animation* a = findAnimationP(playbackID);
 	if(a!=0)
@@ -773,7 +773,7 @@ float AnimationComponent::getAnimationExtent()
 	return m_extent;
 }
 
-float AnimationComponent::getAnimationSpeed(unsigned int playbackID)
+float AnimationComponent::getAnimationSpeed(int playbackID)
 {
 	Animation* a = findAnimationP(playbackID);
 	if(a!=0)
@@ -787,7 +787,7 @@ float AnimationComponent::getAnimationSpeed()
 	return m_speed;
 }
 
-int AnimationComponent::getAnimationStrokeReps(unsigned int playbackID)
+int AnimationComponent::getAnimationStrokeReps(int playbackID)
 {
 	Animation* a = findAnimationP(playbackID);
 	if(a!=0)
@@ -801,7 +801,7 @@ int AnimationComponent::getAnimationStrokeReps()
 	return m_strokeReps;
 }
 
-void AnimationComponent::setAnimationExtent(unsigned int playbackID, float extent)
+void AnimationComponent::setAnimationExtent(int playbackID, float extent)
 {
 	Animation* a = findAnimationP(playbackID);
 	if(a!=0)
@@ -813,7 +813,7 @@ void AnimationComponent::setAnimationExtent(float extent)
 	m_extent = extent;
 }
 
-void AnimationComponent::setAnimationSpeed(unsigned int playbackID, float speed)
+void AnimationComponent::setAnimationSpeed(int playbackID, float speed)
 {
 	Animation* a = findAnimationP(playbackID);
 	if(a!=0)
@@ -825,7 +825,7 @@ void AnimationComponent::setAnimationSpeed(float speed)
 	m_speed = speed;
 }
 
-void AnimationComponent::setAnimationStrokeReps(unsigned int playbackID, unsigned int reps)
+void AnimationComponent::setAnimationStrokeReps(int playbackID, unsigned int reps)
 {
 	Animation* a = findAnimationP(playbackID);
 	if(a!=0)
@@ -837,7 +837,7 @@ void AnimationComponent::setAnimationStrokeReps(unsigned int reps)
 	m_strokeReps = reps;
 }
 
-Animation* AnimationComponent::findAnimationP(unsigned int playbackID)
+Animation* AnimationComponent::findAnimationP(int playbackID)
 {
 	std::list<Layer*>::reverse_iterator riter = m_layers.rbegin();
 	while(riter != m_layers.rend())
@@ -882,7 +882,7 @@ Animation* AnimationComponent::findAnimationI(unsigned int id)
 	return 0;
 }
 
-Agent_AnimStatus::List AnimationComponent::getAnimationStatus(unsigned int playbackID)
+Agent_AnimStatus::List AnimationComponent::getAnimationStatus(int playbackID)
 {
 	Animation* a = findAnimationP(playbackID);
 	if(a!=0)
