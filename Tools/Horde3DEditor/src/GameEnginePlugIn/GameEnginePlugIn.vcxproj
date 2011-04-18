@@ -1,0 +1,702 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Memory Check|Win32">
+      <Configuration>Memory Check</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>GameEnginePlugIn</ProjectName>
+    <ProjectGuid>{AE98057C-AD68-4F66-A78D-FD0E7D62AC73}</ProjectGuid>
+    <RootNamespace>GameEnginePlugIn</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)bin\PlugIns\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)Build\$(ProjectName)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)bin\PlugIns\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)Build\$(ProjectName)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)d</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(QTDIR)/include;$(SolutionDir)/include;$(ProjectDir)..\HordeSceneEditorCore;$(SolutionDir)include\SAPI;$(ProjectDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;QT_LARGEFILE_SUPPORT;QT_DLL;QT_PLUGIN;QT_THREAD_SUPPORT;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>delayimp.lib;QtCored4.lib;QtGuid4.lib;QtXmld4.lib;GameEngineCored.lib;QPropertyEditord.lib;QXmlTreed.lib;Horde3D_vc100d.lib;Horde3DUtils_vc100d.lib;GameBulletPhysicsComponentd.lib;GameSoundComponentd.lib;GameAnimationsComponentd.lib;GameSapiComponentd.lib;GameSceneGraphComponentd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(SolutionDir)/bin/PlugIns/$(ProjectName)d.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)/lib;$(QTDIR)/lib;$(ProjectDir)..\..\lib;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <SupportUnloadOfDelayLoadedDLL>true</SupportUnloadOfDelayLoadedDLL>
+      <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>$(QTDIR)/include;$(SolutionDir)/include;$(ProjectDir)..\HordeSceneEditorCore;$(SolutionDir)include\SAPI;$(ProjectDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;UNICODE;QT_LARGEFILE_SUPPORT;QT_DLL;QT_PLUGIN;QT_NO_DEBUG;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>delayimp.lib;QtCore4.lib;QtGui4.lib;QtXml4.lib;GameEngineCore.lib;Horde3D_vc100.lib;Horde3DUtils_vc100.lib;QPropertyEditor.lib;QXmlTree.lib;GameBulletPhysicsComponent.lib;GameSoundComponent.lib;GameAnimationsComponent.lib;GameSapiComponent.lib;GameSceneGraphComponent.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(SolutionDir)/bin/PlugIns/$(ProjectName).dll</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)/lib;$(QTDIR)/lib;$(ProjectDir)..\..\lib;$(ProjectDir)..\..\..\..\Horde3D\Binaries\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <SupportUnloadOfDelayLoadedDLL>true</SupportUnloadOfDelayLoadedDLL>
+      <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(QTDIR)/include;$(SolutionDir)/include;$(ProjectDir)..\HordeSceneEditorCore;$(SolutionDir)include\SAPI;$(ProjectDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;MEMORYCHECK;_WINDOWS;QT_LARGEFILE_SUPPORT;QT_DLL;QT_PLUGIN;QT_THREAD_SUPPORT;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>delayimp.lib;QtCored4.lib;QtGuid4.lib;QtXmld4.lib;GameEngineCored.lib;Horde3d_vc9.lib;Horde3DUtils_vc9.lib;DsShowGrabberd.lib;QPropertyEditord.lib;QXmlTreed.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(SolutionDir)/bin/PlugIns/$(ProjectName)d.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)/lib;$(QTDIR)/lib;$(ProjectDir)..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <SupportUnloadOfDelayLoadedDLL>true</SupportUnloadOfDelayLoadedDLL>
+      <ImportLibrary>
+      </ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AttachmentTreeModel.cpp" />
+    <ClCompile Include="AttachmentTreeView.cpp" />
+    <ClCompile Include="CrowdParticleWidget.cpp" />
+    <ClCompile Include="CrowdVisibilityWidget.cpp" />
+    <ClCompile Include="DynamidWidget.cpp" />
+    <ClCompile Include="ExtraTreeModel.cpp" />
+    <ClCompile Include="GameControllerAttachment.cpp" />
+    <ClCompile Include="GameControllerWidget.cpp" />
+    <ClCompile Include="KeyframeAnimationWidget.cpp" />
+    <ClCompile Include="PathPage.cpp" />
+    <ClCompile Include="PhonemeEditorWidget.cpp" />
+    <ClCompile Include="PhysicsWidget.cpp" />
+    <ClCompile Include="SoundWidget.cpp" />
+    <ClCompile Include="TimeLineComboBox.cpp" />
+    <ClCompile Include="TimeLineFrame.cpp" />
+    <ClCompile Include="TimeLineTextEdit.cpp" />
+    <ClCompile Include="TTSWidget.cpp" />
+    <ClCompile Include="moc_AttachmentTreeModel.cpp" />
+    <ClCompile Include="moc_AttachmentTreeView.cpp" />
+    <ClCompile Include="moc_CrowdParticleWidget.cpp" />
+    <ClCompile Include="moc_CrowdVisibilityWidget.cpp" />
+    <ClCompile Include="moc_DynamidWidget.cpp" />
+    <ClCompile Include="moc_ExtraTreeModel.cpp" />
+    <ClCompile Include="moc_GameControllerAttachment.cpp" />
+    <ClCompile Include="moc_GameControllerWidget.cpp" />
+    <ClCompile Include="moc_KeyframeAnimationWidget.cpp" />
+    <ClCompile Include="moc_PathPage.cpp" />
+    <ClCompile Include="moc_PhonemeEditorWidget.cpp" />
+    <ClCompile Include="moc_PhysicsWidget.cpp" />
+    <ClCompile Include="moc_QAttachmentNode.cpp" />
+    <ClCompile Include="moc_QComponentNode.cpp" />
+    <ClCompile Include="moc_QExtraNode.cpp" />
+    <ClCompile Include="moc_QGameEntityNode.cpp" />
+    <ClCompile Include="moc_QPositionNode.cpp" />
+    <ClCompile Include="moc_SoundWidget.cpp" />
+    <ClCompile Include="moc_TimeLineComboBox.cpp" />
+    <ClCompile Include="moc_TimeLineFrame.cpp" />
+    <ClCompile Include="moc_TimeLineTextEdit.cpp" />
+    <ClCompile Include="moc_TTSWidget.cpp" />
+    <ClCompile Include="QAttachmentNode.cpp" />
+    <ClCompile Include="QComponentNode.cpp" />
+    <ClCompile Include="QPositionNode.cpp" />
+    <ClCompile Include="QExtraNode.cpp" />
+    <ClCompile Include="QGameEntityNode.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="AttachmentTreeModel.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="AttachmentTreeView.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="CrowdParticleWidget.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="CrowdVisibilityWidget.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="DynamidWidget.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="ExtraTreeModel.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="GameControllerAttachment.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="GameControllerWidget.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="KeyframeAnimationWidget.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="PathPage.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="PhonemeEditorWidget.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="PhysicsWidget.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="SoundWidget.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="TimeLineComboBox.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="TimeLineFrame.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="TimeLineTextEdit.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="TTSWidget.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="QAttachmentNode.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="QComponentNode.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="QPositionNode.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="QExtraNode.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="QGameEntityNode.h">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/moc.exe" "%(FullPath)" -o "%(RootDir)%(Directory)./moc_%(Filename).cpp"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)./moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="CrowdParticleWidget.ui">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="CrowdVisibilityWidget.ui">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="DynamidWidget.ui">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="GameControllerWidget.ui">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="KeyframeAnimationWidget.ui">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="PathPage.ui">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="PhonemeEditorWidget.ui">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="PhysicsWidget.ui">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="SoundWidget.ui">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="TTSWidget.ui">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Memory Check|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling UI file %(Filename)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)/bin/uic.exe" "%(FullPath)" -o "%(RootDir)%(Directory)ui_%(Filename).h"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)ui_%(Filename).h;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Horde3D\Source\Horde3DEngine\Horde3D Engine.vcxproj">
+      <Project>{1d558d7d-da57-4908-bcfc-902054fe6b63}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Dependencies\XMLParser\XmlParserLib.vcxproj">
+      <Project>{3bf9d44f-4a29-46ee-9a04-ee706e602620}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\HordeSceneEditorCore\HordeSceneEditorCore.vcxproj">
+      <Project>{b50fe54c-0061-466d-892f-7c5a85854eb4}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\QPropertyEditor\QPropertyEditor.vcxproj">
+      <Project>{c0a9dd0a-fda1-4749-86b7-d831cdd4478b}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\QXmlTree\QXmlTree.vcxproj">
+      <Project>{5fdf2849-8ab0-4e61-af32-1c9af7479601}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
