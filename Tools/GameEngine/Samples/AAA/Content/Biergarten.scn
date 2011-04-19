@@ -4,7 +4,7 @@
 	<AttachmentPlugIn name="GameEngine" />
 	<EnginePath texturepath="textures" geometrypath="models" pipelinepath="pipelines" mediapath="media" shaderpath="shaders" scenegraphpath="models" animationpath="animations" materialpath="materials" />
 	<EngineConfig fastAnimation="true" shadowMapSize="2048" texCompression="true" loadTextures="true" maxNumMessages="5000" />
-	<ActiveCamera name="camera" />
+	<!--<ActiveCamera name="camera" />-->
 	<Extras>
 		<AnimationLexicon path="AnimationLexicon.xml"/>
 	</Extras>

@@ -2,9 +2,12 @@
 <Group tx="0" sx="1" ty="0" rx="0" sy="1" tz="0" ry="0" sz="1" rz="0" name="Biergarten" >
     <Reference tx="0" sx="1" ty="0" sy="1" rx="0" tz="0" sceneGraph="models/biergartenmodel.scene.xml" sz="1" ry="0" rz="0" name="Biergarten Scene" />
     <Light sy="1" lightingContext="LIGHTING" sz="1" col_B="0.5294117647058824" name="light" material="materials/light.material.xml" col_G="0.7215686274509804" tx="-15" ty="35" shadowContext="SHADOWMAP" tz="35" shadowMapBias="0.0004" rx="-40" ry="-45" shadowMapCount="4" rz="0" col_R="0.8705882352941177" radius="200" fov="150" shadowSplitLambda="0.7" sx="1" />
-    <Camera pipeline="pipelines/forward.pipeline.xml" tx="-13" ty="5.63" sx="1" occlusionCulling="0" tz="2" rx="-25" sy="1" ry="-40" sz="1" rz="0" name="camera" >
+    <Camera name="camera" pipeline="pipelines/forward.pipeline.xml" tx="-13" ty="5.63" sx="1" occlusionCulling="0" tz="2" rx="-25" sy="1" ry="-40" sz="1" rz="0"  >
         <Attachment type="GameEngine" name="camera" >
-			<BayesNet file="../Kultur-Modell_paper.xdsl" />
+			    <BayesNet file="../Kultur-Modell_paper.xdsl" />
+          <CameraControl />
+          <SoundListener active="true" gain="0.8" />
+          <Socket protocol="UDP" port="343" type="server"/>
 			<Socket protocol="UDP" port="343" address="127.0.0.1" type="server"/>
         </Attachment>
     </Camera>
@@ -53,8 +56,7 @@
 				<Formation type="V" />
 				<Icon name="symb_default" distance="30" />
 			</Agent>
-			
-            <Sapi voice="Crystal16" useDistanceModel="1" rollOff="5.0"/>
+	          <Sapi voice="Crystal16" useDistanceModel="1" rollOff="5.0"/>
         </Attachment>
     </Reference>
 	
@@ -92,8 +94,7 @@
 				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Idle" />
 				<Formation type="L" />
 			</Agent>
-			
-            <Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>
+          <Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>
         </Attachment>
     </Reference>
 	
@@ -226,7 +227,11 @@
         <Reference tx="27.8493" sx="0.01" ty="-24.5266" sy="0.01" tz="-52.5821" rx="-4.54515" sceneGraph="models/holzZaun/holzZaun.scene.xml" sz="0.01" ry="1.70927" rz="-11.5696" name="holzZaun21" />
     </Group>
     <Group tx="-6.22384" ty="0.837493" tz="-2.33799" rx="0" ry="-135" rz="0" name="brunnen" >
-        <Reference tx="-0.162738" sx="0.02" ty="-0.309088" sy="0.02" tz="-0.720933" sceneGraph="models/holzBrunnen/holzBrunnen.scene.xml" sz="0.02" name="holzBrunnen" />
+      <Reference tx="-0.162738" sx="0.02" ty="-0.309088" sy="0.02" tz="-0.720933" sceneGraph="models/holzBrunnen/holzBrunnen.scene.xml" sz="0.02" name="holzBrunnen">
+        <Attachment type="GameEngine" name="backgroundsound">
+        <Sound3D loop="0" file="background.ogg" gain="1" />
+        </Attachment>
+      </Reference>
 		<Emitter name="BrunnenWasser" material="effects/ParticleSystem1/ParticleSystem1.material.xml" particleEffect="effects/ParticleSystem1/ParticleSystem1.particle.xml"
 			 tx="0.159241" ty="0.590321" tz="0.0502045" rx="30" ry="0" rz="0"
 			 maxCount="1000" respawnCount="1000" delay="0" emissionRate="1000" spreadAngle="3"

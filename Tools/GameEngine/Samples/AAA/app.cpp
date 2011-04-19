@@ -28,6 +28,7 @@
 //
 // ****************************************************************************************
 #include "app.h"
+#include "Console.h"
 
 #include "Horde3D/Horde3DUtils.h"
 #include "Horde3D/Horde3D.h"
@@ -40,6 +41,7 @@
 #include "GameEngine/GameEngine_IK.h"
 #include "GameEngine/GameEngine_Sapi.h"
 #include "GameEngine/utmath.h"
+#include <GameEngine/GameEngine_CameraControl.h>
 
 #include <direct.h>
 #include <iostream>
@@ -48,11 +50,13 @@
 
 using namespace Horde3D;
 
+
+
 Application::Application()
 {
 	for( unsigned int i = 0; i < 320; ++i ) _keys[i] = false;
 	
-	_velocity = 4.0f;
+//	_velocity = 4.0f;
 	_curFPS = 30;
 	m_m0pressed = false;
 	m_m1pressed = false;
@@ -69,6 +73,17 @@ Application::Application()
 
 bool Application::init( const char *fileName )
 {	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	mConsole.print("  __________________________________________________________________\r\n\r\n", Console::BRIGHT_BLUE);
+	mConsole.print("                  Soap Opera Beergarden:                            \r\n", Console::BRIGHT_BLUE);
+	mConsole.print("  __________________________________________________________________\r\n\r\n", Console::BRIGHT_BLUE);
+	mConsole.print("      Copyright \u00A9 2009-2012 University of Augsburg             \r\n", Console::BRIGHT_GREEN);
+	mConsole.print("       http://mm-werkstatt.informatik.uni-augsburg.de/              \r\n", Console::BRIGHT_GREEN);
+	mConsole.print("  __________________________________________________________________\r\n\r\n", Console::BRIGHT_BLUE);
+	mConsole.print("\r\n", Console::WHITE);
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	//
 	//** Initialize engine **
 	if (!GameEngine::init()) return false;	
 	if (!GameEngine::loadScene(fileName)) return false;
@@ -76,11 +91,15 @@ bool Application::init( const char *fileName )
 	//init cam
 	m_cam_eID = GameEngine::entityWorldID("camera");
 	m_cam_hID = GameEngine::entitySceneGraphID(m_cam_eID);
-	GameEngine::setActiveCamera(m_cam_hID);
+	//GameEngine::setActiveCamera(m_cam_hID);
+
+	GameEngine::SetupCamera(m_cam_eID, 1024, 768, 45.0f, 0.01f, 1000.0f);
+	
+	
 	//default camera position
-	h3dGetNodeTransform( m_cam_hID, &init_x, &init_y, &init_z, &init_rx, &init_ry, &init_rz, 0,0,0 );
-	_x = init_x; _y = init_y; _z = init_z; 
-	_rx = init_rx; _ry = init_ry; _rz = init_rz; 
+	//h3dGetNodeTransform( m_cam_hID, &init_x, &init_y, &init_z, &init_rx, &init_ry, &init_rz, 0,0,0 );
+	//_x = init_x; _y = init_y; _z = init_z; 
+	//_rx = init_rx; _ry = init_ry; _rz = init_rz; 
 
 	// VON PETER für Shader Uniform
 	m_waterMaterial = h3dAddResource( H3DResTypes::Material, "models/holzBrunnen/wasser.material.xml", 0 );
@@ -96,6 +115,19 @@ bool Application::init( const char *fileName )
 	if(!config( getSceneXMLNode(fileName) ))
 		GameLog::errorMessage( "AAA failed to load properly - xml data incomplete, corrupt or missing" );
 
+	// Camera Drive
+	float curve[27] = 
+		{ 0.0f,  2.1f,  0.0f,
+		 -4.0f,  2.1f,  0.0f,
+		 -4.0f,  2.1f, -4.0f,
+		 -4.0f,  2.1f, -8.0f,
+		  0.0f,  2.1f, -8.0f,
+		  4.0f,  2.1f, -8.0f,
+		  4.0f,  2.1f, -4.0f,
+		  4.0f,  2.1f,  0.0f,
+		  0.0f,  2.1f,  0.0f };
+	GameEngine::AddCameraDrive(m_cam_eID, "DRIVE_001", 8, curve);
+	//
 	return true;
 }
 
@@ -281,7 +313,7 @@ void Application::update( float fps )
     m_counter += 10.0f/_curFPS;
 
 	//** Set camera parameters
-	h3dSetNodeTransform( m_cam_hID, _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
+	//h3dSetNodeTransform( m_cam_hID, _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
 
 	//show overlay with camera parameters
 	std::stringstream text;
@@ -313,12 +345,7 @@ void Application::release()
 
 void Application::resize( int width, int height )
 {
-	// Resize viewport
-	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportXI, 0 );
-	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportYI, 0 );
-	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportWidthI, width );
-	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportHeightI, height );	
-	h3dResizePipelineBuffers( h3dGetNodeParamI( m_cam_hID, H3DCamera::PipeResI ), width, height );
+	GameEngine::ResizeCamera(m_cam_eID, width, height);
 }
 
 
@@ -331,6 +358,7 @@ void Application::keyPressEvent( int key, bool pressed )
 
 void Application::keyHandler()
 {
+	/*
 	float curVel = _velocity / _curFPS;
 	float transSpeed = 0.7f;
 	float rotSpeed = 5;
@@ -347,9 +375,6 @@ void Application::keyHandler()
 		_keys[264] = false;
 	}
 
-	/**
-	 * Camera movement
-	 */
 	if( _keys['W'] )
 	{
 		// Move forward
@@ -404,9 +429,6 @@ void Application::keyHandler()
 		//_keys['F']=false;
 	}
 
-	/**
-	 * Camera rotation
-	 */
 	if( _keys['J'] )
 	{
 		// turn left
@@ -445,6 +467,24 @@ void Application::keyHandler()
 		_rx = init_rx; _ry = init_ry; _rz = init_rz; 
 		h3dSetNodeTransform( m_cam_hID, _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
 	}
+	*/
+
+	if( _keys['W'] ) { GameEngine::MoveCameraForward(m_cam_eID); }
+	if( _keys['S'] ) { GameEngine::MoveCameraBackward(m_cam_eID); }
+	if( _keys['A'] ) { GameEngine::MoveCameraLeft(m_cam_eID); }
+	if( _keys['D'] ) { GameEngine::MoveCameraRight(m_cam_eID); }
+	if( _keys['R'] ) { GameEngine::MoveCameraUpward(m_cam_eID); }
+	if( _keys['F'] ) { GameEngine::MoveCameraDownward(m_cam_eID); }
+	if( _keys['K'] ) { GameEngine::TurnCameraDown(m_cam_eID); }	
+	if( _keys['I'] ) { GameEngine::TurnCameraUp(m_cam_eID); }
+	if( _keys['J'] ) { GameEngine::TurnCameraLeft(m_cam_eID); }	
+	if( _keys['L'] ) { GameEngine::TurnCameraRight(m_cam_eID); }
+	if( _keys['N'] ) { GameEngine::RollCameraLeft(m_cam_eID); }
+	if( _keys['M'] ) { GameEngine::RollCameraRight(m_cam_eID);}
+	if( _keys['X'] ) { GameEngine::ResetCamera(m_cam_eID);}
+
+
+	if( _keys['Q'] ) { GameEngine::RunCameraDrive(m_cam_eID, "DRIVE_001");}
 
 	if( _keys['T'] )
 	{
@@ -476,7 +516,7 @@ void Application::keyHandler()
 			if(_keys[287]) //Shift
 			{
 				m_scenario = i;
-				printf("Scenario %d activated\n", i);
+				//printf("Scenario %d activated\n", i);
 				_keys[i +48]=false;
 				break;
 			}
@@ -589,7 +629,7 @@ void Application::processScenario(int act_id)
 				GameEngine::IK_setParamI( getAgent(i)->entity_id, IK_Param::UseDofr_I, 1 );
 			}
 			//set the camera
-			_x=-17; _y=6.1f; _z=15; _rx=-17.8f; _ry=-34.7f; _rz=0;
+//			_x=-17; _y=6.1f; _z=15; _rx=-17.8f; _ry=-34.7f; _rz=0;
 			break;
 		}
 		break;
@@ -598,6 +638,14 @@ void Application::processScenario(int act_id)
 
 void Application::mouseMoveEvent( float dX, float dY )
 {
+	if(m_m1pressed) {
+		GameEngine::MoveCursor(m_cam_eID, dX, dY, 0x0002);
+	} else {
+		GameEngine::MoveCursor(m_cam_eID, dX, dY, 0x0);
+	}
+
+
+	/*
 	float mouseRotSpeed = 30.0f;
 	float _fps = GameEngine::FPS();
 
@@ -615,6 +663,7 @@ void Application::mouseMoveEvent( float dX, float dY )
 
 		GameEngine::setEntityRotation( m_cam_eID, _rx, _ry, _rz);
 	}
+	*/
 }
 
 void Application::mouseClickEvent(int button, int action, float x, float y)
@@ -629,10 +678,16 @@ void Application::mouseClickEvent(int button, int action, float x, float y)
 		if(m_m0pressed)
 		{			
 			float coords[3];
-			const char* nodeName = GameEngine::pickNodeWithIntersectionCoords(x,y, coords);
+			
+			int node = GameEngine::PickObject(m_cam_eID, x, y, coords, 0x0);
+			char const * nodeName = h3dGetNodeParamStr( node, H3DNodeParams::NameStr );
+			//const char* nodeName = GameEngine::pickNodeWithIntersectionCoords(x,y, coords);
+			//printf("Picked %s", nodeName);
+			
 			processDestination(nodeName, coords[0],coords[1],coords[2]);
 		}
 	}
+	
 }
 
 void Application::processDestination(const char* nodeName, float x, float y, float z)

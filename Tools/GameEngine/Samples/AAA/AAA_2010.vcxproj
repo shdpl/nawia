@@ -128,12 +128,16 @@ xcopy "$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.lib" "$(SolutionDir)lib\" 
     <ClCompile Include="AgentNode.cpp" />
     <ClCompile Include="app.cpp" />
     <ClCompile Include="Bayesnet.cpp" />
+    <ClCompile Include="Console.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="StdInc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AgentNode.h" />
     <ClInclude Include="app.h" />
     <ClInclude Include="Bayesnet.h" />
+    <ClInclude Include="Console.h" />
+    <ClInclude Include="StdInc.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Horde3D\Samples\glfw\glfw.vcxproj">
@@ -153,6 +157,9 @@ xcopy "$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.lib" "$(SolutionDir)lib\" 
     </ProjectReference>
     <ProjectReference Include="..\..\src\GameBayesNetComponent\GameBayesNetComponent.vcxproj">
       <Project>{aca0edf7-a6d9-42df-a0c1-29e8d0aacc32}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\GameCameraControlComponent\GameCameraControlComponent_2008.vcxproj">
+      <Project>{db3d0197-9842-41d2-8f69-f6d70b41307c}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\src\GameEngineCore\GameEngineCore.vcxproj">
       <Project>{db488001-8e98-4724-9787-72da137c4e47}</Project>
