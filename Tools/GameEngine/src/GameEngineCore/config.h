@@ -43,4 +43,17 @@
 #	 define DLLEXP
 #endif
 
+#if !defined( PLATFORM_WIN ) && !defined( PLATFORM_WIN_CE )
+#   define localtime_s localtime_r
+#	define _stricmp strcasecmp
+#	define _mkdir( name ) mkdir( name, 0755 )
+#endif
+
+#if !defined( _MSC_VER ) || (defined( _MSC_VER ) && (_MSC_VER < 1400))
+#	define strncpy_s( dst, dstSize, src, count ) strncpy( dst, src, count < dstSize ? count : dstSize )
+#endif
+#if defined( _MSC_VER ) && (_MSC_VER < 1400)
+#   define vsnprintf _vsnprintf
+#endif
+
 #endif
