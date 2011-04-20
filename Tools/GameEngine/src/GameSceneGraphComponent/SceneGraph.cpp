@@ -123,6 +123,7 @@ void SceneGraphManager::update()
 		//// Init attachments
 		GameLog::logMessage("Searching for attachments...");
 		int attachments = 0;
+		int ignoredAttachments = 0;
 		while( !m_newSceneNodes.empty() )
 		{
 			int nodes = h3dFindNodes( m_newSceneNodes.top(), "", H3DNodeTypes::Undefined );
@@ -137,13 +138,21 @@ void SceneGraphManager::update()
 				if (xmlText && strlen(xmlText) > 0) 
 				{
 					// Create a new GameEntity based on the attachment settings
-					createGameEntity( xmlText, findResult[i] );
-					++attachments;
+					unsigned int id = createGameEntity( xmlText, findResult[i] );
+					if (id > 0)
+						++attachments;
+					else
+						++ignoredAttachments;
 				}
 			}
 			m_newSceneNodes.pop();
 		}
-		GameLog::logMessage("%d game entities created from attachments", attachments);
+		if (attachments > 0)
+			GameLog::logMessage("%d game entities created from attachments", attachments);
+		else
+			GameLog::warnMessage("Found no attachments!");
+		if (ignoredAttachments > 0)
+			GameLog::logMessage("Ignored %d attachments as they had a wrong type or invalid content", ignoredAttachments);
 	}
 
 	if (m_activeCam != m_nextCam)
@@ -176,6 +185,14 @@ unsigned int SceneGraphManager::createGameEntity( const char *xmlText, int horde
 	XMLNode attachment = XMLNode::parseString(xmlText, 0, &results);
 	if (results.error == eXMLErrorNone)
 	{
+		const char* attachmentType = attachment.getAttribute("type");
+		if (attachmentType == 0)
+			GameLog::warnMessage("Attachment has no type attribute, trying to load it as of type 'GameEngine'.");
+		else if (strcmp(attachmentType, "GameEngine") != 0)
+		{
+			// Other attachment type, so ignore it
+			return 0;
+		}
 		const char* entityName = attachment.getAttribute("name");
 		if (entityName == 0)
 		{
