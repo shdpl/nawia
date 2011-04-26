@@ -101,7 +101,7 @@
 								<documentation>Deprecated.</documentation>
 							</annotation>
 						</attribute>
-						<attribute name="defence" type="integer">
+						<attribute name="defense" type="integer">
 							<annotation>
 								<documentation>Deprecated.</documentation>
 							</annotation>
