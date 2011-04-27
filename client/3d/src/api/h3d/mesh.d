@@ -6,4 +6,6 @@ class H3DMesh : Mesh {
 	uint _batchStart;
 	uint _batchCount;
 	
+	public:
+	uint lodLevel;
 }

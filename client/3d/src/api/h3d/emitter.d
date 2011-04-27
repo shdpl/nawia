@@ -6,7 +6,14 @@ class H3DEmitter : Emitter {
 	H3DNode _handle;
 	string _name;
 	Material _mat;
+	/// Particle description
 	Particle _particle;
+	/// Delay before object will start emitting
+	StopWatch delay;
+	float emissionRate;
+	/// Angle of cone for random emission direction (default: 0.0)
+	float spreadAngle;
+	Vector3D force;
 	uint _particlesCount;
 	uint _particleRespCount;
 	

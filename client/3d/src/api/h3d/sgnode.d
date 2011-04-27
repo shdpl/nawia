@@ -8,8 +8,20 @@ class SGNode  {
 		
 	}
 	
+	this(SGNode) {
+		h3dCloneResource(_handle, null);
+	}
+	
+	~this() {
+		h3dRemoveResource(_handle);
+	}
+	
+	string name();
 	NodeType type();
-	SGNode[] find();
+	SGNode[] find(string name);
+	SGNode[] all();
+	Iterator iterator();
+	//mapStream();
 	Ray castRay(Point3D origin, Vector3D direction, uint maxIntersections);
 	
 	SGNode parent();
