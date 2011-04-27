@@ -875,4 +875,21 @@
 		</Function>
 		<Restriction></Restriction>  
 	</Gesture>
+	<Gesture>
+		<ID>0057</ID>
+		<Name>Japanese Beat 02</Name>
+		<Speech></Speech>
+		<Description>Japanese beat gesture from corpusvideo</Description>
+		<Files gender="female">
+			<File strokeStart="11" strokeEnd="143">Gestures\Female\female_jap_beat_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="11" strokeEnd="143">Gestures\Male\male_jap_beat_02.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
 </AnimationLexicon>
