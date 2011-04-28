@@ -7,6 +7,10 @@
 
 src\NawiaClient3D.d
 src\api\breakpad\breakpad.d
+src\api\breakpad\filter\exception.d
+src\api\breakpad\filter\report.d
+src\api\breakpad\handler.d
+src\api\breakpad\reporter\reporter.d
 src\api\bullet\broadphase.d
 src\api\bullet\bullet.d
 src\api\bullet\pbody\pbody.d
@@ -24,6 +28,8 @@ src\api\bullet\shape\staticmesh.d
 src\api\bullet\world\collision.d
 src\api\bullet\world\dynamics.d
 src\api\bullet\world\world.d
+src\api\csound\csound.d
+src\api\flac\flac.d
 src\api\glfw\glfw.d
 src\api\glfw\keyboard.d
 src\api\glfw\mouse.d
@@ -55,7 +61,20 @@ src\api\h3d\shader\fragment.d
 src\api\h3d\shader\shader.d
 src\api\h3d\shader\vertex.d
 src\api\h3d\texture.d
+src\api\openal\buffer.d
+src\api\openal\device\device.d
+src\api\openal\device\manager.d
+src\api\openal\device\recorder.d
+src\api\openal\device\renderer.d
+src\api\openal\listener.d
+src\api\openal\medium.d
 src\api\openal\openal.d
+src\api\openal\playback.d
+src\api\openal\source\generated.d
+src\api\openal\source\sample.d
+src\api\openal\source\source.d
+src\api\theora\theora.d
+src\api\vorbis\vorbis.d
 src\cfg\cfg.d
 src\ge\graph\emitter.d
 src\ge\window\glfw.d
