@@ -664,7 +664,7 @@ uint32 RenderDevice::createShader( const char *vertexShaderSrc, const char *frag
 			bool attribFound = false;
 			for( uint32 k = 0; k < vl.numAttribs; ++k )
 			{
-				if( strcmp( vl.attribs[k].semanticName.c_str(), name ) == 0 )
+				if( vl.attribs[k].semanticName.compare(name) == 0 )
 				{
 					shader.inputLayouts[i].attribIndices[k] = glGetAttribLocation( programObj, name );
 					attribFound = true;
