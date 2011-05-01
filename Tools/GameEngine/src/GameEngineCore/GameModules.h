@@ -29,6 +29,7 @@
 class GameComponentRegistry;
 class GamePlugInManager;
 class GameWorld;
+class GameNetworkManager;
 
 /** \addtogroup GameEngineCore
  * @{
@@ -77,6 +78,12 @@ public:
 	 */ 
 	static GameWorld*				gameWorld();
 	/**
+	 * \brief Return the GameNetworkManager singleton instance
+	 * 
+	 * @return the singleton instance of the GameNetworkManager
+	 */ 
+	static GameNetworkManager*		networkManager();
+	/**
 	 * \brief Releases the gameworld with all entities in it
 	 * 
 	 */ 
@@ -89,6 +96,8 @@ private:
 	static GameComponentRegistry*	m_componentRegistry;
 	/// Singleton instance 
 	static GameWorld*				m_gameWorld;
+	/// Singleton instance 
+	static GameNetworkManager*		m_networkManager;
 };
 
 /*! @}*/

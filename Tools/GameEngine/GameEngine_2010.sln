@@ -14,6 +14,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bullet", "Bullet", "{ED5EA9BB-D534-45BC-9456-3EF70CC5E119}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameEngineCore", "src\GameEngineCore\GameEngineCore.vcxproj", "{DB488001-8E98-4724-9787-72DA137C4E47}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA} = {E02FCFB9-A587-4498-8EF0-47937769B7AA}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameSceneGraphComponent", "src\GameSceneGraphComponent\GameSceneGraphComponent.vcxproj", "{7B21D090-9A12-4E86-8E65-9AAEA2B72AB4}"
 EndProject
@@ -78,6 +81,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AAA", "Samples\AAA\AAA_2010.vcxproj", "{29BF6357-CD36-419D-817D-CBC80A1C9A9B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameAgentComponent", "src\GameAgentComponent\GameAgentComponent_2010.vcxproj", "{89A7AF08-1212-41AD-BD51-399A51043777}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\Dependencies\zlib\zlib.vcxproj", "{E02FCFB9-A587-4498-8EF0-47937769B7AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1427,6 +1432,46 @@ Global
 		{89A7AF08-1212-41AD-BD51-399A51043777}.ReleaseDoublePrecision|Mixed Platforms.Build.0 = Release|Win32
 		{89A7AF08-1212-41AD-BD51-399A51043777}.ReleaseDoublePrecision|Win32.ActiveCfg = Release|Win32
 		{89A7AF08-1212-41AD-BD51-399A51043777}.ReleaseDoublePrecision|Win32.Build.0 = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Debug|Win32.Build.0 = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.DebugDll|Any CPU.ActiveCfg = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.DebugDll|Mixed Platforms.ActiveCfg = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.DebugDll|Mixed Platforms.Build.0 = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.DebugDll|Win32.ActiveCfg = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.DebugDll|Win32.Build.0 = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.DebugDoublePrecision|Any CPU.ActiveCfg = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.DebugDoublePrecision|Mixed Platforms.ActiveCfg = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.DebugDoublePrecision|Mixed Platforms.Build.0 = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.DebugDoublePrecision|Win32.ActiveCfg = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.DebugDoublePrecision|Win32.Build.0 = Debug|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.MemoryCheck|Any CPU.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.MemoryCheck|Mixed Platforms.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.MemoryCheck|Mixed Platforms.Build.0 = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.MemoryCheck|Win32.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.MemoryCheck|Win32.Build.0 = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Release OpenMP|Any CPU.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Release OpenMP|Mixed Platforms.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Release OpenMP|Mixed Platforms.Build.0 = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Release OpenMP|Win32.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Release OpenMP|Win32.Build.0 = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Release|Any CPU.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Release|Win32.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.Release|Win32.Build.0 = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.ReleaseDll|Any CPU.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.ReleaseDll|Mixed Platforms.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.ReleaseDll|Mixed Platforms.Build.0 = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.ReleaseDll|Win32.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.ReleaseDll|Win32.Build.0 = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.ReleaseDoublePrecision|Any CPU.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.ReleaseDoublePrecision|Mixed Platforms.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.ReleaseDoublePrecision|Mixed Platforms.Build.0 = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.ReleaseDoublePrecision|Win32.ActiveCfg = Release|Win32
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA}.ReleaseDoublePrecision|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1436,6 +1481,7 @@ Global
 		{3BF9D44F-4A29-46EE-9A04-EE706E602620} = {72E7B5C1-F470-4CFD-9EC8-70182755F741}
 		{BEA5367D-0441-4677-934A-43A09ABBF8C6} = {72E7B5C1-F470-4CFD-9EC8-70182755F741}
 		{2A423B83-D582-49BA-A45F-E27148099850} = {72E7B5C1-F470-4CFD-9EC8-70182755F741}
+		{E02FCFB9-A587-4498-8EF0-47937769B7AA} = {72E7B5C1-F470-4CFD-9EC8-70182755F741}
 		{385CBAD7-8D6D-4177-88C0-6072E5F06AA8} = {89178F5A-7E82-4024-A86D-85E6CF33ADCE}
 		{1D558D7D-DA57-4908-BCFC-902054FE6B63} = {89178F5A-7E82-4024-A86D-85E6CF33ADCE}
 		{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D} = {89178F5A-7E82-4024-A86D-85E6CF33ADCE}

@@ -103,6 +103,10 @@ public:
 	 */
 	virtual void	loadFromXml(const XMLNode* description) = 0;
 
+	virtual size_t	getSerializedState(char* state);
+
+	virtual void	setSerializedState(const char* state, size_t length);
+
 protected:
 
 	/// The entity containing this component instance 

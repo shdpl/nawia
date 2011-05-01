@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="GameEngineCore"
 	ProjectGUID="{DB488001-8E98-4724-9787-72DA137C4E47}"
 	RootNamespace="GameEngineCore"
@@ -303,6 +303,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GameEngine_Network.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\GameEntity.cpp"
 				>
 			</File>
@@ -312,6 +316,10 @@
 			</File>
 			<File
 				RelativePath=".\GameModules.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GameNetworkManager.cpp"
 				>
 			</File>
 			<File
@@ -361,6 +369,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GameEngine_Network.h"
+				>
+			</File>
+			<File
 				RelativePath=".\GameEntity.h"
 				>
 			</File>
@@ -374,6 +386,10 @@
 			</File>
 			<File
 				RelativePath=".\GameModules.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GameNetworkManager.h"
 				>
 			</File>
 			<File

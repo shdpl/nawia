@@ -42,3 +42,10 @@ GameComponent::~GameComponent()
 }
 
 
+size_t GameComponent::getSerializedState(char *state) {
+	return 0;
+}
+
+void GameComponent::setSerializedState(const char *state, size_t length) {
+
+}

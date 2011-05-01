@@ -26,13 +26,16 @@
 #include "GamePlugInManager.h"
 #include "GameWorld.h"
 #include "GameComponentRegistry.h"
+#include "GameNetworkManager.h"
 
 GamePlugInManager* GameModules::m_plugInManager = 0x0;
 GameComponentRegistry* GameModules::m_componentRegistry = 0x0;
 GameWorld* GameModules::m_gameWorld = 0x0;
+GameNetworkManager* GameModules::m_networkManager = 0x0;
 
 void GameModules::release()
 {
+	delete m_networkManager; m_networkManager = 0;
 	// Order of destruction is important !
 	// First release the game world to delete all allocated components and entities
 	delete m_gameWorld; m_gameWorld = 0;
@@ -61,6 +64,13 @@ GameWorld* GameModules::gameWorld()
 	if( m_gameWorld == 0x0 )
 		m_gameWorld = new GameWorld();
 	return m_gameWorld;
+}
+
+GameNetworkManager* GameModules::networkManager()
+{
+	if( m_networkManager == 0x0 )
+		m_networkManager = new GameNetworkManager();
+	return m_networkManager;
 }
 
 void GameModules::releaseGameWorld()

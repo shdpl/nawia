@@ -99,7 +99,7 @@ xcopy "$(ProjectDir)config.h" "$(SolutionDir)include\GameEngine\" /y
       <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)bin\$(ProjectName)d.dll</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)/lib;$(ProjectDir)..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -144,7 +144,7 @@ xcopy "$(ProjectDir)config.h" "$(SolutionDir)include\GameEngine\" /y
       <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)bin\$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)/lib;$(ProjectDir)..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -192,7 +192,7 @@ xcopy "$(ProjectDir)config.h" "$(SolutionDir)include\GameEngine\" /y
       <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)bin\$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)/lib;$(ProjectDir)..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -218,9 +218,11 @@ xcopy "$(ProjectDir)config.h" "$(SolutionDir)include\GameEngine\" /y
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameEngine_Events.cpp" />
     <ClCompile Include="GameEngine_Lua.cpp" />
+    <ClCompile Include="GameEngine_Network.cpp" />
     <ClCompile Include="GameEntity.cpp" />
     <ClCompile Include="GameLog.cpp" />
     <ClCompile Include="GameModules.cpp" />
+    <ClCompile Include="GameNetworkManager.cpp" />
     <ClCompile Include="GamePlugInManager.cpp" />
     <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="PerformanceTimer.cpp" />
@@ -233,10 +235,12 @@ xcopy "$(ProjectDir)config.h" "$(SolutionDir)include\GameEngine\" /y
     <ClInclude Include="GameComponentManager.h" />
     <ClInclude Include="GameComponentRegistry.h" />
     <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="GameEngine_Network.h" />
     <ClInclude Include="GameEntity.h" />
     <ClInclude Include="GameEvent.h" />
     <ClInclude Include="GameLog.h" />
     <ClInclude Include="GameModules.h" />
+    <ClInclude Include="GameNetworkManager.h" />
     <ClInclude Include="GamePlugInManager.h" />
     <ClInclude Include="GameWorld.h" />
     <ClInclude Include="PerformanceTimer.h" />
