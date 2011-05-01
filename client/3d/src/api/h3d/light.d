@@ -1,5 +1,7 @@
 module api.h3d.light;
 
+import horde3d;
+
 class H3DLight {
 	string _name;
 	LightContext _lctx;

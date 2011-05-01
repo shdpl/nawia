@@ -1,5 +1,7 @@
 module api.bullet.shape.shape;
 
+import type.cuda.types;
+
 class Shape {
-	Vector3D scale;
+	float3 scale;
 }

@@ -1,5 +1,10 @@
 module api.h3d.ray;
 
+import horde3d;
+
+import api.h3d.sgnode,
+	type.cuda.types;
+
 class Ray {
 	public Intersection[] intersections;
 	
@@ -7,6 +12,6 @@ class Ray {
 		public:
 		SGNode target;
 		float distance;
-		Point3D point;
+		float3 point;
 	}
 }

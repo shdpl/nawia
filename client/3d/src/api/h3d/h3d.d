@@ -1,5 +1,7 @@
 module api.h3d.h3d;
 
+import horde3d;
+
 static this() {
 	if (h3dInit())
 		{}//TODO:

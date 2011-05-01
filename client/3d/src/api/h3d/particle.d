@@ -1,5 +1,7 @@
 module api.h3d.particle;
 
+import horde3d;
+
 class Particle {
 	RGBAColor color;
 	float size;

@@ -19,5 +19,6 @@ module msg.msg;
 
 
 interface Msg {
+	void register(Msg prvdr);
 
 }

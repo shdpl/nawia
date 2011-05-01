@@ -1,4 +1,5 @@
 module api.h3d.logmsg;
+import horde3d;
 
 class LogMsg {
 	public:

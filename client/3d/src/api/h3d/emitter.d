@@ -1,7 +1,6 @@
 module api.h3d.emitter;
 import horde3d;
 
-
 class H3DEmitter : Emitter {
 	H3DNode _handle;
 	string _name;

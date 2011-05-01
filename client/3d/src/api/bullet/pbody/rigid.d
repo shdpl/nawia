@@ -1,20 +1,23 @@
 module api.bullet.pbody.rigid;
 
+import api.bullet.shape.shape,
+	type.cuda.types;
+
 class PBodyRigid {
 	private:
-	plRigidBodyHandle _handle;
+	//plRigidBodyHandle _handle;
 	
 	public:
 	void init(void* userData, float mass, Shape shape);
 	void clear() {
-		plDeleteRigidBody(_handle);
+		//plDeleteRigidBody(_handle);
 	}
-	Transform3D matrix();
-	void matrix(Transform3D matrix);
+	float3 matrix();
+	void matrix(float3 matrix);
 	
-	Vector3D translation();
-	void translation(Vector3D translation);
+	float3 translation();
+	void translation(float3 translation);
 	
-	Rotation3D rotation();
-	void rotation(Rotation3D rotation);
+	float4 rotation();
+	void rotation(float4 rotation);
 }

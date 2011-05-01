@@ -1,5 +1,7 @@
 module api.h3d.joint;
 
+import horde3d;
+
 class H3DJoint : Joint {
 	string _name;
 	uint _id;

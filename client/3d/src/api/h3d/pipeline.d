@@ -1,7 +1,10 @@
 module api.h3d.pipeline;
 
-class H3DPipeline : Pipeline {
-	H3DNode _handle;
+import horde3d;
+
+
+class H3DPipeline /*: Pipeline*/ {
+	H3DNodeTypes _handle;
 	
 	public:
 	/// Size of the render targets

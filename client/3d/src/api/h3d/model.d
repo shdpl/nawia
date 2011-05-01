@@ -1,5 +1,7 @@
 module api.h3d.model;
 
+import horde3d;
+
 class H3DModel : Model {
 	string _name;
 	Geometry _geometry;

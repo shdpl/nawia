@@ -1,5 +1,6 @@
 module api.h3d.texture;
 
+import horde3d;
 
 class Texture {
 	public:

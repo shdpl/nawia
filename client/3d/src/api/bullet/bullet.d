@@ -1,11 +1,11 @@
 module api.bullet.bullet;
 
-plPhysicsSdkHandle plHandle;
+//plPhysicsSdkHandle plHandle;
 
 static this() {
-	 plHandle = plNewBulletSdk();
+	 //plHandle = plNewBulletSdk();
 }
 
 static ~this() {
-	plDeletePhysicsSdk(plHandle);
+	//plDeletePhysicsSdk(plHandle);
 }

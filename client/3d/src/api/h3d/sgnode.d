@@ -1,11 +1,16 @@
 module api.h3d.sgnode;
 
+import horde3d;
+
+import api.h3d.ray,
+	type.cuda.types;
+
 class SGNode  {
-	H3DNode _handle;
+	H3DNodeTypes _handle;
 	
 	public:
 	enum NodeType {
-		
+		CAMERA
 	}
 	
 	this(SGNode) {
@@ -20,9 +25,9 @@ class SGNode  {
 	NodeType type();
 	SGNode[] find(string name);
 	SGNode[] all();
-	Iterator iterator();
+	//Iterator iterator();
 	//mapStream();
-	Ray castRay(Point3D origin, Vector3D direction, uint maxIntersections);
+	Ray castRay(float3 origin, float3 direction, uint maxIntersections);
 	
 	SGNode parent();
 	void parent(SGNode newParent);
@@ -30,7 +35,7 @@ class SGNode  {
 	SGNode child(uint n);
 	void child(SGNode child, uint n);
 
-	SGNode addNode(SGNode parent, SGFragment which);
+	SGNode addNode(SGNode parent, SGNode which);
 	void delNode(SGNode parent);
 
 	void active(bool val);
@@ -38,15 +43,15 @@ class SGNode  {
 	
 	bool transformed();
 	
-	Cuboid aabb();
+	float3[3] aabb();
 	
-	Translation translationLocal();
-	void translationLocal(Translation!SGNode trans);
-	Translation translationGlobal();
-	void translationGlobal(Translation trans);
+	float3 translationLocal();
+	void translationLocal(float3 trans);
+	float3 translationGlobal();
+	void translationGlobal(float3 trans);
 	
-	Rotation rotation();
-	void rotation(Rotation rot);
-	Scale scale();
-	void scale(Scale scale);
+	float3 rotation();
+	void rotation(float3 rot);
+	float3 scale();
+	void scale(float3 scale);
 }

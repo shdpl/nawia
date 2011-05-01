@@ -17,7 +17,7 @@
 
 module type.cords;
 
-import cuda.types;
+import type.cuda.types;
 
 //TODO dirty bitch
 class Cords(T, size_t N) if (N > 0 && N < 4) {

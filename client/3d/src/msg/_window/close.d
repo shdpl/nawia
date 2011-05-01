@@ -20,5 +20,7 @@ module msg._window.close;
 private import msg.msg;
 
 class MsgWindowClose : Msg {
-	 
+	 struct outParam {
+	 	bool keepClosing;
+	 	}
 }

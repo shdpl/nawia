@@ -1,7 +1,10 @@
 module api.bullet.world.world;
 
+import api.bullet.ray,
+	type.cuda.types;
+
 class World {
 	public:
-	Ray rayCast(Vector3D from, Vector3D to);
+	Ray rayCast(float3 from, float3 to);
 	
 	}

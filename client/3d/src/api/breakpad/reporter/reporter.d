@@ -1,6 +1,9 @@
-module api.breakpad.reporter;
+module api.breakpad.reporter.reporter;
+
+import api.breakpad.report;
 
 interface Reporter {
-	string recipient;
+	@property string recipient();
+	@property void recipient(string);
 	bool send(Report report);
 }

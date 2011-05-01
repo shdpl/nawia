@@ -18,24 +18,29 @@
 module api.glfw.window;
 
 import std.conv,
-	std.stdio;
+	std.stdio,
+	std.signals;
 
 import glfw;
 
-import window.window;
+import window.window,
+	msg._window.close,
+	msg._window.refresh,
+	msg._window.resize;
 
+ 
 
-	
-package class WindowGLFW : Window, MsgProvider!MsgWindowClose, MsgProvider!MsgWindowResize, MsgProvider!MsgWindowRefresh
+package class WindowGLFW : Window
 {
 	private:
 	static Window hInstance = null;
 	string _title;
 	CordsScreen _position;
 	WindowProperties _props;
-	MsgListener!MsgWindowClose _lstnrClose;
-	MsgListener!MsgWindowRefresh _lstnrRefresh;
-	MsgListener!MsgWindowResize _lstnrResize;
+	mixin Signal!(MsgWindowClose) slotClose;
+	mixin Signal!(MsgWindowRefresh) slotRefresh;
+	mixin Signal!(MsgWindowResize) slotResize;
+	
 	
 	public:
 	
@@ -190,6 +195,8 @@ package class WindowGLFW : Window, MsgProvider!MsgWindowClose, MsgProvider!MsgWi
 		_props = new WindowProperties();
 		glfwGetWindowSize(&__tmp_i1, &__tmp_i2);
 		_props.size = new CordsScreen(__tmp_i1, __tmp_i2);
+		
+		connect();
 	}
 	
 	~this()
@@ -199,12 +206,11 @@ package class WindowGLFW : Window, MsgProvider!MsgWindowClose, MsgProvider!MsgWi
 
 	extern(C) {	/* Warning! Methods prohibited, and fields might be unitialized */
 		int onClose() {
-			//TODO:
-			return GL_TRUE;
+			emit(); 
 		}
 	
 		void onResize(int x, int y) {
-			//TODO:
+			_lstnrResize();
 		}
 	
 		void onRefresh() {
