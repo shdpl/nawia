@@ -65,8 +65,7 @@
     </Lib>
     <PostBuildEvent>
       <Command>xcopy "$(ProjectDir)src\zlib.h" "$(SolutionDir)include\zlib\" /y
-xcopy "$(ProjectDir)src\zconf.h" "$(SolutionDir)include\zlib\" /y
-</Command>
+xcopy "$(ProjectDir)src\zconf.h" "$(SolutionDir)include\zlib\" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -83,7 +82,8 @@ xcopy "$(ProjectDir)src\zconf.h" "$(SolutionDir)include\zlib\" /y
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)src\zlib.h" "$(SolutionDir)include\zlib\" /y</Command>
+      <Command>xcopy "$(ProjectDir)src\zlib.h" "$(SolutionDir)include\zlib\" /y
+xcopy "$(ProjectDir)src\zconf.h" "$(SolutionDir)include\zlib\" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
