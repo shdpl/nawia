@@ -186,6 +186,9 @@ xcopy "$(SolutionDir)..\..\Horde3D\Samples\glfw\glfw.h" "$(SolutionDir)Include\G
     <ProjectReference Include="..\..\src\GameSceneGraphComponent\GameSceneGraphComponent.vcxproj">
       <Project>{7b21d090-9a12-4e86-8e65-9aaea2b72ab4}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\GameSoundEngineComponent\GameSoundComponent.vcxproj">
+      <Project>{c93e4376-d274-4d5c-9d4b-597594e5b343}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
