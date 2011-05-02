@@ -1,6 +1,6 @@
 module api.openal.playback;
 
-interface Playback {
+class Playback {
 	uint seconds;
 	uint samples;
 	uint bytes;

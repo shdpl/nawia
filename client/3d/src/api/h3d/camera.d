@@ -3,13 +3,15 @@ module api.h3d.camera;
 import horde3d;
 
 import api.h3d.sgnode,
-	api.h3d.pipeline;
+	api.h3d.pipeline,
+	type.buffer.pixel,
+	type.screen.cords;
 
 class H3DCamera : SGNode {
-	Pipeline _pipeline;
-	PixelBuffer renderTarget;
+	H3DPipeline _pipeline;
+	BufferPixel renderTarget;
 	
-	Rect viewport;
+	CordsScreen viewport;
 	
 	float clipNear;
 	float clipFar;

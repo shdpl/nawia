@@ -1,5 +1,7 @@
 module api.openal.source.generated;
 
-interface SourceGenerated {
+import api.openal.source.source;
+	
+class SourceGenerated : Source {
 	
 }

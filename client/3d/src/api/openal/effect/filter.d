@@ -1,5 +1,7 @@
 module api.openal.effect.filter;
 
-interface EffectFilter : Effect {
+import api.openal.effect.effect;
+
+class EffectFilter : Effect {
 	
 }

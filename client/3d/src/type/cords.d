@@ -19,7 +19,6 @@ module type.cords;
 
 import type.cuda.types;
 
-//TODO dirty bitch
 class Cords(T, size_t N) if (N > 0 && N < 4) {
 	private SmallVec!(T, N) c;
 	

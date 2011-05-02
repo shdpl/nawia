@@ -2,10 +2,12 @@ module api.h3d.model;
 
 import horde3d;
 
-class H3DModel : Model {
+import api.h3d.animation.animation;
+
+class /*H3DModel :*/ Model {
 	string _name;
-	Geometry _geometry;
-	Animation[H3D_ANIMATION_COUNT] _anim;
+	//Geometry _geometry;
+	H3DAnimation[H3DAnimation.maxCount] _anim;
 	//TODO: Pose _pose;
 	/// Distance to camera from which on LOD[n] is used
 	float lodDist[4];

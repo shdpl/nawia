@@ -1,6 +1,9 @@
 module ui.gui.composer;
 
-interface Composer {
+import ui.gui.control.control,
+	ui.gui.control.fragment;
+
+class Composer {
 	Control[string] controlsMap;
 	Fragment compose(Object what);
 }

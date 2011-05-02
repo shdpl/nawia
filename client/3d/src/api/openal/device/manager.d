@@ -1,6 +1,9 @@
 module api.openal.device.manager;
 
-interface DeviceManager {
+import api.openal.device.renderer,
+	api.openal.device.recorder;
+
+class DeviceManager {
 	DeviceRenderer[] renderers;
 	DeviceRenderer renderer;
 	

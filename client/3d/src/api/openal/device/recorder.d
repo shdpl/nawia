@@ -1,6 +1,8 @@
 module api.openal.device.recorder;
 
-interface DeviceRecorder : Device {
+import api.openal.device.device;
+
+class DeviceRecorder : Device {
 	bool enable;
 	byte[] buffer;
 }

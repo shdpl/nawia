@@ -1,7 +1,10 @@
 module window.mode;
 public import type.screen.cords;
 
-class WindowMode {
-	CordsScreen size;
+interface WindowMode {
+	CordsScreen size() @property;
+	
+	void size(CordsScreen size) @property;
+		
 	
 }

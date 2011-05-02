@@ -1,5 +1,7 @@
 module api.openal.effect.reverb;
 
-interface EffectReverb : Effect {
+import api.openal.effect.effect;
+
+class EffectReverb : Effect {
 	
 }

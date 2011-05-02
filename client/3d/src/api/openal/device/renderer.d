@@ -1,5 +1,7 @@
 module api.openal.device.renderer;
 
-interface DeviceRenderer : Device {
+import api.openal.device.device;
+
+class DeviceRenderer : Device {
 	
 }

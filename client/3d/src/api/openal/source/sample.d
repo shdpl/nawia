@@ -1,5 +1,7 @@
 module api.openal.sample;
 
-interface SourceSample : Source {
+import api.openal.source.source;
+
+class SourceSample : Source {
 	
 }

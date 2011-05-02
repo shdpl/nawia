@@ -1,8 +1,15 @@
 module api.h3d.emitter;
+
 import horde3d;
 
-class H3DEmitter : Emitter {
-	H3DNode _handle;
+import std.datetime;
+
+import api.h3d.material,
+	api.h3d.particle,
+	type.cuda.types;
+
+class H3DEmitter /*: Emitter*/ {
+	H3DNodeTypes _handle;
 	string _name;
 	Material _mat;
 	/// Particle description
@@ -12,7 +19,7 @@ class H3DEmitter : Emitter {
 	float emissionRate;
 	/// Angle of cone for random emission direction (default: 0.0)
 	float spreadAngle;
-	Vector3D force;
+	float3 force;
 	uint _particlesCount;
 	uint _particleRespCount;
 	

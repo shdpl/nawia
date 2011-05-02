@@ -2,7 +2,10 @@ module api.h3d.mesh;
 
 import horde3d;
 
-class H3DMesh : Mesh {
+import api.h3d.mesh,
+	api.h3d.material;
+
+class /*H3DMesh :*/ Mesh {
 	string _name;
 	Material _mat;
 	uint _batchStart;

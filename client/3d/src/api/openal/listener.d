@@ -1,8 +1,10 @@
 module api.openal.listener;
 
-interface Listener {
+import type.cuda.types;
+
+class Listener {
 	float gain;
-	WorldPos position;
-	Vector3D velocity;
-	Vector3D[2] orientation; //AT, UP vectors
+	float3 position;
+	float3 velocity;
+	float3[2] orientation; //AT, UP vectors
 }

@@ -2,5 +2,5 @@
 <buildpath>
 	<buildpathentry kind="src" path=""/>
 	<buildpathentry kind="con" path="org.eclipse.dltk.launching.INTERPRETER_CONTAINER"/>
-	<buildpathentry external="true" kind="lib" path="C:/Documents and Settings/shd/Moje dokumenty/Visual Studio 2008/Projects/Nawia/nawia/client/3d/src/external/glfw"/>
+	<buildpathentry external="true" kind="lib" path="C:/Documents and Settings/shd/Moje dokumenty/Visual Studio 2008/Projects/Nawia/nawia/client/3d/src"/>
 </buildpath>

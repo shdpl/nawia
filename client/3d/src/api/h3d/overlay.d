@@ -2,10 +2,14 @@ module api.h3d.overlay;
 
 import horde3d;
 
+import type.screen.cords,
+	type.color.rgba,
+	api.h3d.material;
+
 class Overlay {
 	public:
-	void mapCords (Point2D xy, Point2D uv);
-	RGBAFloat color;
+	void mapCords (CordsScreen xy, CordsScreen uv);
+	ColorRGBA!float color;
 	Material material;
 	///Clears *ALL* overlays
 	void clear();

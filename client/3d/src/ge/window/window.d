@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module window.window;
+module ge.window.window;
 
 public import
 	msg._window.close,

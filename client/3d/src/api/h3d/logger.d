@@ -1,5 +1,5 @@
 module api.h3d.logger;
 
 class Logger {
-	LogMsg poll();
+	void*/*LogMsg*/ poll();
 }

@@ -2,10 +2,13 @@ module api.h3d.light;
 
 import horde3d;
 
+import api.h3d.material,
+	type.color.rgb;
+
 class H3DLight {
 	string _name;
-	LightContext _lctx;
-	ShadowContext _sctx;
+	void*/*LightContext*/ _lctx;
+	void*/*ShadowContext*/ _sctx;
 	
 	public:
 	Material material;

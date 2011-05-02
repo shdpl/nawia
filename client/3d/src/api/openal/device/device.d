@@ -1,7 +1,8 @@
 module api.openal.device.device;
 
+
 interface Device {
-	bool supported(DeviceExtension ext);
+	bool supported(Extension ext);
 	
 	interface Extension {
 		

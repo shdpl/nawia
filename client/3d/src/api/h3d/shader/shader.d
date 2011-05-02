@@ -1,9 +1,11 @@
 module api.h3d.shader.shader;
 
+import type.cuda.types;
+
 class Shader {
-	ShaderContext[] _contexts;
-	Sampler[] _samplers;
-	Uniform[] _uniforms;
+	void*/*ShaderContext[]*/ _contexts = void;
+	void*/*Sampler[]*/ _samplers = void;
+	float3[] _uniforms;
 	
 	public:
 	void preamble(string code);

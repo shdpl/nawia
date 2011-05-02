@@ -1,6 +1,6 @@
 module api.openal.medium;
 
-interface Medium {
+class Medium {
 	float speedOfSound;
 	float dopplerFactor;
 }

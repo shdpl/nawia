@@ -1,17 +1,21 @@
 module api.openal.source.source;
 
-interface Source {
+import api.openal.buffer,
+	api.openal.playback,
+	type.cuda.types;
+
+class Source {
 	bool active;
 	float pitch;
 	bool loops;
-	Playback position;
+	Playback playPosition;
 	
 	
 	
-	Pos position;
+	float3 position;
 	bool posIsLocalToListener;
-	Vector3D velocity;
-	Vector3D direction;
+	float3 velocity;
+	float3 direction;
 	
 	float gain;
 	float gainMin;
@@ -39,7 +43,7 @@ interface Source {
 	}
 	
 	enum DistanceModel {
-		
+		BLAH
 	}
 	
 	
