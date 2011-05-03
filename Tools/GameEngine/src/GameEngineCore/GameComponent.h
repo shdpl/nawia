@@ -103,8 +103,24 @@ public:
 	 */
 	virtual void	loadFromXml(const XMLNode* description) = 0;
 
+	/**
+	 * \brief Gets the current GameComponent's state
+	 * 
+	 * Copies a serialized representation of the GameComponent's state to a char-Array.
+	 * Primarily used by GameNetworkManager.
+	 * @param pointer to a char-Array provided by caller
+	 * @return the size of the serialized state representation
+	 */
 	virtual size_t	getSerializedState(char* state);
 
+	/**
+	 * \brief Sets the current GameComponent's state
+	 * 
+	 * Sets the state of the GameComponent according to the serialized representation in provided char-Array.
+	 * Primarily used by GameNetworkManager.
+	 * @param state pointer to a char-Array provided by caller
+	 * @param length the size of the serialized state representation
+	 */
 	virtual void	setSerializedState(const char* state, size_t length);
 
 protected:

@@ -29,6 +29,7 @@
 #include "GameLog.h"
 
 #include "GameModules.h"
+#include "GameNetworkManager.h"
 #include "GamePlugInManager.h"
 #include "GameComponentRegistry.h"
 #include "TimingManager.h"
@@ -67,6 +68,11 @@ namespace GameEngine
 		if( !GameModules::plugInManager()->init() )
 			return false;
 
+		if( !GameModules::networkManager()->init() ) {
+			GameLog::errorMessage("NetworkManager failed to initialize.");
+			return false;
+		}
+
 		GameLog::logMessage("----GameEngine successfuly initialized----");
 		Initialized = true;
 		return true;
@@ -95,6 +101,8 @@ namespace GameEngine
 
 	GAMEENGINE_API void update()
 	{
+		// Update Network Manager
+		GameModules::networkManager()->update();
 
 		// Update all components depending on the time
 		TimingManager::update();

@@ -83,6 +83,7 @@ xcopy "$(ProjectDir)GameWorld.h" "$(SolutionDir)include\GameEngine\" /y
 xcopy "$(ProjectDir)GameComponentManager.h" "$(SolutionDir)include\GameEngine\" /y
 xcopy "$(ProjectDir)GameLog.h" "$(SolutionDir)include\GameEngine\" /y
 xcopy "$(ProjectDir)config.h" "$(SolutionDir)include\GameEngine\" /y
+xcopy "$(ProjectDir)GameEngine_Network.h" "$(SolutionDir)include\GameEngine\" /y
 </Command>
     </PreBuildEvent>
     <ClCompile>

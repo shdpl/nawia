@@ -50,7 +50,6 @@ namespace GameEngine
 		DISCONNECTED,
 		CONNECTING_TO_SERVER,
 		CONNECTED_TO_SERVER,
-		SETTING_UP_SERVER,
 		SERVING,
 		DISCOVERY
 	};
@@ -103,12 +102,28 @@ namespace GameEngine
 	 */
 	GAMEENGINE_API bool deregisterComponentOnClient(const char* entityID, const char* componentID);
 
+	/**
+	 * Returns the current state of the GameNetworkManager
+	 * @return the current NetworkState
+	 */
 	GAMEENGINE_API GameEngine::NetworkState getNetworkState();
 
+	/**
+	 * Sets a GameNetworkManager option
+	 * @return true on success
+	 */
 	GAMEENGINE_API bool setNetworkOption(GameEngine::NetworkOption option, const size_t value);
 
+	/**
+	 * Sets a GameNetworkManager option
+	 * @return true on success
+	 */
 	GAMEENGINE_API bool setNetworkOption(GameEngine::NetworkOption option, const char* value);
 
+	/**
+	 * Sets a GameNetworkManager option
+	 * @return true on success
+	 */
 	GAMEENGINE_API bool setNetworkOption(GameEngine::NetworkOption option, const bool value);
 
 	/*! @}*/

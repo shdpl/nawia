@@ -120,7 +120,11 @@ public:
 	 * @param description a XML Node representing the data for the component ( must not be null)
 	 */ 
 	void loadFromXml(const XMLNode* description);
-	
+
+	size_t getSerializedState(char* state);
+
+	void setSerializedState(const char* state, size_t length);
+
 	/**
 	 * \brief Sets the component's transformation
 	 * 
@@ -184,6 +188,8 @@ private:
 
 	void unloadTerrainGeoRes();
 
+	void checkTransformation();
+
 	float*				m_transformation;
 	H3DNode				m_hordeID;
 	std::vector<int>	m_currentCollisions;
@@ -192,5 +198,14 @@ private:
 	short				m_visibilityFlag;
 
 	int					m_terrainGeoRes;
+
+	// used for interpolation on a networking SceneGraphComponent
+	float*				m_lasttransformation;
+	Vec3f				m_traject_translation;
+	Vec3f				m_traject_rotation;
+	Vec3f				m_traject_scale;
+
+	void traject();
+
 };
 #endif

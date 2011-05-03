@@ -49,6 +49,7 @@ SceneGraphComponent::SceneGraphComponent( GameEntity* owner) : GameComponent(own
 {
 	// Initialize Memory for transformation
 	m_transformation = new float[16];
+	m_lasttransformation = new float[16];
 
 	owner->addListener(GameEvent::E_SET_TRANSFORMATION, this);
 	owner->addListener(GameEvent::E_TRANSFORMATION, this);
@@ -78,6 +79,7 @@ SceneGraphComponent::SceneGraphComponent( GameEntity* owner) : GameComponent(own
 SceneGraphComponent::~SceneGraphComponent()
 {
 	delete[] m_transformation;
+	delete[] m_lasttransformation;
 	if (m_hordeID != 0 && h3dGetNodeType(m_hordeID) != H3DNodeTypes::Undefined)
 		h3dRemoveNode(m_hordeID);	
 	SceneGraphManager::instance()->removeComponent(this);
@@ -197,6 +199,18 @@ void SceneGraphComponent::executeEvent(GameEvent *event)
 }
 
 void SceneGraphComponent::update()
+{
+	// save the current transformation for calculation of trajectory
+	memcpy(m_lasttransformation, m_transformation, sizeof(m_transformation) * 16);
+
+	// 2011-05-03: code transfered to checkTransformation(), so internal calls to update() could be eliminated.
+	checkTransformation();
+
+	// apply pending trajectories
+	traject();
+}
+
+void SceneGraphComponent::checkTransformation()
 {
 	// Check if transformation has been changed (e.g. by a transformation change of a parent node)
 	if ( h3dCheckNodeTransFlag( m_hordeID, true ) )
@@ -324,7 +338,7 @@ void SceneGraphComponent::getMeshData(MeshData* data)
 void SceneGraphComponent::translateLocal(const Vec3f* translation)
 {
 	// ensure that m_transfomration is up to date
-	update();
+	checkTransformation();
 
 	/*Matrix4f trans(m_transformation);
 	Vec3f t( (trans * *translation) );
@@ -363,7 +377,7 @@ void SceneGraphComponent::translateLocal(const Vec3f* translation)
 void SceneGraphComponent::translateGlobal(const Vec3f* translation)
 {
 	// ensure that m_transfomration is up to date
-	update();
+	checkTransformation();
 
 	/*Matrix4f trans(m_transformation);
 	trans.x[12] += translation->x;
@@ -429,7 +443,7 @@ void SceneGraphComponent::setScale(const Vec3f *scale)
 void SceneGraphComponent::rotate(const Vec3f* rotation)
 {
 	// ensure that m_transfomration is up to date
-	update();
+	checkTransformation();
 
 	Matrix4f trans( Matrix4f(m_transformation) * Matrix4f(Quaternion(degToRad(rotation->x), degToRad(rotation->y), degToRad(rotation->z))) );
 	
@@ -502,7 +516,7 @@ void SceneGraphComponent::setParentNode(const Attach* data)
 		data->Rx, data->Ry, data->Rz,
 		data->Sx, data->Sy, data->Sz);
 
-	update();
+	checkTransformation();
 }
 
 void SceneGraphComponent::attach(const Attach* data)
@@ -571,4 +585,59 @@ bool SceneGraphComponent::getVisibility()
 void SceneGraphComponent::getBoundingBox(float* minX, float* minY, float* minZ, float* maxX, float* maxY, float* maxZ)
 {
 	h3dGetNodeAABB(hordeId(), minX, minY, minZ, maxX, maxY, maxZ);
+}
+
+
+size_t SceneGraphComponent::getSerializedState(char *state) {
+	// current transformation
+	memcpy(state, m_transformation, sizeof(float) * 16);
+
+	// transformation one frame ago
+	memcpy(state + sizeof(float) * 16, m_lasttransformation, sizeof(float) * 16);
+
+	return sizeof(float) * 16 * 2;
+}
+
+void SceneGraphComponent::setSerializedState(const char *state, size_t length) {
+	if (length != sizeof(float) * 16 * 2)
+		return;
+
+	setTransformation((float*)state);
+
+	// set last transformation (i. e. one frame ago)
+	memcpy(m_lasttransformation, state + sizeof(float) * 16, sizeof(float) * 16);
+
+	// calculate trajectory
+	Vec3f t, r, s, lt, lr, ls;
+
+	Matrix4f(m_transformation).decompose(t, r, s);
+	Matrix4f(m_lasttransformation).decompose(lt, lr, ls);
+
+	m_traject_translation = t - lt;
+	m_traject_rotation = r - lr;
+	m_traject_scale = s - ls;
+}
+
+void SceneGraphComponent::traject() {
+	// apply trajections
+	if (m_traject_translation.length() > Math::Epsilon
+	||	m_traject_rotation.length() > Math::Epsilon
+	||	m_traject_scale.length() > Math::Epsilon) {
+
+		// apply translation
+		m_transformation[12] += m_traject_translation.x;
+		m_transformation[13] += m_traject_translation.y;
+		m_transformation[14] += m_traject_translation.z;
+
+		// apply rotation
+		Matrix4f trans( Matrix4f(m_transformation) * Matrix4f(Quaternion(m_traject_rotation.x, m_traject_rotation.y, m_traject_rotation.z)) );
+		memcpy( m_transformation, trans.x, sizeof( float ) * 16 );
+
+		// TODO: apply scale
+
+		sendTransformation();
+
+		GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(m_transformation, 16), this);
+		m_owner->executeEvent(&event);
+	}
 }
