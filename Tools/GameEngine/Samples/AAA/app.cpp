@@ -700,6 +700,8 @@ void Application::processDestination(const char* nodeName, float x, float y, flo
 	bool ctrlIsPressed = _keys[289];
 	bool queueMovement = shiftIsPressed;
 
+	int socket_eID = GameEngine::entityWorldID(GameEngine::Agent_getParamS(Agent_Param::SocketEntityName_S));
+
 	std::stringstream msg_ss("");
 	if(strcmp(nodeName,"berg")==0)
 	{
@@ -719,7 +721,7 @@ void Application::processDestination(const char* nodeName, float x, float y, flo
 		msg_ss << agentid_spacer << agent_id << "00" << "352";
 		msg_ss << " agent #" << agent_id << " movement towards a world location started";
 		//send message
-		GameEngine::sendSocketData( getAgent(0)->entity_id, msg_ss.str().c_str() );
+		GameEngine::sendSocketData( socket_eID, msg_ss.str().c_str() );
 	}
 	else
 	{
@@ -744,7 +746,7 @@ void Application::processDestination(const char* nodeName, float x, float y, flo
 		msg_ss << agentid_spacer << agent_id << destid_spacer << dest->id << "351";
 		msg_ss << " agent #" << agent_id << " movement towards other entity started";
 		//send message
-		GameEngine::sendSocketData( getAgent(0)->entity_id, msg_ss.str().c_str() );
+		GameEngine::sendSocketData( socket_eID, msg_ss.str().c_str() );
 	}	
 }
 
