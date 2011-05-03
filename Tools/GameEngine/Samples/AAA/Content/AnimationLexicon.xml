@@ -814,7 +814,7 @@
 			<File>male_german_idle.anim</File>			
 		</Files>	
 	</Posture>
-	<Posture>
+	<Movement>
 		<ID>0053</ID>
 		<Name>Walk</Name>
 		<Description></Description>
@@ -824,7 +824,7 @@
 		<Files gender="male">
 			<File>char_male_laufen.anim</File>			
 		</Files>	
-	</Posture>
+	</Movement>
 	<Posture>
 		<ID>0054</ID>
 		<Name>Japanese_posture_JHS</Name>
@@ -889,6 +889,23 @@
 		<Context></Context>
 		<Function>
 			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0058</ID>
+		<Name>Go On</Name>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="72">Gestures\Female\female_ger_goOn.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="74">Gestures\Male\male_ger_goOn.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>emblem</McNeil>
 		</Function>
 		<Restriction></Restriction>  
 	</Gesture>
