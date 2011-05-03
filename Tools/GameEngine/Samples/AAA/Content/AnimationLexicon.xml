@@ -909,4 +909,21 @@
 		</Function>
 		<Restriction></Restriction>  
 	</Gesture>
+<Gesture>
+		<ID>0059</ID>
+		<Name>Japanese Beat 03</Name>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="18" strokeEnd="52">Gestures\Female\female_jap_beat_03.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="18" strokeEnd="54">Gestures\Male\male_jap_beat_03.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
 </AnimationLexicon>
