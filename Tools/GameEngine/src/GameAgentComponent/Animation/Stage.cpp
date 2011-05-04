@@ -27,7 +27,7 @@
 
 Stage::Stage(int agent_hID, int id) : m_agent_hID(agent_hID), m_ID(id), m_animation(0), m_isLocked(false)
 {
-	printf("stage construct\n");
+	//printf("stage construct\n");
 }
 
 Stage::~Stage()
