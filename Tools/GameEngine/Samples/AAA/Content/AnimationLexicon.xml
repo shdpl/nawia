@@ -909,7 +909,7 @@
 		</Function>
 		<Restriction></Restriction>  
 	</Gesture>
-<Gesture>
+	<Gesture>
 		<ID>0059</ID>
 		<Name>Japanese Beat 03</Name>
 		<Speech></Speech>
@@ -926,4 +926,37 @@
 		</Function>
 		<Restriction></Restriction>  
 	</Gesture>
+	<Movement>
+		<ID>0060</ID>
+		<Name>Medium Step Backward</Name>
+		<Description></Description>
+		<Files gender="female">
+			<File>Gestures\Female\female_ger_mediumStepBackward.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>Gestures\Male\male_ger_mediumStepBackward.anim</File>			
+		</Files>	
+	</Movement>
+	<Movement>
+		<ID>0061</ID>
+		<Name>Small Step Backward</Name>
+		<Description></Description>
+		<Files gender="female">
+			<File>Gestures\Female\female_ger_smallStepBackward.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>Gestures\Male\male_ger_smallStepBackward.anim</File>			
+		</Files>	
+	</Movement>
+	<Movement>
+		<ID>0062</ID>
+		<Name>Large Step Backward</Name>
+		<Description></Description>
+		<Files gender="female">
+			<File>Gestures\Female\female_ger_largeStepBackward.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>Gestures\Male\male_ger_largeStepBackward.anim</File>			
+		</Files>	
+	</Movement>
 </AnimationLexicon>
