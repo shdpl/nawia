@@ -149,13 +149,6 @@ public:
 	const float* getTransformation() { return m_transformation; };
 
 	/**
-	 * \brief Number of object collisions within the last frame
-	 * 	
-	 * @return 
-	 */ 
-	const std::vector<int>& collisionList() { return m_currentCollisions; }
-
-	/**
 	 * \brief The Horde3D id of the node
 	 * 
 	 * @return Horde3D's scene graph node ID
@@ -176,36 +169,52 @@ public:
 
 private:
 	
+	// Get the mesh data
 	void getMeshData(MeshData* data);
+
+	// Transformation changes
 	void translateLocal(const Vec3f* translation);
 	void translateGlobal(const Vec3f* translation);
 	void rotate(const Vec3f* rotation);
 	void setRotation(const Vec3f* rotation);
 	void setScale(const Vec3f* scale);
-	void attach(const Attach* data);
-	void setEnabled(bool enable);
-	void setParentNode(const Attach* data);
 
+	// Enable or disable an entity (makes it (in)visible)
+	void setEnabled(bool enable);
+
+	// Attach two entities
+	void attach(const Attach* data);
+	void setParentNode(const Attach* data);
+	// Note that additionaldata->EntityID has no more meaning, as we already have the new parent horde id
+	void setParentNode(H3DNode newParentNode, const Attach* additionaldata);
+
+	// Remove the geo resource from horde if we have one
 	void unloadTerrainGeoRes();
 
+	// Checks for transformation changes from horde
 	void checkTransformation();
 
-	float*				m_transformation;
+	// Apply the transformation changes received by setSerializedState()
+	void traject();
+
+	// The current transformation
+	float				m_transformation[16];
+
+	// The HordeID
 	H3DNode				m_hordeID;
-	std::vector<int>	m_currentCollisions;
 
 	// 0 = unknown, 1 = visible, 2 = invisible
 	short				m_visibilityFlag;
 
 	int					m_terrainGeoRes;
 
-	// used for interpolation on a networking SceneGraphComponent
-	float*				m_lasttransformation;
+	// data used for interpolating transformation on a networking SceneGraphComponent
+	float				m_lasttransformation[16];
 	Vec3f				m_traject_translation;
 	Vec3f				m_traject_rotation;
 	Vec3f				m_traject_scale;
-
-	void traject();
+	// must be set to true if one of the above has changed
+	bool				m_trajectChanged;
 
 };
 #endif

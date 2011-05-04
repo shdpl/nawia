@@ -28,6 +28,7 @@
 #include <GameEngine/GameWorld.h>
 #include <GameEngine/GameModules.h>
 #include <GameEngine/GameEntity.h>
+#include <GameEngine/GameEngine.h>
 
 #include <XMLParser/utXMLParser.h>
 
@@ -45,12 +46,8 @@ GameComponent* SceneGraphComponent::createComponent( GameEntity* owner )
 }
 
 SceneGraphComponent::SceneGraphComponent( GameEntity* owner) : GameComponent(owner, "Horde3D"), 
-	m_hordeID(0), m_visibilityFlag(0), m_terrainGeoRes(0)
+	m_hordeID(0), m_visibilityFlag(0), m_terrainGeoRes(0), m_trajectChanged(false)
 {
-	// Initialize Memory for transformation
-	m_transformation = new float[16];
-	m_lasttransformation = new float[16];
-
 	owner->addListener(GameEvent::E_SET_TRANSFORMATION, this);
 	owner->addListener(GameEvent::E_TRANSFORMATION, this);
 	owner->addListener(GameEvent::E_TRANSLATE_LOCAL, this);
@@ -78,8 +75,6 @@ SceneGraphComponent::SceneGraphComponent( GameEntity* owner) : GameComponent(own
 
 SceneGraphComponent::~SceneGraphComponent()
 {
-	delete[] m_transformation;
-	delete[] m_lasttransformation;
 	if (m_hordeID != 0 && h3dGetNodeType(m_hordeID) != H3DNodeTypes::Undefined)
 		h3dRemoveNode(m_hordeID);	
 	SceneGraphManager::instance()->removeComponent(this);
@@ -96,7 +91,7 @@ void SceneGraphComponent::setHordeID( H3DNode id )
 		h3dGetNodeTransMats(id, 0, &t);
 		// Copy absolute transformation of scene graph resource to the member variable
 		if( t != 0x0 )
-			memcpy(m_transformation, t, sizeof(m_transformation) * 16);
+			memcpy(m_transformation, t, sizeof(float) * 16);
 		else
 			GameLog::errorMessage("Error retrieving absolute transformation matrix for HordeID %d", id);
 	}
@@ -110,7 +105,7 @@ void SceneGraphComponent::executeEvent(GameEvent *event)
 		setTransformation(static_cast<const float*>(event->data()));
 		break;
 	case GameEvent::E_TRANSFORMATION:
-		memcpy(static_cast<float*>(event->data()), m_transformation, sizeof(m_transformation) * 16);
+		memcpy(static_cast<float*>(event->data()), m_transformation, sizeof(float) * 16);
 		break;
 	case GameEvent::E_SET_TRANSLATION:
 		{
@@ -201,7 +196,7 @@ void SceneGraphComponent::executeEvent(GameEvent *event)
 void SceneGraphComponent::update()
 {
 	// save the current transformation for calculation of trajectory
-	memcpy(m_lasttransformation, m_transformation, sizeof(m_transformation) * 16);
+	memcpy(m_lasttransformation, m_transformation, sizeof(float) * 16);
 
 	// 2011-05-03: code transfered to checkTransformation(), so internal calls to update() could be eliminated.
 	checkTransformation();
@@ -218,12 +213,12 @@ void SceneGraphComponent::checkTransformation()
 		// Update the locally stored global transformation 
 		const float* absTrans = 0;
 		h3dGetNodeTransMats(m_hordeID, 0, &absTrans);
-		memcpy(m_transformation, absTrans, sizeof(m_transformation) * 16);
+		memcpy(m_transformation, absTrans, sizeof(float) * 16);
 
 		GameEvent event(GameEvent::E_SET_TRANSFORMATION, GameEventData(m_transformation, 16), this);
-		m_owner->executeEvent(&event);		
+		m_owner->executeEvent(&event);
+		m_visibilityFlag = 0;
 	}
-	m_visibilityFlag = 0;
 }
 
 void SceneGraphComponent::loadFromXml( const XMLNode* description )
@@ -254,6 +249,7 @@ void SceneGraphComponent::loadFromXml( const XMLNode* description )
 		{
 			SceneGraphManager::instance()->addComponent(this);
 			memcpy( m_transformation, trans, sizeof( float ) * 16 );
+			m_visibilityFlag = 0;
 		}
 		else
 		{
@@ -267,7 +263,7 @@ void SceneGraphComponent::loadFromXml( const XMLNode* description )
 
 void SceneGraphComponent::setTransformation(const float *transformation)
 {
-	memcpy(m_transformation, transformation, sizeof(m_transformation) * 16);
+	memcpy(m_transformation, transformation, sizeof(float) * 16);
 	sendTransformation();
 }
 
@@ -281,7 +277,8 @@ void SceneGraphComponent::sendTransformation()
 	// when calling SceneGraphComponent::update() (note that the node transformed flag will be set again if someone else will update
 	// the transformation from outside, so this way of avoiding unnecessary updates should be safe)
 	h3dCheckNodeTransFlag( m_hordeID, true );
-	//printf("SceneGraphComponent::setTransformation\n\t %.3f, %.3f, %.3f\n", transformation[12], transformation[13], transformation[14]);	
+	//printf("SceneGraphComponent::setTransformation\n\t %.3f, %.3f, %.3f\n", transformation[12], transformation[13], transformation[14]);
+	m_visibilityFlag = 0;
 }
 
 void SceneGraphComponent::getMeshData(MeshData* data)
@@ -485,12 +482,13 @@ void SceneGraphComponent::setRotation(const Vec3f* rotation)
 		m_owner->executeEvent(&event);
 	}
 }
+
 void SceneGraphComponent::setParentNode(const Attach* data)
 {
+	// Default parent is the root node
 	H3DNode otherNode = H3DRootNode;
-	int nodes;
 	
-	// Get the real horde id
+	// Get the horde id of the new parent
 	GameEntity* entity = GameModules::gameWorld()->entity(data->EntityID);
 	if (entity)
 	{
@@ -498,18 +496,54 @@ void SceneGraphComponent::setParentNode(const Attach* data)
 		if (component)
 			otherNode = component->hordeId();
 	}
-	
-	
-	if(strcmp(data->Child,"") !=0 )
+
+	// Set the parent node in any case
+	setParentNode(otherNode, data);
+}
+
+void SceneGraphComponent::attach(const Attach* data)
+{
+	// Get the real horde id
+	H3DNode otherNode = H3DRootNode;
+	GameEntity* entity = GameModules::gameWorld()->entity(data->EntityID);
+	if (entity)
 	{
-		nodes = h3dFindNodes( otherNode, data->Child, H3DNodeTypes::Undefined );
+		SceneGraphComponent* component = static_cast<SceneGraphComponent*>(entity->component("Horde3D"));
+		if (component)
+		{
+			component->setParentNode(m_hordeID, data);
+			//otherNode = component->hordeId();
+		}
+	}
+	
+	/*if(data->Child && strcmp(data->Child,"") != 0 )
+	{
+		h3dFindNodes( m_hordeID, data->Child, H3DNodeTypes::Undefined );
+		H3DNode child = h3dGetNodeFindResult(0);
+		h3dSetNodeParent(otherNode, child);
+	}
+	else
+	{
+		h3dSetNodeParent(otherNode, m_hordeID);
+	}
+	
+	h3dSetNodeTransform(otherNode,data->Tx,data->Ty, data->Tz,
+		data->Rx, data->Ry, data->Rz,
+		data->Sx, data->Sy, data->Sz);*/
+}
+
+void SceneGraphComponent::setParentNode(H3DNode newParentNode, const Attach* data)
+{
+	if(data->Child && strcmp(data->Child,"") != 0 )
+	{
+		int nodes = h3dFindNodes( newParentNode, data->Child, H3DNodeTypes::Undefined );
 		H3DNode child = h3dGetNodeFindResult(0);
 	
 		h3dSetNodeParent(m_hordeID, child);
 	}
 	else
 	{
-		h3dSetNodeParent(m_hordeID, otherNode);
+		h3dSetNodeParent(m_hordeID, newParentNode);
 	}
 
 	h3dSetNodeTransform(m_hordeID,data->Tx,data->Ty, data->Tz,
@@ -519,37 +553,11 @@ void SceneGraphComponent::setParentNode(const Attach* data)
 	checkTransformation();
 }
 
-void SceneGraphComponent::attach(const Attach* data)
-{
-	//Assuming the entity has the same name as the node it is attached to
-	/*int nodes = h3dFindNodes(H3DRootNode, data->EntityID, H3DNodeTypes::Model );
-	H3DNode otherNode = h3dGetNodeFindResult(0);*/
-
-	//TODO Proposal: create a SET_NODE_PARENT event, send this event to the data->EntityID using GameEngine::sendEvent
-
-	// Get the real horde id
-	H3DNode otherNode = H3DRootNode;
-	GameEntity* entity = GameModules::gameWorld()->entity(data->EntityID);
-	if (entity)
-	{
-		SceneGraphComponent* component = static_cast<SceneGraphComponent*>(entity->component("Horde3D"));
-		if (component)
-			otherNode = component->hordeId();
-	}
-
-	h3dFindNodes( m_hordeID, data->Child, H3DNodeTypes::Undefined );
-	H3DNode child = h3dGetNodeFindResult(0);
-
-	h3dSetNodeParent(otherNode, child);
-	
-	h3dSetNodeTransform(otherNode,data->Tx,data->Ty, data->Tz,
-		data->Rx, data->Ry, data->Rz,
-		data->Sx, data->Sy, data->Sz);
-}
 
 void SceneGraphComponent::setEnabled(bool enable)
 {
 	// Not sure if we want to use recursive == true or false here
+	// Also not sure about the visibility state
 	h3dSetNodeFlags(m_hordeID, enable ? 0 : H3DNodeFlags::Inactive, true );
 }
 
@@ -588,7 +596,8 @@ void SceneGraphComponent::getBoundingBox(float* minX, float* minY, float* minZ, 
 }
 
 
-size_t SceneGraphComponent::getSerializedState(char *state) {
+size_t SceneGraphComponent::getSerializedState(char *state)
+{
 	// current transformation
 	memcpy(state, m_transformation, sizeof(float) * 16);
 
@@ -598,7 +607,8 @@ size_t SceneGraphComponent::getSerializedState(char *state) {
 	return sizeof(float) * 16 * 2;
 }
 
-void SceneGraphComponent::setSerializedState(const char *state, size_t length) {
+void SceneGraphComponent::setSerializedState(const char *state, size_t length)
+{
 	if (length != sizeof(float) * 16 * 2)
 		return;
 
@@ -613,16 +623,20 @@ void SceneGraphComponent::setSerializedState(const char *state, size_t length) {
 	Matrix4f(m_transformation).decompose(t, r, s);
 	Matrix4f(m_lasttransformation).decompose(lt, lr, ls);
 
-	m_traject_translation = t - lt;
-	m_traject_rotation = r - lr;
-	m_traject_scale = s - ls;
+	if (s != ls || r != lr || t != lt)
+	{
+		m_traject_translation = t - lt;
+		m_traject_rotation = r - lr;
+		m_traject_scale = s - ls;
+		m_trajectChanged = true;
+	}
 }
 
-void SceneGraphComponent::traject() {
+void SceneGraphComponent::traject()
+{
 	// apply trajections
-	if (m_traject_translation.length() > Math::Epsilon
-	||	m_traject_rotation.length() > Math::Epsilon
-	||	m_traject_scale.length() > Math::Epsilon) {
+	if (m_trajectChanged)
+	{
 
 		// apply translation
 		m_transformation[12] += m_traject_translation.x;
