@@ -213,8 +213,6 @@ private:
 	Vec3f				m_traject_translation;
 	Vec3f				m_traject_rotation;
 	Vec3f				m_traject_scale;
-	// must be set to true if one of the above has changed
-	bool				m_trajectChanged;
 
 };
 #endif

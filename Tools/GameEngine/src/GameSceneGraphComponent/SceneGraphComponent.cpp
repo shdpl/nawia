@@ -46,7 +46,7 @@ GameComponent* SceneGraphComponent::createComponent( GameEntity* owner )
 }
 
 SceneGraphComponent::SceneGraphComponent( GameEntity* owner) : GameComponent(owner, "Horde3D"), 
-	m_hordeID(0), m_visibilityFlag(0), m_terrainGeoRes(0), m_trajectChanged(false)
+	m_hordeID(0), m_visibilityFlag(0), m_terrainGeoRes(0)
 {
 	owner->addListener(GameEvent::E_SET_TRANSFORMATION, this);
 	owner->addListener(GameEvent::E_TRANSFORMATION, this);
@@ -623,20 +623,26 @@ void SceneGraphComponent::setSerializedState(const char *state, size_t length)
 	Matrix4f(m_transformation).decompose(t, r, s);
 	Matrix4f(m_lasttransformation).decompose(lt, lr, ls);
 
-	if (s != ls || r != lr || t != lt)
+	m_traject_translation = t - lt;
+	m_traject_rotation = r - lr;
+	m_traject_scale = s - ls;
+
+	/*if (s != ls || r != lr || t != lt)
 	{
 		m_traject_translation = t - lt;
 		m_traject_rotation = r - lr;
 		m_traject_scale = s - ls;
 		m_trajectChanged = true;
-	}
+	} else
+		 m_trajectChanged = false; */
 }
 
 void SceneGraphComponent::traject()
 {
 	// apply trajections
-	if (m_trajectChanged)
-	{
+	if (m_traject_translation.length() > Math::Epsilon
+	||	m_traject_rotation.length() > Math::Epsilon
+	||	m_traject_scale.length() > Math::Epsilon) {
 
 		// apply translation
 		m_transformation[12] += m_traject_translation.x;
