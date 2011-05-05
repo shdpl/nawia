@@ -42,7 +42,6 @@
 
 #include "Horde3D/Horde3D.h"
 #include "AgentNode.h"
-#include "Console.h"
 #include <XMLParser/utXMLParser.h>
 
 #include <sstream>
@@ -54,8 +53,6 @@ class CommManager;
 class Application
 {
 private:
-	// Console
-	Console mConsole;
 	///array storing keyboard status
 	bool			_keys[320];
 
@@ -64,11 +61,11 @@ private:
 	int				m_cam_hID;
 	int				m_cam_eID;
 	///initial camera position and rotation
-	//float			init_x, init_y, init_z, init_rx, init_ry, init_rz;
+	float			init_x, init_y, init_z, init_rx, init_ry, init_rz;
 	///current camera position and rotation
-	//float			_x, _y, _z, _rx, _ry, _rz;
+	float			_x, _y, _z, _rx, _ry, _rz;
 	///camera movement velocityvelocity
-	//float			_velocity;
+	float			_velocity;
 	///current FPS
 	float			_curFPS;
 	///flag for H3D debug rendering

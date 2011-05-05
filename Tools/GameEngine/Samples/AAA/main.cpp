@@ -133,7 +133,7 @@ void GLFWCALL mouseMoveListener( int x, int y )
 		return;
 	}	
 
-	app->mouseMoveEvent( /*(float)(x - mx0)*/x, /*(float)(my0 - y)*/y );
+	app->mouseMoveEvent( (float)(x - mx0), (float)(my0 - y) );
 	mx0 = x; my0 = y;
 }
 
