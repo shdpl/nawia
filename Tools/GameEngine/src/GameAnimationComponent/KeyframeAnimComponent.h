@@ -65,6 +65,11 @@ public:
 		return int(m_animationRegistry.size());
 	};
 	int getJobID(std::string animName);
+
+	size_t getSerializedState(char* state);
+
+	void setSerializedState(const char* state, size_t length);
+
 private:
 	void release();
 
@@ -82,7 +87,8 @@ private:
 
 	const int												MAX_STAGES;
 
-
+	// needed on a networking KeyframeAnimComponent
+	float*													m_initTimestamps;	// saves the timestamp an animation was initiated
 };
 
 #endif

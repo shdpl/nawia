@@ -79,6 +79,9 @@ public:
 	// Add phonemes to our viseme container
 	bool loadPhonemesFile(const char* fileName);
 	inline float getDistanceToListener();
+
+	size_t getSerializedState(char* state);
+	void setSerializedState(const char* state, size_t length);
 	
 private:
 	// Add the viseme that corresponds to the given phonem to a container

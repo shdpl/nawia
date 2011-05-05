@@ -758,3 +758,21 @@ void SoundComponent::updateVisemes()
 			m_owner->executeEvent(&event2);
 	}
 }
+
+size_t SoundComponent::getSerializedState(char* state) {
+	char* out = state;
+	memcpy(out, &m_gain, sizeof(float));			out+=sizeof(float);
+	memcpy(out, &m_initialGain, sizeof(float));		out+=sizeof(float);
+	memcpy(out, &m_loop, sizeof(bool));				out+=sizeof(bool);
+
+	return out - state;
+}
+
+void SoundComponent::setSerializedState(const char* state, size_t length) {
+	if (length != 2 * sizeof(float) + sizeof(bool))
+		return;
+
+	memcpy(&m_gain, state, sizeof(float));			state+=sizeof(float);
+	memcpy(&m_initialGain, state, sizeof(float));	state+=sizeof(float);
+	memcpy(&m_loop, state, sizeof(bool));			state+=sizeof(bool);
+}

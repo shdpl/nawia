@@ -110,8 +110,11 @@ namespace AnimationControl
 		 * @param command the parameters how to play the animation
 		 */
 		AnimationJob(KeyframeAnimComponent* owner, Animation* anim, AnimationSetup* command) : m_animation(anim), m_stageID(command->Stage), m_speed(command->Speed),
-			m_currentTimeWeight(-1), m_jobID(0), m_owner(owner) 
+			m_currentTimeWeight(-1), m_jobID(0), m_owner(owner)		//, m_animationName(command->Animation) WHAT HAPPENS if the string this is pointing to is changed while this job is playing??
 		{
+			m_animationName = new char[strlen(command->Animation) + 1];
+			strcpy((char*)m_animationName, command->Animation);
+
 			// If speed was set to zero by the user...
 			if ( command->Speed == 0 )
 			{
@@ -164,6 +167,8 @@ namespace AnimationControl
 				m_animation->activate(false, m_stageID, false);
 			// Deregister in owner's registry
 			m_owner->m_animationRegistry[m_jobID - 1] = 0;
+
+			delete[] m_animationName;
 		}
 
 		bool past(const float timestamp) const
@@ -282,7 +287,7 @@ namespace AnimationControl
 			const float end = GameEngine::timeStamp() + duration;			
 
 			float weight = m_timeline.back().Weight;
-			while(!m_timeline.empty() && m_timeline.back().Timestamp > end)
+			while(m_timeline.back().Timestamp > end)
 			{
 				weight = m_timeline.back().Weight;
 				m_timeline.pop_back();
@@ -292,6 +297,7 @@ namespace AnimationControl
 
 		std::vector<TimelineWeight>	m_timeline;
 		Animation*					m_animation;
+		const char*					m_animationName;
 		const int					m_stageID;
 		float						m_speed;
 		int							m_currentTimeWeight;
@@ -373,11 +379,17 @@ KeyframeAnimComponent::KeyframeAnimComponent(GameEntity* owner) : GameComponent(
 	owner->addListener(GameEvent::E_GET_ANIM_LENGTH, this);
 
 	m_stageControllers = new AnimationControl::StageController[MAX_STAGES];
+
+	m_initTimestamps = new float[MAX_STAGES];
+
 	for (int i=0; i<MAX_STAGES; ++i)
 	{
 		m_stageControllers[i].StageID = i;
 		m_stageControllers[i].Owner = this;
+
+		m_initTimestamps[i] = 0;
 	}
+
 	KeyframeAnimManager::instance()->addObject(this);
 }
 
@@ -580,8 +592,119 @@ int KeyframeAnimComponent::getJobID(std::string animName)
 	{
 		for(unsigned int i = 0; i < m_animationRegistry.size(); ++i)
 		{
-			if(m_animationRegistry[i]->m_animation == iter->second) return i+1;
+			if(m_animationRegistry[i]->m_animation = iter->second) return i+1;
 		}
 	}
 	return 0;
+}
+
+// getSerializedState: for low bandwidth usage, only the currently playing animation on each stage gets transmitted
+size_t KeyframeAnimComponent::getSerializedState(char *state) {
+	char *out = state;
+
+	// transmitting local timestamp to be able to create correct animation timelines on clients
+	*(float*)out = GameEngine::timeStamp();			out += sizeof(float);
+
+	// serializing stage controllers		ASSUMPTION: MAX_STAGES is equal on client and server
+
+	for (int i = 0; i < MAX_STAGES; i++) {
+	
+		*(size_t*)out = m_stageControllers[i].Animations.size();	out+=sizeof(size_t);
+
+		if (m_stageControllers[i].Animations.size() == 0)
+			continue;
+
+		// currently playing animation
+		AnimationControl::AnimationJob* job = m_stageControllers[i].Animations.front();
+
+		strcpy(out, job->m_animationName);						out+=strlen(job->m_animationName)+1;
+		memcpy(out, &job->m_endless, sizeof(bool));				out+=sizeof(bool);
+		memcpy(out, &job->m_speed, sizeof(float));				out+=sizeof(float);
+
+		*(size_t*)out = job->m_timeline.size();					out+=sizeof(size_t);
+
+		for (size_t j = 0; j < job->m_timeline.size(); j++) {
+			memcpy(out, &job->m_timeline[j].Timestamp, sizeof(float));	out+=sizeof(float);
+			memcpy(out, &job->m_timeline[j].Weight, sizeof(float));		out+=sizeof(float);
+		}
+	}
+
+	return out - state;
+}
+
+// setSerializedState: In a networking scenario, a locally playing animation might get overwritten by an animation playing on a remote, sending GameEngine (on the same stage)!
+void KeyframeAnimComponent::setSerializedState(const char *state, size_t length) {
+
+	char* anim_name;
+	bool anim_endless;
+	float anim_speed;
+
+	AnimationControl::TimelineWeight tl_weight(0, 0);
+	
+	// calulate sender/recipient real time discrepancy
+	float deltatimestamp = *(float*)state - GameEngine::timeStamp();		state += sizeof(float);
+
+	for (int i = 0; i < MAX_STAGES; i++) {
+		
+		if (*(size_t*)state == 0) {
+			// empty stage controller
+			state+=sizeof(size_t);
+			continue;
+		} else {
+			state+=sizeof(size_t);
+			
+			anim_name = (char*)state;						state+=strlen(state) + 1;
+			memcpy(&anim_endless, state, sizeof(bool));		state+=sizeof(bool);
+			memcpy(&anim_speed, state, sizeof(float));		state+=sizeof(float);
+
+			size_t tlsize = *(size_t*)state;				state+=sizeof(size_t);	// should be two
+
+			memcpy(&tl_weight, state, sizeof(AnimationControl::TimelineWeight));	state+=sizeof(AnimationControl::TimelineWeight);
+
+			// was this job already registered?
+			if (tl_weight.Timestamp == m_initTimestamps[i]) {
+
+				// skip to next stage controller
+				for (size_t j = 1; j < tlsize; j++) {
+					state+=sizeof(AnimationControl::TimelineWeight);
+				}
+				
+				continue;
+			}
+
+			// save timestamp
+			m_initTimestamps[i] = tl_weight.Timestamp;
+
+			AnimationSetup command(anim_name, i, anim_speed, 1.0f, 1.0f, 0);	// constant values will be adjusted afterwards
+
+			m_stageControllers[i].clear();
+
+			setupAnim(&command);
+
+			if (m_stageControllers[i].Animations.size() == 0) {		// something went terribly wrong
+				// skip to next stage controller
+				for (size_t j = 1; j < tlsize; j++) {
+					state+=sizeof(AnimationControl::TimelineWeight);
+				}
+				
+				continue;
+			}
+
+			// adjusting the job's timeline to client's real time
+			AnimationControl::AnimationJob* job = m_stageControllers[i].Animations.front();
+			job->m_endless = anim_endless;
+			job->m_timeline.clear();
+
+			tl_weight.Timestamp -= deltatimestamp;
+
+			job->m_timeline.push_back(tl_weight);
+
+			for (size_t j = 1; j < tlsize; j++) {
+				memcpy(&tl_weight, state, sizeof(AnimationControl::TimelineWeight));	state+=sizeof(AnimationControl::TimelineWeight);
+
+				tl_weight.Timestamp -= deltatimestamp;
+				job->m_timeline.push_back(tl_weight);
+			}
+		}
+	}
 }
