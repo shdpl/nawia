@@ -15,16 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module msg.handler.recording;
+module msg.provider;
+public import msg.mediator.mtd;
 
-import msg.handler.handler,
-	msg.msg;
-
-class MsgHandlerRecording : MsgHandler!Msg {
-	
-	override bool msgHandle(Msg msg) {
-		//TODO:
-		return true;
+interface MsgProvider(MSG) {
+	mixin template InjectMsgListener(MSG) {
+		public bool register(MsgProvider!MSG what) {
+			return MsgMediatorMtD().register(cast(MsgProvider!Msg)what);
+		}
+		public bool unregister(MsgProvider!MSG what) {
+			return MsgMediatorMtD().unregister(cast(MsgProvider!Msg)what);
+		}
+		void deliver(MSG msg) {
+			return MsgMediatorMtD().deliver(msg);
+		}
 	}
-	
+	bool register(MsgProvider!MSG prvdr);
+	bool unregister(MsgProvider!MSG prvdr);
+	void deliver(MSG msg);
 }

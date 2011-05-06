@@ -23,55 +23,55 @@ import std.string,
 public import msg.msg,
 	msg.mediator.mediator;
 
-class MsgMediatorMtD : MsgMediator {
+class MsgMediatorMtD : Singleton!MsgMediatorMtD, MsgMediator {
 	
-	MsgHandler!Msg[MsgHandler!Msg][TypeInfo] _handlers;
+	MsgFilter!Msg[MsgFilter!Msg][TypeInfo] _filters;
 	MsgListener!Msg[MsgListener!Msg][TypeInfo] _listeners;
 	MsgProvider!Msg[MsgProvider!Msg][TypeInfo] _providers;
 	
 	this() {
-		_handlers = null;
+		_filters = null;
 		_listeners = null;
 		_providers = null;
 		
 		setMaxMailboxSize(thisTid, 1024, OnCrowding.throwException);
 	}
 	
-	override bool addHandler(MsgHandler!Msg hndlr) {
-		auto msgtype = typeid(hndlr.getMsg());
-		if ( !type in _handlers )
-			_handlers[type] = null;
-		if ( !hndlr in _handlers[type] ) {
-			_handlers[type][hndlr] = hndlr;
+	override bool register(MsgFilter!Msg filter) {
+		auto type = typeid(filter);
+		if ( type !in _filters )
+			_filters[type] = null;
+		if ( filter !in _filters[type] ) {
+			_filters[type][filter] = filter;
 			return true;
 		} 
 		return false;
 	}
 	
-	override bool delHandler(MsgHandler!Msg hndlr)
+	bool unregister(MsgFilter!Msg filter)
 	in {
-		assert(typeid(hndlr) in _handlers);
+		assert(typeid(filter) in _filters);
 	}body{
-		auto type = typeid(hndlr);
-		if ( hndlr in _handlers[type]) {
-			_handlers[type].remove(hndlr);		//FIXME: _handlers[type].remove(hndlr);
+		auto type = typeid(filter);
+		if ( filter in _filters[type]) {
+			_filters[type].remove(filter);		//FIXME: _handlers[type].remove(hndlr);
 			return true;
 		}
 		return false;
 	}
 	
-	override bool addListener(MsgListener!Msg lstnr) {
+	override bool register(MsgListener!Msg lstnr) {
 		auto type = typeid(lstnr);
-		if ( !type in _listeners )
+		if ( type !in _listeners )
 			_listeners[type] = null;
-		if ( !lstnr in _listeners[type]) {
+		if ( lstnr !in _listeners[type]) {
 			_listeners[type][lstnr] = lstnr;
 			return true;
 		}
 		return false;
 	}
 	
-	override bool delListener(MsgListener!Msg lstnr)
+	override bool unregister(MsgListener!Msg lstnr)
 	in {
 		assert(typeid(lstnr) in _listeners);
 	}body{
@@ -83,11 +83,11 @@ class MsgMediatorMtD : MsgMediator {
 		return false;
 	}
 	
-	override bool addProvider(MsgProvider!Msg prvdr) {
+	override bool register(MsgProvider!Msg prvdr) {
 		auto type = typeid(prvdr);
-		if ( !type in _providers )
+		if ( type !in _providers )
 			_providers[type] = null;
-		if ( !prvdr in _providers[type] ) {
+		if ( prvdr !in _providers[type] ) {
 			_providers[type][prvdr] = prvdr;
 			return true;
 		}
@@ -95,7 +95,7 @@ class MsgMediatorMtD : MsgMediator {
 		
 	}
 	
-	override bool delProvider(MsgProvider!Msg prvdr)
+	override bool unregister(MsgProvider!Msg prvdr)
 	in {
 		assert(typeid(prvdr) in _providers);
 	}body{
@@ -105,6 +105,10 @@ class MsgMediatorMtD : MsgMediator {
 			return true;
 		}
 		return false;
+	}
+	
+	override void deliver(Msg msg) {
+		
 	}
 	
 	override void poll() {

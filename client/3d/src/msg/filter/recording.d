@@ -15,20 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module msg.handler.handler;
+module msg.filter.recording;
 
-interface MsgHandler(Msg) {
+import msg.filter.filter,
+	msg.msg;
+
+class MsgFilterRecording : MsgFilter!Msg {
 	
-	/**
-	 * Handle message.
-	 * 
-	 * Params:
-	 * 		msg		= message to handle
-	 *
-	 * Returns:
-	 *		true	= continue delivering
-	 *		false	= ignore message
-	 */
-	bool msgHandle(Msg msg);
+	override bool doFilter(Msg msg) {
+		//TODO:
+		return true;
+	}
 	
 }

@@ -15,10 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module msg.listener.listener;
+module msg.listener;
 
 public import msg.msg;
 
-interface MsgListener(Msg) {
-	void postMsg(Msg msg);
+
+interface MsgListener(MSG) {
+	mixin template InjectMsgProvider(MSG) {
+		public bool register(MsgListener!MSG what) {
+			return MsgMediatorMtD().register(cast(MsgListener!Msg)what);
+		}
+		public bool unregister(MsgListener!MSG what) {
+			return MsgMediatorMtD().unregister(cast(MsgListener!Msg)what);
+		}
+	}
+	
+	bool register(MsgListener!MSG lstnr);
+	bool unregister(MsgListener!MSG lstnr);
+	
 }

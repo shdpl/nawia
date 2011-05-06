@@ -15,12 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module msg.provider.provider;
+module msg.filter.filter;
 
-private import msg.listener.listener;
 
-interface MsgProvider(Msg) {
+interface MsgFilter(Msg)  {
 	
-	 bool setListener(MsgListener!Msg lstnr);
+	/**
+	 * Filter message.
+	 * 
+	 * Params:
+	 * 		msg		= message to filter
+	 *
+	 * Returns:
+	 *		true	= continue delivering
+	 *		false	= ignore message
+	 */
+	bool doFilter(Msg msg);
 	
 }

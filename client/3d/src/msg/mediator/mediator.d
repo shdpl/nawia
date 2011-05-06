@@ -17,30 +17,15 @@
 
 module msg.mediator.mediator;
 
-public import msg.msg;
-public import msg.listener.listener;
-public import msg.provider.provider;
-public import msg.handler.handler;
+public import msg.listener;
+public import msg.provider;
+public import msg.filter.filter;
+public import util.singleton;
 
-abstract class MsgMediator {
-	/**
-	 * Add handler, that wants to be invoked each time on every message
-	 * of given type.
-	 *
-	 * It might allow, or block message from being transmitted to listeners,
-	 * or next handlers in chain.
-	 *
-	 * Params:
-	 * 		hndlr =		MsgHandler to add
-	 */
-	bool addHandler(MsgHandler!Msg hndlr);
-	bool delHandler(MsgHandler!Msg hndlr);
+interface MsgMediator : MsgListener!Msg, MsgProvider!Msg {
 	
-	bool addListener(MsgListener!Msg lst);
-	bool delListener(MsgListener!Msg lst);
-	
-	bool addProvider(MsgProvider!Msg prvdr);
-	bool delProvider(MsgProvider!Msg prvdr);
+	bool register(MsgFilter!Msg filter);
+	bool unregister(MsgFilter!Msg filter);
 	
 	void poll();
 }
