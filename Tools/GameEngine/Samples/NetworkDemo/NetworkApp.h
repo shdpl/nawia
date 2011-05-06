@@ -1,17 +1,17 @@
-#ifndef DEMOAPP_H_
-#define DEMOAPP_H_
+#ifndef NETWORKAPP_H_
+#define NETWORKAPP_H_
 
 #include "Horde3D/Horde3D.h"
 #include "Horde3D/Horde3DUtils.h"
 
 struct lua_State;
 
-class DemoApp
+class NetworkApp
 {
 public:
 
-	DemoApp();
-	~DemoApp();
+	NetworkApp();
+	~NetworkApp();
 
 	bool init(const char* fileName);
 

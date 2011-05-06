@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "DemoApp.H"
+#include "NetworkApp.H"
 
 #include "GameEngine/GameEngine.h"
 #include "GameEngine/GameEngine_Network.h"
@@ -20,7 +20,7 @@ extern "C"
 	#include "Lua/lauxlib.h"
 }
 
-DemoApp::DemoApp() : m_running(true), m_L(0), m_networkStarted(false)
+NetworkApp::NetworkApp() : m_running(true), m_L(0), m_networkStarted(false)
 {
 	memset(m_keys, 0, sizeof(m_keys));
 	m_controlledChar = "";
@@ -28,14 +28,14 @@ DemoApp::DemoApp() : m_running(true), m_L(0), m_networkStarted(false)
 	m_networkState = "";
 }
 
-DemoApp::~DemoApp()
+NetworkApp::~NetworkApp()
 {
 	GameEngine::release();
 	if (m_L)
 		lua_close( m_L );
 }
 
-void DemoApp::startServer() {
+void NetworkApp::startServer() {
 	// only once
 	if (m_networkStarted)
 		return;
@@ -77,7 +77,7 @@ void DemoApp::startServer() {
 
 }
 
-void DemoApp::startClient(const char* character) {
+void NetworkApp::startClient(const char* character) {
 	// only once
 	if (m_networkStarted)
 		return;
@@ -97,7 +97,7 @@ void DemoApp::startClient(const char* character) {
 	GameEngine::connectToServer(serverip);
 }
 
-bool DemoApp::init(const char *fileName)
+bool NetworkApp::init(const char *fileName)
 {
 	if (!GameEngine::init()) return false;
 	
@@ -124,7 +124,7 @@ bool DemoApp::init(const char *fileName)
 		return false;	
 }
 
-void DemoApp::keyHandler()
+void NetworkApp::keyHandler()
 {		
 	if( m_keys[118] )  // F7
 	{
@@ -192,11 +192,11 @@ void DemoApp::keyHandler()
 
 }
 
-void DemoApp::mouseMoved(float x, float y)
+void NetworkApp::mouseMoved(float x, float y)
 {
 }
 
-void DemoApp::updateCamera() {
+void NetworkApp::updateCamera() {
 	if (m_character == UINT_MAX)
 		return;
 
@@ -213,7 +213,7 @@ void DemoApp::updateCamera() {
 	GameEngine::setEntityRotation(m_camID, -10, r.y / Math::Pi * 180.0f - 180.0f, 0);
 }
 
-void DemoApp::render()
+void NetworkApp::render()
 {
 	keyHandler();
 
@@ -250,9 +250,9 @@ void DemoApp::render()
 
 }
 
-void DemoApp::keyboardCb(unsigned int param, bool pressed, void *userData)
+void NetworkApp::keyboardCb(unsigned int param, bool pressed, void *userData)
 {
-	DemoApp* app = static_cast<DemoApp*>(userData);
+	NetworkApp* app = static_cast<NetworkApp*>(userData);
 	if (app)
 	{
 		app->m_keys[param] = pressed ? 1 : 0;
@@ -263,9 +263,9 @@ void DemoApp::keyboardCb(unsigned int param, bool pressed, void *userData)
 	}
 }
 
-void DemoApp::mouseButtonCb(float x, float y, void *userData)
+void NetworkApp::mouseButtonCb(float x, float y, void *userData)
 {
-	//DemoApp* app = static_cast<DemoApp*>(userData);
+	//NetworkApp* app = static_cast<NetworkApp*>(userData);
 	//if (app)
 	//{
 	//	float coords[3];
@@ -287,23 +287,23 @@ void DemoApp::mouseButtonCb(float x, float y, void *userData)
 	//}
 }
 
-void DemoApp::mouseCb(float x, float y, void *userData)
+void NetworkApp::mouseCb(float x, float y, void *userData)
 {
-	DemoApp* app = static_cast<DemoApp*>(userData);
+	NetworkApp* app = static_cast<NetworkApp*>(userData);
 	if (app) app->mouseMoved(x, y);
 }
 
-void DemoApp::renderCb(void *userData)
+void NetworkApp::renderCb(void *userData)
 {
-	DemoApp* app = static_cast<DemoApp*>(userData);
+	NetworkApp* app = static_cast<NetworkApp*>(userData);
 	if (app) app->render();
 }
 
-void DemoApp::resizeCb(void* userData, int width, int height)
+void NetworkApp::resizeCb(void* userData, int width, int height)
 {	
 	//h3dSetupViewport(0, 0, width, height, true);
 
-	DemoApp* app = static_cast<DemoApp*>(userData);
+	NetworkApp* app = static_cast<NetworkApp*>(userData);
 	H3DNode camID = GameEngine::entitySceneGraphID( app->m_camID );
 	h3dSetNodeParamI( camID, H3DCamera::ViewportXI, 0 );
 	h3dSetNodeParamI( camID, H3DCamera::ViewportYI, 0 );
@@ -312,7 +312,7 @@ void DemoApp::resizeCb(void* userData, int width, int height)
 	h3dResizePipelineBuffers( h3dGetNodeParamI( camID, H3DCamera::PipeResI ), width, height );
 }
 
-int DemoApp::worldToGrid(float coords)
+int NetworkApp::worldToGrid(float coords)
 {
 	float wc;   
     if (coords >= 0)

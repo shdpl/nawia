@@ -88,7 +88,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameAgentComponent", "src\G
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\Dependencies\zlib\zlib.vcxproj", "{E02FCFB9-A587-4498-8EF0-47937769B7AA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetworkApp", "Samples\NetworkDemo\DemoApp.vcxproj", "{07D26A4C-4569-4AAB-B504-D45A24C23BE7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetworkApp", "Samples\NetworkDemo\NetworkApp.vcxproj", "{07D26A4C-4569-4AAB-B504-D45A24C23BE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

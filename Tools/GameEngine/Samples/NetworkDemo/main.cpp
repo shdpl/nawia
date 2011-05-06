@@ -1,5 +1,5 @@
 #include "OpenGlWindow.h"
-#include "DemoApp.h"
+#include "NetworkApp.h"
 
 #ifdef MEMORYCHECK
 #include <vld.h>
@@ -57,7 +57,7 @@ int WINAPI WinMain(	HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	//-----------------------------
 
-	DemoApp* app = new DemoApp();
+	NetworkApp* app = new NetworkApp();
 	if (!app->init(lpCmdLine))
 	{
 #ifdef UNICODE
@@ -71,12 +71,12 @@ int WINAPI WinMain(	HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	}
 
 	// Register Keyboard callback
-	glWindow->setRenderCB(DemoApp::renderCb, app);
-	glWindow->setKeyboardCB(DemoApp::keyboardCb);
-	glWindow->setMouseCB(DemoApp::mouseCb);
-	glWindow->setMouseButtonCB(DemoApp::mouseButtonCb);
-	glWindow->setResizeCB(DemoApp::resizeCb, app);
-	DemoApp::resizeCb(app, width, height);
+	glWindow->setRenderCB(NetworkApp::renderCb, app);
+	glWindow->setKeyboardCB(NetworkApp::keyboardCb);
+	glWindow->setMouseCB(NetworkApp::mouseCb);
+	glWindow->setMouseButtonCB(NetworkApp::mouseButtonCb);
+	glWindow->setResizeCB(NetworkApp::resizeCb, app);
+	NetworkApp::resizeCb(app, width, height);
 	// Run Event Loop	
 	while( app->isRunning() )
 	{		

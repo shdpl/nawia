@@ -17,7 +17,7 @@
   <PropertyGroup Label="Globals">
     <ProjectName>NetworkApp</ProjectName>
     <ProjectGuid>{07D26A4C-4569-4AAB-B504-D45A24C23BE7}</ProjectGuid>
-    <RootNamespace>DemoApp</RootNamespace>
+    <RootNamespace>NetworkApp</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -149,12 +149,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DemoApp.cpp" />
+    <ClCompile Include="NetworkApp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenGlWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DemoApp.h" />
+    <ClInclude Include="NetworkApp.h" />
     <ClInclude Include="OpenGLWindow.h" />
   </ItemGroup>
   <ItemGroup>
