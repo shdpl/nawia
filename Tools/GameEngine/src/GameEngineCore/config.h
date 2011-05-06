@@ -49,8 +49,11 @@
 #	define _mkdir( name ) mkdir( name, 0755 )
 #endif
 
+
 #if !defined( _MSC_VER ) || (defined( _MSC_VER ) && (_MSC_VER < 1400))
+#	define strcpy_s( dst, count, src) strncpy( dst, src, count )
 #	define strncpy_s( dst, dstSize, src, count ) strncpy( dst, src, count < dstSize ? count : dstSize )
+#	define sprintf_s( buf, size, format, ... ) snprintf( buf, size, format, ... )
 #endif
 #if defined( _MSC_VER ) && (_MSC_VER < 1400)
 #   define vsnprintf _vsnprintf
