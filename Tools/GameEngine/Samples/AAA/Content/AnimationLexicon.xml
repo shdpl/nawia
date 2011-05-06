@@ -981,4 +981,19 @@
 			<File>Gestures\Male\male_ger_skewRight.anim</File>			
 		</Files>	
 	</Movement>
+	<Gesture>
+		<ID>0065</ID>
+		<Name>Drink Japanese</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="92">Gestures\Female\female_jap_drink.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="92">Gestures\Male\male_jap_drink.anim</File>
+		</Files>
+		<Context>drink</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>noCustomization</Restriction>
+	</Gesture>
 </AnimationLexicon>
