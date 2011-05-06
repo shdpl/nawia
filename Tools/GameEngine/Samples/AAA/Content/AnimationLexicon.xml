@@ -996,4 +996,19 @@
 		</Function>
 		<Restriction>noCustomization</Restriction>
 	</Gesture>
+	<Gesture>
+		<ID>0066</ID>
+		<Name>Come Over Here Japanese</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="62">Gestures\Female\female_jap_comeOverHere.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="62">Gestures\Male\male_jap_comeOverHere.anim.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>noCustomization</Restriction>
+	</Gesture>
 </AnimationLexicon>
