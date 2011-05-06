@@ -959,4 +959,26 @@
 			<File>Gestures\Male\male_ger_largeStepBackward.anim</File>			
 		</Files>	
 	</Movement>
+	<Movement>
+		<ID>0063</ID>
+		<Name>Skew Left</Name>
+		<Description>Loopable movement to the left</Description>
+		<Files gender="female">
+			<File>Gestures\Female\female_ger_skewLeft.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>Gestures\Male\male_ger_skewLeft.anim</File>			
+		</Files>	
+	</Movement>
+	<Movement>
+		<ID>0064</ID>
+		<Name>Skew Left</Name>
+		<Description>Loopable movement to the right</Description>
+		<Files gender="female">
+			<File>Gestures\Female\female_ger_skewRight.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>Gestures\Male\male_ger_skewRight.anim</File>			
+		</Files>	
+	</Movement>
 </AnimationLexicon>
