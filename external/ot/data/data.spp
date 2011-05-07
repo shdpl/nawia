@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project>
+	<Folder FolderName="XML Files" ExtStr="xml;cml;math;rdf;smil;svg;wml">
+		<Folder FolderName="monster" ExtStr="*.xml" ValidFile="C:\Users\shd\Documents\Visual Studio 2010\Projects\Nawia\nawia\www\gsao\src\main\resources\xsd\monster-0.0.1.xsd">
+			<File FilePath="monster\fury of the emperor.xml" HomeFolder="Yes"/>
+			<File FilePath="monster\lizard gate guardian.xml" HomeFolder="Yes"/>
+			<File FilePath="monster\lizard magistratus.xml" HomeFolder="Yes"/>
+			<File FilePath="monster\lizard noble.xml" HomeFolder="Yes"/>
+			<File FilePath="monster\scorn of the emperor.xml" HomeFolder="Yes"/>
+			<File FilePath="monster\spite of the emperor.xml" HomeFolder="Yes"/>
+			<File FilePath="monster\wrath of the emperor.xml" HomeFolder="Yes"/>
+			<ExtMountFolder FolderName="monster\Animals"/>
+			<ExtMountFolder FolderName="monster\Undeads"/>
+			<ExtMountFolder FolderName="monster\Annelids"/>
+			<ExtMountFolder FolderName="monster\Apes"/>
+			<ExtMountFolder FolderName="monster\Bandits"/>
+			<ExtMountFolder FolderName="monster\Barbarians"/>
+			<ExtMountFolder FolderName="monster\Beholders"/>
+			<ExtMountFolder FolderName="monster\Bosses"/>
+			<ExtMountFolder FolderName="monster\Bosses Quests"/>
+			<ExtMountFolder FolderName="monster\Chakoyas"/>
+			<ExtMountFolder FolderName="monster\Cultists"/>
+			<ExtMountFolder FolderName="monster\Cyclopes and Giants"/>
+			<ExtMountFolder FolderName="monster\Demons"/>
+			<ExtMountFolder FolderName="monster\Djinns"/>
+			<ExtMountFolder FolderName="monster\Dragons"/>
+			<ExtMountFolder FolderName="monster\Dwarves"/>
+			<ExtMountFolder FolderName="monster\Dworcs"/>
+			<ExtMountFolder FolderName="monster\Elementals"/>
+			<ExtMountFolder FolderName="monster\Elves"/>
+			<ExtMountFolder FolderName="monster\Event"/>
+			<ExtMountFolder FolderName="monster\Goblins"/>
+			<ExtMountFolder FolderName="monster\Golems"/>
+			<ExtMountFolder FolderName="monster\Hunting Tasks"/>
+			<ExtMountFolder FolderName="monster\Insects"/>
+			<ExtMountFolder FolderName="monster\Lizards"/>
+			<ExtMountFolder FolderName="monster\Magicians"/>
+			<ExtMountFolder FolderName="monster\Minotaurs"/>
+			<ExtMountFolder FolderName="monster\Mutans"/>
+			<ExtMountFolder FolderName="monster\Orcs"/>
+			<ExtMountFolder FolderName="monster\Pirates"/>
+			<ExtMountFolder FolderName="monster\Plants Like"/>
+			<ExtMountFolder FolderName="monster\Quaras"/>
+			<ExtMountFolder FolderName="monster\Reptiles"/>
+			<ExtMountFolder FolderName="monster\Slimes and Blobs"/>
+			<ExtMountFolder FolderName="monster\Spiders"/>
+			<ExtMountFolder FolderName="monster\Traps"/>
+			<ExtMountFolder FolderName="monster\Trolls"/>
+		</Folder>
+	</Folder>
+	<Folder FolderName="XSL Files" ExtStr="xsl;xslt"/>
+	<Folder FolderName="XQuery Files" ExtStr="xq;xql;xquery"/>
+	<Folder FolderName="HTML Files" ExtStr="html;htm;xhtml;asp"/>
+	<Folder FolderName="DTD/Schemas" ExtStr="dtd;dcd;xdr;biz;xsd">
+		<File FilePath="C:\Users\shd\Documents\Visual Studio 2010\Projects\Nawia\nawia\www\gsao\src\main\resources\xsd\monster-0.0.1.xsd" HomeFolder="Yes"/>
+		<File FilePath="C:\Users\shd\Documents\Visual Studio 2010\Projects\Nawia\nawia\www\gsao\src\main\resources\xsd\monster-0.0.2.xsd" HomeFolder="Yes"/>
+		<File FilePath="C:\Users\shd\Documents\Visual Studio 2010\Projects\Nawia\nawia\www\gsao\src\main\resources\xsd\monsters-0.0.1.xsd" HomeFolder="Yes"/>
+		<File FilePath="C:\Users\shd\Documents\Visual Studio 2010\Projects\Nawia\nawia\www\gsao\src\main\resources\xsd\spells-0.0.1.xsd" HomeFolder="Yes"/>
+	</Folder>
+	<Folder FolderName="Entities" ExtStr="ent"/>
+</Project>
