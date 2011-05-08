@@ -115,10 +115,10 @@ void AgentManager::addComponent(CommComponent *component)
 }
 void AgentManager::addComponent(FormationComponent *component)
 {
-	std::vector<FormationComponent*>::iterator iter = find(m_agentInteractionListener.begin(), m_agentInteractionListener.end(), component);
-	if (iter == m_agentInteractionListener.end())
+	std::vector<FormationComponent*>::iterator iter = find(m_agentFormationListener.begin(), m_agentFormationListener.end(), component);
+	if (iter == m_agentFormationListener.end())
 	{
-		m_agentInteractionListener.push_back(component);
+		m_agentFormationListener.push_back(component);
 	}
 }
 void AgentManager::addComponent(MovementComponent *component)
@@ -163,10 +163,10 @@ void AgentManager::removeComponent(CommComponent *component)
 }
 void AgentManager::removeComponent(FormationComponent *component)
 {
-	std::vector<FormationComponent*>::iterator iter = find(m_agentInteractionListener.begin(), m_agentInteractionListener.end(), component);
-	if (iter != m_agentInteractionListener.end())
+	std::vector<FormationComponent*>::iterator iter = find(m_agentFormationListener.begin(), m_agentFormationListener.end(), component);
+	if (iter != m_agentFormationListener.end())
 	{
-		m_agentInteractionListener.erase(iter);
+		m_agentFormationListener.erase(iter);
 	}
 }
 void AgentManager::removeComponent(MovementComponent *component)
@@ -191,8 +191,8 @@ void AgentManager::update()
 	for_each(m_agentMovementListener.begin(), m_agentMovementListener.end(), UpdateNode());
 	for_each(m_agentAnimationListener.begin(), m_agentAnimationListener.end(), UpdateNode());
 	for_each(m_agentGazeListener.begin(), m_agentGazeListener.end(), UpdateNode());
+	for_each(m_agentFormationListener.begin(), m_agentFormationListener.end(), UpdateNode());
 	for_each(m_agentCommListener.begin(), m_agentCommListener.end(), UpdateNode());
-	for_each(m_agentInteractionListener.begin(), m_agentInteractionListener.end(), UpdateNode());
 }     
 
 //getter
@@ -259,8 +259,8 @@ CommComponent* AgentManager::getCommComponent(/*int eID*/)
 
 FormationComponent* AgentManager::getFormationComponent(int eID)
 {
-	std::vector<FormationComponent*>::iterator iter = m_agentInteractionListener.begin();
-	while (iter != m_agentInteractionListener.end())
+	std::vector<FormationComponent*>::iterator iter = m_agentFormationListener.begin();
+	while (iter != m_agentFormationListener.end())
 	{
 		if((*iter)->getEntityID() == eID)
 			return *iter;

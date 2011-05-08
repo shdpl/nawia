@@ -69,18 +69,17 @@ void cmdGoto::execute()
 	{
 		error("unknown agent");
 		return;
-	}
-
-	int dest_eID = AgentManager::instance()->getEntityID(m_dest_aID);
-	if(dest_eID < 0)
-	{
-		error("unknown destination");
-		return;
-	}
+	}	
 
 	if(m_doGotoByID)
-	{		
-		m_goto_ID = GameEngine::Agent_gotoF( agent_eID, dest_eID, m_speed, /*(m_putInQueue == 0) ? false : true,*/ 0, 0); //put in queue for goto formation disabled
+	{
+		int dest_eID = AgentManager::instance()->getEntityID(m_dest_aID);
+		if(dest_eID < 0)
+		{
+			error("unknown destination");
+			return;
+		}
+		m_goto_ID = GameEngine::Agent_gotoF( agent_eID, dest_eID, m_speed, 0, 0);
 		m_comp->addFeedbackNode( new fbGoto( m_comp->getSocketEntityID(), agent_eID, m_goto_ID ) );
 	}
 

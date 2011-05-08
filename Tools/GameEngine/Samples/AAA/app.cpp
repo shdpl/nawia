@@ -645,26 +645,23 @@ void Application::processDestination(const char* nodeName, float x, float y, flo
 	bool ctrlIsPressed = _keys[289];
 	bool queueMovement = shiftIsPressed;
 
+	int socket_eID = GameEngine::entityWorldID("Skybox"); //socket client
+
 	std::stringstream msg_ss("");
 	if(strcmp(nodeName,"berg")==0)
 	{
 		int agent_id = getPersonalChar()->id;
 
-		GameEngine::Agent_gotoP( getPersonalChar()->entity_id, x,y,z, 1.3f, queueMovement, 0, 0 );
+		//generate socket command
+		float speed = 1.3f;
 
-		AgentNode* a = getAgent(agent_id);
-		a->movement = 1;
-
-		//send feedback
-		//generate message
-		char* agentid_spacer;
-		if(agent_id < 10) agentid_spacer = "0";
-		else  agentid_spacer = "";
-
-		msg_ss << agentid_spacer << agent_id << "00" << "352";
-		msg_ss << " agent #" << agent_id << " movement towards a world location started";
+		msg_ss.str("");
+		msg_ss << "goto #agent " << agent_id 
+			<< " #dest x" << x << "y" << y << "z" << z 
+			<< " #spd " << speed
+			<< " #queue " << (queueMovement) ? 1 : 0;
 		//send message
-		GameEngine::sendSocketData( getAgent(0)->entity_id, msg_ss.str().c_str() );
+		GameEngine::sendSocketData( socket_eID, msg_ss.str().c_str() );
 	}
 	else
 	{
@@ -673,23 +670,15 @@ void Application::processDestination(const char* nodeName, float x, float y, flo
 		if(dest == 0)
 			return; //if this entity isn't a known agent, break.
 		
-		GameEngine::Agent_gotoF( getPersonalChar()->entity_id, dest->entity_id, 1.3f, 0, 0 );
-		
-		AgentNode* a = getAgent(agent_id);
-		a->movement = 1;
+		//generate socket command
+		float speed = 1.3f;
 
-		//send feedback
-		//generate message		
-		char* agentid_spacer, *destid_spacer;
-		if(agent_id < 10) agentid_spacer = "0";
-		else  agentid_spacer = "";
-		if(dest->id < 10) destid_spacer = "0";
-		else  destid_spacer = "";
-
-		msg_ss << agentid_spacer << agent_id << destid_spacer << dest->id << "351";
-		msg_ss << " agent #" << agent_id << " movement towards other entity started";
+		msg_ss.str("");
+		msg_ss << "goto #agent " << agent_id 
+			<< " #dest " << dest->id
+			<< " #spd " << speed;
 		//send message
-		GameEngine::sendSocketData( getAgent(0)->entity_id, msg_ss.str().c_str() );
+		GameEngine::sendSocketData( socket_eID, msg_ss.str().c_str() );
 	}	
 }
 

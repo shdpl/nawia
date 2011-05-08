@@ -82,6 +82,8 @@ bool AnimationData::loadLexiconData(XMLNode* lexicon)
 			type = Agent_AnimType::GESTURE;
 		else if( strcmp(entry->getName(), "Posture") == 0 )
 			type = Agent_AnimType::POSTURE;
+		else if( strcmp(entry->getName(), "Movement") == 0 )
+			type = Agent_AnimType::POSTURE;
 
 		AnimationData* animdata = AnimationData::getInstance( (int)atoi(id->getText()) );
 		animdata->setName( name->getText() );

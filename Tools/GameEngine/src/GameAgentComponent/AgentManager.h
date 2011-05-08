@@ -83,7 +83,7 @@ private:
 	std::vector<AnimationComponent*>	m_agentAnimationListener;
 	std::vector<GazeComponent*>			m_agentGazeListener;
 	std::vector<CommComponent*>			m_agentCommListener;
-	std::vector<FormationComponent*>	m_agentInteractionListener;
+	std::vector<FormationComponent*>	m_agentFormationListener;
 	std::vector<MovementComponent*>		m_agentMovementListener;
 };
 
