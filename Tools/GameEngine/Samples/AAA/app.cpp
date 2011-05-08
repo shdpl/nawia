@@ -284,9 +284,9 @@ void Application::update( float fps )
 	h3dSetNodeTransform( m_cam_hID, _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
 
 	//show overlay with camera parameters
-	std::stringstream text;
-	text << "Camera: pos(" << _x << ", " << _y << ", " << _z << ") rot(" << _rx << ", " << _ry << ", " << _rz << ")";
-	h3dutShowText(text.str().c_str(), 0.01f, 0.02f, 0.03f, 1, 1, 1, m_fontMatRes);
+	//std::stringstream text;
+	//text << "Camera: pos(" << _x << ", " << _y << ", " << _z << ") rot(" << _rx << ", " << _ry << ", " << _rz << ")";
+	//h3dutShowText(text.str().c_str(), 0.01f, 0.02f, 0.03f, 1, 1, 1, m_fontMatRes);
 
 	//** Render scene
 	GameEngine::update();

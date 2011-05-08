@@ -5,8 +5,6 @@
     <Camera name="camera" pipeline="pipelines/forward.pipeline.xml" tx="-13" ty="5.63" sx="1" occlusionCulling="0" tz="2" rx="-25" sy="1" ry="-40" sz="1" rz="0"  >
         <Attachment type="GameEngine" name="camera" >
 		  <BayesNet file="../Kultur-Modell_paper.xdsl" />
-          <CameraControl />
-          <SoundListener active="true" gain="0.8" />
           <Socket protocol="UDP" port="343" type="server"/>
         </Attachment>
     </Camera>
@@ -60,7 +58,7 @@
 				<Formation type="V" />
 				<Icon name="symb_default" distance="30" />
 			</Agent>
-	          <Sapi voice="Crystal16" useDistanceModel="1" rollOff="5.0"/>
+	        <Sapi voice="Crystal16" useDistanceModel="1" rollOff="5.0"/>
         </Attachment>
     </Reference>
 	
@@ -232,9 +230,6 @@
     </Group>
     <Group tx="-6.22384" ty="0.837493" tz="-2.33799" rx="0" ry="-135" rz="0" name="brunnen" >
       <Reference tx="-0.162738" sx="0.02" ty="-0.309088" sy="0.02" tz="-0.720933" sceneGraph="models/holzBrunnen/holzBrunnen.scene.xml" sz="0.02" name="holzBrunnen">
-        <Attachment type="GameEngine" name="backgroundsound">
-        <Sound3D loop="0" file="background.ogg" gain="1" />
-        </Attachment>
       </Reference>
 		<Emitter name="BrunnenWasser" material="effects/ParticleSystem1/ParticleSystem1.material.xml" particleEffect="effects/ParticleSystem1/ParticleSystem1.particle.xml"
 			 tx="0.159241" ty="0.590321" tz="0.0502045" rx="30" ry="0" rz="0"
