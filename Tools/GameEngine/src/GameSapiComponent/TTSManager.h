@@ -39,7 +39,7 @@ public:
 	 * Note that the TTSComponent instances won't be deleted though it's the job of the GameEntity
 	 */
 
-	void run() {}
+	void run();
 
 	/**
 	 * Updates all current TTS Morph Targets

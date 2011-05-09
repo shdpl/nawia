@@ -40,6 +40,7 @@ public:
 	 * the visemes
 	 */
 	void update();
+	void run();
 
 	/**
 	 * Initialises the Text-To-Speech Engine
@@ -62,30 +63,33 @@ public:
 
 private:
 
+	// Sapi functions
 	bool setVoice(const char* voice);
-	void speak(const char* string, int sentenceID = -1);
+	void speak(const char* string);
+	// Viseme functions
 	void resetPreviousViseme();
-	void setViseme( const std::string viseme, const float weight );
-
+	void updateVisemes();
+	// Calculates the volume dependent on the current distance to the listener if activated
 	void calcVolumeFromDistance();
 
+	// SAPI call back function
 	static void __stdcall sapiEvent(WPARAM wParam, LPARAM lParam);
 
+	// The SAPI voice
 	ISpVoice*		m_pVoice;
+
+	// Viseme info
 	bool			m_visemeChanged;
 	int				m_prevViseme, m_curViseme;
 	float			m_visemeBlendFac, m_visemeBlendFacPrev;
+	float			m_lastTimeStamp;
+	bool			m_FACSmapping;
+	std::map<std::string, std::map<int, float>> m_FACSvisemes;
 
 	/// To avoid restarting of the same speaking action, the current speak action will be stored as long as the associated action takes
-	int				m_sentenceID;
 	bool			m_isSpeaking;
-	bool			m_FACSmapping;
 	std::wstring	m_currentSentence;
 	float			m_startSpeaking;
-
-	std::map<std::string, std::map<int, float>> m_FACSvisemes;
-	std::string		m_curFACSViseme;
-	float			m_curFACSWeight;
 
 	// Sentences loaded from xml, stored by tag
 	typedef std::map<std::string, std::vector<std::wstring>>::iterator SentenceIterator;

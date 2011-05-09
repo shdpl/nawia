@@ -88,8 +88,8 @@ const char *visemeMapping[22] = {
 	"p_b_m"						// SP_VISEME_21,		// p, b, m
 };
 
-const float avgDuration[22] = 
-{ 169, 86, 89, 84, 78, 60, 77, 69, 93, 90, 31, 81, 87, 100, 102, 122, 93, 85, 92, 90, 83, 80 };	
+//const float avgDuration[22] = 
+//{ 169, 86, 89, 84, 78, 60, 77, 69, 93, 90, 31, 81, 87, 100, 102, 122, 93, 85, 92, 90, 83, 80 };	
 
 GameComponent* TTSComponent::createComponent( GameEntity* owner )
 {
@@ -98,7 +98,8 @@ GameComponent* TTSComponent::createComponent( GameEntity* owner )
 
 TTSComponent::TTSComponent(GameEntity *owner) : GameComponent(owner, "Sapi"), m_pVoice(0), 
 m_curViseme(0), m_prevViseme(0), m_visemeChanged(false), m_visemeBlendFacPrev(1.0f),
-m_isSpeaking(false), m_FACSmapping(false), m_useDistanceModel(false), m_dist(0), m_rollOff(1.0f)
+m_isSpeaking(false), m_FACSmapping(false), m_useDistanceModel(false), m_dist(0), m_rollOff(1.0f),
+m_lastTimeStamp(0)
 {
 	owner->addListener(GameEvent::E_SPEAK, this);
 	owner->addListener(GameEvent::SP_TTS_PAUSE, this);
@@ -150,66 +151,9 @@ void TTSComponent::update()
 	if (m_pVoice == 0 )	return;
 
 	if( m_visemeChanged )
-	{	
-		m_visemeBlendFacPrev = minf( minf( 1.0f, 2.0f - m_visemeBlendFac), m_visemeBlendFac );
-		m_visemeBlendFac = 0;
-		m_visemeChanged = false;
-	}
-
-	// Calculate interpolation
-	float step = (1.0f / GameEngine::FPS() * 1000) / (avgDuration[m_curViseme]) ;
-	m_visemeBlendFac += step;
-	m_visemeBlendFacPrev -= step;
-
-	if( m_prevViseme != 0 )
-	{		
-		// Fade out previous viseme
-		if( !m_FACSmapping )
-		{
-			MorphTarget morphTargetData( visemeMapping[m_prevViseme], minf( m_visemeBlendFacPrev, maxf( 1.0f - m_visemeBlendFac, 0.0f ) ) );
-			if( morphTargetData.Value <= 0.0f )
-				resetPreviousViseme();
-			else
-			{
-				//printf(" Prev vis: %s, %.4f\n", visemeMapping[m_prevViseme], morphTargetData.Value);
-				GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
-				if (m_owner->checkEvent(&event)) m_owner->executeEvent(&event);
-			}
-		}
-		else
-		{
-			float val = minf( m_visemeBlendFacPrev, maxf( 1.0f - m_visemeBlendFac, 0.0f ) );
-			if (val <= 0.0f )
-				resetPreviousViseme();
-			else
-			{
-				setViseme( visemeMapping[m_prevViseme], val );
-			}
-		}
-	}
-
-	if( m_curViseme != 0 )
 	{
-		if( !m_FACSmapping )
-		{
-			MorphTarget morphTargetData(visemeMapping[m_curViseme], minf( 1.0f, m_visemeBlendFac ) );
-			if( m_visemeBlendFac > 1.0f )
-				morphTargetData.Value = maxf( 2.0f - m_visemeBlendFac, 0.0f );
-			//printf(" Curr vis: %s, %.4f\n", visemeMapping[m_curViseme], morphTargetData.Value);
-			GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);
-			if (m_owner->checkEvent(&event)) m_owner->executeEvent(&event);
-		}
-		else
-		{
-			float val = minf( 1.0f, m_visemeBlendFac );
-			if( m_visemeBlendFac > 1.0f )
-				val = maxf( 2.0f - m_visemeBlendFac, 0.0f );
-			setViseme( visemeMapping[m_curViseme], val );
-			if( m_visemeBlendFac > 2.0f ) 
-				m_curViseme = 0;
-		}
-		if( m_visemeBlendFac > 2.0f ) 
-			m_curViseme = 0;
+		updateVisemes();
+		m_visemeChanged = false;
 	}
 }
 
@@ -360,7 +304,7 @@ bool TTSComponent::setVoice(const char* voice)
 	return hr == S_OK;	
 }
 
-void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
+void TTSComponent::speak(const char* text)
 {
 #ifdef PRINT_INFO
 	printf("TTSComponent::speak(%s, %d)", text, sentenceID);
@@ -388,8 +332,10 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 			m_currentSentence = sentences[ rand() % sentences.size()];
 			m_startSpeaking = GameEngine::currentTimeStamp();
 			m_pVoice->Speak( m_currentSentence.c_str(), SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
-			m_sentenceID = sentenceID;			
 			m_isSpeaking = true;
+			m_visemeBlendFacPrev = 0.0f;
+			m_visemeBlendFac = 0.1f;
+			m_visemeChanged = true;
 		}
 		else
 		{
@@ -410,8 +356,10 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 					m_currentSentence = unicodestr;
 					m_pVoice->Speak( unicodestr, SPF_ASYNC | SPF_PURGEBEFORESPEAK | SPF_IS_XML, NULL );
 					m_startSpeaking = GameEngine::currentTimeStamp();
-					m_sentenceID = sentenceID;
 					m_isSpeaking = true;
+					m_visemeBlendFacPrev = 0.0f;
+					m_visemeBlendFac = 0.1f;
+					m_visemeChanged = true;
 				}
 				::SysFreeString(unicodestr);
 			}
@@ -419,7 +367,7 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 	}
 	if (!m_isSpeaking)
 	{
-		GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(sentenceID), this);
+		GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(text), this);
 		if (m_owner->checkEvent(&event))
 			m_owner->executeEvent(&event);	
 	}
@@ -427,22 +375,11 @@ void TTSComponent::speak(const char* text, int sentenceID /*=-1*/)
 
 void TTSComponent::resetPreviousViseme()
 {
-	if( m_prevViseme != 0 )
+	if (m_prevViseme != 0 && m_visemeBlendFacPrev != 0)
 	{
-		if( !m_FACSmapping )
-		{
-			MorphTarget morphTargetData(visemeMapping[m_prevViseme], 0);
-			// Reset visemes
-			GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
-			if (m_owner->checkEvent(&event))
-				m_owner->executeEvent(&event);
-		}
-		else
-		{
-			setViseme( visemeMapping[m_prevViseme], 0 );
-		}
-		m_prevViseme = 0;
-		//printf("Reseted prev viseme\n");
+		//printf("Viseme not completely blended out, value: %.3f!\n", m_visemeBlendFacPrev);
+		m_visemeBlendFacPrev = 0;
+		updateVisemes();
 	}
 }
 
@@ -457,10 +394,12 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 		{
 		case SPEI_VISEME:
 			{
-				obj->m_visemeChanged = true;
-				obj->resetPreviousViseme();
+				obj->resetPreviousViseme(); // TODO: sending events from a different thread might crash the app
 				obj->m_prevViseme = obj->m_curViseme;
 				obj->m_curViseme = e.Viseme();
+				obj->m_visemeBlendFacPrev = obj->m_visemeBlendFac;
+				obj->m_visemeBlendFac = 0.1f;
+				obj->m_visemeChanged = true;
 				// Update volume every viseme
 				if (obj->m_useDistanceModel)
 					obj->calcVolumeFromDistance();
@@ -474,7 +413,8 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 				// Send event
 				GameEvent event(GameEvent::SP_BOOKMARK, &GameEventData(value), obj);
 				if (obj->m_owner->checkEvent(&event))
-					obj->m_owner->executeEvent(&event);			
+					obj->m_owner->executeEvent(&event);
+				delete[] value;
 				break;
 			}
 
@@ -486,9 +426,11 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 				GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(sentence), obj);
 				if (obj->m_owner->checkEvent(&event))
 					obj->m_owner->executeEvent(&event);			
-				//obj->m_sentenceID = -1;
-				// TODO: Konsistenz für m_isSpeaking
 				obj->m_isSpeaking = false;
+				obj->m_visemeChanged = true;
+				obj->m_visemeBlendFacPrev = 0;
+				obj->m_visemeBlendFac = 0;
+				delete[] sentence;
 				break;
 			}
 		case SPEI_START_INPUT_STREAM:
@@ -498,7 +440,8 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 				// Send event
 				GameEvent event(GameEvent::E_SPEAKING_STARTED, &GameEventData(sentence), obj);
 				if (obj->m_owner->checkEvent(&event))
-					obj->m_owner->executeEvent(&event);			
+					obj->m_owner->executeEvent(&event);
+				delete[] sentence;
 				break;
 			}		
 		case SPEI_WORD_BOUNDARY:
@@ -514,7 +457,8 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 					// Send event
 					GameEvent event(GameEvent::SP_SPOKEN_WORD, &GameEventData(word), obj);
 					if (obj->m_owner->checkEvent(&event))
-						obj->m_owner->executeEvent(&event);			
+						obj->m_owner->executeEvent(&event);
+					delete[] word;
 				}
 #ifdef PRINT_INFO
 				if (start < obj->m_currentSentence.size())
@@ -533,87 +477,6 @@ bool TTSComponent::isSpeaking()
 	return m_isSpeaking;
 }
 
-void TTSComponent::setViseme( const string viseme, const float weight )
-{
-	map<int, float> oldAUs = m_FACSvisemes[m_curFACSViseme];
-	map<int, float>::iterator iterOldAUs;
-
-	map<int, float> newAUs = m_FACSvisemes[viseme];
-	map<int, float>::iterator iterNewAUs;
-
-	// resetting old morph targets
-	for( iterOldAUs = oldAUs.begin(); iterOldAUs != oldAUs.end(); iterOldAUs++ )
-	{
-		char buffer[10];
-		sprintf_s( buffer, 10, "AU_%02i", (*iterOldAUs).first );
-		string au( buffer );
-
-		MorphTarget morphTargetData( au.c_str(), newAUs[(*iterOldAUs).first] * weight );
-		GameEvent event( GameEvent::E_MORPH_TARGET, &morphTargetData, this );
-		if( m_owner->checkEvent( &event ) )
-		{
-			m_owner->executeEvent( &event );
-		}
-
-		// Special treatment for AU27
-		if( (*iterOldAUs).first == 27 )
-		{
-			MorphTarget morphTargetData( "bottom_au_27", newAUs[(*iterOldAUs).first] * weight );
-			GameEvent event( GameEvent::E_MORPH_TARGET, &morphTargetData, this );
-			if( m_owner->checkEvent( &event ) )
-			{
-				m_owner->executeEvent( &event );
-			}
-
-			MorphTarget morphTargetData2( "bottomgums_au_27", newAUs[(*iterOldAUs).first] * weight );
-			GameEvent event2( GameEvent::E_MORPH_TARGET, &morphTargetData2, this );
-			if( m_owner->checkEvent( &event2 ) )
-			{
-				m_owner->executeEvent( &event2 );
-			}
-		}
-	}
-
-	// setting new morph targets
-	for( iterNewAUs = newAUs.begin(); iterNewAUs != newAUs.end(); iterNewAUs++ )
-	{
-		char buffer[10];
-		sprintf_s( buffer, 10, "AU_%02i", (*iterNewAUs).first);
-		string au( buffer );
-
-		if( oldAUs[(*iterNewAUs).first] == 0 )
-		{
-			MorphTarget morphTargetData( au.c_str(), (*iterNewAUs).second * weight );
-			GameEvent event( GameEvent::E_MORPH_TARGET, &morphTargetData, this );
-			if ( m_owner->checkEvent( &event ) )
-			{
-				m_owner->executeEvent( &event );
-			}
-
-			// Special treatment for AU27
-			if( (*iterNewAUs).first == 27 )
-			{
-				MorphTarget morphTargetData( "bottom_au_27", (*iterNewAUs).second * weight );
-				GameEvent event( GameEvent::E_MORPH_TARGET, &morphTargetData, this );
-				if( m_owner->checkEvent( &event ) )
-				{
-					m_owner->executeEvent( &event );
-				}
-
-				MorphTarget morphTargetData2( "bottomgums_au_27", (*iterNewAUs).second * weight );
-				GameEvent event2( GameEvent::E_MORPH_TARGET, &morphTargetData2, this );
-				if( m_owner->checkEvent( &event2 ) )
-				{
-					m_owner->executeEvent( &event2 );
-				}
-			}
-		}
-	}
-
-	m_curFACSViseme = viseme;
-	m_curFACSWeight = weight;
-}
-
 void TTSComponent::calcVolumeFromDistance()
 {
 	// Update distance
@@ -621,4 +484,67 @@ void TTSComponent::calcVolumeFromDistance()
 	// Calculate and set volume (between 0 and 100) by a simple distance model
 	m_pVoice->SetVolume((unsigned short) minf(100.0f, (1000.0f / (0.00001f + m_rollOff * m_dist)) + 0.5f));
 	//m_pVoice->SetVolume(maxf(0.0f, (100.0f - 20.0f * log10(1.0f + m_dist))));
+}
+
+void TTSComponent::updateVisemes()
+{
+	if (m_FACSmapping)
+	{
+		// Morphtarget should be set instantly (duration = 0), else there is an additional morphtarget animation created every frame
+		MorphTargetAnimation morphTargetAnimData( visemeMapping[m_curViseme], m_visemeBlendFac, 0 );
+		GameEvent event( GameEvent::E_SET_FACS, &morphTargetAnimData, this );
+		m_owner->executeEvent( &event );
+	}
+	else
+	{
+		// Set new morphtarget values for current viseme
+		MorphTarget morphTargetData(visemeMapping[m_curViseme], m_visemeBlendFac);
+		GameEvent event(GameEvent::E_MORPH_TARGET, &morphTargetData, this);		
+		if (m_owner->checkEvent(&event))
+			m_owner->executeEvent(&event);
+		
+		// And the previous one
+		MorphTarget morphTargetData2(visemeMapping[m_prevViseme], m_visemeBlendFacPrev);
+		GameEvent event2(GameEvent::E_MORPH_TARGET, &morphTargetData2, this);		
+		if (m_owner->checkEvent(&event2))
+			m_owner->executeEvent(&event2);
+	}
+
+	if (m_visemeBlendFacPrev == 0)
+	{
+		// Previous viseme has been faded out
+		m_prevViseme = 0;
+	}
+}
+
+void TTSComponent::run()
+{
+	// update visemes
+	if(m_isSpeaking)
+	{		
+		// Calculate interpolation
+
+		// Blend in at a specified speed as we don't know any duration
+		// TODO: use different speeds for each viseme or make it configurable?
+		const float speed = 4.0f; // --> blend current in from 0 to 1 in 250 ms, blend previous out form 1 to 0 in 125 ms
+		float timeStep = GameEngine::timeStamp() - m_lastTimeStamp;
+
+		if (m_visemeBlendFac < 1.0f)
+		{
+			// blend current viseme in
+			m_visemeBlendFac +=  speed * timeStep;
+			// blend previous viseme out, double speed
+			m_visemeBlendFacPrev -=  2.0f * speed * timeStep;
+			m_visemeBlendFac = clamp(m_visemeBlendFac, 0, 1.0f);
+			m_visemeBlendFacPrev = clamp(m_visemeBlendFacPrev, 0, 1.0f);
+			m_visemeChanged = true;
+		}
+
+		// Old version: Calculate interpolation using average duration
+		//float step = (1.0f / GameEngine::FPS() * 1000) / (avgDuration[m_curViseme]) ;
+		//m_visemeBlendFac += step;
+		//m_visemeBlendFacPrev -= step;
+	}
+
+	m_lastTimeStamp = GameEngine::timeStamp();
 }

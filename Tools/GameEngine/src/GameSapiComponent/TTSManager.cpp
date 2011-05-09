@@ -26,6 +26,13 @@ struct UpdateNode
 		ptr->update();
 	}
 };
+struct RunNode
+{ 		
+	void operator()(TTSComponent* ptr) const
+	{
+		ptr->run();
+	}
+};
 
 TTSManager*		TTSManager::m_instance = 0x0;
 
@@ -45,6 +52,11 @@ void TTSManager::release()
 void TTSManager::update()
 {
 	for_each(m_ttsComponents.begin(), m_ttsComponents.end(), UpdateNode());
+}
+
+void TTSManager::run()
+{
+	for_each(m_ttsComponents.begin(), m_ttsComponents.end(), RunNode());
 }
 
 void TTSManager::addComponent(TTSComponent* component)
