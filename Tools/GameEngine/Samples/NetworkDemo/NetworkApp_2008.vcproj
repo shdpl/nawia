@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="NetworkApp"
-	ProjectGUID="{07D26A4C-4569-4AAB-B504-D45A24C23BE7}"
+	ProjectGUID="{0616B596-46BA-43B7-8E34-67E58D177D25}"
 	RootNamespace="NetworkApp"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"

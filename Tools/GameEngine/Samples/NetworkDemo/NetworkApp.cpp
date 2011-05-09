@@ -175,13 +175,13 @@ void NetworkApp::keyHandler()
 
 
 	if( m_keys['W'] ) 
-		GameEngine::translateEntityLocal(m_character, 0, 0, 0.8);
+		GameEngine::translateEntityLocal(m_character, 0, 0, 0.8f);
 	if( m_keys['S'] ) 
-		GameEngine::translateEntityLocal(m_character, 0, 0, -0.8);
+		GameEngine::translateEntityLocal(m_character, 0, 0, -0.8f);
 	if( m_keys['A'] )
-		GameEngine::rotateEntityLocal(m_character, 0, 2.5, 0);
+		GameEngine::rotateEntityLocal(m_character, 0, 2.5f, 0);
 	if( m_keys['D'] )
-		GameEngine::rotateEntityLocal(m_character, 0, -2.5, 0);
+		GameEngine::rotateEntityLocal(m_character, 0, -2.5f, 0);
 
 	if( m_keys['Q'] ) {
 		if (!GameEngine::isPlaying(m_character, "wave")) {

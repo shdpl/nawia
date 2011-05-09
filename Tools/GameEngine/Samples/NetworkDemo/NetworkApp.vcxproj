@@ -16,7 +16,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>NetworkApp</ProjectName>
-    <ProjectGuid>{07D26A4C-4569-4AAB-B504-D45A24C23BE7}</ProjectGuid>
+    <ProjectGuid>{BE09F0D2-703E-4306-8116-7EAB0DF06138}</ProjectGuid>
     <RootNamespace>NetworkApp</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
