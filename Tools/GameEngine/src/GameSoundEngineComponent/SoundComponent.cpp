@@ -739,7 +739,8 @@ void SoundComponent::updateVisemes()
 		//GameEvent event(GameEvent::FACS_SET_EXPRESSION, &data, this);
 		//m_owner->executeEvent(&event);
 
-		MorphTargetAnimation morphTargetAnimData( visemeMapping[m_curViseme], m_visemeBlendFac, 0.06f );
+		// Morphtarget should be set instantly (duration = 0), else there is a new morphtarget animation created every frame, conflicting with each other!!
+		MorphTargetAnimation morphTargetAnimData( visemeMapping[m_curViseme], m_visemeBlendFac, 0/*.06f*/ );
 		GameEvent event( GameEvent::E_SET_FACS, &morphTargetAnimData, this );
 		m_owner->executeEvent( &event );
 	}
