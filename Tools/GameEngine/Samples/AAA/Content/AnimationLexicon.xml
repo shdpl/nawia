@@ -1011,4 +1011,19 @@
 		</Function>
 		<Restriction>noCustomization</Restriction>
 	</Gesture>
+	<Gesture>
+		<ID>0067</ID>
+		<Name>Me Japanese</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="68">Gestures\Female\female_jap_me.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="68">Gestures\Male\male_jap_me.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>noCustomization</Restriction>
+	</Gesture>
 </AnimationLexicon>
