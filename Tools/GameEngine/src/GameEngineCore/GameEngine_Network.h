@@ -18,7 +18,7 @@
 //
 // GameEngine Core Library of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Volker Wiendl
+// Copyright (C) 2007 Christoph Nuscheler
 // 
 // ****************************************************************************************
 #ifndef GAMEENGINE_NETWORK_H_
@@ -65,6 +65,7 @@ namespace GameEngine
 
 	/**
 	 * Connects the local GameEngine as a client to a remote server
+	 * @param ip_addr The server's IPv4 address in dotted decimal form
 	 */
 	GAMEENGINE_API void connectToServer(const char* ip_addr);
 
