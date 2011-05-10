@@ -1003,7 +1003,7 @@
 			<File strokeStart="10" strokeEnd="62">Gestures\Female\female_jap_comeOverHere.anim</File>
 		</Files>
 		<Files gender="male">
-			<File strokeStart="10" strokeEnd="62">Gestures\Male\male_jap_comeOverHere.anim.anim</File>
+			<File strokeStart="10" strokeEnd="62">Gestures\Male\male_jap_comeOverHere.anim</File>
 		</Files>
 		<Context></Context>
 		<Function>
