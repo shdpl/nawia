@@ -1026,4 +1026,19 @@
 		</Function>
 		<Restriction>noCustomization</Restriction>
 	</Gesture>
+	<Gesture>
+		<ID>0068</ID>
+		<Name>German Beat 04</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="90">Gestures\Female\female_ger_beat_04.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="90">Gestures\Male\male_ger_beat_04.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>
+	</Gesture>
 </AnimationLexicon>
