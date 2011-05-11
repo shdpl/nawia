@@ -130,7 +130,7 @@ void VideoComponent::loadFromXml(const XMLNode* node)
 	m_y = (float) atof(node->getAttribute("y", "0"));
 	m_w = (float) atof(node->getAttribute("w", "1"));
 	m_h = (float) atof(node->getAttribute("h", "1"));
-	m_stretchToAspect = _strcmpi(node->getAttribute("stretchToAspect", "1"), "0") != 0 && _strcmpi(node->getAttribute("stretchToAspect", "1"), "false") != 0;
+	m_stretchToAspect = _stricmp(node->getAttribute("stretchToAspect", "1"), "0") != 0 && _stricmp(node->getAttribute("stretchToAspect", "1"), "false") != 0;
 
 	// Get material name and load it (must be before openAvi)
 	const char* mat = node->getAttribute("material", "materials/video.material.xml");
