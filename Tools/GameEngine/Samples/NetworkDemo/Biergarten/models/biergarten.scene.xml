@@ -12,40 +12,23 @@
   
 	<Reference tx="-11" sx="0.06" ty="0" sy="0.06" rx="0" tz="0" sceneGraph="models/male/male.scene.xml" sz="0.06" ry="90" rz="0" name="Player1" >
 		<Attachment type="GameEngine" name="Player1" >
-			<KeyframeAnimation>
-				<StaticAnimation fps="30" name="idle" file="female_idle.anim" />
-				<StaticAnimation fps="30" name="burp" file="female_burp.anim" />
-				<StaticAnimation fps="30" name="wave" file="female_wave.anim" />
-				<StaticAnimation fps="30" name="drink" file="female_drink01.anim" />
-				<StaticAnimation fps="30" name="walk" file="female_walk.anim" />
-				<StaticAnimation fps="45" name="walk_drunk" file="female_walk_drunk01.anim" />
-				<StaticAnimation fps="30" name="talk_drunk" file="female_talk_drunk.anim" />
-				<StaticAnimation fps="30" name="toast" file="female_toast.anim" />
-				<StaticAnimation fps="30" name="beckon" file="female_beckon.anim" />
-				<StaticAnimation fps="30" name="phone" file="female_talking_phone.anim" />
-				<StaticAnimation fps="30" name="make" file="male_japan_geste01.anim" />
-			</KeyframeAnimation>
-			<MoveAnimation moveAnimation="walk" LODToStopAnim="2" idleAnimation="idle" speed="0.5" />
+      <KeyframeAnimation>
+        <StaticAnimation fps="30" name="idle" file="female_idle.anim" />
+        <StaticAnimation fps="30" name="wave" file="female_wave.anim" />
+        <StaticAnimation fps="30" name="walk" file="female_walk.anim" />
+      </KeyframeAnimation>
+      <MoveAnimation moveAnimation="walk" LODToStopAnim="2" idleAnimation="idle" speed="0.5" />
       <Sound3D loop="0" file="../media/Hi.wav" gain="0" />
 		</Attachment>
 	</Reference>
 
   <Reference tx="-11" sx="0.06" ty="0" sy="0.06" rx="0" tz="-2" sceneGraph="models/male/male.scene.xml" sz="0.06" ry="90" rz="0" name="Player2" >
 		<Attachment type="GameEngine" name="Player2" >
-			<KeyframeAnimation>
-				<StaticAnimation fps="30" name="eat" file="female_eat_drink.anim" />
-				<StaticAnimation fps="30" name="idle" file="female_idle.anim" />
-				<StaticAnimation fps="30" name="burp" file="female_burp.anim" />
-				<StaticAnimation fps="30" name="wave" file="female_wave.anim" />
-				<StaticAnimation fps="30" name="drink" file="female_drink01.anim" />
-				<StaticAnimation fps="30" name="walk" file="female_walk.anim" />
-				<StaticAnimation fps="45" name="walk_drunk" file="female_walk_drunk01.anim" />
-				<StaticAnimation fps="30" name="talk_drunk" file="female_talk_drunk.anim" />
-				<StaticAnimation fps="30" name="toast" file="female_toast.anim" />
-				<StaticAnimation fps="30" name="beckon" file="female_beckon.anim" />
-				<StaticAnimation fps="30" name="phone" file="female_talking_phone.anim" />
-				<StaticAnimation fps="30" name="make" file="male_japan_geste01.anim" />
-			</KeyframeAnimation>
+      <KeyframeAnimation>
+        <StaticAnimation fps="30" name="idle" file="female_idle.anim" />
+        <StaticAnimation fps="30" name="wave" file="female_wave.anim" />
+        <StaticAnimation fps="30" name="walk" file="female_walk.anim" />
+      </KeyframeAnimation>
 			<MoveAnimation moveAnimation="walk" LODToStopAnim="2" idleAnimation="idle" speed="0.5" />
       <Sound3D loop="0" file="../media/Hi.wav" gain="0" />
     </Attachment>
@@ -53,51 +36,23 @@
 
 	<Reference tx="-11" sx="0.06" ty="0" sy="0.06" ry="90" tz="1.63694" sceneGraph="models/female/female3.scene.xml" sz="0.06" rz="0" name="Player3" >
 		<Attachment type="GameEngine" name="Player3" >
-			<KeyframeAnimation>
-				<StaticAnimation fps="30" name="eat" file="female_eat_drink.anim" />
-				<StaticAnimation fps="30" name="idle" file="female_idle.anim" />
-				<StaticAnimation fps="30" name="burp" file="female_burp.anim" />
-				<StaticAnimation fps="30" name="wave" file="female_wave.anim" />
-				<StaticAnimation fps="30" name="drink" file="female_drink01.anim" />
-				<StaticAnimation fps="30" name="walk" file="female_walk.anim" />
-				<StaticAnimation fps="45" name="walk_drunk" file="female_walk_drunk01.anim" />
-				<StaticAnimation fps="30" name="talk_drunk" file="female_talk_drunk.anim" />
-				<StaticAnimation fps="30" name="toast" file="female_toast.anim" />
-				<StaticAnimation fps="30" name="beckon" file="female_beckon.anim" />
-				<StaticAnimation fps="30" name="sit" file="female_sit_chair.anim" />
-				<StaticAnimation fps="30" name="sit2" file="female_sit_chair2.anim" />
-				<StaticAnimation fps="30" name="sitting2" file="female_sitting2.anim" />
-				<StaticAnimation fps="30" name="sitting" file="female_sitting.anim" />
-				<StaticAnimation fps="30" name="sit_drink" file="female_sit_drink.anim" />
-				<StaticAnimation fps="30" name="sit_eat" file="female_sit_eat.anim" />
-				<StaticAnimation fps="30" name="phone" file="female_talking_phone.anim" />
-			</KeyframeAnimation>
-			<MoveAnimation moveAnimation="walk" LODToStopAnim="3" idleAnimation="idle" speed="0.5" />
+      <KeyframeAnimation>
+        <StaticAnimation fps="30" name="idle" file="female_idle.anim" />
+        <StaticAnimation fps="30" name="wave" file="female_wave.anim" />
+        <StaticAnimation fps="30" name="walk" file="female_walk.anim" />
+      </KeyframeAnimation>
+      <MoveAnimation moveAnimation="walk" LODToStopAnim="3" idleAnimation="idle" speed="0.5" />
       <Sound3D loop="0" file="../media/Hellothere.wav" gain="0" />
 		</Attachment>
 	</Reference>
 
   <Reference tx="-11" sx="0.06" ty="0" sy="0.06" rx="0" tz="4" sceneGraph="models/female/female1.scene.xml" sz="0.06" ry="90" rz="0" name="Player4" >
 		<Attachment type="GameEngine" name="Player4" >
-			<KeyframeAnimation>
-				<StaticAnimation fps="30" name="eat" file="female_eat_drink.anim" />
-				<StaticAnimation fps="30" name="idle" file="female_idle.anim" />
-				<StaticAnimation fps="30" name="burp" file="female_burp.anim" />
-				<StaticAnimation fps="30" name="wave" file="female_wave.anim" />
-				<StaticAnimation fps="30" name="drink" file="female_drink01.anim" />
-				<StaticAnimation fps="30" name="walk" file="female_walk.anim" />
-				<StaticAnimation fps="45" name="walk_drunk" file="female_walk_drunk01.anim" />
-				<StaticAnimation fps="30" name="talk_drunk" file="female_talk_drunk.anim" />
-				<StaticAnimation fps="30" name="toast" file="female_toast.anim" />
-				<StaticAnimation fps="30" name="beckon" file="female_beckon.anim" />
-				<StaticAnimation fps="30" name="sit" file="female_sit_chair.anim" />
-				<StaticAnimation fps="30" name="sit2" file="female_sit_chair2.anim" />
-				<StaticAnimation fps="30" name="sitting2" file="female_sitting2.anim" />
-				<StaticAnimation fps="30" name="sitting" file="female_sitting.anim" />
-				<StaticAnimation fps="30" name="sit_drink" file="female_sit_drink.anim" />
-				<StaticAnimation fps="30" name="sit_eat" file="female_sit_eat.anim" />
-				<StaticAnimation fps="30" name="phone" file="female_talking_phone.anim" />
-			</KeyframeAnimation>
+      <KeyframeAnimation>
+        <StaticAnimation fps="30" name="idle" file="female_idle.anim" />
+        <StaticAnimation fps="30" name="wave" file="female_wave.anim" />
+        <StaticAnimation fps="30" name="walk" file="female_walk.anim" />
+      </KeyframeAnimation>
       <Sound3D loop="0" file="../media/Hellothere.wav" gain="0" />
       <MoveAnimation moveAnimation="walk" LODToStopAnim="3" idleAnimation="idle" speed="0.5" />
 		</Attachment>
@@ -105,25 +60,11 @@
   
 	<Reference tx="-11" sx="0.06" ty="0" sy="0.06" rx="0" tz="-4" sceneGraph="models/female/female1.scene.xml" sz="0.06" ry="90" rz="0" name="Player5" >
 		<Attachment type="GameEngine" name="Player5" >
-			<KeyframeAnimation>
-				<StaticAnimation fps="30" name="eat" file="female_eat_drink.anim" />
-				<StaticAnimation fps="30" name="idle" file="female_idle.anim" />
-				<StaticAnimation fps="30" name="burp" file="female_burp.anim" />
-				<StaticAnimation fps="30" name="wave" file="female_wave.anim" />
-				<StaticAnimation fps="30" name="drink" file="female_drink01.anim" />
-				<StaticAnimation fps="30" name="walk" file="female_walk.anim" />
-				<StaticAnimation fps="45" name="walk_drunk" file="female_walk_drunk01.anim" />
-				<StaticAnimation fps="30" name="talk_drunk" file="female_talk_drunk.anim" />
-				<StaticAnimation fps="30" name="toast" file="female_toast.anim" />
-				<StaticAnimation fps="30" name="beckon" file="female_beckon.anim" />
-				<StaticAnimation fps="30" name="sit" file="female_sit_chair.anim" />
-				<StaticAnimation fps="30" name="sit2" file="female_sit_chair2.anim" />
-				<StaticAnimation fps="30" name="sitting2" file="female_sitting2.anim" />
-				<StaticAnimation fps="30" name="sitting" file="female_sitting.anim" />
-				<StaticAnimation fps="30" name="sit_drink" file="female_sit_drink.anim" />
-				<StaticAnimation fps="30" name="sit_eat" file="female_sit_eat.anim" />
-				<StaticAnimation fps="30" name="phone" file="female_talking_phone.anim" />
-			</KeyframeAnimation>
+      <KeyframeAnimation>
+        <StaticAnimation fps="30" name="idle" file="female_idle.anim" />
+        <StaticAnimation fps="30" name="wave" file="female_wave.anim" />
+        <StaticAnimation fps="30" name="walk" file="female_walk.anim" />
+      </KeyframeAnimation>
 			<MoveAnimation moveAnimation="walk" LODToStopAnim="3" idleAnimation="idle" speed="0.5" />
       <Sound3D loop="0" file="../media/Hellothere.wav" gain="0" />
     </Attachment>
@@ -131,25 +72,11 @@
   
 	<Reference tx="-11" sx="0.06" ty="0" sy="0.06" rx="0" tz="8" sceneGraph="models/female/female2.scene.xml" sz="0.06" ry="90" rz="0" name="Player6" >
 		<Attachment type="GameEngine" name="Player6" >
-			<KeyframeAnimation>
-				<StaticAnimation fps="30" name="eat" file="female_eat_drink.anim" />
-				<StaticAnimation fps="30" name="idle" file="female_idle.anim" />
-				<StaticAnimation fps="30" name="burp" file="female_burp.anim" />
-				<StaticAnimation fps="30" name="wave" file="female_wave.anim" />
-				<StaticAnimation fps="30" name="drink" file="female_drink01.anim" />
-				<StaticAnimation fps="30" name="walk" file="female_walk.anim" />
-				<StaticAnimation fps="45" name="walk_drunk" file="female_walk_drunk01.anim" />
-				<StaticAnimation fps="30" name="talk_drunk" file="female_talk_drunk.anim" />
-				<StaticAnimation fps="30" name="toast" file="female_toast.anim" />
-				<StaticAnimation fps="30" name="beckon" file="female_beckon.anim" />
-				<StaticAnimation fps="30" name="sit" file="female_sit_chair.anim" />
-				<StaticAnimation fps="30" name="sit2" file="female_sit_chair2.anim" />
-				<StaticAnimation fps="30" name="sitting2" file="female_sitting2.anim" />
-				<StaticAnimation fps="30" name="sitting" file="female_sitting.anim" />
-				<StaticAnimation fps="30" name="sit_drink" file="female_sit_drink.anim" />
-				<StaticAnimation fps="30" name="sit_eat" file="female_sit_eat.anim" />
-				<StaticAnimation fps="30" name="phone" file="female_talking_phone.anim" />
-			</KeyframeAnimation>
+      <KeyframeAnimation>
+        <StaticAnimation fps="30" name="idle" file="female_idle.anim" />
+        <StaticAnimation fps="30" name="wave" file="female_wave.anim" />
+        <StaticAnimation fps="30" name="walk" file="female_walk.anim" />
+      </KeyframeAnimation>
 			<MoveAnimation moveAnimation="walk" LODToStopAnim="3" idleAnimation="idle" speed="0.5" />
       <Sound3D loop="0" file="../media/Hellothere.wav" gain="0" />
     </Attachment>
@@ -158,23 +85,9 @@
 	<Reference tx="-11" sx="0.06" ty="0" sy="0.06" rx="0" tz="6" sceneGraph="models/female/female2.scene.xml" sz="0.06" ry="90" rz="0" name="Player7" >
 		<Attachment type="GameEngine" name="Player7" >
 			<KeyframeAnimation>
-				<StaticAnimation fps="30" name="eat" file="female_eat_drink.anim" />
 				<StaticAnimation fps="30" name="idle" file="female_idle.anim" />
-				<StaticAnimation fps="30" name="burp" file="female_burp.anim" />
 				<StaticAnimation fps="30" name="wave" file="female_wave.anim" />
-				<StaticAnimation fps="30" name="drink" file="female_drink01.anim" />
 				<StaticAnimation fps="30" name="walk" file="female_walk.anim" />
-				<StaticAnimation fps="45" name="walk_drunk" file="female_walk_drunk01.anim" />
-				<StaticAnimation fps="30" name="talk_drunk" file="female_talk_drunk.anim" />
-				<StaticAnimation fps="30" name="toast" file="female_toast.anim" />
-				<StaticAnimation fps="30" name="beckon" file="female_beckon.anim" />
-				<StaticAnimation fps="30" name="sit" file="female_sit_chair.anim" />
-				<StaticAnimation fps="30" name="sit2" file="female_sit_chair2.anim" />
-				<StaticAnimation fps="30" name="sitting2" file="female_sitting2.anim" />
-				<StaticAnimation fps="30" name="sitting" file="female_sitting.anim" />
-				<StaticAnimation fps="30" name="sit_drink" file="female_sit_drink.anim" />
-				<StaticAnimation fps="30" name="sit_eat" file="female_sit_eat.anim" />
-				<StaticAnimation fps="30" name="phone" file="female_talking_phone.anim" />
 			</KeyframeAnimation>
 			<MoveAnimation moveAnimation="walk" LODToStopAnim="3" idleAnimation="idle" speed="0.5" />
       <Sound3D loop="0" file="../media/Hellothere.wav" gain="0" />
