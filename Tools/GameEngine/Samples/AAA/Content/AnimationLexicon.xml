@@ -1059,4 +1059,22 @@
 		</Function>
 		<Restriction></Restriction>  
 	</Gesture>
+	<Gesture>
+		<ID>0069<70/ID>
+		<Name>German_Metaphoric_04</Name>
+		<CorpusName>german-meta.wmv</CorpusName>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="9" strokeEnd="47">Gestures\Female\female_ger_metaphoric_04.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="9" strokeEnd="47">Gestures\Male\male_ger_metaphoric_04.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>metaphoric</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
 </AnimationLexicon>
