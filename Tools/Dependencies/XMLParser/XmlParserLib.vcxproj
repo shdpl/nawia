@@ -97,9 +97,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\Horde3D\Source\Shared\utXMLParser.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ReadMe.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
