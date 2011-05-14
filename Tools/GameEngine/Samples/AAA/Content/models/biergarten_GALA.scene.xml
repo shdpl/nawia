@@ -56,9 +56,9 @@
         <Attachment type="GameEngine" name="agent0" >
             <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female01/female01.scene.xml" neck="Bip01_Head" />	
 			
-            <Agent gender="female" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
-				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="female_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Sidestep left" />
-				<Formation type="V" />
+            <Agent gender="female" willpower="200" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="female_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Medium Step Backward" />
+				<Formation type="H" />
 				<Icon name="symb_default" distance="30" />
 			</Agent>
 	        <Sapi voice="Crystal16" useDistanceModel="1" rollOff="5.0"/>
@@ -69,7 +69,7 @@
         <Attachment type="GameEngine" name="agent1" >
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />			
             <Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
-				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Idle" />
+				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Sidestep left" />
 				<Formation type="V" />
 				<Icon name="symb_bad" distance="30" />
 			</Agent>			
@@ -82,7 +82,7 @@
             <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female02/female02.scene.xml" neck="Bip01_Head" />	
 			
             <Agent gender="female" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
-				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="female_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Idle" />
+				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="female_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Sidestep left" />
 				<Formation type="V" />
 				<Icon name="symb_host" distance="30" />
 			</Agent>
@@ -96,7 +96,7 @@
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male02/male02.scene.xml" neck="Bip01_Head" />	
 			
             <Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
-				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Idle" />
+				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Sidestep left" />
 				<Formation type="L" />
 			</Agent>
           <Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>
@@ -123,7 +123,7 @@
         <Attachment type="GameEngine" name="agent5" >
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male_japan/male_japan.scene.xml" neck="Bip01_Head" />			
             <Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
-				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle_Jap" walkAnimName="Walk" reposAnimName="Idle" />
+				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle_Jap" walkAnimName="Walk" reposAnimName="Sidestep left" />
 				<Formation type="V" />
 				<Icon name="symb_bad" distance="30" />
 			</Agent>			
@@ -135,9 +135,9 @@
         <Attachment type="GameEngine" name="agent6" >
             <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/char_female_japan_02/char_female_japan_02.scene.xml" neck="Bip01_Head" />	
 			
-            <Agent gender="female" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
-				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="female_still.anim" idleAnimName="Idle_Jap" walkAnimName="Walk" reposAnimName="Idle" />
-				<Formation type="V" />
+            <Agent gender="female" willpower="200" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="female_still.anim" idleAnimName="Idle_Jap" walkAnimName="Walk" reposAnimName="Walk" />
+				<Formation type="H" />
 				<Icon name="symb_host" distance="30" />
 			</Agent>
 			
@@ -150,7 +150,7 @@
             <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/char_male_japan_02/char_male_japan_02.scene.xml" neck="Bip01_Head" />	
 			
             <Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
-				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle_Jap" walkAnimName="Walk" reposAnimName="Idle" />
+				<Animation AnimationLexicon="AnimationLexicon.xml" stillAnim="male_still.anim" idleAnimName="Idle_Jap" walkAnimName="Walk" reposAnimName="Sidestep left" />
 				<Formation type="L" />
 			</Agent>
           <Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>

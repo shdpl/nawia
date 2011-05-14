@@ -284,9 +284,9 @@ void Application::update( float fps )
 	h3dSetNodeTransform( m_cam_hID, _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
 
 	//show overlay with camera parameters
-	std::stringstream text;
-	text << "Camera: pos(" << _x << ", " << _y << ", " << _z << ") rot(" << _rx << ", " << _ry << ", " << _rz << ")";
-	h3dutShowText(text.str().c_str(), 0.01f, 0.02f, 0.03f, 1, 1, 1, m_fontMatRes);
+	//std::stringstream text;
+	//text << "Camera: pos(" << _x << ", " << _y << ", " << _z << ") rot(" << _rx << ", " << _ry << ", " << _rz << ")";
+	//h3dutShowText(text.str().c_str(), 0.01f, 0.02f, 0.03f, 1, 1, 1, m_fontMatRes);
 
 	//** Render scene
 	GameEngine::update();
@@ -525,8 +525,9 @@ void Application::processScenario(int act_id)
 			//GameEngine::Agent_setParamI(Agent_Param::DfltMorphDuration_I, 5);
 
 			//set the camera
-			//_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0; //japanese cam
-			_x=-4.88f; _y=2.15f; _z=-4.43f; _rx=-19.54f; _ry=-303.17f; _rz=0; //german cam
+			_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0; //med height cam
+			//_x=-4.88f; _y=2.15f; _z=-4.43f; _rx=-19.54f; _ry=-303.17f; _rz=0; //low height cam
+			//_x=-12.64f; _y=5.44f; _z=3.54f; _rx=-25.65f; _ry=-29.77f; _rz=0; //high height cam
 			
 			/*
 			 * INIT AGENTS
@@ -630,8 +631,9 @@ void Application::processScenario(int act_id)
 			GameEngine::Agent_setParamI(Agent_Param::DfltMorphDuration_I, 5);
 
 			//set the camera
-			_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0; //japanese cam
-			//_x=-4.88f; _y=2.15f; _z=-4.43f; _rx=-19.54f; _ry=-303.17f; _rz=0; //german cam
+			_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0; //med height cam
+			//_x=-4.88f; _y=2.15f; _z=-4.43f; _rx=-19.54f; _ry=-303.17f; _rz=0; //low height cam
+			//_x=-12.64f; _y=5.44f; _z=3.54f; _rx=-25.65f; _ry=-29.77f; _rz=0; //high height cam
 
 			/*
 			 * INIT AGENTS
@@ -722,6 +724,71 @@ void Application::processScenario(int act_id)
 			break;
 		}
 		break;
+	
+	////////////////////////////////
+	case 3: //funny1
+		switch(act_id)
+		{
+		case 99: //init
+
+			/*
+			 * INIT SYSTEM
+			 */
+			m_scenario_counter = 0;
+			for(int i=0; i<NR_OF_AGENTS; i++)
+			{
+				AgentNode* a = getAgent(i);
+				a->setVisibility(false);
+				GameEngine::IK_setParamI( a->entity_id, IK_Param::UseDofr_I, 1 );
+				h3dSetNodeTransform(a->horde_id, a->pos.x, a->pos.y, a->pos.z, a->rot.x, a->rot.y, a->rot.z, a->scale.x, a->scale.y, a->scale.z);
+			}
+			//setPersonalChar(m_agents[4]);
+			GameEngine::Agent_setParamI(Agent_Param::DfltMorphDuration_I, 5);
+
+			//set the camera
+			//_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0; //med height cam
+			//_x=-4.88f; _y=2.15f; _z=-4.43f; _rx=-19.54f; _ry=-303.17f; _rz=0; //low height cam
+			_x=-12.64f; _y=5.44f; _z=3.54f; _rx=-25.65f; _ry=-29.77f; _rz=0; //high height cam
+
+			/*
+			 * INIT AGENTS
+			 */
+			//Agent - japanese
+			//make visible
+			getAgent(6)->setVisibility(true);
+			//ipdist
+			GameEngine::Agent_setIPDistance( getAgent(6)->entity_id, 0.65f, 0.65f );	//low
+			//deviation
+			GameEngine::Agent_setDeviation( getAgent(6)->entity_id, 15 );//high
+			//stroke rep
+			GameEngine::Agent_setAnimationStrokeReps( getAgent(6)->entity_id, -1, 1 ); //med
+			//a speed
+			GameEngine::Agent_setAnimationSpeed( getAgent(6)->entity_id, -1, 1.0f ); //med
+			//a se
+			GameEngine::Agent_setAnimationExtent( getAgent(6)->entity_id, -1, 0.9f ); //med-ish
+			//walk speed
+			GameEngine::Agent_setMovementSpeed( getAgent(6)->entity_id, 0.75f ); //low-ish
+						
+			//Agent - german
+			//make visible
+			getAgent(0)->setVisibility(true);
+			//ipdist
+			GameEngine::Agent_setIPDistance( getAgent(0)->entity_id, 1.4f, 1.4f );	//high
+			//deviation
+			GameEngine::Agent_setDeviation( getAgent(0)->entity_id, 5 );//medium
+			//stroke rep
+			GameEngine::Agent_setAnimationStrokeReps( getAgent(0)->entity_id, -1, 0 ); //low
+			//a speed
+			GameEngine::Agent_setAnimationSpeed( getAgent(0)->entity_id, -1, 1.5f ); //high
+			//a se
+			GameEngine::Agent_setAnimationExtent( getAgent(0)->entity_id, -1, 1.0f ); //high
+			//walk speed
+			GameEngine::Agent_setMovementSpeed( getAgent(0)->entity_id, 1.5f ); //high
+
+			//form formation
+			GameEngine::Agent_gotoF( getAgent(0)->entity_id, getAgent(6)->entity_id, 1.5f, 0, 0 );
+			break;				
+		}
 	
 	case 9: //random scene
 		switch(act_id)
