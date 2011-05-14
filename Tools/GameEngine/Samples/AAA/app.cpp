@@ -194,7 +194,7 @@ bool Application::config( XMLNode* scene )
 				{
 					setPersonalChar(getAgent(i));
 				}
-			}			
+			}
 		}
 	}
 
@@ -213,7 +213,7 @@ void Application::update( float fps )
 	//SCENARIOS PLAYBACK (imported from 0.25.4.video)
 	//continous scenario updates
 	int anim_status, agent_status;
-	if(m_scenario == 5)
+	if(m_scenario == 9)
 	{
 		m_scenario_counter += 10.0f/_curFPS;		
 
@@ -284,9 +284,9 @@ void Application::update( float fps )
 	h3dSetNodeTransform( m_cam_hID, _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
 
 	//show overlay with camera parameters
-	//std::stringstream text;
-	//text << "Camera: pos(" << _x << ", " << _y << ", " << _z << ") rot(" << _rx << ", " << _ry << ", " << _rz << ")";
-	//h3dutShowText(text.str().c_str(), 0.01f, 0.02f, 0.03f, 1, 1, 1, m_fontMatRes);
+	std::stringstream text;
+	text << "Camera: pos(" << _x << ", " << _y << ", " << _z << ") rot(" << _rx << ", " << _ry << ", " << _rz << ")";
+	h3dutShowText(text.str().c_str(), 0.01f, 0.02f, 0.03f, 1, 1, 1, m_fontMatRes);
 
 	//** Render scene
 	GameEngine::update();
@@ -461,8 +461,8 @@ void Application::keyHandler()
 		//GameEngine::IK_setParamI( m_agents[0]->entity_id, IK_Param::UseDofr_I, 0);
 		//GameEngine::Agent_gazeP( m_agents[0]->entity_id, targetGaze.x, targetGaze.y, targetGaze.z, 0.5f, 0.2f );
 
-		GameEngine::IK_setParamI( m_agents[0]->entity_id, IK_Param::UseDofr_I, 0);
-		GameEngine::Agent_nod(m_agents[0]->entity_id, 1, 0.5f, 2);
+		//GameEngine::IK_setParamI( m_agents[0]->entity_id, IK_Param::UseDofr_I, 0);
+		//GameEngine::Agent_nod(m_agents[0]->entity_id, 1, 0.5f, 2);
 
 		_keys['T']=false;
 	}
@@ -477,6 +477,10 @@ void Application::keyHandler()
 			{
 				m_scenario = i;
 				printf("Scenario %d activated\n", i);
+
+				//start the initialization act
+				processScenario(99);
+
 				_keys[i +48]=false;
 				break;
 			}
@@ -503,74 +507,223 @@ void Application::processScenario(int act_id)
 {
 	switch(m_scenario)
 	{
-	case 1: //3-man formation
+	case 1: //german
 		switch(act_id)
 		{
-		case 1: //init1
-			//movement
-			setPersonalChar(m_agents[4]);
-
-			//ipdist
-			GameEngine::Agent_setIPDistance( getAgent(0)->entity_id, 0.5f, 0.8f );
-			GameEngine::Agent_setIPDistance( getAgent(1)->entity_id, 0.5f, 5.0f );
-			GameEngine::Agent_setIPDistance( getAgent(2)->entity_id, 0.5f, 5.0f );
-			GameEngine::Agent_setIPDistance( getAgent(3)->entity_id, 1.2f, 5.0f );
-
-			GameEngine::Agent_gotoF( getAgent(1)->entity_id, getAgent(0)->entity_id, 1, 0, 0 );
-			GameEngine::Agent_gotoF( getAgent(2)->entity_id, getAgent(0)->entity_id, 1, 0, 0 );
-			GameEngine::Agent_gotoF( getAgent(3)->entity_id, getAgent(0)->entity_id, 1, 0, 0 );
-			
-			//INIT	
+		case 99: //init german
+			/*
+			 * INIT SYSTEM
+			 */
 			m_scenario_counter = 0;
 			for(int i=0; i<NR_OF_AGENTS; i++)
 			{
-				getAgent(i)->setVisibility(true);
-				GameEngine::IK_setParamI( getAgent(i)->entity_id, IK_Param::UseDofr_I, 1 );
+				AgentNode* a = getAgent(i);
+				a->setVisibility(false);
+				GameEngine::IK_setParamI( a->entity_id, IK_Param::UseDofr_I, 1 );
+				h3dSetNodeTransform(a->horde_id, a->pos.x, a->pos.y, a->pos.z, a->rot.x, a->rot.y, a->rot.z, a->scale.x, a->scale.y, a->scale.z);
 			}
+			//GameEngine::Agent_setParamI(Agent_Param::DfltMorphDuration_I, 5);
+
 			//set the camera
-			_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0;
+			//_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0; //japanese cam
+			_x=-4.88f; _y=2.15f; _z=-4.43f; _rx=-19.54f; _ry=-303.17f; _rz=0; //german cam
+			
+			/*
+			 * INIT AGENTS
+			 */
+			for(int i=0; i<=3; i++)
+			{				
+				//make visible
+				getAgent(i)->setVisibility(true);
+
+				//ipdist
+				GameEngine::Agent_setIPDistance( getAgent(i)->entity_id, 1.4f, 1.4f );	//high
+				//deviation
+				GameEngine::Agent_setDeviation( getAgent(i)->entity_id, 5 );//medium
+				//stroke rep
+				GameEngine::Agent_setAnimationStrokeReps( getAgent(i)->entity_id, -1, 0 ); //low
+				//a speed
+				GameEngine::Agent_setAnimationSpeed( getAgent(i)->entity_id, -1, 1.5f ); //high
+				//a se
+				GameEngine::Agent_setAnimationExtent( getAgent(i)->entity_id, -1, 1.0f ); //high
+				//walk speed
+				GameEngine::Agent_setMovementSpeed( getAgent(i)->entity_id, 1.5f ); //high
+			}
+
+			//form formation
+			//GameEngine::Agent_gotoF( getAgent(1)->entity_id, getAgent(0)->entity_id, 50, 0, 0 );
+			GameEngine::Agent_gotoF( getAgent(2)->entity_id, getAgent(0)->entity_id, 50, 0, 0 );
+			GameEngine::Agent_gotoF( getAgent(3)->entity_id, getAgent(0)->entity_id, 50, 0, 0 );
 			break;
 
-		case 2: //init2
-			//movement
-			setPersonalChar(m_agents[4]);
+		case 1: //0 talks
+			GameEngine::Agent_gazeE( getAgent(1)->entity_id, getAgent(0)->entity_id, 0.1f, -1 ); //dur high
+			GameEngine::Agent_gazeE( getAgent(2)->entity_id, getAgent(0)->entity_id, 0.1f, 10 ); //dur high
+			GameEngine::Agent_gazeE( getAgent(3)->entity_id, getAgent(0)->entity_id, 0.1f, -1 ); //dur high
 
-			//ipdist
-			GameEngine::Agent_setIPDistance( getAgent(0)->entity_id, 0.5f, 2.2f );
-			GameEngine::Agent_setIPDistance( getAgent(1)->entity_id, 0.5f, 5.0f );
-			GameEngine::Agent_setIPDistance( getAgent(2)->entity_id, 0.5f, 5.0f );
-			GameEngine::Agent_setIPDistance( getAgent(3)->entity_id, 1.2f, 5.0f );
-
-			GameEngine::Agent_gotoF( getAgent(1)->entity_id, getAgent(0)->entity_id, 1, 0, 0 );
-			GameEngine::Agent_gotoF( getAgent(2)->entity_id, getAgent(0)->entity_id, 1, 0, 0 );
-			GameEngine::Agent_gotoF( getAgent(3)->entity_id, getAgent(0)->entity_id, 1, 0, 0 );
+			GameEngine::Agent_playAnimationI( getAgent(0)->entity_id, 42, -1, -1, -1, 0, "just" );
+			GameEngine::Agent_playAnimationI( getAgent(0)->entity_id, 70, -1, -1, 0, 0, "straight" );
+			GameEngine::Agent_playAnimationI( getAgent(0)->entity_id, 10, -1, -1, 0, 0, "me" );
+			GameEngine::Agent_playAnimationI( getAgent(0)->entity_id, 68, -1, -1, 0, 0, "idea" );
+			GameEngine::speak( getAgent(0)->entity_id, "uuuhh Well I just got there and uhm, I just went straight in there. Next thing I know, Mark was standing in front of me and he was looking straight at me. I had no idea what to say to him.");
 			
-			//INIT	
-			m_scenario_counter = 0;
-			for(int i=0; i<NR_OF_AGENTS; i++)
-			{
-				getAgent(i)->setVisibility(true);
-				GameEngine::IK_setParamI( getAgent(i)->entity_id, IK_Param::UseDofr_I, 1 );
-			}
-			//set the camera
-			_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0;
+			GameEngine::Agent_playAnimationI( getAgent(3)->entity_id, 69, -1, -1, -1, 0, "me" ); //anim 54 - with stroke rep
+			GameEngine::speak( getAgent(3)->entity_id, "Blablablabla Blaaa blablabal blabal! BLAAAAA! buuu Well I just got there and uhm, I just went straight in there. Next thing I know, Mark was standing in front of me and he was looking straight at me. I had no idea what to say to him.");
+
 			break;
 
-		case 3: //gestures + gaze
-			
-			GameEngine::Agent_gazeE( getAgent(1)->entity_id, getAgent(0)->entity_id, 1, -1 );
-			GameEngine::Agent_gazeE( getAgent(2)->entity_id, getAgent(0)->entity_id, 1, -1 );
-			GameEngine::Agent_gazeE( getAgent(3)->entity_id, getAgent(0)->entity_id, 1, -1 );
+		case 2: //2 talks
+			GameEngine::Agent_gazeE( getAgent(0)->entity_id, getAgent(2)->entity_id, 0.1f, -1 ); //dur high
+			GameEngine::Agent_gazeE( getAgent(1)->entity_id, getAgent(2)->entity_id, 0.1f, 10 ); //dur high
+			GameEngine::Agent_gazeE( getAgent(3)->entity_id, getAgent(2)->entity_id, 0.1f, -1 ); //dur high
 
-			GameEngine::Agent_playAnimationI( getAgent(0)->entity_id, 5, 1, 1, 0, 0, "just" );
-			GameEngine::Agent_playAnimationI( getAgent(0)->entity_id, 16, 1, 1, 0, 0, "standing" );
-			GameEngine::Agent_playAnimationI( getAgent(0)->entity_id, 7, 1, 1, 0, 0, "me" );
-			GameEngine::speak( getAgent(0)->entity_id, "Well I just got there and uhm, I just went straight in there. Next thing I know, Mark was standing in front of me and he was looking straight at me. I had no idea what to say to him.");
-			GameEngine::Agent_playAnimationI( getAgent(1)->entity_id, 12, 1, 1, 0, 0, 0 );
+			GameEngine::Agent_playAnimationI( getAgent(2)->entity_id, 43, -1, -1, -1, 0, "just" );
+			GameEngine::Agent_playAnimationI( getAgent(2)->entity_id, 8, -1, -1, 0, 0, "straight" );
+			GameEngine::Agent_playAnimationI( getAgent(2)->entity_id, 9, -1, -1, 0, 0, "me" );
+			GameEngine::Agent_playAnimationI( getAgent(2)->entity_id, 44, -1, -1, 0, 0, "idea" );
+			GameEngine::speak( getAgent(2)->entity_id, "uuuhh Well I just got there and uhm, I just went straight in there. Next thing I know, Mark was standing in front of me and he was looking straight at me. I had no idea what to say to him.");
+			
+			GameEngine::Agent_playAnimationI( getAgent(0)->entity_id, 40, -1, -1, -1, 0, "Mark" ); //anim 54 - with stroke rep
+			GameEngine::Agent_playAnimationI( getAgent(0)->entity_id, 11, -1, -1, -1, 0, "looking" ); //anim 54 - with stroke rep
+			GameEngine::speak( getAgent(0)->entity_id, "Blablablabla Blaaa blablabal blabal! BLAAAAA! buuu Well I just got there and uhm, I just went straight in there. Next thing I know, Mark was standing in front of me and he was looking straight at me. I had no idea what to say to him.");
+
+			break;
+
+		case 3: //1 walks over
+			GameEngine::Agent_gotoF( getAgent(1)->entity_id, getAgent(0)->entity_id, -1, 0, 0 );
+			break;
+
+		case 4: //2 talks
+			GameEngine::Agent_gazeE( getAgent(0)->entity_id, getAgent(2)->entity_id, 0.1f, -1 ); //dur high
+			GameEngine::Agent_gazeE( getAgent(1)->entity_id, getAgent(2)->entity_id, 0.1f, 10 ); //dur high
+			GameEngine::Agent_gazeE( getAgent(3)->entity_id, getAgent(2)->entity_id, 0.1f, -1 ); //dur high
+
+			GameEngine::Agent_playAnimationI( getAgent(2)->entity_id, 12, -1, -1, -1, 0, "just" );
+			GameEngine::Agent_playAnimationI( getAgent(2)->entity_id, 13, -1, -1, 0, 0, "straight" );
+			GameEngine::speak( getAgent(2)->entity_id, "uuuhh Well I just got there and uhm, I just went straight in there. Next thing I know, Mark was standing in front of me and he was looking straight at me. I had no idea what to say to him.");
+			
+			break;
+
+		case 5: //2 walks away
+			GameEngine::Agent_gotoP( getAgent(2)->entity_id, 0, 0, -50, -1, false, 0, 0 );
 			break;
 		}
 		break;
-	case 5: //Final scene
+	//////////////////////////////////////
+	case 2: //japan
+		switch(act_id)
+		{
+		case 99: //init japan
+
+			/*
+			 * INIT SYSTEM
+			 */
+			m_scenario_counter = 0;
+			for(int i=0; i<NR_OF_AGENTS; i++)
+			{
+				AgentNode* a = getAgent(i);
+				a->setVisibility(false);
+				GameEngine::IK_setParamI( a->entity_id, IK_Param::UseDofr_I, 1 );
+				h3dSetNodeTransform(a->horde_id, a->pos.x, a->pos.y, a->pos.z, a->rot.x, a->rot.y, a->rot.z, a->scale.x, a->scale.y, a->scale.z);
+			}
+			//setPersonalChar(m_agents[4]);
+			GameEngine::Agent_setParamI(Agent_Param::DfltMorphDuration_I, 5);
+
+			//set the camera
+			_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0; //japanese cam
+			//_x=-4.88f; _y=2.15f; _z=-4.43f; _rx=-19.54f; _ry=-303.17f; _rz=0; //german cam
+
+			/*
+			 * INIT AGENTS
+			 */
+			for(int i=4; i<=7; i++)
+			{
+				//make visible
+				getAgent(i)->setVisibility(true);
+
+				//ipdist
+				GameEngine::Agent_setIPDistance( getAgent(i)->entity_id, 0.7f, 0.7f );	//low
+				//deviation
+				GameEngine::Agent_setDeviation( getAgent(i)->entity_id, 15 );//high
+				//stroke rep
+				GameEngine::Agent_setAnimationStrokeReps( getAgent(i)->entity_id, -1, 1 ); //med
+				//a speed
+				GameEngine::Agent_setAnimationSpeed( getAgent(i)->entity_id, -1, 1.0f ); //med
+				//a se
+				GameEngine::Agent_setAnimationExtent( getAgent(i)->entity_id, -1, 0.9f ); //med-ish
+				//walk speed
+				GameEngine::Agent_setMovementSpeed( getAgent(i)->entity_id, 0.75f ); //low-ish
+			}
+
+			//form formation
+			//GameEngine::Agent_gotoF( getAgent(5)->entity_id, getAgent(4)->entity_id, 50, 0, 0 );
+			GameEngine::Agent_gotoF( getAgent(6)->entity_id, getAgent(4)->entity_id, 50, 0, 0 );
+			GameEngine::Agent_gotoF( getAgent(7)->entity_id, getAgent(4)->entity_id, 50, 0, 0 );
+			break;		
+
+		case 1: //6 talks
+			GameEngine::Agent_gazeE( getAgent(4)->entity_id, getAgent(6)->entity_id, 0.1f, 5.5f ); //dur low
+			GameEngine::Agent_gazeE( getAgent(4)->entity_id, getAgent(7)->entity_id, 0.1f, 5.1f ); //dur low
+
+			GameEngine::Agent_gazeE( getAgent(7)->entity_id, getAgent(6)->entity_id, 0.1f, -1 ); //dur inf
+
+			GameEngine::Agent_gazeE( getAgent(6)->entity_id, getAgent(4)->entity_id, 0.1f, 5.2f ); //dur low
+			GameEngine::Agent_gazeE( getAgent(6)->entity_id, getAgent(7)->entity_id, 0.1f, 5.9f ); //dur low
+
+			GameEngine::Agent_playAnimationI( getAgent(6)->entity_id, 26, -1, -1, -1, 0, "just" ); //with rep
+			GameEngine::Agent_playAnimationI( getAgent(6)->entity_id, 67, -1, -1, 0, 0, "straight" );
+			GameEngine::Agent_playAnimationI( getAgent(6)->entity_id, 57, -1, -1, 0, 0, "me" );
+			GameEngine::Agent_playAnimationI( getAgent(6)->entity_id, 20, -1, -1, 0, 0, "idea" );
+			GameEngine::speak( getAgent(6)->entity_id, "uuuhh Well I just got there and uhm, I just went straight in there. Next thing I know, Mark was standing in front of me and he was looking straight at me. I had no idea what to say to him.");
+			
+			GameEngine::Agent_playAnimationI( getAgent(7)->entity_id, 26, -1, -1, -1, 0, "me" );
+			GameEngine::speak( getAgent(7)->entity_id, "Blablablabla Blaaa blablabal blabal! BLAAAAA! buuu Well I just got there and uhm, I just went straight in there. Next thing I know, Mark was standing in front of me and he was looking straight at me. I had no idea what to say to him.");
+
+			break;
+
+		case 2: //7 talks
+			GameEngine::Agent_gazeE( getAgent(4)->entity_id, getAgent(7)->entity_id, 0.1f, 5.5f ); //dur low
+			GameEngine::Agent_gazeE( getAgent(4)->entity_id, getAgent(6)->entity_id, 0.1f, 5.1f ); //dur low
+
+			GameEngine::Agent_gazeE( getAgent(6)->entity_id, getAgent(7)->entity_id, 0.1f, -1 ); //dur inf
+
+			GameEngine::Agent_gazeE( getAgent(7)->entity_id, getAgent(4)->entity_id, 0.1f, 5.2f ); //dur low
+			GameEngine::Agent_gazeE( getAgent(7)->entity_id, getAgent(6)->entity_id, 0.1f, 5.9f ); //dur low
+
+			GameEngine::Agent_playAnimationI( getAgent(7)->entity_id, 65, -1, -1, 0, 0, "just" );
+			GameEngine::Agent_playAnimationI( getAgent(7)->entity_id, 35, -1, -1, 0, 0, "straight" );
+			GameEngine::Agent_playAnimationI( getAgent(7)->entity_id, 59, -1, -1, 0, 0, "me" );
+			GameEngine::Agent_playAnimationI( getAgent(7)->entity_id, 31, -1, -1, 0, 0, "idea" );
+			GameEngine::speak( getAgent(7)->entity_id, "uuuhh Well I just got there and uhm, I just went straight in there. Next thing I know, Mark was standing in front of me and he was looking straight at me. I had no idea what to say to him.");
+			
+			GameEngine::Agent_playAnimationI( getAgent(4)->entity_id, 67, -1, -1, 0, 0, "Mark" ); //anim 54 - with stroke rep
+			GameEngine::Agent_playAnimationI( getAgent(4)->entity_id, 66, -1, -1, 0, 0, "looking" ); //anim 54 - with stroke rep
+			GameEngine::speak( getAgent(4)->entity_id, "Blablablabla Blaaa blablabal blabal! BLAAAAA! buuu Well I just got there and uhm, I just went straight in there. Next thing I know, Mark was standing in front of me and he was looking straight at me. I had no idea what to say to him.");
+
+			break;
+
+		case 3: //5 walks over
+			GameEngine::Agent_gotoF( getAgent(5)->entity_id, getAgent(4)->entity_id, 1.0f, 0, 0 );
+			break;
+
+		case 4: //4 talks (says goodbye)
+			GameEngine::Agent_gazeE( getAgent(5)->entity_id, getAgent(4)->entity_id, 0.1f, -1 ); //dur high
+			GameEngine::Agent_gazeE( getAgent(6)->entity_id, getAgent(4)->entity_id, 0.1f, 5 ); //dur high
+			GameEngine::Agent_gazeE( getAgent(7)->entity_id, getAgent(4)->entity_id, 0.1f, -1 ); //dur high
+
+			GameEngine::Agent_playAnimationI( getAgent(4)->entity_id, 59, -1, -1, 0, 0, "just" );
+			GameEngine::Agent_playAnimationI( getAgent(4)->entity_id, 30, -1, -1, 0, 0, "know" );
+			GameEngine::speak( getAgent(4)->entity_id, "uuuhh Well I just got there and uhm, I just went straight in there. Next thing I know, Mark was standing in front of me and he was looking straight at me. I had no idea what to say to him.");
+			
+			break;
+
+		case 5: //2 walks away
+			GameEngine::Agent_gotoP( getAgent(4)->entity_id, -50, 0, 0, -1, false, 0, 0 );
+			break;
+		}
+		break;
+	
+	case 9: //random scene
 		switch(act_id)
 		{
 		case 1: //scene5_1: init

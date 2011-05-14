@@ -57,6 +57,9 @@ AgentNode::AgentNode(int _id, unsigned int _entity_id):
 	head_horde_id = h3dGetNodeFindResult(0);	
 
 	GameEngine::Agent_setIconVisible(entity_id, false);
+
+	//set initial position
+	h3dGetNodeTransform(horde_id, &pos.x, &pos.y, &pos.z, &rot.x, &rot.y, &rot.z, &scale.x, &scale.y, &scale.z);
 }
 
 AgentNode::~AgentNode()

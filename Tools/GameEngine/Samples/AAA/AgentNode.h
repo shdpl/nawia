@@ -33,6 +33,7 @@
 
 #include <stack>
 #include <vector>
+#include "GameEngine/utmath.h"
 
 /**
  * Class defines one agent in AAA.
@@ -65,7 +66,11 @@ public:
 	int culture;
 	
 	///flag indicating whether agent is active
-	bool active;	
+	bool active;
+
+	Horde3D::Vec3f pos;
+	Horde3D::Vec3f rot;
+	Horde3D::Vec3f scale;
 
 	///constructor
 	AgentNode(int _id, unsigned int _entity_id);
