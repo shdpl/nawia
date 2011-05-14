@@ -226,43 +226,43 @@ namespace GameEngine
 	///Stops the playback of an animation
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function
-	AGENTAPI void Agent_stopAnimation( unsigned int entityWorldID, unsigned int playbackID );
+	AGENTAPI void Agent_stopAnimation( unsigned int entityWorldID, int playbackID );
 
 	///Gets the spatial extent of an animation
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to get agent default)
 	///@return spatialExtent value of the Spatial Extent attribute represented by a float between 0 to 1, where 0 is the lowest (still) spatial extent and 1 is the highest spatial extent (normal playback)
-	AGENTAPI float Agent_getAnimationExtent( unsigned int entityWorldID, unsigned int playbackID, float spatialExtent );
+	AGENTAPI float Agent_getAnimationExtent( unsigned int entityWorldID, int playbackID, float spatialExtent );
 
 	///Gets the playback speed of an animation
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to get agent default)
 	///@return speed the desired value for the playback speed. Values range from 0 to infinite, where "0" represents no playback at all, "1" is normal playback speed, "2" is double speed, ...
-	AGENTAPI float Agent_getAnimationSpeed( unsigned int entityWorldID, unsigned int playbackID, float speed );
+	AGENTAPI float Agent_getAnimationSpeed( unsigned int entityWorldID, int playbackID, float speed );
 
 	///Gets the number of stroke repetitions the specified animation should perform
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to get agent default)
 	///@return reps the desired number of stroke repetitions the specified animation should perform
-	AGENTAPI int Agent_getAnimationStrokeReps( unsigned int entityWorldID, unsigned int playbackID, unsigned int numStrokeReps );
+	AGENTAPI int Agent_getAnimationStrokeReps( unsigned int entityWorldID, int playbackID, unsigned int numStrokeReps );
 
 	///Sets the spatial extent of an animation
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to set agent default)
 	///@param spatialExtent value of the Spatial Extent attribute represented by a float between 0 to 1, where 0 is the lowest (still) spatial extent and 1 is the highest spatial extent (normal playback)
-	AGENTAPI void Agent_setAnimationExtent( unsigned int entityWorldID, unsigned int playbackID, float spatialExtent );
+	AGENTAPI void Agent_setAnimationExtent( unsigned int entityWorldID, int playbackID, float spatialExtent );
 
 	///Sets the playback speed of an animation
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to set agent default)
 	///@param speed the desired value for the playback speed. Values range from 0 to infinite, where "0" represents no playback at all, "1" is normal playback speed, "2" is double speed, ...
-	AGENTAPI void Agent_setAnimationSpeed( unsigned int entityWorldID, unsigned int playbackID, float speed );
+	AGENTAPI void Agent_setAnimationSpeed( unsigned int entityWorldID, int playbackID, float speed );
 
 	///Sets the number of stroke repetitions the specified animation should perform
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function (use -1 to set agent default)
 	///@param reps the desired number of stroke repetitions the specified animation should perform
-	AGENTAPI void Agent_setAnimationStrokeReps( unsigned int entityWorldID, unsigned int playbackID, unsigned int numStrokeReps );
+	AGENTAPI void Agent_setAnimationStrokeReps( unsigned int entityWorldID, int playbackID, unsigned int numStrokeReps );
 
 	///Clears all animation stages, deleting all loaded animations
 	///@param entityWorldID the entity we want to use the function on
@@ -272,7 +272,7 @@ namespace GameEngine
 	///@param entityWorldID the entity we want to use the function on
 	///@param playbackID the playback id of the animation, as returned by a play or load function
 	///@return animation status code of type Agent_AnimStatus
-	AGENTAPI Agent_AnimStatus::List Agent_getAnimationStatus( unsigned int entityWorldID, unsigned int playbackID );
+	AGENTAPI Agent_AnimStatus::List Agent_getAnimationStatus( unsigned int entityWorldID, int playbackID );
 
 	/***************************************/
 	/************** MOVEMENT ***************/
