@@ -243,7 +243,7 @@ void Application::update( float fps )
 			
 			int r = rand();
 			if(getAgent(i)->active /*&& (getAgent(i)->animation_id < 0)*/ && (getAgent(i)->movement < 0)
-			&&(r % 1000 < 50)) // chance for anim load = 5%
+			&&(r % 1000 < 10)) // chance for anim load = 1%
 			{
 				//compute which arm to animate
 				char* arm = "Bip01_R_Clavicle";
@@ -808,7 +808,7 @@ void Application::processScenario(int act_id)
 
 			break;
 
-		case 1: //0 talks
+		case 1: //germab talk
 			GameEngine::Agent_gazeE( getAgent(1)->entity_id, getAgent(0)->entity_id, 0.1f, -1 ); //dur high
 			GameEngine::Agent_gazeE( getAgent(2)->entity_id, getAgent(0)->entity_id, 0.1f, 10 ); //dur high
 			GameEngine::Agent_gazeE( getAgent(3)->entity_id, getAgent(0)->entity_id, 0.1f, -1 ); //dur high
@@ -832,7 +832,7 @@ void Application::processScenario(int act_id)
 
 			break;
 
-		case 2: //7 talks
+		case 2: //japanese talk
 			GameEngine::Agent_gazeE( getAgent(4)->entity_id, getAgent(7)->entity_id, 0.1f, 5.5f ); //dur low
 			GameEngine::Agent_gazeE( getAgent(4)->entity_id, getAgent(6)->entity_id, 0.1f, 5.1f ); //dur low
 
