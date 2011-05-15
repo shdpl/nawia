@@ -714,7 +714,7 @@
 		<Restriction></Restriction>  
 	</Gesture>
 	<Movement>
-		<ID>0045</ID>
+		<ID>0145</ID>
 		<Name>Sidestep left</Name>
 		<Description>Sidestep to the left (ca. 20cms)</Description>
 		<Files gender="female">
@@ -726,7 +726,7 @@
 		<Function>repositioning</Function>
 	</Movement>
 	<Movement>
-		<ID>0046</ID>
+		<ID>0146</ID>
 		<Name>Sidestep right</Name>
 		<Description>Sidestep to the right (ca. 20cms)</Description>
 		<Files gender="female">
@@ -804,7 +804,7 @@
 		<Restriction></Restriction>  
 	</Gesture>
 	<Posture>
-		<ID>0052</ID>
+		<ID>0151</ID>
 		<Name>Idle</Name>
 		<Description></Description>
 		<Files gender="female">
@@ -826,7 +826,7 @@
 		</Files>	
 	</Posture>
 	<Movement>
-		<ID>0053</ID>
+		<ID>0153</ID>
 		<Name>Walk</Name>
 		<Description></Description>
 		<Files gender="female">
@@ -938,7 +938,7 @@
 		<Restriction></Restriction>  
 	</Gesture>
 	<Movement>
-		<ID>0060</ID>
+		<ID>0160</ID>
 		<Name>Medium Step Backward</Name>
 		<Description></Description>
 		<Files gender="female">
@@ -949,7 +949,7 @@
 		</Files>	
 	</Movement>
 	<Movement>
-		<ID>0061</ID>
+		<ID>0161</ID>
 		<Name>Small Step Backward</Name>
 		<Description></Description>
 		<Files gender="female">
@@ -960,7 +960,7 @@
 		</Files>	
 	</Movement>
 	<Movement>
-		<ID>0062</ID>
+		<ID>0162</ID>
 		<Name>Large Step Backward</Name>
 		<Description></Description>
 		<Files gender="female">
@@ -971,7 +971,7 @@
 		</Files>	
 	</Movement>
 	<Movement>
-		<ID>0063</ID>
+		<ID>0163</ID>
 		<Name>Skew Left</Name>
 		<Description>Loopable movement to the left</Description>
 		<Files gender="female">
@@ -982,7 +982,7 @@
 		</Files>	
 	</Movement>
 	<Movement>
-		<ID>0064</ID>
+		<ID>0164</ID>
 		<Name>Skew Left</Name>
 		<Description>Loopable movement to the right</Description>
 		<Files gender="female">

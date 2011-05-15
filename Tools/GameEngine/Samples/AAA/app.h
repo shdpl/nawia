@@ -97,6 +97,7 @@ public:
 	int m_scenario;
 	///a counter to be used by the scenario
 	float m_scenario_counter;
+	bool m_randomize;
 	
 	///an "empty" agent, contains neutral parameter initializations
 	AgentNode* m_dummyAgent;
