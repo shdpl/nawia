@@ -313,60 +313,81 @@ void TTSComponent::speak(const char* text)
 	{
 		GameLog::errorMessage("No voice initialized");
 	}
-	else if (text == 0 || strlen(text) == 0)
-	{
-		m_isSpeaking = false;
-	}
 	else
 	{
-		if (m_useDistanceModel)
-			calcVolumeFromDistance();
+		if (m_isSpeaking)
+		{
+			// Already speaking, so stop current sentence
+			// Sapi has no stop function, but speak with a null sentence and 
+			// the flag SPF_PURGEBEFORESPEAK set has the same meaning
+			// Note that this would be done anyway with the next speak call, but
+			// we also want a sentence to be aborted if the argument text is null or empty
+			m_pVoice->Speak(NULL, SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL); 
+			m_isSpeaking = false;
+			// Stop visemes
+			m_visemeBlendFacPrev = 0.0f;
+			m_visemeBlendFac = 0.0f;
+			updateVisemes();
+			// Send stopped event
+			GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(m_currentSentence.c_str()), this);
+			if (m_owner->checkEvent(&event))
+				m_owner->executeEvent(&event);
+		}
+
+		if (text != 0 && strlen(text) > 0)
+		{
+			if (m_useDistanceModel)
+				calcVolumeFromDistance();
 
 		
-		// Try to find text as tag
-		SentenceIterator iter = m_sentences.find(string(text));
-		if (iter != m_sentences.end())
-		{
-			// This seems to be a tag, so speak it directly
-			std::vector<wstring>& sentences = iter->second;
-			m_currentSentence = sentences[ rand() % sentences.size()];
-			m_startSpeaking = GameEngine::currentTimeStamp();
-			m_pVoice->Speak( m_currentSentence.c_str(), SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
-			m_isSpeaking = true;
-			m_visemeBlendFacPrev = 0.0f;
-			m_visemeBlendFac = 0.1f;
-			m_visemeChanged = true;
-		}
-		else
-		{
-
-			int lenA = lstrlenA(text);
-			if (lenA > 0)
+			// Try to find text as tag
+			SentenceIterator iter = m_sentences.find(string(text));
+			if (iter != m_sentences.end())
 			{
-				int lenW;
-				BSTR unicodestr = 0;
-				lenW = ::MultiByteToWideChar(CP_ACP, 0, text, lenA, 0, 0);
-				if (lenW > 0)
+				// This seems to be a tag, so speak it directly
+				std::vector<wstring>& sentences = iter->second;
+				m_currentSentence = sentences[ rand() % sentences.size()];
+				m_startSpeaking = GameEngine::currentTimeStamp();
+				m_pVoice->Speak( m_currentSentence.c_str(), SPF_ASYNC | SPF_PURGEBEFORESPEAK, NULL );
+				m_isSpeaking = true;
+				m_visemeBlendFacPrev = 0.0f;
+				m_visemeBlendFac = 0.1f;
+				m_visemeChanged = true;
+			}
+			else
+			{
+
+				int lenA = lstrlenA(text);
+				if (lenA > 0)
 				{
-					// Check whether conversion was successful
-					unicodestr = ::SysAllocStringLen(0, lenW);
-					::MultiByteToWideChar(CP_ACP, 0, text, lenA, unicodestr, lenW);		
-					//ULONG numSkipped = 0;
-					//m_pVoice->Skip(L"SENTENCE", 100, &numSkipped);
-					m_currentSentence = unicodestr;
-					m_pVoice->Speak( unicodestr, SPF_ASYNC | SPF_PURGEBEFORESPEAK | SPF_IS_XML, NULL );
-					m_startSpeaking = GameEngine::currentTimeStamp();
-					m_isSpeaking = true;
-					m_visemeBlendFacPrev = 0.0f;
-					m_visemeBlendFac = 0.1f;
-					m_visemeChanged = true;
+					int lenW;
+					BSTR unicodestr = 0;
+					lenW = ::MultiByteToWideChar(CP_ACP, 0, text, lenA, 0, 0);
+					if (lenW > 0)
+					{
+						// Check whether conversion was successful
+						unicodestr = ::SysAllocStringLen(0, lenW);
+						::MultiByteToWideChar(CP_ACP, 0, text, lenA, unicodestr, lenW);		
+						//ULONG numSkipped = 0;
+						//m_pVoice->Skip(L"SENTENCE", 100, &numSkipped);
+						m_currentSentence = unicodestr;
+						// TODO: maybe don't always set the Flag SPF_IS_XML, but only if necessary
+						m_pVoice->Speak( unicodestr, SPF_ASYNC | SPF_PURGEBEFORESPEAK | SPF_IS_XML, NULL );
+						m_startSpeaking = GameEngine::currentTimeStamp();
+						m_isSpeaking = true;
+						m_visemeBlendFacPrev = 0.0f;
+						m_visemeBlendFac = 0.1f;
+						m_visemeChanged = true;
+					}
+					::SysFreeString(unicodestr);
 				}
-				::SysFreeString(unicodestr);
 			}
 		}
 	}
 	if (!m_isSpeaking)
 	{
+		// Speaking failed for that sentence, so send a message about that
+		// Not sure if this is wanted when text is null or empty
 		GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(text), this);
 		if (m_owner->checkEvent(&event))
 			m_owner->executeEvent(&event);	
@@ -422,6 +443,7 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 			{
 				char * sentence = new char[1024];
 				sprintf_s(sentence, 1024, "%ls", obj->m_currentSentence.c_str());
+				printf("Speaking now stopped: %s\n", sentence);
 				// Send event
 				GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(sentence), obj);
 				if (obj->m_owner->checkEvent(&event))
