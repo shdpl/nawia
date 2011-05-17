@@ -329,9 +329,12 @@ void TTSComponent::speak(const char* text)
 			m_visemeBlendFac = 0.0f;
 			updateVisemes();
 			// Send stopped event
-			GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(m_currentSentence.c_str()), this);
+			char* sentence = new char[1024];
+			sprintf_s(sentence, 1024, "%ls", m_currentSentence.c_str());
+			GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(sentence), this);
 			if (m_owner->checkEvent(&event))
 				m_owner->executeEvent(&event);
+			delete[] sentence;
 		}
 
 		if (text != 0 && strlen(text) > 0)
