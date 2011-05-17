@@ -443,7 +443,6 @@ void TTSComponent::sapiEvent(WPARAM wParam, LPARAM lParam)
 			{
 				char * sentence = new char[1024];
 				sprintf_s(sentence, 1024, "%ls", obj->m_currentSentence.c_str());
-				printf("Speaking now stopped: %s\n", sentence);
 				// Send event
 				GameEvent event(GameEvent::E_SPEAKING_STOPPED, &GameEventData(sentence), obj);
 				if (obj->m_owner->checkEvent(&event))
