@@ -15,12 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Horde3D\Source\Shared\utXMLParser.cpp">
+    <ClCompile Include="utXMLParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Horde3D\Source\Shared\utXMLParser.h">
+    <ClInclude Include="utXMLParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
