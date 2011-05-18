@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Horde3D Utils"
 	ProjectGUID="{AE8EB9B3-D2C2-4372-AB4B-FC980EE69D2D}"
 	RootNamespace="Horde3DUtils"
@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib Horde3D_vc9d.lib"
+				AdditionalDependencies="opengl32.lib"
 				OutputFile="$(OutDir)\$(RootNamespace)d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)../../Bindings/C++&quot;"
@@ -140,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib Horde3D_vc9.lib"
+				AdditionalDependencies="opengl32.lib"
 				OutputFile="$(OutDir)\$(RootNamespace).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)../../Bindings/C++&quot;"

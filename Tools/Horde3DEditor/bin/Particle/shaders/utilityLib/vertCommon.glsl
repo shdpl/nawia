@@ -3,14 +3,15 @@
 // --------------------------------------
 //		- Common functions -
 //
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // You may use the following code in projects based on the Horde3D graphics engine.
 //
 // *************************************************************************************************
 
-uniform 	mat4 worldMat;
-uniform		mat3 worldNormalMat;
+uniform mat4 viewMat;
+uniform mat4 worldMat;
+uniform	mat3 worldNormalMat;
 
 
 vec4 calcWorldPos( const vec4 pos )
@@ -20,7 +21,7 @@ vec4 calcWorldPos( const vec4 pos )
 
 vec4 calcViewPos( const vec4 pos )
 {
-	return gl_ModelViewMatrix * pos;
+	return viewMat * pos;
 }
 
 vec3 calcWorldVec( const vec3 vec )

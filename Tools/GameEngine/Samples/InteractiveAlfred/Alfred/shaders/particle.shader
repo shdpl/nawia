@@ -62,8 +62,7 @@ void main( void )
 
 #include "shaders/utilityLib/vertParticle.glsl"
 
-uniform mat4 projMat;
-attribute vec3 vertPos;
+uniform mat4 viewProjMat;
 attribute vec2 texCoords0;
 varying vec4 color;
 varying vec2 texCoords;
@@ -72,7 +71,7 @@ void main(void)
 {
 	color = getParticleColor();
 	texCoords = vec2( texCoords0.s, -texCoords0.t );
-	gl_Position = projMat * calcParticleViewPos( vertPos );
+	gl_Position = viewProjMat * vec4( calcParticlePos( texCoords0 ), 1 );
 }
 
 

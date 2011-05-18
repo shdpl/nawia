@@ -131,13 +131,11 @@ bool Renderer::init()
 	};
 	_vlModel = gRDI->registerVertexLayout( 7, attribsModel );
 
-	VertexLayoutAttrib attribsParticle[4] = {
-		"vertPos", 0, 3, 0,
-		"parIdx", 0, 1, 24,
-		"parCornerIdx", 0, 1, 20,
-		"texCoords0", 0, 2, 12
+	VertexLayoutAttrib attribsParticle[2] = {
+		"texCoords0", 0, 2, 0,
+		"parIdx", 0, 1, 8
 	};
-	_vlParticle = gRDI->registerVertexLayout( 4, attribsParticle );
+	_vlParticle = gRDI->registerVertexLayout( 2, attribsParticle );
 	
 	// Upload default shaders
 	if( !createShaderComb( vsDefColor, fsDefColor, _defColorShader ) )
@@ -172,10 +170,10 @@ bool Renderer::init()
 	delete[] quadIndices; quadIndices = 0x0;
 	
 	// Create particle geometry array
-	ParticleVert v0( 0, 0, 0 );
-	ParticleVert v1( 1, 0, 1 );
-	ParticleVert v2( 1, 1, 2 );
-	ParticleVert v3( 0, 1, 3 );
+	ParticleVert v0( 0, 0 );
+	ParticleVert v1( 1, 0 );
+	ParticleVert v2( 1, 1 );
+	ParticleVert v3( 0, 1 );
 	
 	ParticleVert *parVerts = new ParticleVert[ParticlesPerBatch * 4];
 	for( uint32 i = 0; i < ParticlesPerBatch; ++i )
@@ -229,6 +227,7 @@ void Renderer::setupViewMatrices( const Matrix4f &viewMat, const Matrix4f &projM
 	_viewMatInv = viewMat.inverted();
 	_projMat = projMat;
 	_viewProjMat = projMat * viewMat;
+	_viewProjMatInv = _viewProjMat.inverted();
 
 	++_curShaderUpdateStamp;
 }
@@ -376,6 +375,7 @@ bool Renderer::createShaderComb( const char *vertexShader, const char *fragmentS
 	sc.uni_viewMatInv = gRDI->getShaderConstLoc( shdObj, "viewMatInv" );
 	sc.uni_projMat = gRDI->getShaderConstLoc( shdObj, "projMat" );
 	sc.uni_viewProjMat = gRDI->getShaderConstLoc( shdObj, "viewProjMat" );
+	sc.uni_viewProjMatInv = gRDI->getShaderConstLoc( shdObj, "viewProjMatInv" );
 	sc.uni_viewerPos = gRDI->getShaderConstLoc( shdObj, "viewerPos" );
 	
 	// Per-instance uniforms
@@ -394,7 +394,6 @@ bool Renderer::createShaderComb( const char *vertexShader, const char *fragmentS
 	sc.uni_shadowBias = gRDI->getShaderConstLoc( shdObj, "shadowBias" );
 	
 	// Particle-specific uniforms
-	sc.uni_parCorners = gRDI->getShaderConstLoc( shdObj, "parCorners" );
 	sc.uni_parPosArray = gRDI->getShaderConstLoc( shdObj, "parPosArray" );
 	sc.uni_parSizeAndRotArray = gRDI->getShaderConstLoc( shdObj, "parSizeAndRotArray" );
 	sc.uni_parColorArray = gRDI->getShaderConstLoc( shdObj, "parColorArray" );
@@ -449,6 +448,9 @@ void Renderer::commitGeneralUniforms()
 		
 		if( _curShader->uni_viewProjMat >= 0 )
 			gRDI->setShaderConst( _curShader->uni_viewProjMat, CONST_FLOAT44, _viewProjMat.x );
+
+		if( _curShader->uni_viewProjMatInv >= 0 )
+			gRDI->setShaderConst( _curShader->uni_viewProjMatInv, CONST_FLOAT44, _viewProjMatInv.x );
 		
 		if( _curShader->uni_viewerPos >= 0 )
 			gRDI->setShaderConst( _curShader->uni_viewerPos, CONST_FLOAT3, &_viewMatInv.x[12] );
@@ -1737,15 +1739,6 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 	if( debugView ) return;  // Don't render particles in debug view
 
 	MaterialResource *curMatRes = 0x0;
-	
-	// Calculate right and up vectors for camera alignment
-	Matrix4f mat = Modules::renderer().getCurCamera()->getViewMat();
-	Vec3f right = Vec3f( mat.x[0], mat.x[4], mat.x[8] );
-	Vec3f up = Vec3f (mat.x[1], mat.x[5], mat.x[9] );
-	float cornerCoords[12] = { -right.x - up.x, -right.y - up.y, -right.z - up.z,
-	                            right.x - up.x,  right.y - up.y,  right.z - up.z,
-                                right.x + up.x,  right.y + up.y,  right.z + up.z,
-							   -right.x + up.x, -right.y + up.y, -right.z + up.z };
 
 	GPUTimer *timer = Modules::stats().getGPUTimer( EngineStats::ParticleGPUTime );
 	if( Modules::config().gatherTimeStats ) timer->beginQuery( Modules::renderer().getFrameID() );
@@ -1816,8 +1809,6 @@ void Renderer::drawParticles( const string &shaderContext, const string &theClas
 		
 		// Shader uniforms
 		ShaderCombination *curShader = Modules::renderer().getCurShader();
-		if( curShader->uni_parCorners >= 0 )
-			gRDI->setShaderConst( curShader->uni_parCorners, CONST_FLOAT3, (float *)cornerCoords, 4 );
 		if( curShader->uni_nodeId >= 0 )
 		{
 			float id = (float)emitter->getHandle();

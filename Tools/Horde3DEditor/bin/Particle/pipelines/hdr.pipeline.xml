@@ -6,13 +6,20 @@
 		<RenderTarget id="BLURBUF2" depthBuf="false" numColBufs="1" format="RGBA8" scale="0.25" />
 	</Setup>
 	
-	<CommandQueue>		
+	<CommandQueue>
+		<Stage id="Ambient" link="pipelines/globalSettings.material.xml">
+			<SwitchTarget target="HDRBUF" />
+			<ClearTarget depthBuf="true" colBuf0="true" />
+			
+			<DrawGeometry context="AMBIENT" class="~Translucent" />
+		</Stage>
+		
 		<Stage id="Lighting">
 			<DoForwardLightLoop class="~Translucent" />
 		</Stage>
 		
 		<Stage id="Translucent">
-			<DrawGeometry context="TRANSLUCENT" class="Translucent" />
+			<DrawGeometry context="TRANSLUCENT" class="Translucent" order="BACK_TO_FRONT" />
 		</Stage>
 		
 		<!-- HDR post processing -->

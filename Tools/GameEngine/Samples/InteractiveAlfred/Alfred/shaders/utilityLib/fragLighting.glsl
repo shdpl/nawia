@@ -3,7 +3,7 @@
 // --------------------------------------
 //		- Lighting functions -
 //
-// Copyright (C) 2006-2009 Nicolas Schulz
+// Copyright (C) 2006-2011 Nicolas Schulz
 //
 // You may use the following code in projects based on the Horde3D graphics engine.
 //
@@ -44,43 +44,37 @@ vec3 calcPhongSpotLight( const vec3 pos, const vec3 normal, const vec3 albedo, c
 	
 	// Distance attenuation
 	float lightDepth = lightLen / lightPos.w;
-	float att = max( 1.0 - lightDepth * lightDepth, 0.0 );
+	float atten = max( 1.0 - lightDepth * lightDepth, 0.0 );
 	
 	// Spotlight falloff
 	float angle = dot( lightDir.xyz, -light );
-	att *= clamp( (angle - lightDir.w) / 0.2, 0.0, 1.0 );
+	atten *= clamp( (angle - lightDir.w) / 0.2, 0.0, 1.0 );
 		
-	// Lambert diffuse contribution
-	float diffuse = max( dot( normal, light ), 0.0 );
+	// Lambert diffuse
+	float NdotL = max( dot( normal, light ), 0.0 );
+	atten *= NdotL;
+		
+	// Blinn-Phong specular with energy conservation
+	vec3 view = normalize( viewerPos - pos );
+	vec3 halfVec = normalize( light + view );
+	float spec = pow( max( dot( halfVec, normal ), 0.0 ), specExp );
+	spec *= (specExp * 0.04 + 0.32) * specMask;  // Normalization factor (n+8)/8pi
 	
-	// Diffuse color
-	vec3 col = albedo * lightColor * diffuse;
-	
-	// Shadow
-	if( diffuse * att > 0.0 )
-	{	
-		float shadowTerm = 1.0;
-		if( shadowMapSize > 4.0 )  // No shadow mapping if default shadow map is bound
-		{
-			vec4 projShadow = shadowMats[3] * vec4( pos, 1.0 );
-			if( viewDist < shadowSplitDists.x ) projShadow = shadowMats[0] * vec4( pos, 1.0 );
-			else if( viewDist < shadowSplitDists.y ) projShadow = shadowMats[1] * vec4( pos, 1.0 );
-			else if( viewDist < shadowSplitDists.z ) projShadow = shadowMats[2] * vec4( pos, 1.0 );
-			
-			projShadow.z = lightDepth;
-			projShadow.xy /= projShadow.w;
-			
-			shadowTerm = PCF( projShadow );
-		}
+	// Shadows
+	float shadowTerm = 1.0;
+	if( atten * (shadowMapSize - 4.0) > 0.0 )  // Skip shadow mapping if default shadow map (size==4) is bound
+	{
+		vec4 projShadow = shadowMats[3] * vec4( pos, 1.0 );
+		if( viewDist < shadowSplitDists.x ) projShadow = shadowMats[0] * vec4( pos, 1.0 );
+		else if( viewDist < shadowSplitDists.y ) projShadow = shadowMats[1] * vec4( pos, 1.0 );
+		else if( viewDist < shadowSplitDists.z ) projShadow = shadowMats[2] * vec4( pos, 1.0 );
 		
-		// Specular contribution
-		vec3 eye = normalize( viewerPos - pos );
-		vec3 refl = reflect( -light, normal );
-		float spec = pow( clamp( dot( refl, eye ), 0.0, 1.0 ), specExp ) * specMask;
-		col += lightColor * spec * shadowTerm;
+		projShadow.z = lightDepth;
+		projShadow.xy /= projShadow.w;
 		
-		col *= max( shadowTerm, ambientIntensity );
+		shadowTerm = max( PCF( projShadow ), ambientIntensity );
 	}
 	
-	return col * att;
+	// Final color
+	return albedo * lightColor * atten * shadowTerm * (1.0 + spec);
 }

@@ -646,6 +646,7 @@ void EmitterNode::onPostUpdate()
 			float rotVel = p.rotVel0 * (1.0f + (_effectRes->_rotVel.endRate - 1.0f) * fac);
 			float drag = p.drag0 * (1.0f + (_effectRes->_drag.endRate - 1.0f) * fac);
 			_parSizesANDRotations[i * 2 + 0] = p.size0 * (1.0f + (_effectRes->_size.endRate - 1.0f) * fac);
+			_parSizesANDRotations[i * 2 + 0] *= 2;  // Keep compatibility with old particle vertex shader
 			_parColors[i * 4 + 0] = p.r0 * (1.0f + (_effectRes->_colR.endRate - 1.0f) * fac);
 			_parColors[i * 4 + 1] = p.g0 * (1.0f + (_effectRes->_colG.endRate - 1.0f) * fac);
 			_parColors[i * 4 + 2] = p.b0 * (1.0f + (_effectRes->_colB.endRate - 1.0f) * fac);
@@ -655,7 +656,7 @@ void EmitterNode::onPostUpdate()
 			_parPositions[i * 3 + 0] += (p.dir.x * moveVel + p.dragVec.x * drag + _force.x) * _timeDelta;
 			_parPositions[i * 3 + 1] += (p.dir.y * moveVel + p.dragVec.y * drag + _force.y) * _timeDelta;
 			_parPositions[i * 3 + 2] += (p.dir.z * moveVel + p.dragVec.z * drag + _force.z) * _timeDelta;
-			_parSizesANDRotations[i * 2 + 1] +=  rotVel * _timeDelta;
+			_parSizesANDRotations[i * 2 + 1] += degToRad( rotVel ) * _timeDelta;
 
 			// Decrease lifetime
 			p.life -= _timeDelta;

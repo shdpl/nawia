@@ -29,6 +29,8 @@ context TRANSLUCENT
 
 #include "shaders/utilityLib/vertParticle.glsl"
 
+uniform mat4 viewMatInv;
+uniform mat4 projMat;
 uniform vec4 lightPos;
 attribute vec3 vertPos;
 varying float dist;
@@ -36,10 +38,10 @@ varying float dist;
 void main(void)
 {
 	vec4 vsPos = calcParticleViewPos( vertPos );
-	vec4 pos = gl_ModelViewMatrixInverse * vsPos;
+	vec4 pos = viewMatInv * vsPos;
 	dist = length( lightPos.xyz - pos.xyz ) / lightPos.w;
 	
-	gl_Position = gl_ProjectionMatrix * vsPos;
+	gl_Position = projMat * vsPos;
 }
 				
 				
@@ -60,7 +62,7 @@ void main( void )
 
 #include "shaders/utilityLib/vertParticle.glsl"
 
-attribute vec3 vertPos;
+uniform mat4 viewProjMat;
 attribute vec2 texCoords0;
 varying vec4 color;
 varying vec2 texCoords;
@@ -69,7 +71,7 @@ void main(void)
 {
 	color = getParticleColor();
 	texCoords = vec2( texCoords0.s, -texCoords0.t );
-	gl_Position = gl_ProjectionMatrix * calcParticleViewPos( vertPos );
+	gl_Position = viewProjMat * vec4( calcParticlePos( texCoords0 ), 1 );
 }
 
 

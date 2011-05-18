@@ -9,13 +9,11 @@
 //
 // *************************************************************************************************
 
-uniform mat4 viewMat;
-uniform vec3 parCorners[4];
+uniform mat4 viewMatInv;
 uniform vec3 parPosArray[64];
 uniform vec2 parSizeAndRotArray[64];
 uniform vec4 parColorArray[64];
 
-attribute float parCornerIdx;
 attribute float parIdx;
 
 
@@ -24,20 +22,18 @@ vec4 getParticleColor()
 	return parColorArray[int( parIdx )];
 }
 
-vec4 calcParticleViewPos( const vec3 pos )
+vec3 calcParticlePos( const vec2 texCoords )
 {
-	// Position
-	vec3 pos1 = pos + parPosArray[int( parIdx )] +
-			    parCorners[int( parCornerIdx )] * parSizeAndRotArray[int( parIdx )].x;
+	int index = int( parIdx );
+	vec3 camAxisX = viewMatInv[0].xyz;
+	vec3 camAxisY = viewMatInv[1].xyz;
 	
-	// Rotation
-	float s = sin( parSizeAndRotArray[int( parIdx )].y * 0.0174532925 );
-	float c = cos( parSizeAndRotArray[int( parIdx )].y * 0.0174532925 );
-	mat4 rotMat = mat4( c, -s, 0, 0,
-						s,  c, 0, 0,
-						0,  0, 1, 0,
-						0,  0, 0, 1 );
-	vec4 mid = viewMat * vec4( parPosArray[int( parIdx )], 1 );
-	vec4 pos2 = viewMat * vec4( pos1, 1 );
-	return rotMat * (pos2 - mid) + mid;
+	vec2 cornerPos = texCoords - vec2( 0.5, 0.5 );
+	
+	// Apply rotation
+	float s = sin( parSizeAndRotArray[index].y );
+	float c = cos( parSizeAndRotArray[index].y );
+	cornerPos = mat2( c, -s, s, c ) * cornerPos;
+	
+	return parPosArray[index] + (camAxisX * cornerPos.x + camAxisY * cornerPos.y) * parSizeAndRotArray[index].x;
 }

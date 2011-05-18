@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Horde3D Engine"
 	ProjectGUID="{1D558D7D-DA57-4908-BCFC-902054FE6B63}"
 	RootNamespace="Horde3D"
@@ -294,10 +294,6 @@
 			</File>
 			<File
 				RelativePath=".\utOpenGL.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Shared\utXMLParser.cpp"
 				>
 			</File>
 		</Filter>

@@ -68,7 +68,7 @@
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
     </Lib>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)..\..\..\Horde3D\Source\Shared\utXmlParser.h" "$(SolutionDir)include\XMLParser\" /y</Command>
+      <Command>xcopy "$(ProjectDir)utXmlParser.h" "$(SolutionDir)include\XMLParser\" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -88,14 +88,14 @@
       <OutputFile>$(SolutionDir)lib\$(ProjectName).lib</OutputFile>
     </Lib>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)..\..\..\Horde3D\Source\Shared\utXmlParser.h" "$(SolutionDir)include\XMLParser\" /y</Command>
+      <Command>xcopy "$(ProjectDir)utXmlParser.h" "$(SolutionDir)include\XMLParser\" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Horde3D\Source\Shared\utXMLParser.cpp" />
+    <ClCompile Include=".\utXMLParser.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Horde3D\Source\Shared\utXMLParser.h" />
+    <ClInclude Include=".\utXMLParser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -67,15 +67,13 @@ struct OverlayVert
 
 struct ParticleVert
 {
-	float  x, y, z;      // Position
 	float  u, v;         // Texture coordinates
-	float  cornerIndex;  // Index of corner of quad (for up/right vectors)
 	float  index;        // Index in property array
 
 	ParticleVert() {}
 
-	ParticleVert( float u, float v, float cornerIndex ):
-		x( 0 ), y( 0 ), z( 0 ), u( u ), v( v ), cornerIndex( cornerIndex ), index( 0 )
+	ParticleVert( float u, float v ):
+		u( u ), v( v ), index( 0 )
 	{
 	}
 };
@@ -182,7 +180,7 @@ protected:
 	unsigned char                      *_scratchBuf;
 	uint32                             _scratchBufSize;
 
-	Matrix4f                           _viewMat, _viewMatInv, _projMat, _viewProjMat;
+	Matrix4f                           _viewMat, _viewMatInv, _projMat, _viewProjMat, _viewProjMatInv;
 	
 	std::vector< PipeSamplerBinding >  _pipeSamplerBindings;
 	std::vector< char >                _occSets;  // Actually bool

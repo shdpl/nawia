@@ -158,7 +158,7 @@ void QModelNode::addRepresentation()
 
 	QFile file(QFileInfo(resourceName).absoluteFilePath());
 	if (!file.open(QIODevice::ReadOnly))
-		qWarning("Error opening resource %s", qPrintable(m_xmlNode.attribute("geometry")));
+		qWarning("Error opening resource %s (%s)", qPrintable(m_xmlNode.attribute("geometry")), qPrintable( QFileInfo(resourceName).absoluteFilePath() ));
 	
 	// Stupid return value, if false it can also be the case that the resource was loaded before instead of that their was an error
 	h3dLoadResource(m_resourceID, file.readAll().constData(), file.size());

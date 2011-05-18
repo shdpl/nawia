@@ -677,7 +677,7 @@ DLLEXP H3DRes h3dutCreateGeometryRes(
 	// Set joint count (zero for this method)
 	*( (uint32 *)pData ) = 0; pData += sizeof( uint32 );
 	// Set number of streams
-	*( (uint32 *)pData ) = 1 + numTexSets + ( normalData ? 1 : 0 ); pData += sizeof( uint32 );
+	*( (uint32 *)pData ) = 1 + numTexSets + ( normalData ? 1 : 0 ) + ((tangentData && bitangentData) ? 2 : 0); pData += sizeof( uint32 );
 	// Write number of elements in each stream
 	*( (uint32 *)pData ) = numVertices; pData += sizeof( uint32 );
 

@@ -76,7 +76,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy &quot;$(ProjectDir)..\..\..\Horde3D\Source\Shared\utXmlParser.h&quot; &quot;$(SolutionDir)include\XMLParser\&quot; /y"
+				CommandLine="xcopy &quot;$(ProjectDir)utXmlParser.h&quot; &quot;$(SolutionDir)include\XMLParser\&quot; /y"
 			/>
 		</Configuration>
 		<Configuration
@@ -140,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy &quot;$(ProjectDir)..\..\..\Horde3D\Source\Shared\utXmlParser.h&quot; &quot;$(SolutionDir)include\XMLParser\&quot; /y"
+				CommandLine="xcopy &quot;$(ProjectDir)utXmlParser.h&quot; &quot;$(SolutionDir)include\XMLParser\&quot; /y"
 			/>
 		</Configuration>
 	</Configurations>
@@ -153,7 +153,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\Horde3D\Source\Shared\utXMLParser.cpp"
+				RelativePath=".\utXMLParser.cpp"
 				>
 			</File>
 		</Filter>
@@ -163,7 +163,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\..\Horde3D\Source\Shared\utXMLParser.h"
+				RelativePath=".\utXMLParser.h"
 				>
 			</File>
 		</Filter>
