@@ -112,7 +112,7 @@
     </Link>
     <PostBuildEvent>
       <Command>
-</Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -139,7 +139,6 @@
     <ClCompile Include="egTexture.cpp" />
     <ClCompile Include="utImage.cpp" />
     <ClCompile Include="utOpenGL.cpp" />
-    <ClCompile Include="..\Shared\utXMLParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="egAnimatables.h" />
@@ -169,7 +168,6 @@
     <ClInclude Include="utOpenGL.h" />
     <ClInclude Include="..\Shared\utPlatform.h" />
     <ClInclude Include="utTimer.h" />
-    <ClInclude Include="..\Shared\utXMLParser.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Extensions\Sound\Source\Extension_Sound.vcxproj">

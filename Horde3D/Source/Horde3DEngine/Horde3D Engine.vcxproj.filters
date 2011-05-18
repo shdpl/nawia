@@ -84,9 +84,6 @@
     <ClCompile Include="utOpenGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\utXMLParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="egAnimatables.h">
@@ -168,9 +165,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utTimer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\utXMLParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
