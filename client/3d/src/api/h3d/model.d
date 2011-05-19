@@ -2,9 +2,10 @@ module api.h3d.model;
 
 import horde3d;
 
-import api.h3d.animation.animation;
+import api.h3d.animation.animation,
+	api.h3d.node;
 
-class /*H3DModel :*/ Model {
+class /*H3DModel :*/ H3DModel : H3DNode {
 	string _name;
 	//Geometry _geometry;
 	H3DAnimation[H3DAnimation.maxCount] _anim;
@@ -13,7 +14,6 @@ class /*H3DModel :*/ Model {
 	float lodDist[4];
 	bool skinning;
 	
-	bool setMorphTarget() {
-		
-	}
+	/// indexed by target name
+	float[string] morphWeight;
 }

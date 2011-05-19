@@ -7,7 +7,7 @@ import api.h3d.mesh,
 
 class /*H3DMesh :*/ Mesh {
 	string _name;
-	Material _mat;
+	H3DMaterial _mat;
 	uint _batchStart;
 	uint _batchCount;
 	

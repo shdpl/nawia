@@ -3,11 +3,10 @@ module io.res.filter.filter;
 import type.file.media;
 
 interface ResFilter {
-	@property
-	immutable MediaType type();	//FIXME: abstract variable plx
+	immutable @property MediaType type();	//FIXME: abstract variable plx
 	
 	static this() {
-		registerHandler(type);
+		
 	}
 	
 	/*

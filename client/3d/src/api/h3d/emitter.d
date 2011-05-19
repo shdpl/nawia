@@ -6,14 +6,13 @@ import std.datetime;
 
 import api.h3d.material,
 	api.h3d.particle,
+	api.h3d.node,
 	type.cuda.types;
 
-class H3DEmitter /*: Emitter*/ {
-	H3DNodeTypes _handle;
-	string _name;
-	Material _mat;
+class H3DEmitter : H3DNode /*: Emitter*/ {
+	H3DMaterial _mat;
 	/// Particle description
-	Particle _particle;
+	H3DParticle _particle;
 	/// Delay before object will start emitting
 	StopWatch delay;
 	float emissionRate;
@@ -23,14 +22,17 @@ class H3DEmitter /*: Emitter*/ {
 	uint _particlesCount;
 	uint _particleRespCount;
 	
-	this() {
-		h3dAddEmiterNode();
+	this(H3DNode parent, string name, H3DMaterial material, H3DParticle particle, uint maxCountInMoment, uint maxCount) {
+		this.name = name;
+		_particlesCount = maxCountInMoment;
+		_particleRespCount = maxCount;
+		h3dAddEmitterNode(parent.id, name, material.id, particle.id, _particlesCount, _particleRespCount);
 	}
 	
 	public void onRedraw() {
-		h3dAdvanceEmitterTime(_handle, Timer.delta);
-		if (h3dHasEmitterFinished(_handle)) {
-			delete this;
+		h3dAdvanceEmitterTime(this.id, 0/*Timer.delta*/); //FIXME
+		if (h3dHasEmitterFinished(this.id)) {
+			//this.clear(); //FIXME
 		}
 	}
 }

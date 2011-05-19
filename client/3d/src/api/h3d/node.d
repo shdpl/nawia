@@ -1,42 +1,47 @@
-module api.h3d.sgnode;
+module api.h3d.node;
 
 import horde3d;
 
 import api.h3d.ray,
 	type.cuda.types;
 
-class SGNode  {
-	H3DNodeTypes _handle;
+class H3DNode  {
 	
 	public:
 	enum NodeType {
 		CAMERA
 	}
 	
-	this(SGNode) {
-		h3dCloneResource(_handle, null);
+	this() {}
+	
+	this(H3DNode node) {
+		this.id = h3dCloneResource(node.id, null);
 	}
 	
 	~this() {
-		h3dRemoveResource(_handle);
+		h3dRemoveResource(id);
 	}
 	
-	string name();
+	abstract @property int id();
+	abstract @property void id(int id);
+	
+	@property string name();
+	@property void name(string);
 	NodeType type();
-	SGNode[] find(string name);
-	SGNode[] all();
+	H3DNode[] find(string name);
+	H3DNode[] all();
 	//Iterator iterator();
 	//mapStream();
 	Ray castRay(float3 origin, float3 direction, uint maxIntersections);
 	
-	SGNode parent();
-	void parent(SGNode newParent);
+	H3DNode parent();
+	void parent(H3DNode newParent);
 	
-	SGNode child(uint n);
-	void child(SGNode child, uint n);
+	H3DNode child(uint n);
+	void child(H3DNode child, uint n);
 
-	SGNode addNode(SGNode parent, SGNode which);
-	void delNode(SGNode parent);
+	H3DNode addNode(H3DNode parent, H3DNode which);
+	void delNode(H3DNode parent);
 
 	void active(bool val);
 	bool active();

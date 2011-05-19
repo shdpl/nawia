@@ -2,12 +2,12 @@ module api.h3d.camera;
 
 import horde3d;
 
-import api.h3d.sgnode,
+import api.h3d.node,
 	api.h3d.pipeline,
 	type.buffer.pixel,
 	type.screen.cords;
 
-class H3DCamera : SGNode {
+class H3DCamera : H3DNode {
 	H3DPipeline _pipeline;
 	BufferPixel renderTarget;
 	
@@ -20,18 +20,18 @@ class H3DCamera : SGNode {
 	
 	bool orthogonal;
 	
-	this() {
-		h3dAddCammeraNode();
+	void init(H3DNode parent, string name, H3DPipeline pipeline) {
+		h3dAddCameraNode(parent.id, name, pipeline.id);
 	}
 	
 	void setFrustum() {
 		
 	}
 	
-	bool visible(SGNode what);
-	uint queryLOD(SGNode what);
+	bool visible(H3DNode what);
+	uint queryLOD(H3DNode what);
 	
 	void render() {
-		h3dRender(_handle);
+		h3dRender(id);
 	}
 }

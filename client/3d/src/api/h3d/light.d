@@ -11,7 +11,7 @@ class H3DLight {
 	void*/*ShadowContext*/ _sctx;
 	
 	public:
-	Material material;
+	H3DMaterial material;
 	float radius;
 	float fov;
 	ColorRGB diffuse;

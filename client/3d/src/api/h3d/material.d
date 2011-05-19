@@ -5,11 +5,12 @@ import horde3d;
 import api.h3d.shader.shader,
 	type.cuda.types;
 
-class Material {
+class H3DMaterial {
 	public:
 	Shader shader;
 	
 	void*/*Sampler[]*/ _samplers;
 	float3[] _uniforms;
+	int id;
 	
 }

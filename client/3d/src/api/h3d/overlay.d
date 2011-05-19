@@ -10,7 +10,7 @@ class Overlay {
 	public:
 	void mapCords (CordsScreen xy, CordsScreen uv);
 	ColorRGBA!float color;
-	Material material;
+	H3DMaterial material;
 	///Clears *ALL* overlays
 	void clear();
 }

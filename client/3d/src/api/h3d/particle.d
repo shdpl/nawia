@@ -4,9 +4,10 @@ import horde3d;
 
 import std.datetime;
 
-import type.color.rgba;
+import type.color.rgba,
+	api.h3d.node;
 
-class Particle {
+class H3DParticle : H3DNode {
 	ColorRGBA!float color;
 	float size;
 	float velocity;

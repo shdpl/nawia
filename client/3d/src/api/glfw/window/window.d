@@ -24,17 +24,15 @@ import std.conv,
 import glfw;
 
 import ge.window.window,
-	msg.provider.window.close,
-	msg.provider.window.refresh,
-	msg.provider.window.resize,
+	msg.provider,
 	msg._window.close,
 	msg._window.refresh,
 	msg._window.resize;
 
  
 
-package class WindowGLFW : Window, MsgProviderWindowClose,
-	MsgProviderWindowRefresh, MsgProviderWindowResize
+package class WindowGLFW : Window, MsgProvider!MsgWindowClose,
+	MsgProvider!MsgWindowRefresh, MsgProvider!MsgWindowResize
 {
 	private:
 	static Window hInstance = null;
@@ -42,9 +40,9 @@ package class WindowGLFW : Window, MsgProviderWindowClose,
 	CordsScreen _position;
 	WindowProperties _props;
 	WindowMode[] _windowModes;
-	mixin InjectListener!MsgWindowClose _lstnrClose;
-	mixin InjectListener!MsgWindowRefresh _lstnrRefresh;
-	mixin InjectListener!MsgWindowResize _lstnrResize;
+	mixin InjectMsgListener!MsgWindowClose _lstnrClose;
+	mixin InjectMsgListener!MsgWindowRefresh _lstnrRefresh;
+	mixin InjectMsgListener!MsgWindowResize _lstnrResize;
 	
 	
 	public:
@@ -163,27 +161,6 @@ package class WindowGLFW : Window, MsgProviderWindowClose,
 		return ret;
 	}
 	
-	override bool setMsgListener( MsgListener!MsgWindowClose lstnr ) {
-		_lstnrClose = lstnr;
-		glfwSetWindowCloseCallback(!is(lstnr) ?
-			cast(GLFWwindowclosefun)&onClose : null); /* TODO: better method? */
-		return true;
-	}
-	
-	override bool setMsgListener( MsgListener!MsgWindowResize lstnr ) {
-		_lstnrResize = lstnr;
-		glfwSetWindowSizeCallback(!is(lstnr) ?
-			cast(GLFWwindowsizefun)&onResize : null); /* TODO: better method? */
-		return true;
-	}
-	
-	override bool setMsgListener( MsgListener!MsgWindowRefresh lstnr ) {
-		_lstnrRefresh = lstnr;
-		glfwSetWindowRefreshCallback(!is(lstnr) ?
-			cast(GLFWwindowrefreshfun)&onRefresh : null); /* TODO: better method? */
-		return true;
-	}
-	
 	private:
 
 	this(WindowProperties hints)
@@ -202,7 +179,9 @@ package class WindowGLFW : Window, MsgProviderWindowClose,
 		glfwGetWindowSize(&__tmp_i1, &__tmp_i2);
 		_props.size = new CordsScreen(__tmp_i1, __tmp_i2);
 		
-		connect();
+		register(cast(MsgProvider!MsgWindowClose)this);
+		register(cast(MsgProvider!MsgWindowResize)this);
+		register(cast(MsgProvider!MsgWindowRefresh)this);
 	}
 	
 	~this()
@@ -212,15 +191,13 @@ package class WindowGLFW : Window, MsgProviderWindowClose,
 
 	extern(C) {	/* Warning! Methods prohibited, and fields might be unitialized */
 		int onClose() {
-			emit(); 
+			return 1;
 		}
 	
 		void onResize(int x, int y) {
-			_lstnrResize();
 		}
 	
 		void onRefresh() {
-			//TODO:
 		}
 	}
 	
@@ -245,15 +222,15 @@ package class WindowGLFW : Window, MsgProviderWindowClose,
 		}
 	}
 	void initModes()
-	in { assert(!is(_videoModes)); }
-	 out { assert(cNewModes == cModes); }
+	 in { assert(!is(_windowModes)); }
 	 body{
+	 	GLFWvidmode vidModes;
 		int cNewModes;
 		int cModes = 16;
 		do {
-			cNewModes = glfwGetVideoModes(_videoModes, cModes);
+			cNewModes = glfwGetVideoModes(vidModes, cModes);
 			} while (cNewModes < cModes);
-		
+		assert(cNewModes == cModes);
 	}
 	
 }
