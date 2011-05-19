@@ -29,19 +29,17 @@ context TRANSLUCENT
 
 #include "shaders/utilityLib/vertParticle.glsl"
 
-uniform mat4 viewMatInv;
-uniform mat4 projMat;
+uniform mat4 viewProjMat;
 uniform vec4 lightPos;
-attribute vec3 vertPos;
+attribute vec2 texCoords0;
 varying float dist;
 
 void main(void)
 {
-	vec4 vsPos = calcParticleViewPos( vertPos );
-	vec4 pos = viewMatInv * vsPos;
+	vec4 pos = vec4( calcParticlePos( texCoords0 ), 1 );
 	dist = length( lightPos.xyz - pos.xyz ) / lightPos.w;
 	
-	gl_Position = projMat * vsPos;
+	gl_Position = viewProjMat * pos;
 }
 				
 				
