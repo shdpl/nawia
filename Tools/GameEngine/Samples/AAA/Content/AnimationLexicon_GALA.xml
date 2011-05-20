@@ -567,7 +567,7 @@
 		<Restriction>Japan, </Restriction>
 	</Gesture>
 	<Posture>
-		<ID>0036</ID>
+		<ID>0136</ID>
 		<Name>German_posture_armsCrossed</Name>
 		<Description>300 Frames posture in which the character holds his/her arms crossed</Description>
 		<Files gender="female">
@@ -583,7 +583,7 @@
 		<Restriction>Germany</Restriction>		
 	</Posture>
 	<Posture>
-		<ID>0037</ID>
+		<ID>0137</ID>
 		<Name>German_posture_handsOnHips</Name>
 		<Description>300 Frames posture in which the character has the hands on his/her hips</Description>
 		<Files gender="female">
@@ -613,7 +613,7 @@
 		</Function>
 	</Gesture>
 	<Posture>
-		<ID>0039</ID>
+		<ID>0139</ID>
 		<Name>Japanese_posture_handsCrossed</Name>
 		<Description>300 Frames posture in which the character has the hands crossed infront of his Pelvis</Description>
 		<Files gender="female">
@@ -755,7 +755,7 @@
 		<Restriction></Restriction>  
 	</Gesture>
 	<Still>
-		<ID>0048</ID>
+		<ID>0148</ID>
 		<Name>Still Animation Low</Name>
 		<Description>Two frames animation for spacial extend feature</Description>
 		<Files gender="female">
@@ -766,7 +766,7 @@
 		</Files>
 	</Still>
 	<Still>
-		<ID>0049</ID>
+		<ID>0149</ID>
 		<Name>Still Animation Medium</Name>
 		<Description>Two frames animation for spacial extend feature</Description>
 		<Files gender="female">
@@ -777,7 +777,7 @@
 		</Files>
 	</Still>
 	<Still>
-		<ID>0050</ID>
+		<ID>0150</ID>
 		<Name>Still Animation High</Name>
 		<Description>Two frames animation for spacial extend feature</Description>
 		<Files gender="female">
@@ -837,7 +837,7 @@
 		</Files>	
 	</Movement>
 	<Posture>
-		<ID>0054</ID>
+		<ID>0154</ID>
 		<Name>Japanese_posture_JHS</Name>
 		<Description>300 Frames posture in which the character holds the one hand with the other hand infront of his/her stomach</Description>
 		<Files gender="female">

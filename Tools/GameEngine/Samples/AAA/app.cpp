@@ -92,7 +92,7 @@ bool Application::init( const char *fileName )
 	m_scenario_counter = 0;
 	
 	m_fontMatRes = h3dAddResource( H3DResTypes::Material, "materials/font.material.xml", 0 );
-	h3dutLoadResourcesFromDisk(".");
+	h3dutLoadResourcesFromDisk(".");	
 
 	//** configure AAA with settings from XML file
 	if(!config( getSceneXMLNode(fileName) ))
@@ -243,7 +243,7 @@ void Application::update( float fps )
 			
 			int r = rand();
 			if(getAgent(i)->active /*&& (getAgent(i)->animation_id < 0)*/ && (getAgent(i)->movement < 0)
-			&&(r % 1000 < 10)) // chance for anim load = 1%
+			&&(r % 1000 < 5)) // chance for anim load = 0.5%
 			{
 				//compute which arm to animate
 				char* arm = "Bip01_R_Clavicle";
@@ -298,6 +298,10 @@ void Application::update( float fps )
 	//text << "Camera: pos(" << _x << ", " << _y << ", " << _z << ") rot(" << _rx << ", " << _ry << ", " << _rz << ")";
 	//h3dutShowText(text.str().c_str(), 0.01f, 0.02f, 0.03f, 1, 1, 1, m_fontMatRes);
 
+	//std::stringstream text;
+	//text << "fps" << GameEngine::FPS();
+	//h3dutShowText(text.str().c_str(), 0.01f, 0.02f, 0.03f, 1, 1, 1, m_fontMatRes);
+
 	//** Render scene
 	GameEngine::update();
 
@@ -329,6 +333,8 @@ void Application::resize( int width, int height )
 	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportWidthI, width );
 	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportHeightI, height );	
 	h3dResizePipelineBuffers( h3dGetNodeParamI( m_cam_hID, H3DCamera::PipeResI ), width, height );
+
+	h3dSetupCameraView(m_cam_hID, 35, width/(float)height, 0.5f, 100);
 }
 
 
@@ -517,6 +523,24 @@ void Application::processScenario(int act_id)
 {
 	switch(m_scenario)
 	{
+	case 0: //german
+		switch(act_id)
+		{
+		case 99:
+			for(int j=0; j< NR_OF_AGENTS; j++)
+			{
+				for(int i=1; i<= 70; i++)
+				{
+					//preload animations
+					GameEngine::Agent_playAnimationI( getAgent(j)->entity_id, i, -1, -1, -1, 0, 0 );
+				}
+				//preload TTS
+				GameEngine::speak( getAgent(j)->entity_id, "a b c d e f g h i j k l m n o p q r s t u v w x y z");
+			}
+			break;
+		}
+		break;
+	
 	case 1: //german
 		switch(act_id)
 		{
@@ -638,7 +662,7 @@ void Application::processScenario(int act_id)
 				h3dSetNodeTransform(a->horde_id, a->pos.x, a->pos.y, a->pos.z, a->rot.x, a->rot.y, a->rot.z, a->scale.x, a->scale.y, a->scale.z);
 			}
 			//setPersonalChar(m_agents[4]);
-			GameEngine::Agent_setParamI(Agent_Param::DfltMorphDuration_I, 5);
+			//GameEngine::Agent_setParamI(Agent_Param::DfltMorphDuration_I, 5);
 
 			//set the camera
 			_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0; //med height cam
@@ -897,7 +921,7 @@ void Application::processScenario(int act_id)
 				h3dSetNodeTransform(a->horde_id, a->pos.x, a->pos.y, a->pos.z, a->rot.x, a->rot.y, a->rot.z, a->scale.x, a->scale.y, a->scale.z);
 			}
 			//setPersonalChar(m_agents[4]);
-			GameEngine::Agent_setParamI(Agent_Param::DfltMorphDuration_I, 5);
+			GameEngine::Agent_setParamI(Agent_Param::DfltMorphDuration_I, 40);
 
 			//set the camera
 			//_x=-9.64f; _y=3.0f; _z=-3.76f; _rx=-32.0f; _ry=-48.0f; _rz=0; //med height cam
