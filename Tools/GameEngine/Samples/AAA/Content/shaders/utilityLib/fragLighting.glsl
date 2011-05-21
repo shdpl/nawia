@@ -76,5 +76,5 @@ vec3 calcPhongSpotLight( const vec3 pos, const vec3 normal, const vec3 albedo, c
 	}
 	
 	// Final color
-	return albedo * lightColor * atten * shadowTerm * (1.0 + spec);
+	return albedo * lightColor * atten * shadowTerm * (1.0 + spec) * 2;
 }
