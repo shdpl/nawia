@@ -1,8 +1,8 @@
 module api.h3d.material;
 
-import horde3d;
 
-import api.h3d.shader.shader,
+import api.h3d.h3d,
+	api.h3d.shader.shader,
 	type.cuda.types;
 
 class H3DMaterial {

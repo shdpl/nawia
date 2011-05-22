@@ -4,6 +4,6 @@ import horde3d;
 
 class MMComponent {
 	public:
-	void free();
+	void free() {}
 	//listUnloaded
 }

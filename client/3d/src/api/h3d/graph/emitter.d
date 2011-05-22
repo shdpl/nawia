@@ -1,6 +1,6 @@
 module api.h3d.emitter;
 
-import horde3d;
+import api.h3d.h3d;
 
 import std.datetime;
 
@@ -9,7 +9,7 @@ import api.h3d.material,
 	api.h3d.node,
 	type.cuda.types;
 
-class H3DEmitter : H3DNode /*: Emitter*/ {
+class H3DEmitter : H3DSGNode /*: Emitter*/ {
 	H3DMaterial _mat;
 	/// Particle description
 	H3DParticle _particle;
@@ -22,7 +22,7 @@ class H3DEmitter : H3DNode /*: Emitter*/ {
 	uint _particlesCount;
 	uint _particleRespCount;
 	
-	this(H3DNode parent, string name, H3DMaterial material, H3DParticle particle, uint maxCountInMoment, uint maxCount) {
+	this(H3DSGNode parent, string name, H3DMaterial material, H3DParticle particle, uint maxCountInMoment, uint maxCount) {
 		this.name = name;
 		_particlesCount = maxCountInMoment;
 		_particleRespCount = maxCount;

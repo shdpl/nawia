@@ -1,10 +1,9 @@
 module api.h3d.texture;
 
-import horde3d;
 
-import type.geometric.rect;
-
-import type.buffer.pixel;
+import api.h3d.h3d,
+	type.geometric.rect,
+	type.buffer.pixel;
 
 class Texture {
 	public:

@@ -31,8 +31,8 @@ import ge.window.window,
 
  
 
-package class WindowGLFW : Window, MsgProvider!MsgWindowClose,
-	MsgProvider!MsgWindowRefresh, MsgProvider!MsgWindowResize
+package class WindowGLFW : Window, MsgProvider!MsgWindowRefresh, MsgProvider!MsgWindowResize,
+	MsgProvider!MsgWindowClose
 {
 	private:
 	static Window hInstance = null;
@@ -93,8 +93,8 @@ package class WindowGLFW : Window, MsgProvider!MsgWindowClose,
 		return glfwGetWindowParam(GLFW_REFRESH_RATE);
 	}
 	
-	override ColorRGB fmtMain() {
-		return (new ColorRGB(
+	override ColorRGB!ubyte fmtMain() {
+		return (ColorRGB!ubyte(
 			to!ubyte(glfwGetWindowParam(GLFW_RED_BITS)),
 			to!ubyte(glfwGetWindowParam(GLFW_GREEN_BITS)),
 			to!ubyte(glfwGetWindowParam(GLFW_BLUE_BITS))
@@ -105,8 +105,8 @@ package class WindowGLFW : Window, MsgProvider!MsgWindowClose,
 		return to!ubyte(glfwGetWindowParam(GLFW_ALPHA_BITS));
 	}
 	
-	override ColorRGB fmtAccumMain() {
-		return (new ColorRGB(
+	override ColorRGB!ubyte fmtAccumMain() {
+		return (ColorRGB!ubyte(
 			to!ubyte(glfwGetWindowParam(GLFW_ACCUM_RED_BITS)),
 			to!ubyte(glfwGetWindowParam(GLFW_ACCUM_GREEN_BITS)),
 			to!ubyte(glfwGetWindowParam(GLFW_ACCUM_BLUE_BITS))

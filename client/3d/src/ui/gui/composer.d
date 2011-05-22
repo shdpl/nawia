@@ -5,5 +5,5 @@ import ui.gui.control.control,
 
 class Composer {
 	Control[string] controlsMap;
-	Fragment compose(Object what);
+	Fragment compose(Object what) {return new Fragment;}
 }

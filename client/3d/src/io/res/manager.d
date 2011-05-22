@@ -7,7 +7,7 @@ static class ResManager : Singleton!ResManager {
 	public:
 	string[string] _aliasMap;
 	
-	Stream open(string uri);
+	Stream open(string uri) {return new BufferedFile(uri);}
 	
-	void close(Stream stream);
+	void close(Stream stream) {}
 }

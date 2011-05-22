@@ -1,8 +1,8 @@
 module api.h3d.pipeline;
 
-import horde3d;
 
-import type.cuda.types,
+import api.h3d.h3d,
+	type.cuda.types,
 	type.buffer.pixel;
 
 class H3DPipeline /*: Pipeline*/ {
@@ -13,7 +13,7 @@ class H3DPipeline /*: Pipeline*/ {
 	public:
 	/// Size of the render targets
 	float2[2] size;
-	BufferPixel pixelBuffer(string name, uint bufId);
+	BufferPixel pixelBuffer(string name, uint bufId) {return BufferPixel();}
 	
 	this() {
 		

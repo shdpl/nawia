@@ -1,8 +1,7 @@
 module api.h3d.light;
 
-import horde3d;
-
-import api.h3d.material,
+import api.h3d.h3d,
+	api.h3d.material,
 	type.color.rgb;
 
 class H3DLight {
@@ -14,7 +13,7 @@ class H3DLight {
 	H3DMaterial material;
 	float radius;
 	float fov;
-	ColorRGB diffuse;
+	ColorRGB!ubyte diffuse;
 	float intensity;
 	
 }

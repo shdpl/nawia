@@ -1,16 +1,16 @@
 module api.h3d.ray;
 
-import horde3d;
 
-import api.h3d.node,
+import api.h3d.h3d,
+	api.h3d.node,
 	type.cuda.types;
 
-class Ray {
+struct Ray {
 	public Intersection[] intersections;
 	
-	class Intersection {
+	struct Intersection {
 		public:
-		H3DNode target;
+		H3DSGNode target;
 		float distance;
 		float3 point;
 	}

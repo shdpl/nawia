@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module nawiaclient3d;
+module nawia.client3d;
+
+import msg.mediator.mtd;
 
 void main(){
-	
+	new MsgMediatorMtD;
 }
- 

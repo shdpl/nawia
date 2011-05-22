@@ -1,8 +1,8 @@
 module api.h3d.mesh;
 
-import horde3d;
 
-import api.h3d.mesh,
+import api.h3d.h3d,
+	api.h3d.mesh,
 	api.h3d.material;
 
 class /*H3DMesh :*/ Mesh {

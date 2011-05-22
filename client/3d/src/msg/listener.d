@@ -17,7 +17,8 @@
 
 module msg.listener;
 
-public import msg.msg;
+public import msg.msg,
+	msg.mediator.mtd;
 
 
 interface MsgListener(MSG) {

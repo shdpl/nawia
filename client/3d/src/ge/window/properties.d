@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module window.properties;
+module ge.window.properties;
 
 public import type.screen.cords;
 

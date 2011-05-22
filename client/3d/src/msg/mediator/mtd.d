@@ -30,17 +30,15 @@ class MsgMediatorMtD : Singleton!MsgMediatorMtD, MsgMediator {
 	MsgProvider!Msg[MsgProvider!Msg][TypeInfo] _providers;
 	
 	this() {
-		_filters = null;
-		_listeners = null;
-		_providers = null;
-		
 		setMaxMailboxSize(thisTid, 1024, OnCrowding.throwException);
 	}
 	
 	override bool register(MsgFilter!Msg filter) {
 		auto type = typeid(filter);
-		if ( type !in _filters )
+		if ( type !in _filters ) {
 			_filters[type] = null;
+			
+			}
 		if ( filter !in _filters[type] ) {
 			_filters[type][filter] = filter;
 			return true;
@@ -128,21 +126,5 @@ class MsgMediatorMtD : Singleton!MsgMediatorMtD, MsgMediator {
 }
 
 unittest {
-	try {
-		MsgHandler[] handlers;
-		handlers ~= new msg._test.t1.MsgHandlerTest1();
-		handlers ~= new msg._test.t2.MsgHandlerTest2();
-		MsgMediatorMtD m = new MsgMediatorMtD;
-		
-		assert(m.addHandler(handlers[0]));
-		assert(m.addHandler(handlers[1]));
-		assert(!m.addHandler(handlers[0]));
-			
-		assert(m.delHandler(handlers[0]));
-		assert(!m.delHandler(handlers[0]));
-		assert(m.delHandler(handlers[1]));
-	} catch (Exception e) {
-		std.stdio.writeln("mtd.d unittest failed");
-		throw e;
-	}
+	
 }

@@ -6,9 +6,9 @@ import api.bullet.world.collision,
 	api.bullet.pbody.rigid;
 
 class WorldDynamics : WorldCollision {
-	void onFrame(StopWatch delta);
+	void onFrame(StopWatch delta) {}
 	
 	public:
-	void add(PBodyRigid rigidBody);
-	void del(PBodyRigid rigidBody);
+	void add(PBodyRigid rigidBody) {}
+	void del(PBodyRigid rigidBody) {}
 }

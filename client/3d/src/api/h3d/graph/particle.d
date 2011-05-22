@@ -1,13 +1,12 @@
 module api.h3d.particle;
 
-import horde3d;
-
 import std.datetime;
 
-import type.color.rgba,
+import api.h3d.h3d,
+	type.color.rgba,
 	api.h3d.node;
 
-class H3DParticle : H3DNode {
+class H3DParticle : H3DSGNode {
 	ColorRGBA!float color;
 	float size;
 	float velocity;

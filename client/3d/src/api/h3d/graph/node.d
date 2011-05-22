@@ -1,11 +1,10 @@
 module api.h3d.node;
 
-import horde3d;
-
-import api.h3d.ray,
+import api.h3d.h3d,
+	api.h3d.ray,
 	type.cuda.types;
 
-class H3DNode  {
+class H3DSGNode  {
 	
 	public:
 	enum NodeType {
@@ -14,7 +13,7 @@ class H3DNode  {
 	
 	this() {}
 	
-	this(H3DNode node) {
+	this(H3DSGNode node) {
 		this.id = h3dCloneResource(node.id, null);
 	}
 	
@@ -28,20 +27,20 @@ class H3DNode  {
 	@property string name();
 	@property void name(string);
 	NodeType type();
-	H3DNode[] find(string name);
-	H3DNode[] all();
+	H3DSGNode[] find(string name);
+	H3DSGNode[] all();
 	//Iterator iterator();
 	//mapStream();
 	Ray castRay(float3 origin, float3 direction, uint maxIntersections);
 	
-	H3DNode parent();
-	void parent(H3DNode newParent);
+	H3DSGNode parent();
+	void parent(H3DSGNode newParent);
 	
-	H3DNode child(uint n);
-	void child(H3DNode child, uint n);
+	H3DSGNode child(uint n);
+	void child(H3DSGNode child, uint n);
 
-	H3DNode addNode(H3DNode parent, H3DNode which);
-	void delNode(H3DNode parent);
+	H3DSGNode addNode(H3DSGNode parent, H3DSGNode which);
+	void delNode(H3DSGNode parent);
 
 	void active(bool val);
 	bool active();

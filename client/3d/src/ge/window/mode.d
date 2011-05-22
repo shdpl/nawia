@@ -1,4 +1,4 @@
-module window.mode;
+module ge.window.mode;
 public import type.screen.cords;
 
 interface WindowMode {

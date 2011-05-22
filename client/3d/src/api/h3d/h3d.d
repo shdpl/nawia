@@ -1,12 +1,13 @@
 module api.h3d.h3d;
 
-import horde3d;
+public import horde3d;
+
+alias int H3DNode;
 
 static this() {
-	if (h3dInit())
-		{}//TODO:
+	h3dInit();
 	}
-		
-static ~this() {	
+
+static ~this() {
 	h3dRelease();
 }

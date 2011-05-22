@@ -1,11 +1,10 @@
 module api.h3d.model;
 
-import horde3d;
-
-import api.h3d.animation.animation,
+import api.h3d.h3d,
+	api.h3d.animation.animation,
 	api.h3d.node;
 
-class /*H3DModel :*/ H3DModel : H3DNode {
+class /*H3DModel :*/ H3DModel : H3DSGNode {
 	string _name;
 	//Geometry _geometry;
 	H3DAnimation[H3DAnimation.maxCount] _anim;

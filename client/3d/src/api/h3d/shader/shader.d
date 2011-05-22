@@ -8,5 +8,5 @@ class Shader {
 	float3[] _uniforms;
 	
 	public:
-	void preamble(string code);
+	abstract void preamble(string code);
 }

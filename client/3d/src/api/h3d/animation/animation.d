@@ -1,6 +1,6 @@
 module api.h3d.animation.animation;
 
-import horde3d;
+import api.h3d.h3d;
 
 class H3DAnimation {
 	public:

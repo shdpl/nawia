@@ -26,11 +26,11 @@ interface MsgProvider(MSG) {
 		public bool unregister(MsgProvider!MSG what) {
 			return MsgMediatorMtD().unregister(cast(MsgProvider!Msg)what);
 		}
-		void deliver(MSG msg) {
+		public void deliver(MSG msg) {
 			return MsgMediatorMtD().deliver(msg);
 		}
 	}
 	bool register(MsgProvider!MSG prvdr);
 	bool unregister(MsgProvider!MSG prvdr);
-	void deliver(MSG msg);
+	public void deliver(MSG msg);
 }

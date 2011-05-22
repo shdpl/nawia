@@ -25,8 +25,8 @@ public import
 	msg.provider,
 	type.screen.cords,
 	type.color.rgb,
-	window.properties,
-	window.mode;
+	ge.window.properties,
+	ge.window.mode;
 
 interface Window : MsgProvider!MsgWindowRefresh, MsgProvider!MsgWindowResize,
 	MsgProvider!MsgWindowClose
@@ -49,10 +49,10 @@ interface Window : MsgProvider!MsgWindowRefresh, MsgProvider!MsgWindowResize,
 	
 	uint refreshRate();
 	
-	ColorRGB fmtMain();
+	ColorRGB!ubyte fmtMain();
 	ubyte fmtAlpha();
 	
-	ColorRGB fmtAccumMain();
+	ColorRGB!ubyte fmtAccumMain();
 	ubyte fmtAccumAlpha();
 	
 	ubyte fmtStencil();
@@ -69,10 +69,6 @@ interface Window : MsgProvider!MsgWindowRefresh, MsgProvider!MsgWindowResize,
 	
 	WindowMode[] supportedModes();
 	WindowMode desktopMode();
-
-	bool setMsgListener( MsgListener!MsgWindowClose prvdr );
-	bool setMsgListener( MsgListener!MsgWindowResize prvdr );
-	bool setMsgListener( MsgListener!MsgWindowRefresh prvdr );
 	
 }
 

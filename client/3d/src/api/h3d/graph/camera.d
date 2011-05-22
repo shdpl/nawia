@@ -1,13 +1,12 @@
 module api.h3d.camera;
 
-import horde3d;
-
-import api.h3d.node,
+import api.h3d.h3d,
+	api.h3d.node,
 	api.h3d.pipeline,
 	type.buffer.pixel,
 	type.screen.cords;
 
-class H3DCamera : H3DNode {
+class H3DCamera : H3DSGNode {
 	H3DPipeline _pipeline;
 	BufferPixel renderTarget;
 	
@@ -20,7 +19,7 @@ class H3DCamera : H3DNode {
 	
 	bool orthogonal;
 	
-	void init(H3DNode parent, string name, H3DPipeline pipeline) {
+	void init(H3DSGNode parent, string name, H3DPipeline pipeline) {
 		h3dAddCameraNode(parent.id, name, pipeline.id);
 	}
 	
