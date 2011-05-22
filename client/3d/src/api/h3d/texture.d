@@ -2,19 +2,20 @@ module api.h3d.texture;
 
 
 import api.h3d.h3d,
-	type.geometric.rect,
+	type.cuda.types,
 	type.buffer.pixel;
 
 class Texture {
 	public:
 	
-	enum Format {
-		R16G16B24A8
+	alias H3DFormats.List Format;
+	
+	this(string name, int2 size, Format fmt) {
+		id = h3dCreateTexture(name, size.x, size.y, fmt, 0);
 	}
 	
-	string name;
-	Rect!uint size;
-	Format format;
+	
+	int id;
 	//flags
 	
 	Texture[] subtextures;

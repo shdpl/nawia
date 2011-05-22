@@ -1,3 +1,4 @@
 DLL void h3dFinalizeFrame()
 SampleCount
 h3dGetStat
+h3dGetResType

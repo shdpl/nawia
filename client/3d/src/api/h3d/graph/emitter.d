@@ -23,7 +23,6 @@ class H3DEmitter : H3DSGNode /*: Emitter*/ {
 	uint _particleRespCount;
 	
 	this(H3DSGNode parent, string name, H3DMaterial material, H3DParticle particle, uint maxCountInMoment, uint maxCount) {
-		this.name = name;
 		_particlesCount = maxCountInMoment;
 		_particleRespCount = maxCount;
 		h3dAddEmitterNode(parent.id, name, material.id, particle.id, _particlesCount, _particleRespCount);

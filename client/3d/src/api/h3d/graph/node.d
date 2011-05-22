@@ -24,8 +24,10 @@ class H3DSGNode  {
 	abstract @property int id();
 	abstract @property void id(int id);
 	
-	@property string name();
-	@property void name(string);
+	@property string name() {
+		return h3dGetResName(id);
+	}
+	
 	NodeType type();
 	H3DSGNode[] find(string name);
 	H3DSGNode[] all();
@@ -58,4 +60,53 @@ class H3DSGNode  {
 	void rotation(float3 rot);
 	float3 scale();
 	void scale(float3 scale);
+	
+	protected:
+	
+	class NodeIterator(T) : InputRange!(T) {
+		private:
+		int _id;
+		
+		public:
+		
+		override H3DMessage front() {
+			return _id;
+		}
+		
+		override void popFront() {
+			h3dGetNextResource(_id.type, _id);
+		}
+		
+		override bool empty() {
+			return _current.content.empty;
+		}
+		
+		override H3DMessage moveFront() {
+			assert(false, "not implemented");
+			return _current;
+		}
+		
+		override int opApply(int delegate(ref H3DMessage) dg) {
+			int res;
+			for(; !empty; popFront()) {
+				auto front = front;
+				res = dg(front);
+				if(res) return res;
+				}
+			return res;
+		}
+		
+		override int opApply(int delegate(ref size_t, ref H3DMessage) dg) {
+			int res;
+			
+			size_t i = 0;
+			for(; !empty; popFront()) {
+				auto front = front;
+				res = dg(i, front);
+				if(res) break;
+				i++;
+				}
+			return res;
+		}
+	}
 }

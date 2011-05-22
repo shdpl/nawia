@@ -9,7 +9,20 @@ class Overlay {
 	public:
 	ColorRGBA!float color;
 	H3DMaterial material;
+	
 	void mapCords (CordsScreen xy, CordsScreen uv) {}
+	
+	void render() {
+		assert(verts.length % 4 == 0);
+		h3dShowOverlays(cast(float*)verts, verts.length, color.r, color.g, color.b, color.a,
+			material.id, 0);
+	}
+	
 	///Clears *ALL* overlays
-	void clear() {}
+	void clear() {
+		h3dClearOverlays();
+	}
+	
+	private:
+	float[] verts;
 }
