@@ -141,6 +141,11 @@
     <ClCompile Include="utOpenGL.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Bindings\C++\Horde3D.h" />
+    <ClInclude Include="..\Shared\rapidxml.h" />
+    <ClInclude Include="..\Shared\rapidxml_print.h" />
+    <ClInclude Include="..\Shared\utXML.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="egAnimatables.h" />
     <ClInclude Include="egAnimation.h" />
     <ClInclude Include="egCamera.h" />

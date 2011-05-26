@@ -410,10 +410,6 @@
 				RelativePath=".\utTimer.h"
 				>
 			</File>
-			<File
-				RelativePath="..\Shared\utXMLParser.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
