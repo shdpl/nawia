@@ -1160,7 +1160,12 @@ void Renderer::drawOverlays( const string &shaderContext )
 		
 		if( curMatRes != ob.materialRes )
 		{
-			if( !setMaterial( ob.materialRes, shaderContext ) ) continue;
+			if( !setMaterial( ob.materialRes, shaderContext ) )
+			{
+				// Unsuccessful material setting probably has destroyed the last setted material
+				curMatRes = 0x0;
+				continue;
+			}
 			gRDI->setVertexLayout( _vlOverlay );
 			curMatRes = ob.materialRes;
 		}
