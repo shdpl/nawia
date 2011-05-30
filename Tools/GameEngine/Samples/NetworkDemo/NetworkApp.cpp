@@ -256,35 +256,11 @@ void NetworkApp::keyboardCb(unsigned int param, bool pressed, void *userData)
 	if (app)
 	{
 		app->m_keys[param] = pressed ? 1 : 0;
-		//if (!pressed)
-		//	printf("%.3f\n",GameEngine::FPS());
-		//else
-		//	printf("Key: %d\n", param);
 	}
 }
 
 void NetworkApp::mouseButtonCb(float x, float y, void *userData)
 {
-	//NetworkApp* app = static_cast<NetworkApp*>(userData);
-	//if (app)
-	//{
-	//	float coords[3];
-	//	const char* nodeName = GameEngine::pickNodeWithIntersectionCoords(x,y, coords);
-	//	if(strcmp(nodeName,"Ground")==0)
-	//	{
-	//		//GameEngine::goToPosition(GameEngine::entityWorldID(app->getControlledChar()), coords[0],coords[1],coords[2]);
-	//		//GameEngine::setCrowdParticleTargetPosition(GameEngine::entityWorldID(app->getControlledChar()),coords[0],coords[1],coords[2]);
-	//		//GameEngine::setCrowdParticleLoop(GameEngine::entityWorldID(app->getControlledChar()), false);
-	//	}
-	//	else
-	//	{
-	//		app->setControlledChar(nodeName);
-	//	}
-	//	
-	//	printf("%.2f,%.2f,%.2f : %s - ", coords[0],coords[1],coords[2],nodeName);
-	//	int gridIndex = worldToGrid(-coords[0]) * 27 + worldToGrid(coords[2]);
-	//	printf("GridIndex: %d\n", gridIndex);
-	//}
 }
 
 void NetworkApp::mouseCb(float x, float y, void *userData)
@@ -310,20 +286,4 @@ void NetworkApp::resizeCb(void* userData, int width, int height)
 	h3dSetNodeParamI( camID, H3DCamera::ViewportWidthI, width );
 	h3dSetNodeParamI( camID, H3DCamera::ViewportHeightI, height );	
 	h3dResizePipelineBuffers( h3dGetNodeParamI( camID, H3DCamera::PipeResI ), width, height );
-}
-
-int NetworkApp::worldToGrid(float coords)
-{
-	float wc;   
-    if (coords >= 0)
-    {
-        wc = floor(coords + 0.5f);
-    }
-    else
-    {
-        wc = ceil(coords - 0.5f);
-    }
-	 
-	// Don't return values out of the grid
-	return (int) clamp((wc + 13), 0, 26);
 }

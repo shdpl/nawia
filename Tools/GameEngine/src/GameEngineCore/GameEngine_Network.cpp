@@ -18,7 +18,7 @@
 //
 // GameEngine Core Library of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Christoph Nuscheler
+// Copyright (C) 2011 Christoph Nuscheler
 // 
 // ****************************************************************************************
 

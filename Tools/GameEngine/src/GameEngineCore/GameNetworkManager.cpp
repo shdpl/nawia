@@ -18,7 +18,7 @@
 //
 // GameEngine Core Library of the University of Augsburg
 // ---------------------------------------------------------
-// Copyright (C) 2007 Christoph Nuscheler
+// Copyright (C) 2011 Christoph Nuscheler
 // 
 // ****************************************************************************************
 #include "GameNetworkManager.h"
@@ -276,7 +276,6 @@ void GameNetworkManager::setupServer() {
 	m_sv_adress.sin_family = AF_INET;
 	m_sv_adress.sin_port = htons(22888);
 	m_sv_adress.sin_addr.S_un.S_addr = INADDR_ANY;
-	m_sv_adress.sin_addr.S_un.S_addr = inet_addr("0.0.0.0");
 
 	// bind socket
 	bind(m_socket, (SOCKADDR*) &m_sv_adress, sizeof(SOCKADDR));

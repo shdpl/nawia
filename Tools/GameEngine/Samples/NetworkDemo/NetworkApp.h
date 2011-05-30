@@ -31,8 +31,6 @@ public:
 
 private:
 
-	static int worldToGrid(float coords);
-	
 	bool m_running;
 	char m_keys[256];
 	float m_camRX, m_camRY;

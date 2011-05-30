@@ -126,6 +126,16 @@ public:
 	void setSerializedState(const char* state, size_t length);
 
 	/**
+	 * \brief Sets the maximum trajection vector length (of translation) that will be applied on a networking SceneGraphComponent
+	 *
+	 * If you don't want every change of transformation to be interpolated between two updates,
+	 * you can set a maximum value here. This can be useful in case you plan to "respawn" an entity.
+	 *
+	 * @param maxTrajection The maximum vector length that will be applied
+	 */ 
+	void setMaxTrajection(float maxTrajection);
+
+	/**
 	 * \brief Sets the component's transformation
 	 * 
 	 * The transformation has to be specified in the world's coordinate system. The relative transformation for
@@ -213,6 +223,7 @@ private:
 	Vec3f				m_traject_translation;
 	Vec3f				m_traject_rotation;
 	Vec3f				m_traject_scale;
-
+	bool				m_applyTrajection;
+	float				m_maxTrajection;
 };
 #endif
