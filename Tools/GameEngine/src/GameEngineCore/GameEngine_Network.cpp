@@ -108,19 +108,19 @@ namespace GameEngine
 		return GameModules::networkManager()->deregisterClientComponent(gc);
 	}
 
-	GAMEENGINE_API GameEngine::NetworkState GameEngine::getNetworkState() {
+	GAMEENGINE_API GameEngine::Network::NetworkState GameEngine::getNetworkState() {
 		return GameModules::networkManager()->getState();
 	}
 
-	GAMEENGINE_API bool GameEngine::setNetworkOption(GameEngine::NetworkOption option, const size_t value) {
+	GAMEENGINE_API bool GameEngine::setNetworkOption(GameEngine::Network::NetworkOption option, const size_t value) {
 		return GameModules::networkManager()->setOption(option, value);
 	}
 
-	GAMEENGINE_API bool GameEngine::setNetworkOption(GameEngine::NetworkOption option, const char* value) {
+	GAMEENGINE_API bool GameEngine::setNetworkOption(GameEngine::Network::NetworkOption option, const char* value) {
 		return GameModules::networkManager()->setOption(option, value);
 	}
 
-	GAMEENGINE_API bool GameEngine::setNetworkOption(GameEngine::NetworkOption option, const bool value) {
+	GAMEENGINE_API bool GameEngine::setNetworkOption(GameEngine::Network::NetworkOption option, const bool value) {
 		return GameModules::networkManager()->setOption(option, value);
 	}
 }

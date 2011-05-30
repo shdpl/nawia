@@ -45,22 +45,26 @@ namespace GameEngine
  	 * @{
 	 */
 
-	enum NetworkState {
-		INVALID_STATE,
-		DISCONNECTED,
-		CONNECTING_TO_SERVER,
-		CONNECTED_TO_SERVER,
-		SERVING,
-		DISCOVERY
-	};
+	struct Network {
 
-	enum NetworkOption {
-		SV_PORT,
-		SV_IP,
-		SV_TICKRATE,
-		CL_SERVERPORT,
-		CL_TICKRATE,
-		USE_COMPRESSION
+		enum NetworkState {
+			INVALID_STATE,
+			DISCONNECTED,
+			CONNECTING_TO_SERVER,
+			CONNECTED_TO_SERVER,
+			SERVING,
+			DISCOVERY
+		};
+
+		enum NetworkOption {
+			SV_PORT,
+			SV_IP,
+			SV_TICKRATE,
+			CL_SERVERPORT,
+			CL_TICKRATE,
+			USE_COMPRESSION
+		};
+
 	};
 
 	/**
@@ -107,25 +111,25 @@ namespace GameEngine
 	 * Returns the current state of the GameNetworkManager
 	 * @return the current NetworkState
 	 */
-	GAMEENGINE_API GameEngine::NetworkState getNetworkState();
+	GAMEENGINE_API GameEngine::Network::NetworkState getNetworkState();
 
 	/**
 	 * Sets a GameNetworkManager option
 	 * @return true on success
 	 */
-	GAMEENGINE_API bool setNetworkOption(GameEngine::NetworkOption option, const size_t value);
+	GAMEENGINE_API bool setNetworkOption(GameEngine::Network::NetworkOption option, const size_t value);
 
 	/**
 	 * Sets a GameNetworkManager option
 	 * @return true on success
 	 */
-	GAMEENGINE_API bool setNetworkOption(GameEngine::NetworkOption option, const char* value);
+	GAMEENGINE_API bool setNetworkOption(GameEngine::Network::NetworkOption option, const char* value);
 
 	/**
 	 * Sets a GameNetworkManager option
 	 * @return true on success
 	 */
-	GAMEENGINE_API bool setNetworkOption(GameEngine::NetworkOption option, const bool value);
+	GAMEENGINE_API bool setNetworkOption(GameEngine::Network::NetworkOption option, const bool value);
 
 	/*! @}*/
 }

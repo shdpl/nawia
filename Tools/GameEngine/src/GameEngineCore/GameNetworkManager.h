@@ -29,13 +29,14 @@
 
 #include "GameEngine.h"
 #include "GameEngine_Network.h"
-#include "GameComponent.h"
 
 #include <set>
 #include <vector>
 
 struct ClientRecord;
 struct NetworkMessage;
+
+class GameComponent;
 
 /** \addtogroup GameEngineCore
  * @{
@@ -47,7 +48,7 @@ class DLLEXP GameNetworkManager
 
 public:
 
-	GameEngine::NetworkState getState();
+	GameEngine::Network::NetworkState getState();
 
 	bool init();
 
@@ -69,9 +70,9 @@ public:
 	bool registerClientComponent(GameComponent* component);
 	bool deregisterClientComponent(GameComponent* component);
 
-	bool setOption(GameEngine::NetworkOption option, const size_t value);
-	bool setOption(GameEngine::NetworkOption option, const char* value);
-	bool setOption(GameEngine::NetworkOption option, const bool value);
+	bool setOption(GameEngine::Network::NetworkOption option, const size_t value);
+	bool setOption(GameEngine::Network::NetworkOption option, const char* value);
+	bool setOption(GameEngine::Network::NetworkOption option, const bool value);
 
 private:
 	/// Private Contstructor ( friend class GameModules )
@@ -80,7 +81,7 @@ private:
 	~GameNetworkManager();
 
 	// current state of the network manager
-	GameEngine::NetworkState	m_currentState;
+	GameEngine::Network::NetworkState	m_currentState;
 
 	// UDP socket
 	SOCKET			m_socket;

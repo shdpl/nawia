@@ -188,7 +188,7 @@ struct NetworkMessage {
 
 GameNetworkManager::GameNetworkManager()
 {
-	m_currentState = GameEngine::INVALID_STATE;
+	m_currentState = GameEngine::Network::INVALID_STATE;
 	
 	m_outgoing_message = new NetworkMessage();
 	m_incoming_message = new NetworkMessage();
@@ -224,7 +224,7 @@ bool GameNetworkManager::init()
 	unsigned long mode = 1;
 	ioctlsocket(m_socket, FIONBIO, &mode);
 
-	m_currentState = GameEngine::DISCONNECTED;
+	m_currentState = GameEngine::Network::DISCONNECTED;
 
 	m_sv_adress.sin_family = AF_INET;
 	m_sv_adress.sin_addr.S_un.S_addr = INADDR_ANY;
@@ -244,7 +244,7 @@ bool GameNetworkManager::init()
 
 void GameNetworkManager::release()
 {
-	m_currentState = GameEngine::INVALID_STATE;
+	m_currentState = GameEngine::Network::INVALID_STATE;
 
 	// close UDP socket
 	if ( m_socket != 0 )
@@ -263,7 +263,7 @@ void GameNetworkManager::release()
 
 
 void GameNetworkManager::setupServer() {
-	if (m_currentState != GameEngine::DISCONNECTED) {
+	if (m_currentState != GameEngine::Network::DISCONNECTED) {
 		printf(" NetworkManager: Failed to start Server!");
 		return;
 	}
@@ -280,7 +280,7 @@ void GameNetworkManager::setupServer() {
 	// bind socket
 	bind(m_socket, (SOCKADDR*) &m_sv_adress, sizeof(SOCKADDR));
 
-	m_currentState = GameEngine::SERVING;
+	m_currentState = GameEngine::Network::SERVING;
 }
 
 
@@ -294,15 +294,15 @@ void GameNetworkManager::connectToServer(const char* ip_addr) {
 	// "bind" UDP socket
 	connect(m_socket, (SOCKADDR*) &m_cl_serveradress, sizeof(SOCKADDR_IN));
 
-	m_currentState = GameEngine::CONNECTING_TO_SERVER;
+	m_currentState = GameEngine::Network::CONNECTING_TO_SERVER;
 }
 
 void GameNetworkManager::disconnect() {
-	if (m_currentState == GameEngine::CONNECTED_TO_SERVER) {
+	if (m_currentState == GameEngine::Network::CONNECTED_TO_SERVER) {
 		cl_disconnect();
 	}
 	
-	if (m_currentState == GameEngine::SERVING) {
+	if (m_currentState == GameEngine::Network::SERVING) {
 		// send goodbye messages to clients
 		m_outgoing_message->setDataLength(0);
 		m_outgoing_message->setTick(m_sv_tick);
@@ -311,21 +311,21 @@ void GameNetworkManager::disconnect() {
 		sv_broadcastOutgoingMessage();
 	}
 	
-	m_currentState = GameEngine::DISCONNECTED;
+	m_currentState = GameEngine::Network::DISCONNECTED;
 }
 
 void GameNetworkManager::update() {
 	
 	switch (m_currentState) {
 
-		case GameEngine::SERVING:
+		case GameEngine::Network::SERVING:
 			m_sv_tick++;
 			sv_handleClientMessages();
 			sv_testClientsTimeout();
 			sv_transmitComponentStates();
 			break;
 
-		case GameEngine::CONNECTING_TO_SERVER:
+		case GameEngine::Network::CONNECTING_TO_SERVER:
 			if (m_cl_retrytimer == 10) {
 				m_cl_retrytimer = 0;
 				// send/resend CONNECT message
@@ -336,7 +336,7 @@ void GameNetworkManager::update() {
 			cl_awaitAccept();			
 			break;
 
-		case GameEngine::CONNECTED_TO_SERVER:
+		case GameEngine::Network::CONNECTED_TO_SERVER:
 			cl_transmitComponentStates();
 			cl_handleServerMessages();
 			break;
@@ -375,7 +375,7 @@ void GameNetworkManager::cl_awaitAccept() {
 		if (m_incoming_message->getType() == ACCEPT) {
 			// connection has been accepted by server
 			m_cl_id = m_incoming_message->getClientID();
-			m_currentState = GameEngine::CONNECTED_TO_SERVER;
+			m_currentState = GameEngine::Network::CONNECTED_TO_SERVER;
 			// set local tick to server's tick
 			m_cl_tick = m_incoming_message->getTick();
 		}
@@ -749,7 +749,7 @@ void GameNetworkManager::sv_broadcastOutgoingMessage() {
 	}
 }
 
-GameEngine::NetworkState GameNetworkManager::getState() {
+GameEngine::Network::NetworkState GameNetworkManager::getState() {
 	return m_currentState;
 }
 
@@ -795,11 +795,11 @@ bool GameNetworkManager::deregisterClientComponent(GameComponent* component) {
 	}
 }
 
-bool GameNetworkManager::setOption(GameEngine::NetworkOption option, const size_t value) {
+bool GameNetworkManager::setOption(GameEngine::Network::NetworkOption option, const size_t value) {
 
 	switch (option) {
-		case GameEngine::SV_IP:
-			if (m_currentState == GameEngine::DISCONNECTED) {
+		case GameEngine::Network::SV_IP:
+			if (m_currentState == GameEngine::Network::DISCONNECTED) {
 				m_sv_adress.sin_addr.S_un.S_addr = value;
 				return true;
 			} else {
@@ -808,8 +808,8 @@ bool GameNetworkManager::setOption(GameEngine::NetworkOption option, const size_
 			break;
 
 
-		case GameEngine::SV_PORT:
-			if (m_currentState == GameEngine::DISCONNECTED) {
+		case GameEngine::Network::SV_PORT:
+			if (m_currentState == GameEngine::Network::DISCONNECTED) {
 				m_sv_adress.sin_port = htons(value);
 				return true;
 			} else {
@@ -818,13 +818,13 @@ bool GameNetworkManager::setOption(GameEngine::NetworkOption option, const size_
 			break;
 
 
-		case GameEngine::SV_TICKRATE:
+		case GameEngine::Network::SV_TICKRATE:
 			m_sv_tickinterval = value;
 			return true;
 
 
-		case GameEngine::CL_SERVERPORT:
-			if (m_currentState == GameEngine::DISCONNECTED) {
+		case GameEngine::Network::CL_SERVERPORT:
+			if (m_currentState == GameEngine::Network::DISCONNECTED) {
 				m_cl_serveradress.sin_port = htons(value);
 				return true;
 			} else {
@@ -833,7 +833,7 @@ bool GameNetworkManager::setOption(GameEngine::NetworkOption option, const size_
 			break;
 
 
-		case GameEngine::CL_TICKRATE:
+		case GameEngine::Network::CL_TICKRATE:
 			m_cl_tickinterval = value;
 			return true;
 
@@ -845,11 +845,11 @@ bool GameNetworkManager::setOption(GameEngine::NetworkOption option, const size_
 	return false;
 }
 
-bool GameNetworkManager::setOption(GameEngine::NetworkOption option, const char *value) {
+bool GameNetworkManager::setOption(GameEngine::Network::NetworkOption option, const char *value) {
 
 	switch (option) {
-		case GameEngine::SV_IP:
-			if (m_currentState == GameEngine::DISCONNECTED) {
+		case GameEngine::Network::SV_IP:
+			if (m_currentState == GameEngine::Network::DISCONNECTED) {
 				m_sv_adress.sin_addr.S_un.S_addr = inet_addr(value);
 				return true;
 			} else {
@@ -865,10 +865,10 @@ bool GameNetworkManager::setOption(GameEngine::NetworkOption option, const char 
 	return false;
 }
 
-bool GameNetworkManager::setOption(GameEngine::NetworkOption option, const bool value) {
+bool GameNetworkManager::setOption(GameEngine::Network::NetworkOption option, const bool value) {
 
 	switch (option) {
-		case GameEngine::USE_COMPRESSION:
+		case GameEngine::Network::USE_COMPRESSION:
 			m_useCompression = value;
 			return true;
 

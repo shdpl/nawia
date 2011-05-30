@@ -221,21 +221,21 @@ void NetworkApp::render()
 	
 	// print current network state
 	switch (GameEngine::getNetworkState()) {
-	case GameEngine::DISCONNECTED:
+	case GameEngine::Network::DISCONNECTED:
 		h3dutShowText( "Disconnected.", 0.01f, 0.02f, 0.04f, 1, 1, 1, _fontMatRes );
 		h3dutShowText( "X - start server       [1..7] - select character and connect", 0.01f, 0.94f, 0.04f, 1, 1, 1, _fontMatRes );
 		break;
 
-	case GameEngine::CONNECTING_TO_SERVER:
+	case GameEngine::Network::CONNECTING_TO_SERVER:
 		h3dutShowText( "Connecting to server...", 0.01f, 0.02f, 0.04f, 1, 1, 1, _fontMatRes );
 		break;
 
-	case GameEngine::CONNECTED_TO_SERVER:
+	case GameEngine::Network::CONNECTED_TO_SERVER:
 		h3dutShowText( "Connected to server.", 0.01f, 0.02f, 0.04f, 1, 1, 1, _fontMatRes );
 		h3dutShowText( "[W,A,S,D] - move       Q - greet", 0.01f, 0.94f, 0.04f, 1, 1, 1, _fontMatRes );
 		break;
 
-	case GameEngine::SERVING:
+	case GameEngine::Network::SERVING:
 		h3dutShowText( "Server is running.", 0.01f, 0.02f, 0.04f, 1, 1, 1, _fontMatRes );
 		break;
 
