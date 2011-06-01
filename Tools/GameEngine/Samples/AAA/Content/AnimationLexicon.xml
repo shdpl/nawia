@@ -1077,4 +1077,22 @@
 		</Function>
 		<Restriction></Restriction>  
 	</Gesture>
+	<Gesture>
+		<ID>0071</ID>
+		<Name>German_Beat_05</Name>
+		<CorpusName>german-beat2.wmv</CorpusName>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="11" strokeEnd="57">Gestures\Female\female_ger_beat_05.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="11" strokeEnd="57">Gestures\Male\male_ger_beat_05.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
 </AnimationLexicon>
