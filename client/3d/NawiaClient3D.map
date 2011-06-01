@@ -18,31 +18,31 @@ bin\NawiaClient3D.obj(NawiaClient3D)  Offset 0EC66H Record Type 0091
  0004:00000060 00000004H  .CRT$XTA               DATA 32-bit
  0004:00000070 00000004H  .CRT$XTZ               DATA 32-bit
  0004:00000074 00000000H  IMP__DATA              IMP__DATA 32-bit
- 0004:00000080 000216D0H  _DATA                  DATA 32-bit
- 0004:00021750 00000000H  FMB                    DATA 32-bit
- 0004:00021750 0000042CH  FM                     DATA 32-bit
- 0004:00021B7C 00000000H  FME                    DATA 32-bit
- 0004:00021B7C 00000000H  XIB                    DATA 32-bit
- 0004:00021B7C 0000001CH  XI                     DATA 32-bit
- 0004:00021B98 00000000H  XIE                    DATA 32-bit
- 0004:00021B98 00000000H  XCB                    DATA 32-bit
- 0004:00021B98 00000014H  XC                     DATA 32-bit
- 0004:00021BAC 00000000H  XCE                    DATA 32-bit
- 0004:00021BAC 00000000H  XIFCB                  DATA 32-bit
- 0004:00021BAC 00000004H  XIFU                   DATA 32-bit
- 0004:00021BB0 00000000H  XIFL                   DATA 32-bit
- 0004:00021BB0 00000004H  XIFM                   DATA 32-bit
- 0004:00021BB4 00000000H  XIFCE                  DATA 32-bit
- 0004:00021BC0 00000000H  CONST                  CONST 32-bit
- 0004:00021BC0 00000000H  EEND                   ENDBSS 32-bit
- 0004:00021BC0 000019BCH  _BSS                   BSS 32-bit
- 0004:0002357C 00000000H  XOB                    BSS 32-bit
- 0004:0002357C 00000004H  XO                     BSS 32-bit
- 0004:00023580 00000000H  XOE                    BSS 32-bit
- 0004:00023580 00000000H  XOFB                   BSS 32-bit
- 0004:00023580 00000108H  XOF                    BSS 32-bit
- 0004:00023688 00000000H  XOFE                   BSS 32-bit
- 0004:00023690 00000425H  c_common               BSS 32-bit
- 0004:00023AC0 00000000H  STACK                  STACK 32-bit
+ 0004:00000080 000216E0H  _DATA                  DATA 32-bit
+ 0004:00021760 00000000H  FMB                    DATA 32-bit
+ 0004:00021760 00000430H  FM                     DATA 32-bit
+ 0004:00021B90 00000000H  FME                    DATA 32-bit
+ 0004:00021B90 00000000H  XIB                    DATA 32-bit
+ 0004:00021B90 0000001CH  XI                     DATA 32-bit
+ 0004:00021BAC 00000000H  XIE                    DATA 32-bit
+ 0004:00021BAC 00000000H  XCB                    DATA 32-bit
+ 0004:00021BAC 00000014H  XC                     DATA 32-bit
+ 0004:00021BC0 00000000H  XCE                    DATA 32-bit
+ 0004:00021BC0 00000000H  XIFCB                  DATA 32-bit
+ 0004:00021BC0 00000004H  XIFU                   DATA 32-bit
+ 0004:00021BC4 00000000H  XIFL                   DATA 32-bit
+ 0004:00021BC4 00000004H  XIFM                   DATA 32-bit
+ 0004:00021BC8 00000000H  XIFCE                  DATA 32-bit
+ 0004:00021BD0 00000000H  CONST                  CONST 32-bit
+ 0004:00021BD0 00000000H  EEND                   ENDBSS 32-bit
+ 0004:00021BD0 000019BCH  _BSS                   BSS 32-bit
+ 0004:0002358C 00000000H  XOB                    BSS 32-bit
+ 0004:0002358C 00000004H  XO                     BSS 32-bit
+ 0004:00023590 00000000H  XOE                    BSS 32-bit
+ 0004:00023590 00000000H  XOFB                   BSS 32-bit
+ 0004:00023590 00000108H  XOF                    BSS 32-bit
+ 0004:00023698 00000000H  XOFE                   BSS 32-bit
+ 0004:000236A0 00000425H  c_common               BSS 32-bit
+ 0004:00023AD0 00000000H  STACK                  STACK 32-bit
 
 Program entry point at 0009971C 
