@@ -835,9 +835,9 @@
 			<File type="retraction" strokeStart="15" strokeEnd="33">Gestures\Female\female_jap_JHS_ret.anim</File>			
 		</Files>
 		<Files gender="male">
-			<File strokeStart="0" strokeEnd="300">Gestures\Male\male_ger_handsOnHips_stroke.anim</File>
-			<File type="preparation" strokeStart="7" strokeEnd="25">Gestures\Male\male_ger_handsOnHips_prep.anim</File>
-			<File type="retraction" strokeStart="15" strokeEnd="30">Gestures\Male\male_ger_handsOnHips_ret.anim</File>			
+			<File strokeStart="0" strokeEnd="300">Gestures\Male\male_jap_JHS_stroke.anim</File>
+			<File type="preparation" strokeStart="12" strokeEnd="28">Gestures\Male\male_jap_JHS_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="33">Gestures\Male\male_jap_JHS_ret.anim</File>			
 		</Files>
 		<Restriction>Germany</Restriction>		
 	</Posture>
@@ -1113,4 +1113,20 @@
 		</Function>
 		<Restriction></Restriction>  
 	</Gesture>
+	<Posture>
+		<ID>0073</ID>
+		<Name>German PHE</Name>
+		<Description>300 Frames posture in which the character holds the one hand </Description>
+		<Files gender="female">
+			<File strokeStart="0" strokeEnd="300">Gestures\Female\female_ger_PHE_stroke.anim</File>
+			<File type="preparation" strokeStart="8" strokeEnd="25">Gestures\Female\female_ger_PHE_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="30">Gestures\Female\female_ger_PHE_ret.anim</File>			
+		</Files>
+		<Files gender="male">
+			<File strokeStart="0" strokeEnd="300">Gestures\Male\male_ger_PHE_stroke.anim</File>
+			<File type="preparation" strokeStart="8" strokeEnd="25">Gestures\Male\male_ger_PHE_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="30">Gestures\Male\male_ger_PHE_ret.anim</File>			
+		</Files>
+		<Restriction>Germany</Restriction>		
+	</Posture>
 </AnimationLexicon>
