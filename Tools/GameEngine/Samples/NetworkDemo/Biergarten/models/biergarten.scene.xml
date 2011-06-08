@@ -19,7 +19,8 @@
       </KeyframeAnimation>
       <MoveAnimation moveAnimation="walk" LODToStopAnim="2" idleAnimation="idle" speed="0.5" />
       <Sound3D loop="0" file="../media/Hi.wav" gain="0" />
-		</Attachment>
+      <TTS voice="Microsoft Mike" />
+    </Attachment>
 	</Reference>
 
   <Reference tx="-11" sx="0.06" ty="0" sy="0.06" rx="0" tz="-2" sceneGraph="models/male/male.scene.xml" sz="0.06" ry="90" rz="0" name="Player2" >
@@ -31,6 +32,7 @@
       </KeyframeAnimation>
 			<MoveAnimation moveAnimation="walk" LODToStopAnim="2" idleAnimation="idle" speed="0.5" />
       <Sound3D loop="0" file="../media/Hi.wav" gain="0" />
+      <TTS voice="Microsoft Mike" />
     </Attachment>
 	</Reference>
 
@@ -43,6 +45,7 @@
       </KeyframeAnimation>
       <MoveAnimation moveAnimation="walk" LODToStopAnim="3" idleAnimation="idle" speed="0.5" />
       <Sound3D loop="0" file="../media/Hellothere.wav" gain="0" />
+      <TTS voice="Microsoft Anna" />
 		</Attachment>
 	</Reference>
 
@@ -55,7 +58,8 @@
       </KeyframeAnimation>
       <Sound3D loop="0" file="../media/Hellothere.wav" gain="0" />
       <MoveAnimation moveAnimation="walk" LODToStopAnim="3" idleAnimation="idle" speed="0.5" />
-		</Attachment>
+      <TTS voice="Microsoft Anna" />
+    </Attachment>
 	</Reference>
   
 	<Reference tx="-11" sx="0.06" ty="0" sy="0.06" rx="0" tz="-4" sceneGraph="models/female/female1.scene.xml" sz="0.06" ry="90" rz="0" name="Player5" >
@@ -67,6 +71,7 @@
       </KeyframeAnimation>
 			<MoveAnimation moveAnimation="walk" LODToStopAnim="3" idleAnimation="idle" speed="0.5" />
       <Sound3D loop="0" file="../media/Hellothere.wav" gain="0" />
+      <TTS voice="Microsoft Anna" />
     </Attachment>
 	</Reference>
   
@@ -79,6 +84,7 @@
       </KeyframeAnimation>
 			<MoveAnimation moveAnimation="walk" LODToStopAnim="3" idleAnimation="idle" speed="0.5" />
       <Sound3D loop="0" file="../media/Hellothere.wav" gain="0" />
+      <TTS voice="Microsoft Anna" />
     </Attachment>
 	</Reference>
   
@@ -91,6 +97,7 @@
 			</KeyframeAnimation>
 			<MoveAnimation moveAnimation="walk" LODToStopAnim="3" idleAnimation="idle" speed="0.5" />
       <Sound3D loop="0" file="../media/Hellothere.wav" gain="0" />
+      <TTS voice="Microsoft Anna" />
     </Attachment>
 	</Reference>
   -->

@@ -7,6 +7,7 @@
 #include "GameEngine/GameEngine_SceneGraph.h"
 #include "GameEngine/GameEngine_Animations.h"
 #include "GameEngine/GameEngine_Sound.h"
+#include "GameEngine/GameEngine_SAPI.h"
 #include "GameEngine/GameEvent.h"
 #include <stdio.h>
 #include <string.h>
@@ -23,7 +24,6 @@ extern "C"
 NetworkApp::NetworkApp() : m_running(true), m_L(0), m_networkStarted(false)
 {
 	memset(m_keys, 0, sizeof(m_keys));
-	m_controlledChar = "";
 	m_character = UINT_MAX;
 	m_networkState = "";
 }
@@ -46,30 +46,37 @@ void NetworkApp::startServer() {
 	GameEngine::registerComponentOnServer("Player1", "Horde3D");
 	GameEngine::registerComponentOnServer("Player1", "KeyframeAnimComponent");
 	GameEngine::registerComponentOnServer("Player1", "Sound3D");
+	GameEngine::registerComponentOnServer("Player3", "Sapi");
 
 	GameEngine::registerComponentOnServer("Player2", "Horde3D");
 	GameEngine::registerComponentOnServer("Player2", "KeyframeAnimComponent");
 	GameEngine::registerComponentOnServer("Player2", "Sound3D");
+	GameEngine::registerComponentOnServer("Player3", "Sapi");
 
 	GameEngine::registerComponentOnServer("Player3", "Horde3D");
 	GameEngine::registerComponentOnServer("Player3", "KeyframeAnimComponent");
 	GameEngine::registerComponentOnServer("Player3", "Sound3D");
+	GameEngine::registerComponentOnServer("Player3", "Sapi");
 
 	GameEngine::registerComponentOnServer("Player4", "Horde3D");
 	GameEngine::registerComponentOnServer("Player4", "KeyframeAnimComponent");
 	GameEngine::registerComponentOnServer("Player4", "Sound3D");
+	GameEngine::registerComponentOnServer("Player3", "Sapi");
 
 	GameEngine::registerComponentOnServer("Player5", "Horde3D");
 	GameEngine::registerComponentOnServer("Player5", "KeyframeAnimComponent");
 	GameEngine::registerComponentOnServer("Player5", "Sound3D");
+	GameEngine::registerComponentOnServer("Player3", "Sapi");
 
 	GameEngine::registerComponentOnServer("Player6", "Horde3D");
 	GameEngine::registerComponentOnServer("Player6", "KeyframeAnimComponent");
 	GameEngine::registerComponentOnServer("Player6", "Sound3D");
+	GameEngine::registerComponentOnServer("Player3", "Sapi");
 
 	GameEngine::registerComponentOnServer("Player7", "Horde3D");
 	GameEngine::registerComponentOnServer("Player7", "KeyframeAnimComponent");
 	GameEngine::registerComponentOnServer("Player7", "Sound3D");
+	GameEngine::registerComponentOnServer("Player3", "Sapi");
 
 	GameEngine::disconnect();
 
@@ -84,6 +91,8 @@ void NetworkApp::startClient(const char* character) {
 
 	m_character = GameEngine::entityWorldID(character);
 
+	sprintf_s(m_sentence, 100, "I am %s. Nice to meet you.", character);
+
 	const char* serverip = "127.0.0.1";
 
 	m_networkStarted = true;
@@ -92,6 +101,7 @@ void NetworkApp::startClient(const char* character) {
 	GameEngine::registerComponentOnClient(character, "Horde3D");
 	GameEngine::registerComponentOnClient(character, "KeyframeAnimComponent");
 	GameEngine::registerComponentOnClient(character, "Sound3D");
+	GameEngine::registerComponentOnClient(character, "Sapi");
 
 	GameEngine::disconnect();
 	GameEngine::connectToServer(serverip);
@@ -190,6 +200,11 @@ void NetworkApp::keyHandler()
 		}
 	}
 
+	if( m_keys['E'] ) {
+		if (!GameEngine::isSpeaking(m_character))
+			GameEngine::speak(m_character, m_sentence);
+	}
+
 }
 
 void NetworkApp::mouseMoved(float x, float y)
@@ -232,7 +247,7 @@ void NetworkApp::render()
 
 	case GameEngine::Network::CONNECTED_TO_SERVER:
 		h3dutShowText( "Connected to server.", 0.01f, 0.02f, 0.04f, 1, 1, 1, _fontMatRes );
-		h3dutShowText( "[W,A,S,D] - move       Q - greet", 0.01f, 0.94f, 0.04f, 1, 1, 1, _fontMatRes );
+		h3dutShowText( "[W,A,S,D] - move       Q - greet       E - talk", 0.01f, 0.94f, 0.04f, 1, 1, 1, _fontMatRes );
 		break;
 
 	case GameEngine::Network::SERVING:

@@ -16,8 +16,6 @@ public:
 	bool init(const char* fileName);
 
 	bool isRunning() {return m_running;}
-	const char* getControlledChar() {return m_controlledChar;}
-	void setControlledChar(const char* name) {m_controlledChar = name;}
 	
 	void keyHandler();
 	void mouseMoved(float x, float y);
@@ -34,9 +32,9 @@ private:
 	bool m_running;
 	char m_keys[256];
 	float m_camRX, m_camRY;
-	const char* m_controlledChar;
 	unsigned int m_character;
 	char* m_networkState;
+	char m_sentence[100];
 	H3DRes _fontMatRes;
 	H3DRes _logoMatRes;
 
