@@ -99,7 +99,7 @@ GameComponent* TTSComponent::createComponent( GameEntity* owner )
 TTSComponent::TTSComponent(GameEntity *owner) : GameComponent(owner, "Sapi"), m_pVoice(0), 
 m_curViseme(0), m_prevViseme(0), m_visemeChanged(false), m_visemeBlendFacPrev(1.0f),
 m_isSpeaking(false), m_FACSmapping(false), m_useDistanceModel(false), m_dist(0), m_rollOff(1.0f),
-m_lastTimeStamp(0)
+m_lastTimeStamp(0), m_startSpeaking(0), m_remoteStartSpeaking(0)
 {
 	owner->addListener(GameEvent::E_SPEAK, this);
 	owner->addListener(GameEvent::SP_TTS_PAUSE, this);
@@ -571,4 +571,27 @@ void TTSComponent::run()
 	}
 
 	m_lastTimeStamp = GameEngine::timeStamp();
+}
+
+size_t TTSComponent::getSerializedState(char* state) {
+	char* out = state;
+
+	memcpy(out, &m_startSpeaking, sizeof(m_startSpeaking));		out+=sizeof(m_startSpeaking);
+	out += sprintf(out, "%ls", m_currentSentence.c_str()) + 1;
+
+	return out - state;
+}
+
+void TTSComponent::setSerializedState(const char* state, size_t length) {
+	if (length < sizeof(m_startSpeaking) + 1)
+		return;
+
+	float remoteStartSpeaking;
+	memcpy(&remoteStartSpeaking, state, sizeof(remoteStartSpeaking));		state += sizeof(remoteStartSpeaking);
+	
+	// if remote startSpeaking mismatches, a new sentence has begun
+	if (remoteStartSpeaking != m_remoteStartSpeaking) {
+		speak(state);
+		m_remoteStartSpeaking = remoteStartSpeaking;
+	}
 }

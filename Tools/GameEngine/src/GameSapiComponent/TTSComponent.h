@@ -61,6 +61,9 @@ public:
 	 */ 
 	bool isSpeaking();
 
+	size_t getSerializedState(char* state);
+	void setSerializedState(const char* state, size_t length);
+	
 private:
 
 	// Sapi functions
@@ -102,6 +105,8 @@ private:
 	float m_dist;
 	float m_rollOff;
 
+	// used for speak invocation by remote GameEngine (network)
+	float			m_remoteStartSpeaking;
 };
 
 
