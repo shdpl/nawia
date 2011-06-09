@@ -36,6 +36,7 @@ enum PacketType {
 	CONNECT,
 	DISCONNECT,
 	ACCEPT,
+	REJECT,
 	STATE_UPDATE,
 	DISCOVER,
 	RES_DISCOVER
@@ -196,6 +197,9 @@ GameNetworkManager::GameNetworkManager()
 	m_outgoing_message->makeGameEngineMessage();
 
 	m_buffer = new char[NetworkMessage::MAXDATALENGTH];
+
+	m_applicationID = new char[11];
+	strcpy_s(m_applicationID, 11, "GameEngine");
 }
 
 GameNetworkManager::~GameNetworkManager()
@@ -259,12 +263,14 @@ void GameNetworkManager::release()
 
 	// clean state buffer
 	delete[] m_buffer;
+
+	delete[] m_applicationID;
 }
 
 
 void GameNetworkManager::setupServer() {
 	if (m_currentState != GameEngine::Network::DISCONNECTED) {
-		printf(" NetworkManager: Failed to start Server!");
+		GameLog::warnMessage(" NetworkManager: Failed to start Server!");
 		return;
 	}
 
@@ -349,7 +355,9 @@ void GameNetworkManager::update() {
 
 void GameNetworkManager::cl_connectToServer() {
 	m_outgoing_message->setType(CONNECT);
-	m_outgoing_message->setDataLength(0);
+	// application identifier
+	strcpy_s(m_outgoing_message->data(0), m_outgoing_message->MAXDATALENGTH, m_applicationID);
+	m_outgoing_message->setDataLength(strlen(m_applicationID) + 1);
 	m_outgoing_message->setTick(m_cl_tick);
 
 	send(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0);
@@ -378,6 +386,11 @@ void GameNetworkManager::cl_awaitAccept() {
 			m_currentState = GameEngine::Network::CONNECTED_TO_SERVER;
 			// set local tick to server's tick
 			m_cl_tick = m_incoming_message->getTick();
+
+		} else if (m_incoming_message->getType() == REJECT) {
+			// connection has been refused by server
+			m_currentState = GameEngine::Network::DISCONNECTED;
+
 		}
 	}
 }
@@ -433,6 +446,11 @@ void GameNetworkManager::cl_handleServerMessages() {
 						ge->component(componentID)->setSerializedState(m_incoming_message->data(datacursor), statelength);	datacursor += statelength;
 					}
 				}
+				break;
+
+			case DISCONNECT:
+				// connection terminated by server
+				m_currentState = GameEngine::Network::DISCONNECTED;
 				break;
 
 			default:
@@ -574,11 +592,19 @@ void GameNetworkManager::sv_handleClientMessages() {
 
 			// new client connects
 			case CONNECT:
-				id = sv_addClient(from_addr);
-				m_outgoing_message->setType(ACCEPT);
-				m_outgoing_message->setClientID(id);
-				m_outgoing_message->setDataLength(0);
-				m_outgoing_message->setTick(m_sv_tick);
+				// check for application ID match
+				if (strcmp(m_applicationID, m_incoming_message->data(0))) {
+					m_outgoing_message->setType(REJECT);
+					m_outgoing_message->setClientID(0);
+					m_outgoing_message->setDataLength(0);
+					m_outgoing_message->setTick(m_sv_tick);
+				} else {
+					id = sv_addClient(from_addr);
+					m_outgoing_message->setType(ACCEPT);
+					m_outgoing_message->setClientID(id);
+					m_outgoing_message->setDataLength(0);
+					m_outgoing_message->setTick(m_sv_tick);
+				}
 				sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &from_addr, sizeof(SOCKADDR_IN));
 				break;
 
@@ -857,6 +883,14 @@ bool GameNetworkManager::setOption(GameEngine::Network::NetworkOption option, co
 			}
 			break;
 
+		case GameEngine::Network::APPLICATION_ID:
+			if (m_applicationID) {
+				delete[] m_applicationID;
+				m_applicationID = 0;
+			}
+			m_applicationID = new char[strlen(value) + 1];
+			strcpy_s(m_applicationID, strlen(value) + 1, value);
+			break;
 
 		default:
 			return false;

@@ -111,7 +111,7 @@ bool NetworkApp::init(const char *fileName)
 {
 	if (!GameEngine::init()) return false;
 	
-
+	GameEngine::setNetworkOption(GameEngine::Network::APPLICATION_ID, "GameEngine Network Demo");
 	
 	if (GameEngine::loadScene(fileName))
 	{
@@ -239,6 +239,9 @@ void NetworkApp::render()
 	case GameEngine::Network::DISCONNECTED:
 		h3dutShowText( "Disconnected.", 0.01f, 0.02f, 0.04f, 1, 1, 1, _fontMatRes );
 		h3dutShowText( "X - start server       [1..7] - select character and connect", 0.01f, 0.94f, 0.04f, 1, 1, 1, _fontMatRes );
+		// reset network controls
+		m_character = UINT_MAX;
+		m_networkStarted = false;
 		break;
 
 	case GameEngine::Network::CONNECTING_TO_SERVER:

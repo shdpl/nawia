@@ -143,6 +143,12 @@ private:
 
 
 
+
+	// common vars
+	char*			m_applicationID;
+
+
+
 	// network buffers
 	NetworkMessage*	m_outgoing_message;
 	NetworkMessage*	m_incoming_message;

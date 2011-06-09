@@ -62,7 +62,8 @@ namespace GameEngine
 			SV_TICKRATE,
 			CL_SERVERPORT,
 			CL_TICKRATE,
-			USE_COMPRESSION
+			USE_COMPRESSION,
+			APPLICATION_ID
 		};
 
 	};
