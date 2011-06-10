@@ -1,5 +1,5 @@
 <Material>
-	<Shader source="shaders/model.shader" />
+	<Shader source="shaders/model_standard.shader" />
 	<ShaderFlag name="_F01_Skinning" />
 
 	<Sampler name="albedoMap" map="textures/character/female/augen.jpg" />
