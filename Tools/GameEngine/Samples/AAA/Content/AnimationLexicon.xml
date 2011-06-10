@@ -1129,4 +1129,20 @@
 		</Files>
 		<Restriction>Germany</Restriction>		
 	</Posture>
+	<Posture>
+		<ID>0074</ID>
+		<Name>Japanese PHB</Name>
+		<Description>300 Frames posture in which the character holds the hand behind his body </Description>
+		<Files gender="female">
+			<File strokeStart="0" strokeEnd="300">Gestures\Female\female_jap_PHB_stroke.anim</File>
+			<File type="preparation" strokeStart="8" strokeEnd="38">Gestures\Female\female_jap_PHB_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="40">Gestures\Female\female_jap_PHB_ret.anim</File>			
+		</Files>
+		<Files gender="male">
+			<File strokeStart="0" strokeEnd="300">Gestures\Male\male_jap_PHB_stroke.anim</File>
+			<File type="preparation" strokeStart="8" strokeEnd="38">Gestures\Male\male_jap_PHB_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="40">Gestures\Male\male_jap_PHB_ret.anim</File>			
+		</Files>
+		<Restriction>Germany</Restriction>		
+	</Posture>
 </AnimationLexicon>
