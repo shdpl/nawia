@@ -760,15 +760,21 @@ void SoundComponent::updateVisemes()
 	}
 }
 
-size_t SoundComponent::getSerializedState(char* state) {
+size_t SoundComponent::getSerializedState(char* state, size_t availableBytes) {
 	char* out = state;
 
 	const char* soundfile = SoundResourceManager::instance()->getResourceFileName(m_resourceID);
-	strcpy(out, soundfile);							out+=strlen(soundfile) + 1;
+	if (strcpy_s(out, availableBytes, soundfile))
+		return 0;															out+=strlen(soundfile) + 1;	availableBytes-=strlen(soundfile) + 1;
 
-	memcpy(out, &m_gain, sizeof(float));			out+=sizeof(float);
-	memcpy(out, &m_initialGain, sizeof(float));		out+=sizeof(float);
-	memcpy(out, &m_loop, sizeof(bool));				out+=sizeof(bool);
+	if (memcpy_s(out, availableBytes, &m_gain, sizeof(float)))
+		return 0;															out+=sizeof(float);	availableBytes-=sizeof(float);
+
+	if (memcpy_s(out, availableBytes, &m_initialGain, sizeof(float)))
+		return 0;															out+=sizeof(float);	availableBytes-=sizeof(float);
+
+	if (memcpy_s(out, availableBytes, &m_loop, sizeof(bool)))
+		return 0;															out+=sizeof(bool);	availableBytes-=sizeof(bool);
 	
 	return out - state;
 }

@@ -213,7 +213,7 @@ unsigned int SceneGraphManager::createGameEntity( const char *xmlText, int horde
 		{
 			SceneGraphComponent* sceneGraphComponent = new SceneGraphComponent( entity );
 			sceneGraphComponent->setHordeID( hordeID );
-			sceneGraphComponent->setMaxTrajection(atof(attachment.getAttribute("maxTrajection", "1.#INF")));
+			sceneGraphComponent->setMaxTrajection((float)atof(attachment.getAttribute("maxTrajection", "1.#INF")));
 
 #ifdef MEASURE_COMPONENT_LOADING
 			float time = GameEngine::currentTimeStamp();

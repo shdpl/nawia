@@ -486,7 +486,7 @@ void GameNetworkManager::cl_transmitComponentStates() {
 	std::set<GameComponent*>::iterator comp_it = m_cl_components.begin();
 
 	while (comp_it != m_cl_components.end()) {
-		size_t state_length = (*comp_it)->getSerializedState(m_buffer);
+		size_t state_length = (*comp_it)->getSerializedState(m_buffer, NetworkMessage::MAXDATALENGTH);
 		size_t componentID_length = (*comp_it)->componentID().length();
 		size_t entityID_length = (*comp_it)->owner()->id().length();
 
@@ -720,7 +720,7 @@ void GameNetworkManager::sv_transmitComponentStates() {
 	std::set<GameComponent*>::iterator comp_it = m_sv_components.begin();
 
 	while (comp_it != m_sv_components.end()) {
-		size_t state_length = (*comp_it)->getSerializedState(m_buffer);
+		size_t state_length = (*comp_it)->getSerializedState(m_buffer, NetworkMessage::MAXDATALENGTH);
 		size_t componentID_length = (*comp_it)->componentID().length();
 		size_t entityID_length = (*comp_it)->owner()->id().length();
 

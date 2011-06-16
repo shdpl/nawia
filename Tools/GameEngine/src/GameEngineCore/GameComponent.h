@@ -109,9 +109,10 @@ public:
 	 * Copies a serialized representation of the GameComponent's state to a char-Array.
 	 * Primarily used by GameNetworkManager.
 	 * @param pointer to a char-Array provided by caller
+	 * @param number of bytes available in the array
 	 * @return the size of the serialized state representation
 	 */
-	virtual size_t	getSerializedState(char* state);
+	virtual size_t	getSerializedState(char* state, size_t availableBytes);
 
 	/**
 	 * \brief Sets the current GameComponent's state

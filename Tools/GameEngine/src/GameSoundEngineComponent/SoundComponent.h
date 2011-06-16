@@ -80,7 +80,7 @@ public:
 	bool loadPhonemesFile(const char* fileName);
 	inline float getDistanceToListener();
 
-	size_t getSerializedState(char* state);
+	size_t getSerializedState(char* state, size_t availableBytes);
 	void setSerializedState(const char* state, size_t length);
 	
 private:

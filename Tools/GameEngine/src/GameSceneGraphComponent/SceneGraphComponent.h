@@ -121,7 +121,7 @@ public:
 	 */ 
 	void loadFromXml(const XMLNode* description);
 
-	size_t getSerializedState(char* state);
+	size_t getSerializedState(char* state, size_t availableBytes);
 
 	void setSerializedState(const char* state, size_t length);
 

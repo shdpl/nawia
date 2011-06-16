@@ -42,7 +42,7 @@ GameComponent::~GameComponent()
 }
 
 
-size_t GameComponent::getSerializedState(char *state) {
+size_t GameComponent::getSerializedState(char *state, size_t availableBytes) {
 	return 0;
 }
 

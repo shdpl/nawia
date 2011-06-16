@@ -573,11 +573,15 @@ void TTSComponent::run()
 	m_lastTimeStamp = GameEngine::timeStamp();
 }
 
-size_t TTSComponent::getSerializedState(char* state) {
+size_t TTSComponent::getSerializedState(char* state, size_t availableBytes) {
 	char* out = state;
 
-	memcpy(out, &m_startSpeaking, sizeof(m_startSpeaking));		out+=sizeof(m_startSpeaking);
-	out += sprintf(out, "%ls", m_currentSentence.c_str()) + 1;
+	if (memcpy_s(out, availableBytes, &m_startSpeaking, sizeof(m_startSpeaking)))
+		return 0;																	out+=sizeof(m_startSpeaking);	availableBytes-=sizeof(m_startSpeaking);
+
+	int bytes = sprintf_s(out, availableBytes, "%ls", m_currentSentence.c_str());
+	if (bytes < 0)
+		return 0;																	out+=bytes + 1;					availableBytes-=bytes + 1;
 
 	return out - state;
 }

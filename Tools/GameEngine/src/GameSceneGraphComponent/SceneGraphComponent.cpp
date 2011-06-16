@@ -596,13 +596,15 @@ void SceneGraphComponent::getBoundingBox(float* minX, float* minY, float* minZ, 
 }
 
 
-size_t SceneGraphComponent::getSerializedState(char *state)
+size_t SceneGraphComponent::getSerializedState(char *state, size_t availableBytes)
 {
 	// current transformation
-	memcpy(state, m_transformation, sizeof(float) * 16);
+	if (memcpy_s(state, availableBytes, m_transformation, sizeof(float) * 16))
+		return 0;
 
 	// transformation one frame ago
-	memcpy(state + sizeof(float) * 16, m_lasttransformation, sizeof(float) * 16);
+	if (memcpy_s(state + sizeof(float) * 16, availableBytes - sizeof(float) * 16, m_lasttransformation, sizeof(float) * 16))
+		return 0;
 
 	return sizeof(float) * 16 * 2;
 }

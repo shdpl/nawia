@@ -113,7 +113,7 @@ namespace AnimationControl
 			m_currentTimeWeight(-1), m_jobID(0), m_owner(owner)		//, m_animationName(command->Animation) WHAT HAPPENS if the string this is pointing to is changed while this job is playing??
 		{
 			m_animationName = new char[strlen(command->Animation) + 1];
-			strcpy((char*)m_animationName, command->Animation);
+			strcpy_s((char*)m_animationName, strlen(command->Animation) + 1, command->Animation);
 
 			// If speed was set to zero by the user...
 			if ( command->Speed == 0 )
@@ -599,17 +599,20 @@ int KeyframeAnimComponent::getJobID(std::string animName)
 }
 
 // getSerializedState: for low bandwidth usage, only the currently playing animation on each stage gets transmitted
-size_t KeyframeAnimComponent::getSerializedState(char *state) {
+size_t KeyframeAnimComponent::getSerializedState(char *state, size_t availableBytes) {
 	char *out = state;
 
 	// transmitting local timestamp to be able to create correct animation timelines on clients
-	*(float*)out = GameEngine::timeStamp();			out += sizeof(float);
+	float localtime = GameEngine::timeStamp();
+	if (memcpy_s(out, availableBytes, &localtime, sizeof(float)))
+		return 0;													out+=sizeof(float);	availableBytes-=sizeof(float);
 
 	// serializing stage controllers		ASSUMPTION: MAX_STAGES is equal on client and server
 
 	for (int i = 0; i < MAX_STAGES; i++) {
-	
-		*(size_t*)out = m_stageControllers[i].Animations.size();	out+=sizeof(size_t);
+		size_t numAnims = m_stageControllers[i].Animations.size();
+		if (memcpy_s(out, availableBytes, &numAnims, sizeof(size_t)))
+			return 0;											out+=sizeof(size_t);	availableBytes-=sizeof(size_t);
 
 		if (m_stageControllers[i].Animations.size() == 0)
 			continue;
@@ -617,15 +620,25 @@ size_t KeyframeAnimComponent::getSerializedState(char *state) {
 		// currently playing animation
 		AnimationControl::AnimationJob* job = m_stageControllers[i].Animations.front();
 
-		strcpy(out, job->m_animationName);						out+=strlen(job->m_animationName)+1;
-		memcpy(out, &job->m_endless, sizeof(bool));				out+=sizeof(bool);
-		memcpy(out, &job->m_speed, sizeof(float));				out+=sizeof(float);
+		if (strcpy_s(out, availableBytes, job->m_animationName))
+			return 0;										out+=strlen(job->m_animationName)+1;		availableBytes-=strlen(job->m_animationName)+1;
 
-		*(size_t*)out = job->m_timeline.size();					out+=sizeof(size_t);
+		if (memcpy_s(out, availableBytes, &job->m_endless, sizeof(bool)))
+			return 0;										out+=sizeof(bool);						availableBytes-=sizeof(bool);
+
+		if (memcpy_s(out, availableBytes, &job->m_speed, sizeof(float)))
+			return 0;										out+=sizeof(float);						availableBytes-=sizeof(float);
+
+		size_t tlsize = job->m_timeline.size();
+		if (memcpy_s(out, availableBytes, &tlsize, sizeof(size_t)))
+			return 0;										out+=sizeof(size_t);					availableBytes-=sizeof(size_t);
 
 		for (size_t j = 0; j < job->m_timeline.size(); j++) {
-			memcpy(out, &job->m_timeline[j].Timestamp, sizeof(float));	out+=sizeof(float);
-			memcpy(out, &job->m_timeline[j].Weight, sizeof(float));		out+=sizeof(float);
+			if (memcpy_s(out, availableBytes, &job->m_timeline[j].Timestamp, sizeof(float)))
+				return 0;									out+=sizeof(float);						availableBytes-=sizeof(float);
+
+			if (memcpy_s(out, availableBytes, &job->m_timeline[j].Weight, sizeof(float)))
+				return 0;									out+=sizeof(float);						availableBytes-=sizeof(float);
 		}
 	}
 
