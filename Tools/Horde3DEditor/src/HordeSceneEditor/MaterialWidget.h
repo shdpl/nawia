@@ -65,10 +65,10 @@ private slots:
 	void shaderChanged();
 	void classChanged();
 	void flagsChanged( int index, bool checked );
+	void syncWithShader();
 
 private:
 	void release();
-	void syncWithShader();
 
 	ShaderData*			m_shaderData;
 	QString				m_currentMaterialFile;
@@ -76,6 +76,7 @@ private:
 	QString				m_resourcePath;
 	H3DRes				m_matHandle;
 	H3DRes				m_shaderHandle;
+	QFileSystemWatcher* m_shaderWatcher;
 
 };
 #endif

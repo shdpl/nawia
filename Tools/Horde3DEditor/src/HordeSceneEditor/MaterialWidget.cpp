@@ -53,6 +53,8 @@ m_shaderHandle( 0 )
 	connect(m_shader, SIGNAL(shaderChanged()), this, SLOT(shaderChanged()));
 	connect(m_shaderFlags, SIGNAL(stateChanged( int, bool ) ), this, SLOT( flagsChanged( int, bool ) ) );
 	m_shaderFlags->setDisplayText( tr( "Shader Flags" ) );
+	m_shaderWatcher = new QFileSystemWatcher( this );
+	connect( m_shaderWatcher, SIGNAL( fileChanged( const QString& ) ), this, SLOT( syncWithShader() ) );
 }
 
 
@@ -245,6 +247,10 @@ void MaterialWidget::shaderChanged()
 	shader.setAttribute("source", m_shader->currentText());
 	if ( m_shader->currentText().isEmpty() )
 		m_materialXml.documentElement().removeChild(shader);
+
+	m_shaderWatcher->removePaths( m_shaderWatcher->files() );
+	m_shaderWatcher->addPath( QDir::current().absoluteFilePath( m_shader->currentText() ) );
+
 	syncWithShader();
 	m_saveButton->setEnabled(true);
 }

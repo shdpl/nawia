@@ -23,7 +23,7 @@
 #ifndef QHORDESCENEEDITORSETTINGS_H_
 #define QHORDESCENEEDITORSETTINGS_H_
 
-#include <Qt/qsettings.h>
+#include <QtCore/QSettings>
 
 /**
  * x
