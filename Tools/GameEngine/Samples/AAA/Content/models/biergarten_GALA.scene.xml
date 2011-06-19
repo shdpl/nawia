@@ -7,12 +7,13 @@
 		  <BayesNet file="../Kultur-Modell_paper.xdsl" />
           <Socket protocol="UDP" port="343" type="server"/>
         </Attachment>
-    </Camera>
     <Reference tx="0" sx="70" ty="15" sy="50" rx="0" tz="0" sceneGraph="models/skybox/skybox.scene.xml" sz="70" ry="0" rz="0" name="Skybox" >
 		<Attachment type="GameEngine" name="Skybox" >
           <Socket protocol="UDP" port="343" type="client"/>
         </Attachment>
 	</Reference>
+    </Camera>
+
 	
 		<!-- 
 			AAA configurations
