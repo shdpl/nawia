@@ -35,6 +35,7 @@ HEADERS += ../../../../Horde3D/Source/Horde3DEngine/egAnimatables.h \
            ../../../../Horde3D/Source/Horde3DEngine/egShader.h \
            ../../../../Horde3D/Source/Horde3DEngine/egTexture.h \
            ../../../../Horde3D/Source/Horde3DEngine/utImage.h \
+           ../../../../Horde3D/Source/Horde3DEngine/utTimer.h \
            ../../../../Horde3D/Source/Horde3DEngine/utOpenGL.h \
            ../../../../Horde3D/Source/Shared/utXMLParser.h \
            ../../../../Horde3D/Source/Shared/utMath.h \

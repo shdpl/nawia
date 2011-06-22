@@ -16,19 +16,24 @@
 <ul>
 	<li><b>Core Engine</b></li>
 	<ul>
+		<li>Added support for 3d/volume textures.</li>
+		<li>Added support for input gamma correction (sRGB texture support).</li>
 		<li>Refactored overlay system and h3dShowOverlay: layers were removed and overlays are batched for better performance.</li>
 		<li>Changed overlay coordinate system to go from (0,0) to (aspect,1) for better compatibility with different screen aspect ratios.</li>
 		<li>Refactored extension system.</li>
 		<li>Exchanged current XML parser by RapidXml.</li>
+		<li>Removed requirement that resource data has to be null-terminated.</li>
+		<li>Removed restriction that resource names may not contain colons.</li>
 		<li>Improved particle spawning: particles are created along emitter's motion vector to avoid blobs when framerate is low.</li>
 		<li>Added particle parameter 'drag' with which particles can inherit the velocity of their emitter.</li>
 		<li>Added support for weighted additive animations.</li>
 		<li>Added support for negative morpher weights.</li>
-		<li>Added support for individual viewport settings for each camera.</li>
+		<li>Added support for individual viewport settings for each camera and removed API functions h3dSetupViewport/h3dGetViewportParams.</li>
 		<li>Added API function h3dResizePipelineBuffers to change the output buffer size.</li>
 		<li>Renamed API function getPipelineRenderTargetData to getRenderTargetData and added support for reading out the backbuffer directly.</li>
 		<li>Added color intensity multiplier for light nodes.</li>
-		<li>Added support for input gamma correction (sRGB texture support).</li>
+		<li>Introduced scene node flags to give more control over where nodes should be processed.</li>
+		<li>Removed API function h3dSetNodeActivation which is redundant due to new node flags.</li>
 		<li>Optimized deferred shading by drawing light volumes.</li>
 		<li>Added more CPU timing stats.</li>
 		<li>Added basic GPU timing stats (requires ARB_timer_query to work).</li>
@@ -42,10 +47,12 @@
 		<li>Changed overlay shader vertex attributes.</li>
 		<li>Replaced all built-in GLSL vertex attributes by custom ones.</li>
 		<li>Removed vertex attribute 'bitangent' as it can be derived in the shader.</li>
-		<li>Replaced fixed-function modelview and projection matrices by custom uniforms (viewMat, viewMatInv, projMat, viewProjMat).</li>
+		<li>Replaced fixed-function modelview and projection matrices by custom uniforms (viewMat, viewMatInv, projMat, viewProjMat, viewProjMatInv).</li>
 		<li>Renamed uniform 'viewer' to 'viewerPos'.</li>
 		<li>Merged uniform 'lightCosCutoff' into w component of 'lightDir'.</li>
+		<li>Simplified particle vertex shader and removed unnecessary attributes and uniforms from renderer.</li>
 		<li>Added log messages to the debugger output (Win only).</li>
+		<li>Fixed several issues in shadow mapping implementation.</li>
 		<li>Fixed a plenty of different bugs.</li>
 	</ul>
 	<li><b>Utility Lib</b></li>
@@ -65,6 +72,8 @@
 		<li>Updated sample framework to GLFW version 2.7</li>
 		<li>Added possibility to freeze camera.</li>
 		<li>Set window resolution of samples to widescreen format by default.</li>
+		<li>Fixed precision issues in deferred shading pipeline.</li>
+		<li>Switched to Blinn-Phong shading model.</li>
 	</ul>
 </ul>
 

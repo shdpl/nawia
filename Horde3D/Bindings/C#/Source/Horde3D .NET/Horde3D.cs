@@ -81,7 +81,9 @@ namespace Horde3DNET
        ///    AnimationTime     - CPU time in ms spent for animation
        ///    GeoUpdateTime     - CPU time in ms spent for software skinning and morphing
        ///    ParticleSimTime   - CPU time in ms spent for particle simulation and updates
+	   ///	  FwdLightsGPUTime  - GPU time in ms spent for forward lighting passes
        ///    DefLightsGPUTime  - GPU time in ms spent for drawing deferred light volumes
+	   ///    ShadowsGPUTime    - GPU time in ms spent for generating shadow maps
        ///    ParticleGPUTime   - GPU time in ms spent for drawing particles
        ///    TextureVMem       - Estimated amount of video memory used by textures (in Mb)
        ///    GeometryVMem      - Estimated amount of video memory used by geometry (in Mb)
@@ -95,7 +97,9 @@ namespace Horde3DNET
             AnimationTime,
             GeoUpdateTime,
             ParticleSimTime,
+            FwdLightsGPUTime,
             DefLightsGPUTime,
+            ShadowsGPUTime,
             ParticleGPUTime,
             TextureVMem,
             GeometryVMem
@@ -374,6 +378,24 @@ namespace Horde3DNET
         }
 
         /// <summary>
+        /// Enum: H3DNodeFlags
+        ///        The available scene node flags.
+        ///
+        /// NoDraw         - Excludes scene node from all rendering
+        /// NoCastShadow   - Excludes scene node from list of shadow casters
+        /// NoRayQuery     - Excludes scene node from ray intersection queries
+        /// Inactive       - Deactivates scene node so that it is completely ignored
+        ///                  (combination of all flags above)            
+        /// </summary>
+        public enum H3DNodeFlags
+        {
+            NoDraw = 1,
+            NoCastShadow = 2,
+            NoRayQuery = 4,
+            Inactive = 7  // NoDraw | NoCastShadow | NoRayQuery        
+        };
+
+        /// <summary>
         ///	Enum: H3DNodeParams
         ///        The available scene node parameters.
 
@@ -383,8 +405,8 @@ namespace Horde3DNET
         /// </summary>
         public enum H3DNodeParams
         {
-            Name = 1,
-            AttachmentString
+            NameStr = 1,
+            AttachmentStr
         }
 
         /// <summary>
@@ -601,20 +623,6 @@ namespace Horde3DNET
         public static void release()
         {
             NativeMethodsEngine.h3dRelease();
-        }
-
-        /// <summary>
-        /// This function sets the base width and height which affects render targets with relative (in percent) size 
-        /// specification. Changing the base size is usually desired after engine initialization and when the window
-        /// is being resized. Note that in case several cameras use the same pipeline resource instance, the change
-        /// will affect all cameras.
-        /// </summary>
-        /// <param name="pipeRes">the pipeline resource instance to be changed</param>        
-        /// <param name="width">base width in pixels used for render targets with relative size</param>
-        /// <param name="height">base height in pixels used for render targets with relative size</param>
-        public static void resizePipelineBuffers(int pipeRes, int width, int height)
-        {
-            NativeMethodsEngine.h3dResizePipelineBuffers( pipeRes, width, height );
         }
 
         /// <summary>
@@ -1150,7 +1158,21 @@ namespace Horde3DNET
             if (name == null) throw new ArgumentNullException("name", Resources.StringNullExceptionString);
 
             return NativeMethodsEngine.h3dSetMaterialUniform(materialRes, name, a, b, c, d);
-        }      
+        }
+
+        /// <summary>
+        /// This function sets the base width and height which affects render targets with relative (in percent) size 
+        /// specification. Changing the base size is usually desired after engine initialization and when the window
+        /// is being resized. Note that in case several cameras use the same pipeline resource instance, the change
+        /// will affect all cameras.
+        /// </summary>
+        /// <param name="pipeRes">the pipeline resource instance to be changed</param>        
+        /// <param name="width">base width in pixels used for render targets with relative size</param>
+        /// <param name="height">base height in pixels used for render targets with relative size</param>
+        public static void resizePipelineBuffers(int pipeRes, int width, int height)
+        {
+            NativeMethodsEngine.h3dResizePipelineBuffers(pipeRes, width, height);
+        }
 
         /// <summary>
         /// Reads the pixel data of a pipeline render target buffer.
@@ -1246,25 +1268,6 @@ namespace Horde3DNET
         public static void removeNode(int node)
         {
             NativeMethodsEngine.h3dRemoveNode(node);
-        }
-
-        /// <summary>
-        /// Gets the scene node flags.
-        /// </summary>
-        /// <param name="node">handle to the node to be accessed</param>
-        public static void h3dGetNodeFlags(int node)
-        {
-            NativeMethodsEngine.h3dGetNodeFlags(node);
-        }
-        /// <summary>
-        /// Sets the scene node flags.
-        /// </summary>
-        /// <param name="node">handle to the node to be modified</param>
-        /// <param name="flags">new flag bitmask</param>
-        /// <param name="recursive">specifies whether flags should be applied recursively to all child nodes</param>        
-        public static void setNodeFlags(int node, int flags, bool recursive)
-        {
-            NativeMethodsEngine.h3dSetNodeFlags(node, flags, recursive);
         }
 
         /// <summary>
@@ -1427,6 +1430,29 @@ namespace Horde3DNET
         {
             if( value == null) throw new ArgumentNullException("value", Resources.StringNullExceptionString);
             NativeMethodsEngine.h3dSetNodeParamStr(node, param, value);
+        }
+
+        /// <summary>
+        /// Gets the scene node flags.
+        /// </summary>
+        /// This function returns a bit mask containing the set scene node flags.
+        /// <param name="node">handle to the node to be accessed</param>
+        /// <returns>flag bitmask</returns>
+        public static int getNodeFlags( int node )
+        {
+            return NativeMethodsEngine.h3dGetNodeFlags( node );
+        }
+
+        /// <summary>
+		///  Sets the scene node flags.
+        /// </summary>
+        /// This function sets the flags of the specified scene node.
+        /// <param name="node">handle to the node to be modified</param>
+        /// <param name="flags">new flag bitmask</param>
+        /// <param name="recursive">specifies whether flags should be applied recursively to all child nodes</param>
+        public static void setNodeFlags(int node, int flags, bool recursive)
+        {
+            NativeMethodsEngine.h3dSetNodeFlags(node, flags, recursive);
         }
 
 

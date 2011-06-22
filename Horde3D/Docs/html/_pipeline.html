@@ -618,6 +618,10 @@ rendering emitters.
         <td>premultiplied view and projection matrix</td>
     </tr>
 	<tr>
+        <td><b>uniform mat4 viewProjMatInv</b></td>
+        <td>inverse view-projection matrix</td>
+    </tr>
+	<tr>
         <td><b>uniform vec3 viewerPos</b></td>
         <td>position of the viewer (virtual camera)</td>
     </tr>
@@ -704,10 +708,6 @@ rendering emitters.
 <div class="syntaxbox">
 <table>
     <tr>
-        <td><b>uniform vec3 parCorners[4]</b></td>
-        <td>four corner positions of particle billboard</td>
-    </tr>
-    <tr>
         <td><b>uniform vec3 parPosArray[64]</b></td>
         <td>position array of particle batch</td>
     </tr>
@@ -771,10 +771,6 @@ rendering emitters.
 	<tr>
         <td><b>attribute float parIdx</b></td>
         <td>index of current particle in position, size and color arrays</td>
-    </tr>
-    <tr>
-        <td><b>attribute float parCornerIdx</b></td>
-        <td>index of current particle's corner in corners array</td>
     </tr>
 </table>
 </div>

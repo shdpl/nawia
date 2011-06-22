@@ -18,7 +18,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 FIND_LIBRARY(X11_LIBRARY X11)
-target_link_libraries(Knight Horde3D Horde3DUtils glfw ${X11})
+target_link_libraries(Knight Horde3D Horde3DUtils glfw ${X11_LIBRARY})
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

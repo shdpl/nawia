@@ -20,15 +20,11 @@ namespace Horde3DNET.Utils
     /// <summary>
     /// Separates native methods from managed code.
     /// </summary>
-    internal static class NativeMethodsUtils    
+    internal static class NativeMethodsUtils
     {
-    #if DEBUG
-            public const string UTILS_DLL = "Horde3DUtilsd.dll";
-    #else
-            public const string UTILS_DLL = "Horde3DUtils.dll";
-    #endif
+        public const string UTILS_DLL = "Horde3DUtils.dll";
 
-            [DllImport(UTILS_DLL), SuppressUnmanagedCodeSecurity]
+        [DllImport(UTILS_DLL), SuppressUnmanagedCodeSecurity]
         internal static extern void h3dutFreeMem(IntPtr ptr);
 
         [DllImport(UTILS_DLL), SuppressUnmanagedCodeSecurity]
@@ -57,6 +53,11 @@ namespace Horde3DNET.Utils
         [return: MarshalAs(UnmanagedType.U1)]   // represents C++ bool type 
         internal static extern bool h3dutLoadResourcesFromDisk(string contentDir);
 
+        [DllImport(UTILS_DLL), SuppressUnmanagedCodeSecurity]        
+        internal static extern int h3dutCreateGeometryRes(string name, int numVertices, int numTriangleIndices,
+                                           float[] posData, int[] indexData, short[] normalData,
+                                           short[] tangentData, short[] bitangentData,
+                                           float[] texData1, float[] texData2);
 
         [DllImport(UTILS_DLL), SuppressUnmanagedCodeSecurity]
         [return: MarshalAs(UnmanagedType.U1)]   // represents C++ bool type 
@@ -77,5 +78,10 @@ namespace Horde3DNET.Utils
 
         [DllImport(UTILS_DLL), SuppressUnmanagedCodeSecurity]
         internal static extern void h3dutShowFrameStats(int fontMaterialRes, int panelMaterialRes, int mode);
+
+        [DllImport(UTILS_DLL), SuppressUnmanagedCodeSecurity]
+        [return: MarshalAs(UnmanagedType.U1)]   // represents C++ bool type 
+        internal static extern bool h3dutScreenshot(string filename);
+
     }
 }

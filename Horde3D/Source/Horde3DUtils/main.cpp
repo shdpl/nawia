@@ -903,7 +903,7 @@ DLLEXP bool h3dutScreenshot( const char *filename )
 	delete[] pixels;
 	h3dutFreeMem( &image );
 
-	return bytesWritten == width * height * 3 + 18;
+	return bytesWritten == (size_t) width * height * 3 + 18;
 }
 
 

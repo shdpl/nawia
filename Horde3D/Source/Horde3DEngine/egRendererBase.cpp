@@ -100,7 +100,6 @@ bool GPUTimer::updateResults()
 	if( !available ) return false;
 	
 	//  Accumulate time
-	double time = 0;
 	GLuint64 timeStart = 0, timeEnd = 0, timeAccum = 0;
 	for( uint32 i = 0; i < _numQueries; ++i )
 	{

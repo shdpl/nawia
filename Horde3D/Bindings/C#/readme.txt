@@ -1,7 +1,7 @@
 
 Horde3D .NET wrapper for Horde3D SDK [1.0.0]
 =============================================
-version 1.0.0Beta, 5-June-2008
+version 1.0.0Beta 5, 28-May-2011
 
 http://www.pyropix.net/
 https://sourceforge.net/projects/horde3dnet/
@@ -18,7 +18,7 @@ You should have a look at the included samples Chicago .NET and Knight.NET for s
 
 Package
 -------
-Includes Horde3D SDK C# bindings Version 1.0.0Beta4 - http://www.horde3d.org - Copyright (C) 2006-2007 Nicolas Schulz
+Includes Horde3D SDK C# bindings Version 1.0.0Beta5 - http://www.horde3d.org - Copyright (C) 2006-2007 Nicolas Schulz
 
 
 Requirements

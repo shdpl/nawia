@@ -50,6 +50,7 @@ The extension is then part of the Horde3D DLL and can be used with the Horde3DTe
 ChangeLog
 ---------
 
+0.2.3   - Adapted to Horde3D 1.0.0 Beta5
 0.2.2   - Adapted to Horde3D 1.0.0 Beta4
 0.2.1   - Adapted to Horde3D 1.0.0 Beta3
 0.2.0   - Disabled texture compression for height map

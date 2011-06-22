@@ -110,30 +110,30 @@ bool Renderer::init()
 	
 	// Create vertex layouts
 	VertexLayoutAttrib attribsPosOnly[1] = {
-		"vertPos", 0, 3, 0
+		{"vertPos", 0, 3, 0}
 	};
 	_vlPosOnly = gRDI->registerVertexLayout( 1, attribsPosOnly );
 
 	VertexLayoutAttrib attribsOverlay[2] = {
-		"vertPos", 0, 2, 0,
-		"texCoords0", 0, 2, 8
+		{"vertPos", 0, 2, 0},
+		{"texCoords0", 0, 2, 8}
 	};
 	_vlOverlay = gRDI->registerVertexLayout( 2, attribsOverlay );
 	
 	VertexLayoutAttrib attribsModel[7] = {
-		"vertPos", 0, 3, 0,
-		"normal", 1, 3, 0,
-		"tangent", 2, 4, 0,
-		"joints", 3, 4, 8,
-		"weights", 3, 4, 24,
-		"texCoords0", 3, 2, 0,
-		"texCoords1", 3, 2, 40
+		{"vertPos", 0, 3, 0},
+		{"normal", 1, 3, 0},
+		{"tangent", 2, 4, 0},
+		{"joints", 3, 4, 8},
+		{"weights", 3, 4, 24},
+		{"texCoords0", 3, 2, 0},
+		{"texCoords1", 3, 2, 40}
 	};
 	_vlModel = gRDI->registerVertexLayout( 7, attribsModel );
 
 	VertexLayoutAttrib attribsParticle[2] = {
-		"texCoords0", 0, 2, 0,
-		"parIdx", 0, 1, 8
+		{"texCoords0", 0, 2, 0},
+		{"parIdx", 0, 1, 8}
 	};
 	_vlParticle = gRDI->registerVertexLayout( 2, attribsParticle );
 	
@@ -1160,12 +1160,7 @@ void Renderer::drawOverlays( const string &shaderContext )
 		
 		if( curMatRes != ob.materialRes )
 		{
-			if( !setMaterial( ob.materialRes, shaderContext ) )
-			{
-				// Unsuccessful material setting probably has destroyed the last setted material
-				curMatRes = 0x0;
-				continue;
-			}
+			if( !setMaterial( ob.materialRes, shaderContext ) ) continue;
 			gRDI->setVertexLayout( _vlOverlay );
 			curMatRes = ob.materialRes;
 		}

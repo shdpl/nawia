@@ -105,6 +105,33 @@ namespace Horde3DNET.Utils
         }
 
         /// <summary>
+        /// Creates a Geometry resource from specified vertex data.
+        /// </summary>
+        /// This utility function allocates and initializes a Geometry resource
+        /// with the specified vertex attributes and indices. The optional tangent space
+        /// data (normal, tangent, bitangent) is encoded as int16, where -1.0 maps to
+        /// -32'767 and 1.0f to +32'767.
+        /// <param name="name">unique name of the new Geometry resource </param>
+        /// <param name="numVertices">number of vertices</param>
+        /// <param name="numTriangleIndices">number of vertex indices</param>
+        /// <param name="posData">vertex positions (xyz)</param>
+        /// <param name="indexData">indices defining triangles</param>
+        /// <param name="normalData">normals xyz (optional, can be NULL)</param>
+        /// <param name="tangentData">tangents xyz (optional, can be NULL)</param>
+        /// <param name="bitangentData">bitangents xyz (required if tangents specified, otherwise NULL)</param>
+        /// <param name="texData1">first texture coordinate uv set (optional, can be NULL)</param>
+        /// <param name="texData2">second texture coordinate uv set (optional, can be NULL)</param>
+        /// <returns>handle to new Geometry resource or 0 in case of failure</returns>
+        public static int createGeometryRes(string name, int numVertices, int numTriangleIndices,
+                                           float[] posData, int[] indexData, short[] normalData,
+                                           short[] tangentData, short[] bitangentData,
+                                           float[] texData1, float[] texData2)
+        {
+            return NativeMethodsUtils.h3dutCreateGeometryRes(name, numVertices, numTriangleIndices, posData, indexData, normalData, tangentData, bitangentData, texData1, texData2);
+        }
+
+
+        /// <summary>
         /// This utility function allocates memory for the pointer outData and creates a TGA image from the specified pixel data. 
         /// The dimensions of the image have to be specified as well as the bit depth of the pixel data. 
         /// The created TGA-image-data can be used as Texture2D or TexureCube resource in the engine.
@@ -149,6 +176,18 @@ namespace Horde3DNET.Utils
             //NativeMethodsUtils.freeMem(dataPtr);
 
             return result;
+        }
+
+        /// <summary>
+        /// Writes the content of the backbuffer to a tga file.
+        /// </summary>
+        /// This function reads back the content of the backbuffer and writes it to a tga file with the
+		/// specified filename and path.
+        /// <param name="filename">filename and path of the output tga file</param>
+        /// <returns>true if the file could be written, otherwise false</returns>
+        public static bool createSnapshot(string filename)
+        {
+            return NativeMethodsUtils.h3dutScreenshot(filename); 
         }
 
         /// <summary>
