@@ -60,6 +60,7 @@ namespace GameEngine
 			SV_PORT,
 			SV_IP,
 			SV_TICKRATE,
+			SV_RESTRICT_CLIENT_UPDATES,
 			CL_SERVERPORT,
 			CL_TICKRATE,
 			USE_COMPRESSION,
@@ -109,6 +110,22 @@ namespace GameEngine
 	GAMEENGINE_API bool deregisterComponentOnClient(const char* entityID, const char* componentID);
 
 	/**
+	 * Registers a GameComponent on the local client so its gamestate gets transmitted to server
+	 * @return true on success
+	 */
+	GAMEENGINE_API bool registerComponentOnClient(const char* entityID, const char* componentID);
+
+	/**
+	 * State updates to this component sent by given remote client will be allowed by the server.
+	 */
+	GAMEENGINE_API void allowClientUpdate(size_t clientID, const char* entityID, const char* componentID);
+
+	/**
+	 * State updates to this component sent by given remote client will be denied by the server.
+	 */
+	GAMEENGINE_API void disallowClientUpdate(size_t clientID, const char* entityID, const char* componentID);
+
+	/**
 	 * Returns the current state of the GameNetworkManager
 	 * @return the current NetworkState
 	 */
@@ -131,6 +148,12 @@ namespace GameEngine
 	 * @return true on success
 	 */
 	GAMEENGINE_API bool setNetworkOption(GameEngine::Network::NetworkOption option, const bool value);
+
+	/**
+	 * Removes (disconnects) a connected client from the server
+	 * @return true on success
+	 */
+	GAMEENGINE_API bool removeClient(const size_t clientID);
 
 	/*! @}*/
 }

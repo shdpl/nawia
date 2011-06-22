@@ -31,7 +31,7 @@
 #include "GameEngine_Network.h"
 
 #include <set>
-#include <vector>
+#include <list>
 
 struct ClientRecord;
 struct NetworkMessage;
@@ -62,6 +62,8 @@ public:
 
 	void disconnect();
 
+	bool removeClient(const size_t clientID);
+
 	// registers a GameComponent on the server for transmitting its state to clients
 	bool registerServerComponent(GameComponent* component);
 	bool deregisterServerComponent(GameComponent* component);
@@ -69,6 +71,10 @@ public:
 	// registers a GameComponent on the local client for transmitting its state to the server
 	bool registerClientComponent(GameComponent* component);
 	bool deregisterClientComponent(GameComponent* component);
+
+	// if m_sv_restrictClientUpdates is true, incoming state updates are rejected unless declared with allowClientUpdate
+	void allowClientUpdate(size_t clientID, const char* entityID, const char* componentID);
+	void disallowClientUpdate(size_t clientID, const char* entityID, const char* componentID);
 
 	bool setOption(GameEngine::Network::NetworkOption option, const size_t value);
 	bool setOption(GameEngine::Network::NetworkOption option, const char* value);
@@ -101,7 +107,7 @@ private:
 	size_t sv_addClient(SOCKADDR_IN client);
 
 	// removes a client from the server's list
-	void sv_removeClient(size_t clientID);
+	bool sv_removeClient(size_t clientID);
 
 	// broadcasts the outgoing NetworkMessage to all clients
 	void sv_broadcastOutgoingMessage();
@@ -128,7 +134,8 @@ private:
 	size_t			m_sv_tickinterval;
 	SOCKADDR_IN		m_sv_adress;
 	size_t			m_sv_clientid;
-	std::vector<ClientRecord*>	m_sv_clients;
+	bool			m_sv_restrictClientUpdates;
+	std::list<ClientRecord*>	m_sv_clients;
 	std::set<GameComponent*>	m_sv_components;
 
 
@@ -146,6 +153,7 @@ private:
 
 	// common vars
 	char*			m_applicationID;
+	bool			m_useCompression;
 
 
 
@@ -156,7 +164,6 @@ private:
 	char* m_sendBuffer;
 	char* m_receiveBuffer;
 
-	bool m_useCompression;
 };
 
 /*! @}*/

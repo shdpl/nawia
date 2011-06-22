@@ -108,6 +108,14 @@ namespace GameEngine
 		return GameModules::networkManager()->deregisterClientComponent(gc);
 	}
 
+	GAMEENGINE_API void GameEngine::allowClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
+		GameModules::networkManager()->allowClientUpdate(clientID, entityID, componentID);
+	}
+
+	GAMEENGINE_API void GameEngine::disallowClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
+		GameModules::networkManager()->disallowClientUpdate(clientID, entityID, componentID);
+	}
+
 	GAMEENGINE_API GameEngine::Network::NetworkState GameEngine::getNetworkState() {
 		return GameModules::networkManager()->getState();
 	}
@@ -122,5 +130,9 @@ namespace GameEngine
 
 	GAMEENGINE_API bool GameEngine::setNetworkOption(GameEngine::Network::NetworkOption option, const bool value) {
 		return GameModules::networkManager()->setOption(option, value);
+	}
+
+	GAMEENGINE_API bool removeClient(const size_t clientID) {
+		return GameModules::networkManager()->removeClient(clientID);
 	}
 }

@@ -31,6 +31,10 @@
 
 #include "zlib/zlib.h"
 
+#include <list>
+
+using namespace std;
+
 enum PacketType {
 	INVALID_PACKET,
 	CONNECT,
@@ -47,10 +51,49 @@ struct ClientRecord {
 	size_t			client_id;
 	size_t			client_tick;
 
+	list<pair<string,string>*>	allowedUpdates;
+
 	ClientRecord(SOCKADDR_IN cladr, size_t clid) {
 		adress = cladr;
 		client_id = clid;
 		client_tick = 0;
+	}
+
+	~ClientRecord() {
+		allowedUpdates.clear();
+	}
+
+	void allowUpdate(string entity, string component) {
+		pair<string,string> *newpair = new pair<string,string>();
+		newpair->first = entity;
+		newpair->second = component;
+		allowedUpdates.push_back(newpair);
+	}
+
+	void disallowUpdate(string entity, string component) {
+		list<pair<string,string>*>::iterator it = allowedUpdates.begin();
+		while (it != allowedUpdates.end()) {
+			pair<string,string>* p = (*it);
+			if ((p->first == entity) && (p->second == component)) {
+				list<pair<string,string>*>::iterator it_remove = it;
+				it++;
+				allowedUpdates.erase(it_remove);
+				delete p;
+			} else
+				it++;
+		}
+	}
+
+	bool isUpdateAllowed(string entity, string component) {
+		list<pair<string,string>*>::iterator it = allowedUpdates.begin();
+		while (it != allowedUpdates.end()) {
+			pair<string,string>* p = (*it);
+			if ((p->first == entity) && (p->second == component))
+				return true;
+			it++;
+		}
+		
+		return false;
 	}
 };
 
@@ -243,6 +286,8 @@ bool GameNetworkManager::init()
 
 	m_useCompression = true;
 
+	m_sv_restrictClientUpdates = false;
+
 	return true;
 }
 
@@ -315,9 +360,15 @@ void GameNetworkManager::disconnect() {
 		m_outgoing_message->setType(DISCONNECT);
 
 		sv_broadcastOutgoingMessage();
+
+		m_sv_clients.clear();
 	}
 	
 	m_currentState = GameEngine::Network::DISCONNECTED;
+}
+
+bool GameNetworkManager::removeClient(const size_t clientID) {
+	return sv_removeClient(clientID);
 }
 
 void GameNetworkManager::update() {
@@ -536,14 +587,6 @@ void GameNetworkManager::cl_transmitComponentStates() {
 
 size_t GameNetworkManager::sv_addClient(SOCKADDR_IN client) {
 
-	//std::vector<ClientRecord>::iterator it = m_sv_clients.begin();
-
-	//while (it != m_sv_clients.end()) {
-	//	if ((*it).adress.sin_addr.S_un.S_addr == client.sin_addr.S_un.S_addr)
-	//		return;
-	//	it++;
-	//}
-
 	size_t id = m_sv_clientid++;
 
 	ClientRecord* cr = new ClientRecord(client, id);
@@ -554,17 +597,27 @@ size_t GameNetworkManager::sv_addClient(SOCKADDR_IN client) {
 	return id;
 }
 
-void GameNetworkManager::sv_removeClient(size_t clientID) {
-	std::vector<ClientRecord*>::iterator it = m_sv_clients.begin();
+bool GameNetworkManager::sv_removeClient(size_t clientID) {
+	std::list<ClientRecord*>::iterator it = m_sv_clients.begin();
 
 	while (it != m_sv_clients.end()) {
 		if ((*it)->client_id == clientID) {
+			// send goodbye message
+			m_outgoing_message->setClientID(clientID);
+			m_outgoing_message->setType(DISCONNECT);
+			m_outgoing_message->setDataLength(0);
+			m_outgoing_message->setTick(m_sv_tick);
+			sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &((*it)->adress), sizeof(SOCKADDR_IN));
+
+			// remove client
 			delete (*it);
 			m_sv_clients.erase(it);
-			return;
+			return true;
 		}
 		it++;
 	}
+
+	return false;
 }
 
 void GameNetworkManager::sv_handleClientMessages() {
@@ -620,7 +673,7 @@ void GameNetworkManager::sv_handleClientMessages() {
 
 					ClientRecord* client = NULL;
 
-					std::vector<ClientRecord*>::iterator it = m_sv_clients.begin();
+					std::list<ClientRecord*>::iterator it = m_sv_clients.begin();
 					while (it != m_sv_clients.end()) {
 						if ((*it)->client_id == clientID) {
 							client = (*it);
@@ -654,6 +707,12 @@ void GameNetworkManager::sv_handleClientMessages() {
 						std::string entityID(m_incoming_message->data(datacursor));						datacursor += entityID.length() + 1;
 						std::string componentID(m_incoming_message->data(datacursor));					datacursor += componentID.length() + 1;
 
+						// is this state update allowed for this client?
+						if ( (m_sv_restrictClientUpdates) && !(client->isUpdateAllowed(entityID, componentID)) ) {
+							datacursor += statelength;
+							continue;
+						}
+
 						GameEntity* ge = GameModules::gameWorld()->entity(entityID);
 
 						// set component's state
@@ -682,7 +741,7 @@ void GameNetworkManager::sv_testClientsTimeout() {
 
 	count = 0;
 
-	std::vector<ClientRecord*>::iterator it = m_sv_clients.begin();
+	std::list<ClientRecord*>::iterator it = m_sv_clients.begin();
 
 	while (it != m_sv_clients.end()) {
 		if (m_sv_tick - (*it)->client_tick > 600) {
@@ -766,7 +825,7 @@ void GameNetworkManager::sv_broadcastOutgoingMessage() {
 		m_outgoing_message->compressData();
 
 	// send the message to all clients
-	std::vector<ClientRecord*>::iterator cl_it = m_sv_clients.begin();
+	std::list<ClientRecord*>::iterator cl_it = m_sv_clients.begin();
 
 	while (cl_it != m_sv_clients.end()) {
 		m_outgoing_message->setClientID((*cl_it)->client_id);
@@ -906,9 +965,50 @@ bool GameNetworkManager::setOption(GameEngine::Network::NetworkOption option, co
 			m_useCompression = value;
 			return true;
 
+		case GameEngine::Network::SV_RESTRICT_CLIENT_UPDATES:
+			m_sv_restrictClientUpdates = value;
+			return true;
+
 		default:
 			return false;
 	}
 
 	return false;
+}
+
+void GameNetworkManager::allowClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
+	ClientRecord* client = NULL;
+
+	std::list<ClientRecord*>::iterator cl_it = m_sv_clients.begin();
+
+	while (cl_it != m_sv_clients.end()) {
+		if ((*cl_it)->client_id == clientID) {
+			client = (*cl_it);
+			break;
+		}
+	}
+
+	if (client == NULL)
+		return;
+
+	client->allowUpdate(entityID, componentID);
+}
+
+
+void GameNetworkManager::disallowClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
+	ClientRecord* client = NULL;
+
+	std::list<ClientRecord*>::iterator cl_it = m_sv_clients.begin();
+
+	while (cl_it != m_sv_clients.end()) {
+		if ((*cl_it)->client_id == clientID) {
+			client = (*cl_it);
+			break;
+		}
+	}
+
+	if (client == NULL)
+		return;
+
+	client->disallowUpdate(entityID, componentID);
 }
