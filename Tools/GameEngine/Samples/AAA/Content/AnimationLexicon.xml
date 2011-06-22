@@ -1145,4 +1145,22 @@
 		</Files>
 		<Restriction>Germany</Restriction>		
 	</Posture>
+	<Gesture>
+		<ID>0075</ID>
+		<Name>Japanese_Adaptor_01</Name>
+		<CorpusName>Jap-PHFe.wmv</CorpusName>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="64">Gestures\Female\female_jap_adaptor_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="64">Gestures\Male\male_jap_adaptor_01.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>adaptor</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
 </AnimationLexicon>
