@@ -76,6 +76,10 @@ public:
 	void allowClientUpdate(size_t clientID, const char* entityID, const char* componentID);
 	void disallowClientUpdate(size_t clientID, const char* entityID, const char* componentID);
 
+	// register callbacks
+	void registerCallbackOnClientConnect(void (*callback)(size_t));
+	void registerCallbackOnClientDisconnect(void (*callback)(size_t));
+
 	bool setOption(GameEngine::Network::NetworkOption option, const size_t value);
 	bool setOption(GameEngine::Network::NetworkOption option, const char* value);
 	bool setOption(GameEngine::Network::NetworkOption option, const bool value);
@@ -164,6 +168,11 @@ private:
 	char* m_sendBuffer;
 	char* m_receiveBuffer;
 
+
+
+	// event callbacks
+	void			(*m_onClientConnect)(size_t);
+	void			(*m_onClientDisconnect)(size_t);
 };
 
 /*! @}*/

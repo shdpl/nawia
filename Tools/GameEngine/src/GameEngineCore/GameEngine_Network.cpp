@@ -116,6 +116,14 @@ namespace GameEngine
 		GameModules::networkManager()->disallowClientUpdate(clientID, entityID, componentID);
 	}
 
+	GAMEENGINE_API void GameEngine::registerCallbackOnClientConnect(void (*callback)(size_t)) {
+		GameModules::networkManager()->registerCallbackOnClientConnect(callback);
+	}
+
+	GAMEENGINE_API void GameEngine::registerCallbackOnClientDisconnect(void (*callback)(size_t)) {
+		GameModules::networkManager()->registerCallbackOnClientDisconnect(callback);
+	}
+
 	GAMEENGINE_API GameEngine::Network::NetworkState GameEngine::getNetworkState() {
 		return GameModules::networkManager()->getState();
 	}

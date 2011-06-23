@@ -126,6 +126,16 @@ namespace GameEngine
 	GAMEENGINE_API void disallowClientUpdate(size_t clientID, const char* entityID, const char* componentID);
 
 	/**
+	 * Registers a callback function to be executed when a new client connects
+	 */
+	GAMEENGINE_API void registerCallbackOnClientConnect(void (*callback)(size_t));
+
+	/**
+	 * Registers a callback function to be executed when a client disconnects
+	 */
+	GAMEENGINE_API void registerCallbackOnClientDisconnect(void (*callback)(size_t));
+
+	/**
 	 * Returns the current state of the GameNetworkManager
 	 * @return the current NetworkState
 	 */

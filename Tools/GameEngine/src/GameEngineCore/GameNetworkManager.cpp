@@ -243,6 +243,9 @@ GameNetworkManager::GameNetworkManager()
 
 	m_applicationID = new char[11];
 	strcpy_s(m_applicationID, 11, "GameEngine");
+
+	m_onClientConnect = 0;
+	m_onClientDisconnect = 0;
 }
 
 GameNetworkManager::~GameNetworkManager()
@@ -612,6 +615,10 @@ bool GameNetworkManager::sv_removeClient(size_t clientID) {
 			// remove client
 			delete (*it);
 			m_sv_clients.erase(it);
+
+			if (m_onClientDisconnect)
+				m_onClientDisconnect(clientID);
+
 			return true;
 		}
 		it++;
@@ -651,14 +658,17 @@ void GameNetworkManager::sv_handleClientMessages() {
 					m_outgoing_message->setClientID(0);
 					m_outgoing_message->setDataLength(0);
 					m_outgoing_message->setTick(m_sv_tick);
+					sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &from_addr, sizeof(SOCKADDR_IN));
 				} else {
 					id = sv_addClient(from_addr);
 					m_outgoing_message->setType(ACCEPT);
 					m_outgoing_message->setClientID(id);
 					m_outgoing_message->setDataLength(0);
 					m_outgoing_message->setTick(m_sv_tick);
+					sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &from_addr, sizeof(SOCKADDR_IN));
+					if (m_onClientConnect)
+						m_onClientConnect(id);
 				}
-				sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &from_addr, sizeof(SOCKADDR_IN));
 				break;
 
 			// client disconnects
@@ -1011,4 +1021,12 @@ void GameNetworkManager::disallowClientUpdate(size_t clientID, const char* entit
 		return;
 
 	client->disallowUpdate(entityID, componentID);
+}
+
+void GameNetworkManager::registerCallbackOnClientConnect(void (*callback)(size_t)) {
+	m_onClientConnect = callback;
+}
+
+void GameNetworkManager::registerCallbackOnClientDisconnect(void (*callback)(size_t)) {
+	m_onClientDisconnect = callback;
 }
