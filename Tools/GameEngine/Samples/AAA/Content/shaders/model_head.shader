@@ -291,7 +291,7 @@ void main( void )
 	#define _F02_NormalMapping
 #endif
 
-#include "shaders/utilityLib/fragLightingStandard.glsl" 
+#include "shaders/utilityLib/fragLightingLessTone.glsl" 
 
 uniform vec4 specParams;
 uniform sampler2D albedoMap;
@@ -364,7 +364,7 @@ void main( void )
 	#define _F02_NormalMapping
 #endif
 
-#include "shaders/utilityLib/fragLightingStandard.glsl" 
+#include "shaders/utilityLib/fragLightingLessTone.glsl" 
 
 uniform sampler2D albedoMap;
 uniform samplerCube ambientMap;
