@@ -32,6 +32,7 @@
 
 #include <set>
 #include <list>
+#include <string>
 
 struct ClientRecord;
 struct NetworkMessage;
@@ -68,17 +69,13 @@ public:
 	bool registerServerComponent(GameComponent* component);
 	bool deregisterServerComponent(GameComponent* component);
 
-	// registers a GameComponent on the local client for transmitting its state to the server
-	bool registerClientComponent(GameComponent* component);
-	bool deregisterClientComponent(GameComponent* component);
-
-	// if m_sv_restrictClientUpdates is true, incoming state updates are rejected unless declared with allowClientUpdate
-	void allowClientUpdate(size_t clientID, const char* entityID, const char* componentID);
-	void disallowClientUpdate(size_t clientID, const char* entityID, const char* componentID);
+	void requestClientUpdate(size_t clientID, const char* entityID, const char* componentID);
+	void disrequestClientUpdate(size_t clientID, const char* entityID, const char* componentID);
 
 	// register callbacks
 	void registerCallbackOnClientConnect(void (*callback)(size_t));
 	void registerCallbackOnClientDisconnect(void (*callback)(size_t));
+	void registerCallbackOnStateRequest(void (*callback)(std::string, std::string));
 
 	bool setOption(GameEngine::Network::NetworkOption option, const size_t value);
 	bool setOption(GameEngine::Network::NetworkOption option, const char* value);
@@ -119,6 +116,9 @@ private:
 	// test for timed out clients
 	void sv_testClientsTimeout();
 
+	// send requests to clients
+	void sv_sendStateRequests();
+
 
 	// sends a connect message to server
 	void cl_connectToServer();
@@ -139,7 +139,7 @@ private:
 	SOCKADDR_IN		m_sv_adress;
 	size_t			m_sv_clientid;
 	bool			m_sv_restrictClientUpdates;
-	std::list<ClientRecord*>	m_sv_clients;
+	std::list<ClientRecord*>	m_sv_clients;			// TODO: map<int,ClientRecord> could speed up some things
 	std::set<GameComponent*>	m_sv_components;
 
 
@@ -173,6 +173,8 @@ private:
 	// event callbacks
 	void			(*m_onClientConnect)(size_t);
 	void			(*m_onClientDisconnect)(size_t);
+
+	void			(*m_onStateRequest)(std::string, std::string);
 };
 
 /*! @}*/

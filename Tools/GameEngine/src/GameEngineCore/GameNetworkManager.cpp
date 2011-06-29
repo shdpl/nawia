@@ -31,8 +31,6 @@
 
 #include "zlib/zlib.h"
 
-#include <list>
-
 using namespace std;
 
 enum PacketType {
@@ -43,7 +41,9 @@ enum PacketType {
 	REJECT,
 	STATE_UPDATE,
 	DISCOVER,
-	RES_DISCOVER
+	RES_DISCOVER,
+	REQUEST_UPDATES,
+	ACK_REQUEST_UPDATES
 };
 
 struct ClientRecord {
@@ -51,49 +51,39 @@ struct ClientRecord {
 	size_t			client_id;
 	size_t			client_tick;
 
-	list<pair<string,string>*>	allowedUpdates;
+	//list<pair<string,string>*>	allowedUpdates;
+	set<pair<string,string>>	requestedUpdates;
+
+	size_t	requestedUpdates_changed;
+	bool	requestedUpdates_acknowledged;
 
 	ClientRecord(SOCKADDR_IN cladr, size_t clid) {
 		adress = cladr;
 		client_id = clid;
 		client_tick = 0;
+		requestedUpdates_changed = 0;
+		requestedUpdates_acknowledged = true;
 	}
 
 	~ClientRecord() {
-		allowedUpdates.clear();
+		requestedUpdates.clear();
 	}
 
-	void allowUpdate(string entity, string component) {
-		pair<string,string> *newpair = new pair<string,string>();
-		newpair->first = entity;
-		newpair->second = component;
-		allowedUpdates.push_back(newpair);
+	void requestUpdate(string entity, string component) {
+		pair<string,string> p(entity, component);
+		requestedUpdates.insert(p);
+		requestedUpdates_acknowledged = false;
 	}
 
-	void disallowUpdate(string entity, string component) {
-		list<pair<string,string>*>::iterator it = allowedUpdates.begin();
-		while (it != allowedUpdates.end()) {
-			pair<string,string>* p = (*it);
-			if ((p->first == entity) && (p->second == component)) {
-				list<pair<string,string>*>::iterator it_remove = it;
-				it++;
-				allowedUpdates.erase(it_remove);
-				delete p;
-			} else
-				it++;
-		}
+	void disrequestUpdate(string entity, string component) {
+		pair<string,string> p(entity, component);
+		requestedUpdates.erase(p);
+		requestedUpdates_acknowledged = false;
 	}
 
-	bool isUpdateAllowed(string entity, string component) {
-		list<pair<string,string>*>::iterator it = allowedUpdates.begin();
-		while (it != allowedUpdates.end()) {
-			pair<string,string>* p = (*it);
-			if ((p->first == entity) && (p->second == component))
-				return true;
-			it++;
-		}
-		
-		return false;
+	bool isUpdateRequested(string entity, string component) {
+		pair<string,string> p(entity, component);
+		return (requestedUpdates.find(p) == requestedUpdates.end());
 	}
 };
 
@@ -246,6 +236,7 @@ GameNetworkManager::GameNetworkManager()
 
 	m_onClientConnect = 0;
 	m_onClientDisconnect = 0;
+	m_onStateRequest = 0;
 }
 
 GameNetworkManager::~GameNetworkManager()
@@ -281,6 +272,8 @@ bool GameNetworkManager::init()
 	m_sv_adress.sin_port = htons(22888);
 
 	m_sv_tickinterval = 5;
+
+	m_sv_clientid = 1;
 
 	m_cl_serveradress.sin_family = AF_INET;
 	m_cl_serveradress.sin_port = htons(22888);
@@ -382,6 +375,7 @@ void GameNetworkManager::update() {
 			m_sv_tick++;
 			sv_handleClientMessages();
 			sv_testClientsTimeout();
+			sv_sendStateRequests();
 			sv_transmitComponentStates();
 			break;
 
@@ -462,6 +456,53 @@ void GameNetworkManager::cl_handleServerMessages() {
 			continue;
 
 		switch (m_incoming_message->getType()) {
+
+			case REQUEST_UPDATES:
+				{
+					//printf("REQUEST_UPDATES received, length = %i", m_incoming_message->getDataLength());
+					/*if (m_incoming_message->isCompressed()) {
+						m_incoming_message->decompressData();		// decompress message
+						
+						if (m_incoming_message->isCompressed())		// decompression failed
+							continue;
+					}*/
+					
+					m_cl_components.clear();	// TODO: hopefully, this won't call the GameComponents' destructors?
+				
+					size_t datacursor = 0;
+
+					while (datacursor < m_incoming_message->getDataLength()) {
+						std::string entityID(m_incoming_message->data(datacursor));						datacursor += entityID.length() + 1;
+						if (datacursor > m_incoming_message->getDataLength())
+							break;
+						std::string componentID(m_incoming_message->data(datacursor));					datacursor += componentID.length() + 1;
+
+						GameEntity* ge = GameModules::gameWorld()->entity(entityID);
+
+						if (!ge)
+							continue;
+
+						GameComponent* gc = ge->component(componentID);
+
+						if (!gc)
+							continue;
+
+						m_cl_components.insert(gc);
+
+						// execute callback
+						if (m_onStateRequest)
+							m_onStateRequest(entityID, componentID);
+					}
+				
+					// send acknowledgement
+					m_outgoing_message->setClientID(m_cl_id);
+					m_outgoing_message->setTick(m_cl_tick);
+					m_outgoing_message->setType(ACK_REQUEST_UPDATES);
+					size_t request_changed = m_incoming_message->getTick();
+					memcpy(m_outgoing_message->data(0), &request_changed, sizeof(size_t));
+					send(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0);
+				}
+			break;
 
 			case STATE_UPDATE:
 				
@@ -676,6 +717,34 @@ void GameNetworkManager::sv_handleClientMessages() {
 				sv_removeClient(m_incoming_message->getClientID());
 				break;
 
+			// client acknowledges changed requests
+			case ACK_REQUEST_UPDATES:
+				{
+					size_t clientID = m_incoming_message->getClientID();
+
+					ClientRecord* client = NULL;
+
+					std::list<ClientRecord*>::iterator it = m_sv_clients.begin();
+					while (it != m_sv_clients.end()) {
+						if ((*it)->client_id == clientID) {
+							client = (*it);
+							break;
+						}
+						it++;
+					}
+
+					if (client == NULL)		// client ID not found on server
+						break;
+
+					// check for tick match
+					size_t acknowledge_tick;
+					memcpy(&acknowledge_tick, m_incoming_message->data(0), sizeof(size_t));
+					if (client->requestedUpdates_changed == acknowledge_tick) {
+						client->requestedUpdates_acknowledged = true;
+					}
+				}
+				break;
+
 			// client transmits the state of its entities
 			case STATE_UPDATE:
 				{
@@ -718,7 +787,7 @@ void GameNetworkManager::sv_handleClientMessages() {
 						std::string componentID(m_incoming_message->data(datacursor));					datacursor += componentID.length() + 1;
 
 						// is this state update allowed for this client?
-						if ( (m_sv_restrictClientUpdates) && !(client->isUpdateAllowed(entityID, componentID)) ) {
+						if ( (m_sv_restrictClientUpdates) && !(client->isUpdateRequested(entityID, componentID)) ) {
 							datacursor += statelength;
 							continue;
 						}
@@ -761,6 +830,49 @@ void GameNetworkManager::sv_testClientsTimeout() {
 		} else {
 			it++;
 		}
+	}
+}
+
+void GameNetworkManager::sv_sendStateRequests() {
+	static size_t count = 0;
+
+	// do not send for m_sv_tickinterval frames
+	if (++count != m_sv_tickinterval) {
+		return;
+	}
+
+	count = 0;
+
+	std::list<ClientRecord*>::iterator it = m_sv_clients.begin();
+
+	while (it != m_sv_clients.end()) {
+		ClientRecord* client = (*it);
+		if (!client->requestedUpdates_acknowledged) {
+			m_outgoing_message->setClientID(client->client_id);
+			m_outgoing_message->setTick(client->requestedUpdates_changed);
+			m_outgoing_message->setType(REQUEST_UPDATES);
+			
+			size_t offset = 0;
+			set<pair<string,string>>::iterator reqit = client->requestedUpdates.begin();
+			while (reqit != client->requestedUpdates.end()) {
+				pair<string,string> p = (*reqit);
+
+				if (strcpy_s(m_outgoing_message->data(offset), NetworkMessage::MAXDATALENGTH - offset, p.first.c_str()))
+					break;
+				offset+=strlen(p.first.c_str()) + 1;	
+
+				if (strcpy_s(m_outgoing_message->data(offset), NetworkMessage::MAXDATALENGTH - offset, p.second.c_str()))
+					break;
+				offset+=strlen(p.second.c_str()) + 1;	
+
+				reqit++;
+			}
+			
+			m_outgoing_message->setDataLength(offset);
+
+			sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &(client->adress), sizeof(SOCKADDR_IN));
+		}
+		it++;
 	}
 }
 
@@ -869,27 +981,6 @@ bool GameNetworkManager::deregisterServerComponent(GameComponent* component) {
 	}
 }
 
-bool GameNetworkManager::registerClientComponent(GameComponent* component) {
-	
-	// no duplicates
-	if (m_cl_components.find(component) == m_cl_components.end()) {
-		m_cl_components.insert(component);
-		return true;
-	} else {
-		return false;
-	}
-}
-
-bool GameNetworkManager::deregisterClientComponent(GameComponent* component) {
-	
-	if (m_cl_components.find(component) != m_cl_components.end()) {
-		m_cl_components.erase(component);
-		return true;
-	} else {
-		return false;
-	}
-}
-
 bool GameNetworkManager::setOption(GameEngine::Network::NetworkOption option, const size_t value) {
 
 	switch (option) {
@@ -986,7 +1077,7 @@ bool GameNetworkManager::setOption(GameEngine::Network::NetworkOption option, co
 	return false;
 }
 
-void GameNetworkManager::allowClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
+void GameNetworkManager::requestClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
 	ClientRecord* client = NULL;
 
 	std::list<ClientRecord*>::iterator cl_it = m_sv_clients.begin();
@@ -996,16 +1087,17 @@ void GameNetworkManager::allowClientUpdate(size_t clientID, const char* entityID
 			client = (*cl_it);
 			break;
 		}
+		cl_it++;
 	}
 
 	if (client == NULL)
 		return;
 
-	client->allowUpdate(entityID, componentID);
+	client->requestUpdate(entityID, componentID);
 }
 
 
-void GameNetworkManager::disallowClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
+void GameNetworkManager::disrequestClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
 	ClientRecord* client = NULL;
 
 	std::list<ClientRecord*>::iterator cl_it = m_sv_clients.begin();
@@ -1015,12 +1107,13 @@ void GameNetworkManager::disallowClientUpdate(size_t clientID, const char* entit
 			client = (*cl_it);
 			break;
 		}
+		cl_it++;
 	}
 
 	if (client == NULL)
 		return;
 
-	client->disallowUpdate(entityID, componentID);
+	client->disrequestUpdate(entityID, componentID);
 }
 
 void GameNetworkManager::registerCallbackOnClientConnect(void (*callback)(size_t)) {
@@ -1029,4 +1122,8 @@ void GameNetworkManager::registerCallbackOnClientConnect(void (*callback)(size_t
 
 void GameNetworkManager::registerCallbackOnClientDisconnect(void (*callback)(size_t)) {
 	m_onClientDisconnect = callback;
+}
+
+void GameNetworkManager::registerCallbackOnStateRequest(void (*callback)(std::string, std::string)) {
+	m_onStateRequest = callback;
 }

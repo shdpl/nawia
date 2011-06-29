@@ -26,6 +26,8 @@
 
 #include <GameEngine/config.h>
 
+#include <string>
+
 #ifdef MEMORYCHECK
 #include <vld.h>
 #endif
@@ -89,41 +91,23 @@ namespace GameEngine
 	 * Registers a GameComponent on the local server so its gamestate gets transmitted to clients
 	 * @return true on success
 	 */
-	GAMEENGINE_API bool registerComponentOnServer(const char* entityID, const char* componentID);
+	GAMEENGINE_API bool startDistributing(const char* entityID, const char* componentID);
 	
 	/**
 	 * Removes a GameComponent from the local server
 	 * @return true on success
 	 */
-	GAMEENGINE_API bool deregisterComponentOnServer(const char* entityID, const char* componentID);
+	GAMEENGINE_API bool stopDistributing(const char* entityID, const char* componentID);
 
 	/**
-	 * Registers a GameComponent on the local client so its gamestate gets transmitted to server
-	 * @return true on success
+	 * State updates to this component will be requested from given client.
 	 */
-	GAMEENGINE_API bool registerComponentOnClient(const char* entityID, const char* componentID);
-	
-	/**
-	 * Removes a GameComponent from the local client
-	 * @return true on success
-	 */
-	GAMEENGINE_API bool deregisterComponentOnClient(const char* entityID, const char* componentID);
+	GAMEENGINE_API void requestClientUpdate(size_t clientID, const char* entityID, const char* componentID);
 
 	/**
-	 * Registers a GameComponent on the local client so its gamestate gets transmitted to server
-	 * @return true on success
+	 * State updates to this component will no longer be requested nor will they be accepted from given client.
 	 */
-	GAMEENGINE_API bool registerComponentOnClient(const char* entityID, const char* componentID);
-
-	/**
-	 * State updates to this component sent by given remote client will be allowed by the server.
-	 */
-	GAMEENGINE_API void allowClientUpdate(size_t clientID, const char* entityID, const char* componentID);
-
-	/**
-	 * State updates to this component sent by given remote client will be denied by the server.
-	 */
-	GAMEENGINE_API void disallowClientUpdate(size_t clientID, const char* entityID, const char* componentID);
+	GAMEENGINE_API void disrequestClientUpdate(size_t clientID, const char* entityID, const char* componentID);
 
 	/**
 	 * Registers a callback function to be executed when a new client connects
@@ -134,6 +118,11 @@ namespace GameEngine
 	 * Registers a callback function to be executed when a client disconnects
 	 */
 	GAMEENGINE_API void registerCallbackOnClientDisconnect(void (*callback)(size_t));
+
+	/**
+	 * Registers a callback function to be executed when a state is newly requested by the server
+	 */
+	GAMEENGINE_API void registerCallbackOnStateRequest(void (*callback)(std::string, std::string));
 
 	/**
 	 * Returns the current state of the GameNetworkManager

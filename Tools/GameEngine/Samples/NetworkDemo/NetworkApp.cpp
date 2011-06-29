@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "NetworkApp.H"
+#include "NetworkApp.h"
 
 #include "GameEngine/GameEngine.h"
 #include "GameEngine/GameEngine_Network.h"
@@ -21,90 +21,38 @@ extern "C"
 	#include "Lua/lauxlib.h"
 }
 
+using namespace std;
+
+// static variables' definitions
+set<string> NetworkApp::m_availablePlayers;
+map<size_t,string> NetworkApp::m_assignedPlayers;
+unsigned int NetworkApp::m_character = UINT_MAX;
+char NetworkApp::m_sentence[100];
+
 NetworkApp::NetworkApp() : m_running(true), m_L(0), m_networkStarted(false)
 {
 	memset(m_keys, 0, sizeof(m_keys));
-	m_character = UINT_MAX;
 	m_networkState = "";
+
+	// make playable characters available
+	NetworkApp::m_availablePlayers.insert("Player1");
+	NetworkApp::m_availablePlayers.insert("Player2");
+	NetworkApp::m_availablePlayers.insert("Player3");
+	NetworkApp::m_availablePlayers.insert("Player4");
+	NetworkApp::m_availablePlayers.insert("Player5");
+	NetworkApp::m_availablePlayers.insert("Player6");
+	NetworkApp::m_availablePlayers.insert("Player7");
 }
 
 NetworkApp::~NetworkApp()
 {
+	NetworkApp::m_availablePlayers.clear();
+
+	NetworkApp::m_assignedPlayers.clear();
+
 	GameEngine::release();
 	if (m_L)
 		lua_close( m_L );
-}
-
-void NetworkApp::startServer() {
-	// only once
-	if (m_networkStarted)
-		return;
-
-	m_networkStarted = true;
-
-	// register components of all playable characters on server
-	GameEngine::registerComponentOnServer("Player1", "Horde3D");
-	GameEngine::registerComponentOnServer("Player1", "KeyframeAnimComponent");
-	GameEngine::registerComponentOnServer("Player1", "Sound3D");
-	GameEngine::registerComponentOnServer("Player3", "Sapi");
-
-	GameEngine::registerComponentOnServer("Player2", "Horde3D");
-	GameEngine::registerComponentOnServer("Player2", "KeyframeAnimComponent");
-	GameEngine::registerComponentOnServer("Player2", "Sound3D");
-	GameEngine::registerComponentOnServer("Player3", "Sapi");
-
-	GameEngine::registerComponentOnServer("Player3", "Horde3D");
-	GameEngine::registerComponentOnServer("Player3", "KeyframeAnimComponent");
-	GameEngine::registerComponentOnServer("Player3", "Sound3D");
-	GameEngine::registerComponentOnServer("Player3", "Sapi");
-
-	GameEngine::registerComponentOnServer("Player4", "Horde3D");
-	GameEngine::registerComponentOnServer("Player4", "KeyframeAnimComponent");
-	GameEngine::registerComponentOnServer("Player4", "Sound3D");
-	GameEngine::registerComponentOnServer("Player3", "Sapi");
-
-	GameEngine::registerComponentOnServer("Player5", "Horde3D");
-	GameEngine::registerComponentOnServer("Player5", "KeyframeAnimComponent");
-	GameEngine::registerComponentOnServer("Player5", "Sound3D");
-	GameEngine::registerComponentOnServer("Player3", "Sapi");
-
-	GameEngine::registerComponentOnServer("Player6", "Horde3D");
-	GameEngine::registerComponentOnServer("Player6", "KeyframeAnimComponent");
-	GameEngine::registerComponentOnServer("Player6", "Sound3D");
-	GameEngine::registerComponentOnServer("Player3", "Sapi");
-
-	GameEngine::registerComponentOnServer("Player7", "Horde3D");
-	GameEngine::registerComponentOnServer("Player7", "KeyframeAnimComponent");
-	GameEngine::registerComponentOnServer("Player7", "Sound3D");
-	GameEngine::registerComponentOnServer("Player3", "Sapi");
-
-	GameEngine::disconnect();
-
-	GameEngine::startServer();
-
-}
-
-void NetworkApp::startClient(const char* character) {
-	// only once
-	if (m_networkStarted)
-		return;
-
-	m_character = GameEngine::entityWorldID(character);
-
-	sprintf_s(m_sentence, 100, "I am %s. Nice to meet you.", character);
-
-	const char* serverip = "127.0.0.1";
-
-	m_networkStarted = true;
-
-	// register components of user-controlled character on client
-	GameEngine::registerComponentOnClient(character, "Horde3D");
-	GameEngine::registerComponentOnClient(character, "KeyframeAnimComponent");
-	GameEngine::registerComponentOnClient(character, "Sound3D");
-	GameEngine::registerComponentOnClient(character, "Sapi");
-
-	GameEngine::disconnect();
-	GameEngine::connectToServer(serverip);
 }
 
 bool NetworkApp::init(const char *fileName)
@@ -134,6 +82,120 @@ bool NetworkApp::init(const char *fileName)
 		return false;	
 }
 
+void NetworkApp::startServer() {
+	// only once
+	if (m_networkStarted)
+		return;
+
+	m_networkStarted = true;
+
+	// register components of all playable characters to be distributed to the clients
+	GameEngine::startDistributing("Player1", "Horde3D");
+	GameEngine::startDistributing("Player1", "KeyframeAnimComponent");
+	GameEngine::startDistributing("Player1", "Sound3D");
+	GameEngine::startDistributing("Player1", "Sapi");
+
+	GameEngine::startDistributing("Player2", "Horde3D");
+	GameEngine::startDistributing("Player2", "KeyframeAnimComponent");
+	GameEngine::startDistributing("Player2", "Sound3D");
+	GameEngine::startDistributing("Player2", "Sapi");
+
+	GameEngine::startDistributing("Player3", "Horde3D");
+	GameEngine::startDistributing("Player3", "KeyframeAnimComponent");
+	GameEngine::startDistributing("Player3", "Sound3D");
+	GameEngine::startDistributing("Player3", "Sapi");
+
+	GameEngine::startDistributing("Player4", "Horde3D");
+	GameEngine::startDistributing("Player4", "KeyframeAnimComponent");
+	GameEngine::startDistributing("Player4", "Sound3D");
+	GameEngine::startDistributing("Player4", "Sapi");
+
+	GameEngine::startDistributing("Player5", "Horde3D");
+	GameEngine::startDistributing("Player5", "KeyframeAnimComponent");
+	GameEngine::startDistributing("Player5", "Sound3D");
+	GameEngine::startDistributing("Player5", "Sapi");
+
+	GameEngine::startDistributing("Player6", "Horde3D");
+	GameEngine::startDistributing("Player6", "KeyframeAnimComponent");
+	GameEngine::startDistributing("Player6", "Sound3D");
+	GameEngine::startDistributing("Player6", "Sapi");
+
+	GameEngine::startDistributing("Player7", "Horde3D");
+	GameEngine::startDistributing("Player7", "KeyframeAnimComponent");
+	GameEngine::startDistributing("Player7", "Sound3D");
+	GameEngine::startDistributing("Player7", "Sapi");
+
+	GameEngine::startServer();
+
+	// register callbacks to handle client connect/disconnect events
+	GameEngine::registerCallbackOnClientConnect(clientConnectCb);
+	GameEngine::registerCallbackOnClientDisconnect(clientDisconnectCb);
+}
+
+void NetworkApp::startClient() {
+	// only once
+	if (m_networkStarted)
+		return;
+
+	m_networkStarted = true;
+
+	// the IP address we want to connect to
+	const char* serverip = "127.0.0.1";
+
+	GameEngine::connectToServer(serverip);
+
+	// register a callback to handle upcoming state requests by the server
+	GameEngine::registerCallbackOnStateRequest(stateRequestCb);
+}
+
+void NetworkApp::clientConnectCb(size_t clientID) {
+	// A new client has connected. It has been assigned an unique client ID.
+	// We can use this client ID to control the state updates transmitted by this client.
+	// In conclusion, we can assign this client a character he will be able to control.
+	
+	if (NetworkApp::m_availablePlayers.size() == 0) {
+		// bad news: no more player characters available
+		printf(" NetworkDemo: Client rejected because no more players available.\n");
+		GameEngine::removeClient(clientID);
+		return;
+	}
+
+	string entityID = *(NetworkApp::m_availablePlayers.begin());
+	NetworkApp::m_availablePlayers.erase(NetworkApp::m_availablePlayers.begin());
+	
+	NetworkApp::m_assignedPlayers.insert(pair<size_t,string>(clientID, entityID));
+
+	GameEngine::requestClientUpdate(clientID, entityID.c_str(), "Horde3D");
+	GameEngine::requestClientUpdate(clientID, entityID.c_str(), "KeyframeAnimComponent");
+	GameEngine::requestClientUpdate(clientID, entityID.c_str(), "Sound3D");
+	GameEngine::requestClientUpdate(clientID, entityID.c_str(), "Sapi");
+}
+
+void NetworkApp::clientDisconnectCb(size_t clientID) {
+	// A client has disconnected from the server.
+	// If a controllable character has already been assigned to this client,
+	// it becomes available again.
+
+	map<size_t,string>::iterator it = NetworkApp::m_assignedPlayers.find(clientID);
+
+	if (it == NetworkApp::m_assignedPlayers.end())
+		return;
+
+	string entityID = it->second;
+
+	NetworkApp::m_availablePlayers.insert(entityID);
+}
+
+void NetworkApp::stateRequestCb(std::string entityID, std::string componentID) {
+	// The server has requested state updates for a certain entity/component.
+	// This is how we know what character to control.
+
+	m_character = GameEngine::entityWorldID(entityID.c_str());
+
+	// arrange a personalized chat line to hit on other players ;-)
+	sprintf_s(m_sentence, 100, "I am %s. Nice to meet you.", entityID.c_str());
+}
+
 void NetworkApp::keyHandler()
 {		
 	if( m_keys[118] )  // F7
@@ -143,34 +205,9 @@ void NetworkApp::keyHandler()
 	}
 
 
-	if ( m_keys['1'] ) {
-		startClient("Player1");
-	}
+	if ( m_keys['C'] )
+		startClient();
 		
-	if ( m_keys['2'] ) {
-		startClient("Player2");
-	}
-		
-	if ( m_keys['3'] ) {
-		startClient("Player3");
-	}
-		
-	if ( m_keys['4'] ) {
-		startClient("Player4");
-	}
-		
-	if ( m_keys['5'] ) {
-		startClient("Player5");
-	}
-		
-	if ( m_keys['6'] ) {
-		startClient("Player6");
-	}
-
-	if ( m_keys['7'] ) {
-		startClient("Player7");
-	}
-
 	if( m_keys['X'] )
 		startServer();
 
@@ -180,9 +217,10 @@ void NetworkApp::keyHandler()
 
 	}
 
+	// character controls
+
 	if (m_character == UINT_MAX)
 		return;
-
 
 	if( m_keys['W'] ) 
 		GameEngine::translateEntityLocal(m_character, 0, 0, 0.8f);
@@ -207,13 +245,11 @@ void NetworkApp::keyHandler()
 
 }
 
-void NetworkApp::mouseMoved(float x, float y)
-{
-}
-
 void NetworkApp::updateCamera() {
 	if (m_character == UINT_MAX)
 		return;
+
+	// set camera right behind controlled character
 
 	Matrix4f trans(GameEngine::getEntityTransformation(m_character));
 
@@ -238,7 +274,7 @@ void NetworkApp::render()
 	switch (GameEngine::getNetworkState()) {
 	case GameEngine::Network::DISCONNECTED:
 		h3dutShowText( "Disconnected.", 0.01f, 0.02f, 0.04f, 1, 1, 1, _fontMatRes );
-		h3dutShowText( "X - start server       [1..7] - select character and connect", 0.01f, 0.94f, 0.04f, 1, 1, 1, _fontMatRes );
+		h3dutShowText( "X - start server       C - connect to server", 0.01f, 0.94f, 0.04f, 1, 1, 1, _fontMatRes );
 		// reset network controls
 		m_character = UINT_MAX;
 		m_networkStarted = false;
@@ -283,8 +319,6 @@ void NetworkApp::mouseButtonCb(float x, float y, void *userData)
 
 void NetworkApp::mouseCb(float x, float y, void *userData)
 {
-	NetworkApp* app = static_cast<NetworkApp*>(userData);
-	if (app) app->mouseMoved(x, y);
 }
 
 void NetworkApp::renderCb(void *userData)

@@ -52,7 +52,7 @@ namespace GameEngine
 		GameModules::networkManager()->disconnect();
 	}
 
-	GAMEENGINE_API bool GameEngine::registerComponentOnServer(const char* entityID, const char* componentID) {
+	GAMEENGINE_API bool GameEngine::startDistributing(const char* entityID, const char* componentID) {
 		GameEntity* ge = GameModules::gameWorld()->entity(entityID);
 		
 		if (!ge)
@@ -66,7 +66,7 @@ namespace GameEngine
 		return GameModules::networkManager()->registerServerComponent(gc);
 	}
 	
-	GAMEENGINE_API bool GameEngine::deregisterComponentOnServer(const char* entityID, const char* componentID) {
+	GAMEENGINE_API bool GameEngine::stopDistributing(const char* entityID, const char* componentID) {
 		GameEntity* ge = GameModules::gameWorld()->entity(entityID);
 		
 		if (!ge)
@@ -80,40 +80,12 @@ namespace GameEngine
 		return GameModules::networkManager()->deregisterServerComponent(gc);
 	}
 
-	GAMEENGINE_API bool GameEngine::registerComponentOnClient(const char* entityID, const char* componentID) {
-		GameEntity* ge = GameModules::gameWorld()->entity(entityID);
-		
-		if (!ge)
-			return false;
-
-		GameComponent* gc = ge->component(componentID);
-
-		if (!gc)
-			return false;
-
-		return GameModules::networkManager()->registerClientComponent(gc);
-	}
-	
-	GAMEENGINE_API bool GameEngine::deregisterComponentOnClient(const char* entityID, const char* componentID) {
-		GameEntity* ge = GameModules::gameWorld()->entity(entityID);
-		
-		if (!ge)
-			return false;
-
-		GameComponent* gc = ge->component(componentID);
-
-		if (!gc)
-			return false;
-
-		return GameModules::networkManager()->deregisterClientComponent(gc);
+	GAMEENGINE_API void GameEngine::requestClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
+		GameModules::networkManager()->requestClientUpdate(clientID, entityID, componentID);
 	}
 
-	GAMEENGINE_API void GameEngine::allowClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
-		GameModules::networkManager()->allowClientUpdate(clientID, entityID, componentID);
-	}
-
-	GAMEENGINE_API void GameEngine::disallowClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
-		GameModules::networkManager()->disallowClientUpdate(clientID, entityID, componentID);
+	GAMEENGINE_API void GameEngine::disrequestClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
+		GameModules::networkManager()->disrequestClientUpdate(clientID, entityID, componentID);
 	}
 
 	GAMEENGINE_API void GameEngine::registerCallbackOnClientConnect(void (*callback)(size_t)) {
@@ -122,6 +94,10 @@ namespace GameEngine
 
 	GAMEENGINE_API void GameEngine::registerCallbackOnClientDisconnect(void (*callback)(size_t)) {
 		GameModules::networkManager()->registerCallbackOnClientDisconnect(callback);
+	}
+
+	GAMEENGINE_API void GameEngine::registerCallbackOnStateRequest(void (*callback)(std::string, std::string)) {
+		GameModules::networkManager()->registerCallbackOnStateRequest(callback);
 	}
 
 	GAMEENGINE_API GameEngine::Network::NetworkState GameEngine::getNetworkState() {
