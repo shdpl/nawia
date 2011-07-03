@@ -89,42 +89,6 @@ void NetworkApp::startServer() {
 
 	m_networkStarted = true;
 
-	// register components of all playable characters to be distributed to the clients
-	GameEngine::startDistributing("Player1", "Horde3D");
-	GameEngine::startDistributing("Player1", "KeyframeAnimComponent");
-	GameEngine::startDistributing("Player1", "Sound3D");
-	GameEngine::startDistributing("Player1", "Sapi");
-
-	GameEngine::startDistributing("Player2", "Horde3D");
-	GameEngine::startDistributing("Player2", "KeyframeAnimComponent");
-	GameEngine::startDistributing("Player2", "Sound3D");
-	GameEngine::startDistributing("Player2", "Sapi");
-
-	GameEngine::startDistributing("Player3", "Horde3D");
-	GameEngine::startDistributing("Player3", "KeyframeAnimComponent");
-	GameEngine::startDistributing("Player3", "Sound3D");
-	GameEngine::startDistributing("Player3", "Sapi");
-
-	GameEngine::startDistributing("Player4", "Horde3D");
-	GameEngine::startDistributing("Player4", "KeyframeAnimComponent");
-	GameEngine::startDistributing("Player4", "Sound3D");
-	GameEngine::startDistributing("Player4", "Sapi");
-
-	GameEngine::startDistributing("Player5", "Horde3D");
-	GameEngine::startDistributing("Player5", "KeyframeAnimComponent");
-	GameEngine::startDistributing("Player5", "Sound3D");
-	GameEngine::startDistributing("Player5", "Sapi");
-
-	GameEngine::startDistributing("Player6", "Horde3D");
-	GameEngine::startDistributing("Player6", "KeyframeAnimComponent");
-	GameEngine::startDistributing("Player6", "Sound3D");
-	GameEngine::startDistributing("Player6", "Sapi");
-
-	GameEngine::startDistributing("Player7", "Horde3D");
-	GameEngine::startDistributing("Player7", "KeyframeAnimComponent");
-	GameEngine::startDistributing("Player7", "Sound3D");
-	GameEngine::startDistributing("Player7", "Sapi");
-
 	GameEngine::startServer();
 
 	// register callbacks to handle client connect/disconnect events
@@ -165,10 +129,17 @@ void NetworkApp::clientConnectCb(size_t clientID) {
 	
 	NetworkApp::m_assignedPlayers.insert(pair<size_t,string>(clientID, entityID));
 
+	// request state updates for this character's components from the client
 	GameEngine::requestClientUpdate(clientID, entityID.c_str(), "Horde3D");
 	GameEngine::requestClientUpdate(clientID, entityID.c_str(), "KeyframeAnimComponent");
 	GameEngine::requestClientUpdate(clientID, entityID.c_str(), "Sound3D");
 	GameEngine::requestClientUpdate(clientID, entityID.c_str(), "Sapi");
+
+	// also, register components of this character to be distributed to all the clients
+	GameEngine::startDistributing(entityID.c_str(), "Horde3D");
+	GameEngine::startDistributing(entityID.c_str(), "KeyframeAnimComponent");
+	GameEngine::startDistributing(entityID.c_str(), "Sound3D");
+	GameEngine::startDistributing(entityID.c_str(), "Sapi");
 }
 
 void NetworkApp::clientDisconnectCb(size_t clientID) {
@@ -184,6 +155,13 @@ void NetworkApp::clientDisconnectCb(size_t clientID) {
 	string entityID = it->second;
 
 	NetworkApp::m_availablePlayers.insert(entityID);
+
+	// as long as noone controls this character,
+	// we don't have to distribute its components' states anymore
+	GameEngine::stopDistributing(entityID.c_str(), "Horde3D");
+	GameEngine::stopDistributing(entityID.c_str(), "KeyframeAnimComponent");
+	GameEngine::stopDistributing(entityID.c_str(), "Sound3D");
+	GameEngine::stopDistributing(entityID.c_str(), "Sapi");
 }
 
 void NetworkApp::stateRequestCb(std::string entityID, std::string componentID) {
