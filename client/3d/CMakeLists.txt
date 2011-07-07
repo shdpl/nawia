@@ -4,7 +4,7 @@ PROJECT(NawiaClient3D D)
 
 ############### Dependencies ###############
 #FIND_PACKAGE(Horde3D)
-FIND_PACKAGE(PolyVox)
+#FIND_PACKAGE(PolyVox)
 ############################################
 
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin 

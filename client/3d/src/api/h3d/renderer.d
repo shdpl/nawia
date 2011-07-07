@@ -5,9 +5,11 @@ import std.range,
 	std.math;
 
 import api.h3d.h3d,
-	api.h3d.logs;
+	api.h3d.logs,
+	util.singleton,
+	ge.window.window;
 
-class Renderer {
+class Renderer : Singleton!Renderer {
 	public:
 	@property void filteringTrilinear(bool value) {
 		h3dSetOption(H3DOptions.List.TrilinearFiltering, value);

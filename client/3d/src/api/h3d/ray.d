@@ -2,7 +2,7 @@ module api.h3d.ray;
 
 
 import api.h3d.h3d,
-	api.h3d.node,
+	api.h3d.entity.entity,
 	type.cuda.types;
 
 struct Ray {

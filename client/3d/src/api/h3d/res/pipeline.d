@@ -1,4 +1,4 @@
-module api.h3d.pipeline;
+module api.h3d.res.pipeline;
 
 
 import api.h3d.h3d,
