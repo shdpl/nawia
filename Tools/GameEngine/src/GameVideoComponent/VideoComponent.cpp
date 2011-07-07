@@ -221,7 +221,7 @@ void VideoComponent::render()
 			x+w, m_y+m_h, 1.0f, 0,
 			x+w, m_y, 1.0f, 1.0f
 		};
-		h3dShowOverlays(coords, sizeof(coords), 1.0f,1.0f,1.0f,1.0f, m_material, 0);
+		h3dShowOverlays(coords, sizeof(coords) / 4, 1.0f,1.0f,1.0f,1.0f, m_material, 0);
 	}
 }
 
