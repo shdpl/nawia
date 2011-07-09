@@ -24,21 +24,21 @@ private import
 private import
 	msg.mediator.mtd,
 	ge.window.window,
-	ge.window.glfw,
 	io.res.manager,
-	api.h3d.renderer,
-	api.h3d.entity.camera,
+	ge.renderer,
+	ge.entity.camera,
 	ee.world,
 	cfg.cfg;
-
+	
+	
 void main(string args[]){//TODO: configured resources
 	string fileUri(string path) {
 		//TODO if windows inverse slashes
-		return encode("file://"~dirname(args[0])~"/data");
+		return encode("file://"~dirname(args[0])~"");
 	}
 	
-	auto wndProps = new WindowProperties;
-	wndProps.size = new CordsScreen(1280,1240);
+	auto wndProps = WindowProperties();
+	wndProps.size = CordsScreen(1280,1240);
 	auto wnd = WindowGLFW.getInstance(wndProps);
 	wnd.title = "Nawia RPG";
 	
@@ -49,7 +49,8 @@ void main(string args[]){//TODO: configured resources
 	rndrr.shadowMapSize = 2048;
 	//h3dSetOption( H3DOptions::FastAnimation, 1 ); ??
 	
-	ResManager().bind("data", fileUri(args[0]));
+	ResManager().bind("relative", fileUri(args[0]));
+	ResManager().bind("data", "relative:data");
 	
 	
 	auto world = impl!World;
