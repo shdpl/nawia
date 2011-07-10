@@ -1,7 +1,7 @@
 module pe.shape.sphere;
 
-import api.bullet.shape.shape;
+private import pe.shape.shape;
 
-interface ShapeSphere : Shape {
+interface IShapeSphere : IShape {
 	
 }

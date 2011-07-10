@@ -1,7 +1,8 @@
 module pe.shape.box;
 
-import pe.shape.shape;
+private import pe.shape.shape,
+	type.geometric.box;
 
-interface ShapeBox : Shape {
+interface IShapeBox : IShape {
 	
 }

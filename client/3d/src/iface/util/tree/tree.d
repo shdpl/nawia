@@ -1,11 +1,11 @@
 module util.tree.tree;
 
-interface Tree {
+interface ITree {
 	
-	@property Tree child(uint i);
-	@property void child(Tree node);
-	@property Tree parent();
-	@property void parent(Tree node);
+	@property ITree child(uint i);
+	@property void child(ITree node);
+	@property ITree parent();
+	@property void parent(ITree node);
 	
     Node opBinary(string op)(Stuff rhs) if (op == "~");
     

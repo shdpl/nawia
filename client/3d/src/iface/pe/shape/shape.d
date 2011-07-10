@@ -2,6 +2,6 @@ module pe.shape.shape;
 
 import type.cuda.types;
 
-interface Shape {
+interface IShape {
 	float3 scale;
 }

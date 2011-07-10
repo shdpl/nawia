@@ -1,7 +1,7 @@
 module pe.shape.cylinder;
 
-import pe.shape.shape;
+private import pe.shape.shape;
 
-interface ShapeCylinder : Shape {
+interface IShapeCylinder : IShape {
 	
 }
