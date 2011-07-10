@@ -30,7 +30,6 @@ private import
 	ee.world,
 	cfg.cfg;
 	
-	
 void main(string args[]){//TODO: configured resources
 	string fileUri(string path) {
 		//TODO if windows inverse slashes
@@ -39,7 +38,7 @@ void main(string args[]){//TODO: configured resources
 	
 	auto wndProps = WindowProperties();
 	wndProps.size = CordsScreen(1280,1240);
-	auto wnd = WindowGLFW.getInstance(wndProps);
+	auto wnd = Window.getInstance(wndProps);
 	wnd.title = "Nawia RPG";
 	
 	auto rndrr = Renderer(); //TODO: Renderer(wnd);

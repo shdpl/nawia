@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-module type.cords;
+module type.cords.cords;
 
 import type.cuda.types;
 

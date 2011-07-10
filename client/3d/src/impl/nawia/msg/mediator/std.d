@@ -6,18 +6,18 @@ import std.metastrings;
 import msg.mediator.mediator;
 
 
-
-class MediatorStD : Singleton!MediatorStD, MsgMediator {
+//FIXME: name clash
+class MediatorStD : Singleton!MediatorStD, IMsgMediator {
 	
 	public:
-	override bool register(MsgListener!Msg lstnr){return true;}
-	override bool unregister(MsgListener!Msg lstnr){return true;}
+	override bool register(IMsgListener!Msg lstnr){return true;}
+	override bool unregister(IMsgListener!Msg lstnr){return true;}
 	
-	override bool register(MsgProvider!Msg lstnr){return true;}
-	override bool unregister(MsgProvider!Msg lstnr){return true;}
+	override bool register(IMsgProvider!Msg lstnr){return true;}
+	override bool unregister(IMsgProvider!Msg lstnr){return true;}
 	
-	bool register(MsgFilter!Msg filter){return true;}
-	bool unregister(MsgFilter!Msg filter){return true;}
+	bool register(IMsgFilter!Msg filter){return true;}
+	bool unregister(IMsgFilter!Msg filter){return true;}
 	
 	override void deliver(Msg msg){}
 	void poll(){}

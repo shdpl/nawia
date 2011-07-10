@@ -3,6 +3,6 @@ module ge.node.model;
 private import
 	ge.entity.entity;
 
-interface Model : Entity {
+interface IModel : IEntity {
 	
 }

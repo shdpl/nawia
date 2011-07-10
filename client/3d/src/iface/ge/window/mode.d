@@ -1,10 +1,9 @@
 module ge.window.mode;
-public import type.screen.cords;
 
-interface WindowMode {
+public import type.cords.screen;
+
+interface IWindowMode {
 	CordsScreen size() @property;
 	
 	void size(CordsScreen size) @property;
-		
-	
 }

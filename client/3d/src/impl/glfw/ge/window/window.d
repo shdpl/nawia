@@ -31,7 +31,7 @@ import ge.window.window,
 
  
 
-package class WindowGLFW : Window, MsgProvider!MsgWindowRefresh, MsgProvider!MsgWindowResize,
+package class Window: IWindow, MsgProvider!MsgWindowRefresh, MsgProvider!MsgWindowResize,
 	MsgProvider!MsgWindowClose
 {
 	private:

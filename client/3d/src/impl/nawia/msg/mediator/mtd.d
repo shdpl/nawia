@@ -23,17 +23,17 @@ import std.string,
 public import msg.msg,
 	msg.mediator.mediator;
 
-class MsgMediatorMtD : Singleton!MsgMediatorMtD, MsgMediator {
+class MsgMediator : Singleton!MsgMediator, IMsgMediator {
 	
-	MsgFilter!Msg[MsgFilter!Msg][TypeInfo] _filters;
-	MsgListener!Msg[MsgListener!Msg][TypeInfo] _listeners;
-	MsgProvider!Msg[MsgProvider!Msg][TypeInfo] _providers;
+	IMsgFilter!Msg[IMsgFilter!Msg][TypeInfo] _filters;
+	IMsgListener!Msg[IMsgListener!Msg][TypeInfo] _listeners;
+	IMsgProvider!Msg[IMsgProvider!Msg][TypeInfo] _providers;
 	
 	this() {
 		setMaxMailboxSize(thisTid, 1024, OnCrowding.throwException);
 	}
 	
-	override bool register(MsgFilter!Msg filter) {
+	override bool register(IMsgFilter!Msg filter) {
 		auto type = typeid(filter);
 		if ( type !in _filters ) {
 			_filters[type] = null;
@@ -46,7 +46,7 @@ class MsgMediatorMtD : Singleton!MsgMediatorMtD, MsgMediator {
 		return false;
 	}
 	
-	bool unregister(MsgFilter!Msg filter)
+	bool unregister(IMsgFilter!Msg filter)
 	in {
 		assert(typeid(filter) in _filters);
 	}body{
@@ -58,7 +58,7 @@ class MsgMediatorMtD : Singleton!MsgMediatorMtD, MsgMediator {
 		return false;
 	}
 	
-	override bool register(MsgListener!Msg lstnr) {
+	override bool register(IMsgListener!Msg lstnr) {
 		auto type = typeid(lstnr);
 		if ( type !in _listeners )
 			_listeners[type] = null;
@@ -69,7 +69,7 @@ class MsgMediatorMtD : Singleton!MsgMediatorMtD, MsgMediator {
 		return false;
 	}
 	
-	override bool unregister(MsgListener!Msg lstnr)
+	override bool unregister(IMsgListener!Msg lstnr)
 	in {
 		assert(typeid(lstnr) in _listeners);
 	}body{
@@ -81,7 +81,7 @@ class MsgMediatorMtD : Singleton!MsgMediatorMtD, MsgMediator {
 		return false;
 	}
 	
-	override bool register(MsgProvider!Msg prvdr) {
+	override bool register(IMsgProvider!Msg prvdr) {
 		auto type = typeid(prvdr);
 		if ( type !in _providers )
 			_providers[type] = null;
@@ -93,7 +93,7 @@ class MsgMediatorMtD : Singleton!MsgMediatorMtD, MsgMediator {
 		
 	}
 	
-	override bool unregister(MsgProvider!Msg prvdr)
+	override bool unregister(IMsgProvider!Msg prvdr)
 	in {
 		assert(typeid(prvdr) in _providers);
 	}body{

@@ -1,8 +1,8 @@
 module ge.entity.entity;
 
 private import
-	ee.entity : IEntity = Entity;
+	ee.entity : IEEEntity = Entity;
 
-interface Entity : IEntity {
+interface IEntity : IEEEntity {
 	
 }

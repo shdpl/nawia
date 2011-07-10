@@ -1,6 +1,6 @@
 module io.res.formatter.proto.ot;
 
-class FormatterProtoOT {
+interface FormatterProtoOT {
 	public void init() {
 		//setup network listeners
 	}

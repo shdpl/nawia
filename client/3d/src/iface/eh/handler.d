@@ -5,7 +5,7 @@ import eh.reporter.reporter;
 import eh.filter.exception,
 	eh.filter.report;
 
-interface HandlerException {
+interface IHandlerException {
 	public:
 	void init(Reporter reporter);
 	void clear();

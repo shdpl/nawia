@@ -17,7 +17,7 @@
 
 module ge.window.properties;
 
-public import type.screen.cords;
+public import type.cords.screen;
 
 enum WindowStatus { NORMAL, FULLSCREEN, MINIMIZED };
 	

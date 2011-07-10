@@ -17,19 +17,17 @@
 
 module type.cords.screen;
 
-import type.cords.cords;
+private import type.cords.cords;
+public import type.unit.screen;
 
-struct CordsScreen : Cords!(uint, 2){
+struct CordsScreen {
 	//Screen.Id id_screen = Screen.Id.DEFAULT; TODO: screen
+	private Cords!(Px, 2) _cords;
+	alias _cords this;
 	
-	this(uint x, uint y) {
-		assert(x >= 0 && y >= 0);
+	this(Px x, Px y) {
 		//assert(x < id_screen.Width && y < id_screen.Heigth); TODO: screen
 		super(x,y);
-	}
-	
-	this() {
-		this(0,0);
 	}
 	
 }

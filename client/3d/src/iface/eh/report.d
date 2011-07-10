@@ -1,5 +1,5 @@
 module eh.report;
 
-interface Report {
+interface IReport {
 	
 }

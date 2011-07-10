@@ -20,7 +20,7 @@ module msg.filter.recording;
 import msg.filter.filter,
 	msg.msg;
 
-class MsgFilterRecording : MsgFilter!Msg {
+class MsgFilterRecording : IMsgFilter!Msg {
 	
 	override bool doFilter(Msg msg) {
 		//TODO:

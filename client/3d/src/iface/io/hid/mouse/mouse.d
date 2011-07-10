@@ -1,6 +1,7 @@
 module io.hid.mouse.mouse;
 
+import io.hid.controller;
 
-interface Mouse {
+interface IMouse : IController {
 	
 }

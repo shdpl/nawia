@@ -1,5 +1,7 @@
 module io.hid.keyboard.keyboard;
 
-interface Keyboard {
+import io.hid.controller;
+
+interface IKeyboard : IController {
 	
 }

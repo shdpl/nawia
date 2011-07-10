@@ -3,6 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.1)
 PROJECT(NawiaClient3D D)
 
 ############### Dependencies ###############
+#FIND_PACKAGE(Phobos)
 #FIND_PACKAGE(Horde3D)
 #FIND_PACKAGE(PolyVox)
 ############################################

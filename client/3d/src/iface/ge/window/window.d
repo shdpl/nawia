@@ -28,8 +28,8 @@ public import
 	ge.window.properties,
 	ge.window.mode;
 
-interface Window : MsgProvider!MsgWindowRefresh, MsgProvider!MsgWindowResize,
-	MsgProvider!MsgWindowClose
+interface IWindow : IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWindowResize,
+	IMsgProvider!MsgWindowClose
 {
 	
 	string title();
@@ -67,8 +67,8 @@ interface Window : MsgProvider!MsgWindowRefresh, MsgProvider!MsgWindowResize,
 	
 	void swapBuffers();
 	
-	WindowMode[] supportedModes();
-	WindowMode desktopMode();
+	IWindowMode[] supportedModes();
+	IWindowMode desktopMode();
 	
 }
 

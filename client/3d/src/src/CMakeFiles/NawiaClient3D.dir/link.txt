@@ -1,1 +1,0 @@
-/usr/bin/dmd   -w  CMakeFiles/NawiaClient3D.dir/NawiaClient3D.o -of../../bin/NawiaClient3D   

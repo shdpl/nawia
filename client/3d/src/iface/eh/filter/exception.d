@@ -1,5 +1,5 @@
 module eh.filter.exception;
 
-interface FilterException {
+interface IFilterException {
 	
 }
