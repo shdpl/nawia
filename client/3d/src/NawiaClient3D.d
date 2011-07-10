@@ -20,7 +20,7 @@ module net.nawia.client3d;
 private import 
 	std.path,
 	std.uri;
-
+/*
 private import
 	msg.mediator.mtd,
 	ge.window.window,
@@ -29,8 +29,9 @@ private import
 	ge.entity.camera,
 	ee.world,
 	cfg.cfg;
-	
+	*/
 void main(string args[]){//TODO: configured resources
+/*
 	string fileUri(string path) {
 		//TODO if windows inverse slashes
 		return encode("file://"~dirname(args[0])~"");
@@ -89,5 +90,5 @@ void main(string args[]){//TODO: configured resources
 	auto mtd = new MsgMediatorMtD;
 	while(true) {
 		mtd.poll;
-	}
+	}*/
 }

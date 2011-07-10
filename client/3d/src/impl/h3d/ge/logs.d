@@ -13,7 +13,7 @@ struct H3DMessage {
 	string content;
 	}
 	
-class H3DLogs : InputRange!(H3DMessage), MsgListener!MsgTimeIdle {
+class H3DLogs : InputRange!(H3DMessage), IMsgListener!MsgTimeIdle {
 	private:
 	H3DMessage _current;
 	mixin InjectMsgProvider!MsgTimeIdle _idleProvider;
