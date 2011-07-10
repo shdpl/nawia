@@ -53,30 +53,38 @@ void main(string args[]){//TODO: configured resources
 	
 	
 	auto world = impl!World;
-	auto sky = world.add(impl!Scene("skybox/skybox.scene.xml"));
+	auto sky = impl!Scene("skybox/skybox.scene.xml");
 	//sky.pos = (0, 0, 0);
 	//sky.orientation = (0, 0, 0);
 	sky.scale = (210, 50, 210);
-	//h3dSetNodeFlags( sky, H3DNodeFlags::NoCastShadow, true );
+	sky.shadowsDisabled = true;
+	world.add(sky);
 	
-	auto platform = world.add(impl!Scene("platform/platform.scene.xml"));
+	auto platform = impl!Scene("platform/platform.scene.xml");
 	//platform.pos = (0, 0, 0);
 	//platform.orientation = (0, 0, 0);
 	platform.scale = (.23f, .23f, .23f);
+	world.add(platform);
 	
 	platform.add(impl!Camera("deferred.pipeline.xml"));
 	//TODO: Camera <=> Window
 	
-//	H3DNode light = h3dAddLightNode( H3DRootNode, "Light1", lightMatRes, "LIGHTING", "SHADOWMAP" );
-//	h3dSetNodeTransform( light, 0, 20, 50, -30, 0, 0, 1, 1, 1 );
-//	h3dSetNodeParamF( light, H3DLight::RadiusF, 0, 200 );
-//	h3dSetNodeParamF( light, H3DLight::FovF, 0, 90 );
-//	h3dSetNodeParamI( light, H3DLight::ShadowMapCountI, 3 );
-//	h3dSetNodeParamF( light, H3DLight::ShadowSplitLambdaF, 0, 0.9f );
-//	h3dSetNodeParamF( light, H3DLight::ShadowMapBiasF, 0, 0.001f );
-//	h3dSetNodeParamF( light, H3DLight::ColorF3, 0, 0.9f );
-//	h3dSetNodeParamF( light, H3DLight::ColorF3, 1, 0.7f );
-//	h3dSetNodeParamF( light, H3DLight::ColorF3, 2, 0.75f );
+	auto light = impl!Light(
+		impl!Material("light.material.xml", "LIGHTING", "SHADOWMAP"));
+	light.pos = (0, 20, 50);
+	light.orientation = (-30, 0, 0);
+	//light.scale = (1, 1, 1);
+	light.radius = 100;
+	light.fov = 90;
+	light.shadowMaps = 3;
+	light.shadowSplitLambda = .9f;
+	light.shadowBias = .001f;
+	light.color = RGBColor(.9f, .7f, .75);
+	platform.add(light);
+	
+	auto man = impl!Actor(
+		impl!Model("man/man.scene.xml", impl!Animator("man.anim")),
+		impl!RandomWalker());
 	
 	auto mtd = new MsgMediatorMtD;
 	while(true) {
