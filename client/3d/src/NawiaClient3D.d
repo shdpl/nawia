@@ -20,6 +20,8 @@ module net.nawia.client3d;
 private import 
 	std.path,
 	std.uri;
+	import horde3d;
+	
 /*
 private import
 	msg.mediator.mtd,
