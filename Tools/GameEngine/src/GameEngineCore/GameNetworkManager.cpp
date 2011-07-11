@@ -272,7 +272,7 @@ bool GameNetworkManager::init()
 	m_sv_adress.sin_port = htons(22888);
 
 	m_sv_tickinterval = 5;
-
+	m_sv_clientTimeoutInterval = 600;
 	m_sv_clientid = 1;
 
 	m_cl_serveradress.sin_family = AF_INET;
@@ -636,36 +636,32 @@ size_t GameNetworkManager::sv_addClient(SOCKADDR_IN client) {
 	ClientRecord* cr = new ClientRecord(client, id);
 	cr->client_tick = m_sv_tick;
 
-	m_sv_clients.push_back(cr);
+	m_sv_clients.insert(std::pair<size_t,ClientRecord*>(id,cr));
 
 	return id;
 }
 
 bool GameNetworkManager::sv_removeClient(size_t clientID) {
-	std::list<ClientRecord*>::iterator it = m_sv_clients.begin();
+	std::map<size_t,ClientRecord*>::iterator it = m_sv_clients.find(clientID);
 
-	while (it != m_sv_clients.end()) {
-		if ((*it)->client_id == clientID) {
-			// send goodbye message
-			m_outgoing_message->setClientID(clientID);
-			m_outgoing_message->setType(DISCONNECT);
-			m_outgoing_message->setDataLength(0);
-			m_outgoing_message->setTick(m_sv_tick);
-			sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &((*it)->adress), sizeof(SOCKADDR_IN));
+	if (it == m_sv_clients.end())
+		return false;
 
-			// remove client
-			delete (*it);
-			m_sv_clients.erase(it);
+	// send goodbye message
+	m_outgoing_message->setClientID(clientID);
+	m_outgoing_message->setType(DISCONNECT);
+	m_outgoing_message->setDataLength(0);
+	m_outgoing_message->setTick(m_sv_tick);
+	sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &(it->second->adress), sizeof(SOCKADDR_IN));
 
-			if (m_onClientDisconnect)
-				m_onClientDisconnect(clientID);
+	// remove client
+	delete it->second;
+	m_sv_clients.erase(it);
+	
+	if (m_onClientDisconnect)
+		m_onClientDisconnect(clientID);
 
-			return true;
-		}
-		it++;
-	}
-
-	return false;
+	return true;
 }
 
 void GameNetworkManager::sv_handleClientMessages() {
@@ -724,17 +720,12 @@ void GameNetworkManager::sv_handleClientMessages() {
 
 					ClientRecord* client = NULL;
 
-					std::list<ClientRecord*>::iterator it = m_sv_clients.begin();
-					while (it != m_sv_clients.end()) {
-						if ((*it)->client_id == clientID) {
-							client = (*it);
-							break;
-						}
-						it++;
-					}
+					std::map<size_t,ClientRecord*>::iterator it = m_sv_clients.find(clientID);
 
-					if (client == NULL)		// client ID not found on server
+					if (it == m_sv_clients.end())		// client ID not found on server
 						break;
+
+					client = it->second;
 
 					// check for tick match
 					size_t acknowledge_tick;
@@ -752,17 +743,12 @@ void GameNetworkManager::sv_handleClientMessages() {
 
 					ClientRecord* client = NULL;
 
-					std::list<ClientRecord*>::iterator it = m_sv_clients.begin();
-					while (it != m_sv_clients.end()) {
-						if ((*it)->client_id == clientID) {
-							client = (*it);
-							break;
-						}
-						it++;
-					}
+					std::map<size_t,ClientRecord*>::iterator it = m_sv_clients.find(clientID);
 
-					if (client == NULL)		// client ID not found on server
+					if (it == m_sv_clients.end())		// client ID not found on server
 						break;
+
+					client = it->second;
 
 					// discard if too old
 					if (client->client_tick > m_incoming_message->getTick())
@@ -820,12 +806,12 @@ void GameNetworkManager::sv_testClientsTimeout() {
 
 	count = 0;
 
-	std::list<ClientRecord*>::iterator it = m_sv_clients.begin();
+	std::map<size_t,ClientRecord*>::iterator it = m_sv_clients.begin();
 
 	while (it != m_sv_clients.end()) {
-		if (m_sv_tick - (*it)->client_tick > 600) {
-			printf(" NetworkManager: Client at adress %s timed out and will be removed.\n", inet_ntoa((*it)->adress.sin_addr));
-			delete (*it);
+		if (m_sv_tick - it->second->client_tick > m_sv_clientTimeoutInterval) {
+			printf(" NetworkManager: Client at adress %s timed out and will be removed.\n", inet_ntoa(it->second->adress.sin_addr));
+			delete it->second;
 			it = m_sv_clients.erase(it);
 		} else {
 			it++;
@@ -843,10 +829,10 @@ void GameNetworkManager::sv_sendStateRequests() {
 
 	count = 0;
 
-	std::list<ClientRecord*>::iterator it = m_sv_clients.begin();
+	std::map<size_t,ClientRecord*>::iterator it = m_sv_clients.begin();
 
 	while (it != m_sv_clients.end()) {
-		ClientRecord* client = (*it);
+		ClientRecord* client = it->second;
 		if (!client->requestedUpdates_acknowledged) {
 			m_outgoing_message->setClientID(client->client_id);
 			m_outgoing_message->setTick(client->requestedUpdates_changed);
@@ -947,11 +933,11 @@ void GameNetworkManager::sv_broadcastOutgoingMessage() {
 		m_outgoing_message->compressData();
 
 	// send the message to all clients
-	std::list<ClientRecord*>::iterator cl_it = m_sv_clients.begin();
+	std::map<size_t,ClientRecord*>::iterator cl_it = m_sv_clients.begin();
 
 	while (cl_it != m_sv_clients.end()) {
-		m_outgoing_message->setClientID((*cl_it)->client_id);
-		sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &((*cl_it)->adress), sizeof(SOCKADDR_IN));
+		m_outgoing_message->setClientID(cl_it->second->client_id);
+		sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &(cl_it->second->adress), sizeof(SOCKADDR_IN));
 		cl_it++;
 	}
 }
@@ -1009,6 +995,11 @@ bool GameNetworkManager::setOption(GameEngine::Network::NetworkOption option, co
 			return true;
 
 
+		case GameEngine::Network::SV_CLIENT_TIMEOUT_INTERVAL:
+			m_sv_clientTimeoutInterval = value;
+			return true;
+
+
 		case GameEngine::Network::CL_SERVERPORT:
 			if (m_currentState == GameEngine::Network::DISCONNECTED) {
 				m_cl_serveradress.sin_port = htons(value);
@@ -1022,7 +1013,6 @@ bool GameNetworkManager::setOption(GameEngine::Network::NetworkOption option, co
 		case GameEngine::Network::CL_TICKRATE:
 			m_cl_tickinterval = value;
 			return true;
-
 
 		default:
 			return false;
@@ -1078,42 +1068,24 @@ bool GameNetworkManager::setOption(GameEngine::Network::NetworkOption option, co
 }
 
 void GameNetworkManager::requestClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
-	ClientRecord* client = NULL;
+	std::map<size_t,ClientRecord*>::iterator cl_it = m_sv_clients.find(clientID);
 
-	std::list<ClientRecord*>::iterator cl_it = m_sv_clients.begin();
-
-	while (cl_it != m_sv_clients.end()) {
-		if ((*cl_it)->client_id == clientID) {
-			client = (*cl_it);
-			break;
-		}
-		cl_it++;
-	}
-
-	if (client == NULL)
+	if (cl_it == m_sv_clients.end())
+		// client ID not found
 		return;
 
-	client->requestUpdate(entityID, componentID);
+	cl_it->second->requestUpdate(entityID, componentID);
 }
 
 
 void GameNetworkManager::disrequestClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
-	ClientRecord* client = NULL;
+	std::map<size_t,ClientRecord*>::iterator cl_it = m_sv_clients.find(clientID);
 
-	std::list<ClientRecord*>::iterator cl_it = m_sv_clients.begin();
-
-	while (cl_it != m_sv_clients.end()) {
-		if ((*cl_it)->client_id == clientID) {
-			client = (*cl_it);
-			break;
-		}
-		cl_it++;
-	}
-
-	if (client == NULL)
+	if (cl_it == m_sv_clients.end())
+		// client not found
 		return;
 
-	client->disrequestUpdate(entityID, componentID);
+	cl_it->second->disrequestUpdate(entityID, componentID);
 }
 
 void GameNetworkManager::registerCallbackOnClientConnect(void (*callback)(size_t)) {

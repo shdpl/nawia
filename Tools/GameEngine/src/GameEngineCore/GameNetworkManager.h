@@ -31,7 +31,7 @@
 #include "GameEngine_Network.h"
 
 #include <set>
-#include <list>
+#include <map>
 #include <string>
 
 struct ClientRecord;
@@ -138,9 +138,10 @@ private:
 	size_t			m_sv_tickinterval;
 	SOCKADDR_IN		m_sv_adress;
 	size_t			m_sv_clientid;
+	size_t			m_sv_clientTimeoutInterval;
 	bool			m_sv_restrictClientUpdates;
-	std::list<ClientRecord*>	m_sv_clients;			// TODO: map<int,ClientRecord> could speed up some things
-	std::set<GameComponent*>	m_sv_components;
+	std::map<size_t,ClientRecord*>	m_sv_clients;			// TODO: map<int,ClientRecord> could speed up some things
+	std::set<GameComponent*>		m_sv_components;
 
 
 
