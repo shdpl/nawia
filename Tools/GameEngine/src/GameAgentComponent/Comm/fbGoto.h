@@ -27,7 +27,7 @@
 class fbGoto : public Feedback
 {
 public:
-	fbGoto(int socket_eID, int agent_eID, int goto_ID);
+	fbGoto(int socket_eID, int agent_eID, int dest_eID, int goto_ID);
 	~fbGoto();
 
 	///tracks changes in the components, calling send() when it is required. Is overloaded by specialized feedback classes
@@ -39,6 +39,8 @@ private:
 
 	int m_agent_eID;
 	int m_agent_aID;
+	int m_dest_eID;
+	int m_dest_aID;
 	int m_goto_ID;
 };
 

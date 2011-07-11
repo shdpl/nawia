@@ -80,13 +80,13 @@ void cmdGoto::execute()
 			return;
 		}
 		m_goto_ID = GameEngine::Agent_gotoF( agent_eID, dest_eID, m_speed, 0, 0);
-		m_comp->addFeedbackNode( new fbGoto( m_comp->getSocketEntityID(), agent_eID, m_goto_ID ) );
+		m_comp->addFeedbackNode( new fbGoto( m_comp->getSocketEntityID(), agent_eID, dest_eID, m_goto_ID ) );
 	}
 
 	if(m_doGotoByLocation)
 	{
 		m_goto_ID = GameEngine::Agent_gotoP( agent_eID, m_dest_pos.x, m_dest_pos.y, m_dest_pos.z, m_speed, (m_putInQueue == 0) ? false : true, 0, 0);
-		m_comp->addFeedbackNode( new fbGoto( m_comp->getSocketEntityID(), agent_eID, m_goto_ID ) );
+		m_comp->addFeedbackNode( new fbGoto( m_comp->getSocketEntityID(), agent_eID, -1, m_goto_ID ) );
 	}
 }
 

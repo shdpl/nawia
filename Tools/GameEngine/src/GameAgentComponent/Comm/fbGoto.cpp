@@ -27,9 +27,10 @@
 
 #include <sstream>
 
-fbGoto::fbGoto(int socket_eID, int agent_eID, int goto_ID) : Feedback(socket_eID), m_agent_eID(agent_eID), m_goto_ID(goto_ID)
+fbGoto::fbGoto(int socket_eID, int agent_eID, int dest_eID, int goto_ID) : Feedback(socket_eID), m_agent_eID(agent_eID), m_dest_eID(dest_eID), m_goto_ID(goto_ID)
 {
 	m_agent_aID = AgentManager::instance()->getAgentID(m_agent_eID);
+	m_dest_aID = AgentManager::instance()->getAgentID(m_dest_eID);
 
 	//send start message
 	if(m_goto_ID < 0)
@@ -38,7 +39,12 @@ fbGoto::fbGoto(int socket_eID, int agent_eID, int goto_ID) : Feedback(socket_eID
 		die();
 	}
 	else
-		send(350, "started");
+	{
+		if(m_dest_eID < 0)
+			send(350, "started");
+		else
+			send(351, "started (target is another entity)");
+	}
 }
 
 void fbGoto::update()
@@ -49,7 +55,11 @@ void fbGoto::update()
 	//build message
 	if(status <= 0)
 	{		
-		send(300, "finished (agent might be idle)");
+		if(m_dest_eID < 0)
+			send(300, "finished (agent might be idle)");
+		else
+			send(301, "finished (agent is interacting with other agents)");
+
 		die();
 	}
 }
@@ -60,14 +70,15 @@ void fbGoto::send(int code, const char* description)
 	char* spacerAgent = "";
 	char* spacerObject = "";
 
-	if(m_goto_ID < 0) m_goto_ID = 0;
+	int obj_id = m_dest_aID;
+	if(obj_id < 0) obj_id = 0;
 
 	//compute message formatting helpers
 	if(m_agent_aID < 10) spacerAgent = "0";
-	if(m_goto_ID < 10) spacerObject = "0";
+	if(obj_id < 10) spacerObject = "0";
 	
 	//build message
-	msg << spacerAgent << m_agent_aID << spacerObject << m_goto_ID << code;
+	msg << spacerAgent << m_agent_aID << spacerObject << obj_id << code;
 	msg << " agent #" << m_agent_aID << " movement #" << m_goto_ID << " " << description;
 	
 	//send message

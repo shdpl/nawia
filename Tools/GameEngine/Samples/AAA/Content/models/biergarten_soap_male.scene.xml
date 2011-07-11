@@ -13,27 +13,28 @@
         </Attachment>
 	</Reference>
     </Camera>
-
-	
+    <Reference tx="0" sx="70" ty="15" sy="50" rx="0" tz="0" sceneGraph="models/skybox/skybox.scene.xml" sz="70" ry="0" rz="0" name="Skybox" />
+    
 	<!-- 
-		AAA configurations
+			AAA configurations
 	-->
     <AAA>
         <Agents>
-            <Agent pc="true" visible="true" name="agent0" />	<!-- id = 0 -->
-            <Agent pc="false" visible="true" name="agent1" />	<!-- id = 1 -->
-            <Agent pc="false" visible="true" name="agent2" />	<!-- id = 2 -->
-            <Agent pc="false" visible="true" name="agent3" />	<!-- id = 3 -->
-			<Agent pc="false" visible="true" name="agent4" />	<!-- id = 4 -->
+			<Agent pc="false" visible="true" name="agent0" />
+			<Agent pc="false" visible="true" name="agent1" />
+			<Agent pc="false" visible="true" name="agent2" />
+			<Agent pc="false" visible="true" name="agent3" />
+			<Agent pc="false" visible="true" name="agent4" />
+			<Agent pc="true" visible="true" name="agent5" />
         </Agents>
     </AAA>
-	
-    <!-- 
+    
+	<!-- 
 			Symbols
 			Notes: 
 			- remove symbol reference if no agent uses it
 			- translation and rotation are ignored
-		-->
+	-->
     <Reference tx="0" ty="-2.78045" sx="0.01" tz="0" rx="0" sy="0.01" ry="0" sz="0.01" sceneGraph="models/baum/baum.scene.xml" rz="0" name="symb_default" >
         <Attachment type="GameEngine" name="symb_default" />
     </Reference>
@@ -47,74 +48,90 @@
 	<!--
 		Agents
 	-->
-    <Reference tx="-8" ty="0" sx="0.06" tz="-6" rx="0" sy="0.06" ry="-80" sz="0.06" sceneGraph="models/female01/female01.scene.xml" rz="0" name="agent0" >
+    <Reference tx="-7.7" ty="0" sx="0.06" tz="-3.5" rx="0" sy="0.06" ry="40" sz="0.06" sceneGraph="models/female05/female05.scene.xml" rz="0" name="agent0" >
         <Attachment type="GameEngine" name="agent0" >
-            <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female01/female01.scene.xml" neck="Bip01_Head" />	
+            <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female05/female05.scene.xml" neck="Bip01_Head" />
 			
-            <Agent gender="female" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+			<Agent gender="female" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
 				<Animation stillAnim="female_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Sidestep left" />
-				<Formation type="V" />
-				<Icon name="symb_default" distance="30" />
-			</Agent>
-			
-	        <Sapi voice="Crystal16" useDistanceModel="1" rollOff="5.0"/>
-        </Attachment>
-    </Reference>
-	
-    <Reference tx="-3" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male01/male01.scene.xml" rz="0" name="agent1" >
-        <Attachment type="GameEngine" name="agent1" >
-            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />
-			
-            <Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
-				<Animation stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Sidestep left" />
-				<Formation type="V" />
+				<Formation type="L" />
 				<Icon name="symb_bad" distance="30" />
-			</Agent>		
+			</Agent>			
 			
-            <Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>
+            <Sapi voice="Crystal16"  useDistanceModel="1"/>
         </Attachment>
     </Reference>
-	
-    <Reference tx="-5" ty="0" sx="0.06" tz="-6" rx="0" sy="0.06" ry="-40" sz="0.06" sceneGraph="models/female02/female02.scene.xml" rz="0" name="agent2" >
-        <Attachment type="GameEngine" name="agent2" >
-            <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female02/female02.scene.xml" neck="Bip01_Head" />	
-			
-            <Agent gender="female" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+    
+    <Reference tx="-7" ty="0" sx="0.06" tz="-3.5" rx="0" sy="0.06" ry="-80" sz="0.06" sceneGraph="models/female04/female04.scene.xml" rz="0" name="agent1" >
+        <Attachment type="GameEngine" name="agent1" >
+            <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/female04/female04.scene.xml" neck="Bip01_Head" />
+            
+			<Agent gender="female" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
 				<Animation stillAnim="female_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Sidestep left" />
-				<Formation type="V" />
+				<Formation type="L" />
 				<Icon name="symb_host" distance="30" />
 			</Agent>
 			
-            <Sapi voice="Crystal16" useDistanceModel="1" rollOff="5.0"/>
+            <Sapi voice="Crystal16"  useDistanceModel="1"/>  
         </Attachment>
     </Reference>
-	
-	<Reference tx="0" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male02/male02.scene.xml" rz="0" name="agent3" >
-        <Attachment type="GameEngine" name="agent3" >
-            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male02/male02.scene.xml" neck="Bip01_Head" />	
+    
+    <Reference tx="-3" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-100" sz="0.06" sceneGraph="models/male04/male04.scene.xml" rz="0" name="agent2" >
+        <Attachment type="GameEngine" name="agent2" >
+            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male04/male04.scene.xml" neck="Bip01_Head" />
 			
-            <Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+			<Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
 				<Animation stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Sidestep left" />
 				<Formation type="L" />
+				<Icon name="symb_host" distance="30" />
 			</Agent>
 			
-			<Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>
+            <Sapi voice="Mike16" useDistanceModel="1"/>
         </Attachment>
     </Reference>
-	
-	<Reference tx="-10" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="-70" sz="0.06" sceneGraph="models/male03/male03.scene.xml" rz="0" name="agent4" >
-        <Attachment type="GameEngine" name="agent4" >
-            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male03/male03.scene.xml" neck="Bip01_Head" />	
-			
-            <Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+    
+    <Reference tx="-4" ty="0" sx="0.06" tz="-3" rx="0" sy="0.06" ry="100" sz="0.06" sceneGraph="models/male02/male02.scene.xml" rz="0" name="agent3" >
+        <Attachment type="GameEngine" name="agent3" >
+            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male02/male02.scene.xml" neck="Bip01_Head" />
+            
+			<Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
 				<Animation stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Sidestep left" />
-				<Formation type="V" />
+				<Formation type="L" />
+				<Icon name="symb_default" distance="30" />
 			</Agent>
 			
-            <Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>
+            <Sapi voice="Mike16" useDistanceModel="1"/>            
         </Attachment>
     </Reference>
-	
+    
+    <Reference tx="-7.7" ty="0" sx="0.06" tz="-9" rx="0" sy="0.06" ry="-100" sz="0.057" sceneGraph="models/char_female_kellnerin/char_female_kellnerin.scene.xml" rz="0" name="agent4" >
+        <Attachment type="GameEngine" name="agent4" >
+            <IK reye="BoneAuge_r" leye="BoneAuge_l" file="models/char_female_kellnerin/char_female_kellnerin.scene.xml" neck="Bip01_Head" />
+            
+			<Agent gender="female" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+				<Animation stillAnim="female_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Sidestep left" />
+				<Formation type="L" />
+				<Icon name="symb_default" distance="30" />
+			</Agent>
+			
+            <Sapi voice="Crystal16" useDistanceModel="1"/>
+        </Attachment>
+    </Reference>
+    
+    <Reference tx="-10" ty="0" sx="0.06" tz="-2" rx="0" sy="0.06" ry="140" sz="0.06" sceneGraph="models/male01/male01.scene.xml" rz="0" name="agent5" >
+        <Attachment type="GameEngine" name="agent5" >
+            <IK reye="Bone_auge_r" leye="Bone_auge_l" file="models/male01/male01.scene.xml" neck="Bip01_Head" />
+			
+			<Agent gender="male" willpower="1" minIPDistance="1" maxIPDistance="1.2" orientationDev="0">	
+				<Animation stillAnim="male_still.anim" idleAnimName="Idle" walkAnimName="Walk" reposAnimName="Sidestep left" />
+				<Formation type="L" />
+				<Icon name="symb_host" distance="30" />
+			</Agent>
+			
+            <Sapi voice="Mike16" useDistanceModel="1"/>
+        </Attachment>
+    </Reference>
+    
     <Reference tx="-0.0103268" sx="0.0152282" ty="-0.0245461" sy="0.0152282" tz="-8.87617" sceneGraph="models/StehTischMitSchirm/StehTischMitSchirm.scene.xml" sz="0.0152282" name="StehTisch01" />
 	<Group tx="0.16151" ty="1.28678" tz="-2.23071" name="Zaun" >
         <Reference tx="12.4316" sx="0.01" ty="-0.957744" sy="0.01" tz="-11.0741" sceneGraph="models/zaun/zaun.scene.xml" sz="0.01" name="Zaun01" />
@@ -231,8 +248,7 @@
         <Reference tx="27.8493" sx="0.01" ty="-24.5266" sy="0.01" tz="-52.5821" rx="-4.54515" sceneGraph="models/holzZaun/holzZaun.scene.xml" sz="0.01" ry="1.70927" rz="-11.5696" name="holzZaun21" />
     </Group>
     <Group tx="-6.22384" ty="0.837493" tz="-2.33799" rx="0" ry="-135" rz="0" name="brunnen" >
-      <Reference tx="-0.162738" sx="0.02" ty="-0.309088" sy="0.02" tz="-0.720933" sceneGraph="models/holzBrunnen/holzBrunnen.scene.xml" sz="0.02" name="holzBrunnen">
-      </Reference>
+        <Reference tx="-0.162738" sx="0.02" ty="-0.309088" sy="0.02" tz="-0.720933" sceneGraph="models/holzBrunnen/holzBrunnen.scene.xml" sz="0.02" name="holzBrunnen" />
 		<Emitter name="BrunnenWasser" material="effects/ParticleSystem1/ParticleSystem1.material.xml" particleEffect="effects/ParticleSystem1/ParticleSystem1.particle.xml"
 			 tx="0.159241" ty="0.590321" tz="0.0502045" rx="30" ry="0" rz="0"
 			 maxCount="1000" respawnCount="1000" delay="0" emissionRate="1000" spreadAngle="3"
