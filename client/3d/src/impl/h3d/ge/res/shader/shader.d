@@ -1,4 +1,4 @@
-module api.h3d.shader.shader;
+module ge.res.shader.shader;
 
 import type.cuda.types;
 

@@ -1,0 +1,7 @@
+Resource management:
+	memory - GC
+	single reference  & time-constrained -  std.typecons : Unique
+	multiple reference & time-constrained - std.typecons : RefCounted
+Multi-Threading:
+	Data layout should match current perspective (at least on heavy algorithms)
+	Reduce perspective transmission and sharing between processors.

@@ -1,6 +1,6 @@
-module api.h3d.shader.fragment;
+module ge.res.shader.fragment;
 
-import api.h3d.shader.shader;
+import ge.res.shader.shader;
 
 class ShaderFragment : Shader {
 	

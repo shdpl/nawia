@@ -1,7 +1,7 @@
-module api.h3d.scenegraph;
+module ge.res.scenegraph;
 
-import api.h3d.node,
-	api.h3d.h3d;
+import ge.res.node,
+	ge.res.h3d;
 
 class SceneGraph {
 	public:

@@ -1,8 +1,8 @@
-module api.h3d.model;
+module ge.res.model;
 
-import api.h3d.h3d,
-	api.h3d.animation.animation,
-	api.h3d.node;
+import ge.res.h3d,
+	ge.res.animation.animation,
+	ge.res.node;
 
 class /*H3DModel :*/ H3DModel : H3DSGNode {
 	string _name;

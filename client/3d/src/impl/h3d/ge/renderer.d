@@ -1,11 +1,11 @@
-module ge.renderer;
+module h3d.ge.renderer;
 
-import std.range,
+private import std.range,
 	std.conv,
 	std.math;
 
-import h3d,
-	ge.logs,
+private import h3d.h3d,
+	h3d.ge.logs,
 	util.singleton,
 	ge.window.window;
 

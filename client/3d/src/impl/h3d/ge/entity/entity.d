@@ -1,7 +1,7 @@
-module api.h3d.entity.entity;
+module ge.res.entity.entity;
 
-import api.h3d.h3d,
-	api.h3d.ray,
+import ge.res.h3d,
+	ge.res.ray,
 	type.cuda.types;
 
 abstract class H3DSGNode  {

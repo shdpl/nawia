@@ -1,6 +1,6 @@
-module api.h3d.animation.animation;
+module ge.res.animation.animation;
 
-import api.h3d.h3d;
+import ge.res.h3d;
 
 class H3DAnimation {
 	public:

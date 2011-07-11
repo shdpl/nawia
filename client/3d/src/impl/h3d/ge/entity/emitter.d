@@ -1,12 +1,12 @@
-module api.h3d.emitter;
+module ge.res.emitter;
 
-import api.h3d.h3d;
+import ge.res.h3d;
 
 import std.datetime;
 
-import api.h3d.material,
-	api.h3d.particle,
-	api.h3d.node,
+import ge.res.material,
+	ge.res.particle,
+	ge.res.node,
 	type.cuda.types;
 
 class H3DEmitter : H3DSGNode /*: Emitter*/ {

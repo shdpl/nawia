@@ -1,4 +1,4 @@
-module ge.h3d;
+module h3d.h3d;
 
 public import horde3d;
 

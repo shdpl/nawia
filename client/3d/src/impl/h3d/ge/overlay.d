@@ -1,9 +1,9 @@
-module api.h3d.overlay.overlay;
+module ge.res.overlay.overlay;
 
-import api.h3d.h3d,
-	type.screen.cords,
+import ge.res.h3d,
+	type.cords.screen,
 	type.color.rgba,
-	api.h3d.material;
+	ge.res.material;
 
 class Overlay {
 	public:

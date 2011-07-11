@@ -1,8 +1,8 @@
-module api.h3d.ray;
+module h3d.ge.res.ray;
 
 
-import api.h3d.h3d,
-	api.h3d.entity.entity,
+import ge.res.h3d,
+	ge.res.entity.entity,
 	type.cuda.types;
 
 struct Ray {

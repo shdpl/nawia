@@ -1,6 +1,6 @@
-module api.h3d.animation.additive;
+module ge.res.animation.additive;
 
-import api.h3d.animation.animation;
+import ge.res.animation.animation;
 
 class H3DAnimationAdditive : H3DAnimation {
 	

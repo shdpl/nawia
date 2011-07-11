@@ -1,8 +1,8 @@
-module api.h3d.particle;
+module ge.res.particle;
 
 import std.datetime;
 
-import api.h3d.h3d,
+import ge.res.h3d,
 	type.color.rgba;
 
 class H3DParticle {

@@ -1,9 +1,9 @@
-module api.h3d.mesh;
+module ge.res.mesh;
 
 
-import api.h3d.h3d,
-	api.h3d.mesh,
-	api.h3d.material;
+import ge.res.h3d,
+	ge.res.mesh,
+	ge.res.material;
 
 class /*H3DMesh :*/ Mesh {
 	string _name;

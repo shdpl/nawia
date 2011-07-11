@@ -1,6 +1,6 @@
-module api.h3d.joint;
+module ge.res.joint;
 
-import api.h3d.h3d;
+import ge.res.h3d;
 
 class H3DJoint /*: Joint*/ {
 	string _name;

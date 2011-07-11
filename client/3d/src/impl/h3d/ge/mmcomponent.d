@@ -1,4 +1,4 @@
-module api.h3d.mmcomponent;
+module ge.res.mmcomponent;
 
 import horde3d;
 

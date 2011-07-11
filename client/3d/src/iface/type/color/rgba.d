@@ -3,7 +3,6 @@ module type.color.rgba;
 import type.color.rgb;
 
 struct ColorRGBA(T)  {
-	public:
 	ColorRGB!T _rgb;
 	alias _rgb this;
 	T a;

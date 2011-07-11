@@ -1,7 +1,7 @@
-module api.h3d.group;
+module ge.res.group;
 
-import api.h3d.h3d,
-	api.h3d.node;
+import ge.res.h3d,
+	ge.res.node;
 
 class H3DGroup : H3DSGNode {
 	string _name;

@@ -1,8 +1,8 @@
-module api.h3d.material;
+module ge.res.material;
 
 
-import api.h3d.h3d,
-	api.h3d.shader.shader,
+import ge.res.h3d,
+	ge.res.shader.shader,
 	type.cuda.types;
 
 class H3DMaterial {

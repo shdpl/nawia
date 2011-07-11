@@ -3,7 +3,7 @@ module ge.logs;
 import std.range,
 	std.conv;
 
-import ge.h3d,
+import h3d,
 	msg._time.idle,
 	msg.listener;
 

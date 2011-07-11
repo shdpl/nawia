@@ -1,7 +1,7 @@
-module api.h3d.light;
+module ge.res.light;
 
-import api.h3d.h3d,
-	api.h3d.material,
+import ge.res.h3d,
+	ge.res.material,
 	type.color.rgb;
 
 class H3DLight {

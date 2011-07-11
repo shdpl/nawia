@@ -11,7 +11,9 @@ class ResManager : IResManager {
 	}
 	
 	void init() {
-		_aliasMap["data"] = curdir~"/data";
+		_aliasMap["home"] = "~"; //TODO:
+		_aliasMap["tmp"] = "/tmp"; //TODO:
+		_aliasMap["data"] = curdir~"/data"; //TODO:
 		_aliasMap["gui"] = "data/gui";
 		_aliasMap["models"] = "data/models";
 		_aliasMap["materials"] = "data/materials";
@@ -23,14 +25,16 @@ class ResManager : IResManager {
 	
 	/**
 		default aliases are:
-		_aliasMap["data"] = curdir~"/data";
-		_aliasMap["gui"] = "data/gui";
-		_aliasMap["models"] = "data/models";
-		_aliasMap["materials"] = "data/materials";
-		_aliasMap["textures"] = "data/textures";
-		_aliasMap["particles"] = "data/particles";
-		_aliasMap["animations"] = "data/animations";
-		_aliasMap["shaders"] = "data/shaders";
+			home - TODO
+			tmp - TODO
+			data - TODO
+			gui - data/gui
+			models - data/models
+			materials - data/materials
+			textures - data/textures
+			particles - data/particles
+			animations - data/animations
+			shaders - data/shaders
 	**/
 	void bind(string entry, string uri) {_aliasMap[entry]=uri;}
 	

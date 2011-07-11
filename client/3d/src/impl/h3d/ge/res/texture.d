@@ -1,7 +1,7 @@
-module api.h3d.texture;
+module ge.res.texture;
 
 
-import api.h3d.h3d,
+import ge.res.h3d,
 	type.cuda.types,
 	type.buffer.pixel;
 

@@ -1,12 +1,12 @@
-module ge.entity.camera;
+module h3d.ge.entity.camera;
 
-import ge.h3d,
-	ge.entity.entity,
-	ge.res.pipeline,
+import h3d.h3d,
+	ge.entity.camera,
+	h3d.ge.res.pipeline,
 	type.buffer.pixel,
-	type.screen.cords;
+	type.cords.screen;
 
-class Camera : Entity {
+class Camera : ICamera {
 	private:
 	H3DPipeline _pipeline;
 	BufferPixel renderTarget;

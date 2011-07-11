@@ -1,7 +1,7 @@
-module api.h3d.res.pipeline;
+module ge.res.pipeline;
 
 
-import api.h3d.h3d,
+import h3d.h3d,
 	type.cuda.types,
 	type.buffer.pixel;
 

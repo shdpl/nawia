@@ -1,6 +1,6 @@
-module api.h3d.shader.vertex;
+module ge.res.shader.vertex;
 
-import api.h3d.shader.shader;
+import ge.res.shader.shader;
 
 class ShaderVertex : Shader {
 	
