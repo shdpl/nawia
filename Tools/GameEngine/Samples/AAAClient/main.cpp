@@ -58,7 +58,7 @@ int main()
 	//rc = bind( s, (SOCKADDR *)&addr, sizeof(SOCKADDR_IN) );
 	
 	//send one message
-	rc = sendto(s, "hello", 6, 0, (struct sockaddr *)&addr, sizeof(addr));
+	rc = sendto(s, "set #agent 0", 13, 0, (struct sockaddr *)&addr, sizeof(addr));
 	if(rc==SOCKET_ERROR)
 	{
 		printf("[AAAClient]ERROR: Connection failed %d\n",WSAGetLastError());

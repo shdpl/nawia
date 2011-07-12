@@ -210,9 +210,6 @@
     <ProjectReference Include="..\..\..\Dependencies\XMLParser\XmlParserLib.vcxproj">
       <Project>{3bf9d44f-4a29-46ee-9a04-ee706e602620}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\GameBayesNetComponent\GameBayesNetComponent.vcxproj">
-      <Project>{aca0edf7-a6d9-42df-a0c1-29e8d0aacc32}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\GameEngineCore\GameEngineCore.vcxproj">
       <Project>{db488001-8e98-4724-9787-72da137c4e47}</Project>
       <Private>true</Private>

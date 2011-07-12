@@ -25,7 +25,7 @@
 
 #include "../AgentManager.h"
 #include "GameEngine/GameEngine_Sapi.h"
-#include "GameEngine/GameEngine_BayesNet.h"
+//#include "GameEngine/GameEngine_BayesNet.h" //disabled
 
 #include "../utils.h"
 
@@ -83,7 +83,7 @@ void cmdSet::execute()
 
 	if(m_doBayesNet)
 	{
-		GameEngine::Bayes_setCulture(agent_eID, m_bayesNet);
+		//GameEngine::Bayes_setCulture(agent_eID, m_bayesNet); //disabled
 	}
 
 	if(m_doTTSVoice)
