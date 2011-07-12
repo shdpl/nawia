@@ -70,7 +70,7 @@ int main()
 	} 
 	else
 	{
-		printf("[AAAClient]Connected to Advanced Agent Animations on %s\nFor help please read the readme.txt file\n\n",SERVER_ADDR);
+		printf("[AAAClient] Connected to AAA on %s\nFor help please visit http://hcm-lab.de/projects/aaa \n\n",SERVER_ADDR);
 	}
 
 
