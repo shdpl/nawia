@@ -71,21 +71,9 @@ void fbAnimation::update()
 }
 
 void fbAnimation::send(int code, const char* description)
-{
-	std::stringstream msg;
-	char* spacerAgent = "";
-	char* spacerObject = "";
+{	
+	std::stringstream text;
+	text << "agent " << m_agent_aID << " animation " << m_animation_ID << " " << description;
 
-	if(m_animation_ID < 0) m_animation_ID = 0;
-
-	//compute message formatting helpers
-	if(m_agent_aID < 10) spacerAgent = "0";
-	if(m_animation_ID < 10) spacerObject = "0";
-	
-	//build message
-	msg << spacerAgent << m_agent_aID << spacerObject << m_animation_ID << code;
-	msg << " agent #" << m_agent_aID << " animation #" << m_animation_ID << " " << description;
-	
-	//send message
-	GameEngine::sendSocketData( m_socket_eID, msg.str().c_str() );
+	_send(m_agent_aID, m_animation_ID, code, text.str().c_str());
 }

@@ -36,13 +36,9 @@ fbError::fbError(int socket_eID, const char* description) : Feedback(socket_eID)
 }
 
 void fbError::send(int code, const char* description)
-{
-	stringstream msg;
-	
-	//build message
-	msg << "0000" << code;
-	msg << " ERROR: " << description;
-	
-	//send message
-	GameEngine::sendSocketData( m_socket_eID, msg.str().c_str() );
+{	
+	std::stringstream text;
+	text << "ERROR: " << description;
+
+	_send(0, 0, 900, text.str().c_str());
 }

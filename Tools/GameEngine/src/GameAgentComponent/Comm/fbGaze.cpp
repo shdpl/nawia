@@ -55,21 +55,9 @@ void fbGaze::update()
 }
 
 void fbGaze::send(int code, const char* description)
-{
-	std::stringstream msg;
-	char* spacerAgent = "";
-	char* spacerObject = "";
+{	
+	std::stringstream text;
+	text << "agent " << m_agent_aID << " gaze " << m_gaze_ID << " " << description;
 
-	if(m_gaze_ID < 0) m_gaze_ID = 0;
-
-	//compute message formatting helpers
-	if(m_agent_aID < 10) spacerAgent = "0";
-	if(m_gaze_ID < 10) spacerObject = "0";
-	
-	//build message
-	msg << spacerAgent << m_agent_aID << spacerObject << m_gaze_ID << code;
-	msg << " agent #" << m_agent_aID << " gaze #" << m_gaze_ID << " " << description;
-	
-	//send message
-	GameEngine::sendSocketData( m_socket_eID, msg.str().c_str() );
+	_send(m_agent_aID, m_gaze_ID, code, text.str().c_str());
 }

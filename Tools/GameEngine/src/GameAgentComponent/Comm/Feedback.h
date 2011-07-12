@@ -48,6 +48,8 @@ protected:
 
 	///sends out the feedback message via socket
 	virtual void send(int code, const char* description);
+	void _send(int agent_id, int obj_id, int code, const char* text);
+
 	///marks this instance ready for termination
 	void die();
 };

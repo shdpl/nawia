@@ -21,7 +21,6 @@
     
 #include "fbTTS.h"
 #include "GameEngine/GameEngine.h"
-#include "GameEngine/GameEngine_Socket.h"
 #include "GameEngine/GameEngine_Agent.h"
 #include "GameEngine/GameEngine_Sapi.h"
 #include "../AgentManager.h"
@@ -56,21 +55,9 @@ void fbTTS::update()
 }
 
 void fbTTS::send(int code, const char* description)
-{
-	std::stringstream msg;
-	char* spacerAgent = "";
-	char* spacerObject = "";
+{	
+	std::stringstream text;
+	text << "agent " << m_agent_aID << " TTS " << m_tts_ID << " " << description;
 
-	if(m_tts_ID < 0) m_tts_ID = 0;
-
-	//compute message formatting helpers
-	if(m_agent_aID < 10) spacerAgent = "0";
-	if(m_tts_ID < 10) spacerObject = "0";
-	
-	//build message
-	msg << spacerAgent << m_agent_aID << spacerObject << m_tts_ID << code;
-	msg << " agent #" << m_agent_aID << " TTS #" << m_tts_ID << " " << description;
-	
-	//send message
-	GameEngine::sendSocketData( m_socket_eID, msg.str().c_str() );
+	_send(m_agent_aID, m_tts_ID, code, text.str().c_str());
 }
