@@ -13,13 +13,26 @@
  * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
-module msg._window.resize;
+module ge.res.particle;
 
-private import msg.msg;
+import std.datetime;
 
-struct MsgWindowResize {
-	Msg _msg;
-	alias _msg this;
-	}
+import ge.res.h3d,
+	type.color.rgba;
+
+class H3DParticle {
+	ColorRGBA!float color;
+	float size;
+	float velocity;
+	float velocityRot;
+	
+	StopWatch lifeMin;
+	StopWatch lifeMax;
+	
+	float powerStartMin;
+	float powerStartMax;
+	float powerEnd;
+	
+}

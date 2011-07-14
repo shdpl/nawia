@@ -13,17 +13,13 @@
  * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
-module msg._window.close;
+module msg.dispatcher;
 
-private import msg.msg;
-
-struct MsgWindowClose {
-	Msg _msg;
-	alias _msg this;
+/**
+  Distrubutes received messages over child listeners
+*/
+interface IDispatcher : IMsgListener {
 	
-	struct outParam {
-		bool keepClosing;
-		}
 }

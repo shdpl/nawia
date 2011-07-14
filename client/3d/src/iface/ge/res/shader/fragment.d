@@ -13,13 +13,12 @@
  * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
-module msg._window.refresh;
+module ge.res.shader.fragment;
 
-private import msg.msg;
+import ge.res.shader.shader;
 
-struct MsgWindowRefresh {
-	Msg _msg;
-	alias _msg this;
-	}
+class ShaderFragment : Shader {
+	
+}
