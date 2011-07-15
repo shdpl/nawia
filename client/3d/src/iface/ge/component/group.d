@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module pe.entity.entity;
-
+module ge.node.group;
 
 private import
-	ee.entity : IEntity = Entity;
+	ge.component.component;
 
-interface Entity : IEntity {
+interface IGroup : IComponent {
 	
 }

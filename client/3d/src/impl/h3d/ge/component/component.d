@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.entity.entity;
+module ge.res.component.component;
 
 import ge.res.h3d,
 	ge.res.ray,

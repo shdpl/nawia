@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.node.joint;
+module ge.component.component;
 
 private import
-	ge.entity.entity;
+	ee.component : IEEComponent = IComponent;
 
-interface IJoint : IEntity {
+interface IComponent : IEEComponent {
 	
 }

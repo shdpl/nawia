@@ -15,43 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module h3d.ge.entity.camera;
+module type.geometric.circle;
 
-import h3d.h3d,
-	ge.entity.camera,
-	h3d.ge.res.pipeline,
-	type.buffer.pixel,
-	type.cords.screen;
+import type.cords;
 
-class Camera : ICamera {
-	private:
-	H3DPipeline _pipeline;
-	BufferPixel renderTarget;
-	
-	CordsScreen viewport;
-	
-	float clipNear;
-	float clipFar;
-	float viewAngleX;
-	float viewAngleY;
-	
-	bool orthogonal;
-	
-	
-	public:
-	void init(Entity parent, string name, H3DPipeline pipeline) {
-		h3dAddCameraNode(parent.id, name, pipeline.id);
+static if (is(T : Cords))
+	struct Circle(T) {
+		T center;
+		real rad_min;
+		real rad_max;
 	}
-	
-	
-	void setFrustum() {
-		
-	}
-	
-	bool visible(H3DNode what);
-	uint queryLOD(H3DNode what);
-	
-	void render() {
-		h3dRender(id);
-	}
-}

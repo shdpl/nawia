@@ -15,50 +15,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ae.entity.source.source;
+module h3d.ge.component.camera;
 
-interface ISource {
-	/*
-	bool active;
-	float pitch;
-	bool loops;
-	Playback playPosition;
+import h3d.h3d,
+	ge.component.camera,
+	h3d.ge.res.pipeline,
+	type.buffer.pixel,
+	type.cords.screen;
+
+class Camera : ICamera {
+	private:
+	H3DPipeline _pipeline;
+	BufferPixel renderTarget;
+	
+	CordsScreen viewport;
+	
+	float clipNear;
+	float clipFar;
+	float viewAngleX;
+	float viewAngleY;
+	
+	bool orthogonal;
 	
 	
-	
-	float3 position;
-	bool posIsLocalToListener;
-	float3 velocity;
-	float3 direction;
-	
-	float gain;
-	float gainMin;
-	float gainMax;
-	
-	float gainInCone;
-	float gainOutCone;
-	float coneAngle;
-	
-	float radius;
-	float radiusHalfDecay;
-	float roloff;
-	
-	Buffer[] buffers;
-	
-	enum Type {
-		AL_UNDETERMINED,
-		AL_STATIC, 
-		AL_STREAMING
+	public:
+	void init(Component parent, string name, H3DPipeline pipeline) {
+		h3dAddCameraNode(parent.id, name, pipeline.id);
 	}
 	
-	enum State {
-		AL_STOPPED,
-		AL_PLAYING
+	
+	void setFrustum() {
+		
 	}
 	
-	enum DistanceModel {
-		BLAH
-	}
-	*/
+	bool visible(H3DNode what);
+	uint queryLOD(H3DNode what);
 	
+	void render() {
+		h3dRender(id);
+	}
 }

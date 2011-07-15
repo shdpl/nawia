@@ -15,23 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
- * Copyright (C) 2010 Mariusz 'shd' Gliwiński.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 module net.nawia.client3d;
 
 private import 
@@ -44,7 +27,7 @@ private import
 	ge.window.window,
 	io.res.manager,
 	ge.renderer,
-	ge.entity.camera,
+	ge.component.camera,
 	ee.world,
 	cfg.cfg;
 	*/
@@ -85,11 +68,13 @@ void main(string args[]){//TODO: configured resources
 	platform.scale = (.23f, .23f, .23f);
 	world.add(platform);
 	
-	platform.add(impl!Camera("deferred.pipeline.xml"));
-	//TODO: Camera <=> Window
+	platform.add(impl!Camera(wnd, impl!Pipeline("deferred.pipeline.xml")));
 	
-	auto light = impl!Light(
-		impl!Material("light.material.xml", "LIGHTING", "SHADOWMAP"));
+	auto lCtxID = "LIGHTING";
+	auto sCtxID = "SHADOWMAP";
+	auto lMat = impl!Material("light.material.xml");
+	enforce( lCtxID in lMat.contexts && sCtxID in lMat.contexts );
+	auto light = impl!Light(lMat, lCtxID, sCtxID);
 	light.pos = (0, 20, 50);
 	light.orientation = (-30, 0, 0);
 	//light.scale = (1, 1, 1);
@@ -102,8 +87,13 @@ void main(string args[]){//TODO: configured resources
 	platform.add(light);
 	
 	auto man = impl!Actor(
-		impl!Model("man/man.scene.xml", impl!Animator("man.anim")),
+		impl!Model("man/man.scene.xml", impl!Animation("man.anim")),
 		impl!RandomWalker());
+	platform.add(man);
+
+	auto mPositioner = Positioner(Circle(0, 20), uniform(0.0L, 20.0L));
+	for(int i=0; i<99; i++)
+		platform.add(mPositioner.position(man.duplicate));
 	
 	auto mtd = new MsgMediatorMtD;
 	while(true) {

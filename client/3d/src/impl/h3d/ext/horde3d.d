@@ -361,7 +361,7 @@ class H3DAnimRes {
   }
 
   enum List {
-    EntityElem = 300,
+    ComponentElem = 300,
     EntFrameCountI
   }
 

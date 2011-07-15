@@ -18,8 +18,8 @@
 module ge.node.model;
 
 private import
-	ge.entity.entity;
+	ge.component.component;
 
-interface IModel : IEntity {
+interface IModel : IComponent {
 	
 }

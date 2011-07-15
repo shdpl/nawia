@@ -17,7 +17,7 @@
 
 module ee.map.decimatormesh;
 
-import ge.entity.mesh;
+import ge.component.mesh;
 
 interface IDecimatorMesh {
 	void init(float threshold);

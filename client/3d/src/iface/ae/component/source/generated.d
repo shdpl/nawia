@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module pe.entity.world;
+module ae.component.source.generated;
 
-private import pe.entity.entity;
-
-interface WorldPhysics : Entity {
+import ae.component.source.source;
+	
+interface ISourceGenerated : ISource {
 	
 }

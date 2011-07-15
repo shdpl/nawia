@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module pe.entity.pbody.rigid;
+module ee.component;
 
-interface BodyRigid {
+interface IComponent {
 	
 }

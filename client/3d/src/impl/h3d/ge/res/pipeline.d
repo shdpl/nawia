@@ -30,7 +30,7 @@ class H3DPipeline /*: Pipeline*/ {
 	public:
 	/// Size of the render targets
 	float2[2] size;
-	BufferPixel pixelBuffer(string name, uint bufId) {return BufferPixel();}
+	BufferPixel getRenderTarget(string name, uint bufId) {return BufferPixel();}
 	
 	this() {
 		

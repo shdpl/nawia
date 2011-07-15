@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.entity.animator;
+module ge.node.camera;
 
-import ge.entity.entity;
+private import
+	ge.component.component;
 
-interface IAnimator : IEntity {
+interface ICamera : IComponent {
+	
+	
 	
 }

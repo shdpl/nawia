@@ -19,7 +19,7 @@ module h3d.ge.res.ray;
 
 
 import ge.res.h3d,
-	ge.res.entity.entity,
+	ge.res.component.component,
 	type.cuda.types;
 
 struct Ray {

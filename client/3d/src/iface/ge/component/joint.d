@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ee.player;
+module ge.node.joint;
 
-private import ge.node.camera,
-	ee.actor;
+private import
+	ge.component.component;
 
-interface IPlayer : IActor {
-	@property Camera camera();
-	@property void camera(Camera cam);
+interface IJoint : IComponent {
+	
 }

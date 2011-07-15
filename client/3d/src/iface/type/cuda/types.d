@@ -589,7 +589,7 @@ struct qfloat {
         this.im = im;
     }
 
-    /// Contruct an identity quaternion
+    /// Contruct an idComponent quaternion
     static qfloat I() { return qfloat(1, float3(0,0,0)); }
 
     /// Construct a quaternion from an axis and angle

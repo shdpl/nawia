@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ee.actor;
+module pe.component.world;
 
-private import
-	ee.entity,
-	io.hid.controller;
+private import pe.component.component;
 
-interface IActor : IEntity {
-	@property Controller controller();
-	@property void controller(Controller controller);
+interface WorldPhysics : Component {
+	
 }

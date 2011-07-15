@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.entity.light;
+module ge.component.light;
 
 private import
-	ge.entity.entity;
+	ge.component.component;
 
-interface ILight : IEntity {
+interface ILight : IComponent {
 	
 }

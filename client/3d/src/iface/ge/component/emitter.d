@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.node.group;
+module ge.graph.emitter;
 
 private import
-	ge.entity.entity;
+	ge.component.component;
 
-interface IGroup : IEntity {
-	
+interface IEmitter : IComponent {
+	//
 }

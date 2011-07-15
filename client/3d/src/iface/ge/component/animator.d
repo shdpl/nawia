@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ae.entity.source.generated;
+module ge.component.animator;
 
-import ae.entity.source.source;
-	
-interface ISourceGenerated : ISource {
+import ge.component.component;
+
+interface IAnimator : IComponent {
 	
 }

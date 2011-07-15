@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ae.entity.source.sample;
+module ae.component.source.sample;
 
-import ae.entity.source.source;
+import ae.component.source.source;
 
 interface ISourceSample : ISource {
 	

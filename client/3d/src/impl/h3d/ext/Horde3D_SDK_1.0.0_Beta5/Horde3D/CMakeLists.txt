@@ -1,4 +1,4 @@
+project(horde3d)
 
-add_subdirectory(Source)
-add_subdirectory(Samples)
-add_subdirectory(Bindings)
+add_executable(horde3d main.cpp)
+

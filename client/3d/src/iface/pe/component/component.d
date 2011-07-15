@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.node.mesh;
+module pe.component.component;
+
 
 private import
-	ge.entity.entity;
+	ee.component : IComponent = Component;
 
-interface IMesh : IEntity{
+interface Component : IComponent {
 	
 }
