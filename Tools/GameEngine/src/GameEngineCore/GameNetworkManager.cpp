@@ -48,6 +48,7 @@ enum PacketType {
 
 struct ClientRecord {
 	SOCKADDR_IN		adress;
+	SOCKET			socket;
 	size_t			client_id;
 	size_t			client_tick;
 
@@ -57,8 +58,19 @@ struct ClientRecord {
 	size_t	requestedUpdates_changed;
 	bool	requestedUpdates_acknowledged;
 
+	// create UDP client
 	ClientRecord(SOCKADDR_IN cladr, size_t clid) {
+		socket = 0;
 		adress = cladr;
+		client_id = clid;
+		client_tick = 0;
+		requestedUpdates_changed = 0;
+		requestedUpdates_acknowledged = true;
+	}
+
+	// create TCP client
+	ClientRecord(SOCKET clsocket, size_t clid) {
+		socket = clsocket;
 		client_id = clid;
 		client_tick = 0;
 		requestedUpdates_changed = 0;
@@ -67,6 +79,10 @@ struct ClientRecord {
 
 	~ClientRecord() {
 		requestedUpdates.clear();
+		if (socket) {
+			closesocket(socket);
+			socket = 0;
+		}
 	}
 
 	void requestUpdate(string entity, string component) {
@@ -83,7 +99,7 @@ struct ClientRecord {
 
 	bool isUpdateRequested(string entity, string component) {
 		pair<string,string> p(entity, component);
-		return (requestedUpdates.find(p) == requestedUpdates.end());
+		return (requestedUpdates.find(p) != requestedUpdates.end());
 	}
 };
 
@@ -255,16 +271,6 @@ bool GameNetworkManager::init()
 		return false;
 	}
 
-	// set up UDP socket
-	if ( ( m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) ) == INVALID_SOCKET ) {
-		GameLog::errorMessage("GameNetworkManager: Could not create UDP socket.");
-		return false;
-	}
-
-	// enable non-blocking
-	unsigned long mode = 1;
-	ioctlsocket(m_socket, FIONBIO, &mode);
-
 	m_currentState = GameEngine::Network::DISCONNECTED;
 
 	m_sv_adress.sin_family = AF_INET;
@@ -281,14 +287,15 @@ bool GameNetworkManager::init()
 	m_cl_tickinterval = 5;
 
 	m_useCompression = true;
-
-	m_sv_restrictClientUpdates = false;
+	
+	m_useTCP = false;
 
 	return true;
 }
 
 void GameNetworkManager::release()
 {
+	disconnect();
 	m_currentState = GameEngine::Network::INVALID_STATE;
 
 	// close UDP socket
@@ -311,7 +318,7 @@ void GameNetworkManager::release()
 
 void GameNetworkManager::setupServer() {
 	if (m_currentState != GameEngine::Network::DISCONNECTED) {
-		GameLog::warnMessage(" NetworkManager: Failed to start Server!");
+		GameLog::warnMessage(" NetworkManager: Failed to start Server! Already connected or serving.");
 		return;
 	}
 
@@ -320,25 +327,89 @@ void GameNetworkManager::setupServer() {
 	// empty client IDs
 	m_sv_clients.clear();
 
-	m_sv_adress.sin_family = AF_INET;
-	m_sv_adress.sin_port = htons(22888);
-	m_sv_adress.sin_addr.S_un.S_addr = INADDR_ANY;
+	m_sv_orphanSockets.clear();
 
-	// bind socket
-	bind(m_socket, (SOCKADDR*) &m_sv_adress, sizeof(SOCKADDR));
+	if (m_useTCP) {
+
+		// set up TCP listen socket
+		if ( ( m_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) ) == INVALID_SOCKET ) {
+			GameLog::errorMessage("GameNetworkManager: Could not create TCP socket.");
+			return;
+		}
+
+		// enable non-blocking
+		unsigned long mode = 1;
+		ioctlsocket(m_socket, FIONBIO, &mode);
+
+		// disable Nagle's algorithm (sacrifice a little throughput for drastically reduced latency)
+		int flag = 1;
+		setsockopt(m_socket, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(flag) );
+
+		// bind socket
+		bind(m_socket, (SOCKADDR*) &m_sv_adress, sizeof(SOCKADDR));
+
+		// listen
+		listen(m_socket, SOMAXCONN);
+
+	} else {
+
+		// set up UDP socket
+		if ( ( m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) ) == INVALID_SOCKET ) {
+			GameLog::errorMessage("GameNetworkManager: Could not create UDP socket.");
+			return;
+		}
+
+		// enable non-blocking
+		unsigned long mode = 1;
+		ioctlsocket(m_socket, FIONBIO, &mode);
+
+		// bind socket
+		bind(m_socket, (SOCKADDR*) &m_sv_adress, sizeof(SOCKADDR));
+	}
 
 	m_currentState = GameEngine::Network::SERVING;
 }
 
-
 void GameNetworkManager::connectToServer(const char* ip_addr) {
+	if (m_currentState != GameEngine::Network::DISCONNECTED) {
+		GameLog::warnMessage(" NetworkManager: Failed to connect to server! Already connected or serving.");
+		return;
+	}
+
+	if (m_useTCP) {
+		// set up TCP socket
+		if ( ( m_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) ) == INVALID_SOCKET ) {
+			GameLog::errorMessage("GameNetworkManager: Could not create TCP socket.");
+			return;
+		}
+
+		// enable non-blocking
+		unsigned long mode = 1;
+		ioctlsocket(m_socket, FIONBIO, &mode);
+
+		// disable Nagle's algorithm (sacrifice a little throughput for drastically reduced latency)
+		int flag = 1;
+		setsockopt(m_socket, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(flag) );
+
+	} else {
+		// set up TCP socket
+		if ( ( m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) ) == INVALID_SOCKET ) {
+			GameLog::errorMessage("GameNetworkManager: Could not create TCP socket.");
+			return;
+		}
+
+		// enable non-blocking
+		unsigned long mode = 1;
+		ioctlsocket(m_socket, FIONBIO, &mode);
+	}
 
 	m_cl_serveradress.sin_addr.S_un.S_addr = inet_addr(ip_addr);
 
 	m_cl_tick = 0;
 	m_cl_retrytimer = 10;
 
-	// "bind" UDP socket
+	// connect (if TCP)
+	// fix server adress (if UDP)
 	connect(m_socket, (SOCKADDR*) &m_cl_serveradress, sizeof(SOCKADDR_IN));
 
 	m_currentState = GameEngine::Network::CONNECTING_TO_SERVER;
@@ -373,7 +444,9 @@ void GameNetworkManager::update() {
 
 		case GameEngine::Network::SERVING:
 			m_sv_tick++;
-			sv_handleClientMessages();
+			if (m_useTCP)
+				sv_acceptIncomingTCPConnections();
+			sv_receiveMessages();
 			sv_testClientsTimeout();
 			sv_sendStateRequests();
 			sv_transmitComponentStates();
@@ -434,11 +507,14 @@ void GameNetworkManager::cl_awaitAccept() {
 			m_currentState = GameEngine::Network::CONNECTED_TO_SERVER;
 			// set local tick to server's tick
 			m_cl_tick = m_incoming_message->getTick();
+			break;
 
 		} else if (m_incoming_message->getType() == REJECT) {
 			// connection has been refused by server
 			m_currentState = GameEngine::Network::DISCONNECTED;
-
+			if (m_socket != INVALID_SOCKET)
+				closesocket(m_socket);
+			break;
 		}
 	}
 }
@@ -448,7 +524,6 @@ void GameNetworkManager::cl_handleServerMessages() {
 	//int from_len = sizeof(SOCKADDR_IN);
 
 	while (recv(m_socket, m_incoming_message->message, 65536, 0) > 0) {
-
 		if (!m_incoming_message->isGameEngineMessage())
 			continue;
 
@@ -629,14 +704,38 @@ void GameNetworkManager::cl_transmitComponentStates() {
 }
 
 
-size_t GameNetworkManager::sv_addClient(SOCKADDR_IN client) {
+void GameNetworkManager::sv_acceptIncomingTCPConnections() {
+	SOCKET s;
+	s = accept(m_socket, NULL, NULL);	// client address is not relevant to us when dealing with TCP
+	
+	while (s != INVALID_SOCKET) {
+		m_sv_orphanSockets.insert(s);
+		s = accept(m_socket, NULL, NULL);
+	}
+}
 
+size_t GameNetworkManager::sv_addClient(SOCKADDR_IN client) {
+	// adds a UDP client
 	size_t id = m_sv_clientid++;
 
 	ClientRecord* cr = new ClientRecord(client, id);
 	cr->client_tick = m_sv_tick;
 
 	m_sv_clients.insert(std::pair<size_t,ClientRecord*>(id,cr));
+
+	return id;
+}
+
+size_t GameNetworkManager::sv_addClient(SOCKET clientsocket) {
+	// adds a TCP client
+	size_t id = m_sv_clientid++;
+
+	ClientRecord* cr = new ClientRecord(clientsocket, id);
+	cr->client_tick = m_sv_tick;
+
+	m_sv_clients.insert(std::pair<size_t,ClientRecord*>(id,cr));
+
+	m_sv_orphanSockets.erase(clientsocket);
 
 	return id;
 }
@@ -652,7 +751,8 @@ bool GameNetworkManager::sv_removeClient(size_t clientID) {
 	m_outgoing_message->setType(DISCONNECT);
 	m_outgoing_message->setDataLength(0);
 	m_outgoing_message->setTick(m_sv_tick);
-	sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &(it->second->adress), sizeof(SOCKADDR_IN));
+
+	sv_sendOutgoingMessageTo(clientID);
 
 	// remove client
 	delete it->second;
@@ -664,135 +764,187 @@ bool GameNetworkManager::sv_removeClient(size_t clientID) {
 	return true;
 }
 
-void GameNetworkManager::sv_handleClientMessages() {
+void GameNetworkManager::sv_receiveMessages() {
 	SOCKADDR_IN from_addr;
 	int from_len = sizeof(SOCKADDR_IN);
 
-	while (recvfrom(m_socket, m_incoming_message->message, 65536, 0, (SOCKADDR*) &from_addr, &from_len) > 0)   {
+	if (!m_useTCP) {
 
-		// is it a GameEngine message?
-		if (!m_incoming_message->isGameEngineMessage())
-			continue;
+		// UDP messages
+		while ((!m_useTCP) && (recvfrom(m_socket, m_incoming_message->message, 65536, 0, (SOCKADDR*) &from_addr, &from_len) > 0))   {
+			sv_handleIncomingMessage(&from_addr, 0);
+		}
+	
+	} else {
+		// TCP messages from clients
+		std::map<size_t,ClientRecord*>::iterator cl_it = m_sv_clients.begin();
+		while(cl_it != m_sv_clients.end()) {
+			ClientRecord* client = cl_it->second;
 
-		// determine message type
-		switch (m_incoming_message->getType()) {
-			size_t id;
+			cl_it++;
 
-			// someone is looking for servers
-			case DISCOVER:
-				m_outgoing_message->setType(RES_DISCOVER);
+			// three steps: Does client still exist? Does it own a socket (TCP)? Was data received?
+			while ((client) && (client->socket) && recv(client->socket, m_incoming_message->message, 65536, 0) > 0)
+				sv_handleIncomingMessage(0, (client->socket));
+		}
+
+		// TCP messages from other TCP connections (wannabe clients)
+		std::set<SOCKET>::iterator sock_it = m_sv_orphanSockets.begin();
+		while (sock_it != m_sv_orphanSockets.end()) {
+			SOCKET s = *sock_it;
+
+			if (s == INVALID_SOCKET) {
+				std::set<SOCKET>::iterator sock_it_temp = sock_it;
+				sock_it++;
+				m_sv_orphanSockets.erase(sock_it_temp);
+				continue;
+			}
+
+			sock_it++;
+
+			while (recv(s, m_incoming_message->message, 65536, 0) > 0)
+				sv_handleIncomingMessage(0, s);
+		}
+	}
+}
+
+void GameNetworkManager::sv_handleIncomingMessage(SOCKADDR_IN* fromaddr, SOCKET fromsocket) {
+	// fromsocket == 0  =>  UDP client
+
+	// is it a GameEngine message?
+	if (!m_incoming_message->isGameEngineMessage())
+		return;
+
+	// determine message type
+	switch (m_incoming_message->getType()) {
+		size_t id;
+
+		// someone is looking for servers
+		case DISCOVER:
+			m_outgoing_message->setType(RES_DISCOVER);
+			m_outgoing_message->setClientID(0);
+			m_outgoing_message->setDataLength(0);
+			m_outgoing_message->setTick(m_sv_tick);
+			if (!fromsocket)
+				sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*)fromaddr, sizeof(SOCKADDR_IN));
+			else
+				send(fromsocket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0);
+			break;
+
+		// new client connects
+		case CONNECT:
+			// check for application ID match
+			if (strcmp(m_applicationID, m_incoming_message->data(0))) {
+				m_outgoing_message->setType(REJECT);
 				m_outgoing_message->setClientID(0);
 				m_outgoing_message->setDataLength(0);
 				m_outgoing_message->setTick(m_sv_tick);
-				sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &from_addr, sizeof(SOCKADDR_IN));
-				break;
-
-			// new client connects
-			case CONNECT:
-				// check for application ID match
-				if (strcmp(m_applicationID, m_incoming_message->data(0))) {
-					m_outgoing_message->setType(REJECT);
-					m_outgoing_message->setClientID(0);
-					m_outgoing_message->setDataLength(0);
-					m_outgoing_message->setTick(m_sv_tick);
-					sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &from_addr, sizeof(SOCKADDR_IN));
-				} else {
-					id = sv_addClient(from_addr);
-					m_outgoing_message->setType(ACCEPT);
-					m_outgoing_message->setClientID(id);
-					m_outgoing_message->setDataLength(0);
-					m_outgoing_message->setTick(m_sv_tick);
-					sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &from_addr, sizeof(SOCKADDR_IN));
-					if (m_onClientConnect)
-						m_onClientConnect(id);
+				if (!fromsocket)
+					sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*)fromaddr, sizeof(SOCKADDR_IN));
+				else {
+					send(fromsocket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0);
+					m_sv_orphanSockets.erase(fromsocket);
+					closesocket(fromsocket);
 				}
-				break;
+			} else {
+				// application ID matches, welcome new client
+				if (!fromsocket)
+					id = sv_addClient(*fromaddr);
+				else
+					id = sv_addClient(fromsocket);
+				m_outgoing_message->setType(ACCEPT);
+				m_outgoing_message->setClientID(id);
+				m_outgoing_message->setDataLength(0);
+				m_outgoing_message->setTick(m_sv_tick);
+				sv_sendOutgoingMessageTo(id);
+				if (m_onClientConnect)
+					m_onClientConnect(id);
+			}
+			break;
 
-			// client disconnects
-			case DISCONNECT:
-				sv_removeClient(m_incoming_message->getClientID());
-				break;
+		// client disconnects
+		case DISCONNECT:
+			sv_removeClient(m_incoming_message->getClientID());
+			break;
 
-			// client acknowledges changed requests
-			case ACK_REQUEST_UPDATES:
-				{
-					size_t clientID = m_incoming_message->getClientID();
+		// client acknowledges changed requests
+		case ACK_REQUEST_UPDATES:
+			{
+				size_t clientID = m_incoming_message->getClientID();
 
-					ClientRecord* client = NULL;
+				ClientRecord* client = NULL;
 
-					std::map<size_t,ClientRecord*>::iterator it = m_sv_clients.find(clientID);
+				std::map<size_t,ClientRecord*>::iterator it = m_sv_clients.find(clientID);
 
-					if (it == m_sv_clients.end())		// client ID not found on server
-						break;
+				if (it == m_sv_clients.end())		// client ID not found on server
+					break;
 
-					client = it->second;
+				client = it->second;
 
-					// check for tick match
-					size_t acknowledge_tick;
-					memcpy(&acknowledge_tick, m_incoming_message->data(0), sizeof(size_t));
-					if (client->requestedUpdates_changed == acknowledge_tick) {
-						client->requestedUpdates_acknowledged = true;
-					}
+				// check for tick match
+				size_t acknowledge_tick;
+				memcpy(&acknowledge_tick, m_incoming_message->data(0), sizeof(size_t));
+				if (client->requestedUpdates_changed == acknowledge_tick) {
+					client->requestedUpdates_acknowledged = true;
 				}
-				break;
+			}
+			break;
 
-			// client transmits the state of its entities
-			case STATE_UPDATE:
-				{
-					size_t clientID = m_incoming_message->getClientID();
+		// client transmits the state of its entities
+		case STATE_UPDATE:
+			{
+				size_t clientID = m_incoming_message->getClientID();
 
-					ClientRecord* client = NULL;
+				ClientRecord* client = NULL;
 
-					std::map<size_t,ClientRecord*>::iterator it = m_sv_clients.find(clientID);
+				std::map<size_t,ClientRecord*>::iterator it = m_sv_clients.find(clientID);
 
-					if (it == m_sv_clients.end())		// client ID not found on server
-						break;
+				if (it == m_sv_clients.end())		// client ID not found on server
+					break;
 
-					client = it->second;
+				client = it->second;
 
-					// discard if too old
-					if (client->client_tick > m_incoming_message->getTick())
-						break;
+				// discard if too old
+				if (client->client_tick > m_incoming_message->getTick())
+					break;
 
-					client->client_tick = m_incoming_message->getTick();
+				client->client_tick = m_incoming_message->getTick();
 
-					if (m_incoming_message->isCompressed()) {
-						m_incoming_message->decompressData();		// decompress message
+				if (m_incoming_message->isCompressed()) {
+					m_incoming_message->decompressData();		// decompress message
 
-						if (m_incoming_message->isCompressed())		// decompression failed
-							continue;
-					}
-
-					size_t datacursor = 0;
-
-					while (datacursor < m_incoming_message->getDataLength()) {
-						size_t statelength = 0;
-						memcpy(&statelength, m_incoming_message->data(datacursor), sizeof(size_t));		datacursor += sizeof(size_t);
-
-						std::string entityID(m_incoming_message->data(datacursor));						datacursor += entityID.length() + 1;
-						std::string componentID(m_incoming_message->data(datacursor));					datacursor += componentID.length() + 1;
-
-						// is this state update allowed for this client?
-						if ( (m_sv_restrictClientUpdates) && !(client->isUpdateRequested(entityID, componentID)) ) {
-							datacursor += statelength;
-							continue;
-						}
-
-						GameEntity* ge = GameModules::gameWorld()->entity(entityID);
-
-						// set component's state
-						ge->component(componentID)->setSerializedState(m_incoming_message->data(datacursor), statelength);	datacursor += statelength;
-					}
+					if (m_incoming_message->isCompressed())		// decompression failed
+						return;
 				}
-				break;
 
-			//case ALIVE:	obsolete, empty STATE_UDPATE acts as an ALIVE message
-			//	break;
+				size_t datacursor = 0;
 
-			default:
-				break;
-		}
+				while (datacursor < m_incoming_message->getDataLength()) {
+					size_t statelength = 0;
+					memcpy(&statelength, m_incoming_message->data(datacursor), sizeof(size_t));		datacursor += sizeof(size_t);
 
+					std::string entityID(m_incoming_message->data(datacursor));						datacursor += entityID.length() + 1;
+					std::string componentID(m_incoming_message->data(datacursor));					datacursor += componentID.length() + 1;
+
+					// is this state update allowed for this client?
+					if ( !client->isUpdateRequested(entityID, componentID) ) {
+						datacursor += statelength;
+						continue;
+					}
+
+					GameEntity* ge = GameModules::gameWorld()->entity(entityID);
+
+					// set component's state
+					ge->component(componentID)->setSerializedState(m_incoming_message->data(datacursor), statelength);	datacursor += statelength;
+				}
+			}
+			break;
+
+		//case ALIVE:	obsolete, empty STATE_UDPATE acts as an ALIVE message
+		//	break;
+
+		default:
+			break;
 	}
 }
 
@@ -856,7 +1008,7 @@ void GameNetworkManager::sv_sendStateRequests() {
 			
 			m_outgoing_message->setDataLength(offset);
 
-			sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &(client->adress), sizeof(SOCKADDR_IN));
+			sv_sendOutgoingMessageTo(client);
 		}
 		it++;
 	}
@@ -928,6 +1080,18 @@ void GameNetworkManager::sv_transmitComponentStates() {
 	sv_broadcastOutgoingMessage();
 }
 
+void GameNetworkManager::sv_sendOutgoingMessageTo(size_t clientID) {
+	ClientRecord* client = m_sv_clients.find(clientID)->second;
+	sv_sendOutgoingMessageTo(client);
+}
+
+void GameNetworkManager::sv_sendOutgoingMessageTo(ClientRecord* client) {
+	if (client->socket)	// TCP mode
+		send(client->socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0);
+	else				// UDP mode
+		sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*)&(client->adress), sizeof(SOCKADDR_IN));
+}
+
 void GameNetworkManager::sv_broadcastOutgoingMessage() {
 	if (m_useCompression)
 		m_outgoing_message->compressData();
@@ -936,8 +1100,14 @@ void GameNetworkManager::sv_broadcastOutgoingMessage() {
 	std::map<size_t,ClientRecord*>::iterator cl_it = m_sv_clients.begin();
 
 	while (cl_it != m_sv_clients.end()) {
-		m_outgoing_message->setClientID(cl_it->second->client_id);
-		sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*) &(cl_it->second->adress), sizeof(SOCKADDR_IN));
+		ClientRecord* client = cl_it->second;
+		m_outgoing_message->setClientID(client->client_id);
+
+		if (client->socket)	// TCP mode
+			send(client->socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0);
+		else				// UDP mode
+			sendto(m_socket, m_outgoing_message->message, m_outgoing_message->getTotalLength(), 0, (SOCKADDR*)&(client->adress), sizeof(SOCKADDR_IN));
+
 		cl_it++;
 	}
 }
@@ -1052,12 +1222,16 @@ bool GameNetworkManager::setOption(GameEngine::Network::NetworkOption option, co
 bool GameNetworkManager::setOption(GameEngine::Network::NetworkOption option, const bool value) {
 
 	switch (option) {
+		case GameEngine::Network::USE_TCP:
+			if (m_currentState == GameEngine::Network::DISCONNECTED) {
+				m_useTCP = value;
+			} else {
+				return false;
+			}
+			break;
+
 		case GameEngine::Network::USE_COMPRESSION:
 			m_useCompression = value;
-			return true;
-
-		case GameEngine::Network::SV_RESTRICT_CLIENT_UPDATES:
-			m_sv_restrictClientUpdates = value;
 			return true;
 
 		default:
@@ -1076,7 +1250,6 @@ void GameNetworkManager::requestClientUpdate(size_t clientID, const char* entity
 
 	cl_it->second->requestUpdate(entityID, componentID);
 }
-
 
 void GameNetworkManager::disrequestClientUpdate(size_t clientID, const char* entityID, const char* componentID) {
 	std::map<size_t,ClientRecord*>::iterator cl_it = m_sv_clients.find(clientID);

@@ -98,17 +98,23 @@ private:
 
 
 
-	// handles clients' requests
-	void sv_handleClientMessages();
+	// receives / handles clients' requests
+	void sv_receiveMessages();
+	void sv_handleIncomingMessage(SOCKADDR_IN* fromaddr, SOCKET fromsocket);
 
 	// collects GameComponents' states and sends them to clients
 	void sv_transmitComponentStates();
 
 	// adds a new client to the server's list
 	size_t sv_addClient(SOCKADDR_IN client);
+	size_t sv_addClient(SOCKET clientsocket);
 
 	// removes a client from the server's list
 	bool sv_removeClient(size_t clientID);
+
+	// sends the outgoing NetworkMessage to a certain client
+	void sv_sendOutgoingMessageTo(ClientRecord* client);
+	void sv_sendOutgoingMessageTo(size_t clientID);
 
 	// broadcasts the outgoing NetworkMessage to all clients
 	void sv_broadcastOutgoingMessage();
@@ -118,6 +124,10 @@ private:
 
 	// send requests to clients
 	void sv_sendStateRequests();
+
+	// accepts incoming TCP connections (doesn't accept the client itself)
+	void sv_acceptIncomingTCPConnections();
+
 
 
 	// sends a connect message to server
@@ -139,8 +149,8 @@ private:
 	SOCKADDR_IN		m_sv_adress;
 	size_t			m_sv_clientid;
 	size_t			m_sv_clientTimeoutInterval;
-	bool			m_sv_restrictClientUpdates;
-	std::map<size_t,ClientRecord*>	m_sv_clients;			// TODO: map<int,ClientRecord> could speed up some things
+	std::set<SOCKET>				m_sv_orphanSockets;
+	std::map<size_t,ClientRecord*>	m_sv_clients;
 	std::set<GameComponent*>		m_sv_components;
 
 
@@ -159,6 +169,7 @@ private:
 	// common vars
 	char*			m_applicationID;
 	bool			m_useCompression;
+	bool			m_useTCP;
 
 
 
