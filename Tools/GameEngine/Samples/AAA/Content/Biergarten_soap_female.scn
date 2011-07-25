@@ -7,5 +7,6 @@
 	<!--<ActiveCamera name="camera" />-->
 	<Extras>
 		<AnimationLexicon path="AnimationLexicon.xml"/>
+		<SocketServer entity="camera"/>
 	</Extras>
 </Configuration>

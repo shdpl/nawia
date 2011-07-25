@@ -91,7 +91,7 @@ AGENTPLUGINEXP void dllLoadScene( const char* sceneFile )
 		if (!agentSettings.isEmpty())
 		{
 			char* xmlString = agentSettings.createXMLString();
-			GameLog::logMessage("- Setting Agent setting from xml = %s", xmlString);
+			GameLog::logMessage("- Setting Agent settings from xml = %s", xmlString);
 			delete xmlString;
 
 			Config::loadFromXml(agentSettings);
@@ -112,4 +112,19 @@ AGENTPLUGINEXP void dllLoadScene( const char* sceneFile )
 		else
 			GameLog::errorMessage( "AgentComponent: error parsing animation lexicon (file not found?). Animation loading will only be available by filename or resource" );
 	}
-}   
+
+	/*
+	 * Socket entity
+	 */
+	if (!extras.isEmpty())
+	{
+		const XMLNode& socket(extras.getChildNode("SocketServer"));
+		if (!socket.isEmpty() && socket.getAttribute("entity") != 0)
+		{			
+			GameLog::logMessage("- SocketServer entity set to %s", socket.getAttribute("entity"));
+			Config::setParamS(Agent_Param::SocketEntityName_S, socket.getAttribute("entity"));
+		}
+		else
+			GameLog::logMessage("- SocketServer entity set to default value (%s)", Config::getParamS(Agent_Param::SocketEntityName_S));
+	}
+}

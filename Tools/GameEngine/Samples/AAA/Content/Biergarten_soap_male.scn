@@ -2,10 +2,11 @@
 <Configuration>
 	<SceneGraph path="models/biergarten_soap_male.scene.xml" />
 	<AttachmentPlugIn name="GameEngine" />
-	<EnginePath mediapath="media"  animationpath="animations" />
+	<EnginePath mediapath="media" animationpath="animations" />
 	<EngineConfig fastAnimation="true" shadowMapSize="2048" texCompression="true" loadTextures="true" maxNumMessages="5000" />
 	<!--<ActiveCamera name="camera" />-->
 	<Extras>
 		<AnimationLexicon path="AnimationLexicon.xml"/>
+		<SocketServer entity="camera"/>
 	</Extras>
 </Configuration>
