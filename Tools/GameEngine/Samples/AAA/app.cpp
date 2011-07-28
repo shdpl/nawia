@@ -1195,6 +1195,6 @@ AgentNode* Application::getAgent(unsigned int id)
 float Application::roundf(float value, float numDecimals)
 {
 	int acc = 10 * numDecimals;
-
+	
 	return (float)((int)(value * acc)/(float)acc);
 }
