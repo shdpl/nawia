@@ -22,9 +22,8 @@
 //
 // ****************************************************************************************
 //
-// For information on how to use AAA, please read the readme.txt in the project folder 
-// (ex: GameEngine\Samples\AAA\readme.txt) or check out the website at: 
-// http://mm-werkstatt.informatik.uni-augsburg.de/projects/aaa/
+// For information on how to use AAA, please visit the website at: 
+// http://hcm-lab.de/projects/aaa/
 //
 // ****************************************************************************************
 #include <windows.h>

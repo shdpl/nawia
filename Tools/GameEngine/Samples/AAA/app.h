@@ -22,9 +22,8 @@
 //
 // ****************************************************************************************
 //
-// For information on how to use AAA, please read the readme.txt in the project folder 
-// (ex: GameEngine\Samples\AAA\readme.txt) or check out the website at: 
-// http://mm-werkstatt.informatik.uni-augsburg.de/projects/aaa/
+// For information on how to use AAA, please visit the website at: 
+// http://hcm-lab.de/projects/aaa/
 //
 // ****************************************************************************************
 
@@ -69,7 +68,7 @@ private:
 	///current FPS
 	float			_curFPS;
 	///flag for H3D debug rendering
-	bool			_debugViewMode;
+	int			_debugViewMode;
 	
 	//**Shader update
 	///Shader control parameter
@@ -155,6 +154,8 @@ public:
 	void resize( int width, int height );
 	///releases all allocated memory space and prepares application for termination
 	void release();
+
+	float roundf(float value, float numDecimals);
 };
 
 #endif // _app_H_

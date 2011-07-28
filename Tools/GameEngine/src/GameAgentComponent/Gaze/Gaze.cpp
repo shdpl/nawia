@@ -212,6 +212,7 @@ bool Gaze::checkGaze(Vec3f target)
 	//check if it is possible to gaze at that target
 	int g_code;
 	g_code = GameEngine::IK_checkGaze( m_agent_eID, target.x, target.y, target.z, true, true, true );
+	
 	if( g_code >= 4 || g_code <= 0) //4 = head and eyes out of range, 0 = error
 		return false;
 	else
@@ -289,3 +290,7 @@ Vec3f Gaze::getTarget()
 	return m_morph->getTarget();
 }
 
+bool Gaze::isValid()
+{
+	return !m_badTarget;
+}

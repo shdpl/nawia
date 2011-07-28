@@ -22,9 +22,8 @@
 //
 // ****************************************************************************************
 //
-// For information on how to use AAA, please read the readme.txt in the project folder 
-// (ex: GameEngine\Samples\AAA\readme.txt) or check out the website at: 
-// http://mm-werkstatt.informatik.uni-augsburg.de/projects/aaa/
+// For information on how to use AAA, please visit the website at: 
+// http://hcm-lab.de/projects/aaa/
 //
 // ****************************************************************************************
 #include "app.h"
@@ -57,10 +56,10 @@ Application::Application()
 	m_m0pressed = false;
 	m_m1pressed = false;
 
-	_debugViewMode = false;
+	_debugViewMode = 0;
 	m_pc = 0;
 
-	//SCENARIOS PLAYBACK (imported from 0.25.4.video)
+	//SCENARIOS PLAYBACK
 	m_scenario = 0;
 	srand((unsigned int)time(0));
 	m_dummyAgent = new AgentNode(0,0);
@@ -84,7 +83,7 @@ bool Application::init( const char *fileName )
 	_x = init_x; _y = init_y; _z = init_z; 
 	_rx = init_rx; _ry = init_ry; _rz = init_rz; 
 
-	// VON PETER für Shader Uniform
+	//[PETER] Shader Uniform
 	m_waterMaterial = h3dAddResource( H3DResTypes::Material, "models/holzBrunnen/wasser.material.xml", 0 );
 	m_leafMaterial = h3dAddResource( H3DResTypes::Material, "models/baumNeu01/aeste.material.xml", 0 );
 	m_bushMaterial = h3dAddResource( H3DResTypes::Material, "models/busch01/aeste.material.xml", 0 );
@@ -210,9 +209,9 @@ void Application::update( float fps )
 	_curFPS = fps;
 
 	keyHandler();
-	h3dSetOption( H3DOptions::DebugViewMode, _debugViewMode ? 1.0f : 0.0f );
+	h3dSetOption( H3DOptions::DebugViewMode, (_debugViewMode > 1) ? 1.0f : 0.0f );
 
-	//SCENARIOS PLAYBACK (imported from 0.25.4.video)
+	//SCENARIOS PLAYBACK
 	//continous scenario updates
 	int anim_status, agent_status;
 	if((m_scenario == 9) || (m_scenario == 3 && m_randomize))
@@ -294,13 +293,16 @@ void Application::update( float fps )
 	h3dSetNodeTransform( m_cam_hID, _x, _y, _z, _rx, _ry, _rz, 1, 1, 1 );
 
 	//show overlay with camera parameters
-	//std::stringstream text;
-	//text << "Camera: pos(" << _x << ", " << _y << ", " << _z << ") rot(" << _rx << ", " << _ry << ", " << _rz << ")";
-	//h3dutShowText(text.str().c_str(), 0.01f, 0.02f, 0.03f, 1, 1, 1, m_fontMatRes);
+	if(_debugViewMode > 0)
+	{
+		std::stringstream cam;
+		cam << "Camera: pos(" << roundf(_x, 2) << ", " << roundf(_y, 2) << ", " << roundf(_z, 2) << ") rot(" << roundf(_rx, 2) << ", " << roundf(_ry, 2) << ", " << roundf(_rz, 2) << ")";
+		h3dutShowText(cam.str().c_str(), 0.01f, 0.02f, 0.03f, 1, 1, 1, m_fontMatRes);
 
-	//std::stringstream text;
-	//text << "fps" << GameEngine::FPS();
-	//h3dutShowText(text.str().c_str(), 0.01f, 0.02f, 0.03f, 1, 1, 1, m_fontMatRes);
+		std::stringstream fps;
+		fps << "Fps: " << roundf(GameEngine::FPS(), 2);
+		h3dutShowText(fps.str().c_str(), 0.01f, 0.05f, 0.03f, 1, 1, 1, m_fontMatRes);
+	}
 
 	//** Render scene
 	GameEngine::update();
@@ -315,7 +317,6 @@ void Application::release()
 	//delete all animations and agents
 	for(int i=0; i< NR_OF_AGENTS; i++)
 	{
-		//GameEngine::AgentAnim_clearStages( getAgent(i)->entity_id );
 		delete getAgent(i);
 	}
 	
@@ -359,7 +360,11 @@ void Application::keyHandler()
 
 	if( _keys[264] )	// F7
 	{
-		_debugViewMode = !_debugViewMode;
+		_debugViewMode += 1;
+		
+		if(_debugViewMode > 2)
+			_debugViewMode = 0;
+
 		_keys[264] = false;
 	}
 
@@ -464,6 +469,8 @@ void Application::keyHandler()
 
 	if( _keys['T'] )
 	{
+		GameEngine::Agent_gazeE( m_agents[2]->entity_id, 3, 1, 10 );
+
 		//GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 51, 1, 1, 1, 0, 0); 
 
 		//head nod
@@ -518,18 +525,20 @@ void Application::keyHandler()
 	}
 }
 
-//SCENARIOS PLAYBACK (imported from 0.25.4.video)
+//SCENARIOS PLAYBACK
 void Application::processScenario(int act_id)
 {
 	switch(m_scenario)
 	{
-	case 0: //german
+	//////////////////////////////////////
+	//Preloading resources
+	case 0:
 		switch(act_id)
 		{
 		case 99:
 			for(int j=0; j< NR_OF_AGENTS; j++)
 			{
-				for(int i=1; i<= 70; i++)
+				for(int i=1; i <= 70; i++) //ASSUMING there are 70 animations in the lexicon
 				{
 					//preload animations
 					GameEngine::Agent_playAnimationI( getAgent(j)->entity_id, i, -1, -1, -1, 0, 0 );
@@ -541,7 +550,10 @@ void Application::processScenario(int act_id)
 		}
 		break;
 	
-	case 1: //german
+	//////////////////////////////////////
+	//Interaction demo
+	//german culture
+	case 1: 
 		switch(act_id)
 		{
 		case 99: //init german
@@ -644,8 +656,11 @@ void Application::processScenario(int act_id)
 			break;
 		}
 		break;
+
 	//////////////////////////////////////
-	case 2: //japan
+	//Interaction demo
+	//japanese culture
+	case 2:
 		switch(act_id)
 		{
 		case 99: //init japan
@@ -759,7 +774,11 @@ void Application::processScenario(int act_id)
 		}
 		break;
 
-	case 3: //all agents, mixed interations
+	
+	//////////////////////////////////////
+	//Interaction demo
+	//all agents, mixed interations
+	case 3: 
 		switch(act_id)
 		{
 		case 99: //init
@@ -904,7 +923,9 @@ void Application::processScenario(int act_id)
 		break;
 	
 	////////////////////////////////
-	case 4: //funny1
+	//interaction demo
+	//funny
+	case 4:
 		switch(act_id)
 		{
 		case 99: //init
@@ -968,7 +989,10 @@ void Application::processScenario(int act_id)
 			break;				
 		}
 	
-	case 9: //random scene
+	////////////////////////////////
+	//interaction demo
+	//randomized agent interactions
+	case 9:
 		switch(act_id)
 		{
 		case 1: //scene5_1: init
@@ -1166,4 +1190,11 @@ AgentNode* Application::getAgent(unsigned int id)
 	}
 
 	else return m_agents[id];
+}
+
+float Application::roundf(float value, float numDecimals)
+{
+	int acc = 10 * numDecimals;
+
+	return (float)((int)(value * acc)/(float)acc);
 }

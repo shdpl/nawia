@@ -22,9 +22,8 @@
 //
 // ****************************************************************************************
 //
-// For information on how to use AAA, please read the readme.txt in the project folder 
-// (ex: GameEngine\Samples\AAA\readme.txt) or check out the website at: 
-// http://mm-werkstatt.informatik.uni-augsburg.de/projects/aaa/
+// For information on how to use AAA, please visit the website at: 
+// http://hcm-lab.de/projects/aaa/
 //
 // ****************************************************************************************
 
@@ -78,8 +77,8 @@ void AgentNode::update()
 void AgentNode::setVisibility(bool visible)
 {
 	active = visible;
-	//GameEngine::setVisible(entity_id, visible);
-	h3dSetNodeFlags(horde_id, visible ? 0 : H3DNodeFlags::Inactive, true );
+	GameEngine::setVisible(entity_id, visible);
+	//h3dSetNodeFlags(horde_id, visible ? 0 : H3DNodeFlags::Inactive, true );
 
 	//if this is the pc we also need to change the visibility of its flag
 	if(m_pc)

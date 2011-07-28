@@ -64,6 +64,7 @@ public:
 	int getTargetEID();
 	Vec3f getTarget();
 	Vec3f getCurrent();
+	bool isValid();
 
 private:
 	GazeComponent* m_component;

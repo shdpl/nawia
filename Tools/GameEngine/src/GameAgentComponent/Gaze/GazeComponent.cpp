@@ -163,7 +163,11 @@ int GazeComponent::gaze(int target_eID, float speed, float duration)
 		return m_gazeNodes.top()->getID();
 
 	Gaze* g = new Gaze(this, getGazeCoord(), target_eID, (speed >= 0)? speed : m_speed, duration);
-	m_gazeNodes.push( g );
+	
+	if(g->isValid())
+		m_gazeNodes.push( g );
+	else
+		return -1;
 
 	//force immediate update
 	m_gazeNodes.top()->update();
@@ -178,7 +182,11 @@ int GazeComponent::gaze(float targetX, float targetY, float targetZ, float speed
 		return m_gazeNodes.top()->getID();
 
 	Gaze* g = new Gaze(this, getGazeCoord(), Vec3f(targetX, targetY, targetZ), (speed >= 0)? speed : m_speed, duration);
-	m_gazeNodes.push( g );
+
+	if(g->isValid())
+		m_gazeNodes.push( g );
+	else
+		return -1;
 
 	//force immediate update	
 	m_gazeNodes.top()->update();
