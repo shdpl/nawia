@@ -33,4 +33,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\Biergarten.scn" />
+    <None Include="Content\models\biergarten.scene.xml" />
+  </ItemGroup>
 </Project>

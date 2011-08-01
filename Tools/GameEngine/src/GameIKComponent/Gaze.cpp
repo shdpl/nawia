@@ -141,6 +141,7 @@ bool Gaze::moveHead(bool simulate)
 	m_head->update();
 	Horde3D::Vec3f s = m_head->getScale();
 	Horde3D::Vec3f p = m_head->getTranslation();
+	Horde3D::Vec3f r = m_head->getRotation();
 	h3dSetNodeTransform( m_head->getHordeID(), 
 		p.x,p.y,p.z, 
 		0,0,0,
@@ -151,7 +152,7 @@ bool Gaze::moveHead(bool simulate)
 		if(!simulate)
 			result = applyRotation(m_head, axis, angle, &lock, false);
 		else
-			result = simulateRotation(m_head, axis, angle, &lock);
+			result = simulateRotation(m_head, axis, angle, &lock, r);
 	}
 	return result;
 }
@@ -167,6 +168,7 @@ bool Gaze::moveEye(Joint *eye, Joint *aux_eye, bool simulate)
 	eye->update();
 	Horde3D::Vec3f s = eye->getScale();
 	Horde3D::Vec3f p = eye->getTranslation();
+	Horde3D::Vec3f r = eye->getRotation();
 	h3dSetNodeTransform( eye->getHordeID(), 
 		p.x,p.y,p.z, 
 		Config::getParamF(IK_Param::DfltEyeRotX_F), Config::getParamF(IK_Param::DfltEyeRotY_F), Config::getParamF(IK_Param::DfltEyeRotZ_F),
@@ -178,7 +180,7 @@ bool Gaze::moveEye(Joint *eye, Joint *aux_eye, bool simulate)
 		if(!simulate)
 			result = applyRotation(eye, axis, angle, &lock, false);
 		else
-			result = simulateRotation(eye, axis, angle, &lock);
+			result = simulateRotation(eye, axis, angle, &lock, r);
 	}
 	return result;
 }

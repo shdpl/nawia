@@ -94,9 +94,10 @@ protected:
 	 * @param axis rotation axis
 	 * @param angle_rad rotation angle in radians
 	 * @param axis_lock flag for locking an axis of a rotation (axis_lock = 3 (z-axis) is used mostly for head rotations to make them look more realistic)
+	 * @param initRot the rotation of the joint before the computation started
 	 * @return false if rotation needs constraining (because of dofrs), true otherwise
 	 */
-	bool simulateRotation(Joint* j, Horde3D::Vec3f axis, float angle_rad, AxisLock *axis_lock = 0);
+	bool simulateRotation(Joint* j, Horde3D::Vec3f axis, float angle_rad, AxisLock *axis_lock, Horde3D::Vec3f initRot);
 
 	///returns the Horde3D::Quaternion formed by the given axis and angle
 	Horde3D::Quaternion getQuat(Horde3D::Vec3f axis, float angle_rad);

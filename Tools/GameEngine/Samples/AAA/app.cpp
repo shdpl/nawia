@@ -469,7 +469,7 @@ void Application::keyHandler()
 
 	if( _keys['T'] )
 	{
-		GameEngine::Agent_gazeE( m_agents[2]->entity_id, 3, 1, 10 );
+		GameEngine::Agent_gazeE( m_agents[2]->entity_id, 6, 1, 60 );
 
 		//GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 51, 1, 1, 1, 0, 0); 
 

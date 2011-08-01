@@ -218,11 +218,11 @@ bool CCD::applyRotation(Joint *j, Horde3D::Vec3f axis, float angle_rad, AxisLock
 	return result;
 }
 
-bool CCD::simulateRotation(Joint *j, Horde3D::Vec3f axis, float angle_rad, AxisLock *axis_lock)
+bool CCD::simulateRotation(Joint *j, Horde3D::Vec3f axis, float angle_rad, AxisLock *axis_lock, Horde3D::Vec3f initRot)
 {
 	bool result = true;
 	Horde3D::Vec3f p,r,s;
-	Horde3D::Quaternion req_rotQ = getQuat( axis, angle_rad );	
+	Horde3D::Quaternion req_rotQ = getQuat( axis, angle_rad );
 
 	j->update();
 	Horde3D::Matrix4f jointRelMat = *(j->getRelTransf()) * Horde3D::Matrix4f( req_rotQ );
@@ -238,6 +238,19 @@ bool CCD::simulateRotation(Joint *j, Horde3D::Vec3f axis, float angle_rad, AxisL
 	{				
 		result = j->getDOFR()->apply(&r, axis_lock);
 	}
+
+	//before exiting, we must restore the joint to its original transformation	
+	initRot.x = Horde3D::radToDeg( initRot.x );
+	initRot.y = Horde3D::radToDeg( initRot.y );
+	initRot.z = Horde3D::radToDeg( initRot.z );
+		
+	//s = j->getScale();
+	//p = j->getTranslation();
+	h3dSetNodeTransform( j->getHordeID(), 
+		p.x,p.y,p.z, 
+		initRot.x,initRot.y,initRot.z,
+		s.x,s.y,s.z );
+	
 	return result;	
 }
 

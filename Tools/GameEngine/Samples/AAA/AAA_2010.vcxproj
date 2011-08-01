@@ -165,6 +165,10 @@ xcopy "$(SolutionDir)\..\..\Horde3D\Samples\glfw\glfw.lib" "$(SolutionDir)lib\" 
       <Project>{46436c34-9e64-4754-a03e-d951849b0830}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\Biergarten.scn" />
+    <None Include="Content\models\biergarten.scene.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
