@@ -49,7 +49,7 @@ public:
 	void update();
 
 	///resets gaze morphing process
-	void reset(Vec3f currentGaze);
+	void reset(Vec3f currentGaze, float newSpeed = -1);
 
 	///retrieves gaze node status
 	bool isActive();
@@ -65,6 +65,7 @@ public:
 	Vec3f getTarget();
 	Vec3f getCurrent();
 	bool isValid();
+	float getSpeed();
 
 private:
 	GazeComponent* m_component;

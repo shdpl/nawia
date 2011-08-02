@@ -469,7 +469,7 @@ void Application::keyHandler()
 
 	if( _keys['T'] )
 	{
-		GameEngine::Agent_gazeE( m_agents[2]->entity_id, 6, 1, 60 );
+		//GameEngine::Agent_gazeE( m_agents[2]->entity_id, 6, 1, 60 );
 
 		//GameEngine::Agent_playAnimationI( m_agents[0]->entity_id, 51, 1, 1, 1, 0, 0); 
 
@@ -484,10 +484,42 @@ void Application::keyHandler()
 		//GameEngine::IK_setParamI( m_agents[0]->entity_id, IK_Param::UseDofr_I, 0);
 		//GameEngine::Agent_gazeP( m_agents[0]->entity_id, targetGaze.x, targetGaze.y, targetGaze.z, 0.5f, 0.2f );
 
-		//GameEngine::IK_setParamI( m_agents[0]->entity_id, IK_Param::UseDofr_I, 0);
-		//GameEngine::Agent_nod(m_agents[0]->entity_id, 1, 0.5f, 2);
+		GameEngine::IK_setParamI( m_agents[2]->entity_id, IK_Param::UseDofr_I, 0);
+		GameEngine::Agent_headNod(m_agents[2]->entity_id, 0.9f, 5, 0.15f, 0.1f);
 
 		_keys['T']=false;
+	}
+
+	if( _keys['Z'] )
+	{
+		GameEngine::IK_setParamI( m_agents[2]->entity_id, IK_Param::UseDofr_I, 0);
+		//GameEngine::Agent_nod(m_agents[0]->entity_id, 2.0f, 0.15f, 0.4f);
+		GameEngine::Agent_headNod(m_agents[2]->entity_id, 1.9f, 5, 0.15f, 1.4f);
+
+		_keys['Z']=false;
+	}
+
+	if( _keys['G'] )
+	{
+		GameEngine::IK_setParamI( m_agents[2]->entity_id, IK_Param::UseDofr_I, 0);
+		GameEngine::Agent_headShake(m_agents[2]->entity_id, 1.9f, 5, 0.15f, 1.4f);
+
+		_keys['G']=false;
+	}
+
+	if( _keys['H'] )
+	{
+		GameEngine::IK_setParamI( m_agents[2]->entity_id, IK_Param::UseDofr_I, 0);
+		GameEngine::Agent_headShake(m_agents[2]->entity_id, 0.9f, 5, 0.15f, 0.1f);
+
+		_keys['H']=false;
+	}
+
+	if( _keys['U'] )
+	{
+		GameEngine::Agent_gazeE( m_agents[0]->entity_id, 10, 1, 60 );
+
+		_keys['U']=false;
 	}
 
 	//check number keys

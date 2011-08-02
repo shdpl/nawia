@@ -27,6 +27,7 @@
 
 #include "Gaze.h"
 
+#include "../utils.h"
 #include <stack>
 
 /*
@@ -57,6 +58,8 @@ public:
 	int gaze(float targetX, float targetY, float targetZ, float speed, float duration);	
 	///performs a head nod (negative extent results in head jerk)
 	void nod(float extent, float speed, float duration);
+	///performs a head nod (negative extent results in head jerk)
+	void headMovement(utils::Axis::List direction, float extent, int count, float speed, float duration);
 
 	int getStatus(int gazeID);
 

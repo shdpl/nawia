@@ -219,7 +219,7 @@ bool Gaze::checkGaze(Vec3f target)
 		return true;
 }
 
-void Gaze::reset(Vec3f currentGaze)
+void Gaze::reset(Vec3f currentGaze, float newSpeed)
 {
 	if(!isActive())
 		return;
@@ -236,6 +236,10 @@ void Gaze::reset(Vec3f currentGaze)
 	delete m_morph;
 	m_morph = new Morph3(currentGaze, targetGaze);
 
+	//check speed override
+	if(newSpeed >= 0)
+		m_speed = newSpeed;
+
 	if(m_speed == 0)
 	{
 		//0 speed means we snap to the end immediately
@@ -247,7 +251,9 @@ void Gaze::reset(Vec3f currentGaze)
 		m_morph->setDuration( m_distance / ((speedMultiplier/GameEngine::FPS()) * m_speed) );
 	}
 	
-	//printf("AgentComponent/Gaze: resetting node (%.2f, %.2f, %.2f @ s%.2f)\n", getTarget().x, getTarget().y, getTarget().z, m_speed);
+	//printf("AgentComponent/Gaze: resetting node (%.2f, %.2f, %.2f @ s%.2f d%.2f)\n", getTarget().x, getTarget().y, getTarget().z, m_speed, m_morph->getDuration());
+	//printf("AgentComponent/Gaze: R -dur dist %.2f, mult %.2f, fps %.2f, spd %.2f => %.2f\n", m_distance, Config::getParamF(Agent_Param::GazeSpeedMult_F), GameEngine::FPS(), m_speed, m_morph->getDuration());
+	//printf("Agent/Gaze: R (%.2f, %.2f, %.2f)=>(%.2f, %.2f, %.2f) @ s%.2f dist%.2f)\n", currentGaze.x, currentGaze.y, currentGaze.z, targetGaze.x, targetGaze.y, targetGaze.z, m_speed, m_distance);
 	activate();
 }
 
@@ -293,4 +299,9 @@ Vec3f Gaze::getTarget()
 bool Gaze::isValid()
 {
 	return !m_badTarget;
+}
+
+float Gaze::getSpeed()
+{
+	return m_speed;
 }

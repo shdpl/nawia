@@ -35,7 +35,8 @@
 #include "Horde3D/Horde3D.h"
 
 #include "../Config.h"
-#include "../utils.h"
+
+#include <list>
 
 GameComponent* GazeComponent::createComponent( GameEntity* owner )
 {
@@ -146,12 +147,16 @@ void GazeComponent::update()
 		//if the top node is not active, we'll go back to the previous node
 		//however, this node doesn't know that we've moved the head since it was last updated
 		//so we must inform it of the new gaze (currentGaze)
+		float speed = 1;
 		while(!m_gazeNodes.top()->isActive() && m_gazeNodes.size() > 1)
 		{
+			//save speed of last inactive gaze node
+			speed =  m_gazeNodes.top()->getSpeed();
+
 			delete m_gazeNodes.top();
 			m_gazeNodes.pop();
 		}
-		m_gazeNodes.top()->reset(getGazeCoord());
+		m_gazeNodes.top()->reset(getGazeCoord(), speed);
 		m_gazeNodes.top()->update();
 	}
 }      
@@ -207,7 +212,7 @@ void GazeComponent::nod(float extent, float speed, float duration)
 	Vec3f head_pos(head_absArray[12], head_absArray[13], head_absArray[14]);
 
 	//compute gaze deviation for nod based on extent
-	Vec3f deviation(0,0,0);
+	/*Vec3f deviation(0,0,0);
 	switch(utils::getUpAxis())
 	{
 	case utils::Axis::X:
@@ -219,8 +224,25 @@ void GazeComponent::nod(float extent, float speed, float duration)
 	case utils::Axis::Z:
 		deviation.z = head_pos.z - extent;
 		break;
-	}
+	}*/
 
+	Vec3f deviation(0,0,0);
+	switch(utils::getUpAxis())
+	{
+	case utils::Axis::X:
+		deviation.x = (-1)* extent;
+		break;
+	case utils::Axis::Y:
+		deviation.y = (-1)* extent;
+		break;
+	case utils::Axis::Z:
+		deviation.z = (-1)* extent;
+		break;
+	}
+	
+	Vec3f currentGaze = getGazeCoord();
+
+	/*
 	//compute target
 	const float *agent_relArray;
 	h3dGetNodeTransMats( GameEngine::entitySceneGraphID( m_eID ), &agent_relArray, 0 );
@@ -231,9 +253,59 @@ void GazeComponent::nod(float extent, float speed, float duration)
 	Vec3f targetGaze = agent_relMat * Vec3f(currentGaze.x + deviation.x,
 											currentGaze.y + deviation.y, 
 											currentGaze.z + deviation.z);
+	*/
+	Vec3f targetGaze(currentGaze.x + deviation.x,
+					currentGaze.y + deviation.y,
+					currentGaze.z + deviation.z);
 
 	//apply gaze
 	gaze(targetGaze.x, targetGaze.y, targetGaze.z, speed, duration);
+}
+
+void GazeComponent::headMovement(utils::Axis::List direction, float extent, int count, float speed, float duration)
+{
+	//get head position
+	h3dFindNodes( m_hID, Config::getParamS( Agent_Param::HeadName_S ), H3DNodeTypes::Joint );
+	int head_hID = h3dGetNodeFindResult(0);
+	if(head_hID <= 0)
+		return;
+
+	const float *head_absArray;
+	h3dGetNodeTransMats( head_hID, 0, &head_absArray );
+	Vec3f head_pos(head_absArray[12], head_absArray[13], head_absArray[14]);
+
+	Vec3f deviation(0,0,0);
+	switch(direction)
+	{
+	case utils::Axis::X:
+		deviation.x = extent;
+		break;
+	case utils::Axis::Y:
+		deviation.y = extent;
+		break;
+	case utils::Axis::Z:
+		deviation.z = extent;
+		break;
+	}
+	
+	Vec3f currentGaze = getGazeCoord();
+
+	//compute gaze nodes that form the head movement
+	std::list<Gaze*> nodes;
+	for(int i=0; i<count; i++)
+	{
+		nodes.push_back( new Gaze(this, getGazeCoord(), Vec3f(	currentGaze.x + (-1 + 2*(i%2)) * deviation.x, //alternating sign
+																currentGaze.y + (-1 + 2*(i%2)) * deviation.y,
+																currentGaze.z + (-1 + 2*(i%2)) * deviation.z	), (speed >= 0)? speed : m_speed, duration) );
+	}
+	
+	//now add the new gaze nodes to the gaze stack (in reverse order ... 'cause it's a stack)
+	std::list<Gaze*>::reverse_iterator riter = nodes.rbegin();
+	while(riter != nodes.rend())
+	{
+		if((*riter)->isValid()) m_gazeNodes.push( (*riter) );
+		++riter;
+	}
 }
 
 int GazeComponent::getStatus(int gazeID)

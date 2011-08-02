@@ -446,15 +446,32 @@ namespace GameEngine
 	//Performs a head nod (or head jerk if the extent is negative)
 	//@param entityWorldID the entity we want to use the function on
 	//@param extent the "size" of the nod (use negative values for head jerks)
+	//@param count the number of alternating head movements (Ex: extent > 0 with count = 5 would result in Down-Up-Down-Up-Down)
 	//@param speed the speed of the nod
-	//@param duration the duration of the nod in seconds
-	AGENTAPI void Agent_nod( unsigned int entityWorldID, float extent, float speed, float duration )
+	//@param duration the duration of each head movement in seconds
+	AGENTAPI void Agent_headNod( unsigned int entityWorldID, float extent, int count, float speed, float duration )
 	{
 		AgentComponent* c = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
 		{
-			c->getGazeComponent()->nod(extent, speed, duration);
+			c->getGazeComponent()->headMovement(utils::Axis::Y, extent, 4, speed, duration);
+		}
+	}
+
+	//Performs a head shake
+	//@param entityWorldID the entity we want to use the function on
+	//@param extent the "size" of the shake
+	//@param count the number of alternating head movements (Ex: extent > 0 with count = 5 would result in Right-Left-Right-Left-Right)
+	//@param speed the speed of the shake
+	//@param duration the duration of each head movement in seconds
+	AGENTAPI void Agent_headShake( unsigned int entityWorldID, float extent, int count, float speed, float duration )
+	{
+		AgentComponent* c = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
+		{
+			c->getGazeComponent()->headMovement(utils::Axis::X, extent, 4, speed, duration);
 		}
 	}
 
