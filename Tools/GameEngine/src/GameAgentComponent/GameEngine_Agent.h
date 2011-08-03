@@ -42,6 +42,7 @@ struct Agent_Param
 		DfltMorphDuration_I = 0, //< default duration of a morph (default 30)
 		DfltAnimReps_I, //< default number of stroke repetitions (default 0)
 		MaxMsgSize_I, //< maximal size of a message (default 1024)
+		DfltHeadShakeReps_I, //> default number of alternating movement during a head shake/nod
 		_EndParamI, //< must always be the last int paramater
 
 		//float
@@ -64,6 +65,9 @@ struct Agent_Param
 		HcMaxStr_F, //< the maximal strength an agent can have when computing its handicap (used for interaction conflict solving) (default 10)
 		HcSoftness_F, //< the softness of the handicap algorithm of an agent. The higher the softness the longer conflict negotations will take (default 10)
 		HcCurveAnchor_F, //< anchor point for the bezier curve used in the computation of the handicap. A 0.5 anchor will result is a liniar function (Values between 0 and 1, default 0.7)
+		DfltHeadShakeExt_F, //> default extent (amplitude) of a head shake/nod
+		DfltHeadShakeSpd_F, //> default speed of a head shake/nod
+		DfltHeadShakeDur_F, //> default duration of a single movement of a head shake/nod
 		_EndParamF, //< must always be the last float paramater
 
 		//string
@@ -369,19 +373,20 @@ namespace GameEngine
 
 	///Performs a head nod (or head jerk if the extent is negative)
 	///@param entityWorldID the entity we want to use the function on
-	///@param extent the "size" of the nod (use negative values for head jerks)
-	///@param count the number of alternating head movements (Ex: extent > 0 with count = 5 would result in Down-Up-Down-Up-Down)
-	///@param speed the speed of the nod
-	///@param duration the duration of the nod in seconds
+	///@param extent the "size" of the nod (use negative values for head jerks) (use -1 for default)
+	///@param count the number of alternating head movements (Ex: extent > 0 with count = 5 would result in Down-Up-Down-Up-Down) (use -1 for default)
+	///@param speed the speed of the nod (use -1 for default)
+	///@param duration the duration of the nod in seconds (use -1 for default)
 	AGENTAPI void Agent_headNod( unsigned int entityWorldID, float extent, int count, float speed, float duration );
 		
 	///Performs a head shake
 	///@param entityWorldID the entity we want to use the function on
-	///@param extent the "size" of the shake
-	///@param count the number of alternating head movements (Ex: extent > 0 with count = 5 would result in Right-Left-Right-Left-Right)
-	///@param speed the speed of the shake
-	///@param duration the duration of each head movement in seconds
-	AGENTAPI void Agent_headShake( unsigned int entityWorldID, float extent, int count, float speed, float duration );
+	///@param axis the axis of the shake: 0 = X, 1 = Y, 2 = Z (Ex: axis = 1 will result in a nod)
+	///@param extent the "size" of the shake (use -1 for default)
+	///@param count the number of alternating head movements (Ex: extent > 0 with count = 5 would result in Right-Left-Right-Left-Right) (use -1 for default)
+	///@param speed the speed of the shake (use -1 for default)
+	///@param duration the duration of each head movement in seconds (use -1 for default)
+	AGENTAPI void Agent_headShake( unsigned int entityWorldID, unsigned int axis, float extent, int count, float speed, float duration );
 
 	///Retrieves the status of a specific gaze node
 	///@param entityWorldID the entity we want to use the function on

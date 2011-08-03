@@ -54,6 +54,16 @@ cmdAct::cmdAct(CommComponent* comp) : Command(comp)
 	m_attributes.push_back( new CommandAttribute("gazespd",		AttributeType::FLOAT,		&m_gazeSpeed, 0, 0) );
 	m_attributes.push_back( new CommandAttribute("gazedur",		AttributeType::FLOAT,		&m_gazeDuration, 0, 0) );
 
+	m_attributes.push_back( new CommandAttribute("nod",			AttributeType::INTEGER,		&m_nodReps, 0, &m_doNod) );
+	m_attributes.push_back( new CommandAttribute("nodext",		AttributeType::FLOAT,		&m_nodExtent, 0, 0) );
+	m_attributes.push_back( new CommandAttribute("nodspd",		AttributeType::FLOAT,		&m_nodSpeed, 0, 0) );
+	m_attributes.push_back( new CommandAttribute("noddur",		AttributeType::FLOAT,		&m_nodDuration, 0, 0) );
+
+	m_attributes.push_back( new CommandAttribute("shake",		AttributeType::INTEGER,		&m_shakeReps, 0, &m_doShake) );
+	m_attributes.push_back( new CommandAttribute("shakeext",	AttributeType::FLOAT,		&m_shakeExtent, 0, 0) );
+	m_attributes.push_back( new CommandAttribute("shakespd",	AttributeType::FLOAT,		&m_shakeSpeed, 0, 0) );
+	m_attributes.push_back( new CommandAttribute("shakedur",	AttributeType::FLOAT,		&m_shakeDuration, 0, 0) );
+
 	m_attributes.push_back( new CommandAttribute("tts",			AttributeType::STRING,		&m_tts, c_MaxTTSLength, &m_doTTS) );
 
 	m_attributes.push_back( new CommandAttribute("animclr",		AttributeType::NONE,		0, 0, &m_doAnimationClear) );
@@ -120,6 +130,18 @@ void cmdAct::execute()
 		m_comp->addFeedbackNode( new fbGaze( m_comp->getSocketEntityID(), agent_eID, m_gaze_ID ) );
 	}
 
+	//** Head nod
+	if(m_doNod)
+	{
+		GameEngine::Agent_headNod( agent_eID, m_nodExtent, m_nodReps, m_nodSpeed, m_nodDuration );
+	}
+
+	//** Head shake
+	if(m_doShake)
+	{
+		GameEngine::Agent_headShake( agent_eID, 0, m_shakeExtent, m_shakeReps, m_shakeSpeed, m_shakeDuration );
+	}
+
 	//** Animations
 	for(unsigned int i=0; i< c_MaxNrAnimsPerMsg; i++)
 	{
@@ -153,9 +175,21 @@ void cmdAct::reset()
 	m_doTTS = false;
 	m_doGazeByID = false;	
 	m_doGazeByLocation = false;
+	m_doNod = false;
+	m_doShake = false;
 
 	m_gazeSpeed = -1;
 	m_gazeDuration = Config::getParamF(Agent_Param::DfltGazeDuration_F);
+
+	m_nodReps = -1;
+	m_nodSpeed = -1;
+	m_nodExtent = -1;
+	m_nodDuration = -1;
+
+	m_shakeReps = -1;
+	m_shakeSpeed = -1;
+	m_shakeExtent = -1;
+	m_shakeDuration = -1;
 
 	for(unsigned int i=0; i< c_MaxNrAnimsPerMsg; i++)
 	{		

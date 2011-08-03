@@ -445,33 +445,35 @@ namespace GameEngine
 
 	//Performs a head nod (or head jerk if the extent is negative)
 	//@param entityWorldID the entity we want to use the function on
-	//@param extent the "size" of the nod (use negative values for head jerks)
-	//@param count the number of alternating head movements (Ex: extent > 0 with count = 5 would result in Down-Up-Down-Up-Down)
-	//@param speed the speed of the nod
-	//@param duration the duration of each head movement in seconds
+	//@param extent the "size" of the nod (use negative values for head jerks) (use -1 for default)
+	//@param count the number of alternating head movements (Ex: extent > 0 with count = 5 would result in Down-Up-Down-Up-Down) (use -1 for default)
+	//@param speed the speed of the nod (use -1 for default)
+	//@param duration the duration of each head movement in seconds (use -1 for default)
 	AGENTAPI void Agent_headNod( unsigned int entityWorldID, float extent, int count, float speed, float duration )
 	{
 		AgentComponent* c = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
 		{
-			c->getGazeComponent()->headMovement(utils::Axis::Y, extent, 4, speed, duration);
+			c->getGazeComponent()->headShake(utils::Axis::Y, extent, count, speed, duration);
 		}
 	}
 
 	//Performs a head shake
 	//@param entityWorldID the entity we want to use the function on
-	//@param extent the "size" of the shake
-	//@param count the number of alternating head movements (Ex: extent > 0 with count = 5 would result in Right-Left-Right-Left-Right)
-	//@param speed the speed of the shake
-	//@param duration the duration of each head movement in seconds
-	AGENTAPI void Agent_headShake( unsigned int entityWorldID, float extent, int count, float speed, float duration )
+	//@param axis the axis of the shake: 0 = X, 1 = Y, 2 = Z (Ex: axis = 1 will result in a nod)
+	//@param extent the "size" of the shake (use -1 for default)
+	//@param count the number of alternating head movements (Ex: extent > 0 with count = 5 would result in Right-Left-Right-Left-Right) (use -1 for default)
+	//@param speed the speed of the shake (use -1 for default)
+	//@param duration the duration of each head movement in seconds (use -1 for default)
+	AGENTAPI void Agent_headShake( unsigned int entityWorldID, unsigned int axis, float extent, int count, float speed, float duration )
 	{
 		AgentComponent* c = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
 		{
-			c->getGazeComponent()->headMovement(utils::Axis::X, extent, 4, speed, duration);
+			if(axis > 2) axis = 0;
+			c->getGazeComponent()->headShake((utils::Axis::List)axis, extent, count, speed, duration);
 		}
 	}
 

@@ -199,7 +199,7 @@ int GazeComponent::gaze(float targetX, float targetY, float targetZ, float speed
 	return g->getID();
 }
 
-void GazeComponent::nod(float extent, float speed, float duration)
+void GazeComponent::headShake(utils::Axis::List direction, float extent, int count, float speed, float duration)
 {
 	//get head position
 	h3dFindNodes( m_hID, Config::getParamS( Agent_Param::HeadName_S ), H3DNodeTypes::Joint );
@@ -211,68 +211,11 @@ void GazeComponent::nod(float extent, float speed, float duration)
 	h3dGetNodeTransMats( head_hID, 0, &head_absArray );
 	Vec3f head_pos(head_absArray[12], head_absArray[13], head_absArray[14]);
 
-	//compute gaze deviation for nod based on extent
-	/*Vec3f deviation(0,0,0);
-	switch(utils::getUpAxis())
-	{
-	case utils::Axis::X:
-		deviation.x = head_pos.x - extent;
-		break;
-	case utils::Axis::Y:
-		deviation.y = head_pos.y - extent;
-		break;
-	case utils::Axis::Z:
-		deviation.z = head_pos.z - extent;
-		break;
-	}*/
-
-	Vec3f deviation(0,0,0);
-	switch(utils::getUpAxis())
-	{
-	case utils::Axis::X:
-		deviation.x = (-1)* extent;
-		break;
-	case utils::Axis::Y:
-		deviation.y = (-1)* extent;
-		break;
-	case utils::Axis::Z:
-		deviation.z = (-1)* extent;
-		break;
-	}
-	
-	Vec3f currentGaze = getGazeCoord();
-
-	/*
-	//compute target
-	const float *agent_relArray;
-	h3dGetNodeTransMats( GameEngine::entitySceneGraphID( m_eID ), &agent_relArray, 0 );
-	Matrix4f agent_relMat(agent_relArray);
-
-	Vec3f currentGaze = getGazeCoord();
-	Vec3f fwdView = getDfltRelGaze();
-	Vec3f targetGaze = agent_relMat * Vec3f(currentGaze.x + deviation.x,
-											currentGaze.y + deviation.y, 
-											currentGaze.z + deviation.z);
-	*/
-	Vec3f targetGaze(currentGaze.x + deviation.x,
-					currentGaze.y + deviation.y,
-					currentGaze.z + deviation.z);
-
-	//apply gaze
-	gaze(targetGaze.x, targetGaze.y, targetGaze.z, speed, duration);
-}
-
-void GazeComponent::headMovement(utils::Axis::List direction, float extent, int count, float speed, float duration)
-{
-	//get head position
-	h3dFindNodes( m_hID, Config::getParamS( Agent_Param::HeadName_S ), H3DNodeTypes::Joint );
-	int head_hID = h3dGetNodeFindResult(0);
-	if(head_hID <= 0)
-		return;
-
-	const float *head_absArray;
-	h3dGetNodeTransMats( head_hID, 0, &head_absArray );
-	Vec3f head_pos(head_absArray[12], head_absArray[13], head_absArray[14]);
+	//check parameters
+	if(count < 0) count = Config::getParamI(Agent_Param::DfltHeadShakeReps_I);
+	if(extent < 0) extent = Config::getParamF(Agent_Param::DfltHeadShakeExt_F);
+	if(speed < 0) speed = Config::getParamF(Agent_Param::DfltHeadShakeSpd_F);
+	if(duration < 0) duration = Config::getParamF(Agent_Param::DfltHeadShakeDur_F);
 
 	Vec3f deviation(0,0,0);
 	switch(direction)
@@ -286,7 +229,18 @@ void GazeComponent::headMovement(utils::Axis::List direction, float extent, int 
 	case utils::Axis::Z:
 		deviation.z = extent;
 		break;
-	}
+	}	
+
+	Vec3f p,r,s;
+	Matrix4f head_absMat(head_absArray);
+	head_absMat.decompose(p,r,s);
+
+	//rotate the deviation vector (needed for head shake along x-z plain)
+	Vec3f _deviation(0, deviation.y, 0);
+	_deviation.x = deviation.x * cos(r.y) - deviation.z * sin(r.y);
+	_deviation.z = deviation.x * sin(r.y) + deviation.z * cos(r.y);
+
+	deviation = _deviation;
 	
 	Vec3f currentGaze = getGazeCoord();
 
