@@ -20,6 +20,8 @@
 // Copyright (C) 2010 Ionut Damian
 // 
 // ****************************************************************************************
+#include "GameEngine\GameEngine_SceneGraph.h"
+
 #include "Joint.h"
 #include <string.h>
 
@@ -126,6 +128,7 @@ Joint::Joint(H3DNode id) : m_horde_id(id), m_dofr( DOFRestrictions::FULL_FREEDOM
 	while(h3dGetNodeType(node) != H3DNodeTypes::Model)
 		node = h3dGetNodeParent(node);
 	m_model_hID = node;
+	m_model_eID = GameEngine::sceneGraphEntityID(m_model_hID);
 
 	update();
 }
@@ -232,4 +235,15 @@ H3DNode Joint::getHordeID()
 const char* Joint::getName()
 {
 	return (const char *)m_name;
+}
+
+
+unsigned int Joint::getModelEID()
+{
+	return m_model_eID;
+}
+
+H3DNode Joint::getModelHID()
+{
+	return m_model_hID;
 }

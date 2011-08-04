@@ -123,6 +123,8 @@ public:
 	H3DNode getHordeID();
 	const char* getName();
 	DOFRestrictions* getDOFR();
+	unsigned int getModelEID();
+	H3DNode getModelHID();
 };
 
 #endif
