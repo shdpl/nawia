@@ -142,7 +142,11 @@ bool TTSComponent::init()
 	//Setting alert boundary of TTS Voice
 	if( FAILED( m_pVoice->SetAlertBoundary( SPEI_VISEME ) ) ) 
 		return false;
-	
+
+	// "OVER" priority must be set in order to mix voices (multiple entities speaking at the sime time)
+	if( FAILED( m_pVoice->SetPriority( SPVPRI_OVER ) ) ) 
+		return false;	
+
 	return true;
 }
 
