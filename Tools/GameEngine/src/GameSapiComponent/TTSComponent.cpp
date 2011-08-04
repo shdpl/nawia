@@ -580,6 +580,9 @@ void TTSComponent::run()
 size_t TTSComponent::getSerializedState(char* state, size_t availableBytes) {
 	char* out = state;
 
+	if (memcpy_s(out, availableBytes, &m_isSpeaking, sizeof(m_isSpeaking)))
+		return 0;																	out+=sizeof(m_isSpeaking);		availableBytes-=sizeof(m_isSpeaking);
+
 	if (memcpy_s(out, availableBytes, &m_startSpeaking, sizeof(m_startSpeaking)))
 		return 0;																	out+=sizeof(m_startSpeaking);	availableBytes-=sizeof(m_startSpeaking);
 
@@ -591,15 +594,19 @@ size_t TTSComponent::getSerializedState(char* state, size_t availableBytes) {
 }
 
 void TTSComponent::setSerializedState(const char* state, size_t length) {
-	if (length < sizeof(m_startSpeaking) + 1)
+	if (length < sizeof(m_startSpeaking) + sizeof(m_isSpeaking) + 1)
 		return;
+
+	bool remoteIsSpeaking;
+	memcpy(&remoteIsSpeaking, state, sizeof(m_isSpeaking));					state += sizeof(remoteIsSpeaking);
 
 	float remoteStartSpeaking;
 	memcpy(&remoteStartSpeaking, state, sizeof(remoteStartSpeaking));		state += sizeof(remoteStartSpeaking);
 	
 	// if remote startSpeaking mismatches, a new sentence has begun
-	if (remoteStartSpeaking != m_remoteStartSpeaking) {
-		speak(state);
-		m_remoteStartSpeaking = remoteStartSpeaking;
+	// but don't bother if sentence has already ended on remote instance
+	if (remoteIsSpeaking && (remoteStartSpeaking != m_remoteStartSpeaking)) {
+			speak(state);
+			m_remoteStartSpeaking = remoteStartSpeaking;
 	}
 }
