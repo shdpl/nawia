@@ -47,6 +47,42 @@ namespace GameEngine
 		return -1;
 	}
 
+	ANIMATIONSAPI void stopAnim(unsigned int entityWorldID, const int stage /*= 0*/)
+	{		
+		KeyframeAnimComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( component = static_cast<KeyframeAnimComponent*>(entity->component("KeyframeAnimComponent")) ) != 0 )
+		{
+			GameEvent event(GameEvent::E_STOP_ANIM, (GameEventData)stage, 0);
+			if( entity->checkEvent( &event ) )
+				entity->executeEvent( &event );
+		}
+	}
+
+	ANIMATIONSAPI void pauseAnim(unsigned int entityWorldID, const int stage /*= 0*/)
+	{
+		KeyframeAnimComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( component = static_cast<KeyframeAnimComponent*>(entity->component("KeyframeAnimComponent")) ) != 0 )
+		{
+			GameEvent event(GameEvent::E_PAUSE_ANIM, (GameEventData)stage, 0);
+			if( entity->checkEvent( &event ) )
+				entity->executeEvent( &event );
+		}
+	}
+
+	ANIMATIONSAPI void resumeAnim(unsigned int entityWorldID, const int stage /*= 0*/)
+	{
+		KeyframeAnimComponent* component = 0;
+		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
+		if( entity && ( component = static_cast<KeyframeAnimComponent*>(entity->component("KeyframeAnimComponent")) ) != 0 )
+		{
+			GameEvent event(GameEvent::E_RESUME_ANIM, (GameEventData)stage, 0);
+			if( entity->checkEvent( &event ) )
+				entity->executeEvent( &event );
+		}
+	}
+
 	ANIMATIONSAPI void updateAnim(unsigned int entityWorldID, const int jobID, const GameEngineAnimParams::List paramType, const float value, const float timeoffset /*= 0*/)
 	{		
 		KeyframeAnimComponent* component = 0;

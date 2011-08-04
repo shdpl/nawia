@@ -84,6 +84,29 @@ namespace GameEngine
 		const float speed = 30.0f,
 		const float timeoffset = 0.0f);
 
+	/**
+	 * \brief Stops a playing or paused animation on the given entity
+	 * 
+	 * @param entityWorldID the entity's world ID that plays the animation
+	 * @param stage the stage id the animation is playing on (0 - 16, default = 0)
+	 */
+	ANIMATIONSAPI void stopAnim(unsigned int entityWorldID, const int stage = 0);
+
+	/**
+	 * \brief Pauses a playing animation on the given entity
+	 * 
+	 * @param entityWorldID the entity's world ID that plays the animation
+	 * @param stage the stage id the animation is playing on (0 - 16, default = 0)
+	 */
+	ANIMATIONSAPI void pauseAnim(unsigned int entityWorldID, const int stage = 0);
+
+	/**
+	 * \brief Resumes a paused animation on the given entity
+	 * 
+	 * @param entityWorldID the entity's world ID that plays the animation
+	 * @param stage the stage id the animation is playing on (0 - 16, default = 0)
+	 */
+	ANIMATIONSAPI void resumeAnim(unsigned int entityWorldID, const int stage = 0);
 	
 	/** 
 	 * \brief Updates an animation currently played
@@ -100,7 +123,8 @@ namespace GameEngine
 	/**
 	 * \brief Check if a specific animation is currently being played
 	 * 
-	 * If you want to check if a specific animation is currently being played by an entity you can call this method
+	 * If you want to check if a specific animation is currently being played by an entity you can call this method.
+	 * Note: Return value is also true for currently paused animations.
 	 * 
 	 * @param entityWorldID the entity's world ID that may playing the specified animation
 	 * @param animation the animation that may be played

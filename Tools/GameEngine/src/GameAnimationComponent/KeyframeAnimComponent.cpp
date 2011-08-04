@@ -41,7 +41,7 @@
 #include <XMLParser/utXMLParser.h>
 
 // Uncomment the next line, if you want to see debuging infos about the animations in the console
-//#define PRINT_ANIMATION_INFO 1
+#define PRINT_ANIMATION_INFO 1
 
 namespace AnimationControl
 {
@@ -110,7 +110,7 @@ namespace AnimationControl
 		 * @param command the parameters how to play the animation
 		 */
 		AnimationJob(KeyframeAnimComponent* owner, Animation* anim, AnimationSetup* command) : m_animation(anim), m_stageID(command->Stage), m_speed(command->Speed),
-			m_currentTimeWeight(-1), m_jobID(0), m_owner(owner)		//, m_animationName(command->Animation) WHAT HAPPENS if the string this is pointing to is changed while this job is playing??
+			m_currentTimeWeight(-1), m_jobID(0), m_owner(owner), m_paused(false), m_pauseTimestamp(0)
 		{
 			m_animationName = new char[strlen(command->Animation) + 1];
 			strcpy_s((char*)m_animationName, strlen(command->Animation) + 1, command->Animation);
@@ -174,14 +174,19 @@ namespace AnimationControl
 		bool past(const float timestamp) const
 		{
 #ifdef PRINT_ANIMATION_INFO
-			if (m_timeline.back().Timestamp < timestamp)
+			if (!m_paused && m_timeline.back().Timestamp < timestamp)
 				printf("Animation has passed at time %.3f! last timestamp: %.3f \n", timestamp, m_timeline.back().Timestamp);
 #endif
-			return m_endless == false && m_timeline.back().Timestamp < timestamp;
+			return m_paused == false && m_endless == false && m_timeline.back().Timestamp < timestamp;
 		}
 
 		void update(const float timestamp)
 		{
+			if (m_paused) {
+				// Animation is paused. Don't do anything with it.
+				return;
+			}
+
 			// How many timeline weight do we have?
 			const int   timeweights = (int) m_timeline.size();
 			// If there are no more timelightweights to handle return
@@ -271,7 +276,7 @@ namespace AnimationControl
 			const float currentTime = GameEngine::timeStamp();
 			// adjust beginning that we don't get a gap after changing the speed
 			m_timeline.front().Timestamp = (m_timeline.front().Timestamp * m_speed + currentTime * (speed - m_speed) ) / speed;
-			m_speed = speed;				
+			m_speed = speed;
 		}
 
 		void changeDuration(float duration)
@@ -295,6 +300,26 @@ namespace AnimationControl
 			m_timeline.push_back(TimelineWeight(end, weight));
 		}
 
+		void pause() {
+			m_paused = true;
+			// save timestamp to be able to readjust timeline on resume
+			m_pauseTimestamp = GameEngine::timeStamp();
+		}
+
+		void unPause() {
+			if (!m_paused)
+				return;
+
+			// resume the animation with adjusted timeline
+			float pauseDuration = GameEngine::timeStamp() - m_pauseTimestamp;
+
+			for (int i = 0; i < m_timeline.size(); i++) {
+				m_timeline[i].Timestamp += pauseDuration;
+			}
+
+			m_paused = false;
+		}
+
 		std::vector<TimelineWeight>	m_timeline;
 		Animation*					m_animation;
 		const char*					m_animationName;
@@ -305,6 +330,8 @@ namespace AnimationControl
 		KeyframeAnimComponent*		m_owner;
 		bool						m_endless;
 		static const float			ENDLESS_DURATION;
+		bool						m_paused;
+		float						m_pauseTimestamp;
 	};
 	const float AnimationJob::ENDLESS_DURATION = 31536000.0f;
 
@@ -375,6 +402,9 @@ GameComponent* KeyframeAnimComponent::createComponent( GameEntity* owner )
 KeyframeAnimComponent::KeyframeAnimComponent(GameEntity* owner) : GameComponent(owner, "KeyframeAnimComponent"), MAX_STAGES(16)
 {
 	owner->addListener(GameEvent::E_PLAY_ANIM, this);
+	owner->addListener(GameEvent::E_STOP_ANIM, this);
+	owner->addListener(GameEvent::E_PAUSE_ANIM, this);
+	owner->addListener(GameEvent::E_RESUME_ANIM, this);
 	owner->addListener(GameEvent::E_UPDATE_ANIM, this);
 	owner->addListener(GameEvent::E_GET_ANIM_LENGTH, this);
 
@@ -420,6 +450,15 @@ void KeyframeAnimComponent::executeEvent(GameEvent *event)
 	{
 	case GameEvent::E_PLAY_ANIM:
 		setupAnim(static_cast<AnimationSetup*>(event->data()));
+		break;
+	case GameEvent::E_STOP_ANIM:
+		stopAnim(*((const int*)event->data()));
+		break;
+	case GameEvent::E_PAUSE_ANIM:
+		pauseAnim(*((const int*)event->data()));
+		break;
+	case GameEvent::E_RESUME_ANIM:
+		resumeAnim(*((const int*)event->data()));
 		break;
 	case GameEvent::E_UPDATE_ANIM:
 		updateAnim(static_cast<AnimationUpdate*>(event->data()));
@@ -583,6 +622,46 @@ void KeyframeAnimComponent::updateAnim(AnimationUpdate *command)
 			}
 		}
 	}
+}
+
+void KeyframeAnimComponent::stopAnim(const int stage)
+{
+	if (stage >= MAX_STAGES)
+		return;
+
+	if (m_stageControllers[stage].Animations.size() == 0)
+		return;
+
+	AnimationControl::AnimationJob* job = m_stageControllers[stage].Animations.front();
+		
+	job->unPause();
+	job->changeDuration(0);
+}
+
+void KeyframeAnimComponent::pauseAnim(const int stage)
+{
+	if (stage >= MAX_STAGES)
+		return;
+
+	if (m_stageControllers[stage].Animations.size() == 0)
+		return;
+
+	AnimationControl::AnimationJob* job = m_stageControllers[stage].Animations.front();
+		
+	job->pause();
+}
+
+void KeyframeAnimComponent::resumeAnim(const int stage)
+{
+	if (stage >= MAX_STAGES)
+		return;
+
+	if (m_stageControllers[stage].Animations.size() == 0)
+		return;
+
+	AnimationControl::AnimationJob* job = m_stageControllers[stage].Animations.front();
+		
+	job->unPause();
 }
 
 int KeyframeAnimComponent::getJobID(std::string animName)

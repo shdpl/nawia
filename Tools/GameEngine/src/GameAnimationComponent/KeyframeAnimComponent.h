@@ -75,6 +75,12 @@ private:
 
 	void setupAnim(AnimationSetup* command);
 
+	void stopAnim(const int stage);
+
+	void pauseAnim(const int stage);
+
+	void resumeAnim(const int stage);
+
 	void updateAnim(AnimationUpdate* command);
 
 	AnimationControl::StageController*						m_stageControllers;

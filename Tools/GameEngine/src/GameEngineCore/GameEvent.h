@@ -272,6 +272,9 @@ public:
 		E_MORPH_TARGET,			/// Sets the model morpher of a Horde3D representation to the provided morph target position 
 		E_MORPH_TARGET_ANIM,    /// Animates a morph target
 		E_PLAY_ANIM,			/// Play an animation 
+		E_STOP_ANIM,
+		E_PAUSE_ANIM,
+		E_RESUME_ANIM,
 		E_UPDATE_ANIM,			/// Updates a running animation
 		E_SETUP_ANIM,			/// Loads an animation on a model stage
 		E_SET_ANIM_FRAME,		/// Sets the frame of a loaded animation 
