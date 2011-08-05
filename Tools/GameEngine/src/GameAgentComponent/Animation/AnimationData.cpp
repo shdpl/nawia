@@ -204,6 +204,7 @@ int AnimationData::findMaxID()
 void AnimationData::release()
 {
 	s_animationData.clear();
+	s_isLexiconLoaded = false;
 }
 
 bool AnimationData::isValid()

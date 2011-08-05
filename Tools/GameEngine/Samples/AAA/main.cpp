@@ -32,17 +32,12 @@
 #include "app.h"
 
 // Configuration
-#ifdef VERSION_HAS_BAYESNET
-const char *caption = "AAA +Culture v";
-const int caption_len = 14;
-#else
 const char *caption = "AAA v";
 const int caption_len = 5;
-#endif
 char title[caption_len + APP_VERSION_LEN];
 
-const int appWidth = 1024;
-const int appHeight = 768;
+static int appWidth = 1024;
+static int appHeight = 768;
 static bool fullScreen = false;
 const char* sceneFile = 0; 
 const char* splashScreenFile = "SplashScreen.tga";
@@ -76,41 +71,46 @@ void GLFWCALL keyPressListener( int key, int action )
 {
 	if( !running ) return;
 
-	if( action == GLFW_PRESS )
-	{
-		int width = appWidth, height = appHeight;
-		
+	if( action == GLFW_RELEASE )
+	{		
 		switch (key)
 		{
 		case GLFW_KEY_ESC:
 			running = false;
 			break;
 		case GLFW_KEY_F1:
+			//close current application
 			app->release();
+			delete app;
+			app = 0;
+
 			glfwCloseWindow();
 			
 			// Toggle fullscreen mode
 			fullScreen = !fullScreen;
 
-			// a full screen resolution doesn't work at the moment
-			// only 800x600 fullscreen is working
 			if( fullScreen )
 			{
 				GLFWvidmode mode;
 				glfwGetDesktopMode( &mode );	
 				// Use desktop resolution
-				width = mode.Width; height = mode.Height;
+				appWidth = mode.Width; appHeight = mode.Height;
 			}
 			
-			if( !setupWindow( width, height, fullScreen ) )
+			if( !setupWindow( appWidth, appHeight, fullScreen ) )
 			{
 				glfwTerminate();
 				exit( -1 );
 			}
 			
+			//start new application
+			app = new Application();
 			app->init(sceneFile);
-			app->resize( width, height );
+			app->resize( appWidth, appHeight );
+			
+			glfwEnable( GLFW_MOUSE_CURSOR );
 			t0 = glfwGetTime();
+			running = true;
 			break;
 		}
 	}
@@ -202,9 +202,7 @@ int WINAPI WinMain(	HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	glfwInit();
 	if( !setupWindow( appWidth, appHeight, fullScreen ) ) return -1;
 
-
 	// ------- loading screen ----------
-
 	glEnable(GL_TEXTURE_2D);
 
 	GLuint texture;
@@ -225,7 +223,6 @@ int WINAPI WinMain(	HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
     glEnd();	
 
 	glfwSwapBuffers();	//paint the screen
-
 	//-----------------------------
 
 

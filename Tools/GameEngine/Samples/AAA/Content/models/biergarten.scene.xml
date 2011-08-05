@@ -4,9 +4,7 @@
     <Light sy="1" lightingContext="LIGHTING" sz="1" col_B="0.5294117647058824" name="light" material="materials/light.material.xml" col_G="0.7215686274509804" tx="-15" ty="35" shadowContext="SHADOWMAP" tz="35" shadowMapBias="0.0004" rx="-40" ry="-45" shadowMapCount="4" rz="0" col_R="0.8705882352941177" radius="200" fov="150" shadowSplitLambda="0.7" sx="1" />
     <Camera name="camera" pipeline="pipelines/forward.pipeline.xml" tx="-13" ty="5.63" sx="1" occlusionCulling="0" tz="2" rx="-25" sy="1" ry="-40" sz="1" rz="0"  >
         <Attachment type="GameEngine" name="camera" >
-		        <BayesNet file="../Kultur-Modell_paper.xdsl" />
             <Socket protocol="UDP" port="343" type="server"/>
-            <GLDrawing />
         </Attachment>
 		    <Reference tx="0" sx="70" ty="15" sy="50" rx="0" tz="0" sceneGraph="models/skybox/skybox.scene.xml" sz="70" ry="0" rz="0" name="Skybox" >
 		      <Attachment type="GameEngine" name="Skybox" >

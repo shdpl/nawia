@@ -77,7 +77,7 @@ bool Application::init( const char *fileName )
 	//init cam
 	m_cam_eID = GameEngine::entityWorldID("camera");
 	m_cam_hID = GameEngine::entitySceneGraphID(m_cam_eID);
-	GameEngine::setActiveCamera(m_cam_hID);
+	//GameEngine::setActiveCamera(m_cam_hID);
 	//default camera position
 	h3dGetNodeTransform( m_cam_hID, &init_x, &init_y, &init_z, &init_rx, &init_ry, &init_rz, 0,0,0 );
 	_x = init_x; _y = init_y; _z = init_z; 
@@ -328,6 +328,11 @@ void Application::release()
 
 void Application::resize( int width, int height )
 {
+	float nearP = h3dGetNodeParamF(m_cam_hID, H3DCamera::NearPlaneF, 0);
+	float farP = h3dGetNodeParamF(m_cam_hID, H3DCamera::FarPlaneF, 0);
+	float topPlane = h3dGetNodeParamF(m_cam_hID, H3DCamera::TopPlaneF, 0);
+	float fov = 2.0f * radToDeg(atan2f(topPlane, nearP));
+
 	// Resize viewport
 	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportXI, 0 );
 	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportYI, 0 );
@@ -335,7 +340,7 @@ void Application::resize( int width, int height )
 	h3dSetNodeParamI( m_cam_hID, H3DCamera::ViewportHeightI, height );	
 	h3dResizePipelineBuffers( h3dGetNodeParamI( m_cam_hID, H3DCamera::PipeResI ), width, height );
 
-	h3dSetupCameraView(m_cam_hID, 35, width/(float)height, 0.5f, 100);
+	h3dSetupCameraView( m_cam_hID, fov, (float)width / (float)height, nearP, farP );
 }
 
 
