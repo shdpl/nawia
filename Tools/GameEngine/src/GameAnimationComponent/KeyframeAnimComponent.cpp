@@ -41,7 +41,7 @@
 #include <XMLParser/utXMLParser.h>
 
 // Uncomment the next line, if you want to see debuging infos about the animations in the console
-#define PRINT_ANIMATION_INFO 1
+//#define PRINT_ANIMATION_INFO 1
 
 namespace AnimationControl
 {
@@ -182,11 +182,6 @@ namespace AnimationControl
 
 		void update(const float timestamp)
 		{
-			if (m_paused) {
-				// Animation is paused. Don't do anything with it.
-				return;
-			}
-
 			// How many timeline weight do we have?
 			const int   timeweights = (int) m_timeline.size();
 			// If there are no more timelightweights to handle return
@@ -205,6 +200,11 @@ namespace AnimationControl
 #ifdef PRINT_ANIMATION_INFO
 				//printf("Starting animation at animTime %.3f\n", animTime);
 #endif
+			}
+
+			if (m_paused) {
+				// Animation is paused. Don't advance.
+				return;
 			}
 
 			// Get next timeline weight			
@@ -377,7 +377,25 @@ namespace AnimationControl
 				}
 				Animations.push_back(job);				
 			}			
-		}	
+		}
+
+		// deletes the job in front
+		void popAnimationJob() {
+			if ( Animations.empty() )  return;
+
+			Animations.front()->unPause();
+			Animations.front()->update(FLT_MAX);		// brings the animation to an end
+
+			int jobID = Animations.front()->m_jobID;
+
+			if (Owner) {
+				GameEvent event(GameEvent::E_ANIM_STOPPED, &GameEventData(jobID), Owner);
+				Owner->owner()->executeEvent(&event);
+			}
+
+			delete Animations.front();								
+			Animations.pop_front();
+		}
 
 		void clear()
 		{
@@ -632,10 +650,7 @@ void KeyframeAnimComponent::stopAnim(const int stage)
 	if (m_stageControllers[stage].Animations.size() == 0)
 		return;
 
-	AnimationControl::AnimationJob* job = m_stageControllers[stage].Animations.front();
-		
-	job->unPause();
-	job->changeDuration(0);
+	m_stageControllers[stage].popAnimationJob();
 }
 
 void KeyframeAnimComponent::pauseAnim(const int stage)
@@ -705,6 +720,9 @@ size_t KeyframeAnimComponent::getSerializedState(char *state, size_t availableBy
 		if (memcpy_s(out, availableBytes, &job->m_endless, sizeof(bool)))
 			return 0;										out+=sizeof(bool);						availableBytes-=sizeof(bool);
 
+		if (memcpy_s(out, availableBytes, &job->m_paused, sizeof(bool)))
+			return 0;										out+=sizeof(bool);						availableBytes-=sizeof(bool);
+
 		if (memcpy_s(out, availableBytes, &job->m_speed, sizeof(float)))
 			return 0;										out+=sizeof(float);						availableBytes-=sizeof(float);
 
@@ -729,6 +747,7 @@ void KeyframeAnimComponent::setSerializedState(const char *state, size_t length)
 
 	char* anim_name;
 	bool anim_endless;
+	bool anim_paused;
 	float anim_speed;
 
 	AnimationControl::TimelineWeight tl_weight(0, 0);
@@ -740,6 +759,8 @@ void KeyframeAnimComponent::setSerializedState(const char *state, size_t length)
 		
 		if (*(size_t*)state == 0) {
 			// empty stage controller
+			stopAnim(i);
+
 			state+=sizeof(size_t);
 			continue;
 		} else {
@@ -747,11 +768,15 @@ void KeyframeAnimComponent::setSerializedState(const char *state, size_t length)
 			
 			anim_name = (char*)state;						state+=strlen(state) + 1;
 			memcpy(&anim_endless, state, sizeof(bool));		state+=sizeof(bool);
+			memcpy(&anim_paused, state, sizeof(bool));		state+=sizeof(bool);
 			memcpy(&anim_speed, state, sizeof(float));		state+=sizeof(float);
 
 			size_t tlsize = *(size_t*)state;				state+=sizeof(size_t);	// should be two
 
 			memcpy(&tl_weight, state, sizeof(AnimationControl::TimelineWeight));	state+=sizeof(AnimationControl::TimelineWeight);
+
+			if (anim_paused)
+				m_initTimestamps[i] = 0;	// workaround to force update on paused animations
 
 			// was this job already registered?
 			if (tl_weight.Timestamp == m_initTimestamps[i]) {
@@ -797,6 +822,8 @@ void KeyframeAnimComponent::setSerializedState(const char *state, size_t length)
 				tl_weight.Timestamp -= deltatimestamp;
 				job->m_timeline.push_back(tl_weight);
 			}
+
+			job->m_paused = anim_paused;
 		}
 	}
 }
