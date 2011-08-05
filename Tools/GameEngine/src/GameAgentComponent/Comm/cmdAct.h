@@ -51,7 +51,6 @@ private:
 	bool m_doTTS;
 	bool m_doGazeByID;	
 	bool m_doGazeByLocation;
-	bool m_doNod;
 	bool m_doShake;
 	bool m_doAnimationClear;
 	bool m_doAnimationByFile[c_MaxNrAnimsPerMsg];	
@@ -67,11 +66,7 @@ private:
 	float	m_gazeSpeed;
 	float	m_gazeDuration;
 
-	int		m_nodReps;
-	float	m_nodExtent;
-	float	m_nodSpeed;
-	float	m_nodDuration;
-
+	int		m_shakeAxis;
 	int		m_shakeReps;
 	float	m_shakeExtent;
 	float	m_shakeSpeed;

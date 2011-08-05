@@ -43,6 +43,7 @@ struct Agent_Param
 		DfltAnimReps_I, //< default number of stroke repetitions (default 0)
 		MaxMsgSize_I, //< maximal size of a message (default 1024)
 		DfltHeadShakeReps_I, //> default number of alternating movement during a head shake/nod
+		DfltHeadShakeAxis_I, //> default axis for a head shake
 		_EndParamI, //< must always be the last int paramater
 
 		//float
@@ -379,14 +380,14 @@ namespace GameEngine
 	///@param duration the duration of the nod in seconds (use -1 for default)
 	AGENTAPI void Agent_headNod( unsigned int entityWorldID, float extent, int count, float speed, float duration );
 		
-	///Performs a head shake
+	///Performs alternating head movements, or "shaking". This function is not as specific as the nod function as it allows to set the axis of the movement
 	///@param entityWorldID the entity we want to use the function on
-	///@param axis the axis of the shake: 0 = X, 1 = Y, 2 = Z (Ex: axis = 1 will result in a nod)
+	///@param axis the axis of the shake: 0 = X, 1 = Y, 2 = Z (Warning: axis choice should be character specific) (use -1 for default)
 	///@param extent the "size" of the shake (use -1 for default)
-	///@param count the number of alternating head movements (Ex: extent > 0 with count = 5 would result in Right-Left-Right-Left-Right) (use -1 for default)
+	///@param count the number of alternating head movements (Ex: count = 5 could result in Right-Left-Right-Left-Right) (use -1 for default)
 	///@param speed the speed of the shake (use -1 for default)
 	///@param duration the duration of each head movement in seconds (use -1 for default)
-	AGENTAPI void Agent_headShake( unsigned int entityWorldID, unsigned int axis, float extent, int count, float speed, float duration );
+	AGENTAPI void Agent_headShake( unsigned int entityWorldID, int axis, float extent, int count, float speed, float duration );
 
 	///Retrieves the status of a specific gaze node
 	///@param entityWorldID the entity we want to use the function on

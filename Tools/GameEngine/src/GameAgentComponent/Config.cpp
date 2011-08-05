@@ -36,6 +36,7 @@ void Config::useDefault()
 	setParamI(Agent_Param::DfltAnimReps_I,			0);
 	setParamI(Agent_Param::MaxMsgSize_I,			1024);
 	setParamI(Agent_Param::DfltHeadShakeReps_I,		2);
+	setParamI(Agent_Param::DfltHeadShakeAxis_I,		0);
 
 	//enum ParamF
 	setParamF(Agent_Param::DfltAnimSpeed_F,			1);
@@ -58,8 +59,8 @@ void Config::useDefault()
 	setParamF(Agent_Param::HcCurveAnchor_F,			0.9f);
 	setParamF(Agent_Param::HcMaxStr_F,				10.0f);
 	setParamF(Agent_Param::HcSoftness_F,			10.0f);
-	setParamF(Agent_Param::DfltHeadShakeExt_F,		1.0f);
-	setParamF(Agent_Param::DfltHeadShakeSpd_F,		0.2f);
+	setParamF(Agent_Param::DfltHeadShakeExt_F,		5.0f);
+	setParamF(Agent_Param::DfltHeadShakeSpd_F,		0.1f);
 	setParamF(Agent_Param::DfltHeadShakeDur_F,		0.2f);
 
 	//enum ParamS	
@@ -75,6 +76,7 @@ void Config::loadFromXml(const XMLNode& description)
 	setParamI(Agent_Param::DfltAnimReps_I,			atoi(description.getAttribute("DfltAnimReps_I", "0")));
 	setParamI(Agent_Param::MaxMsgSize_I,			atoi(description.getAttribute("MaxMsgSize_I", "1024")));
 	setParamI(Agent_Param::DfltHeadShakeReps_I,		atoi(description.getAttribute("DfltHeadShakeReps_I", "2")));
+	setParamI(Agent_Param::DfltHeadShakeAxis_I,		atoi(description.getAttribute("DfltHeadShakeAxis_I", "0")));
 
 	//enum ParamF
 	setParamF(Agent_Param::DfltAnimSpeed_F,			(float)atof(description.getAttribute("DfltAnimSpeed_F", "1")));
@@ -97,8 +99,8 @@ void Config::loadFromXml(const XMLNode& description)
 	setParamF(Agent_Param::HcCurveAnchor_F,			(float)atof(description.getAttribute("HcCurveAnchor_F", "0.9")));
 	setParamF(Agent_Param::HcMaxStr_F,				(float)atof(description.getAttribute("HcMaxStr_F", "10")));
 	setParamF(Agent_Param::HcSoftness_F,			(float)atof(description.getAttribute("HcSoftness_F", "10")));
-	setParamF(Agent_Param::DfltHeadShakeExt_F,		(float)atof(description.getAttribute("DfltHeadShakeExt_F", "1")));
-	setParamF(Agent_Param::DfltHeadShakeSpd_F,		(float)atof(description.getAttribute("DfltHeadShakeSpd_F", "0.2")));
+	setParamF(Agent_Param::DfltHeadShakeExt_F,		(float)atof(description.getAttribute("DfltHeadShakeExt_F", "5")));
+	setParamF(Agent_Param::DfltHeadShakeSpd_F,		(float)atof(description.getAttribute("DfltHeadShakeSpd_F", "0.1")));
 	setParamF(Agent_Param::DfltHeadShakeDur_F,		(float)atof(description.getAttribute("DfltHeadShakeDur_F", "0.2")));
 
 	//enum ParamS	

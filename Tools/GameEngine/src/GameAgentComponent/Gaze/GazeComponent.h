@@ -57,7 +57,7 @@ public:
 	///starts a gaze action towards a target point in 3D space
 	int gaze(float targetX, float targetY, float targetZ, float speed, float duration);	
 	///performs a head shake on the specified axis (use Y axis for head nod)
-	void headShake(utils::Axis::List direction, float extent, int count, float speed, float duration);
+	void headShake(int direction, float extent, int count, float speed, float duration);
 
 	int getStatus(int gazeID);
 

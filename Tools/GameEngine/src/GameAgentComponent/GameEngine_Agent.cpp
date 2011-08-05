@@ -455,25 +455,24 @@ namespace GameEngine
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
 		{
-			c->getGazeComponent()->headShake(utils::Axis::Y, extent, count, speed, duration);
+			c->getGazeComponent()->headShake(-1, extent, count, speed, duration);
 		}
 	}
 
-	//Performs a head shake
+	//Performs alternating head movements, or "shaking". This function is not as specific as the nod function as it allows to set the axis of the movement
 	//@param entityWorldID the entity we want to use the function on
-	//@param axis the axis of the shake: 0 = X, 1 = Y, 2 = Z (Ex: axis = 1 will result in a nod)
+	//@param axis the axis of the shake: 0 = X, 1 = Y, 2 = Z (Warning: axis choice should be character specific) (use -1 for default)
 	//@param extent the "size" of the shake (use -1 for default)
-	//@param count the number of alternating head movements (Ex: extent > 0 with count = 5 would result in Right-Left-Right-Left-Right) (use -1 for default)
+	//@param count the number of alternating head movements (Ex: count = 5 could result in Right-Left-Right-Left-Right) (use -1 for default)
 	//@param speed the speed of the shake (use -1 for default)
 	//@param duration the duration of each head movement in seconds (use -1 for default)
-	AGENTAPI void Agent_headShake( unsigned int entityWorldID, unsigned int axis, float extent, int count, float speed, float duration )
+	AGENTAPI void Agent_headShake( unsigned int entityWorldID, int axis, float extent, int count, float speed, float duration )
 	{
 		AgentComponent* c = 0;
 		GameEntity* entity = GameModules::gameWorld()->entity(entityWorldID);
 		if( entity && ( c = static_cast<AgentComponent*>(entity->component("AgentComponent")) ) != 0 )
 		{
-			if(axis > 2) axis = 0;
-			c->getGazeComponent()->headShake((utils::Axis::List)axis, extent, count, speed, duration);
+			c->getGazeComponent()->headShake(axis, extent, count, speed, duration);
 		}
 	}
 
