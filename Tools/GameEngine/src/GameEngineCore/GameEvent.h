@@ -333,6 +333,8 @@ public:
 		AG_MOVEMENT_SET_SPEED,	/// Sets the default movement speed. Param: float
 		AG_GAZE,				/// Gazes towards the target. Param: AgentGazeData(Vec3f/int,float,float), returns: int
 		AG_GAZE_SET_SPEED,		/// Sets the agent's default gaze speed. Param: float
+		AG_HEADNOD,				/// Starts an alternating head motion. Param: AgentGazeData(int,float,int,float,float)
+		AG_HEADSHAKE,			/// Starts an alternating head motion. Param: AgentGazeData(int,float,int,float,float)
 		AG_FORMATION_ADD,		/// Adds a member to the formation. Param: int
 		AG_FORMATION_DEL,		/// Removes a member from the formation. Param: int
 		AG_FORMATION_EVENT,		/// Fires an event meant to attract the attention of the members of the formation. Param: int
@@ -1605,6 +1607,19 @@ public:
 		m_data.ptr = this;		
 	}
 
+	///Data container constructor for AG_HEADNOD/HEADSHAKE
+	///@param entityWorldID the entity we want to use the function on
+	///@param axis the axis of the shake  (use -1 for default)
+	///@param extent the extent(amplitutde) of the shake  (use -1 for default)
+	///@param count the number of motions  (use -1 for default)
+	///@param speed the motion speed (use -1 for agent default)
+	///@param duration the duration in seconds of a single motion (use -1 for default)
+	AgentGazeData(int axis, float extent, int count, float speed, float duration )
+		: m_axis(axis), m_extent(extent), m_count(count), m_speed(speed), m_duration(duration)
+	{
+		m_data.ptr = this;		
+	}
+
 	///Data container constructor for AG_GAZE_GET_STATUS
 	///@param gazeID the playback id of the gaze node
 	AgentGazeData(int gazeID) : m_gazeID(gazeID), m_returnI(-1)
@@ -1620,7 +1635,8 @@ public:
 
 	AgentGazeData(const AgentGazeData& copy) : GameEventData(CUSTOM), 
 		m_targetV(copy.m_targetV), m_targetI(copy.m_targetI), m_returnI(copy.m_returnI), m_returnF(copy.m_returnF), 
-		m_speed(copy.m_speed), m_duration(copy.m_duration), m_gazeID(copy.m_gazeID), m_type(copy.m_type)
+		m_speed(copy.m_speed), m_duration(copy.m_duration), m_gazeID(copy.m_gazeID), m_type(copy.m_type),
+		m_axis(copy.m_axis), m_extent(copy.m_extent), m_count(copy.m_count)
 	{
 		m_data.ptr = this;
 		m_owner = true;
@@ -1649,7 +1665,10 @@ public:
 	int m_targetI;
 	float m_speed;
 	float m_duration;
+	float m_extent;
 	int m_gazeID;
+	int m_axis;
+	int m_count;
 	int m_returnI;
 	float m_returnF;
 	Type m_type;
