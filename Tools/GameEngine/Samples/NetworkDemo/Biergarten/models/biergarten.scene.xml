@@ -36,7 +36,7 @@
     </Attachment>
 	</Reference>
 
-	<Reference tx="-11" sx="0.06" ty="0" sy="0.06" ry="90" tz="1.63694" sceneGraph="models/female/female3.scene.xml" sz="0.06" rz="0" name="Player3" >
+	<Reference tx="-11" sx="0.06" ty="0" sy="0.06" ry="90" tz="1.63694" sceneGraph="models/female/female1.scene.xml" sz="0.06" rz="0" name="Player3" >
 		<Attachment type="GameEngine" name="Player3" >
       <KeyframeAnimation>
         <StaticAnimation fps="30" name="idle" file="female_idle.anim" />
@@ -54,6 +54,7 @@
       <KeyframeAnimation>
         <StaticAnimation fps="30" name="idle" file="female_idle.anim" />
         <StaticAnimation fps="30" name="wave" file="female_wave.anim" />
+        <StaticAnimation fps="30" name="drink" file="female_drink01.anim" />
         <StaticAnimation fps="30" name="walk" file="female_walk.anim" />
       </KeyframeAnimation>
       <Sound3D loop="0" file="../media/Hellothere.wav" gain="0" />
@@ -75,7 +76,7 @@
     </Attachment>
 	</Reference>
   
-	<Reference tx="-11" sx="0.06" ty="0" sy="0.06" rx="0" tz="8" sceneGraph="models/female/female2.scene.xml" sz="0.06" ry="90" rz="0" name="Player6" >
+	<Reference tx="-11" sx="0.06" ty="0" sy="0.06" rx="0" tz="8" sceneGraph="models/female/female1.scene.xml" sz="0.06" ry="90" rz="0" name="Player6" >
 		<Attachment type="GameEngine" name="Player6" >
       <KeyframeAnimation>
         <StaticAnimation fps="30" name="idle" file="female_idle.anim" />
@@ -88,7 +89,7 @@
     </Attachment>
 	</Reference>
   
-	<Reference tx="-11" sx="0.06" ty="0" sy="0.06" rx="0" tz="6" sceneGraph="models/female/female2.scene.xml" sz="0.06" ry="90" rz="0" name="Player7" >
+	<Reference tx="-11" sx="0.06" ty="0" sy="0.06" rx="0" tz="6" sceneGraph="models/female/female1.scene.xml" sz="0.06" ry="90" rz="0" name="Player7" >
 		<Attachment type="GameEngine" name="Player7" >
 			<KeyframeAnimation>
 				<StaticAnimation fps="30" name="idle" file="female_idle.anim" />
