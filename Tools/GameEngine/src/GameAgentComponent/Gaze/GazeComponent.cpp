@@ -209,7 +209,7 @@ int GazeComponent::gaze(float targetX, float targetY, float targetZ, float speed
 	return g->getID();
 }
 
-void GazeComponent::headShake(int direction, float extent, int count, float speed, float duration)
+void GazeComponent::headShake(int axis, float extent, int count, float speed, float duration)
 {
 	//get head position
 	h3dFindNodes( m_hID, Config::getParamS( Agent_Param::HeadName_S ), H3DNodeTypes::Joint );
@@ -226,11 +226,10 @@ void GazeComponent::headShake(int direction, float extent, int count, float spee
 	if(extent < 0) extent = Config::getParamF(Agent_Param::DfltHeadShakeExt_F);
 	if(speed < 0) speed = Config::getParamF(Agent_Param::DfltHeadShakeSpd_F);
 	if(duration < 0) duration = Config::getParamF(Agent_Param::DfltHeadShakeDur_F);
-	if(direction < 0 || direction > 2) direction = Config::getParamI(Agent_Param::DfltHeadShakeAxis_I);
+	if(axis < 0 || axis > 2) axis = Config::getParamI(Agent_Param::DfltHeadShakeAxis_I);
 
-	utils::Axis::List axis = (utils::Axis::List)direction;
 	Vec3f deviation(0,0,0);
-	switch(axis)
+	switch((utils::Axis::List)axis)
 	{
 	case utils::Axis::X:
 		deviation.x = extent;

@@ -64,7 +64,11 @@ int GLFWCALL windowCloseListener()
 
 void GLFWCALL windowResizeListener(int width, int height)
 {
-	if (app) app->resize(width, height);
+	if(app) 
+	{
+		appWidth = width; appHeight = height;
+		app->resize(appWidth, appHeight);
+	}
 }
 
 void GLFWCALL keyPressListener( int key, int action )

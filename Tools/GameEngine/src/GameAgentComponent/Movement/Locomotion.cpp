@@ -57,6 +57,4 @@ void Locomotion::update()
 
 	//apply changes to scene graph
 	utils::setEntityPosition(m_agent_eID, m_current);
-	//debug
-	//printf("new pos: %.2f,%.2f,%.2f \n", m_current.x, m_current.y, m_current.z);
 }

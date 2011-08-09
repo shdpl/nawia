@@ -32,8 +32,8 @@
 
 /************* DEFINITIONS *************/
 /** Current Version of the Application */
-#define APP_VERSION "1.0 beta2*"
-#define APP_VERSION_LEN 10
+#define APP_VERSION "1.0.0"
+#define APP_VERSION_LEN 5
 //#define VERSION_HAS_BAYESNET
 /** Maximal number of agents allowed ***/
 #define MAX_AGENTS 256

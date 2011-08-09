@@ -132,8 +132,9 @@ void Animation::update()
 		return;
 
 	//** compute current frame
+	//[090811][Johnny] disabled as we're using GameEngine's frame counter
 	//compute length of the last frame in seconds
-	double frametime = m_timer->grabElapsedTime(); //the length of the last frame in seconds
+	//double frametime = m_timer->grabElapsedTime(); //the length of the last frame in seconds
 
 	//compute the actual fps of the animation
 	//the fps can be altered by the animation speed (so a 30fps animation with speed=2 will actually have 60fps)
@@ -146,8 +147,6 @@ void Animation::update()
 	//set the frame
 	//m_frame = (float)((double)m_frame + (animFPS * frametime));
 	m_frame = (float)((double)m_frame + (animFPS / GameEngine::FPS()));
-	//debug
-	//m_frame += 0.25f;
 
 	//** compute storke repetitions
 	if(m_data->isCustomizable() && (m_frame >= m_file->getStrokeEnd()) && (m_currentStrokeReps < m_targetStrokeReps))
