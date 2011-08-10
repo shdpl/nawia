@@ -56,7 +56,7 @@
 				    <Icon name="symb_default" distance="30" />
 			    </Agent>
 			
-	        <Sapi voice="Crystal16" useDistanceModel="1" rollOff="5.0"/>
+	        <Sapi voice="Microsoft Anna" useDistanceModel="1" rollOff="5.0"/>
         </Attachment>
     </Reference>
 	
@@ -70,7 +70,7 @@
 				      <Icon name="symb_bad" distance="30" />
 			      </Agent>		
 			
-            <Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>
+            <Sapi voice="Microsoft Anna" useDistanceModel="1" rollOff="5.0"/>
         </Attachment>
     </Reference>
 	
@@ -84,7 +84,7 @@
 				      <Icon name="symb_host" distance="30" />
 			      </Agent>
 			
-            <Sapi voice="Crystal16" useDistanceModel="1" rollOff="5.0"/>
+            <Sapi voice="Microsoft Anna" useDistanceModel="1" rollOff="5.0"/>
         </Attachment>
     </Reference>
 	
@@ -97,7 +97,7 @@
 				      <Formation type="L" />
 			      </Agent>
 			
-			<Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>
+			<Sapi voice="Microsoft Anna" useDistanceModel="1" rollOff="5.0"/>
         </Attachment>
     </Reference>
 	
@@ -110,7 +110,7 @@
 				      <Formation type="V" />
 			      </Agent>
 			
-            <Sapi voice="Mike16" useDistanceModel="1" rollOff="5.0"/>
+            <Sapi voice="Microsoft Anna" useDistanceModel="1" rollOff="5.0"/>
         </Attachment>
     </Reference>
 	
