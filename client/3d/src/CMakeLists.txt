@@ -1,6 +1,8 @@
 include(UseDDeps)
 include(UseDUnittest)
 
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
+
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/iface )
 
 ADD_SUBDIRECTORY( ${CMAKE_CURRENT_SOURCE_DIR}/impl )
@@ -21,6 +23,6 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/impl/polyvox/ext )
 #include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/impl/theora )
 #include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/impl/vorbis )
 
-file(GLOB_RECURSE files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.d")
+file(GLOB files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.d")
 #file(GLOB files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.d")
 ADD_EXECUTABLE( NawiaClient3D ${files} )

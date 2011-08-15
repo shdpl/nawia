@@ -21,16 +21,16 @@ private import
 	std.path,
 	std.uri;
 	
-/*
+
 private import
-	msg.mediator.mtd,
+	nawia.msg.mediator.mtd,
 	ge.window.window,
 	io.res.manager,
 	ge.renderer,
 	ge.component.camera,
 	ee.world,
 	cfg.cfg;
-	*/
+	
 void main(string args[]){//TODO: configured resources
 /*
 	string fileUri(string path) {
