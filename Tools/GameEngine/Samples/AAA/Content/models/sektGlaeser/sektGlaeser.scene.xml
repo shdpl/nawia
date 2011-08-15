@@ -1,0 +1,5 @@
+<Model name="sektGlaeser" geometry="models/sektGlaeser/sektGlaeser.geo">
+
+	<Mesh name="sektGlas01" material="models/sektGlaeser/glas.material.xml" tx="67.8343" ty="0" tz="24.1571" rx="-0" ry="0" rz="20" batchStart="0" batchCount="1284" vertRStart="0" vertREnd="234" />
+	<Mesh name="sektGlas02" material="models/sektGlaeser/glas.material.xml" tx="-68.2686" ty="0" tz="-1.16564" rx="-0" ry="0" rz="-20" batchStart="1284" batchCount="1284" vertRStart="235" vertREnd="469" />
+</Model>

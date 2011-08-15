@@ -1,0 +1,3 @@
+<Model geometry="models/bank/bank.geo" name="bank" >
+    <Mesh tx="0" vertREnd="571" ty="0.488256" tz="-0" batchStart="0" name="Tree-Bank" batchCount="612" material="models/bank/Tree-Bank.material.xml" vertRStart="0" />
+</Model>

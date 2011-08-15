@@ -1,0 +1,4 @@
+<Model geometry="models/baum/baum.geo" name="baum" >
+    <Mesh tx="24.8678" sx="0.617882" vertREnd="722" ty="-189.269" sy="0.617882" tz="11.224" sz="0.617882" batchStart="0" name="chestnut_PIVOT" batchCount="1191" material="models/baum/Material__36.material.xml" vertRStart="0" />
+    <Mesh tx="24.8678" sx="0.617882" vertREnd="1522" ty="-189.269" sy="0.617882" tz="11.224" sz="0.617882" batchStart="1191" name="chestnut_PIVOT" batchCount="1200" material="models/baum/Material__37.material.xml" vertRStart="723" />
+</Model>

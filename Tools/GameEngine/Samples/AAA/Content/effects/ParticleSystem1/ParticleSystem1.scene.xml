@@ -1,0 +1,3 @@
+<Group>
+    <Emitter forceZ="0" emissionRate="500" maxCount="5000" spreadAngle="7" respawnCount="-1" delay="0" name="ParticleSystem1d" material="particles/ParticleSystem1/ParticleSystem1.material.xml" forceX="0" particleEffect="particles/ParticleSystem1/ParticleSystem1.particle.xml" forceY="-3.5" />
+</Group>

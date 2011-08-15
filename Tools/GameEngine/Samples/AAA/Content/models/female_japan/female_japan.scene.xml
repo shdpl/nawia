@@ -1,0 +1,111 @@
+<Model name="female_japan" geometry="models/female_japan/female_japan.geo">
+	<!-- Morph targets: "torso_lang_weit" "torso_lang_big" "kopf_augenpartie" "kopf_breite" "kopf_kinn" "kopf_nase_kurz" "kopf_nase_lang" "kopf_lippen" "kopf_auge_ani" "kopf_mund_ani" "oy" "ae_ax_ah_aa_ao_er_ay" "ey_eh_uh" "f_v" "r" "w_uw" "p_b_m" "th_dh" "l" "s_z_t_d_n" "sh_ch_jh_zh" "aw_y_iy_ih_ix_h_k_g_ng" "ow" -->
+
+	<Joint name="Bip01" px="0.000392" py="14.5288" pz="-0.145863" rx="-0" ry="-89.9999" rz="0" jointIndex="1">
+		<Joint name="Bip01_Pelvis" rx="-0" ry="-89.9999" rz="89.9999" jointIndex="2">
+			<Joint name="Bip01_Spine" px="1.59112" py="0" pz="-0.282039" rx="-0.000229183" ry="3.97717" rz="5.72958e-005" jointIndex="3">
+				<Joint name="Bip01_Spine1" px="1.7364" py="0" pz="0.001377" rx="-0" ry="-3.81074" rz="0" jointIndex="4">
+					<Joint name="Bip01_Spine2" px="1.73275" py="0" pz="0.001878" rx="-0" ry="-17.1266" rz="0" jointIndex="5">
+						<Joint name="Bip01_Neck" px="3.27879" py="0" pz="-0.116845" rx="-5.72958e-005" ry="41.1877" rz="0.000114592" jointIndex="6">
+							<Joint name="Bip01_Head" px="1.0193" py="0" pz="0" rx="-0" ry="-19.2278" rz="-5.72958e-005" jointIndex="7">
+								<Joint name="BoneAuge_r" px="1.33634" py="-0.473248" pz="-1.09712" rx="-0" ry="-93.7405" rz="180" jointIndex="8" />
+								<Joint name="BoneAuge_l" px="1.33634" py="0.487253" pz="-1.09712" rx="-0" ry="-93.7405" rz="180" jointIndex="9" />
+							</Joint>
+							<Joint name="Bip01_L_Clavicle" px="-0.875465" py="0.45497" pz="-0.108487" rx="-0.000114592" ry="138.767" rz="90.0001" jointIndex="10">
+								<Joint name="Bip01_L_UpperArm" px="1.41431" py="0" pz="0" rx="22.918" ry="-5.32342" rz="-36.5111" jointIndex="11">
+									<Joint name="Bip01_L_Forearm" px="4.2557" py="-1e-006" pz="0" rx="-0" ry="-2.16997" rz="0" jointIndex="12">
+										<Joint name="Bip01_L_Hand" px="3.10903" py="1e-006" pz="0" rx="-82.2019" ry="152.604" rz="-150.701" jointIndex="13">
+											<Joint name="Bip01_L_Finger0" px="0.467085" py="-0.493726" pz="-0.203479" rx="53.5683" ry="-86.0439" rz="-122.128" jointIndex="14">
+												<Joint name="Bip01_L_Finger01" px="0.357304" py="-1e-006" pz="0" rx="-0" ry="8.36821" rz="0" jointIndex="15">
+													<Joint name="Bip01_L_Finger02" px="0.357301" py="1e-006" pz="0" rx="-0" ry="4.89431" rz="0" jointIndex="16" />
+												</Joint>
+											</Joint>
+											<Joint name="Bip01_L_Finger1" px="1.44717" py="-0.390031" pz="-0.050548" rx="1.7956" ry="18.1618" rz="-5.60115" jointIndex="17">
+												<Joint name="Bip01_L_Finger11" px="0.398794" py="0" pz="0" rx="-0" ry="13.369" rz="0" jointIndex="18">
+													<Joint name="Bip01_L_Finger12" px="0.340099" py="0" pz="0" rx="-0" ry="13.369" rz="0" jointIndex="19" />
+												</Joint>
+											</Joint>
+											<Joint name="Bip01_L_Finger2" px="1.44833" py="-0.087953" pz="-0.049977" rx="-0.0444042" ry="13.0255" rz="-0.0102559" jointIndex="20">
+												<Joint name="Bip01_L_Finger21" px="0.492016" py="0" pz="0" rx="-0" ry="17.3681" rz="0" jointIndex="21">
+													<Joint name="Bip01_L_Finger22" px="0.41818" py="0" pz="0" rx="-0" ry="11.3388" rz="0" jointIndex="22" />
+												</Joint>
+											</Joint>
+											<Joint name="Bip01_L_Finger4" px="1.44303" py="0.454887" pz="-0.060547" rx="-1.83131" ry="17.7606" rz="7.26638" jointIndex="23">
+												<Joint name="Bip01_L_Finger41" px="0.257293" py="0" pz="0" rx="-0" ry="12.9179" rz="0" jointIndex="24">
+													<Joint name="Bip01_L_Finger42" px="0.25729" py="0" pz="0" rx="-0" ry="7.46398" rz="0" jointIndex="25" />
+												</Joint>
+											</Joint>
+											<Joint name="Bip01_L_Finger3" px="1.44732" py="0.20104" pz="-0.051227" rx="-0.0445761" ry="11.9666" rz="-0.0094538" jointIndex="26">
+												<Joint name="Bip01_L_Finger31" px="0.400932" py="0" pz="0" rx="-0" ry="17.862" rz="0" jointIndex="27">
+													<Joint name="Bip01_L_Finger32" px="0.415963" py="0" pz="0" rx="-0" ry="13.369" rz="0" jointIndex="28" />
+												</Joint>
+											</Joint>
+										</Joint>
+									</Joint>
+								</Joint>
+							</Joint>
+							<Joint name="Bip01_R_Clavicle" px="-0.875467" py="-0.9447" pz="-0.108494" rx="-0.000114592" ry="138.767" rz="-89.9999" jointIndex="29">
+								<Joint name="Bip01_R_UpperArm" px="1.41431" py="0" pz="0" rx="-22.918" ry="-5.32342" rz="36.5111" jointIndex="30">
+									<Joint name="Bip01_R_Forearm" px="4.2557" py="0" pz="0" rx="-0" ry="-2.16997" rz="0" jointIndex="31">
+										<Joint name="Bip01_R_Hand" px="3.10904" py="0" pz="0" rx="82.2019" ry="152.604" rz="150.701" jointIndex="32">
+											<Joint name="Bip01_R_Finger0" px="0.467084" py="0.493726" pz="-0.203478" rx="-53.5683" ry="-86.0439" rz="122.128" jointIndex="33">
+												<Joint name="Bip01_R_Finger01" px="0.357304" py="0" pz="0" rx="-0" ry="8.36821" rz="0" jointIndex="34">
+													<Joint name="Bip01_R_Finger02" px="0.357301" py="-1e-006" pz="0" rx="-0" ry="4.89431" rz="0" jointIndex="35" />
+												</Joint>
+											</Joint>
+											<Joint name="Bip01_R_Finger1" px="1.44717" py="0.390031" pz="-0.050547" rx="-1.7956" ry="18.1618" rz="5.60115" jointIndex="36">
+												<Joint name="Bip01_R_Finger11" px="0.398795" py="0" pz="1e-006" rx="-0" ry="13.369" rz="0" jointIndex="37">
+													<Joint name="Bip01_R_Finger12" px="0.3401" py="0" pz="0" rx="-0" ry="13.369" rz="0" jointIndex="38" />
+												</Joint>
+											</Joint>
+											<Joint name="Bip01_R_Finger2" px="1.44833" py="0.087953" pz="-0.049976" rx="0.0444042" ry="13.0255" rz="0.0102559" jointIndex="39">
+												<Joint name="Bip01_R_Finger21" px="0.492016" py="0" pz="0" rx="-0" ry="17.3681" rz="0" jointIndex="40">
+													<Joint name="Bip01_R_Finger22" px="0.418179" py="0" pz="0" rx="-0" ry="11.3388" rz="0" jointIndex="41" />
+												</Joint>
+											</Joint>
+											<Joint name="Bip01_R_Finger3" px="1.44732" py="-0.20104" pz="-0.051227" rx="0.0445761" ry="11.9666" rz="0.0094538" jointIndex="42">
+												<Joint name="Bip01_R_Finger31" px="0.400932" py="0" pz="0" rx="-0" ry="17.862" rz="0" jointIndex="43">
+													<Joint name="Bip01_R_Finger32" px="0.415962" py="0" pz="0" rx="-0" ry="13.369" rz="0" jointIndex="44" />
+												</Joint>
+											</Joint>
+											<Joint name="Bip01_R_Finger4" px="1.44303" py="-0.454887" pz="-0.060547" rx="1.83131" ry="17.7606" rz="-7.26638" jointIndex="45">
+												<Joint name="Bip01_R_Finger41" px="0.257292" py="0" pz="-1e-006" rx="-0" ry="12.9179" rz="0" jointIndex="46">
+													<Joint name="Bip01_R_Finger42" px="0.257291" py="0" pz="0" rx="-0" ry="7.46398" rz="0" jointIndex="47" />
+												</Joint>
+											</Joint>
+										</Joint>
+									</Joint>
+								</Joint>
+							</Joint>
+						</Joint>
+					</Joint>
+				</Joint>
+				<Joint name="Bip01_L_Thigh" px="-1.60685" py="1.5945" pz="0.171004" rx="-0.0246372" ry="-1.17665" rz="176.761" jointIndex="48">
+					<Joint name="Bip01_L_Calf" px="6.59462" py="0" pz="0" rx="-0" ry="-8.33328" rz="0" jointIndex="49">
+						<Joint name="Bip01_L_Foot" px="6.48286" py="0" pz="0" rx="-5.175" ry="10.8451" rz="3.2476" jointIndex="50">
+							<Joint name="Bip01_L_Toe0" px="1.51613" py="0" pz="-2.01266" rx="-0" ry="100.298" rz="0" jointIndex="51" />
+						</Joint>
+					</Joint>
+				</Joint>
+				<Joint name="Bip01_R_Thigh" px="-1.60685" py="-1.5945" pz="0.170995" rx="0.0249237" ry="-1.17665" rz="-176.761" jointIndex="52">
+					<Joint name="Bip01_R_Calf" px="6.59462" py="0" pz="0" rx="-0" ry="-8.33328" rz="0" jointIndex="53">
+						<Joint name="Bip01_R_Foot" px="6.48286" py="0" pz="0" rx="5.175" ry="10.8451" rz="-3.2476" jointIndex="54">
+							<Joint name="Bip01_R_Toe0" px="1.51613" py="0" pz="-2.01266" rx="-0" ry="100.298" rz="0" jointIndex="55" />
+						</Joint>
+					</Joint>
+				</Joint>
+			</Joint>
+		</Joint>
+		<Joint name="Bip01_Footsteps" px="0" py="-14.443" pz="0" rx="-0" ry="89.9999" rz="0" jointIndex="56" />
+	</Joint>
+
+	<Mesh name="torso_lang" material="models/female_japan/f_torso_lang.material.xml" batchStart="0" batchCount="1626" vertRStart="0" vertREnd="343" />
+	<Mesh name="schuhe_abs" material="models/female_japan/f_schuhe_abs.material.xml" batchStart="1626" batchCount="528" vertRStart="344" vertREnd="487" />
+	<Mesh name="rock_lang" material="models/female_japan/f_rock_lang.material.xml" batchStart="2154" batchCount="936" vertRStart="488" vertREnd="702" />
+	<Mesh name="haar_straehne" material="models/female_japan/UV_256.material.xml" batchStart="3090" batchCount="9" vertRStart="703" vertREnd="707" />
+	<Mesh name="haar_lang" material="models/female_japan/f_haar_lang.material.xml" batchStart="3099" batchCount="654" vertRStart="708" vertREnd="856" />
+	<Mesh name="auge_l" material="models/female_japan/f_auge.material.xml" batchStart="3753" batchCount="60" vertRStart="857" vertREnd="869" />
+	<Mesh name="hand" material="models/female_japan/f_h_nde.material.xml" batchStart="3813" batchCount="1728" vertRStart="870" vertREnd="1277" />
+	<Mesh name="auge_r" material="models/female_japan/f_auge.material.xml" batchStart="5541" batchCount="60" vertRStart="1278" vertREnd="1290" />
+	<Mesh name="kopf" material="models/female_japan/f_kopf.material.xml" batchStart="5601" batchCount="3024" vertRStart="1291" vertREnd="1992" />
+</Model>

@@ -1,0 +1,5 @@
+<Model geometry="models\alfred\anzug.geo" name="anzug" >
+    <Mesh vertREnd="930" batchStart="0" name="hemd" batchCount="4980" material="models\alfred\shirt.material.xml" vertRStart="0" />
+    <Mesh vertREnd="2671" batchStart="4980" name="jacket" batchCount="7836" material="models\alfred\jacket.material.xml" vertRStart="931" />
+    <Mesh vertREnd="4029" batchStart="12816" name="fliege" batchCount="7248" material="models\alfred\tie.material.xml" vertRStart="2672" />
+</Model>

@@ -1,0 +1,5 @@
+<Model geometry="models/berg/berg.geo" name="berg" >
+    <Mesh vertREnd="1078" batchStart="0" name="berg" batchCount="5370" material="models/berg/gras.material.xml" vertRStart="0" >
+        <Mesh vertREnd="1441" batchStart="5370" name="berg" batchCount="1440" material="models/berg/weg.material.xml" vertRStart="1079" />
+    </Mesh>
+</Model>

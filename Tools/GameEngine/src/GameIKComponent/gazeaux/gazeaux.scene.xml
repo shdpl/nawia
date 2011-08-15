@@ -1,0 +1,3 @@
+<Model geometry="gazeaux.geo" name="gazeaux" >
+   <Mesh tx="0" vertREnd="167" ty="0.015947" tz="-0" batchStart="0" name="gazeaux" batchCount="282" material="gazeaux.material.xml" vertRStart="0" />
+</Model>

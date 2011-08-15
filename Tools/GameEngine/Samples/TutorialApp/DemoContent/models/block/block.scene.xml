@@ -1,0 +1,4 @@
+<Model name="block" geometry="models/block/block.geo">
+
+	<Mesh name="block" material="models/bricks.material.xml" batchStart="0" batchCount="180" vertRStart="0" vertREnd="119" />
+</Model>

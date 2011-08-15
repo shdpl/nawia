@@ -1,0 +1,27 @@
+<Group tx="0" sx="1" ty="0" rx="0" sy="1" tz="0" ry="0" sz="1" rz="0" >
+    <Light sy="1" sz="1" lightingContext="LIGHTING" col_B="1" name="light" col_G="1" tx="25" ty="35" shadowContext="SHADOWMAP" tz="-45" shadowMapBias="0.002" rx="-150" ry="-45" shadowMapCount="4" rz="0" col_R="1" radius="150" fov="90" shadowSplitLambda="0.95" sx="1" />
+    <Camera pipeline="pipelines/forward.pipeline.xml" tx="-12" ty="1.6" sx="1" occlusionCulling="0" tz="-1" rx="0" sy="1" ry="270" sz="1" rz="0" name="camera" >
+        <Attachment type="GameEngine" name="camera" >
+        </Attachment>
+    </Camera>
+    <Reference tx="0" ty="15" sx="40" tz="0" sy="40" rx="0" sz="40" sceneGraph="models/skybox/skybox.scene.xml" ry="0" rz="0" name="skybox" />
+    <Reference tx="-4" ty="0.5" sx="1" tz="1" sy="1" rx="0" sz="1" sceneGraph="models/woodencrate/woodencrate.scene.xml" ry="0" rz="0" name="crate1" >
+        <Attachment type="GameEngine" name="crate1" />
+    </Reference>
+    <Reference tx="5" sx="0.06" ty="0" sy="0.06" rx="0" tz="-3.5" sceneGraph="models/female/female.scene.xml" sz="0.06" ry="0" rz="0" name="Marie" >
+        <Attachment type="GameEngine" name="Marie" >
+            <TTS voice="Microsoft Mary" />
+        </Attachment>
+    </Reference>
+    <Reference tx="-7" sx="0.06" ty="0" sy="0.06" rx="0" tz="-1" sceneGraph="models/male/male.scene.xml" sz="0.06" ry="90" rz="0" name="Hans" >
+        <Attachment type="GameEngine" name="Hans" >
+            <TTS voice="Microsoft Sam" />
+        </Attachment>
+    </Reference>
+    <Reference tx="0" sx="0.008" ty="0" sy="0.008" tz="0" sceneGraph="models/ground/ground.scene.xml" sz="0.008" name="ground" >
+        <Attachment type="GameEngine" name="Ground" />
+    </Reference>
+    <Reference tx="-4" ty="0.5" sx="1" tz="-3" sy="1" rx="0" sz="1" sceneGraph="models/woodencrate/woodencrate.scene.xml" ry="0" rz="0" name="crate2" >
+        <Attachment type="GameEngine" name="crate2" />
+    </Reference>
+</Group>

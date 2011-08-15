@@ -1,0 +1,4 @@
+<Model geometry="models/ground2/ground2.geo" name="ground2" >
+	<Mesh sx="1.32" vertREnd="565" sy="1.32" sz="1.32" batchStart="0" name="GrasMaterial" batchCount="1656" material="models/ground2/gras_256_bk_jpg.material.xml" vertRStart="0" />
+	<Mesh sx="1.32" vertREnd="1090" sy="1.32" sz="1.32" batchStart="1656" name="SteinMaterial" batchCount="1569" material="models/ground2/layingrock_jpg.material.xml" vertRStart="566" />
+</Model>

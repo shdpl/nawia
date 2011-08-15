@@ -1,0 +1,16 @@
+<Model geometry="models/zaun/zaun.geo" name="zaun" >
+    <Mesh tx="-73.2706" ty="40.105" vertREnd="47" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="0" name="ZaunLatte09" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="0" />
+    <Mesh tx="-97.3668" ty="40.105" vertREnd="95" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="108" name="ZaunLatte10" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="48" />
+    <Mesh tx="-121.463" ty="40.105" vertREnd="143" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="216" name="ZaunLatte11" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="96" />
+    <Mesh tx="150.518" ty="40.105" vertREnd="191" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="324" name="ZaunLatte12" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="144" />
+    <Mesh tx="-7.89939" ty="0" vertREnd="239" tz="-0.651024" batchStart="432" name="QuerLeiste01" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="192" />
+    <Mesh tx="119.499" ty="40.105" vertREnd="287" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="540" name="ZaunLatte01" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="240" />
+    <Mesh tx="-6.79975" ty="40.9951" vertREnd="335" tz="-0.651024" batchStart="648" name="QuerLeiste02" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="288" />
+    <Mesh tx="95.4026" ty="40.105" vertREnd="383" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="756" name="ZaunLatte02" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="336" />
+    <Mesh tx="71.3064" ty="40.105" vertREnd="431" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="864" name="ZaunLatte03" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="384" />
+    <Mesh tx="47.2102" ty="40.105" vertREnd="479" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="972" name="ZaunLatte04" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="432" />
+    <Mesh tx="23.1141" ty="40.105" vertREnd="527" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="1080" name="ZaunLatte05" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="480" />
+    <Mesh tx="-0.982117" ty="40.105" vertREnd="575" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="1188" name="ZaunLatte06" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="528" />
+    <Mesh tx="-25.0783" ty="40.105" vertREnd="623" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="1296" name="ZaunLatte07" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="576" />
+    <Mesh tx="-49.1745" ty="40.105" vertREnd="671" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="1404" name="ZaunLatte08" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="624" />
+</Model>

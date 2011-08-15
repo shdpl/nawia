@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>7cfb3305-4fb1-49f6-9a2e-5ed3ac543738</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>8ea3dee1-85a9-4dbb-9f6d-3d028fa9ae2a</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>67250890-246f-4326-b0c8-97874ec1dc8c</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Animation">
+      <UniqueIdentifier>{4d3690ac-1533-4382-9c28-f536917aaaef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Movement">
+      <UniqueIdentifier>{bfa1563e-9a9f-44cb-8815-d82d28a604c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Gaze">
+      <UniqueIdentifier>{becae168-edbf-43c5-893f-aedb6bab156c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation">
+      <UniqueIdentifier>{5f808bd6-fca8-4687-b35d-f75d2087f272}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gaze">
+      <UniqueIdentifier>{5cbe4d6b-f32b-4e57-b0de-975ea8ed8ee0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Movement">
+      <UniqueIdentifier>{c020047f-9347-4055-b301-644ab1c28706}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Comm">
+      <UniqueIdentifier>{2871369b-b645-411c-8f20-6582a55def02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Comm">
+      <UniqueIdentifier>{0c722b6a-baca-493b-a0e1-96b4d4e08869}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Formation">
+      <UniqueIdentifier>{c07a332b-15d7-4f9c-b5be-35aec73f0510}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Formation">
+      <UniqueIdentifier>{a89d9f2a-16e4-4957-8437-b6e4a1ae77b9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GameEngine_Agent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgentComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgentManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\Animation.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\AnimationComponent.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\AnimationFile.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\Layer.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\Stage.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\AnimationData.cpp">
+      <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\cmdAct.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\cmdGoto.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\cmdSet.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\Command.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\CommandAttribute.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\CommComponent.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\fbAnimation.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\fbError.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\fbGaze.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\fbGoto.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\fbTTS.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\Feedback.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm\StringTokenizer.cpp">
+      <Filter>Source Files\Comm</Filter>
+    </ClCompile>
+    <ClCompile Include="Gaze\Gaze.cpp">
+      <Filter>Source Files\Gaze</Filter>
+    </ClCompile>
+    <ClCompile Include="Gaze\GazeComponent.cpp">
+      <Filter>Source Files\Gaze</Filter>
+    </ClCompile>
+    <ClCompile Include="Formation\Agent.cpp">
+      <Filter>Source Files\Formation</Filter>
+    </ClCompile>
+    <ClCompile Include="Formation\BodyLocation.cpp">
+      <Filter>Source Files\Formation</Filter>
+    </ClCompile>
+    <ClCompile Include="Formation\BodyOrientation.cpp">
+      <Filter>Source Files\Formation</Filter>
+    </ClCompile>
+    <ClCompile Include="Formation\FormationComponent.cpp">
+      <Filter>Source Files\Formation</Filter>
+    </ClCompile>
+    <ClCompile Include="Formation\RepulseNode.cpp">
+      <Filter>Source Files\Formation</Filter>
+    </ClCompile>
+    <ClCompile Include="Movement\Idle.cpp">
+      <Filter>Source Files\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="Movement\Locomotion.cpp">
+      <Filter>Source Files\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="Movement\Movement.cpp">
+      <Filter>Source Files\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="Movement\MovementComponent.cpp">
+      <Filter>Source Files\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="Movement\Orientation.cpp">
+      <Filter>Source Files\Movement</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Icon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Morph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GameEngine_Agent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AgentComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AgentManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\Animation.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\AnimationComponent.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\AnimationData.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\AnimationFile.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\Layer.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\Stage.h">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\cmdAct.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\cmdGoto.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\cmdSet.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\Command.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\CommandAttribute.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\CommComponent.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\fbAnimation.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\fbError.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\fbGaze.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\fbGoto.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\fbTTS.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\Feedback.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm\StringTokenizer.h">
+      <Filter>Header Files\Comm</Filter>
+    </ClInclude>
+    <ClInclude Include="Gaze\Gaze.h">
+      <Filter>Header Files\Gaze</Filter>
+    </ClInclude>
+    <ClInclude Include="Gaze\GazeComponent.h">
+      <Filter>Header Files\Gaze</Filter>
+    </ClInclude>
+    <ClInclude Include="Formation\Agent.h">
+      <Filter>Header Files\Formation</Filter>
+    </ClInclude>
+    <ClInclude Include="Formation\BodyLocation.h">
+      <Filter>Header Files\Formation</Filter>
+    </ClInclude>
+    <ClInclude Include="Formation\BodyOrientation.h">
+      <Filter>Header Files\Formation</Filter>
+    </ClInclude>
+    <ClInclude Include="Formation\FormationComponent.h">
+      <Filter>Header Files\Formation</Filter>
+    </ClInclude>
+    <ClInclude Include="Formation\RepulseNode.h">
+      <Filter>Header Files\Formation</Filter>
+    </ClInclude>
+    <ClInclude Include="Movement\Idle.h">
+      <Filter>Header Files\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="Movement\Locomotion.h">
+      <Filter>Header Files\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="Movement\Movement.h">
+      <Filter>Header Files\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="Movement\MovementComponent.h">
+      <Filter>Header Files\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="Movement\Orientation.h">
+      <Filter>Header Files\Movement</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Icon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Morph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

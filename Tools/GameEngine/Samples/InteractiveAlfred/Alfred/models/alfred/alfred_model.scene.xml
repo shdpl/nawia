@@ -1,0 +1,33 @@
+<Model geometry="models\alfred\alfred.geo" name="alfred" >
+    <!-- Morph targets: "bottom_au_27" "bottomgums_au_27" "AU_01" "AU_02" "AU_04" "AU_05" "AU_06" "AU_07" "AU_09" "AU_10" "AU_11" "AU_12" "AU_13" "AU_15" "AU_16" "AU_17" "AU_18" "AU_20" "AU_22" "AU_23" "AU_24" "AU_25" "AU_27" "AU_43" "AU_14" -->
+    <Joint tx="0" ty="1.29947" sx="1.05605" tz="1.09828" rx="-7.63518" sy="1" ry="0" sz="1" rz="90" jointIndex="1" name="Bone_Neck" >
+        <Attachment type="IK" >
+            <DOFR maxX="35" minX="-35" maxY="70" minY="-30" maxZ="50" minZ="-50" dampValue="30" />
+        </Attachment>
+        <Joint tx="2.01127" ty="0" sx="0.899904" tz="0" rx="-0" sy="1" ry="-4.57891" sz="1" rz="0" jointIndex="2" name="Bone_Head" >
+            <Attachment type="GameEngine" name="head" >
+                <!--<BulletPhysics x="3.0" y="2.0" z="0.5" mass="0.1" shape="Box" />-->
+            </Attachment>
+            <Attachment type="IK" >
+                <DOFR maxX="35" minX="-35" maxY="70" minY="-30" maxZ="50" minZ="-50" dampValue="30" />
+            </Attachment>
+            <Joint tx="1.59267" ty="0.612527" sx="0.594379" tz="-2.07441" rx="-0" sy="1" ry="86.4559" sz="1.05297" rz="0" jointIndex="3" name="Bone_Auge_L" >
+                <Attachment type="GameEngine" name="left eye" >
+                    <!--<BulletPhysics radius="0.80" mass="0.1" shape="Sphere" />-->
+                </Attachment>
+            </Joint>
+            <Joint tx="1.59267" ty="-0.611822" sx="0.594378" tz="-2.07441" rx="-0" sy="1" ry="86.473" sz="1.05297" rz="0" jointIndex="4" name="Bone_Auge_R" >
+                <Attachment type="GameEngine" name="right eye" >
+                    <!--<BulletPhysics radius="0.80" mass="0.1" shape="Sphere" />-->
+                </Attachment>
+            </Joint>
+        </Joint>
+    </Joint>
+    <Mesh vertREnd="997" batchStart="0" name="bottom_teeth" batchCount="4548" material="models/alfred/teeth.material.xml" vertRStart="0" />
+    <Mesh vertREnd="1287" batchStart="4548" name="auge_l_instance" batchCount="1584" material="models/alfred/eyes.material.xml" vertRStart="998" />
+    <Mesh vertREnd="2317" batchStart="6132" name="top_teeth" batchCount="4896" material="models/alfred/teeth.material.xml" vertRStart="1288" />
+    <Mesh vertREnd="2873" batchStart="11028" name="topgums" batchCount="3114" material="models/alfred/mouth.material.xml" vertRStart="2318" />
+    <Mesh vertREnd="3319" batchStart="14142" name="bottomgums" batchCount="2478" material="models/alfred/mouth.material.xml" vertRStart="2874" />
+    <Mesh vertREnd="10922" batchStart="16620" name="kopf" batchCount="44784" material="models/alfred/skin.material.xml" vertRStart="3320" />
+    <Mesh vertREnd="11212" batchStart="61404" name="auge_r" batchCount="1584" material="models/alfred/eyes.material.xml" vertRStart="10923" />
+</Model>

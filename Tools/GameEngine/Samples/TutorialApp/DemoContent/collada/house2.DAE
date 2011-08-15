@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author>Admin</author>
+      <authoring_tool>3dsMax 11 - Feeling ColladaMax v3.05B.</authoring_tool>
+      <comments>ColladaMax Export Options: ExportNormals=1;ExportEPolyAsTriangles=1;ExportXRefs=1;ExportSelected=0;ExportTangents=0;ExportAnimations=0;SampleAnim=0;ExportAnimClip=0;BakeMatrices=0;ExportRelativePaths=1;AnimStart=0;AnimEnd=3.33333;</comments>
+    </contributor>
+    <created>2008-10-17T07:08:54Z</created>
+    <modified>2008-10-17T07:08:55Z</modified>
+    <unit meter="0.0254" name="inch"/>
+    <up_axis>Y_UP</up_axis>
+  </asset>
+  <library_lights>
+    <light id="ambient-environment-light" name="Ambient">
+      <technique_common>
+        <ambient>
+          <color>0.4 0.4 0.4</color>
+        </ambient>
+      </technique_common>
+      <extra>
+        <technique profile="FCOLLADA">
+          <intensity>1</intensity>
+        </technique>
+      </extra>
+    </light>
+  </library_lights>
+  <library_images>
+    <image id="brick001a.png" name="brick001a_png">
+      <init_from>../textures/tiles/brick001a.png</init_from>
+    </image>
+    <image id="concrete001a.png" name="concrete001a_png">
+      <init_from>../textures/tiles/concrete001a.png</init_from>
+    </image>
+  </library_images>
+  <library_materials>
+    <material id="Newadventureplayground01a_bricks001a" name="Newadventureplayground01a_bricks001a">
+      <instance_effect url="#Newadventureplayground01a_bricks001a-fx"/>
+    </material>
+    <material id="Newadventureplayground01a_bricks001a1" name="Newadventureplayground01a_bricks001a">
+      <instance_effect url="#Newadventureplayground01a_bricks001a1-fx"/>
+    </material>
+    <material id="Newadventureplayground01a_concrete001a" name="Newadventureplayground01a_concrete001a">
+      <instance_effect url="#Newadventureplayground01a_concrete001a-fx"/>
+    </material>
+    <material id="Newadventureplayground01a_concrete001a1" name="Newadventureplayground01a_concrete001a">
+      <instance_effect url="#Newadventureplayground01a_concrete001a1-fx"/>
+    </material>
+  </library_materials>
+  <library_effects>
+    <effect id="Newadventureplayground01a_bricks001a-fx" name="Newadventureplayground01a_bricks001a">
+      <profile_COMMON>
+        <newparam sid="brick001a_png-surface">
+          <surface type="2D">
+            <init_from>brick001a.png</init_from>
+            <format>A8R8G8B8</format>
+          </surface>
+        </newparam>
+        <newparam sid="brick001a_png-sampler">
+          <sampler2D>
+            <source>brick001a_png-surface</source>
+            <wrap_s>WRAP</wrap_s>
+            <wrap_t>WRAP</wrap_t>
+            <minfilter>NONE</minfilter>
+            <magfilter>NONE</magfilter>
+            <mipfilter>NONE</mipfilter>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color>0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color>0.2 0.2 0.2 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="brick001a_png-sampler" texcoord="CHANNEL1">
+                <extra>
+                  <technique profile="MAYA">
+                    <mirrorU>0</mirrorU>
+                    <mirrorV>0</mirrorV>
+                    <wrapU>1</wrapU>
+                    <wrapV>1</wrapV>
+                    <repeatU>1</repeatU>
+                    <repeatV>1</repeatV>
+                    <offsetU>0</offsetU>
+                    <offsetV>0</offsetV>
+                    <rotateUV>0</rotateUV>
+                  </technique>
+                  <technique profile="MAX3D">
+                    <amount>1</amount>
+                  </technique>
+                </extra>
+              </texture>
+            </diffuse>
+            <specular>
+              <color>1 1 1 1</color>
+            </specular>
+            <shininess>
+              <float>0.8</float>
+            </shininess>
+            <reflective>
+              <color>0 0 0 1</color>
+            </reflective>
+            <reflectivity>
+              <float>1</float>
+            </reflectivity>
+            <transparent opaque="A_ONE">
+              <color>1 1 1 1</color>
+            </transparent>
+            <transparency>
+              <float>1</float>
+            </transparency>
+          </phong>
+          <extra>
+            <technique profile="FCOLLADA">
+              <spec_level>
+                <float>0.2</float>
+              </spec_level>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+      <extra>
+        <technique profile="MAX3D">
+          <faceted>0</faceted>
+          <double_sided>0</double_sided>
+          <wireframe>0</wireframe>
+          <face_map>0</face_map>
+        </technique>
+      </extra>
+    </effect>
+    <effect id="Newadventureplayground01a_bricks001a1-fx" name="Newadventureplayground01a_bricks001a">
+      <profile_COMMON>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color>0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color>0.2 0.2 0.2 1</color>
+            </ambient>
+            <diffuse>
+              <color>0.8 0.8 0.8 1</color>
+            </diffuse>
+            <specular>
+              <color>1 1 1 1</color>
+            </specular>
+            <shininess>
+              <float>0.8</float>
+            </shininess>
+            <reflective>
+              <color>0 0 0 1</color>
+            </reflective>
+            <reflectivity>
+              <float>1</float>
+            </reflectivity>
+            <transparent opaque="A_ONE">
+              <color>1 1 1 1</color>
+            </transparent>
+            <transparency>
+              <float>1</float>
+            </transparency>
+          </phong>
+          <extra>
+            <technique profile="FCOLLADA">
+              <spec_level>
+                <float>0.2</float>
+              </spec_level>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+      <extra>
+        <technique profile="MAX3D">
+          <faceted>0</faceted>
+          <double_sided>0</double_sided>
+          <wireframe>0</wireframe>
+          <face_map>0</face_map>
+        </technique>
+      </extra>
+    </effect>
+    <effect id="Newadventureplayground01a_concrete001a-fx" name="Newadventureplayground01a_concrete001a">
+      <profile_COMMON>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color>0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color>0.2 0.2 0.2 1</color>
+            </ambient>
+            <diffuse>
+              <color>0.8 0.8 0.8 1</color>
+            </diffuse>
+            <specular>
+              <color>1 1 1 1</color>
+            </specular>
+            <shininess>
+              <float>0.8</float>
+            </shininess>
+            <reflective>
+              <color>0 0 0 1</color>
+            </reflective>
+            <reflectivity>
+              <float>1</float>
+            </reflectivity>
+            <transparent opaque="A_ONE">
+              <color>1 1 1 1</color>
+            </transparent>
+            <transparency>
+              <float>1</float>
+            </transparency>
+          </phong>
+          <extra>
+            <technique profile="FCOLLADA">
+              <spec_level>
+                <float>0.2</float>
+              </spec_level>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+      <extra>
+        <technique profile="MAX3D">
+          <faceted>0</faceted>
+          <double_sided>0</double_sided>
+          <wireframe>0</wireframe>
+          <face_map>0</face_map>
+        </technique>
+      </extra>
+    </effect>
+    <effect id="Newadventureplayground01a_concrete001a1-fx" name="Newadventureplayground01a_concrete001a">
+      <profile_COMMON>
+        <newparam sid="concrete001a_png-surface">
+          <surface type="2D">
+            <init_from>concrete001a.png</init_from>
+            <format>A8R8G8B8</format>
+          </surface>
+        </newparam>
+        <newparam sid="concrete001a_png-sampler">
+          <sampler2D>
+            <source>concrete001a_png-surface</source>
+            <wrap_s>WRAP</wrap_s>
+            <wrap_t>WRAP</wrap_t>
+            <minfilter>NONE</minfilter>
+            <magfilter>NONE</magfilter>
+            <mipfilter>NONE</mipfilter>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color>0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color>0.2 0.2 0.2 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="concrete001a_png-sampler" texcoord="CHANNEL1">
+                <extra>
+                  <technique profile="MAYA">
+                    <mirrorU>0</mirrorU>
+                    <mirrorV>0</mirrorV>
+                    <wrapU>1</wrapU>
+                    <wrapV>1</wrapV>
+                    <repeatU>1</repeatU>
+                    <repeatV>1</repeatV>
+                    <offsetU>0</offsetU>
+                    <offsetV>0</offsetV>
+                    <rotateUV>0</rotateUV>
+                  </technique>
+                  <technique profile="MAX3D">
+                    <amount>1</amount>
+                  </technique>
+                </extra>
+              </texture>
+            </diffuse>
+            <specular>
+              <color>1 1 1 1</color>
+            </specular>
+            <shininess>
+              <float>0.8</float>
+            </shininess>
+            <reflective>
+              <color>0 0 0 1</color>
+            </reflective>
+            <reflectivity>
+              <float>1</float>
+            </reflectivity>
+            <transparent opaque="A_ONE">
+              <color>1 1 1 1</color>
+            </transparent>
+            <transparency>
+              <float>1</float>
+            </transparency>
+          </phong>
+          <extra>
+            <technique profile="FCOLLADA">
+              <spec_level>
+                <float>0.2</float>
+              </spec_level>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+      <extra>
+        <technique profile="MAX3D">
+          <faceted>0</faceted>
+          <double_sided>0</double_sided>
+          <wireframe>0</wireframe>
+          <face_map>0</face_map>
+        </technique>
+      </extra>
+    </effect>
+  </library_effects>
+  <library_geometries>
+    <geometry id="adventureplaygound01a-mesh" name="adventureplaygound01a">
+      <mesh>
+        <source id="adventureplaygound01a-mesh-positions">
+          <float_array id="adventureplaygound01a-mesh-positions-array" count="168">-155 0 -281 470 0 -281 470 0 269 -430 0 269 -430 0 -281 -305 0 -281 -305 0 -231 -380 0 -231 -380 0 219 420 0 219 420 0 -231 -155 0 -231 170 0 219 170 0 269 370 0 219 370 0 269 -430 340 269 -430 340 -281 -305 340 -281 -305 340 -231 -380 340 -231 -380 340 219 170 340 219 170 340 269 470 340 -281 470 340 269 370 340 269 370 340 219 420 340 219 420 340 -231 -155 340 -231 -155 340 -281 170 250 269 -430 250 269 -430 250 -281 -305 250 -281 -305 250 -231 -380 250 -231 -380 250 219 170 250 219 -155 250 -281 470 250 -281 470 250 269 370 250 269 370 250 219 420 250 219 420 250 -231 -155 250 -231 -440 340 -291 480 340 -291 480 340 279 -440 340 279 -440 390 -291 480 390 -291 480 390 279 -440 390 279</float_array>
+          <technique_common>
+            <accessor source="#adventureplaygound01a-mesh-positions-array" count="56" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="adventureplaygound01a-mesh-normals">
+          <float_array id="adventureplaygound01a-mesh-normals-array" count="168">-0.078206 -0.195515 -0.977577 0.342166 -0.855416 -0.388826 0.915523 -0.366209 0.166459 -0.354662 -0.851188 0.386904 -0.876501 -0.438251 -0.199205 0.365148 -0.182574 -0.912871 0.547176 -0.164153 0.820763 0.94585 0.283755 0.157642 0.369262 0.812376 -0.45132 -0.974812 0.194962 -0.108312 -0.355274 0.817129 0.453961 -0.084959 -0.195407 0.977035 0.088791 -0.195342 -0.976708 0.081443 -0.195465 0.977323 -0.70014 -0.140028 -0.70014 -0.440226 -0.17609 0.880451 -0.146435 0.976236 0.159748 -0.57922 0.804472 -0.131641 0 0.485643 -0.874157 0 0.485643 0.874157 0.762001 -0.635001 0.127 0.158432 -0.968196 -0.193639 0 0.485643 -0.874157 0 0.485643 0.874157 0.140696 0.977058 -0.159882 0.664071 0.737856 0.12074 0 0.485643 0.874157 0 0.485643 -0.874157 -0.870063 -0.483368 -0.096673 -0.151706 -0.969231 0.193846 0 0.485643 0.874157 0 0.485643 -0.874157 0.05616 -0.044928 0.99741 -0.675725 0 0.737154 -0.975133 0 -0.221621 0.216015 -0.129609 -0.967749 0.300226 -0.180136 0.936705 0.986394 0 0.164399 0.633238 0 -0.773957 0.06079 -0.048632 -0.996965 -0.055195 -0.033117 -0.997926 0.660628 0 -0.750714 0.98387 0 0.178885 -0.229745 -0.183796 0.955739 -0.324785 -0.259828 -0.909398 -0.993884 0 -0.110431 -0.616308 0 0.787505 -0.059663 -0.035798 0.997576 -0.05406 -0.994718 -0.087256 0.05406 -0.994718 -0.087256 0.05406 -0.994718 0.087256 -0.05406 -0.994718 0.087256 -0.05406 0.994718 -0.087256 0.05406 0.994718 -0.087256 0.05406 0.994718 0.087256 -0.05406 0.994718 0.087256</float_array>
+          <technique_common>
+            <accessor source="#adventureplaygound01a-mesh-normals-array" count="56" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="adventureplaygound01a-mesh-map-channel1">
+          <float_array id="adventureplaygound01a-mesh-map-channel1-array" count="600">4.10519 14.0419 0 4.10519 10.7931 0 4.78201 10.7931 0 4.78201 11.0885 0 4.37592 11.0885 0 4.37592 13.7465 0 7.35393 13.7465 0 7.35393 14.0419 0 -22.3721 10.1885 0 -25.6387 10.1885 0 -25.6387 9.89316 0 -22.6444 9.89316 0 -22.6444 7.2351 0 -23.0527 7.2351 0 -23.0527 6.93976 0 -22.3721 6.93976 0 -19.6197 10.7931 0 -19.6197 14.0419 0 -20.2275 14.0419 0 -20.2275 13.7465 0 -19.9236 13.7465 0 -19.9236 11.0885 0 -23.4187 11.0885 0 -23.4187 10.7931 0 -27.272 6.93976 0 -23.8693 6.93976 0 -23.8693 7.2351 0 -26.9998 7.2351 0 -26.9998 9.89316 0 -26.7276 9.89316 0 -26.7276 10.1885 0 -27.272 10.1885 0 14.5282 7.96863 0 11.2616 7.96863 0 11.2616 6.38906 0 14.5282 6.38906 0 11.2616 8.53728 0 11.2616 7.96863 0 14.5282 7.96863 0 14.5282 8.53728 0 -24.0234 11.8939 0 -24.0234 13.4734 0 -27.2722 13.4734 0 -27.2722 11.8939 0 -27.2722 14.0421 0 -27.2722 13.4734 0 -24.0234 13.4734 0 -24.0234 14.0421 0 10.5266 6.38906 0 11.2071 6.38906 0 11.2071 7.96863 0 10.5266 7.96863 0 10.5266 8.53728 0 10.5266 7.96863 0 11.2071 7.96863 0 11.2071 8.53728 0 5.75458 14.646 0 6.25502 14.646 0 6.25502 16.2442 0 5.75458 16.2442 0 -0.298536 8.0405 0 0.109227 8.0405 0 0.109227 9.62007 0 -0.298536 9.62007 0 -0.298536 10.1887 0 -0.298536 9.62007 0 0.109227 9.62007 0 0.109227 10.1887 0 -11.3083 12.4443 0 -8.6099 12.4443 0 -8.6099 14.0239 0 -11.3083 14.0239 0 -11.3083 14.5926 0 -11.3083 14.0239 0 -8.6099 14.0239 0 -8.6099 14.5926 0 -3.34316 8.0405 0 -0.352904 8.0405 0 -0.352904 9.62007 0 -3.34316 9.62007 0 -3.34316 10.1887 0 -3.34316 9.62007 0 -0.352904 9.62007 0 -0.352904 10.1887 0 16.2137 8.04029 0 16.7141 8.04029 0 16.7141 9.63845 0 16.2137 9.63845 0 6.30726 6.38906 0 9.70995 6.38906 0 9.70995 7.96863 0 6.30726 7.96863 0 6.30726 8.53728 0 6.30726 7.96863 0 9.70995 7.96863 0 9.70995 8.53728 0 7.40807 11.3434 0 10.6568 11.3434 0 10.6568 12.9229 0 7.40807 12.9229 0 7.40807 13.4916 0 7.40807 12.9229 0 10.6568 12.9229 0 10.6568 13.4916 0 15.617 6.38906 0 16.1615 6.38906 0 16.1615 7.96863 0 15.617 7.96863 0 15.617 8.53728 0 15.617 7.96863 0 16.1615 7.96863 0 16.1615 8.53728 0 16.2137 6.38884 0 16.7141 6.38884 0 16.7141 7.98701 0 16.2137 7.98701 0 -4.70238 8.0405 0 -4.43053 8.0405 0 -4.43053 9.62007 0 -4.70238 9.62007 0 -4.70238 10.1887 0 -4.70238 9.62007 0 -4.43053 9.62007 0 -4.43053 10.1887 0 -11.3623 14.0239 0 -14.0607 14.0239 0 -14.0607 12.4443 0 -11.3623 12.4443 0 -14.0607 14.5926 0 -14.0607 14.0239 0 -11.3623 14.0239 0 -11.3623 14.5926 0 0.924753 8.0405 0 4.05094 8.0405 0 4.05094 9.62007 0 0.924753 9.62007 0 0.924753 10.1887 0 0.924753 9.62007 0 4.05094 9.62007 0 4.05094 10.1887 0 -23.9713 11.3432 0 -23.4709 11.3432 0 -23.4709 12.9413 0 -23.9713 12.9413 0 15.617 7.96863 0 15.617 8.53728 0 14.5282 8.53728 0 14.5282 7.96863 0 -26.7276 10.1885 0 -26.7276 9.89316 0 -25.6387 9.89316 0 -25.6387 10.1885 0 -4.43053 10.1887 0 -4.43053 9.62007 0 -3.34316 9.62007 0 -3.34316 10.1887 0 25.5206 11.892 0 25.5206 12.3925 0 24.4721 12.3925 0 24.4721 11.892 0 -23.0527 6.93976 0 -23.0527 7.2351 0 -23.8693 7.2351 0 -23.8693 6.93976 0 0.109227 10.1887 0 0.109227 9.62007 0 0.924753 9.62007 0 0.924753 10.1887 0 -22.8692 16.7963 0 -22.8692 16.2959 0 -21.8207 16.2959 0 -21.8207 16.7963 0 10.5266 7.96863 0 10.5266 8.53728 0 9.70995 8.53728 0 9.70995 7.96863 0 -15.7119 6.38928 0 -10.2616 6.38928 0 -10.2616 9.63802 0 -15.7119 9.63802 0 0.747988 6.88767 0 -4.70231 6.88767 0 -4.70231 6.38723 0 0.747988 6.38723 0 -24.0234 11.842 0 -27.2722 11.842 0 -27.2722 11.3416 0 -24.0234 11.3416 0 6.25279 6.88767 0 0.802492 6.88767 0 0.802492 6.38723 0 6.25279 6.38723 0 4.05105 11.842 0 0.802313 11.842 0 0.802313 11.3416 0 4.05105 11.3416 0 -4.75681 6.38928 0 -4.75681 9.63802 0 -10.2071 9.63802 0 -10.2071 6.38928 0</float_array>
+          <technique_common>
+            <accessor source="#adventureplaygound01a-mesh-map-channel1-array" count="200" stride="3">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+              <param name="P" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="adventureplaygound01a-mesh-map-channel2">
+          <float_array id="adventureplaygound01a-mesh-map-channel2-array" count="600">4.10519 14.0419 0 4.10519 10.7931 0 4.78201 10.7931 0 4.78201 11.0885 0 4.37592 11.0885 0 4.37592 13.7465 0 7.35393 13.7465 0 7.35393 14.0419 0 -22.3721 10.1885 0 -25.6387 10.1885 0 -25.6387 9.89316 0 -22.6444 9.89316 0 -22.6444 7.2351 0 -23.0527 7.2351 0 -23.0527 6.93976 0 -22.3721 6.93976 0 -19.6197 10.7931 0 -19.6197 14.0419 0 -20.2275 14.0419 0 -20.2275 13.7465 0 -19.9236 13.7465 0 -19.9236 11.0885 0 -23.4187 11.0885 0 -23.4187 10.7931 0 -27.272 6.93976 0 -23.8693 6.93976 0 -23.8693 7.2351 0 -26.9998 7.2351 0 -26.9998 9.89316 0 -26.7276 9.89316 0 -26.7276 10.1885 0 -27.272 10.1885 0 14.5282 7.96863 0 11.2616 7.96863 0 11.2616 6.38906 0 14.5282 6.38906 0 11.2616 8.53728 0 11.2616 7.96863 0 14.5282 7.96863 0 14.5282 8.53728 0 -24.0234 11.8939 0 -24.0234 13.4734 0 -27.2722 13.4734 0 -27.2722 11.8939 0 -27.2722 14.0421 0 -27.2722 13.4734 0 -24.0234 13.4734 0 -24.0234 14.0421 0 10.5266 6.38906 0 11.2071 6.38906 0 11.2071 7.96863 0 10.5266 7.96863 0 10.5266 8.53728 0 10.5266 7.96863 0 11.2071 7.96863 0 11.2071 8.53728 0 5.75458 14.646 0 6.25502 14.646 0 6.25502 16.2442 0 5.75458 16.2442 0 -0.298536 8.0405 0 0.109227 8.0405 0 0.109227 9.62007 0 -0.298536 9.62007 0 -0.298536 10.1887 0 -0.298536 9.62007 0 0.109227 9.62007 0 0.109227 10.1887 0 -11.3083 12.4443 0 -8.6099 12.4443 0 -8.6099 14.0239 0 -11.3083 14.0239 0 -11.3083 14.5926 0 -11.3083 14.0239 0 -8.6099 14.0239 0 -8.6099 14.5926 0 -3.34316 8.0405 0 -0.352904 8.0405 0 -0.352904 9.62007 0 -3.34316 9.62007 0 -3.34316 10.1887 0 -3.34316 9.62007 0 -0.352904 9.62007 0 -0.352904 10.1887 0 16.2137 8.04029 0 16.7141 8.04029 0 16.7141 9.63845 0 16.2137 9.63845 0 6.30726 6.38906 0 9.70995 6.38906 0 9.70995 7.96863 0 6.30726 7.96863 0 6.30726 8.53728 0 6.30726 7.96863 0 9.70995 7.96863 0 9.70995 8.53728 0 7.40807 11.3434 0 10.6568 11.3434 0 10.6568 12.9229 0 7.40807 12.9229 0 7.40807 13.4916 0 7.40807 12.9229 0 10.6568 12.9229 0 10.6568 13.4916 0 15.617 6.38906 0 16.1615 6.38906 0 16.1615 7.96863 0 15.617 7.96863 0 15.617 8.53728 0 15.617 7.96863 0 16.1615 7.96863 0 16.1615 8.53728 0 16.2137 6.38884 0 16.7141 6.38884 0 16.7141 7.98701 0 16.2137 7.98701 0 -4.70238 8.0405 0 -4.43053 8.0405 0 -4.43053 9.62007 0 -4.70238 9.62007 0 -4.70238 10.1887 0 -4.70238 9.62007 0 -4.43053 9.62007 0 -4.43053 10.1887 0 -11.3623 14.0239 0 -14.0607 14.0239 0 -14.0607 12.4443 0 -11.3623 12.4443 0 -14.0607 14.5926 0 -14.0607 14.0239 0 -11.3623 14.0239 0 -11.3623 14.5926 0 0.924753 8.0405 0 4.05094 8.0405 0 4.05094 9.62007 0 0.924753 9.62007 0 0.924753 10.1887 0 0.924753 9.62007 0 4.05094 9.62007 0 4.05094 10.1887 0 -23.9713 11.3432 0 -23.4709 11.3432 0 -23.4709 12.9413 0 -23.9713 12.9413 0 15.617 7.96863 0 15.617 8.53728 0 14.5282 8.53728 0 14.5282 7.96863 0 -26.7276 10.1885 0 -26.7276 9.89316 0 -25.6387 9.89316 0 -25.6387 10.1885 0 -4.43053 10.1887 0 -4.43053 9.62007 0 -3.34316 9.62007 0 -3.34316 10.1887 0 25.5206 11.892 0 25.5206 12.3925 0 24.4721 12.3925 0 24.4721 11.892 0 -23.0527 6.93976 0 -23.0527 7.2351 0 -23.8693 7.2351 0 -23.8693 6.93976 0 0.109227 10.1887 0 0.109227 9.62007 0 0.924753 9.62007 0 0.924753 10.1887 0 -22.8692 16.7963 0 -22.8692 16.2959 0 -21.8207 16.2959 0 -21.8207 16.7963 0 10.5266 7.96863 0 10.5266 8.53728 0 9.70995 8.53728 0 9.70995 7.96863 0 -15.7119 6.38928 0 -10.2616 6.38928 0 -10.2616 9.63802 0 -15.7119 9.63802 0 0.747988 6.88767 0 -4.70231 6.88767 0 -4.70231 6.38723 0 0.747988 6.38723 0 -24.0234 11.842 0 -27.2722 11.842 0 -27.2722 11.3416 0 -24.0234 11.3416 0 6.25279 6.88767 0 0.802492 6.88767 0 0.802492 6.38723 0 6.25279 6.38723 0 4.05105 11.842 0 0.802313 11.842 0 0.802313 11.3416 0 4.05105 11.3416 0 -4.75681 6.38928 0 -4.75681 9.63802 0 -10.2071 9.63802 0 -10.2071 6.38928 0</float_array>
+          <technique_common>
+            <accessor source="#adventureplaygound01a-mesh-map-channel2-array" count="200" stride="3">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+              <param name="P" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="adventureplaygound01a-mesh-map-channel3">
+          <float_array id="adventureplaygound01a-mesh-map-channel3-array" count="600">0.60875 0.805402 0 0.60875 0.717446 0 0.627074 0.717446 0 0.627074 0.725442 0 0.61608 0.725442 0 0.61608 0.797406 0 0.696706 0.797406 0 0.696706 0.805402 0 0.904134 0.511683 0 0.815907 0.511683 0 0.815907 0.503709 0 0.896782 0.503709 0 0.896782 0.431941 0 0.885754 0.431941 0 0.885754 0.423967 0 0.904134 0.423967 0 0.999304 0.521793 0 0.999304 0.604795 0 0.983772 0.604795 0 0.983772 0.597249 0 0.991538 0.597249 0 0.991538 0.529339 0 0.902228 0.529339 0 0.902228 0.521793 0 0.771793 0.423967 0 0.863697 0.423967 0 0.863697 0.431941 0 0.779146 0.431941 0 0.779146 0.503709 0 0.786498 0.503709 0 0.786498 0.511683 0 0.771793 0.511683 0 0.857094 0.628224 0 0.771793 0.628224 0 0.771793 0.587011 0 0.857094 0.587011 0 0.771793 0.643061 0 0.771793 0.628224 0 0.857094 0.628224 0 0.857094 0.643061 0 0.787988 0.717446 0 0.787988 0.756999 0 0.706576 0.756999 0 0.706576 0.717446 0 0.706576 0.771238 0 0.706576 0.756999 0 0.787988 0.756999 0 0.787988 0.771238 0 0.881973 0.521793 0 0.899744 0.521793 0 0.899744 0.563006 0 0.881973 0.563006 0 0.881973 0.577843 0 0.881973 0.563006 0 0.899744 0.563006 0 0.899744 0.577843 0 0.989184 0.413098 0 0.998679 0.413098 0 0.998679 0.443621 0 0.989184 0.443621 0 0.641359 0.619619 0 0.652013 0.619619 0 0.652013 0.660861 0 0.641359 0.660861 0 0.641359 0.675708 0 0.641359 0.660861 0 0.652013 0.660861 0 0.652013 0.675708 0 0.369619 0.760924 0 0.436721 0.760924 0 0.436721 0.80018 0 0.369619 0.80018 0 0.369619 0.814313 0 0.369619 0.80018 0 0.436721 0.80018 0 0.436721 0.814313 0 0.557308 0.619619 0 0.635441 0.619619 0 0.635441 0.660861 0 0.557308 0.660861 0 0.557308 0.675708 0 0.557308 0.660861 0 0.635441 0.660861 0 0.635441 0.675708 0 0.989184 0.228315 0 0.998679 0.228315 0 0.998679 0.258839 0 0.989184 0.258839 0 0.771793 0.521793 0 0.860648 0.521793 0 0.860648 0.563006 0 0.771793 0.563006 0 0.771793 0.577843 0 0.771793 0.563006 0 0.860648 0.563006 0 0.860648 0.577843 0 0.793533 0.717446 0 0.874944 0.717446 0 0.874944 0.756999 0 0.793533 0.756999 0 0.793533 0.771238 0 0.793533 0.756999 0 0.874944 0.756999 0 0.874944 0.771238 0 0.885527 0.587011 0 0.899744 0.587011 0 0.899744 0.628224 0 0.885527 0.628224 0 0.885527 0.643061 0 0.885527 0.628224 0 0.899744 0.628224 0 0.899744 0.643061 0 0.989184 0.34788 0 0.998679 0.34788 0 0.998679 0.378404 0 0.989184 0.378404 0 0.521793 0.619619 0 0.528896 0.619619 0 0.528896 0.660861 0 0.521793 0.660861 0 0.521793 0.675708 0 0.521793 0.660861 0 0.528896 0.660861 0 0.528896 0.675708 0 0.175851 0.81105 0 0.10875 0.81105 0 0.10875 0.771793 0 0.175851 0.771793 0 0.10875 0.825182 0 0.10875 0.81105 0 0.175851 0.81105 0 0.175851 0.825182 0 0.673322 0.619619 0 0.755006 0.619619 0 0.755006 0.660861 0 0.673322 0.660861 0 0.673322 0.675708 0 0.673322 0.660861 0 0.755006 0.660861 0 0.755006 0.675708 0 0.989184 0.195706 0 0.998679 0.195706 0 0.998679 0.22623 0 0.989184 0.22623 0 0.885527 0.628224 0 0.885527 0.643061 0 0.857094 0.643061 0 0.857094 0.628224 0 0.786498 0.511683 0 0.786498 0.503709 0 0.815907 0.503709 0 0.815907 0.511683 0 0.528896 0.675708 0 0.528896 0.660861 0 0.557308 0.660861 0 0.557308 0.675708 0 0.206951 0.934836 0 0.206951 0.945321 0 0.184837 0.945321 0 0.184837 0.934836 0 0.885754 0.423967 0 0.885754 0.431941 0 0.863697 0.431941 0 0.863697 0.423967 0 0.652013 0.675708 0 0.652013 0.660861 0 0.673322 0.660861 0 0.673322 0.675708 0 0.978315 0.922177 0 0.978315 0.913097 0 0.997434 0.913097 0 0.997434 0.922177 0 0.881973 0.563006 0 0.881973 0.577843 0 0.860648 0.577843 0 0.860648 0.563006 0 0.771793 0.250054 0 0.915463 0.250054 0 0.915463 0.335645 0 0.771793 0.335645 0 0.499744 0.67296 0 0.391359 0.67296 0 0.391359 0.663097 0 0.499744 0.663097 0 0.968066 0.651414 0 0.902228 0.651414 0 0.902228 0.641358 0 0.968066 0.641358 0 0.10844 0.68383 0 0.000054 0.68383 0 0.000054 0.673967 0 0.10844 0.673967 0 0.989805 0.716631 0 0.923967 0.716631 0 0.923967 0.706576 0 0.989805 0.706576 0 0.915463 0.337011 0 0.915463 0.422601 0 0.771793 0.422601 0 0.771793 0.337011 0</float_array>
+          <technique_common>
+            <accessor source="#adventureplaygound01a-mesh-map-channel3-array" count="200" stride="3">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+              <param name="P" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="adventureplaygound01a-mesh-vertices">
+          <input semantic="POSITION" source="#adventureplaygound01a-mesh-positions"/>
+        </vertices>
+        <triangles material="Newadventureplayground01a_bricks001a" count="96">
+          <input semantic="VERTEX" source="#adventureplaygound01a-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#adventureplaygound01a-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#adventureplaygound01a-mesh-map-channel1" offset="2" set="1"/>
+          <input semantic="TEXCOORD" source="#adventureplaygound01a-mesh-map-channel2" offset="3" set="2"/>
+          <input semantic="TEXCOORD" source="#adventureplaygound01a-mesh-map-channel3" offset="4" set="3"/>
+          <p>4 4 1 1 1 5 5 2 2 2 6 6 3 3 3 4 4 1 1 1 6 6 3 3 3 7 7 4 4 4 3 3 0 0 0 4 4 1 1 1 7 7 4 4 4 3 3 0 0 0 7 7 4 4 4 8 8 5 5 5 3 3 0 0 0 8 8 5 5 5 12 12 6 6 6 3 3 0 0 0 12 12 6 6 6 13 13 7 7 7 16 16 8 8 8 23 23 9 9 9 22 22 10 10 10 16 16 8 8 8 22 22 10 10 10 21 21 11 11 11 20 20 12 12 12 19 19 13 13 13 18 18 14 14 14 20 20 12 12 12 18 18 14 14 14 17 17 15 15 15 21 21 11 11 11 20 20 12 12 12 17 17 15 15 15 16 16 8 8 8 21 21 11 11 11 17 17 15 15 15 2 2 17 17 17 15 15 18 18 18 14 14 19 19 19 2 2 17 17 17 14 14 19 19 19 9 9 20 20 20 1 1 16 16 16 2 2 17 17 17 9 9 20 20 20 1 1 16 16 16 9 9 20 20 20 10 10 21 21 21 1 1 16 16 16 10 10 21 21 21 11 11 22 22 22 1 1 16 16 16 11 11 22 22 22 0 0 23 23 23 24 24 24 24 24 31 31 25 25 25 30 30 26 26 26 24 24 24 24 24 30 30 26 26 26 29 29 27 27 27 28 28 28 28 28 27 27 29 29 29 26 26 30 30 30 28 28 28 28 28 26 26 30 30 30 25 25 31 31 31 29 29 27 27 27 28 28 28 28 28 25 25 31 31 31 24 24 24 24 24 29 29 27 27 27 25 25 31 31 31 33 33 33 33 33 3 3 34 34 34 13 13 35 35 35 13 13 35 35 35 32 32 32 32 32 33 33 33 33 33 33 33 37 37 37 32 32 38 38 38 23 23 39 39 39 23 23 39 39 39 16 16 36 36 36 33 33 37 37 37 33 33 41 41 41 34 34 42 42 42 4 4 43 43 43 4 4 43 43 43 3 3 40 40 40 33 33 41 41 41 34 34 45 45 45 33 33 46 46 46 16 16 47 47 47 16 16 47 47 47 17 17 44 44 44 34 34 45 45 45 4 4 49 49 49 34 34 50 50 50 35 35 51 51 51 35 35 51 51 51 5 5 48 48 48 4 4 49 49 49 35 35 53 53 53 34 34 54 54 54 17 17 55 55 55 17 17 55 55 55 18 18 52 52 52 35 35 53 53 53 5 5 57 57 57 35 35 58 58 58 36 36 59 59 59 36 36 59 59 59 6 6 56 56 56 5 5 57 57 57 6 6 61 61 61 36 36 62 62 62 37 37 63 63 63 37 37 63 63 63 7 7 60 60 60 6 6 61 61 61 37 37 65 65 65 36 36 66 66 66 19 19 67 67 67 19 19 67 67 67 20 20 64 64 64 37 37 65 65 65 7 7 69 69 69 37 37 70 70 70 38 38 71 71 71 38 38 71 71 71 8 8 68 68 68 7 7 69 69 69 38 38 73 73 73 37 37 74 74 74 20 20 75 75 75 20 20 75 75 75 21 21 72 72 72 38 38 73 73 73 8 8 77 77 77 38 38 78 78 78 39 39 79 79 79 39 39 79 79 79 12 12 76 76 76 8 8 77 77 77 39 39 81 81 81 38 38 82 82 82 21 21 83 83 83 21 21 83 83 83 22 22 80 80 80 39 39 81 81 81 12 12 85 85 85 39 39 86 86 86 32 32 87 87 87 32 32 87 87 87 13 13 84 84 84 12 12 85 85 85 0 0 89 89 89 40 40 90 90 90 41 41 91 91 91 41 41 91 91 91 1 1 88 88 88 0 0 89 89 89 41 41 93 93 93 40 40 94 94 94 31 31 95 95 95 31 31 95 95 95 24 24 92 92 92 41 41 93 93 93 1 1 97 97 97 41 41 98 98 98 42 42 99 99 99 42 42 99 99 99 2 2 96 96 96 1 1 97 97 97 42 42 101 101 101 41 41 102 102 102 24 24 103 103 103 24 24 103 103 103 25 25 100 100 100 42 42 101 101 101 2 2 105 105 105 42 42 106 106 106 43 43 107 107 107 43 43 107 107 107 15 15 104 104 104 2 2 105 105 105 43 43 109 109 109 42 42 110 110 110 25 25 111 111 111 25 25 111 111 111 26 26 108 108 108 43 43 109 109 109 15 15 113 113 113 43 43 114 114 114 44 44 115 115 115 44 44 115 115 115 14 14 112 112 112 15 15 113 113 113 14 14 117 117 117 44 44 118 118 118 45 45 119 119 119 45 45 119 119 119 9 9 116 116 116 14 14 117 117 117 45 45 121 121 121 44 44 122 122 122 27 27 123 123 123 27 27 123 123 123 28 28 120 120 120 45 45 121 121 121 46 46 125 125 125 10 10 126 126 126 9 9 127 127 127 9 9 127 127 127 45 45 124 124 124 46 46 125 125 125 46 46 129 129 129 45 45 130 130 130 28 28 131 131 131 28 28 131 131 131 29 29 128 128 128 46 46 129 129 129 10 10 133 133 133 46 46 134 134 134 47 47 135 135 135 47 47 135 135 135 11 11 132 132 132 10 10 133 133 133 47 47 137 137 137 46 46 138 138 138 29 29 139 139 139 29 29 139 139 139 30 30 136 136 136 47 47 137 137 137 11 11 141 141 141 47 47 142 142 142 40 40 143 143 143 40 40 143 143 143 0 0 140 140 140 11 11 141 141 141 26 26 145 145 145 23 23 146 146 146 32 32 147 147 147 32 32 147 147 147 43 43 144 144 144 26 26 145 145 145 27 27 149 149 149 22 22 150 150 150 23 23 151 151 151 23 23 151 151 151 26 26 148 148 148 27 27 149 149 149 44 44 153 153 153 39 39 154 154 154 22 22 155 155 155 22 22 155 155 155 27 27 152 152 152 44 44 153 153 153 43 43 157 157 157 32 32 158 158 158 39 39 159 159 159 39 39 159 159 159 44 44 156 156 156 43 43 157 157 157 19 19 161 161 161 30 30 162 162 162 31 31 163 163 163 31 31 163 163 163 18 18 160 160 160 19 19 161 161 161 36 36 165 165 165 47 47 166 166 166 30 30 167 167 167 30 30 167 167 167 19 19 164 164 164 36 36 165 165 165 35 35 169 169 169 40 40 170 170 170 47 47 171 171 171 47 47 171 171 171 36 36 168 168 168 35 35 169 169 169 18 18 173 173 173 31 31 174 174 174 40 40 175 175 175 40 40 175 175 175 35 35 172 172 172 18 18 173 173 173</p>
+        </triangles>
+        <triangles material="Newadventureplayground01a_concrete001a1" count="12">
+          <input semantic="VERTEX" source="#adventureplaygound01a-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#adventureplaygound01a-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#adventureplaygound01a-mesh-map-channel1" offset="2" set="1"/>
+          <input semantic="TEXCOORD" source="#adventureplaygound01a-mesh-map-channel2" offset="3" set="2"/>
+          <input semantic="TEXCOORD" source="#adventureplaygound01a-mesh-map-channel3" offset="4" set="3"/>
+          <p>49 49 177 177 177 50 50 178 178 178 51 51 179 179 179 51 51 179 179 179 48 48 176 176 176 49 49 177 177 177 53 53 181 181 181 49 49 182 182 182 48 48 183 183 183 48 48 183 183 183 52 52 180 180 180 53 53 181 181 181 54 54 185 185 185 50 50 186 186 186 49 49 187 187 187 49 49 187 187 187 53 53 184 184 184 54 54 185 185 185 55 55 189 189 189 51 51 190 190 190 50 50 191 191 191 50 50 191 191 191 54 54 188 188 188 55 55 189 189 189 52 52 193 193 193 48 48 194 194 194 51 51 195 195 195 51 51 195 195 195 55 55 192 192 192 52 52 193 193 193 55 55 197 197 197 54 54 198 198 198 53 53 199 199 199 53 53 199 199 199 52 52 196 196 196 55 55 197 197 197</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="unnamed_scene" name="unnamed_scene">
+      <node id="TextureLocators-node" name="TextureLocators" type="NODE">
+        <translate>0 0 0</translate>
+        <rotate>-1 0 0 -90</rotate>
+        <scale>0.393701 0.393701 0.393701</scale>
+        <extra>
+          <technique profile="MAX3D">
+            <helper>
+              <bounding_min>-0.5 -0.5 -0.5</bounding_min>
+              <bounding_max>0.5 0.5 0.5</bounding_max>
+            </helper>
+          </technique>
+        </extra>
+      </node>
+      <node id="adventureplaygound01a-node" name="adventureplaygound01a" type="NODE">
+        <translate>0 0 0</translate>
+        <rotate>-1 0 0 -90</rotate>
+        <scale>0.393701 0.393701 0.393701</scale>
+        <instance_geometry url="#adventureplaygound01a-mesh">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="Newadventureplayground01a_bricks001a" target="#Newadventureplayground01a_bricks001a">
+                <bind_vertex_input semantic="CHANNEL1" input_semantic="TEXCOORD" input_set="1"/>
+              </instance_material>
+              <instance_material symbol="Newadventureplayground01a_concrete001a1" target="#Newadventureplayground01a_concrete001a1">
+                <bind_vertex_input semantic="CHANNEL1" input_semantic="TEXCOORD" input_set="1"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+      <node id="TextureLocators__2_-node" name="TextureLocators__2_" type="NODE">
+        <translate>0 0 0</translate>
+        <rotate>-1 0 0 -90</rotate>
+        <scale>0.393701 0.393701 0.393701</scale>
+        <extra>
+          <technique profile="MAX3D">
+            <helper>
+              <bounding_min>-0.5 -0.5 -0.5</bounding_min>
+              <bounding_max>0.5 0.5 0.5</bounding_max>
+            </helper>
+          </technique>
+        </extra>
+      </node>
+      <node id="VisualSceneNode" type="NODE">
+        <instance_light url="#ambient-environment-light"/>
+      </node>
+      <extra>
+        <technique profile="FCOLLADA">
+          <start_time>0</start_time>
+          <end_time>3.33333</end_time>
+        </technique>
+      </extra>
+      <extra>
+        <technique profile="MAX3D">
+          <frame_rate>30</frame_rate>
+        </technique>
+      </extra>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#unnamed_scene"/>
+  </scene>
+</COLLADA>

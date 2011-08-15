@@ -1,0 +1,1166 @@
+<AnimationLexicon>
+	<Gesture>
+		<ID>0001</ID>
+		<Name>Stand_up</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="62">Gestures\Female\female_ger_standUp.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="62">Gestures\Male\male_ger_standUp.anim</File>
+		</Files>
+		<Context>move-up</Context>
+		<Function>
+			<McNeil>Emblem</McNeil>
+		</Function>
+		<Restriction>noCustomization</Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0002</ID>
+		<Name>Eat_1</Name>
+		<Files gender="female">
+			<File strokeStart="13" strokeEnd="80">Gestures\Female\female_ger_eat_1.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="13" strokeEnd="80">Gestures\Male\male_ger_eat_1.anim</File>
+		</Files>
+		<Context>eat</Context>
+		<Function>
+			<McNeil>Emblem</McNeil>
+		</Function>
+		<Restriction>noCustomization</Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0003</ID>
+		<Name>Eat_2</Name>
+		<Files gender="female">
+			<File strokeStart="13" strokeEnd="69">Gestures\Female\female_ger_eat_2.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="13" strokeEnd="69">Gestures\Male\male_ger_eat_2.anim</File>
+		</Files>
+		<Context>eat</Context>
+		<Function>
+			<McNeil>Emblem</McNeil>
+		</Function>
+		<Restriction>noCustomization</Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0004</ID>
+		<Name>Go_away</Name>
+		<Files gender="female">
+			<File strokeStart="12" strokeEnd="77">Gestures\Female\female_ger_goAway.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="12" strokeEnd="77">Gestures\Male\male_ger_goAway.anim</File>
+		</Files>
+		<Context>move-away</Context>
+		<Function>
+			<McNeil>Emblem</McNeil>
+		</Function>
+	</Gesture>
+	<Gesture>
+		<ID>0005</ID>
+		<Name>German_Iconic_01</Name>
+		<CorpusName>VP01-1-1</CorpusName>
+		<Speech>"Well I just got there and uhm, I just went straight in there."</Speech>
+		<Description>Subject in German Small Talk conversation talking about a night club in Munich.</Description>
+		<Files gender="female">
+			<File strokeStart="8" strokeEnd="163">Gestures\Female\female_ger_iconic_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="8" strokeEnd="163">Gestures\Male\male_ger_iconic_01.anim</File>
+		</Files>
+		<Context>move-straight</Context>
+		<Function>
+			<McNeil>iconic</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Restriction>Germany, noCustomization</Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0006</ID>
+		<Name>German_Beat_01</Name>
+		<CorpusName>VP02-1-1</CorpusName>
+		<Speech>"I uhm work here, you know."</Speech>
+		<Description>Subject in German Small Talk conversation was asked about his work situation.</Description>
+		<Files gender="female">
+			<File strokeStart="8" strokeEnd="150">Gestures\Female\female_ger_beat_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="8" strokeEnd="150">Gestures\Male\male_ger_beat_01.anim</File>
+		</Files>
+		<Context>here</Context>
+		<Function>
+			<McNeil>beat</McNeil>
+			<DAMSL>answer</DAMSL>
+		</Function>
+		<Restriction>Germany, noCustomization</Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0007</ID>
+		<Name>German_Deictic_01</Name>
+		<CorpusName>VP05-1-1</CorpusName>
+		<Speech>"And what else? What do we do here? What did they say? Negotiation?"</Speech>
+		<Description>Subject in German Small Talk conversation wondering about the experimental setting?</Description>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="65">Gestures\Female\female_ger_deictic_01_pureStroke.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="8" strokeEnd="65">Gestures\Male\male_ger_deictic_01_pureStroke.anim</File>
+		</Files>
+		<Context>here-there</Context>
+		<Function>
+			<McNeil>deictic</McNeil>
+			<DAMSL>info-request</DAMSL>
+		</Function>
+		<Restriction>Germany, noCustomization</Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0008</ID>
+		<Name>German_Beat_02</Name>
+		<CorpusName>VP05-1-2</CorpusName>
+		<Speech>"Brings you further sure. Experience and so on. But..."</Speech>
+		<Description>Subject in German Small Talk conversation talking about a side job in his field of studies.</Description>
+		<Files gender="female">
+			<File strokeStart="8" strokeEnd="141">Gestures\Female\female_ger_beat_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="8" strokeEnd="141">Gestures\Male\male_ger_beat_02.anim</File>
+		</Files>
+		<Function>
+			<McNeil>beat</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Restriction>Germany, noCustomization</Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0009</ID>
+		<Name>German_Beat_03</Name>
+		<Files gender="female">
+			<File strokeStart="8" strokeEnd="55">Gestures\Female\female_ger_beat_03_pureStroke.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="8" strokeEnd="55">Gestures\Male\male_ger_beat_03_pureStroke.anim</File>
+		</Files>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction>Germany</Restriction>  
+	</Gesture>
+
+	<Gesture>
+		<ID>0010</ID>
+		<Name>Me</Name>
+		<Files gender="female">
+			<File strokeStart="8" strokeEnd="41">Gestures\Female\female_ger_me.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="8" strokeEnd="41">Gestures\Male\male_ger_me.anim</File>
+		</Files>
+		<Context>me</Context>
+		<Function>
+			<McNeil>Emblem</McNeil>
+		</Function>
+		<Restriction>Germany</Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0011</ID>
+		<Name>Come_over_here</Name>
+		<Files gender="female">
+			<File strokeStart="7" strokeEnd="57">Gestures\Female\female_ger_comeOverHere.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="7" strokeEnd="57">Gestures\Male\male_ger_comeOverHere.anim</File>
+		</Files>
+		<Context>move-here</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+	</Gesture>
+	<Gesture>
+		<ID>0012</ID>
+		<Name>Tasty</Name>
+		<Files gender="female">
+			<File strokeStart="11" strokeEnd="75">Gestures\Female\female_ger_tasty.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="11" strokeEnd="75">Gestures\Male\male_ger_tasty.anim</File>
+		</Files>
+		<Context>food</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+	</Gesture>
+	<Gesture>
+		<ID>0013</ID>
+		<Name>Becking_1</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="72">Gestures\Female\female_ger_becking_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="72">Gestures\Male\male_ger_becking_01.anim</File>
+		</Files>
+		<Context>greeting</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>Germany, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0014</ID>
+		<Name>Becking_2</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="72">Gestures\Female\female_ger_becking_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="72">Gestures\Male\male_ger_becking_02.anim</File>
+		</Files>
+		<Context>greeting</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>Germany, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0015</ID>
+		<Name>Becking_3</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="72">Gestures\Female\female_ger_becking_03.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="72">Gestures\Male\male_ger_becking_03.anim</File>
+		</Files>
+		<Context>greeting</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>Germany, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0016</ID>
+		<Name>No</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="72">Gestures\Female\female_ger_no.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="72">Gestures\Male\male_ger_no.anim</File>
+		</Files>
+		<Context>negative</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+	</Gesture>
+	<Gesture>
+		<ID>0017</ID>
+		<Name>Windscreen_wiper</Name>
+		<Files gender="female">
+			<File strokeStart="12" strokeEnd="64">Gestures\Female\female_ger_windscreenWiper.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="12" strokeEnd="64">Gestures\Male\male_ger_windscreenWiper.anim</File>
+		</Files>
+		<Context>stupid</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+	</Gesture>
+	<Gesture>
+		<ID>0018</ID>
+		<Name>Drink</Name>
+		<Files gender="female">
+			<File strokeStart="11" strokeEnd="84">Gestures\Female\female_ger_drink.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="11" strokeEnd="84">Gestures\Male\male_ger_drink.anim</File>
+		</Files>
+		<Context>drink</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0019</ID>
+		<Name>Watch</Name>
+		<Files gender="female">
+			<File strokeStart="13" strokeEnd="64">Gestures\Female\female_ger_watch.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="13" strokeEnd="64">Gestures\Male\male_ger_watch.anim</File>
+		</Files>
+		<Context>time</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0020</ID>
+		<Name>Japanese_Iconic_01</Name>
+		<CorpusName>M_4_S_1-1</CorpusName>
+		<Speech>"For us, well in the cafeteria there is; cash you know is not valid there"</Speech>
+		<Description>Subject in Japanese Small Talk conversation talking about his life at university.</Description>
+		<Files gender="female">
+			<File strokeStart="17" strokeEnd="127">Gestures\Female\female_jap_iconic_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="17" strokeEnd="127">Gestures\Male\male_jap_iconic_01.anim</File>
+		</Files>
+		<Context>location</Context>
+		<Function>
+			<McNeil>iconic</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Restriction>Japan, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0021</ID>
+		<Name>Japanese_Iconic_02</Name>
+		<CorpusName>M_15_S_1-1</CorpusName>
+		<Speech>"It's not far, erh it stands in this main campus, but"</Speech>
+		<Description>Subject in Japanese Small Talk conversation talking about the location of his faculty.</Description>
+		<Files gender="female">
+			<File strokeStart="14" strokeEnd="117">Gestures\Female\female_jap_iconic_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="14" strokeEnd="117">Gestures\Male\male_jap_iconic_02.anim</File>
+		</Files>
+		<Context>location</Context>
+		<Function>
+			<McNeil>iconic</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Restriction>Japan, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0022</ID>
+		<Name>Japanese_Beat_01</Name>
+		<CorpusName>M_19_S_1-1</CorpusName>
+		<Speech>"In the department of education, generally, the fields are divided into three parts: pedagogy, politics of the education and psychology."</Speech>
+		<Description>Subject in Japanese Small Talk conversation talking his study subject.</Description>
+		<Files gender="female">
+			<File strokeStart="20" strokeEnd="286">Gestures\Female\female_jap_beat_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="20" strokeEnd="286">Gestures\Male\male_jap_beat_01.anim</File>
+		</Files>
+		<Function>
+			<McNeil>beat</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Restriction>Japan, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0023</ID>
+		<Name>Japanese_Metaphoric_02</Name>
+		<CorpusName>M_19_S_1-2</CorpusName>
+		<Speech>"Though it's okay for the exam for the cognative Psychology, for the clinical Psychology there's a great competition to enter to the faculty."</Speech>
+		<Description>Subject in Japanese Small Talk conversation talking about his study subject.</Description>
+		<Files gender="female">
+			<File strokeStart="19" strokeEnd="79">Gestures\Female\female_jap_metaphoric_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="19" strokeEnd="79">Gestures\Male\male_jap_metaphoric_02.anim</File>
+		</Files>
+		<Function>
+			<McNeil>metaphoric</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Restriction>Japan, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0024</ID>
+		<Name>Japanese_Deictic_01</Name>
+		<CorpusName>F_31_S_1-1</CorpusName>
+		<Speech>"That German guy was telling about more and more prize money."</Speech>
+		<Description>Subject in Japanese Small Talk conversation talking about the experimental setting.</Description>
+		<Files gender="female">
+			<File strokeStart="4" strokeEnd="96">Gestures\Female\female_jap_deictic_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="4" strokeEnd="96">Gestures\Male\male_jap_deictic_01.anim</File>
+		</Files>
+		<Function>
+			<McNeil>deictic</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Restriction>Japan, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0025</ID>
+		<Name>Japanese_Deictic_02</Name>
+		<CorpusName>F_32_S_1-1</CorpusName>
+		<Speech>"Are you an undergraduate student?"</Speech>
+		<Description>Subject in Japanese Small Talk conversation talking about their studies.</Description>
+		<Files gender="female">
+			<File strokeStart="13" strokeEnd="117">Gestures\Female\female_jap_deictic_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="13" strokeEnd="117">Gestures\Male\male_jap_deictic_02.anim</File>
+		</Files>
+		<Function>
+			<McNeil>deictic</McNeil>
+			<DAMSL>info-request</DAMSL>
+		</Function>
+		<Restriction>Japan, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0026</ID>
+		<Name>Japanese_Metaphoric_01</Name>
+		<CorpusName>F_32_S_1-2</CorpusName>
+		<Speech>"Well, I take a class around the new educational psychology."</Speech>
+		<Description>Subject in Japanese Small Talk conversation talking about their studies.</Description>
+		<Files gender="female">
+			<File strokeStart="15" strokeEnd="125">Gestures\Female\female_jap_metaphoric_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="15" strokeEnd="125">Gestures\Male\male_jap_metaphoric_01.anim</File>
+		</Files>
+		<Function>
+			<McNeil>metaphoric</McNeil>
+			<DAMSL>answer</DAMSL>
+		</Function>
+		<Restriction>Japan, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0027</ID>
+		<Name>Japanese_Deictic_03</Name>
+		<CorpusName>F_32_S_1-3</CorpusName>
+		<Speech>"Well, aren't you ??? at Wednesday..." (interrupted)</Speech>
+		<Description>Subject in Japanese Small Talk conversation talking about their studies.</Description>
+		<Files gender="female">
+			<File strokeStart="8" strokeEnd="114">Gestures\Female\female_jap_deictic_03.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="8" strokeEnd="114">Gestures\Male\male_jap_deictic_03.anim</File>
+		</Files>
+		<Function>
+			<McNeil>deictic</McNeil>
+			<DAMSL>info-request</DAMSL>
+		</Function>
+		<Restriction>Japan, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0028</ID>
+		<Name>Japanese_Deictic_04</Name>
+		<CorpusName>F_32_S_1-4</CorpusName>
+		<Speech>"There isn't anybody who could be asked, because there's few people around here."</Speech>
+		<Description>Subject in Japanese Small Talk conversation talking about getting lost on their way to the experiment.</Description>
+		<Files gender="female">
+			<File strokeStart="11" strokeEnd="99">Gestures\Female\female_jap_deictic_04.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="11" strokeEnd="99">Gestures\Male\male_jap_deictic_04.anim</File>
+		</Files>
+		<Function>
+			<McNeil>deictic</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Restriction>Japan, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0029</ID>
+		<Name>Gesture_20</Name>
+		<CorpusName>F_33_S_1-1</CorpusName>
+		<Speech>not available</Speech>
+		<Description>not available</Description>
+		<Files gender="female">
+			<File strokeStart="14" strokeEnd="55">Gestures\Female\char_female_japan_arme_unten_zusammen_zu_geste_20.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="14" strokeEnd="55">Gestures\Male\char_male_japan_arme_unten_zusammen_zu_geste_20.anim</File>
+		</Files>
+		<Function>
+			<McNeil></McNeil>
+			<DAMSL></DAMSL>
+		</Function>
+		<Restriction>Japan, noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0030</ID>
+		<Name>Bow_30_Degrees</Name>
+		<Files gender="female">
+			<File strokeStart="11" strokeEnd="42">Gestures\Female\female_jap_bow30degrees.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="11" strokeEnd="42">Gestures\Male\male_jap_bow30degrees.anim</File>
+		</Files>
+		<Context>greeting</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>Japan</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0031</ID>
+		<Name>HeadNod</Name>
+		<Files gender="female">
+			<File strokeStart="13" strokeEnd="35">Gestures\Female\female_jap_headNod.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="13" strokeEnd="35">Gestures\Male\male_jap_headNod.anim</File>
+		</Files>
+		<Context>greeting</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>Japan</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0032</ID>
+		<Name>Metaphoric_02</Name>
+		<Files gender="female">
+			<File strokeStart="12" strokeEnd="52">Gestures\Female\female_ger_metaphoric_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="12" strokeEnd="52">Gestures\Male\male_ger_metaphoric_02.anim</File>
+		</Files>
+		<Function>
+			<McNeil>metaphoric</McNeil>
+		</Function>
+		<Restriction></Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0033</ID>
+		<Name>Metaphoric_03</Name>
+		<Files gender="female">
+			<File strokeStart="13" strokeEnd="43">Gestures\Female\female_ger_metaphoric_03.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="13" strokeEnd="43">Gestures\Male\male_ger_metaphoric_03.anim</File>
+		</Files>
+		<Function>
+			<McNeil>metaphoric</McNeil>
+		</Function>
+		<Restriction></Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0034</ID>
+		<Name>Metaphoric_01</Name>
+		<Files gender="female">
+			<File strokeStart="15" strokeEnd="52">Gestures\Female\female_ger_metaphoric_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="15" strokeEnd="52">Gestures\Male\male_ger_metaphoric_01.anim</File>
+		</Files>
+		<Function>
+			<McNeil>metaphoric</McNeil>
+		</Function>
+		<Restriction></Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0035</ID>
+		<Name>Japanese_Metaphoric_03</Name>
+		<CorpusName>M_19_S_1-2</CorpusName>
+		<Speech>"Though it's okay for the exam for the cognative Psychology, for the clinical Psychology there's a great competition to enter to the faculty."</Speech>
+		<Description>Subject in Japanese Small Talk conversation talking about his study subject.</Description>
+		<Files gender="female">
+			<File strokeStart="19" strokeEnd="160">Gestures\Female\female_jap_metaphoric_03.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="19" strokeEnd="160">Gestures\Male\male_jap_metaphoric_03.anim</File>
+		</Files>
+		<Function>
+			<McNeil>metaphoric</McNeil>
+			<DAMSL>statement</DAMSL>
+		</Function>
+		<Restriction>Japan, noCustomization</Restriction>
+	</Gesture>
+	<Posture>
+		<ID>0036</ID>
+		<Name>German_posture_armsCrossed</Name>
+		<Description>300 Frames posture in which the character holds his/her arms crossed</Description>
+		<Files gender="female">
+			<File strokeStart="0" strokeEnd="300">Gestures\Female\female_ger_armsCrossed_stroke.anim</File>
+			<File type="preparation" strokeStart="7" strokeEnd="35">Gestures\Female\female_ger_armsCrossed_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="40">Gestures\Female\female_ger_armsCrossed_ret.anim</File>			
+		</Files>
+		<Files gender="male">
+			<File strokeStart="0" strokeEnd="300">Gestures\Ger\Male\Anim\male_ger_armsCrossed_stroke.anim</File>
+			<File type="preparation" strokeStart="7" strokeEnd="35">Gestures\Male\male_ger_armsCrossed_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="40">Gestures\Male\male_ger_armsCrossed_ret.anim</File>			
+		</Files>
+		<Restriction>Germany</Restriction>		
+	</Posture>
+	<Posture>
+		<ID>0037</ID>
+		<Name>German_posture_handsOnHips</Name>
+		<Description>300 Frames posture in which the character has the hands on his/her hips</Description>
+		<Files gender="female">
+			<File strokeStart="0" strokeEnd="300">Gestures\Female\female_ger_handsOnHips_stroke.anim</File>
+			<File type="preparation" strokeStart="15" strokeEnd="30">Gestures\Female\female_ger_handsOnHips_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="35">Gestures\Female\female_ger_handsOnHips_ret.anim</File>			
+		</Files>
+		<Files gender="male">
+			<File strokeStart="0" strokeEnd="300">Gestures\Male\male_ger_handsOnHips_stroke.anim</File>
+			<File type="preparation" strokeStart="7" strokeEnd="25">Gestures\Male\male_ger_handsOnHips_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="38">Gestures\Male\male_ger_handsOnHips_ret.anim</File>			
+		</Files>
+		<Restriction>Germany</Restriction>		
+	</Posture>
+	<Gesture>
+		<ID>0038</ID>
+		<Name>Pointing_01</Name>
+		<Files gender="female">
+			<File strokeStart="7" strokeEnd="68">Gestures\Female\female_ger_pointing_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="7" strokeEnd="68">Gestures\Male\male_ger_pointing_01.anim</File>
+		</Files>
+		<Context>pointing at an imaginary thing</Context>
+		<Function>
+			<McNeil>deictic</McNeil>
+		</Function>
+	</Gesture>
+	<Posture>
+		<ID>0039</ID>
+		<Name>Japanese_posture_handsCrossed</Name>
+		<Description>300 Frames posture in which the character has the hands crossed infront of his Pelvis</Description>
+		<Files gender="female">
+			<File strokeStart="0" strokeEnd="300">Gestures\Female\female_jap_handsCrossed_stroke.anim</File>
+			<File type="preparation" strokeStart="7" strokeEnd="30">Gestures\Female\female_jap_handsCrossed_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="36">Gestures\Female\female_jap_handsCrossed_ret.anim</File>			
+		</Files>
+		<Files gender="male">
+			<File strokeStart="0" strokeEnd="300">Gestures\Male\male_jap_handsCrossed_stroke.anim</File>
+			<File type="preparation" strokeStart="7" strokeEnd="30">Gestures\Male\male_jap_handsCrossed_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="36">Gestures\Male\male_jap_handsCrossed_ret.anim</File>			
+		</Files>
+		<Restriction>Germany</Restriction>		
+	</Posture>
+	<Gesture>
+		<ID>0040</ID>
+		<Name>Adaptor_01</Name>
+		<Description>The character strokes through her/his hair</Description>
+		<Files gender="female">
+			<File strokeStart="08" strokeEnd="46">Gestures\Female\female_ger_adaptor_strokeThroughHair.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="08" strokeEnd="46">Gestures\Male\male_ger_adaptor_strokeThroughHair.anim</File>
+		</Files>
+		<Function>
+			<McNeil>adaptor</McNeil>
+		</Function>
+		<Restriction></Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0041</ID>
+		<Name>German_Deictic_02</Name>
+		<CorpusName>german-deictic2.wmv</CorpusName>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="6" strokeEnd="44">Gestures\Female\female_ger_deictic_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="6" strokeEnd="44">Gestures\Male\male_ger_deictic_02.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>deictic</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0042</ID>
+		<Name>German_Deictic_03</Name>
+		<CorpusName>germna-deictic.wmv</CorpusName>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="6" strokeEnd="38">Gestures\Female\female_ger_deictic_03.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="6" strokeEnd="38">Gestures\Male\male_ger_deictic_03.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>deictic</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0043</ID>
+		<Name>German-Ranicki_01</Name>
+		<Speech></Speech>
+		<Description>Reich Ranicki, a famous german literary critic</Description>
+		<Files gender="female">
+			<File strokeStart="6" strokeEnd="45">Gestures\Female\female_ger_ranicki_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="6" strokeEnd="45">Gestures\Male\male_ger_ranicki_01.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0044</ID>
+		<Name>German-Ranicki_02</Name>
+		<Speech></Speech>
+		<Description>Reich Ranicki, a famous german literary critic</Description>
+		<Files gender="female">
+			<File strokeStart="6" strokeEnd="57">Gestures\Female\female_ger_ranicki_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="6" strokeEnd="57">Gestures\Male\male_ger_ranicki_02.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>deictic</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Movement>
+		<ID>0045</ID>
+		<Name>Sidestep left</Name>
+		<Description>Sidestep to the left (ca. 20cms)</Description>
+		<Files gender="female">
+			<File strokeStart="3" strokeEnd="27">Gestures\Female\female_ger_step_left.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="3" strokeEnd="27">Gestures\Male\male_ger_step_left.anim</File>
+		</Files>
+		<Function>repositioning</Function>
+	</Movement>
+	<Movement>
+		<ID>0046</ID>
+		<Name>Sidestep right</Name>
+		<Description>Sidestep to the right (ca. 20cms)</Description>
+		<Files gender="female">
+			<File strokeStart="3" strokeEnd="27">Gestures\Female\female_ger_step_right.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="3" strokeEnd="27">Gestures\Male\male_ger_step_right.anim</File>
+		</Files>
+		<Function>repositioning</Function>
+	</Movement>
+	<Gesture>
+		<ID>0047</ID>
+		<Name>German Scratch Head</Name>
+		<Speech></Speech>
+		<Description>Scratch head</Description>
+		<Files gender="female">
+			<File strokeStart="5" strokeEnd="60">Gestures\Female\female_ger_scratch_head.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="5" strokeEnd="60">Gestures\Male\male_ger_scratch_head.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>adaptor</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Still>
+		<ID>0048</ID>
+		<Name>Still Animation Low</Name>
+		<Description>Two frames animation for spacial extend feature</Description>
+		<Files gender="female">
+			<File strokeStart="0" strokeEnd="1">Gestures\Female\female_ger_still_low.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="0" strokeEnd="1">Gestures\Male\male_ger_still_low.anim</File>
+		</Files>
+	</Still>
+	<Still>
+		<ID>0049</ID>
+		<Name>Still Animation Medium</Name>
+		<Description>Two frames animation for spacial extend feature</Description>
+		<Files gender="female">
+			<File strokeStart="0" strokeEnd="1">Gestures\Female\female_ger_still_medium.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="0" strokeEnd="1">Gestures\Male\male_ger_still_medium.anim</File>
+		</Files>
+	</Still>
+	<Still>
+		<ID>0050</ID>
+		<Name>Still Animation High</Name>
+		<Description>Two frames animation for spacial extend feature</Description>
+		<Files gender="female">
+			<File strokeStart="0" strokeEnd="1">Gestures\Female\female_ger_still_high.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="0" strokeEnd="1">Gestures\Male\male_ger_still_high.anim</File>
+		</Files>
+	</Still>
+	<Gesture>
+		<ID>0051</ID>
+		<Name>HeadNod - only head</Name>
+		<Description>Only the head is animated</Description>
+		<Files gender="female">
+			<File strokeStart="4" strokeEnd="16">Gestures\Female\female_jap_headNod_only_head.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="4" strokeEnd="16">Gestures\Male\male_jap_headNod_only_head.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Posture>
+		<ID>0052</ID>
+		<Name>Idle</Name>
+		<Description></Description>
+		<Files gender="female">
+			<File>female_german_idle.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>male_german_idle.anim</File>			
+		</Files>	
+	</Posture>
+	<Movement>
+		<ID>0053</ID>
+		<Name>Walk</Name>
+		<Description></Description>
+		<Files gender="female">
+			<File>char_female_laufen.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>char_male_laufen.anim</File>			
+		</Files>	
+	</Movement>
+	<Posture>
+		<ID>0054</ID>
+		<Name>Japanese_posture_JHS</Name>
+		<Description>300 Frames posture in which the character holds the one hand with the other hand infront of his/her stomach</Description>
+		<Files gender="female">
+			<File strokeStart="0" strokeEnd="300">Gestures\Female\female_jap_JHS_stroke.anim</File>
+			<File type="preparation" strokeStart="12" strokeEnd="28">Gestures\Female\female_jap_JHS_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="33">Gestures\Female\female_jap_JHS_ret.anim</File>			
+		</Files>
+		<Files gender="male">
+			<File strokeStart="0" strokeEnd="300">Gestures\Male\male_jap_JHS_stroke.anim</File>
+			<File type="preparation" strokeStart="12" strokeEnd="28">Gestures\Male\male_jap_JHS_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="33">Gestures\Male\male_jap_JHS_ret.anim</File>			
+		</Files>
+		<Restriction>Germany</Restriction>		
+	</Posture>
+	<Gesture>
+		<ID>0055</ID>
+		<Name>Wipe Bar</Name>
+		<Speech></Speech>
+		<Description>The character wipes the bar</Description>
+		<Files gender="female">
+			<File strokeStart="14" strokeEnd="110">Gestures\Female\female_ger_barWipe.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="14" strokeEnd="110">Gestures\Male\male_ger_barWipe.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0056</ID>
+		<Name>Pour glas</Name>
+		<Speech></Speech>
+		<Description>The character takes a bottle, a glas and pours the bottle into the glass</Description>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="214">Gestures\Female\female_ger_pourGlas.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="214">Gestures\Male\male_ger_pourGlas.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0057</ID>
+		<Name>Japanese Beat 02</Name>
+		<Speech></Speech>
+		<Description>Japanese beat gesture from corpusvideo</Description>
+		<Files gender="female">
+			<File strokeStart="11" strokeEnd="143">Gestures\Female\female_jap_beat_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="11" strokeEnd="143">Gestures\Male\male_jap_beat_02.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0058</ID>
+		<Name>Go On</Name>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="72">Gestures\Female\female_ger_goOn.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="74">Gestures\Male\male_ger_goOn.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0059</ID>
+		<Name>Japanese Beat 03</Name>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="18" strokeEnd="52">Gestures\Female\female_jap_beat_03.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="18" strokeEnd="54">Gestures\Male\male_jap_beat_03.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Movement>
+		<ID>0060</ID>
+		<Name>Medium Step Backward</Name>
+		<Description></Description>
+		<Files gender="female">
+			<File>Gestures\Female\female_ger_mediumStepBackward.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>Gestures\Male\male_ger_mediumStepBackward.anim</File>			
+		</Files>	
+	</Movement>
+	<Movement>
+		<ID>0061</ID>
+		<Name>Small Step Backward</Name>
+		<Description></Description>
+		<Files gender="female">
+			<File>Gestures\Female\female_ger_smallStepBackward.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>Gestures\Male\male_ger_smallStepBackward.anim</File>			
+		</Files>	
+	</Movement>
+	<Movement>
+		<ID>0062</ID>
+		<Name>Large Step Backward</Name>
+		<Description></Description>
+		<Files gender="female">
+			<File>Gestures\Female\female_ger_largeStepBackward.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>Gestures\Male\male_ger_largeStepBackward.anim</File>			
+		</Files>	
+	</Movement>
+	<Movement>
+		<ID>0063</ID>
+		<Name>Skew Left</Name>
+		<Description>Loopable movement to the left</Description>
+		<Files gender="female">
+			<File>Gestures\Female\female_ger_skewLeft.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>Gestures\Male\male_ger_skewLeft.anim</File>			
+		</Files>	
+	</Movement>
+	<Movement>
+		<ID>0064</ID>
+		<Name>Skew Left</Name>
+		<Description>Loopable movement to the right</Description>
+		<Files gender="female">
+			<File>Gestures\Female\female_ger_skewRight.anim</File>		
+		</Files>
+		<Files gender="male">
+			<File>Gestures\Male\male_ger_skewRight.anim</File>			
+		</Files>	
+	</Movement>
+	<Gesture>
+		<ID>0065</ID>
+		<Name>Drink Japanese</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="92">Gestures\Female\female_jap_drink.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="92">Gestures\Male\male_jap_drink.anim</File>
+		</Files>
+		<Context>drink</Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0066</ID>
+		<Name>Come Over Here Japanese</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="62">Gestures\Female\female_jap_comeOverHere.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="62">Gestures\Male\male_jap_comeOverHere.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0067</ID>
+		<Name>Me Japanese</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="68">Gestures\Female\female_jap_me.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="68">Gestures\Male\male_jap_me.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>emblem</McNeil>
+		</Function>
+		<Restriction>noCustomization</Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0068</ID>
+		<Name>German Beat 04</Name>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="90">Gestures\Female\female_ger_beat_04.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="90">Gestures\Male\male_ger_beat_04.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>
+	</Gesture>
+	<Gesture>
+		<ID>0069</ID>
+		<Name>German_Iconic_02</Name>
+		<CorpusName>german-icon.wmv</CorpusName>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="9" strokeEnd="47">Gestures\Female\female_ger_iconic_02.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="9" strokeEnd="47">Gestures\Male\male_ger_iconic_02.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>iconic</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0070</ID>
+		<Name>German_Metaphoric_04</Name>
+		<CorpusName>german-meta.wmv</CorpusName>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="8" strokeEnd="54">Gestures\Female\female_ger_metaphoric_04.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="8" strokeEnd="54">Gestures\Male\male_ger_metaphoric_04.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>metaphoric</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0071</ID>
+		<Name>German_Beat_05</Name>
+		<CorpusName>german-beat2.wmv</CorpusName>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="11" strokeEnd="57">Gestures\Female\female_ger_beat_05.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="11" strokeEnd="57">Gestures\Male\male_ger_beat_05.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Gesture>
+		<ID>0072</ID>
+		<Name>German_Beat_06</Name>
+		<CorpusName>german-beat.wmv</CorpusName>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="9" strokeEnd="149">Gestures\Female\female_ger_beat_06.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="9" strokeEnd="149">Gestures\Male\male_ger_beat_06.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>beat</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+	<Posture>
+		<ID>0073</ID>
+		<Name>German PHE</Name>
+		<Description>300 Frames posture in which the character holds the one hand </Description>
+		<Files gender="female">
+			<File strokeStart="0" strokeEnd="300">Gestures\Female\female_ger_PHE_stroke.anim</File>
+			<File type="preparation" strokeStart="8" strokeEnd="25">Gestures\Female\female_ger_PHE_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="30">Gestures\Female\female_ger_PHE_ret.anim</File>			
+		</Files>
+		<Files gender="male">
+			<File strokeStart="0" strokeEnd="300">Gestures\Male\male_ger_PHE_stroke.anim</File>
+			<File type="preparation" strokeStart="8" strokeEnd="25">Gestures\Male\male_ger_PHE_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="30">Gestures\Male\male_ger_PHE_ret.anim</File>			
+		</Files>
+		<Restriction>Germany</Restriction>		
+	</Posture>
+	<Posture>
+		<ID>0074</ID>
+		<Name>Japanese PHB</Name>
+		<Description>300 Frames posture in which the character holds the hand behind his body </Description>
+		<Files gender="female">
+			<File strokeStart="0" strokeEnd="300">Gestures\Female\female_jap_PHB_stroke.anim</File>
+			<File type="preparation" strokeStart="8" strokeEnd="38">Gestures\Female\female_jap_PHB_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="40">Gestures\Female\female_jap_PHB_ret.anim</File>			
+		</Files>
+		<Files gender="male">
+			<File strokeStart="0" strokeEnd="300">Gestures\Male\male_jap_PHB_stroke.anim</File>
+			<File type="preparation" strokeStart="8" strokeEnd="38">Gestures\Male\male_jap_PHB_prep.anim</File>
+			<File type="retraction" strokeStart="15" strokeEnd="40">Gestures\Male\male_jap_PHB_ret.anim</File>			
+		</Files>
+		<Restriction>Germany</Restriction>		
+	</Posture>
+	<Gesture>
+		<ID>0075</ID>
+		<Name>Japanese_Adaptor_01</Name>
+		<CorpusName>Jap-PHFe.wmv</CorpusName>
+		<Speech></Speech>
+		<Description></Description>
+		<Files gender="female">
+			<File strokeStart="10" strokeEnd="64">Gestures\Female\female_jap_adaptor_01.anim</File>
+		</Files>
+		<Files gender="male">
+			<File strokeStart="10" strokeEnd="64">Gestures\Male\male_jap_adaptor_01.anim</File>
+		</Files>
+		<Context></Context>
+		<Function>
+			<McNeil>adaptor</McNeil>
+		</Function>
+		<Restriction></Restriction>  
+	</Gesture>
+</AnimationLexicon>

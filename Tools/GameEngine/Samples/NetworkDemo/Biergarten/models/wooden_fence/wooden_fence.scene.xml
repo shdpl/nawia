@@ -1,0 +1,6 @@
+<Model geometry="models/wooden_fence/wooden_fence.geo" name="wooden_fence" >
+    <Mesh tx="0" vertREnd="23" ty="0.231272" tz="-0" batchStart="0" name="cube2" batchCount="36" material="models/wooden_fence/wood.material.xml" vertRStart="0" />
+    <Mesh tx="0" vertREnd="47" ty="2.19076" tz="-0" batchStart="36" name="cube05" batchCount="36" material="models/wooden_fence/wood.material.xml" vertRStart="24" />
+    <Mesh tx="0" vertREnd="71" ty="0" tz="-0.013377" batchStart="72" name="cube4" batchCount="36" material="models/wooden_fence/wood.material.xml" vertRStart="48" />
+    <Mesh tx="0" vertREnd="95" ty="0" tz="1.03017" batchStart="108" name="cube06" batchCount="36" material="models/wooden_fence/wood.material.xml" vertRStart="72" />
+</Model>
