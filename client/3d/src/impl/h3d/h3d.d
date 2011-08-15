@@ -20,6 +20,7 @@ module h3d.h3d;
 public import horde3d;
 
 alias int H3DNode;
+alias int H3DRes;
 
 static this() {
 	h3dInit();

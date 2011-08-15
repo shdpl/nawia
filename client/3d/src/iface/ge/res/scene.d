@@ -15,9 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.animation.blended;
+module ge.res.scene;
 
-class H3DAnimationBlended {
-	uint _animLayer;
-	
+import ge.res.node,
+	ge.res.h3d;
+
+class Scene {
+	public:
+	void clear() {
+		h3dClear();
+	}
+	H3DNode root;
 }

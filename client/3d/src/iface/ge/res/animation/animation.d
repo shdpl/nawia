@@ -17,15 +17,9 @@
 
 module ge.res.animation.animation;
 
-import ge.res.h3d;
+private import io.res.resource;
 
-class H3DAnimation {
-	public:
-	immutable uint maxCount = 0;
-	H3DResTypes _resource;
-	string _targetNode;
+interface Animation : Resource {
 	///Time in frames
-	uint _time;
-	uint weight;
-	
+	uint frames() @property;
 }

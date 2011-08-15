@@ -17,15 +17,18 @@
 
 module ge.res.animation.animation;
 
-import ge.res.h3d;
+import h3d.h3d;
 
-class H3DAnimation {
+abstract class Animation {
 	public:
 	immutable uint maxCount = 0;
-	H3DResTypes _resource;
+	H3DRes _resource;
 	string _targetNode;
 	///Time in frames
-	uint _time;
+	uint frames() {
+		return h3dGetResParamI(_resource,
+			H3DAnimRes.List.ComponentElem, 0, H3DAnimRes.List.EntFrameCountI);
+	}
 	uint weight;
 	
 }

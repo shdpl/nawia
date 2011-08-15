@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <buildpath>
-	<buildpathentry kind="src" path=""/>
+	<buildpathentry excluding="impl/|impl/h3d/ext/|impl/polyvox/ext/|impl/glfw/ext/" including="iface/" kind="src" path="src"/>
+	<buildpathentry kind="src" path="src/impl/h3d/ext"/>
+	<buildpathentry kind="src" path="src/impl/polyvox/ext"/>
+	<buildpathentry kind="src" path="src/impl/glfw/ext"/>
+	<buildpathentry excluding="h3d/ext/|polyvox/ext/|glfw/ext/" kind="src" path="src/impl"/>
 	<buildpathentry kind="con" path="org.eclipse.dltk.launching.INTERPRETER_CONTAINER"/>
-	<buildpathentry external="true" kind="lib" path="C:/Users/shd/Documents/src/nawia/client/3d/src"/>
 </buildpath>
