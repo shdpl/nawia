@@ -17,17 +17,16 @@
 
 module ge.res.material;
 
+private import ge.res.resource;
 
-import ge.res.h3d,
-	ge.res.shader.shader,
+import ge.res.shader.shader,
 	type.cuda.types;
 
-class IMaterial {
-	public:
-	Shader shader;
+interface IMaterial : IResource {
+	IShader shader() @property;
+	void shader(IShader) @property;
 	
-	void*/*Sampler[]*/ _samplers;
-	float3[] _uniforms;
-	int id;
+	/*ISampler[] _samplers;
+	float3[] _uniforms;*/
 	
 }

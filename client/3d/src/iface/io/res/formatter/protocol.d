@@ -15,18 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.shader.shader;
+module io.res.formatter.protocol;
 
-import type.cuda.types;
-
-interface IShader {
+interface FormatterProto {
+	public void init(); //setup network listeners
 	
-	/*IShaderContext[] contexts() @property;
-	void contexts(IShaderContext[]) @property;
-	
-	Sampler[] _samplers = void;
-	float3[] _uniforms;*/
-	
-	public:
-	abstract void preamble(string code) @property;
 }

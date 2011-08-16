@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.glfw.keyboard;
+module impl.glfw.api.impl.glfw.keyboard;
 
 import io.hid.keyboard.keyboard;
 

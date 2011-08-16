@@ -17,22 +17,40 @@
 
 module ge.res.particle;
 
-import std.datetime;
+public import std.datetime;
 
-import ge.res.h3d,
-	type.color.rgba;
+public import type.color.rgba;
 
-class H3DParticle {
-	ColorRGBA!float color;
-	float size;
-	float velocity;
-	float velocityRot;
+private import ge.res.resource;
+
+
+interface IParticle {
+	ColorRGBA!float color() @property;
+	void color(ColorRGBA!float) @property;
 	
-	StopWatch lifeMin;
-	StopWatch lifeMax;
+	float size() @property;
+	void size(float) @property;
 	
-	float powerStartMin;
-	float powerStartMax;
-	float powerEnd;
+	float velocity() @property;
+	void velocity(float) @property;
+	
+	
+	float velocityRot() @property;
+	void velocityRot(float) @property;
+	
+	StopWatch lifeMin() @property;
+	void lifeMin(StopWatch) @property;
+	
+	StopWatch lifeMax() @property;
+	void lifeMax(StopWatch) @property;
+	
+	float powerStartMin() @property;
+	void powerStartMin(float) @property;
+	
+	float powerStartMax() @property;
+	void powerStartMax(float) @property;
+	
+	float powerEnd() @property;
+	void powerEnd(float) @property;
 	
 }

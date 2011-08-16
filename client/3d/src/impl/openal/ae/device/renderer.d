@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.openal.device.renderer;
+module impl.openal.ae.device.renderer;
 
-import api.openal.device.device;
+import impl.openal.ae.device.device;
 
 class DeviceRenderer : Device {
 	bool supported(Extension ext) {return false;}

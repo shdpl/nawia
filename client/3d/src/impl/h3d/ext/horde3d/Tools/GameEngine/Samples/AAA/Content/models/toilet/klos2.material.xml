@@ -1,5 +1,0 @@
-<Material>
-   <ShaderFlag name="_F01_Skinning" /> 
-<Sampler name="albedoMap" map="models/toilet/klo2.jpg" /> 
-   <Shader source="shaders/model.shader" />
-</Material>

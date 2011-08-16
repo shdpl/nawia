@@ -1,6 +1,0 @@
-<Material>
-   <Shader source="shaders/model.shader" />
-   <ShaderFlag name="_F01_Skinning" /> 
-   <ShaderFlag name="_F05_AlphaTest" /> 
-<Sampler name="albedoMap" map="models/baum/kasttex1.tga" /> 
-</Material>

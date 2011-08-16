@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.openal.medium;
+module impl.openal.ae.medium;
 
 class Medium {
 	float speedOfSound;

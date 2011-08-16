@@ -23,9 +23,9 @@ import io.tty.handler;
 	Listens of log messages and parses user commands.
 */ //TODO: do we really want to join those two things?
 interface ITerminal {
-	void ihandlers(IHandler[]) @property;
-	IHandler[] ihandlers() @property;
+	void ihandlers(ITTYHandler[]) @property;
+	ITTYHandler[] ihandlers() @property;
 	
-	void ohandlers(IHandler[]) @property;
-	IHandler[] ohandlers() @property;
+	void ohandlers(ITTYHandler[]) @property;
+	ITTYHandler[] ohandlers() @property;
 }

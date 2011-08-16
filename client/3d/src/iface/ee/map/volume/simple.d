@@ -17,6 +17,7 @@
 
 module ee.map.volume.simple;
 
+private import ee.map.volume.volume;
 
 interface IVolumeSimple : IVolume {
 	

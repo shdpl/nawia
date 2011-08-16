@@ -17,6 +17,8 @@
 
 module ai.controller.randomwalker;
 
+private import ee.controller.controller;
+
 interface IRandomWalker : IController {
 	
 }

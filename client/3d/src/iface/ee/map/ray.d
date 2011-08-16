@@ -18,16 +18,17 @@
 module ee.map.ray;
 
 public import type.cords.world;
+private import ee.map.voxel;
 
 interface IRaycaster {
 	
-	@property void init(WorldCords source);
+	void init(CordsWorld source);
 	
-	@property WorldCords source();
-	@property void source(WorldCords);
+	@property CordsWorld source();
+	@property void source(CordsWorld);
 	
-	@property WorldVector direction();
-	@property void direction(WorldCords);
+	@property CordsWorld direction();
+	@property void direction(CordsWorld);
 	
 	struct Ray {
 		Voxel intersection;

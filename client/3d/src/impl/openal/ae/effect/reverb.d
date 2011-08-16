@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.openal.effect.reverb;
+module impl.openal.ae.effect.reverb;
 
-import api.openal.effect.effect;
+import impl.openal.ae.effect.effect;
 
 class EffectReverb : Effect {
 	

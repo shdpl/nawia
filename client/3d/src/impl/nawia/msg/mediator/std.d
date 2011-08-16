@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module msg.mediator.std;
+module impl.nawia.msg.mediator.std;
 
 import std.signals;
 import std.metastrings;
@@ -37,6 +37,7 @@ class MediatorStD : Singleton!MediatorStD, IMsgMediator {
 	bool unregister(IMsgFilter!Msg filter){return true;}
 	
 	override void deliver(Msg msg){}
+	override void handle(Msg msg){}
 	void poll(){}
 	
 }

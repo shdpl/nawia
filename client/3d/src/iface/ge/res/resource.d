@@ -15,18 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.shader.shader;
+module ge.res.resource;
 
-import type.cuda.types;
-
-interface IShader {
+interface IResource {
 	
-	/*IShaderContext[] contexts() @property;
-	void contexts(IShaderContext[]) @property;
-	
-	Sampler[] _samplers = void;
-	float3[] _uniforms;*/
-	
-	public:
-	abstract void preamble(string code) @property;
 }

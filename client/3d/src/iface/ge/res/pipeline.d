@@ -18,23 +18,15 @@
 module ge.res.pipeline;
 
 
-import h3d.h3d,
-	type.cuda.types,
+public import type.cuda.types,
 	type.buffer.pixel;
+	
+private import ge.res.resource;	
 
-class H3DPipeline /*: Pipeline*/ {
-	H3DNodeTypes _handle;
-	
-	
-	
-	public:
+interface IPipeline : IResource {
 	/// Size of the render targets
-	float2[2] size;
-	BufferPixel pixelBuffer(string name, uint bufId) {return BufferPixel();}
+	float2[2] size() @property;
+	void size(float2[2]) @property;
 	
-	this() {
-		
-	}
-	
-	int id;
+	BufferPixel pixelBuffer(string name, uint bufId);
 }

@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module msg.filter.network;
+module impl.nawia.msg.filter.network;
 
 import msg.filter.filter,
 	msg.msg;
 
 class MsgFilterNetwork : IMsgFilter!Msg {
 	
-	override bool doFilter(Msg msg) {
+	override bool filter(Msg msg) {
 		//TODO:
 		return true;
 	}

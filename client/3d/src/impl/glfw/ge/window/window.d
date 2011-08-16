@@ -15,24 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
- * Copyright (C) 2010 Mariusz 'shd' Gliwiński.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
-module api.glfw.window.window;
+module impl.glfw.ge.window.window;
 
 import std.conv,
 	std.stdio,
@@ -40,23 +24,24 @@ import std.conv,
 
 import glfw;
 
-import ge.window.window,
-	msg.provider,
-	msg._window.close,
-	msg._window.refresh,
-	msg._window.resize;
+import msg.provider,
+	ge.window.msg.close,
+	ge.window.msg.refresh,
+	ge.window.msg.resize;
+	
+public import ge.window.window;
 
  
 
-package class Window: IWindow, MsgProvider!MsgWindowRefresh, MsgProvider!MsgWindowResize,
-	MsgProvider!MsgWindowClose
+package class Window: IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWindowResize,
+	IMsgProvider!MsgWindowClose
 {
 	private:
 	static Window hInstance = null;
 	string _title;
 	CordsScreen _position;
 	WindowProperties _props;
-	WindowMode[] _windowModes;
+	IWindowMode[] _windowModes;
 	mixin InjectMsgListener!MsgWindowClose _lstnrClose;
 	mixin InjectMsgListener!MsgWindowRefresh _lstnrRefresh;
 	mixin InjectMsgListener!MsgWindowResize _lstnrResize;
@@ -164,14 +149,14 @@ package class Window: IWindow, MsgProvider!MsgWindowRefresh, MsgProvider!MsgWind
 		glfwSwapBuffers();
 	}
 	
-	override WindowMode[] supportedModes() {
+	override IWindowMode[] supportedModes() {
 		if ( !is(_windowModes) ) {
 			initModes();
 			}
 		return _windowModes;
 	}
 	
-	override WindowMode desktopMode() {
+	override IWindowMode desktopMode() {
 		GLFWvidmode mode = new GLFWvidmode;
 		glfwGetDesktopMode(mode);
 		WindowMode ret; //TODO

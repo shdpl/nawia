@@ -19,6 +19,6 @@ module pe.component.world;
 
 private import pe.component.component;
 
-interface WorldPhysics : Component {
+interface WorldPhysics : IComponent {
 	
 }

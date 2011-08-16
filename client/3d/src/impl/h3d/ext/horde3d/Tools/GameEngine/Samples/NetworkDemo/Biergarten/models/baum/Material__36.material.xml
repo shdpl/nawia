@@ -1,5 +1,0 @@
-<Material>
-   <Shader source="shaders/model.shader" />
-   <ShaderFlag name="_F01_Skinning" /> 
-<Sampler name="albedoMap" map="models/baum/rinde1.jpg" /> 
-</Material>

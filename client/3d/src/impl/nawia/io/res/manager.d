@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module io.res.manager;
+module impl.nawia.io.res.manager;
 
 private import util.singleton,
 	std.stream,
 	std.path;
+	
+private import io.res.manager;
 
 class ResManager : IResManager {
 	public:
@@ -55,9 +57,9 @@ class ResManager : IResManager {
 	**/
 	void bind(string entry, string uri) {_aliasMap[entry]=uri;}
 	
-	Stream open(string uri) {return new BufferedFile(uri);}
+	override Stream open(string uri) {return new BufferedFile(uri);}
 	
-	void close(Stream stream) {}
+	override void close(Stream stream) {}
 	
 	
 	private:

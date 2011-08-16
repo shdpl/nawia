@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.openal.buffer;
+module impl.openal.ae.buffer;
 
-import api.openal.source.source;
+import impl.openal.ae.source.source;
 
 interface Buffer {
 	@property

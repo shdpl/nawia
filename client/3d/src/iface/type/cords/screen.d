@@ -44,7 +44,7 @@ struct CordsScreen {
 	
 	this(Px x, Px y) {
 		//assert(x < id_screen.Width && y < id_screen.Heigth); TODO: screen
-		super(x,y);
+		_cords(x,y);
 	}
 	
 }

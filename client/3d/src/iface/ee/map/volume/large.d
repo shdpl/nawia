@@ -17,6 +17,7 @@
 
 module ee.map.volume.large;
 
+private import ee.map.volume.volume;
 
 interface IVolumeLarge : IVolume {
 	

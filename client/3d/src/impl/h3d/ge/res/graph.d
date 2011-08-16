@@ -17,10 +17,12 @@
 
 module ge.res.scenegraph;
 
+private import ge.res.resource;
+
 import ge.res.node,
 	ge.res.h3d;
 
-class SceneGraph {
+class SceneGraph : IResource {
 	public:
 	void clear() {
 		h3dClear();

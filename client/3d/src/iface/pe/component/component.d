@@ -19,8 +19,8 @@ module pe.component.component;
 
 
 private import
-	ee.component : IComponent = Component;
+	ee.component : IEEComponent = IComponent;
 
-interface Component : IComponent {
+interface IComponent : IEEComponent {
 	
 }

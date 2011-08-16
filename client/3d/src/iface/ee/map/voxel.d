@@ -17,7 +17,9 @@
 
 module ee.map.voxel;
 
-struct Voxel(T) {
-	T density;
-	T material;
+alias ubyte VoxelType;
+
+struct Voxel {
+	VoxelType density;
+	VoxelType material;
 }

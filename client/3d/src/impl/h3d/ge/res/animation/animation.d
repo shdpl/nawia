@@ -19,7 +19,9 @@ module ge.res.animation.animation;
 
 import h3d.h3d;
 
-abstract class Animation {
+private import ge.res.resource;
+
+abstract class Animation : IResource {
 	public:
 	immutable uint maxCount = 0;
 	H3DRes _resource;

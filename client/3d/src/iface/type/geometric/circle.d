@@ -17,11 +17,10 @@
 
 module type.geometric.circle;
 
-import type.cords;
+import type.cords.cords;
 
-static if (is(T : Cords))
-	struct Circle(T) {
-		T center;
-		real rad_min;
-		real rad_max;
-	}
+struct Circle(T) { //static if (is(T : Cords))
+	T center;
+	real rad_min;
+	real rad_max;
+}

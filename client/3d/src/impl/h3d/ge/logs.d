@@ -20,7 +20,7 @@ module ge.logs;
 import std.range,
 	std.conv;
 
-import h3d,
+import h3d.h3d,
 	msg._time.idle,
 	msg.listener;
 

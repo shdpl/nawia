@@ -24,15 +24,15 @@ import eh.filter.exception,
 
 interface IHandlerException {
 	public:
-	void init(Reporter reporter);
+	void init(IReporter reporter);
 	void clear();
 	
-	void add(FilterException filter);
-	void del(FilterException filter);
+	void add(IFilterException filter);
+	void del(IFilterException filter);
 	
-	void add(FilterReport filter);
-	void del(FilterReport filter);
+	void add(IFilterReport filter);
+	void del(IFilterReport filter);
 
-	void add(Reporter reporter);
-	void del(Reporter reporter);
+	void add(IReporter reporter);
+	void del(IReporter reporter);
 }

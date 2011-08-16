@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.openal.device.manager;
+module impl.openal.ae.device.manager;
 
-import api.openal.device.renderer,
-	api.openal.device.recorder;
+import impl.openal.ae.device.renderer,
+	impl.openal.ae.device.recorder;
 
 class DeviceManager {
 	DeviceRenderer[] renderers;

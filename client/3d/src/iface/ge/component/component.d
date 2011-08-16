@@ -21,5 +21,5 @@ private import
 	ee.component : IEEComponent = IComponent;
 
 interface IComponent : IEEComponent {
-	
+	//scene graph node clear() rootnode - h3dClear()
 }

@@ -17,14 +17,15 @@
 
 module ee.map.volume.volume;
 
-public import type.cords.world;
+public import type.cords.world,
+	type.geometric.box;
 
 interface IVolume {
 	
-	void init(Rect!CordsWorld);
+	void init(Box!CordsWorld);
 	
-	@property Rect!CordsWorld region();
-	@property void region(Rect!CordsWorld);
+	@property Box!CordsWorld region();
+	@property void region(Box!CordsWorld);
 	
 	@property UnitWorld width();
 	@property void width(UnitWorld);

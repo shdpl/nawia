@@ -1,6 +1,0 @@
-<Material>
-	<Shader source="shaders/model.shader" />
-	<Sampler name="normalMap" map="models/StehTischMitSchirm/birke_normal.jpg" allowCompression="false" />
-	<Sampler name="albedoMap" map="models/StehTischMitSchirm/birke.jpg" />
-	<ShaderFlag name="_F03_ParallaxMapping" />
-</Material>

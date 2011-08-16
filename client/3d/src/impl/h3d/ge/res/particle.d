@@ -22,7 +22,9 @@ import std.datetime;
 import ge.res.h3d,
 	type.color.rgba;
 
-class H3DParticle {
+private import ge.res.resource;
+
+class H3DParticle : IResource {
 	ColorRGBA!float color;
 	float size;
 	float velocity;

@@ -21,8 +21,8 @@ private import std.range,
 	std.conv,
 	std.math;
 
-private import h3d.h3d,
-	h3d.ge.logs,
+private import impl.h3d.h3d,
+	impl.h3d.ge.logs,
 	util.singleton,
 	ge.window.window;
 

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.openal.sample;
+module impl.openal.ae.sample;
 
-import api.openal.source.source;
+import impl.openal.ae.source.source;
 
 class SourceSample : Source {
 	

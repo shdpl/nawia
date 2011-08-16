@@ -1,5 +1,0 @@
-<Material>
-	<Shader source="shaders/skybox.shader"/>
-<ShaderFlag name="_F01_Skinning" /> 
-<Sampler name="albedoMap" map="models/skybox/skybox_mountains_h.dds" />
-</Material>

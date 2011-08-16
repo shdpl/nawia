@@ -17,9 +17,11 @@
 
 module msg.dispatcher;
 
+private import msg.listener;
+
 /**
   Distrubutes received messages over child listeners
 */
-interface IDispatcher : IMsgListener {
+interface IDispatcher(MSG) : IMsgListener!MSG {
 	
 }

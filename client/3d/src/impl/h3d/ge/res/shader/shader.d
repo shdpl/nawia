@@ -19,7 +19,9 @@ module ge.res.shader.shader;
 
 import type.cuda.types;
 
-class Shader {
+private import ge.res.resource;
+
+class Shader : IResource {
 	void*/*ShaderContext[]*/ _contexts = void;
 	void*/*Sampler[]*/ _samplers = void;
 	float3[] _uniforms;

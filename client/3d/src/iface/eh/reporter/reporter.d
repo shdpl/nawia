@@ -22,5 +22,5 @@ import eh.report;
 interface IReporter {
 	@property string recipient();
 	@property void recipient(string);
-	bool send(Report report);
+	bool send(IReport report);
 }

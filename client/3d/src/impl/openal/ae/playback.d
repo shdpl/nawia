@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.openal.playback;
+module impl.openal.ae.playback;
 
 class Playback {
 	uint seconds;

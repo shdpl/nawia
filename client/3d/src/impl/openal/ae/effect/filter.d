@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.openal.effect.filter;
+module impl.openal.ae.effect.filter;
 
-import api.openal.effect.effect;
+import impl.openal.ae.effect.effect;
 
 class EffectFilter : Effect {
 	

@@ -1,4 +1,0 @@
-<Model geometry="models/trestletable/trestletable.geo" name="trestletable" >
-    <Mesh tx="-2.3e-005" vertREnd="381" ty="0.373748" tz="-3e-005" batchStart="0" name="Trestle-Table" batchCount="420" material="models/trestletable/BeerBankAndTable_Green_Metal.material.xml" vertRStart="0" />
-    <Mesh tx="-2.3e-005" vertREnd="677" ty="0.373748" tz="-3e-005" batchStart="420" name="Trestle-Table" batchCount="309" material="models/trestletable/BeerBankAndTable_Bright_Wood.material.xml" vertRStart="382" />
-</Model>

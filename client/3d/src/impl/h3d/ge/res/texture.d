@@ -17,12 +17,13 @@
 
 module ge.res.texture;
 
+private import ge.res.resource;
 
-import ge.res.h3d,
+import impl.h3d.h3d,
 	type.cuda.types,
 	type.buffer.pixel;
 
-class Texture {
+class Texture : IResource {
 	public:
 	
 	alias H3DFormats.List Format;

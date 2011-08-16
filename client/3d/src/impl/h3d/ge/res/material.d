@@ -17,12 +17,13 @@
 
 module ge.res.material;
 
+private import ge.res.resource;
 
 import ge.res.h3d,
 	ge.res.shader.shader,
 	type.cuda.types;
 
-class H3DMaterial {
+class H3DMaterial : IResource {
 	public:
 	Shader shader;
 	

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.glfw.mouse;
+module impl.glfw.api.impl.glfw.mouse;
 
 import io.hid.mouse.mouse;
 

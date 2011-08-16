@@ -17,12 +17,13 @@
 
 module ge.res.pipeline;
 
+private import ge.res.resource;
 
 import h3d.h3d,
 	type.cuda.types,
 	type.buffer.pixel;
 
-class H3DPipeline /*: Pipeline*/ {
+class H3DPipeline : IResource {
 	H3DNodeTypes _handle;
 	
 	

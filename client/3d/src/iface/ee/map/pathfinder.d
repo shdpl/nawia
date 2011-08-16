@@ -17,20 +17,23 @@
 
 module ee.map.pathfinder;
 
+public import type.cords.world,
+	ee.map.volume.volume;
+
 interface IPathfinder {
-	void init(PathfinderArgs);
+	void init(PathFinderArgs);
 	
 	/// Returns normalized vector representing direction to go
-	VecWorld query();
+	CordsWorld query(); //FIXME: Vector
 	
 	
 	struct PathFinderArgs {
-		bool function(PosWorld) pathableChecker;
+		bool function(CordsWorld) pathableChecker;
 		
 		IVolume volume;
 		
 		/// Points to visit
-		PosWorld[] points;
+		CordsWorld[] points;
 		
 		bool diagonalSupported;
 		}

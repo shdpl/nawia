@@ -1,6 +1,0 @@
-<Material>
-	<Shader source="shaders/model.shader" />
-<ShaderFlag name="_F01_Skinning" /> 
-<Sampler name="albedoMap" map="models/dispenser/Dispenser_logo.jpg" /> 
-	<TexUnit unit="0" map="Dispenser_logo.jpg" />
-</Material>

@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.openal.source.source;
+module impl.openal.ae.source.source;
 
-import api.openal.buffer,
-	api.openal.playback,
+import impl.openal.ae.buffer,
+	impl.openal.ae.playback,
 	type.cuda.types;
 
 class Source {

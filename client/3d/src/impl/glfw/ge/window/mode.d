@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.glfw.window.mode;
+module impl.glfw.api.impl.glfw.window.mode;
 
 struct GLFWWindowMode {
 	
