@@ -1,0 +1,3 @@
+<Model geometry="models/ground/ground.geo" name="ground" >
+    <Mesh vertREnd="83" batchStart="0" name="ground" batchCount="204" material="models/concrete.material.xml" vertRStart="0" />
+</Model>

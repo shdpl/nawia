@@ -1,0 +1,3 @@
+<Model geometry="models/lantern/lantern.geo" name="lantern" >
+    <Mesh vertREnd="515" batchStart="0" name="Lantern" batchCount="558" material="models/lantern/Lantern.material.xml" vertRStart="0" />
+</Model>

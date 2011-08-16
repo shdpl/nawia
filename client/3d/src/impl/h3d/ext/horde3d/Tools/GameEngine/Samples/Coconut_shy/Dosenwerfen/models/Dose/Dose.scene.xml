@@ -1,0 +1,3 @@
+<Model geometry="models/Dose/Dose.geo" name="Dose" >
+    <Mesh vertREnd="144" sx="3" sy="3" sz="3" batchStart="0" name="Cylinder" batchCount="384" material="models/Dose/Dose_png.material.xml" vertRStart="0" />
+</Model>

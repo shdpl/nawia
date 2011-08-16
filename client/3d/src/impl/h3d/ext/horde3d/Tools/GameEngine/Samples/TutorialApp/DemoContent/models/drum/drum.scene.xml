@@ -1,0 +1,3 @@
+<Model geometry="models/drum/drum.geo" name="drum" >
+    <Mesh vertREnd="97" batchStart="0" name="drum" batchCount="576" material="models/drum/drum.material.xml" vertRStart="0" />
+</Model>

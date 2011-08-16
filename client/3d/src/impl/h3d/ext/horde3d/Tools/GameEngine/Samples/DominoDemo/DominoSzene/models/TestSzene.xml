@@ -1,0 +1,18 @@
+<Group tx="0" sx="1" ty="0" rx="0" sy="1" tz="0" ry="0" sz="1" rz="0" >
+    <Light sy="1" lightingContext="LIGHTING" sz="1" col_B="1" name="MeinLicht" col_G="1" tx="-25.7213" ty="50.6428" shadowContext="SHADOWMAP" tz="33.8924" shadowMapBias="0.001" rx="-45.4508" ry="-66.9" shadowMapCount="4" rz="0" col_R="1" radius="400" fov="90" shadowSplitLambda="0.9" sx="1" >
+        <Attachment type="GameEngine" name ="MeinLicht"/>
+    </Light>
+    <Camera sy="1" sz="1" nearDist="0.1" nearPlane="0.1" leftPlane="-0.0552271" topPlane="0.0414214" name="camera" tx="-19.1883" ty="36.1332" rightPlane="0.0552271" tz="60.3242" bottomPlane="-0.0414214" rx="-32.8505" ry="-23.1" rz="0" keepAspect="1" farPlane="2000" pipeline="pipelines/forward.pipeline.xml" sx="1" >
+        <Attachment type="GameEngine" name="camera" >
+            <SoundListener/>
+        </Attachment>
+    </Camera>
+    <Reference tx="0" sx="500" ty="8" sy="500" rx="0" tz="0" sceneGraph="models/skybox/skybox.scene.xml" sz="500" ry="0" rz="0" name="Skybox" />
+    <Reference tx="0" sx="1" ty="0" sy="1" rx="0" tz="21.6035" sceneGraph="models/domino/Domino.scene.xml" sz="1" ry="0" rz="0" name="physics" />
+    <Camera pipeline="pipelines/hdr.pipeline.xml" topPlane="0.0414214" bottomPlane="-0.0414214" tx="-19.1883" ty="36.1332" sx="1" tz="60.3242" rx="-32.2505" sy="1" leftPlane="-0.0552283" ry="-36" sz="1" rz="0" farPlane="2000" name="tes" rightPlane="0.0552283" nearPlane="0.1" />
+    <Terrain tx="-44.4779" sx="100" ty="-13.905" sy="20" tz="-36.1296" sz="100" meshQuality="50" lodthresh="0.028" blocksize="17" heightmap="models/terrain/heightmap.tga" name="Terrain" material="models/terrain/terrain.material.xml" skirtHeight="0.1" >
+        <Attachment type="GameEngine" name="Terrain_89" >
+            <Physics kinematic="1" shape="Mesh" />
+        </Attachment>
+    </Terrain>
+</Group>

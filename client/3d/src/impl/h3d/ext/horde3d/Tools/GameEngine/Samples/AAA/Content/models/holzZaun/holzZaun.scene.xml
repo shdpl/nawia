@@ -1,0 +1,8 @@
+<Model geometry="models/holzZaun/holzZaun.geo" name="holzZaun" >
+    <Mesh tx="-172.047" ty="2.12106" vertREnd="55" tz="-1.54965" batchStart="0" name="pfosten01" batchCount="192" material="models/holzZaun/rinde.material.xml" vertRStart="0" />
+    <Mesh tx="0.572522" ty="-0.59124" vertREnd="111" tz="-3.56201" batchStart="192" name="pfosten02" batchCount="192" material="models/holzZaun/rinde.material.xml" vertRStart="56" />
+    <Mesh tx="173.323" ty="2.06262" vertREnd="170" tz="-6.451" batchStart="384" name="pfosten03" batchCount="192" material="models/holzZaun/rinde.material.xml" vertRStart="112" />
+    <Mesh tx="201.077" ty="120.53" vertREnd="186" tz="-5.1589" rx="-0" ry="0" rz="90" batchStart="576" name="pfosten04" batchCount="36" material="models/holzZaun/ende.material.xml" vertRStart="171" >
+        <Mesh vertREnd="243" batchStart="612" name="#pfosten04" batchCount="240" material="models/holzZaun/rinde.material.xml" vertRStart="187" />
+    </Mesh>
+</Model>

@@ -1,0 +1,3 @@
+<Model geometry="models/tire/tire.geo" name="tire" >
+    <Mesh vertREnd="404" batchStart="0" name="tire" batchCount="1728" material="models/tire/tire.material.xml" vertRStart="0" />
+</Model>

@@ -1,0 +1,15 @@
+<Model name="holzBrunnen" geometry="models/holzBrunnen/holzBrunnen.geo">
+
+	<Mesh name="stamm" material="models/holzBrunnen/holzEnde.material.xml" tx="16.3023" ty="0" tz="-58.8957" rx="90" ry="0" rz="-0" batchStart="0" batchCount="624" vertRStart="0" vertREnd="193">
+		<Mesh name="#stamm" material="models/holzBrunnen/holz.material.xml" batchStart="624" batchCount="3648" vertRStart="194" vertREnd="873" />
+	</Mesh>
+	<Mesh name="stuetze01" material="models/holzBrunnen/holzEnde.material.xml" tx="33.2414" ty="-21.2547" tz="40.5273" rx="-0" ry="0" rz="90" batchStart="4272" batchCount="60" vertRStart="874" vertREnd="897">
+		<Mesh name="#stuetze01" material="models/holzBrunnen/holz.material.xml" batchStart="4332" batchCount="216" vertRStart="898" vertREnd="950" />
+	</Mesh>
+	<Mesh name="wasserHahn" material="models/holzBrunnen/holz.material.xml" tx="15.3978" ty="8.85271" tz="55.8348" batchStart="4548" batchCount="2472" vertRStart="951" vertREnd="1452" />
+	<Mesh name="stuetze02" material="models/holzBrunnen/holzEnde.material.xml" tx="40.6486" ty="-22.4574" tz="-34.8384" rx="-0" ry="0" rz="90" batchStart="7020" batchCount="60" vertRStart="1453" vertREnd="1476">
+		<Mesh name="#stuetze02" material="models/holzBrunnen/holz.material.xml" batchStart="7080" batchCount="216" vertRStart="1477" vertREnd="1528" />
+	</Mesh>
+	<Mesh name="dach" material="models/holzBrunnen/holz.material.xml" tx="17.2174" ty="57.9107" tz="54.2341" rx="26.7101" ry="0" rz="0" batchStart="7296" batchCount="402" vertRStart="1529" vertREnd="1639" />
+	<Mesh name="wasser" material="models/holzBrunnen/wasser.material.xml" tx="15.7307" ty="8.21217" tz="-1.76353" batchStart="7698" batchCount="1800" vertRStart="1640" vertREnd="1980" />
+</Model>

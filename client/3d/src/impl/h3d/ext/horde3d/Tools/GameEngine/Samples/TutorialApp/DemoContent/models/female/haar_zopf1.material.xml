@@ -1,0 +1,5 @@
+<Material>
+	<Shader source="shaders/model.shader" />
+	<ShaderFlag name="_F01_Skinning" /> 
+	<Sampler name="albedoMap" map="models/female/haar_zopf_1.tga" />
+</Material>

@@ -1,0 +1,6 @@
+<Material>
+	<Shader source="shaders/model.shader" />
+	<Sampler name="normalMap" map="models/holzBrunnen/schlussStueck_normal.jpg" allowCompression="false" />
+	<Sampler name="albedoMap" map="models/holzBrunnen/schlussStueck.jpg" />
+	<ShaderFlag name="_F03_ParallaxMapping" />
+</Material>

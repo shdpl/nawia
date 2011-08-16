@@ -1,0 +1,4 @@
+<Model geometry="models/table/table.geo" name="table" >
+    <Mesh tx="0" vertREnd="191" ty="0.301076" tz="0.365732" batchStart="0" name="Round-Table" batchCount="282" material="models/table/_1_-_Standard.material.xml" vertRStart="0" />
+    <Mesh tx="0" vertREnd="325" ty="0.301076" tz="0.365732" batchStart="282" name="Round-Table" batchCount="240" material="models/table/_2_-_Standard.material.xml" vertRStart="192" />
+</Model>

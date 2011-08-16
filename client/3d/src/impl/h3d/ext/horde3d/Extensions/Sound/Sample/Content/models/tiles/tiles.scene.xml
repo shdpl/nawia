@@ -1,0 +1,5 @@
+<Model geometry="models/tiles/tiles.geo" name="tiles" >
+
+	<Mesh vertREnd="23" batchStart="0" name="GeometryMeshNode_0000" batchCount="36" material="models/tiles/tiles.material.xml" vertRStart="0" />
+
+</Model>

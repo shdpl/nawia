@@ -1,0 +1,6 @@
+<Model name="toilet2" geometry="models/toilet2/toilet2.geo">
+
+	<Mesh name="objtoilet_paper_toilet_paper_auv" material="models/toilet2/toilet_paper_auv.material.xml" batchStart="0" batchCount="120" vertRStart="0" vertREnd="69" />
+	<Mesh name="objtoilet_door_toilet_door_auv" material="models/toilet2/toilet_door_auv.material.xml" batchStart="120" batchCount="192" vertRStart="70" vertREnd="159"/>
+	<Mesh name="objhighpoly_toilet_highpoly_toilet_auv" material="models/toilet2/highpoly_toilet_auv.material.xml" batchStart="312" batchCount="282" vertRStart="160" vertREnd="315" />
+</Model>

@@ -1,0 +1,3 @@
+<Model geometry="models/asher/asher.geo" name="asher" >
+    <Mesh tx="0" vertREnd="167" ty="0.015947" tz="-0" batchStart="0" name="Asher" batchCount="282" material="models/asher/Asher.material.xml" vertRStart="0" />
+</Model>

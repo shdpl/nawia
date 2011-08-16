@@ -1,0 +1,4 @@
+<Model geometry="models/chair/chair.geo" name="chair" >
+    <Mesh tx="0.034905" vertREnd="344" ty="0.478638" tz="-0.042087" batchStart="0" name="Chair" batchCount="552" material="models/chair/metall.material.xml" vertRStart="0" />
+    <Mesh tx="0.034905" vertREnd="396" ty="0.478638" tz="-0.042087" batchStart="552" name="Chair" batchCount="72" material="models/chair/holz.material.xml" vertRStart="345" />
+</Model>

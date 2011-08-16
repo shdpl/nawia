@@ -1,0 +1,3 @@
+<Model geometry="models/breadboard/breadboard.geo" name="breadboard" >
+    <Mesh tx="0" vertREnd="265" ty="0.021735" tz="-0" batchStart="0" name="Breadboard" batchCount="504" material="models/breadboard/Breadboard.material.xml" vertRStart="0" />
+</Model>

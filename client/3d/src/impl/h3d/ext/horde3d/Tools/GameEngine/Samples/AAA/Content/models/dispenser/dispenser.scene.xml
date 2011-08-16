@@ -1,0 +1,5 @@
+<Model name="dispenser" geometry="models/dispenser/dispenser.geo">
+
+	<Mesh px="0" py="0" pz="6.4e-005" name="Dispenser" material="models/dispenser/Dispenser1.material.xml" batchStart="0" batchCount="312" vertRStart="0" vertREnd="132" />
+	<Mesh px="0" py="0" pz="6.4e-005" name="Dispenser" material="models/dispenser/Dispenser2.material.xml" batchStart="312" batchCount="558" vertRStart="133" vertREnd="255" />
+</Model>
