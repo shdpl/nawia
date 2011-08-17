@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.bullet.shape.capsule;
+module impl.bullet.pe.shape.sphere;
 
-import api.bullet.shape.shape;
+import impl.bullet.pe.shape.shape;
 
-class ShapeCapsule : Shape {
+class ShapeSphere : Shape {
 	
 }

@@ -15,17 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.scenegraph;
+module impl.h3d.ge.res.scenegraph;
 
-private import ge.res.resource;
+private import ge.res.resource,
+	impl.h3d.h3d;
 
-import ge.res.node,
-	ge.res.h3d;
 
 class SceneGraph : IResource {
 	public:
 	void clear() {
 		h3dClear();
 	}
-	H3DNode root;
+	//H3DNode root; FIXME:
 }

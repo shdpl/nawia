@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.animation.blended;
+module impl.h3d.ge.res.animation.blended;
 
 class H3DAnimationBlended {
 	uint _animLayer;

@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.material;
+module impl.h3d.ge.res.material;
 
 private import ge.res.resource;
 
-import ge.res.h3d,
+import impl.h3d.h3d,
 	ge.res.shader.shader,
 	type.cuda.types;
 
 class H3DMaterial : IResource {
 	public:
-	Shader shader;
+	IShader shader;
 	
 	void*/*Sampler[]*/ _samplers;
 	float3[] _uniforms;

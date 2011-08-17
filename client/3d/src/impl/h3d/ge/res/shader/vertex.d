@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.shader.vertex;
+module impl.h3d.ge.res.shader.ge.res.shader.vertex;
 
-import ge.res.shader.shader;
+private import ge.res.shader.vertex,
+	impl.h3d.ge.res.shader.shader;
 
-class ShaderVertex : Shader {
+class ShaderVertex : Shader, IShaderVertex {
 	
 }

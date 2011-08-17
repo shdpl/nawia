@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.shader.shader;
+module impl.h3d.ge.res.shader.shader;
 
 import type.cuda.types;
 

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.animation.additive;
+module impl.h3d.ge.res.animation.additive;
 
-import h3d.ge.res.animation.animation;
+import impl.h3d.ge.res.animation.animation;
 
 class AnimationAdditive : Animation {
 	

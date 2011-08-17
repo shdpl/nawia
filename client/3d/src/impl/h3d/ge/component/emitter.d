@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.emitter;
+module impl.h3d.ge.res.emitter;
 
-import ge.res.h3d;
+import impl.h3d.h3d;
 
 import std.datetime;
 
-import ge.res.material,
-	ge.res.particle,
-	ge.res.node,
+import impl.h3d.ge.res.material,
+	impl.h3d.ge.res.particle,
+	impl.h3d.ge.component.component,
 	type.cuda.types;
 
 class H3DEmitter : H3DSGNode /*: Emitter*/ {

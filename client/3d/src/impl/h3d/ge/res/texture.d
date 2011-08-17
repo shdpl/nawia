@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.texture;
+module impl.h3d.ge.res.texture;
 
 private import ge.res.resource;
 

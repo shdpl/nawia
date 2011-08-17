@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.particle;
+module impl.h3d.ge.res.particle;
 
 import std.datetime;
 
-import ge.res.h3d,
+import impl.h3d.h3d,
 	type.color.rgba;
 
-private import ge.res.resource;
+private import impl.h3d.ge.res.resource;
 
-class H3DParticle : IResource {
+class H3DParticle : H3DResource {
 	ColorRGBA!float color;
 	float size;
 	float velocity;
@@ -36,5 +36,8 @@ class H3DParticle : IResource {
 	float powerStartMin;
 	float powerStartMax;
 	float powerEnd;
+	
+	override uint id() {return 1;} //FIXME:
+	override void id(uint id) {} //FIXME
 	
 }

@@ -17,8 +17,8 @@
 
 module ge.res.group;
 
-import ge.res.h3d,
-	ge.res.node;
+import impl.h3d.h3d,
+	impl.h3d.ge.component.component;
 
 class H3DGroup : H3DSGNode {
 	string _name;

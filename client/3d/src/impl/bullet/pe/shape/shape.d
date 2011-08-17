@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.bullet.shape.cylinder;
+module impl.bullet.pe.shape.shape;
 
-import api.bullet.shape.shape;
+import type.cuda.types;
 
-class ShapeCylinder : Shape {
-	
+class Shape {
+	float3 scale;
 }

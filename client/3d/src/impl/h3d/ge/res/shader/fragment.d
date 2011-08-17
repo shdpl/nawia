@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.shader.fragment;
+module impl.h3d.ge.res.shader.fragment;
 
-import ge.res.shader.shader;
+import impl.h3d.ge.res.shader.shader,
+	ge.res.shader.fragment;
 
-class ShaderFragment : Shader {
+class ShaderFragment : Shader, IShaderFragment {
 	
 }

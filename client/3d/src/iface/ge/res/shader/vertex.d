@@ -19,6 +19,6 @@ module ge.res.shader.vertex;
 
 import ge.res.shader.shader;
 
-interface ShaderVertex : IShader {
+interface IShaderVertex : IShader {
 	
 }

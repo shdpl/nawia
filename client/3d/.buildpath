@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <buildpath>
-	<buildpathentry kind="src" path="src/impl/h3d/ext"/>
+	<buildpathentry excluding="horde3d" kind="src" path="src/impl/h3d/ext"/>
 	<buildpathentry excluding="impl/glfw/ext/|impl/h3d/ext/|impl/polyvox/ext/" including="impl/" kind="src" path="src"/>
 	<buildpathentry kind="src" path="src/iface"/>
 	<buildpathentry kind="src" path="src/impl/polyvox/ext"/>

@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module h3d.ge.component.camera;
+module impl.h3d.ge.component.camera;
 
-import h3d.h3d,
+import impl.h3d.h3d,
 	ge.component.camera,
-	h3d.ge.res.pipeline,
+	impl.h3d.ge.component.component,
+	impl.h3d.ge.res.pipeline,
 	type.buffer.pixel,
 	type.cords.screen;
 
-class Camera : ICamera {
+class Camera : H3DSGNode, ICamera {
 	private:
 	H3DPipeline _pipeline;
 	BufferPixel renderTarget;
@@ -39,7 +40,7 @@ class Camera : ICamera {
 	
 	
 	public:
-	void init(Component parent, string name, H3DPipeline pipeline) {
+	void init(H3DSGNode parent, string name, H3DPipeline pipeline) {
 		h3dAddCameraNode(parent.id, name, pipeline.id);
 	}
 	

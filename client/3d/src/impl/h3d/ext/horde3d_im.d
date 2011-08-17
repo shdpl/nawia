@@ -287,10 +287,10 @@ static this() {
   }
 
   //#if !defined(SWIG_D_NO_EXCEPTION_HELPER)
-  mixin(bindCode("swigRegisterExceptionCallbacks", "SWIGRegisterExceptionCallbacks_horde3d"));
+  mixin(bindCode("swigRegisterExceptionCallbacks_horde3d", "SWIGRegisterExceptionCallbacks_horde3d"));
   //#endif // SWIG_D_NO_EXCEPTION_HELPER
   //#if !defined(SWIG_D_NO_STRING_HELPER)
-  mixin(bindCode("swigRegisterStringCallback", "SWIGRegisterStringCallback_horde3d"));
+  mixin(bindCode("swigRegisterStringCallback_horde3d", "SWIGRegisterStringCallback_horde3d"));
   //#endif // SWIG_D_NO_STRING_HELPER
   
   mixin(bindCode("H3DRootNode_get", "D_H3DRootNode_get"));
@@ -424,11 +424,11 @@ extern(C) void function(
   SwigExceptionCallback illegalArgumentCallback,
   SwigExceptionCallback illegalElementCallback,
   SwigExceptionCallback ioCallback,
-  SwigExceptionCallback noSuchElementCallback) swigRegisterExceptionCallbacks;
+  SwigExceptionCallback noSuchElementCallback) swigRegisterExceptionCallbacks_horde3d;
 //#endif // SWIG_D_NO_EXCEPTION_HELPER
 
 //#if !defined(SWIG_D_NO_STRING_HELPER)
-extern(C) void function(SwigStringCallback callback) swigRegisterStringCallback;
+extern(C) void function(SwigStringCallback callback) swigRegisterStringCallback_horde3d;
 //#endif // SWIG_D_NO_STRING_HELPER
 
 
@@ -496,7 +496,7 @@ mixin template SwigOperatorDefinitions() {
 private class SwigExceptionHelper {
   static this() {
 	// The D1/Tango version maps C++ exceptions to multiple exception types.
-    swigRegisterExceptionCallbacks(
+    swigRegisterExceptionCallbacks_horde3d(
       &setException,
       &setException,
       &setException,
@@ -568,7 +568,7 @@ alias void function(const char* message) SwigExceptionCallback;
 
 private class SwigStringHelper {
   static this() {
-    swigRegisterStringCallback(&createString);
+    swigRegisterStringCallback_horde3d(&createString);
   }
 
   static const(char)* createString(const(char*) cString) {

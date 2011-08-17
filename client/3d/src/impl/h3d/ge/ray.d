@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module h3d.ge.res.ray;
+module impl.h3d.ge.res.ray;
 
 
-import ge.res.h3d,
-	ge.res.component.component,
+import impl.h3d.h3d,
+	ge.component.component,
 	type.cuda.types;
 
 struct Ray {
@@ -27,7 +27,7 @@ struct Ray {
 	
 	struct Intersection {
 		public:
-		H3DSGNode target;
+		H3DNode target;
 		float distance;
 		float3 point;
 	}

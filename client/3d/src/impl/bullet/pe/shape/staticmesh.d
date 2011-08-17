@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.bullet.shape.box;
+module impl.bullet.pe.shape.staticmesh;
 
-import api.bullet.shape.shape;
+import impl.bullet.pe.shape.shape;
 
-class ShapeBox : Shape {
+class ShapeStaticMesh : Shape {
 	
 }

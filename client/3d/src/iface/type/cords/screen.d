@@ -39,7 +39,7 @@ public import type.unit.screen;
 
 struct CordsScreen {
 	//Screen.Id id_screen = Screen.Id.DEFAULT; TODO: screen
-	private Cords!(Px, 2) _cords;
+	Cords!(Px, 2) _cords;
 	alias _cords this;
 	
 	this(Px x, Px y) {

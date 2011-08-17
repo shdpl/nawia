@@ -17,7 +17,7 @@
 
 module ge.res.joint;
 
-import ge.res.h3d;
+import impl.h3d.h3d;
 
 class H3DJoint /*: Joint*/ {
 	string _name;

@@ -1,5 +1,6 @@
 module h3d.ge.res.resource;
 
-interface IResource {
-	
+interface H3DResource {
+	uint id() @property;
+	void id(uint) @property;
 }

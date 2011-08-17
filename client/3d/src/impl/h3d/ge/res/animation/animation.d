@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.animation.animation;
+module impl.h3d.ge.res.animation.animation;
 
-import h3d.h3d;
+import impl.h3d.h3d;
 
 private import ge.res.resource;
 
@@ -29,7 +29,7 @@ abstract class Animation : IResource {
 	///Time in frames
 	uint frames() {
 		return h3dGetResParamI(_resource,
-			H3DAnimRes.List.ComponentElem, 0, H3DAnimRes.List.EntFrameCountI);
+			H3DAnimRes.List.EntityElem, 0, H3DAnimRes.List.EntFrameCountI);
 	}
 	uint weight;
 	

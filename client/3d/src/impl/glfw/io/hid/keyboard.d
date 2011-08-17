@@ -19,6 +19,6 @@ module impl.glfw.api.impl.glfw.keyboard;
 
 import io.hid.keyboard.keyboard;
 
-package class KeyboardGLFW : Keyboard {
+package class KeyboardGLFW : IKeyboard {
 	
 }

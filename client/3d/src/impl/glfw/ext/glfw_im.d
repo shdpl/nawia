@@ -304,10 +304,10 @@ static this() {
   }
 
   //
-  mixin(bindCode("swigRegisterExceptionCallbacks", "SWIGRegisterExceptionCallbacks_glfw"));
+  mixin(bindCode("swigRegisterExceptionCallbacks_glfw", "SWIGRegisterExceptionCallbacks_glfw"));
   //
   //
-  mixin(bindCode("swigRegisterStringCallback", "SWIGRegisterStringCallback_glfw"));
+  mixin(bindCode("swigRegisterStringCallback_glfw", "SWIGRegisterStringCallback_glfw"));
   //
   
   mixin(bindCode("NULL_get", "D_NULL_get"));
@@ -558,11 +558,11 @@ extern(C) void function(
   SwigExceptionCallback illegalArgumentCallback,
   SwigExceptionCallback illegalElementCallback,
   SwigExceptionCallback ioCallback,
-  SwigExceptionCallback noSuchElementCallback) swigRegisterExceptionCallbacks;
+  SwigExceptionCallback noSuchElementCallback) swigRegisterExceptionCallbacks_glfw;
 //
 
 //
-extern(C) void function(SwigStringCallback callback) swigRegisterStringCallback;
+extern(C) void function(SwigStringCallback callback) swigRegisterStringCallback_glfw;
 //
 
 
@@ -630,7 +630,7 @@ mixin template SwigOperatorDefinitions() {
 private class SwigExceptionHelper {
   static this() {
 	// The D1/Tango version maps C++ exceptions to multiple exception types.
-    swigRegisterExceptionCallbacks(
+    swigRegisterExceptionCallbacks_glfw(
       &setException,
       &setException,
       &setException,
@@ -702,7 +702,7 @@ alias void function(const char* message) SwigExceptionCallback;
 
 private class SwigStringHelper {
   static this() {
-    swigRegisterStringCallback(&createString);
+    swigRegisterStringCallback_glfw(&createString);
   }
 
   static const(char)* createString(const(char*) cString) {

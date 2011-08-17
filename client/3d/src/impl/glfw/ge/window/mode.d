@@ -15,8 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module impl.glfw.api.impl.glfw.window.mode;
+module impl.glfw.ge.window.mode;
 
-struct GLFWWindowMode {
+private import ge.window.mode,
+	glfw;
+
+class GLFWWindowMode : IWindowMode {
+	CordsScreen _size;
 	
+	this(GLFWvidmode mode) {
+		
+	}
+	
+	CordsScreen size() @property {
+		return _size;
+	}
+	void size(CordsScreen size) @property {
+		_size = size;
+	}
 }

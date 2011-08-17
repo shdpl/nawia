@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.bullet.world.world;
+module impl.bullet.pe.shape.capsule;
 
-import api.bullet.ray,
-	type.cuda.types;
+import impl.bullet.pe.shape.shape;
 
-class World {
-	public:
-	Ray rayCast(float3 from, float3 to) {return new Ray;}
+class ShapeCapsule : Shape {
 	
-	}
+}

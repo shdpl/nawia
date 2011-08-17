@@ -31,6 +31,8 @@ import msg.provider,
 	
 public import ge.window.window;
 
+private import impl.glfw.ge.window.mode;
+
  
 
 package class Window: IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWindowResize,
@@ -52,7 +54,7 @@ package class Window: IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWi
 	override static Window getInstance(WindowProperties hints) {
 		
 		if (hInstance is null) {
-			hInstance = new WindowGLFW(hints);
+			hInstance = new Window(hints);
 		}
 		return hInstance;
 	}
@@ -138,7 +140,7 @@ package class Window: IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWi
 	override CordsScreen size() {
 		int tmp1, tmp2;
 		glfwGetWindowSize(&tmp1, &tmp2);
-		return new CordsScreen(tmp1, tmp2);
+		return CordsScreen(tmp1, tmp2);
 	}
 	
 	override void size(CordsScreen size) {
@@ -159,7 +161,7 @@ package class Window: IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWi
 	override IWindowMode desktopMode() {
 		GLFWvidmode mode = new GLFWvidmode;
 		glfwGetDesktopMode(mode);
-		WindowMode ret; //TODO
+		IWindowMode ret = new GLFWWindowMode(mode);
 		return ret;
 	}
 	
@@ -177,13 +179,12 @@ package class Window: IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWi
 				rgb[0], rgb[1], rgb[2],
 				alpha, depth, stencil, GLFW_WINDOW);
 		
-		_props = new WindowProperties();
 		glfwGetWindowSize(&__tmp_i1, &__tmp_i2);
-		_props.size = new CordsScreen(__tmp_i1, __tmp_i2);
+		_props.size = CordsScreen(__tmp_i1, __tmp_i2);
 		
-		register(cast(MsgProvider!MsgWindowClose)this);
-		register(cast(MsgProvider!MsgWindowResize)this);
-		register(cast(MsgProvider!MsgWindowRefresh)this);
+		register(cast(IMsgProvider!MsgWindowClose)this);
+		register(cast(IMsgProvider!MsgWindowResize)this);
+		register(cast(IMsgProvider!MsgWindowRefresh)this);
 	}
 	
 	~this()

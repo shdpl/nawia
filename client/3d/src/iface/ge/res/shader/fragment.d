@@ -19,6 +19,6 @@ module ge.res.shader.fragment;
 
 import ge.res.shader.shader;
 
-interface ShaderFragment : IShader {
+interface IShaderFragment : IShader {
 	
 }

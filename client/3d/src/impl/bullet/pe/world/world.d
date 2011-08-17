@@ -15,17 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module api.bullet.world.dynamics;
+module impl.bullet.pe.world.world;
 
-import std.datetime;
+import impl.bullet.pe.ray,
+	type.cuda.types;
 
-import api.bullet.world.collision,
-	api.bullet.pbody.rigid;
-
-class WorldDynamics : WorldCollision {
-	void onFrame(StopWatch delta) {}
-	
+class World {
 	public:
-	void add(PBodyRigid rigidBody) {}
-	void del(PBodyRigid rigidBody) {}
-}
+	Ray rayCast(float3 from, float3 to) {return new Ray;}
+	
+	}

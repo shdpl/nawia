@@ -29,3 +29,5 @@ FOREACH(file ${files})
 ENDFOREACH(file)
 
 ADD_EXECUTABLE( NawiaClient3D ${sources} )
+
+target_link_libraries(NawiaClient3D dl) #FIXME: shouldn't SWIG add it?

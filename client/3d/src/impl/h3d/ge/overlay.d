@@ -15,12 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.overlay.overlay;
+module impl.h3d.ge.res.overlay.overlay;
 
-import ge.res.h3d,
+private import std.conv;
+
+import impl.h3d.h3d,
 	type.cords.screen,
 	type.color.rgba,
-	ge.res.material;
+	impl.h3d.ge.res.material;
+	
 
 class Overlay {
 	public:
@@ -31,7 +34,7 @@ class Overlay {
 	
 	void render() {
 		assert(verts.length % 4 == 0);
-		h3dShowOverlays(cast(float*)verts, verts.length, color.r, color.g, color.b, color.a,
+		h3dShowOverlays(cast(float*)verts, to!int(verts.length), color.r, color.g, color.b, color.a,
 			material.id, 0);
 	}
 	

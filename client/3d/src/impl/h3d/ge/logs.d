@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.logs;
+module impl.ge.logs;
 
-import std.range,
-	std.conv;
+private import std.range,
+	std.conv,
+	std.exception;
 
-import h3d.h3d,
+import impl.h3d.h3d,
 	msg._time.idle,
 	msg.listener;
 
@@ -44,6 +45,10 @@ class H3DLogs : InputRange!(H3DMessage), IMsgListener!MsgTimeIdle {
 		h3dSetOption(H3DOptions.List.MaxLogLevel, level);
 	}
 	
+	override void handle(MsgTimeIdle msg) {
+		//TODO: 
+	}
+	
 	override H3DMessage front() {
 		return _current;
 	}
@@ -57,7 +62,7 @@ class H3DLogs : InputRange!(H3DMessage), IMsgListener!MsgTimeIdle {
 	}
 	
 	override H3DMessage moveFront() {
-		assert(false, "not implemented");
+		enforce(false, "not implemented");
 		return _current;
 	}
 	

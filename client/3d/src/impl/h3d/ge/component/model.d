@@ -15,16 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.model;
+module impl.h3d.ge.res.model;
 
-import ge.res.h3d,
-	ge.res.animation.animation,
-	ge.res.node;
+private import impl.h3d.h3d,
+	impl.h3d.ge.component.component;
+	
+public import ge.res.animation.animation;	
+	
 
 class /*H3DModel :*/ H3DModel : H3DSGNode {
 	string _name;
 	//Geometry _geometry;
-	H3DAnimation[H3DAnimation.maxCount] _anim;
+	//H3DAnimation[Animation.maxCount] _anim;
 	//TODO: Pose _pose;
 	/// Distance to camera from which on LOD[n] is used
 	float lodDist[4];

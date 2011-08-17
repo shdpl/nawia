@@ -15,18 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.pipeline;
+module impl.h3d.ge.res.pipeline;
 
 private import ge.res.resource;
 
-import h3d.h3d,
+import impl.h3d.h3d,
 	type.cuda.types,
 	type.buffer.pixel;
 
 class H3DPipeline : IResource {
 	H3DNodeTypes _handle;
-	
-	
 	
 	public:
 	/// Size of the render targets

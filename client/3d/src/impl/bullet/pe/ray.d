@@ -15,8 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module pe.broadphase;
+module impl.bullet.pe.pe.ray;
 
-class Broadphase  {
-	//TODO:
+import impl.bullet.pe.pbody.rigid,
+	type.cuda.types;
+
+class Ray  {
+	public:
+	PBodyRigid collider;
+	float3 worldPos;
 }

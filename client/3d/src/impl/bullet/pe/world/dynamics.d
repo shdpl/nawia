@@ -15,10 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module pe.world.collision;
+module impl.bullet.pe.world.dynamics;
 
-import pe.world.world;
+import std.datetime;
 
-class WorldCollision : World {
+import impl.bullet.pe.world.collision,
+	impl.bullet.pe.pbody.rigid;
+
+class WorldDynamics : WorldCollision {
+	void onFrame(StopWatch delta) {}
 	
+	public:
+	void add(PBodyRigid rigidBody) {}
+	void del(PBodyRigid rigidBody) {}
 }

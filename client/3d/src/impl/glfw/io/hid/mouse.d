@@ -19,6 +19,6 @@ module impl.glfw.api.impl.glfw.mouse;
 
 import io.hid.mouse.mouse;
 
-package class MouseGLFW : Mouse {
+package class MouseGLFW : IMouse {
 	
 }
