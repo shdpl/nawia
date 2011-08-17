@@ -25,7 +25,7 @@ private import
 private import
 	impl.nawia.msg.mediator.mtd,
 	impl.glfw.ge.window.window,
-	io.res.manager,
+	impl.nawia.io.res.manager,
 	impl.h3d.ge.renderer,
 	ge.component.camera,
 	ee.world;
@@ -48,11 +48,11 @@ void main(string args[]){//TODO: configured resources
 	rndrr.anisotropy = 4;
 	rndrr.shadowMapSize = 2048;
 	//h3dSetOption( H3DOptions::FastAnimation, 1 ); ??
+	
+	ResManager().bind("executable", args[0]);
+	ResManager().bind("data", "executable:../data");
+	
 	/*
-	ResManager().bind("relative", fileUri(args[0]));
-	ResManager().bind("data", "relative:data");
-	
-	
 	auto world = impl!World;
 	auto sky = impl!Scene("skybox/skybox.scene.xml");
 	//sky.pos = (0, 0, 0);
