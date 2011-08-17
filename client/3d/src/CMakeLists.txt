@@ -25,9 +25,12 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/impl/polyvox/ext )
 file(STRINGS ../build.rf files REGEX ^\".*\"$)
 FOREACH(file ${files})
 	STRING(REGEX REPLACE "^\"[a-zA-Z0-9]+/(.+)\"$" "\\1;" source "${file}")
-	SET(sources ${source} ${sources})
+	STRING(REGEX MATCH ^impl/[a-zA-Z0-9]+/ext/[a-zA-Z0-9]+/.*$ matches "${source}")
+	IF(NOT matches)
+		SET(sources ${source} ${sources})
+	ENDIF(NOT matches)
 ENDFOREACH(file)
 
 ADD_EXECUTABLE( NawiaClient3D ${sources} )
 
-target_link_libraries(NawiaClient3D dl) #FIXME: shouldn't SWIG add it?
+target_link_libraries(NawiaClient3D dl GL) #FIXME: shouldn't SWIG add it?

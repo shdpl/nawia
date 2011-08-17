@@ -1,0 +1,3 @@
+[submodule "client/3d/src/impl/glfw/ext/glfw"]
+	path = client/3d/src/impl/glfw/ext/glfw
+	url = ../nawia.git

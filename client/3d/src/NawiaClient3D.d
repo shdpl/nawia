@@ -48,11 +48,11 @@ void main(string args[]){//TODO: configured resources
 	rndrr.anisotropy = 4;
 	rndrr.shadowMapSize = 2048;
 	//h3dSetOption( H3DOptions::FastAnimation, 1 ); ??
+	/*
 	
 	ResManager().bind("executable", args[0]);
 	ResManager().bind("data", "executable:../data");
 	
-	/*
 	auto world = impl!World;
 	auto sky = impl!Scene("skybox/skybox.scene.xml");
 	//sky.pos = (0, 0, 0);
