@@ -27,7 +27,7 @@ struct Cords(T, size_t N) if (N > 0 && N < 4) {
 	}
 
 
-	T x()
+	T x() @property
 	{
 		return c.x;
 	}
@@ -38,7 +38,7 @@ struct Cords(T, size_t N) if (N > 0 && N < 4) {
 			c.y = y;
 		}
 		
-		T y()
+		T y() @property
 		{
 			return c.y;
 		}
@@ -50,7 +50,7 @@ struct Cords(T, size_t N) if (N > 0 && N < 4) {
 			c.z = z;
 		}
 		
-		T z()
+		T z() @property
 		{
 			return c.z;
 		}

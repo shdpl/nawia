@@ -25,7 +25,7 @@ struct ColorRGBA(T)  {
 	T a;
 	
 	this(T r, T g, T b, T a) {
-		_rgb = ColorRGB!T(r, g, b);
+		_rgb = _rgb(r, g, b);
 		a = a;
 	}
 }

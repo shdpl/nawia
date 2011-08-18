@@ -18,7 +18,7 @@
 module msg.filter.filter;
 
 
-interface IMsgFilter(Msg)  {
+interface IMsgFilter(MSG)  {
 	
 	/**
 	 * Filter message.
@@ -30,6 +30,6 @@ interface IMsgFilter(Msg)  {
 	 *		true	= continue delivering
 	 *		false	= ignore message
 	 */
-	bool filter(Msg msg);
+	bool filter(MSG msg);
 	
 }

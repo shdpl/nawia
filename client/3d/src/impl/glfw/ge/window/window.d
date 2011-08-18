@@ -22,7 +22,7 @@ import std.conv,
 	std.stdio,
 	std.iterator;
 
-import glfw;
+import impl.glfw.glfw;
 
 import msg.provider,
 	ge.window.msg.close,
@@ -31,15 +31,15 @@ import msg.provider,
 	
 public import ge.window.window;
 
-private import impl.glfw.ge.window.mode;
+private import impl.glfw.ge.window.mode,
+	ex.window.open;
 
- 
 
-package class Window: IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWindowResize,
+
+package class Window: Singleton!Window, IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWindowResize,
 	IMsgProvider!MsgWindowClose
 {
 	private:
-	static Window hInstance = null;
 	string _title;
 	CordsScreen _position;
 	WindowProperties _props;
@@ -50,18 +50,6 @@ package class Window: IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWi
 	
 	
 	public:
-	
-	override static Window getInstance(WindowProperties hints) {
-		
-		if (hInstance is null) {
-			hInstance = new Window(hints);
-		}
-		return hInstance;
-	}
-	
-	override static void delInstance() {
-		hInstance = null;
-	}
 	
 	override void title(in string title) {
 		_title = title;
@@ -165,19 +153,20 @@ package class Window: IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWi
 		return ret;
 	}
 	
-	private:
+	this() {}
 
 	this(WindowProperties hints)
 	{
 		int __tmp_i1, __tmp_i2;
 		
 		glfwDisable(GLFW_AUTO_POLL_EVENTS);
-			
-		applyHints(hints);
+		
 		with(hints)
-			glfwOpenWindow(size.x, size.y,
+			enforceEx!ExWindowOpen(glfwOpenWindow(size.x, size.y,
 				rgb[0], rgb[1], rgb[2],
-				alpha, depth, stencil, GLFW_WINDOW);
+				alpha, depth, stencil, status), text(hints));//FIXME: exception safety
+		
+		applyHints(hints);
 		
 		glfwGetWindowSize(&__tmp_i1, &__tmp_i2);
 		_props.size = CordsScreen(__tmp_i1, __tmp_i2);
@@ -189,20 +178,24 @@ package class Window: IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWi
 	
 	~this()
 	{
+		unregister(cast(IMsgProvider!MsgWindowClose)this);
+		unregister(cast(IMsgProvider!MsgWindowResize)this);
+		unregister(cast(IMsgProvider!MsgWindowRefresh)this);
 		glfwCloseWindow();
 	}
-
-	extern(C) {	/* Warning! Methods prohibited, and fields might be unitialized */
-		int onClose() {
-			return 1;
-		}
 	
-		void onResize(int x, int y) {
-		}
-	
-		void onRefresh() {
-		}
+	private:
+	int onClose() {
+		_lstnrClose.deliver(MsgWindowClose());
+		return 1; //FIXME
 	}
+	void onResize(int x, int y) {
+		_lstnrResize.deliver(MsgWindowResize(CordsScreen(x,y)));
+	}
+	void onRefresh() {
+		_lstnrRefresh.deliver(MsgWindowRefresh());
+	}
+	
 	
 	void applyHints(in WindowProperties p) {
 		with (p) {
@@ -237,3 +230,18 @@ package class Window: IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWi
 	}
 	
 }
+
+extern(C) {
+	int onClose() {
+		return Window().onClose();
+	}
+
+	void onResize(int x, int y) {
+		return Window().onResize(x, y);
+	}
+	
+	void onRefresh() {
+		return Window().onRefresh();
+	}
+}
+

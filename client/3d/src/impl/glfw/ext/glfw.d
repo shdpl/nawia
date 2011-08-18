@@ -14,11 +14,6 @@ static import std.conv;
 static import std.string;
 
 
-int NULL() @property {
-  auto ret = glfw_im.NULL_get();
-  return ret;
-}
-
 int GLFW_VERSION_MAJOR() @property {
   auto ret = glfw_im.GLFW_VERSION_MAJOR_get();
   return ret;

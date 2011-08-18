@@ -19,11 +19,13 @@ module net.nawia.client3d;
 
 private import 
 	std.path,
-	std.uri;
+	std.uri,
+	std.stdio,
+	ex.window.open,
+	std.conv;
 	
 
 private import
-	impl.nawia.msg.mediator.mtd,
 	impl.glfw.ge.window.window,
 	impl.nawia.io.res.manager,
 	impl.h3d.ge.renderer,
@@ -35,20 +37,23 @@ void main(string args[]){//TODO: configured resources
 		//TODO if windows inverse slashes
 		return encode("file://"~dirname(args[0])~"");
 	}
-	
 	auto wndProps = WindowProperties();
 
-	wndProps.size = CordsScreen(1280,1240);
-	auto wnd = Window.getInstance(wndProps);
+	wndProps.size = CordsScreen(1280,1024);
+	wndProps.status = WindowStatus.NORMAL;
+	auto wnd = Window(wndProps);
 	wnd.title = "Nawia RPG";
 	
-	auto rndrr = Renderer(); //TODO: Renderer(wnd);
+	
+	auto rndrr = Renderer(wnd);
 	rndrr.texturesReference = true;
 	rndrr.texCompression = false;
 	rndrr.anisotropy = 4;
 	rndrr.shadowMapSize = 2048;
+	core.thread.Thread.sleep(5_000_000);
 	//h3dSetOption( H3DOptions::FastAnimation, 1 ); ??
 	/*
+	
 	
 	ResManager().bind("executable", args[0]);
 	ResManager().bind("data", "executable:../data");

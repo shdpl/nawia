@@ -23,9 +23,9 @@ alias int H3DNode;
 alias int H3DRes;
 
 static this() {
-	h3dInit();
+	//h3dInit();
 	}
 
 static ~this() {
-	h3dRelease();
+	//h3dRelease();
 }

@@ -293,7 +293,6 @@ static this() {
   mixin(bindCode("swigRegisterStringCallback_glfw", "SWIGRegisterStringCallback_glfw"));
   //#endif // SWIG_D_NO_STRING_HELPER
   
-  mixin(bindCode("NULL_get", "D_NULL_get"));
   mixin(bindCode("GLFW_VERSION_MAJOR_get", "D_GLFW_VERSION_MAJOR_get"));
   mixin(bindCode("GLFW_VERSION_MINOR_get", "D_GLFW_VERSION_MINOR_get"));
   mixin(bindCode("GLFW_VERSION_REVISION_get", "D_GLFW_VERSION_REVISION_get"));
@@ -562,50 +561,6 @@ mixin template SwigOperatorDefinitions() {
     return super.opEquals(o);
   }
 
-  
-  public override int opCmp(Object o) {
-    static if (__traits(compiles, swigOpLt(typeof(this).init) &&
-        swigOpEquals(typeof(this).init))) {
-      if (auto rhs = cast(typeof(this))o) {
-        if (swigOpLt(rhs)) {
-          return -1;
-        } else if (swigOpEquals(rhs)) {
-          return 0;
-        } else {
-          return 1;
-        }
-      }
-    }
-    return super.opCmp(o);
-  }
-
-  private template swigOpBinary(string operator, string name) {
-    enum swigOpBinary = `public void opOpAssign(string op, T)(T rhs) if (op == "` ~ operator ~
-      `" && __traits(compiles, swigOp` ~ name ~ `Assign(rhs))) { swigOp` ~ name ~ `Assign(rhs);}` ~
-      `public auto opBinary(string op, T)(T rhs) if (op == "` ~ operator ~
-      `" && __traits(compiles, swigOp` ~ name ~ `(rhs))) { return swigOp` ~ name ~ `(rhs);}`;
-  }
-  mixin(swigOpBinary!("+", "Add"));
-  mixin(swigOpBinary!("-", "Sub"));
-  mixin(swigOpBinary!("*", "Mul"));
-  mixin(swigOpBinary!("/", "Div"));
-  mixin(swigOpBinary!("%", "Mod"));
-  mixin(swigOpBinary!("&", "And"));
-  mixin(swigOpBinary!("|", "Or"));
-  mixin(swigOpBinary!("^", "Xor"));
-  mixin(swigOpBinary!("<<", "Shl"));
-  mixin(swigOpBinary!(">>", "Shr"));
-  
-  private template swigOpUnary(string operator, string name) {
-    enum swigOpUnary = `public auto opUnary(string op)() if (op == "` ~ operator ~
-      `" && __traits(compiles, swigOp` ~ name ~ `())) { return swigOp` ~ name ~ `();}`;   
-  }
-  mixin(swigOpUnary!("+", "Pos"));
-  mixin(swigOpUnary!("-", "Neg"));
-  mixin(swigOpUnary!("~", "Com"));
-  mixin(swigOpUnary!("++", "Inc"));
-  mixin(swigOpUnary!("--", "Dec"));
-
 
 }
 
@@ -696,7 +651,6 @@ private class SwigStringHelper {
 }
 alias const(char)* function(const(char*) cString) SwigStringCallback;
 
-extern(C) int function() NULL_get;
 extern(C) int function() GLFW_VERSION_MAJOR_get;
 extern(C) int function() GLFW_VERSION_MINOR_get;
 extern(C) int function() GLFW_VERSION_REVISION_get;

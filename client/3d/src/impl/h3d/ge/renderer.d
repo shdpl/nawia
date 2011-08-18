@@ -24,10 +24,20 @@ private import std.range,
 private import impl.h3d.h3d,
 	impl.h3d.ge.logs,
 	util.singleton,
-	ge.window.window;
+	ge.window.window,
+	ex.renderer.init;
 
 class Renderer : Singleton!Renderer {
 	public:
+	this(IWindow wnd) {
+		super();
+		enforceEx!ExRendererInit(h3dInit());
+	}
+	
+	~this() {
+		h3dRelease();
+	}
+	
 	@property void filteringTrilinear(bool value) {
 		h3dSetOption(H3DOptions.List.TrilinearFiltering, value);
 	}

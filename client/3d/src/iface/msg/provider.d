@@ -17,18 +17,17 @@
 
 
 module msg.provider;
-public import impl.nawia.msg.mediator.mtd; //FIXME
+public import msg.mediator.mediator; //FIXME
 
 interface IMsgProvider(MSG) {
 	mixin template InjectMsgListener(MSG) {
 		public bool register(IMsgProvider!MSG what) {
-			return MsgMediator().register(cast(IMsgProvider!Msg)what);
+			return true;
 		}
 		public bool unregister(IMsgProvider!MSG what) {
-			return MsgMediator().unregister(cast(IMsgProvider!Msg)what);
+			return true;
 		}
 		public void deliver(MSG msg) {
-			return MsgMediator().deliver(msg);
 		}
 	}
 	bool register(IMsgProvider!MSG prvdr);
