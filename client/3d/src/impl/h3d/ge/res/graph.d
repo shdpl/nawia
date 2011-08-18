@@ -17,14 +17,10 @@
 
 module impl.h3d.ge.res.scenegraph;
 
-private import ge.res.resource,
+private import impl.h3d.ge.res.resource,
+	ge.res.graph,
 	impl.h3d.h3d;
 
 
-class SceneGraph : IResource {
-	public:
-	void clear() {
-		h3dClear();
-	}
-	//H3DNode root; FIXME:
+class SceneGraph : H3DResource, ISceneGraph {
 }

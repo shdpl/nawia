@@ -23,7 +23,7 @@ private import util.singleton,
 	
 private import io.res.manager;
 
-class ResManager : IResManager {
+class ResManager : Singleton!ResManager, IResManager {
 	public:
 	this() {
 		init();

@@ -17,18 +17,71 @@
 
 module impl.h3d.ge.res.material;
 
-private import ge.res.resource;
+private import impl.h3d.ge.res.resource,
+	ge.res.material;
 
 import impl.h3d.h3d,
 	ge.res.shader.shader,
+	impl.h3d.ge.res.shader.shader,
 	type.cuda.types;
 
-class H3DMaterial : IResource {
-	public:
-	IShader shader;
+class H3DMaterial : H3DResource, IMaterial {
+	this(H3DRes id) {} //TODO:
 	
-	void*/*Sampler[]*/ _samplers;
-	float3[] _uniforms;
-	int id;
+	class Sampler /*: H3DResElement*/ {
+//		override H3DElemType h3dElemType() @property {
+//			return H3DMatRes.List.SamplerElem;
+//		}
+//		string opIndex(uint i) { //FIXME: samplers[i].texture by using H3DResElement
+//			return h3dGetResParamI(id, H3DMatRes.List.SamplerElem, i, H3DMatRes.List.SampTexResI);
+//		}
+//		void opIndexAssign(uint i, H3DTexture tex) { //FIXME: samplers[i].texture by using H3DResElement
+//			return h3dSetResParamI(id, H3DMatRes.List.SamplerElem, i, H3DMatRes.List.SampTexResI, tex);
+//		}
+//		string opIndex(uint i) { //FIXME: samplers[i].name by using H3DResElement
+//			return h3dGetResParamStr(id, H3DMatRes.List.SamplerElem, i, H3DMatRes.List.SampNameStr);
+//		}
+	}
+	
+	class Uniform /*: H3DResElement*/ {
+//		override H3DElemType h3dElemType() @property {
+//			return H3DMatRes.List.UniformElem;
+//		}
+//		///retrieves shader *default* uniform value.
+//		float opIndex(uint i, uint j) { //FIXME: uniforms[i].value[j] by using H3DResElement
+//			return h3dGetResParamF(id, H3DMatRes.List.UniformElem, i, H3DMatRes.List.UnifValueF4, j);
+//		}
+//		///sets shader *default* uniform value.
+//		float opIndexAssign(uint i, uint j, uint value) { //FIXME: uniforms[i].value[j] by using H3DResElement
+//			return h3dSetResParamF(id, H3DMatRes.List.UniformElem, i, H3DMatRes.List.UnifValueF4, j, value);
+//		}
+//		string opIndex(uint i) { //FIXME: uniforms[i].name by using H3DResElement
+//			return h3dGetResParamStr(id, H3DMatRes.List.UniformElem, i, H3DMatRes.List.UnifNameStr);
+//		}
+	}
+	
+	IMaterial linked() @property {
+		return new H3DMaterial(h3dGetResParamI(id, H3DMatRes.List.MaterialElem, 0, H3DMatRes.List.MatLinkI));
+	}
+	
+	void linked(H3DMaterial value) @property {
+		h3dSetResParamI(id, H3DMatRes.List.MatLinkI, 0, H3DMatRes.List.MatLinkI, value.id);
+	}
+	
+	IShader linked() @property {
+		return new H3DShader(h3dGetResParamI(id, H3DMatRes.List.MaterialElem, 0, H3DMatRes.List.MatShaderI));
+	}
+	
+	void linked(H3DShader value) @property {
+		h3dSetResParamI(id, H3DMatRes.List.MaterialElem, 0, H3DMatRes.List.MatShaderI, value.id);
+	}
+	
+	string name() @property {
+		return h3dGetResParamStr(id, H3DMatRes.List.MaterialElem, 0, H3DMatRes.List.MatClassStr);
+	}
+	
+	void name(string value) @property {
+		h3dSetResParamStr(id, H3DMatRes.List.MaterialElem, 0, H3DMatRes.List.MatClassStr, value);
+	}
 	
 }

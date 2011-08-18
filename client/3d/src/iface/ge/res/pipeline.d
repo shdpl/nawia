@@ -25,8 +25,8 @@ private import ge.res.resource;
 
 interface IPipeline : IResource {
 	/// Size of the render targets
-	float2[2] size() @property;
-	void size(float2[2]) @property;
+	//float2[2] size() @property;
+	//void size(float2[2]) @property;
 	
-	BufferPixel pixelBuffer(string name, uint bufId);
+	BufferPixel getRenderTarget(string name, uint bufId);
 }

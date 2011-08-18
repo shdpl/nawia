@@ -20,6 +20,8 @@ module impl.ge.res.component.component;
 import impl.h3d.h3d,
 	impl.h3d.ge.ray,
 	type.cuda.types;
+	
+alias int H3DNodeId;
 
 abstract class H3DSGNode  {
 	
@@ -38,8 +40,8 @@ abstract class H3DSGNode  {
 		h3dRemoveResource(id);
 	}
 	
-	abstract @property int id();
-	abstract @property void id(int id);
+	abstract @property H3DNodeId id();
+	abstract @property void id(H3DNodeId id);
 	
 	@property string name() {
 		return h3dGetResName(id);

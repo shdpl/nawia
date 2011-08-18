@@ -15,42 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.particle;
-
-public import std.datetime;
-
-public import type.color.rgba;
+module ge.res.graph;
 
 private import ge.res.resource;
 
-
-interface IParticle {
-	ColorRGBA!float color() @property;
-	void color(ColorRGBA!float) @property;
-	
-	float size() @property;
-	void size(float) @property;
-	
-	float velocity() @property;
-	void velocity(float) @property;
-	
-	
-	float velocityRot() @property;
-	void velocityRot(float) @property;
-	
-	Duration lifeMin() @property;
-	void lifeMin(Duration) @property;
-	
-	Duration lifeMax() @property;
-	void lifeMax(Duration) @property;
-	
-	float powerStartMin() @property;
-	void powerStartMin(float) @property;
-	
-	float powerStartMax() @property;
-	void powerStartMax(float) @property;
-	
-	float powerEnd() @property;
-	void powerEnd(float) @property;
+interface ISceneGraph : IResource {
 	
 }

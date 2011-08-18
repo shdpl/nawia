@@ -29,8 +29,8 @@ private import
 	impl.glfw.ge.window.window,
 	impl.nawia.io.res.manager,
 	impl.h3d.ge.renderer,
-	ge.component.camera,
-	ee.world;
+	ge.component.camera/*,
+	impl.nawia.ee.world*/;
 	
 void main(string args[]){//TODO: configured resources
 	string fileUri(string path) {
@@ -52,20 +52,20 @@ void main(string args[]){//TODO: configured resources
 	rndrr.shadowMapSize = 2048;
 	core.thread.Thread.sleep(5_000_000);
 	//h3dSetOption( H3DOptions::FastAnimation, 1 ); ??
-	/*
 	
 	
 	ResManager().bind("executable", args[0]);
 	ResManager().bind("data", "executable:../data");
-	
-	auto world = impl!World;
+
+	/*
+	auto world = new World;
 	auto sky = impl!Scene("skybox/skybox.scene.xml");
 	//sky.pos = (0, 0, 0);
 	//sky.orientation = (0, 0, 0);
 	sky.scale = (210, 50, 210);
 	sky.shadowsDisabled = true;
 	world.add(sky);
-	
+		
 	auto platform = impl!Scene("platform/platform.scene.xml");
 	//platform.pos = (0, 0, 0);
 	//platform.orientation = (0, 0, 0);

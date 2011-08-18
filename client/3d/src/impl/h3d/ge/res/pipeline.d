@@ -17,23 +17,24 @@
 
 module impl.h3d.ge.res.pipeline;
 
-private import ge.res.resource;
+private import ge.res.pipeline,
+	impl.h3d.ge.res.resource;
 
 import impl.h3d.h3d,
 	type.cuda.types,
 	type.buffer.pixel;
 
-class H3DPipeline : IResource {
+class H3DPipeline : H3DResource, IPipeline {
 	H3DNodeTypes _handle;
 	
 	public:
 	/// Size of the render targets
-	float2[2] size;
+	//float2[2] size() @property { return SmallVec!(float,2)[2LU] = 0;}
+	//void size(float2[2]) @property {}
+	
 	BufferPixel getRenderTarget(string name, uint bufId) {return BufferPixel();}
 	
 	this() {
 		
 	}
-	
-	int id;
 }

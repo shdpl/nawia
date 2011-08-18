@@ -19,7 +19,7 @@ module ge.res.animation.animation;
 
 private import io.res.resource;
 
-interface Animation : Resource {
+interface IAnimation : Resource {
 	///Time in frames
 	uint frames() @property;
 }

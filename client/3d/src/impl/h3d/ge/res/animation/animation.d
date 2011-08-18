@@ -19,18 +19,25 @@ module impl.h3d.ge.res.animation.animation;
 
 import impl.h3d.h3d;
 
-private import ge.res.resource;
+private import impl.h3d.ge.res.resource,
+	ge.res.animation.animation;
 
-abstract class Animation : IResource {
+abstract class H3DAnimation : H3DResource, IAnimation {
 	public:
 	immutable uint maxCount = 0;
-	H3DRes _resource;
 	string _targetNode;
 	///Time in frames
 	uint frames() {
-		return h3dGetResParamI(_resource,
+		return h3dGetResParamI(id,
 			H3DAnimRes.List.EntityElem, 0, H3DAnimRes.List.EntFrameCountI);
 	}
+	
+	//jointAndMesh|Entity entities[]
+	// entities.count
+	//   override uint elemCount(T element) {return h3dGetResElemCount(id, element.h3dType);}
+	//    element.h3dType = H3DAnimRes.List.EntityElem
+	// entities[i].frames = h3dGetResParamI(id,	H3DAnimRes.List.EntityElem, 0, H3DAnimRes.List.EntFrameCountI);
+	
 	uint weight;
 	
 }

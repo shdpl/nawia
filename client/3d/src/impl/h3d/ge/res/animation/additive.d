@@ -17,8 +17,9 @@
 
 module impl.h3d.ge.res.animation.additive;
 
-import impl.h3d.ge.res.animation.animation;
+private import impl.h3d.ge.res.animation.animation/*,
+	ge.res.animation.additive*/;
 
-class AnimationAdditive : Animation {
+class AnimationAdditive : H3DAnimation/*, IAnimationAdditive*/ {
 	
 }

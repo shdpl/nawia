@@ -19,13 +19,56 @@ module impl.h3d.ge.res.shader.shader;
 
 import type.cuda.types;
 
-private import ge.res.resource;
+private import impl.h3d.ge.res.resource,
+	ge.res.shader.shader,
+	impl.h3d.h3d;
 
-class Shader : IResource {
-	void*/*ShaderContext[]*/ _contexts = void;
-	void*/*Sampler[]*/ _samplers = void;
-	float3[] _uniforms;
+class H3DShader : H3DResource, IShader {
+	Context contexts;
+	Sampler samplers;
+	Uniform uniforms;
+	
+	this(H3DRes id) {} //TODO:
 	
 	public:
-	abstract void preamble(string code);
+	void preamble(string code) {} //FIXME:
+	
+	/* TODO: investigate */
+	class Context /*: H3DResElement*/ {
+//		override H3DElemType h3dElemType() @property {
+//			return H3DShaderRes.List.ContextElem;
+//		}
+//		string opIndexAssign(uint i) { //FIXME: contexts[i].name by using H3DResElement
+//			return h3dGetResParamStr(id, H3DShaderRes.List.ContextElem, i, H3DShaderRes.List.ContNameStr);
+//		}
+	}
+	
+	class Sampler /*: H3DResElement*/ {
+//		override H3DElemType h3dElemType() @property {
+//			return H3DShaderRes.List.SamplerElem;
+//		}
+//		string opIndexAssign(uint i) { //FIXME: uniforms[i].name by using H3DResElement
+//			return h3dGetResParamStr(id, H3DShaderRes.List.SamplerElem, i, H3DShaderRes.List.SampNameStr);
+//		}
+	}
+	
+	class Uniform /*: H3DResElement*/ {
+//		override H3DElemType h3dElemType() @property {
+//			return H3DShaderRes.List.UniformElem;
+//		}
+//		int opIndex(uint i) { //FIXME: uniforms[i].size by using H3DResElement
+//			return h3dGetResParamI(id, H3DShaderRes.List.UniformElem, i, H3DShaderRes.List.UnifSizeI);
+//		}
+//		///retrieves shader *default* uniform value.
+//		float opIndex(uint i, uint j) { //FIXME: uniforms[i].value[j] by using H3DResElement
+//			return h3dGetResParamF(id, H3DShaderRes.List.UniformElem, i, H3DShaderRes.List.UnifDefValueF4, j);
+//		}
+//		///sets shader *default* uniform value.
+//		float opIndexAssign(uint i, uint j, uint value) { //FIXME: uniforms[i].value[j] by using H3DResElement
+//			return h3dSetResParamF(id, H3DShaderRes.List.UniformElem, i, H3DShaderRes.List.UnifDefValueF4, j, value);
+//		}
+//		string opIndexAssign(uint i) { //FIXME: uniforms[i].name by using H3DResElement
+//			return h3dGetResParamStr(id, H3DShaderRes.List.UniformElem, i, H3DShaderRes.List.UnifNameStr);
+//		}
+	}
 }

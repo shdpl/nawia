@@ -23,8 +23,8 @@ import ge.res.shader.shader,
 	type.cuda.types;
 
 interface IMaterial : IResource {
-	IShader shader() @property;
-	void shader(IShader) @property;
+	//IShader shader() @property;
+	//void shader(IShader) @property;
 	
 	/*ISampler[] _samplers;
 	float3[] _uniforms;*/
