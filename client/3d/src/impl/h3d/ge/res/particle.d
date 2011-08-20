@@ -28,96 +28,215 @@ private import impl.h3d.ge.res.resource,
 	ge.res.particle;
 
 class H3DParticle : H3DResource, IParticle {
-	struct color {
-		//startMin
-		//startMax
-		//end
-	}
-	override ColorRGBA!float color() @property {
-		ColorRGBA!float ret;
-		ret.r = h3dGetResParamF(id, H3DPartEffRes.List.ChanColRElem,
-					0, H3DPartEffRes.List., 0);
-		ret.g = h3dGetResParamF(id, H3DPartEffRes.List.ChanColGElem,
-					0, H3DPartEffRes.List., 0);
-		ret.b = h3dGetResParamF(id, H3DPartEffRes.List.ChanColBElem,
-					0, H3DPartEffRes.List., 0);
-		ret.a = h3dGetResParamF(id, H3DPartEffRes.List.ChanColAElem,
-					0, H3DPartEffRes.List., 0);
-		return ret;
-	}
+	private:
+	alias H3DPartEffRes.List Elements;
 	
-	override void color(ColorRGBA!float value) @property {
-		h3dSetResParamF(id, H3DPartEffRes.List.ChanColRElem,
-			0, H3DPartEffRes.List., 0, value.r);
-		h3dSetResParamF(id, H3DPartEffRes.List.ChanColGElem,
-			0, H3DPartEffRes.List., 0, value.r);
-		h3dSetResParamF(id, H3DPartEffRes.List.ChanColBElem,
-			0, H3DPartEffRes.List., 0, value.r);
-		h3dSetResParamF(id, H3DPartEffRes.List.ChanColAElem,
-			0, H3DPartEffRes.List., 0, value.r);
+	public:
+	Movement movement;
+	Rotation rotation;
+	Drag drag;
+	Size size;
+	Color color;
+	
+	
+	this() {
+		movement = new Movement;
+		rotation = new Rotation;
+		drag = new Drag;
+		size = new Size;
+		color = new Color;	//http://d.puremagic.com/issues/show_bug.cgi?id=6532
 	}
 	
-	override float size() @property {
-		return to!int(h3dGetResParamF(id, H3DPartEffRes.List.ChanSizeElem,
-			0, H3DPartEffRes.List., 0));
+	@property {
+		override Duration lifeMin() {
+			return dur!"nsecs"(to!int(
+				10E-9 * getChannel(Elements.ParticleElem, Elements.PartLifeMinF
+			)));
+		}
+		override void lifeMin(Duration time) {
+			setChannel(Elements.ParticleElem, Elements.PartLifeMinF, time.total!("nsecs")/10E-9);
+		}
+	}	
+	
+	@property {
+		override Duration lifeMax() {
+			return dur!"nsecs"(to!int(
+				10E-9 * getChannel(Elements.ParticleElem, Elements.PartLifeMaxF)
+			));
+		}
+		override void lifeMax(Duration time) {
+			setChannel(Elements.ParticleElem, Elements.PartLifeMaxF, time.total!("nsecs")/10E-9);
+		}
 	}
 	
-	override void size(float value) @property {
-		h3dSetResParamF(id, H3DPartEffRes.List.ChanSizeElem,
-			0, H3DPartEffRes.List., 0, value);
+	private:
+	enum ChannelParam {
+		startMin = Elements.ChanStartMinF,
+		startMax = Elements.ChanStartMaxF,
+		end = Elements.ChanEndRateF
 	}
 	
-	//TODO: ChanDragElem
-	
-	override float velocity() @property {
-		return to!int(h3dGetResParamF(id, H3DPartEffRes.List.ChanMoveVelElem,
-			0, H3DPartEffRes.List., 0));
+	class Size {
+		@property {
+			float startMin() {
+				return getChannel(Elements.ChanSizeElem, Elements.ChanStartMinF);
+			}
+			void startMin(float value) {
+				setChannel(Elements.ChanSizeElem, Elements.ChanStartMinF, value);
+			}
+		}
+		@property {
+			float startMax() {
+				return getChannel(Elements.ChanSizeElem, Elements.ChanStartMaxF);
+			}
+			void startMax(float value) {
+				setChannel(Elements.ChanSizeElem, Elements.ChanStartMaxF, value);
+			}
+		}
+		@property {
+			float end() {
+				return getChannel(Elements.ChanSizeElem, Elements.ChanEndRateF);
+			}
+			void size(float value) {
+				setChannel(Elements.ChanSizeElem, Elements.ChanEndRateF, value);
+			}
+		}
+	}
+
+	class Drag {
+		@property {
+			float startMin() {
+				return getChannel(Elements.ChanDragElem, Elements.ChanStartMinF);
+			}
+			void startMin(float vel) {
+				setChannel(Elements.ChanDragElem, Elements.ChanStartMinF, vel);
+			}
+		}
+		@property {
+			float startMax() {
+				return getChannel(Elements.ChanDragElem, Elements.ChanStartMaxF);
+			}
+			void startMax(float vel) {
+				setChannel(Elements.ChanDragElem, Elements.ChanStartMaxF, vel);
+			}
+		}
+		@property {
+			float end() {
+				return getChannel(Elements.ChanDragElem, Elements.ChanEndRateF);
+			}
+			void end(float vel) {
+				setChannel(Elements.ChanDragElem, Elements.ChanEndRateF, vel);
+			}
+		}
 	}
 	
-	override void velocity(float vel) @property {
-		h3dSetResParamF(id, H3DPartEffRes.List.ChanMoveVelElem,
-			0, H3DPartEffRes.List., 0, vel);
+	class Movement {
+		@property {
+			float startMin() {
+				return getChannel(Elements.ChanMoveVelElem, Elements.ChanStartMinF);
+			}
+			void startMin(float vel) {
+				setChannel(Elements.ChanMoveVelElem, Elements.ChanStartMinF, vel);
+			}
+		}
+		@property {
+			float startMax() {
+				return getChannel(Elements.ChanMoveVelElem, Elements.ChanStartMaxF);
+			}
+			void startMax(float vel) {
+				setChannel(Elements.ChanMoveVelElem, Elements.ChanStartMaxF, vel);
+			}
+		}
+		@property {
+			float end() {
+				return getChannel(Elements.ChanMoveVelElem, Elements.ChanEndRateF);
+			}
+			void end(float vel) {
+				setChannel(Elements.ChanMoveVelElem, Elements.ChanEndRateF, vel);
+			}
+		}
 	}
 	
-	override float velocityRot() @property {
-		return to!int(h3dGetResParamF(id, H3DPartEffRes.List.ChanRotVelElem,
-			0, H3DPartEffRes.List., 0));
+	class Rotation {
+		@property {
+			float startMin() {
+				return getChannel(Elements.ChanRotVelElem, Elements.ChanStartMinF);
+			}
+			void startMin(float vel) {
+				setChannel(Elements.ChanRotVelElem, Elements.ChanStartMinF, vel);
+			}
+		}
+		@property {
+			float startMax() {
+				return getChannel(Elements.ChanRotVelElem, Elements.ChanStartMaxF);
+			}
+			void startMax(float vel) {
+				setChannel(Elements.ChanRotVelElem, Elements.ChanStartMaxF, vel);
+			}
+		}
+		@property {
+			float end() {
+				return getChannel(Elements.ChanRotVelElem, Elements.ChanEndRateF);
+			}
+			void end(float vel) {
+				setChannel(Elements.ChanRotVelElem, Elements.ChanEndRateF, vel);
+			}
+		}
 	}
 	
-	override void velocityRot(float vel) @property {
-		h3dSetResParamF(id, H3DPartEffRes.List.ChanRotVelElem,
-			0, H3DPartEffRes.List., 0, vel);
+	class Color {
+		public:
+		@property {
+			void startMin(ColorRGBA!float value) {
+				setColors(ChannelParam.startMin, value);
+			}
+			ColorRGBA!float startMin() {
+				return getColors(ChannelParam.startMin);
+			}
+		}
+		@property {
+			void startMax(ColorRGBA!float value) {
+				setColors(ChannelParam.startMax, value);
+			}
+			ColorRGBA!float startMax() {
+				return getColors(ChannelParam.startMax);
+			}
+		}
+		@property {
+			void end(ColorRGBA!float value) {
+				setColors(ChannelParam.end, value);
+			}
+			ColorRGBA!float end() {
+				return getColors(ChannelParam.end);
+			}
+		}
+
+		private:
+		void setColors(ChannelParam param, ColorRGBA!float colors) {
+			for (int i = Colors.min; i < Colors.max; i++) {
+				setChannel(param, i, colors.floats[i]);
+			}
+		}
+		ColorRGBA!float getColors(ChannelParam param) {
+			ColorRGBA!float ret;
+			for (int i = Colors.min; i < Colors.max; i++) {
+				ret[i] = getChannel(param, i);
+			}
+			return ret;
+		}
+		
+		enum Colors {
+			RED = Elements.ChanColRElem,
+			GREEN = Elements.ChanColGElem,
+			BLUE = Elements.ChanColBElem,
+			ALPHA = Elements.ChanColAElem
+		};
 	}
 	
-	
-	
-	override float powerStartMin() @property;
-	override void powerStartMin(float) @property;
-	
-	override float powerStartMax() @property;
-	override void powerStartMax(float) @property;
-	
-	override float powerEnd() @property;
-	override void powerEnd(float) @property;
-	
-	
-	
-	override Duration lifeMin() @property {
-		return dur!"nsecs"(to!int(10E-9*h3dGetResParamF(id, H3DPartEffRes.List.ParticleElem,
-			0, H3DPartEffRes.List.PartLifeMinF, 0)));
+	float getChannel(int channel, int property) {
+		return getElemParam!float(channel, 0, property);
 	}
-	override void lifeMin(Duration time) @property {
-		h3dSetResParamF(id, H3DPartEffRes.List.ParticleElem,
-			0, H3DPartEffRes.List.PartLifeMinF, 0, time.total!("nsecs")/10E-9);
+	void setChannel(int channel, int property, float value) {
+		setElemParam(value, channel, 0, property);
 	}
-	
-	override Duration lifeMax() @property {
-		return dur!"nsecs"(to!int(10E-9*h3dGetResParamF(id, H3DPartEffRes.List.ParticleElem,
-			0, H3DPartEffRes.List.PartLifeMaxF, 0)));
-	}
-	override void lifeMax(Duration time) @property {
-		h3dSetResParamF(id, H3DPartEffRes.List.ParticleElem,
-			0, H3DPartEffRes.List.PartLifeMaxF, 0, time.total!("nsecs")/10E-9);
-	}
-	
 }

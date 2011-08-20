@@ -29,6 +29,7 @@ class H3DShader : H3DResource, IShader {
 	Uniform uniforms;
 	
 	this(H3DRes id) {} //TODO:
+	this() {}
 	
 	public:
 	void preamble(string code) {} //FIXME:
@@ -71,4 +72,7 @@ class H3DShader : H3DResource, IShader {
 //			return h3dGetResParamStr(id, H3DShaderRes.List.UniformElem, i, H3DShaderRes.List.UnifNameStr);
 //		}
 	}
+	
+	private:
+	alias H3DShaderRes.List Elements;
 }

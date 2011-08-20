@@ -25,16 +25,56 @@ import impl.h3d.h3d,
 	type.buffer.pixel;
 
 class H3DPipeline : H3DResource, IPipeline {
+	private:
 	H3DNodeTypes _handle;
+	public:
+	Stages stages;
 	
 	public:
 	/// Size of the render targets
 	//float2[2] size() @property { return SmallVec!(float,2)[2LU] = 0;}
 	//void size(float2[2]) @property {}
 	
-	BufferPixel getRenderTarget(string name, uint bufId) {return BufferPixel();}
+	BufferPixel getRenderTarget(string name, uint bufId) {
+		//h3dGetRenderTargetData
+		return BufferPixel();
+	}
 	
 	this() {
 		
+	}
+	
+	private:
+	alias H3DPipeRes.List Elements;
+	
+	class Stage {
+		private uint _id;
+		
+		this(uint i) {
+			_id = i;
+		}
+		
+		@property {
+			void active(bool value) {
+				setElemParam!int(value, Elements.StageElem, _id,
+					Elements.StageActivationI);
+			}
+			
+			bool active() {
+				return 1 == getElemParam!int(Elements.StageElem, _id,
+					Elements.StageActivationI);
+			}
+		}
+		
+	}
+	
+	class Stages {
+		uint count() @property {
+			return h3dGetResElemCount(id, Elements.StageElem);
+		}
+		
+		Stage opIndex(uint i) {
+			return new Stage(i);
+		}
 	}
 }

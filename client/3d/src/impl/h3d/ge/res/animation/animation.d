@@ -28,10 +28,10 @@ abstract class H3DAnimation : H3DResource, IAnimation {
 	string _targetNode;
 	///Time in frames
 	uint frames() {
-		return h3dGetResParamI(id,
-			H3DAnimRes.List.EntityElem, 0, H3DAnimRes.List.EntFrameCountI);
+		return getElemParam!int(Elements.EntityElem, 0, Elements.EntFrameCountI);
 	}
 	
+	//TODO:
 	//jointAndMesh|Entity entities[]
 	// entities.count
 	//   override uint elemCount(T element) {return h3dGetResElemCount(id, element.h3dType);}
@@ -39,5 +39,8 @@ abstract class H3DAnimation : H3DResource, IAnimation {
 	// entities[i].frames = h3dGetResParamI(id,	H3DAnimRes.List.EntityElem, 0, H3DAnimRes.List.EntFrameCountI);
 	
 	uint weight;
+	
+	private:
+	alias H3DAnimRes.List Elements;
 	
 }

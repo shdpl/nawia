@@ -21,15 +21,21 @@ module ge.res.texture;
 import ge.res.resource,
 	type.cuda.types,
 	type.buffer.pixel;
+	
+public import impl.h3d.h3d;
 
 interface ITexture : IResource {
-	//enum Format {};
+	alias H3DFormats.List TextureFormat;	//TODO: other renderer implementation
 	
 	//flags
 	
-	//ITexture[] subtextures;
-	//ubyte slices;
+	uint slicesNo() @property;
 	
 	BufferPixel data() @property;
 	void data(BufferPixel) @property;
+	
+	@property {
+		TextureFormat format();
+		void format(TextureFormat);
+	}
 }

@@ -20,6 +20,6 @@ module impl.h3d.ge.res.shader.fragment;
 import impl.h3d.ge.res.shader.shader,
 	ge.res.shader.fragment;
 
-class ShaderFragment : Shader, IShaderFragment {
+class ShaderFragment : H3DShader, IShaderFragment {
 	
 }

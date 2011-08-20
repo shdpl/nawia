@@ -31,4 +31,23 @@ struct ColorRGB(T) {
 		this.g = g;
 		this.b = b;
 	}
+	
+	@property {
+		float[] floats() {
+			return [r,g,b];
+		}
+	}
+	
+	T opIndexAssign(T value, size_t i) {
+		switch(i) {
+			case 0:
+				return r = value;
+			case 1:
+				return g = value;
+			case 2:
+				return b = value;
+			default:
+				assert(0);
+		}
+	}
 }

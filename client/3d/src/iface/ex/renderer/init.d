@@ -1,8 +1,8 @@
 module ex.renderer.init;
 
-public import std.exception;
+public import ex.ex;
 
-class ExRendererInit : Exception {
+class ExRendererInit : Ex {
 	this() {
 		this("");
 	}

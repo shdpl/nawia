@@ -15,12 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module impl.h3d.ge.res.scenegraph;
+module ge.res.graph;
 
-private import impl.h3d.ge.res.resource,
-	ge.res.graph,
-	impl.h3d.h3d;
+private import ge.res.resource;
 
-
-class SceneGraph : H3DResource, ISceneGraph {
+interface IScene : IResource {
+	
 }

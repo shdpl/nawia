@@ -26,6 +26,8 @@ private import impl.h3d.h3d,
 	util.singleton,
 	ge.window.window,
 	ex.renderer.init;
+	
+public import type.buffer.pixel;	
 
 class Renderer : Singleton!Renderer {
 	public:
@@ -120,6 +122,14 @@ class Renderer : Singleton!Renderer {
 	
 	@property void profile(bool value) {
 		h3dSetOption(H3DOptions.List.GatherTimeStats, value);
+	}
+	
+	@property {
+		BufferPixel backbuffer() {
+			BufferPixel ret;
+			//h3dGetRenderTargetData(0,...)
+			return ret;
+		}
 	}
 	
 	H3DLogs msgs;

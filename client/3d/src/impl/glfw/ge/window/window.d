@@ -153,7 +153,9 @@ package class Window: Singleton!Window, IWindow, IMsgProvider!MsgWindowRefresh, 
 		return ret;
 	}
 	
-	this() {}
+	this() {
+		this(WindowProperties());
+	}
 
 	this(WindowProperties hints)
 	{
@@ -162,9 +164,9 @@ package class Window: Singleton!Window, IWindow, IMsgProvider!MsgWindowRefresh, 
 		glfwDisable(GLFW_AUTO_POLL_EVENTS);
 		
 		with(hints)
-			enforceEx!ExWindowOpen(glfwOpenWindow(size.x, size.y,
+			enforceEx!ExWindowOpen(!glfwOpenWindow(size.x, size.y,
 				rgb[0], rgb[1], rgb[2],
-				alpha, depth, stencil, status), text(hints));//FIXME: exception safety
+				alpha, depth, stencil, GLFW_FULLSCREEN), text(hints));//FIXME: exception safety
 		
 		applyHints(hints);
 		

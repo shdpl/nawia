@@ -61,27 +61,30 @@ class H3DMaterial : H3DResource, IMaterial {
 	}
 	
 	IMaterial linked() @property {
-		return new H3DMaterial(h3dGetResParamI(id, H3DMatRes.List.MaterialElem, 0, H3DMatRes.List.MatLinkI));
+		return new H3DMaterial(getElemParam!int(Elements.MaterialElem, 0, Elements.MatLinkI));
 	}
 	
 	void linked(H3DMaterial value) @property {
-		h3dSetResParamI(id, H3DMatRes.List.MatLinkI, 0, H3DMatRes.List.MatLinkI, value.id);
+		setElemParam!int(value.id, Elements.MatLinkI, 0, Elements.MatLinkI);
 	}
 	
 	IShader linked() @property {
-		return new H3DShader(h3dGetResParamI(id, H3DMatRes.List.MaterialElem, 0, H3DMatRes.List.MatShaderI));
+		return new H3DShader(getElemParam!int(Elements.MaterialElem, 0, Elements.MatShaderI));
 	}
 	
 	void linked(H3DShader value) @property {
-		h3dSetResParamI(id, H3DMatRes.List.MaterialElem, 0, H3DMatRes.List.MatShaderI, value.id);
+		setElemParam!int(value.id, Elements.MaterialElem, 0, Elements.MatShaderI);
 	}
 	
 	string name() @property {
-		return h3dGetResParamStr(id, H3DMatRes.List.MaterialElem, 0, H3DMatRes.List.MatClassStr);
+		return getElemParam!string(Elements.MaterialElem, 0, Elements.MatClassStr);
 	}
 	
 	void name(string value) @property {
-		h3dSetResParamStr(id, H3DMatRes.List.MaterialElem, 0, H3DMatRes.List.MatClassStr, value);
+		setElemParam!string(value, Elements.MaterialElem, 0, Elements.MatClassStr);
 	}
 	
+	
+	private:
+	alias H3DMatRes.List Elements;
 }

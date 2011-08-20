@@ -6,26 +6,19 @@ private import impl.h3d.ge.res.resource,
 
 class H3DGeometry : H3DResource, IGeometry {
 	
-	class Element /*: H3DResElement*/ {
-//		override H3DElemType h3dElemType() @property {
-//			return H3DGeoRes.List.GeometryElem;
-//		}
-	}
-	uint indicesN() @property {
-		return h3dGetResParamI(id, H3DGeoRes.List.GeometryElem,
-			0,H3DGeoRes.List.GeoIndexCountI);
+	uint indicesNo() @property {
+		return getElemParam!int(Elements.GeometryElem,0,Elements.GeoIndexCountI);
 	}
 	
 	enum IndicesFormat : bool {BIT16 = 1, BIT32 = 0};
 	
-	IndicesFormat indicesF() @property {
-		return cast(IndicesFormat) h3dGetResParamI(id, H3DGeoRes.List.GeometryElem,
-			0,H3DGeoRes.List.GeoIndices16I);
+	IndicesFormat indicesFmt() @property {
+		return cast(IndicesFormat)(IndicesFormat.BIT16 ==
+			getElemParam!int(Elements.GeometryElem, 0, Elements.GeoIndices16I));
 	}
 	
-	uint verticesN() @property {
-		return h3dGetResParamI(id, H3DGeoRes.List.GeometryElem,
-			0,H3DGeoRes.List.GeoVertexCountI);
+	uint verticesNo() @property {
+		return getElemParam!int(Elements.GeometryElem, 0, Elements.GeoVertexCountI);
 	}
 	
 	/* TODO:
@@ -89,4 +82,6 @@ void GeometryResource::unmapStream()
 }
 	*/
 	
+	private:
+	alias H3DGeoRes.List Elements;
 }

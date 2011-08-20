@@ -20,7 +20,7 @@ module util.singleton;
 abstract class Singleton(T) {
     private static T instance;
     
-    /*override*/ public static T opCall(E...)(E args) {
+    /*override*/ public static T opCall(E...)(E args) { //D BUG
         if(instance is null) {
             instance = new T(args);
         }

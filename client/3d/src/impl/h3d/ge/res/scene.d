@@ -15,10 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.graph;
+module impl.h3d.ge.res.scenegraph;
 
-private import ge.res.resource;
+private import impl.h3d.ge.res.resource,
+	ge.res.scene,
+	impl.h3d.h3d,
+	ex.ge.res.add;
 
-interface ISceneGraph : IResource {
-	
+
+class H3DScene : H3DResource, IScene {
+	private immutable TYPE = H3DResTypes.List.SceneGraph;
+	this(string path) {
+		enforceEx!ExResAdd(!h3dAddResource(TYPE, path, 0), path);
+	}
 }

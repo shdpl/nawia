@@ -28,4 +28,21 @@ struct ColorRGBA(T)  {
 		_rgb = _rgb(r, g, b);
 		a = a;
 	}
+	
+	@property {
+		float[] floats() {
+			return _rgb.floats ~ a;
+		}
+	}
+	
+	T opIndexAssign(T value, size_t i) 
+	in {
+		assert(i < 4 && i >= 0);
+	} body {
+		if (i<3)
+			_rgb[i] = value;
+		else
+			a = value;
+		return value;
+	}
 }

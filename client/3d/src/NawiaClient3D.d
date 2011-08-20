@@ -29,8 +29,9 @@ private import
 	impl.glfw.ge.window.window,
 	impl.nawia.io.res.manager,
 	impl.h3d.ge.renderer,
-	ge.component.camera/*,
-	impl.nawia.ee.world*/;
+	ge.component.camera,
+	impl.h3d.ee.world,
+	impl.h3d.ge.res.scene;
 	
 void main(string args[]){//TODO: configured resources
 	string fileUri(string path) {
@@ -40,7 +41,7 @@ void main(string args[]){//TODO: configured resources
 	auto wndProps = WindowProperties();
 
 	wndProps.size = CordsScreen(1280,1024);
-	wndProps.status = WindowStatus.NORMAL;
+	wndProps.status = WindowStatus.FULLSCREEN;
 	auto wnd = Window(wndProps);
 	wnd.title = "Nawia RPG";
 	
@@ -50,29 +51,29 @@ void main(string args[]){//TODO: configured resources
 	rndrr.texCompression = false;
 	rndrr.anisotropy = 4;
 	rndrr.shadowMapSize = 2048;
-	core.thread.Thread.sleep(5_000_000);
 	//h3dSetOption( H3DOptions::FastAnimation, 1 ); ??
 	
 	
 	ResManager().bind("executable", args[0]);
 	ResManager().bind("data", "executable:../data");
 
+	auto world = new H3DWorld;
 	/*
-	auto world = new World;
-	auto sky = impl!Scene("skybox/skybox.scene.xml");
+	//auto sky = world.add(new H3DScene("skybox/skybox.scene.xml"));
+	//auto sky = new H3DScene("skybox/skybox.scene.xml");
 	//sky.pos = (0, 0, 0);
 	//sky.orientation = (0, 0, 0);
 	sky.scale = (210, 50, 210);
 	sky.shadowsDisabled = true;
 	world.add(sky);
-		
-	auto platform = impl!Scene("platform/platform.scene.xml");
+	
+	auto platform = new H3DScene("platform/platform.scene.xml");
 	//platform.pos = (0, 0, 0);
 	//platform.orientation = (0, 0, 0);
 	platform.scale = (.23f, .23f, .23f);
 	world.add(platform);
 	
-	platform.add(impl!Camera(wnd, impl!Pipeline("deferred.pipeline.xml")));
+	platform.add(new H3DCamera(wnd, new H3DPipeline("deferred.pipeline.xml")));
 	
 	auto lCtxID = "LIGHTING";
 	auto sCtxID = "SHADOWMAP";
@@ -103,4 +104,5 @@ void main(string args[]){//TODO: configured resources
 	while(true) {
 		mtd.poll;
 	}*/
+	core.thread.Thread.sleep(5_000_000);
 }
