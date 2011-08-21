@@ -5,12 +5,17 @@ private import impl.h3d.ge.res.resource,
 	impl.h3d.h3d;
 
 class H3DGeometry : H3DResource, IGeometry {
+	enum IndicesFormat : bool {BIT16 = 1, BIT32 = 0};
+	
+	
+	public:
+	this(string name) {
+		super(name);	
+	}
 	
 	uint indicesNo() @property {
 		return getElemParam!int(Elements.GeometryElem,0,Elements.GeoIndexCountI);
 	}
-	
-	enum IndicesFormat : bool {BIT16 = 1, BIT32 = 0};
 	
 	IndicesFormat indicesFmt() @property {
 		return cast(IndicesFormat)(IndicesFormat.BIT16 ==
@@ -19,6 +24,11 @@ class H3DGeometry : H3DResource, IGeometry {
 	
 	uint verticesNo() @property {
 		return getElemParam!int(Elements.GeometryElem, 0, Elements.GeoVertexCountI);
+	}
+	
+	private:
+	override ResourceType type() @property {
+		return ResourceType.Geometry;
 	}
 	
 	/* TODO:

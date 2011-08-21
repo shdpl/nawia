@@ -161,13 +161,14 @@ package class Window: Singleton!Window, IWindow, IMsgProvider!MsgWindowRefresh, 
 	{
 		int __tmp_i1, __tmp_i2;
 		
+		//glfwInit();
 		glfwDisable(GLFW_AUTO_POLL_EVENTS);
 		
 		with(hints)
-			enforceEx!ExWindowOpen(!glfwOpenWindow(size.x, size.y,
+			enforceEx!ExWindowOpen(0 != glfwOpenWindow(size.x, size.y,
 				rgb[0], rgb[1], rgb[2],
-				alpha, depth, stencil, GLFW_FULLSCREEN), text(hints));//FIXME: exception safety
-		
+				alpha, depth, stencil, status), text(hints));//FIXME: exception safety
+
 		applyHints(hints);
 		
 		glfwGetWindowSize(&__tmp_i1, &__tmp_i2);
@@ -184,6 +185,7 @@ package class Window: Singleton!Window, IWindow, IMsgProvider!MsgWindowRefresh, 
 		unregister(cast(IMsgProvider!MsgWindowResize)this);
 		unregister(cast(IMsgProvider!MsgWindowRefresh)this);
 		glfwCloseWindow();
+		//glfwTerminate();
 	}
 	
 	private:

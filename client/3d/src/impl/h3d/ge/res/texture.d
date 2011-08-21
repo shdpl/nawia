@@ -24,12 +24,11 @@ import impl.h3d.h3d,
 	type.cuda.types,
 	type.buffer.pixel;
 
-class Texture : H3DResource, ITexture {
+class H3DTexture : H3DResource, ITexture {
 	public:
-	
 	//flags
 	
-	Texture[] subtextures;
+	ITexture[] subtextures;
 	ubyte slices;
 	
 	private:
@@ -37,11 +36,19 @@ class Texture : H3DResource, ITexture {
 	immutable ELEM = Elements.TextureElem;
 	
 	
-	
 	public:
-	this(string name, int2 size, TextureFormat fmt) {
-		id = h3dCreateTexture(name, size.x, size.y, fmt, 0);
+	this(string name) {
+		super(name);	
 	}
+	this(int id) {
+		super(id);
+	}
+	override ResourceType type() @property {
+		return ResourceType.Material;
+	}
+	//this(string name, int2 size, TextureFormat fmt) {
+	//	id = h3dCreateTexture(name, size.x, size.y, fmt, 0);
+	//}
 	
 	override BufferPixel data() @property {
 		return BufferPixel();

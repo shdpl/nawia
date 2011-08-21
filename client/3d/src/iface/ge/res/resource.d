@@ -19,4 +19,18 @@ module ge.res.resource;
 
 interface IResource {
 	
+	string name() @property;
+	
+	bool load(ubyte[] data, size_t size);
+	bool loaded() @property;
+	void unload();
+	
+	//IResource dup();//TODO: make typesafe, and choose better name(non-shallow)
+	//IResource next(); //FIXME: WhiteHole!T does not work as supposed to
+	
+	//TODO: h3dFindResElem
+	//TODO: h3dMapResStream
+	//TODO: h3dUnmapResStream
+	//TODO: h3dQueryUnloadedResource
+	//TODO: h3dReleaseUnusedResources
 }

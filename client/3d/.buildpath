@@ -5,5 +5,5 @@
 	<buildpathentry kind="src" path="src/iface"/>
 	<buildpathentry kind="src" path="src/impl/polyvox/ext"/>
 	<buildpathentry kind="src" path="src/impl/glfw/ext"/>
-	<buildpathentry kind="con" path="org.eclipse.dltk.launching.INTERPRETER_CONTAINER"/>
+	<buildpathentry exported="true" kind="con" path="org.eclipse.dltk.launching.INTERPRETER_CONTAINER"/>
 </buildpath>

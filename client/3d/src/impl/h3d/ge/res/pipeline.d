@@ -35,13 +35,18 @@ class H3DPipeline : H3DResource, IPipeline {
 	//float2[2] size() @property { return SmallVec!(float,2)[2LU] = 0;}
 	//void size(float2[2]) @property {}
 	
+	this(string name) {
+		super(name);	
+	}
+	
 	BufferPixel getRenderTarget(string name, uint bufId) {
 		//h3dGetRenderTargetData
 		return BufferPixel();
 	}
 	
-	this() {
-		
+	private:
+	override ResourceType type() @property {
+		return ResourceType.Material;
 	}
 	
 	private:

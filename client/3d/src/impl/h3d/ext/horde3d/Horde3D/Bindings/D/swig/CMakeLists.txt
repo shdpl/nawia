@@ -8,11 +8,28 @@ if(SWIG_FOUND)
 
         link_directories(${Horde3D_BINARY_DIR})
 
-        set(CMAKE_SWIG_FLAGS "-d2")
+        set(CMAKE_SWIG_FLAGS -d2 -wrapperlibrary Horde3D_D)
         set_source_files_properties(Horde3D.i PROPERTIES CPLUSPLUS ON)
         #SET(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR})
 
         swig_add_module(Horde3D_D d Horde3D.i ${HORDE3D_SOURCES})
         swig_link_libraries(Horde3D_D Horde3D)
         set_target_properties(Horde3D_D PROPERTIES LINKER_LANGUAGE C)
+	install(TARGETS Horde3D_D
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+	)
+
+	SET ( d_headers
+		${CMAKE_CURRENT_BINARY_DIR}/horde3d.d
+		${CMAKE_CURRENT_BINAY_DIR}/horde3d_im.d
+	)
+	
+	foreach ( d_header ${d_headers} )
+	endforeach ( d_header )
+
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/horde3d.d ${CMAKE_CURRENT_BINARY_DIR}/horde3d_im.d
+		DESTINATION include/d/dmd/druntime/import
+	)
 endif()

@@ -45,7 +45,6 @@ void main(string args[]){//TODO: configured resources
 	auto wnd = Window(wndProps);
 	wnd.title = "Nawia RPG";
 	
-	
 	auto rndrr = Renderer(wnd);
 	rndrr.texturesReference = true;
 	rndrr.texCompression = false;
@@ -53,12 +52,12 @@ void main(string args[]){//TODO: configured resources
 	rndrr.shadowMapSize = 2048;
 	//h3dSetOption( H3DOptions::FastAnimation, 1 ); ??
 	
+	/*
 	
 	ResManager().bind("executable", args[0]);
 	ResManager().bind("data", "executable:../data");
 
 	auto world = new H3DWorld;
-	/*
 	//auto sky = world.add(new H3DScene("skybox/skybox.scene.xml"));
 	//auto sky = new H3DScene("skybox/skybox.scene.xml");
 	//sky.pos = (0, 0, 0);

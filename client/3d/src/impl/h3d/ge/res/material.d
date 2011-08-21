@@ -20,68 +20,152 @@ module impl.h3d.ge.res.material;
 private import impl.h3d.ge.res.resource,
 	ge.res.material;
 
-import impl.h3d.h3d,
+private import impl.h3d.h3d,
 	ge.res.shader.shader,
 	impl.h3d.ge.res.shader.shader,
 	type.cuda.types;
+	
+public import impl.h3d.ge.res.texture;	
 
 class H3DMaterial : H3DResource, IMaterial {
-	this(H3DRes id) {} //TODO:
-	
-	class Sampler /*: H3DResElement*/ {
-//		override H3DElemType h3dElemType() @property {
-//			return H3DMatRes.List.SamplerElem;
-//		}
-//		string opIndex(uint i) { //FIXME: samplers[i].texture by using H3DResElement
-//			return h3dGetResParamI(id, H3DMatRes.List.SamplerElem, i, H3DMatRes.List.SampTexResI);
-//		}
-//		void opIndexAssign(uint i, H3DTexture tex) { //FIXME: samplers[i].texture by using H3DResElement
-//			return h3dSetResParamI(id, H3DMatRes.List.SamplerElem, i, H3DMatRes.List.SampTexResI, tex);
-//		}
-//		string opIndex(uint i) { //FIXME: samplers[i].name by using H3DResElement
-//			return h3dGetResParamStr(id, H3DMatRes.List.SamplerElem, i, H3DMatRes.List.SampNameStr);
-//		}
+	public:
+	this(string name) {
+		super(name);	
+	}
+	this(int id) {
+		super(id);	
 	}
 	
-	class Uniform /*: H3DResElement*/ {
-//		override H3DElemType h3dElemType() @property {
-//			return H3DMatRes.List.UniformElem;
-//		}
-//		///retrieves shader *default* uniform value.
-//		float opIndex(uint i, uint j) { //FIXME: uniforms[i].value[j] by using H3DResElement
-//			return h3dGetResParamF(id, H3DMatRes.List.UniformElem, i, H3DMatRes.List.UnifValueF4, j);
-//		}
-//		///sets shader *default* uniform value.
-//		float opIndexAssign(uint i, uint j, uint value) { //FIXME: uniforms[i].value[j] by using H3DResElement
-//			return h3dSetResParamF(id, H3DMatRes.List.UniformElem, i, H3DMatRes.List.UnifValueF4, j, value);
-//		}
-//		string opIndex(uint i) { //FIXME: uniforms[i].name by using H3DResElement
-//			return h3dGetResParamStr(id, H3DMatRes.List.UniformElem, i, H3DMatRes.List.UnifNameStr);
-//		}
+	override ResourceType type() @property {
+		return ResourceType.Material;
 	}
 	
-	IMaterial linked() @property {
-		return new H3DMaterial(getElemParam!int(Elements.MaterialElem, 0, Elements.MatLinkI));
+	class Samplers {
+		class Sampler {
+			private uint id;
+			this(uint id) {
+				this.id = id;
+			}
+			
+			@property {
+				H3DTexture texture() {
+					return new H3DTexture(getElemParam!int(
+							Elements.SamplerElem, id, Elements.SampTexResI));
+				}
+				void texture(H3DTexture value) {
+					setElemParam!int(value.id, Elements.SamplerElem,
+						id, Elements.SampTexResI);
+				}
+			}
+			@property {
+				string name() @property {
+					return getElemParam!string(
+						Elements.MaterialElem, id, Elements.SampNameStr);
+				}
+			}
+		}
+		
+		uint length() @property {
+			return elementCount(Elements.SamplerElem);
+		}
+		
+		Sampler opIndex(uint i) {
+			return new Sampler(i);
+		}
 	}
 	
-	void linked(H3DMaterial value) @property {
-		setElemParam!int(value.id, Elements.MatLinkI, 0, Elements.MatLinkI);
+	class Uniforms {
+		uint length() @property {
+			return elementCount(Elements.UniformElem);
+		}
+		Uniform opIndex(uint i) {
+			return new Uniform(i);
+		}
+		
+		class Uniform {
+			private uint id;
+			this(uint id) {
+				this.id = id;
+			}
+			
+			string name() @property {
+				return getElemParam!string(Elements.UniformElem, id, Elements.UnifNameStr);
+			}
+			
+			/// Amount of uniform components
+			uint length() @property {
+				return 4;
+			}
+
+			UniformComponent opIndex(uint i) {
+				return new UniformComponent(i);
+			}
+			
+			class UniformComponent {
+				private uint id;
+				this(uint id) {
+					this.id = id;
+				}
+				@property {
+					///gets shader *default* uniform value.
+					float value() @property {
+						return getElemParam!float(Elements.UniformElem, id, Elements.UnifValueF4);
+					}
+					///sets shader *default* uniform value.
+					void value(float value) @property {
+						return setElemParam!float(value, Elements.UniformElem, id, Elements.UnifValueF4);
+					}
+				}
+			}
+		}
 	}
 	
-	IShader linked() @property {
-		return new H3DShader(getElemParam!int(Elements.MaterialElem, 0, Elements.MatShaderI));
-	}
-	
-	void linked(H3DShader value) @property {
-		setElemParam!int(value.id, Elements.MaterialElem, 0, Elements.MatShaderI);
-	}
-	
-	string name() @property {
-		return getElemParam!string(Elements.MaterialElem, 0, Elements.MatClassStr);
-	}
-	
-	void name(string value) @property {
-		setElemParam!string(value, Elements.MaterialElem, 0, Elements.MatClassStr);
+	class Materials {
+		class Material {
+			private uint id;
+			this(uint id) {
+				this.id = id;
+			}
+			
+			@property {
+				H3DMaterial linkedMaterial() {
+					return new H3DMaterial(getElemParam!int(
+							Elements.MaterialElem, id, Elements.MatLinkI));
+				}
+				void linkedMaterial(H3DMaterial value) {
+					setElemParam!int(value.id,
+						Elements.MaterialElem, id, Elements.MatLinkI);
+				}
+			}
+			@property {
+				H3DShader shader() @property {
+					return new H3DShader(getElemParam!int(
+						Elements.MaterialElem, id, Elements.MatShaderI));
+				}
+				void shader(H3DShader value) @property {
+					setElemParam!int(value.id,
+						Elements.MaterialElem, id, Elements.MatShaderI);
+				}
+			}
+			@property {
+				string className() @property {
+					return getElemParam!string(
+						Elements.MaterialElem, id, Elements.MatClassStr);
+				}
+				void className(string value) @property {
+					setElemParam!string(value,
+						Elements.MaterialElem, id, Elements.MatClassStr);
+				}
+			}
+		}
+		
+		uint length() @property {
+			return elementCount(Elements.MaterialElem);
+		}
+		
+		Material opIndex(uint i) {
+			return new Material(i);
+		}
 	}
 	
 	

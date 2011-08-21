@@ -31,9 +31,11 @@ public import type.buffer.pixel;
 
 class Renderer : Singleton!Renderer {
 	public:
+	Shaders shaders;
+	
 	this(IWindow wnd) {
 		super();
-		enforceEx!ExRendererInit(h3dInit());
+		enforceEx!ExRendererInit(true == h3dInit());
 	}
 	
 	~this() {
@@ -108,12 +110,20 @@ class Renderer : Singleton!Renderer {
 		h3dSetOption(H3DOptions.List.DebugViewMode, value);
 	}
 	
-	@property bool dumpFailedShaders() {
-		return h3dGetOption(H3DOptions.List.DumpFailedShaders) < 0.01;
-	}
-	
-	@property void dumpFailedShaders(bool value) {
-		h3dSetOption(H3DOptions.List.DumpFailedShaders, value);
+	struct Shaders {
+		void preambles(string vertex, string pixel) {
+			h3dSetShaderPreambles(vertex, pixel);
+		}
+		
+		@property {
+			bool dumpFailedShaders() {
+				return h3dGetOption(H3DOptions.List.DumpFailedShaders) < 0.01;
+			}
+			
+			void dumpFailedShaders(bool value) {
+				h3dSetOption(H3DOptions.List.DumpFailedShaders, value);
+			}
+		}
 	}
 	
 	@property bool profile() {

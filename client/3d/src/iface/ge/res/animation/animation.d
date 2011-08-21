@@ -20,6 +20,6 @@ module ge.res.animation.animation;
 private import io.res.resource;
 
 interface IAnimation : Resource {
-	///Time in frames
-	uint frames() @property;
+	// ///Time in frames
+	//uint frames() @property;
 }

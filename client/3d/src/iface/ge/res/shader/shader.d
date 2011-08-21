@@ -26,7 +26,4 @@ interface IShader {
 	
 	Sampler[] _samplers = void;
 	float3[] _uniforms;*/
-	
-	public:
-	abstract void preamble(string code) @property;
 }

@@ -23,4 +23,7 @@ private import impl.h3d.ge.res.animation.animation/*,
 class H3DAnimationBlended : H3DAnimation/*, IAnimationBlended*/ {
 	uint _animLayer;
 	
+	this(string name) {
+		super(name);	
+	}
 }

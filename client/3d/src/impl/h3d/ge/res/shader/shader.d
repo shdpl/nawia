@@ -24,53 +24,108 @@ private import impl.h3d.ge.res.resource,
 	impl.h3d.h3d;
 
 class H3DShader : H3DResource, IShader {
-	Context contexts;
-	Sampler samplers;
-	Uniform uniforms;
+	Contexts contexts;
+	Samplers samplers;
+	Uniforms uniforms;
 	
-	this(H3DRes id) {} //TODO:
-	this() {}
+	this(string name) {
+		super(name);	
+	}
+	this(int id) {
+		super(id);	
+	}
+	
+	override ResourceType type() @property {
+		return ResourceType.Shader;
+	}
 	
 	public:
-	void preamble(string code) {} //FIXME:
-	
-	/* TODO: investigate */
-	class Context /*: H3DResElement*/ {
-//		override H3DElemType h3dElemType() @property {
-//			return H3DShaderRes.List.ContextElem;
-//		}
-//		string opIndexAssign(uint i) { //FIXME: contexts[i].name by using H3DResElement
-//			return h3dGetResParamStr(id, H3DShaderRes.List.ContextElem, i, H3DShaderRes.List.ContNameStr);
-//		}
+	class Contexts {
+		class Context {
+			private uint id;
+			this(uint id) {
+				this.id = id;
+			}
+			
+			string name() @property {
+				return getElemParam!string(Elements.ContextElem, id, Elements.ContNameStr);
+			}
+		}
+		
+		uint length() @property {
+			return elementCount(Elements.ContextElem);
+		}
+		
+		Context opIndex(uint i) {
+			return new Context(i);
+		}
 	}
 	
-	class Sampler /*: H3DResElement*/ {
-//		override H3DElemType h3dElemType() @property {
-//			return H3DShaderRes.List.SamplerElem;
-//		}
-//		string opIndexAssign(uint i) { //FIXME: uniforms[i].name by using H3DResElement
-//			return h3dGetResParamStr(id, H3DShaderRes.List.SamplerElem, i, H3DShaderRes.List.SampNameStr);
-//		}
+	class Samplers {
+		class Sampler {
+			private uint id;
+			this(uint id) {
+				this.id = id;
+			}
+			
+			string name() @property {
+				return getElemParam!string(Elements.SamplerElem, id, Elements.SampNameStr);
+			}
+		}
+		
+		uint length() @property {
+			return elementCount(Elements.SamplerElem);
+		}
+		
+		Sampler opIndex(uint i) {
+			return new Sampler(i);
+		}
 	}
 	
-	class Uniform /*: H3DResElement*/ {
-//		override H3DElemType h3dElemType() @property {
-//			return H3DShaderRes.List.UniformElem;
-//		}
-//		int opIndex(uint i) { //FIXME: uniforms[i].size by using H3DResElement
-//			return h3dGetResParamI(id, H3DShaderRes.List.UniformElem, i, H3DShaderRes.List.UnifSizeI);
-//		}
-//		///retrieves shader *default* uniform value.
-//		float opIndex(uint i, uint j) { //FIXME: uniforms[i].value[j] by using H3DResElement
-//			return h3dGetResParamF(id, H3DShaderRes.List.UniformElem, i, H3DShaderRes.List.UnifDefValueF4, j);
-//		}
-//		///sets shader *default* uniform value.
-//		float opIndexAssign(uint i, uint j, uint value) { //FIXME: uniforms[i].value[j] by using H3DResElement
-//			return h3dSetResParamF(id, H3DShaderRes.List.UniformElem, i, H3DShaderRes.List.UnifDefValueF4, j, value);
-//		}
-//		string opIndexAssign(uint i) { //FIXME: uniforms[i].name by using H3DResElement
-//			return h3dGetResParamStr(id, H3DShaderRes.List.UniformElem, i, H3DShaderRes.List.UnifNameStr);
-//		}
+	class Uniforms {
+		uint length() @property {
+			return elementCount(Elements.UniformElem);
+		}
+		Uniform opIndex(uint i) {
+			return new Uniform(i);
+		}
+		
+		class Uniform {
+			private uint id;
+			this(uint id) {
+				this.id = id;
+			}
+			
+			string name() @property {
+				return getElemParam!string(Elements.UniformElem, id, Elements.UnifNameStr);
+			}
+			
+			/// Amount of uniform components
+			uint length() @property {
+				return getElemParam!int(Elements.UniformElem, id, Elements.UnifSizeI);
+			}
+
+			UniformComponent opIndex(uint i) {
+				return new UniformComponent(i);
+			}
+			
+			class UniformComponent {
+				private uint id;
+				this(uint id) {
+					this.id = id;
+				}
+				@property {
+					///gets shader *default* uniform value.
+					float value() @property {
+						return getElemParam!float(Elements.UniformElem, id, Elements.UnifDefValueF4);
+					}
+					///sets shader *default* uniform value.
+					void value(float value) @property {
+						return setElemParam!float(value, Elements.UniformElem, id, Elements.UnifDefValueF4);
+					}
+				}
+			}
+		}
 	}
 	
 	private:

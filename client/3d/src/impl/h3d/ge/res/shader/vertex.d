@@ -21,5 +21,7 @@ private import ge.res.shader.vertex,
 	impl.h3d.ge.res.shader.shader;
 
 class ShaderVertex : H3DShader, IShaderVertex {
-	
+	this(string name) {
+		super(name);	
+	}
 }

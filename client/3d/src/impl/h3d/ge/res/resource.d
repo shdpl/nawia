@@ -1,37 +1,89 @@
 module impl.h3d.ge.res.resource;
 
+private import std.typecons,
+	std.conv;
+
 private import ge.res.resource,
 	impl.h3d.h3d;
 
 alias int H3DResId;
 alias int H3DElemType;
 
-abstract class H3DResource : IResource {
+abstract class H3DResource : WhiteHole!IResource, IResource {
 	public:
 	H3DResId id;
-	 //uint count(elemType);
+	
+	this() {}
+	this(H3DRes id) 
+	in {
+		assert(h3dGetResType(id) == this.type);
+	}body{
+		this.id = id;
+	}
+	
+	this(string name, int flags = 0) {
+		this.id = h3dAddResource(this.type, name, flags);
+	}
+	
+	//TODO: find
+//	this(string name)
+//	out {
+//		assert(h3dGetResType(id) == this.type);
+//	}body{
+//		this.id = h3dFindResource(this.type, name);
+//	}
+	
+	~this() {
+		assert(h3dRemoveResource(this.id) >= 0);
+	}
+	
+//	override IResource dup() {
+//		return new T(h3dCloneResource(this.id, this.name));
+//	}
+	
+//	override IResource next() {
+//		return new T(h3dGetNextResource(this.type, this.id));
+//	}
+	
+	override string name() @property {
+		return h3dGetResName(id);
+	}
+	
+	override bool loaded() @property {
+		return h3dIsResLoaded(this.id);
+	}
+	
+	override bool load(ubyte[] data, size_t size) {
+		return h3dLoadResource(this.id, cast(string)data, to!int(size));
+	}
+	
+	override void unload() {
+		h3dUnloadResource(this.id);
+	}
 	
 	protected:
-		T getElemParam(T)(int elem, int elemIdx, int param, int compIdx = 0)
-			if (is (T : float) | is(T : string) | is(T : int)) {
-			static if(is(T == float))
-				return h3dGetResParamF(id, elem, elemIdx, param, compIdx);
-			static if(is(T == string))
-				return h3dGetResParamStr(id, elem, elemIdx, param);
-			static if(is(T == int))
-				return h3dGetResParamI(id, elem, elemIdx, param);
-		}
-		void setElemParam(T)(T value, int elem, int elemIdx, int param, int compIdx = 0)
-			if (is (T : float) | is(T : string) | is(T : int)) {
-			static if(is(T == float))
-				h3dSetResParamF(id, elem, elemIdx, param, compIdx, value);
-			static if(is(T == string))
-				h3dSetResParamStr(id, elem, elemIdx, param, value);
-			static if(is(T == int))
-				h3dSetResParamI(id, elem, elemIdx, param, value);
-		}
+	abstract ResourceType type() @property;
 	
-	private:
+	T getElemParam(T)(int elem, int elemIdx, int param, int compIdx = 0)
+		if (is (T : float) | is(T : string) | is(T : int)) {
+		static if(is(T == float))
+			return h3dGetResParamF(id, elem, elemIdx, param, compIdx);
+		static if(is(T == string))
+			return h3dGetResParamStr(id, elem, elemIdx, param);
+		static if(is(T == int))
+			return h3dGetResParamI(id, elem, elemIdx, param);
+	}
+	void setElemParam(T)(T value, int elem, int elemIdx, int param, int compIdx = 0)
+		if (is (T : float) | is(T : string) | is(T : int)) {
+		static if(is(T == float))
+			h3dSetResParamF(id, elem, elemIdx, param, compIdx, value);
+		static if(is(T == string))
+			h3dSetResParamStr(id, elem, elemIdx, param, value);
+		static if(is(T == int))
+			h3dSetResParamI(id, elem, elemIdx, param, value);
+	}
+	
+	/* Something like that
 	abstract class H3DResElement {
 		abstract H3DElemType h3dElemType() @property;
 		
@@ -39,7 +91,11 @@ abstract class H3DResource : IResource {
 		uint count() @property {
 			return h3dGetResElemCount(id, h3dElemType);
 		}
+	}*/
+	uint elementCount(int element) {
+		return h3dGetResElemCount(id, element);
 	}
 	
 	alias H3DPartEffRes.List Elements;
+	alias H3DResTypes.List ResourceType;
 }

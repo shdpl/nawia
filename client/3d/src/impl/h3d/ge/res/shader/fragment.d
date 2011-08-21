@@ -21,5 +21,7 @@ import impl.h3d.ge.res.shader.shader,
 	ge.res.shader.fragment;
 
 class ShaderFragment : H3DShader, IShaderFragment {
-	
+	this(string name) {
+		super(name);	
+	}
 }

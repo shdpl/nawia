@@ -24,23 +24,45 @@ private import impl.h3d.ge.res.resource,
 
 abstract class H3DAnimation : H3DResource, IAnimation {
 	public:
-	immutable uint maxCount = 0;
-	string _targetNode;
-	///Time in frames
-	uint frames() {
-		return getElemParam!int(Elements.EntityElem, 0, Elements.EntFrameCountI);
+	//string _targetNode;
+	Entities entities;
+	//uint weight;
+	
+	public:
+	this(string name) {super(name);}
+	
+	//TODO: h3dMapResStream
+	//TODO: h3dUnmapResStream
+
+	class Entities {
+		immutable uint lengthMax = 16;
+		
+		class Entity {
+			private uint id;
+			
+			this(uint id) {
+				this.id = id;
+			}
+			///Time in frames
+			uint frames() @property {
+				return getElemParam!int(Elements.EntityElem, id, Elements.EntFrameCountI);
+			}
+		}
+		
+		uint length() @property {
+			return elementCount(Elements.EntityElem);
+		}
+		
+		Entity opIndex(uint i) {
+			return new Entity(i);
+		}
 	}
 	
-	//TODO:
-	//jointAndMesh|Entity entities[]
-	// entities.count
-	//   override uint elemCount(T element) {return h3dGetResElemCount(id, element.h3dType);}
-	//    element.h3dType = H3DAnimRes.List.EntityElem
-	// entities[i].frames = h3dGetResParamI(id,	H3DAnimRes.List.EntityElem, 0, H3DAnimRes.List.EntFrameCountI);
-	
-	uint weight;
+	private:
+	override ResourceType type() @property {
+		return ResourceType.Animation;
+	}
 	
 	private:
 	alias H3DAnimRes.List Elements;
-	
 }

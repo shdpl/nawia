@@ -29,8 +29,7 @@ private import impl.h3d.ge.res.resource,
 
 class H3DParticle : H3DResource, IParticle {
 	private:
-	alias H3DPartEffRes.List Elements;
-	
+	alias H3DPartEffRes.List Elements;	//FIXME: D bug (move bottom)
 	public:
 	Movement movement;
 	Rotation rotation;
@@ -39,12 +38,14 @@ class H3DParticle : H3DResource, IParticle {
 	Color color;
 	
 	
+	public:
 	this() {
-		movement = new Movement;
-		rotation = new Rotation;
-		drag = new Drag;
-		size = new Size;
-		color = new Color;	//http://d.puremagic.com/issues/show_bug.cgi?id=6532
+		super();
+		init();
+	}
+	this(string name) {
+		super(name);
+		init();
 	}
 	
 	@property {
@@ -67,6 +68,24 @@ class H3DParticle : H3DResource, IParticle {
 		override void lifeMax(Duration time) {
 			setChannel(Elements.ParticleElem, Elements.PartLifeMaxF, time.total!("nsecs")/10E-9);
 		}
+	}
+	
+	private:
+	override ResourceType type() @property {
+		return ResourceType.ParticleEffect;
+	}
+	float getChannel(int channel, int property) {
+		return getElemParam!float(channel, 0, property);
+	}
+	void setChannel(int channel, int property, float value) {
+		setElemParam(value, channel, 0, property);
+	}
+	void init() {
+		movement = new Movement;
+		rotation = new Rotation;
+		drag = new Drag;
+		size = new Size;
+		color = new Color;	//http://d.puremagic.com/issues/show_bug.cgi?id=6532
 	}
 	
 	private:
@@ -231,12 +250,5 @@ class H3DParticle : H3DResource, IParticle {
 			BLUE = Elements.ChanColBElem,
 			ALPHA = Elements.ChanColAElem
 		};
-	}
-	
-	float getChannel(int channel, int property) {
-		return getElemParam!float(channel, 0, property);
-	}
-	void setChannel(int channel, int property, float value) {
-		setElemParam(value, channel, 0, property);
 	}
 }

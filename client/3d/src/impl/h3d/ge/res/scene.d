@@ -24,8 +24,13 @@ private import impl.h3d.ge.res.resource,
 
 
 class H3DScene : H3DResource, IScene {
-	private immutable TYPE = H3DResTypes.List.SceneGraph;
-	this(string path) {
-		enforceEx!ExResAdd(!h3dAddResource(TYPE, path, 0), path);
+	public:
+	this(string name) {
+		super(name);	
+	}
+	
+	private:
+	override ResourceType type() @property {
+		return ResourceType.SceneGraph;
 	}
 }
