@@ -17,10 +17,22 @@
 
 module type.buffer.pixel;
 
+private import std.conv;
+
 import type.cuda.types,
 	type.color.rgba;
 
 struct BufferPixel {
-	float2 size;
-	ColorRGBA!float buffer;
+	int2 size;
+	ColorRGBA!float[] buffer;
+	
+	this(uint x, uint y) {
+		size.x = x;
+		size.y = y;
+		buffer = new ColorRGBA!float[x*y];
+	}
+	
+	int memsize() { //FIXME: clash with size
+		return to!int(size.x*size.y*(ColorRGBA!float).sizeof);
+	}
 }

@@ -29,7 +29,7 @@ private import impl.h3d.ge.res.resource,
 
 class H3DParticle : H3DResource, IParticle {
 	private:
-	alias H3DPartEffRes.List Elements;	//FIXME: D bug (move bottom)
+	alias H3DPartEffRes.List Elements;	//FIXME: compiler bug (move bottom)
 	public:
 	Movement movement;
 	Rotation rotation;

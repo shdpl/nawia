@@ -18,18 +18,17 @@
 module impl.h3d.ge.res.texture;
 
 private import impl.h3d.ge.res.resource,
-	ge.res.texture;
+	ge.res.texture,
+	ex.ge.res.add;
 
-import impl.h3d.h3d,
+public import impl.h3d.h3d,
 	type.cuda.types,
 	type.buffer.pixel;
 
 class H3DTexture : H3DResource, ITexture {
 	public:
 	//flags
-	
-	ITexture[] subtextures;
-	ubyte slices;
+	Images images;
 	
 	private:
 	alias H3DTexRes.List Elements;
@@ -39,16 +38,20 @@ class H3DTexture : H3DResource, ITexture {
 	public:
 	this(string name) {
 		super(name);	
+		this.init;
 	}
 	this(int id) {
 		super(id);
+		this.init;
 	}
 	override ResourceType type() @property {
 		return ResourceType.Material;
 	}
-	//this(string name, int2 size, TextureFormat fmt) {
-	//	id = h3dCreateTexture(name, size.x, size.y, fmt, 0);
-	//}
+	this(string name, int2 size, TextureFormat fmt) {
+		//FIXME: size as specialized type
+		id = h3dCreateTexture(name, size.x, size.y, fmt, 0);
+		enforceEx!ExResAdd(id!=0, text(name, size, fmt));
+	}
 	
 	override BufferPixel data() @property {
 		return BufferPixel();
@@ -68,12 +71,16 @@ class H3DTexture : H3DResource, ITexture {
 				getElemParam!int(ELEM, 0, Elements.TexFormatI);
 		}
 		override void format(TextureFormat value) {
-			getElemParam!int(ELEM, 0, Elements.TexFormatI, value);
+			setElemParam!int(value, ELEM, 0, Elements.TexFormatI);
 		}
 	}
 	
 	private:
+	void init() {
+		this.images = new Images;
+	}
 	
+	private:
 	class Images {
 		uint count() @property {
 			return h3dGetResElemCount(id, Elements.ImageElem);
@@ -82,72 +89,21 @@ class H3DTexture : H3DResource, ITexture {
 		Image opIndex(int i) {
 			return new Image(i);
 		}
+		class Image {
+			private immutable ELEM = Elements.ImageElem;
+			uint id;
+			
+			this(uint id) {
+				this.id = id;
+			}
+			
+			uint width() @property {
+				return getElemParam!int(ELEM, id, Elements.ImgWidthI);
+			}
+			
+			uint height() @property {
+				return getElemParam!int(ELEM, id, Elements.ImgHeightI);
+			}
+		}
 	}
-	
-	class Image {
-		private immutable ELEM = Elements.ImageElem;
-		uint id;
-		
-		this(uint id) {
-			this.id = id;
-		}
-		
-		uint width() @property {
-			return getElemParam!int(ELEM, id, Elements.ImgWidthI);
-		}
-		
-		uint height() @property {
-			return getElemParam!int(ELEM, id, Elements.ImgHeightI);
-		}
-	}
-	
-//TODO	
-//	void *TextureResource::mapStream( int elem, int elemIdx, int stream, bool read, bool write )
-//{
-//	if( (read || write) && mappedData == 0x0 )
-//	{
-//		if( elem == TextureResData::ImageElem && stream == TextureResData::ImgPixelStream &&
-//		    elemIdx < getElemCount( elem ) )
-//		{
-//			mappedData = Modules::renderer().useScratchBuf(
-//				gRDI->calcTextureSize( _texFormat, _width, _height, _depth ) );
-//			
-//			if( read )
-//			{	
-//				int slice = elemIdx / (getMipCount() + 1);
-//				int mipLevel = elemIdx % (getMipCount() + 1);
-//				gRDI->getTextureData( _texObject, slice, mipLevel, mappedData );
-//			}
-//
-//			if( write )
-//				mappedWriteImage = elemIdx;
-//			else
-//				mappedWriteImage = -1;
-//
-//			return mappedData;
-//		}
-//	}
-//
-//	return Resource::mapStream( elem, elemIdx, stream, read, write );
-//}
-//
-//
-//void TextureResource::unmapStream()
-//{
-//	if( mappedData != 0x0 )
-//	{
-//		if( mappedWriteImage >= 0 )
-//		{
-//			int slice = mappedWriteImage / (getMipCount() + 1);
-//			int mipLevel = mappedWriteImage % (getMipCount() + 1);
-//			gRDI->updateTextureData( _texObject, slice, mipLevel, mappedData );
-//			mappedWriteImage = -1;
-//		}
-//		
-//		mappedData = 0x0;
-//		return;
-//	}
-//
-//	Resource::unmapStream();
-//}
 }

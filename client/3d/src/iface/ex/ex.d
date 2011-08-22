@@ -1,6 +1,7 @@
 module ex.ex;
 
 public import std.exception;
+public import std.conv : text;
 
 class Ex : Exception {
 	this() {

@@ -1,7 +1,6 @@
 module impl.h3d.ge.res.resource;
 
-private import std.typecons,
-	std.conv;
+private import std.conv;
 
 private import ge.res.resource,
 	impl.h3d.h3d;
@@ -9,7 +8,7 @@ private import ge.res.resource,
 alias int H3DResId;
 alias int H3DElemType;
 
-abstract class H3DResource : WhiteHole!IResource, IResource {
+abstract class H3DResource : IResource {
 	public:
 	H3DResId id;
 	
@@ -21,7 +20,7 @@ abstract class H3DResource : WhiteHole!IResource, IResource {
 		this.id = id;
 	}
 	
-	this(string name, int flags = 0) {
+	this(string name, ResourceFlags flags = ResourceFlags.None) {
 		this.id = h3dAddResource(this.type, name, flags);
 	}
 	
@@ -37,11 +36,11 @@ abstract class H3DResource : WhiteHole!IResource, IResource {
 		assert(h3dRemoveResource(this.id) >= 0);
 	}
 	
-//	override IResource dup() {
+//	override T clone() {
 //		return new T(h3dCloneResource(this.id, this.name));
 //	}
 	
-//	override IResource next() {
+//	override T next() {
 //		return new T(h3dGetNextResource(this.type, this.id));
 //	}
 	
@@ -83,7 +82,7 @@ abstract class H3DResource : WhiteHole!IResource, IResource {
 			h3dSetResParamI(id, elem, elemIdx, param, value);
 	}
 	
-	/* Something like that
+	/* TODO: Something like that
 	abstract class H3DResElement {
 		abstract H3DElemType h3dElemType() @property;
 		
@@ -96,6 +95,5 @@ abstract class H3DResource : WhiteHole!IResource, IResource {
 		return h3dGetResElemCount(id, element);
 	}
 	
-	alias H3DPartEffRes.List Elements;
 	alias H3DResTypes.List ResourceType;
 }

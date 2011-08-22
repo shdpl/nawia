@@ -26,7 +26,7 @@ private import impl.h3d.ge.res.resource,
 class H3DScene : H3DResource, IScene {
 	public:
 	this(string name) {
-		super(name);	
+		super(name);
 	}
 	
 	private:

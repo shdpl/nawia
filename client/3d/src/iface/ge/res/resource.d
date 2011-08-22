@@ -17,6 +17,8 @@
 
 module ge.res.resource;
 
+private import impl.h3d.h3d;	//TODO: drop dependency when other renderer comes
+
 interface IResource {
 	
 	string name() @property;
@@ -25,7 +27,7 @@ interface IResource {
 	bool loaded() @property;
 	void unload();
 	
-	//IResource dup();//TODO: make typesafe, and choose better name(non-shallow)
+	//IResource clone();//TODO: make typesafe
 	//IResource next(); //FIXME: WhiteHole!T does not work as supposed to
 	
 	//TODO: h3dFindResElem
@@ -33,4 +35,15 @@ interface IResource {
 	//TODO: h3dUnmapResStream
 	//TODO: h3dQueryUnloadedResource
 	//TODO: h3dReleaseUnusedResources
+
+	enum ResourceFlags {
+		None = 0,
+		NoQuery = H3DResFlags.Flags.NoQuery,
+    	NoTexCompression = H3DResFlags.Flags.NoTexCompression,
+    	NoTexMipmaps = H3DResFlags.Flags.NoTexMipmaps,
+    	TexCubemap = H3DResFlags.Flags.TexCubemap,
+    	TexDynamic = H3DResFlags.Flags.TexDynamic,
+    	TexRenderable = H3DResFlags.Flags.TexRenderable,
+    	TexSRGB = H3DResFlags.Flags.TexSRGB
+	}
 }

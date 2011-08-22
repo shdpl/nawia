@@ -23,7 +23,8 @@ private import impl.h3d.ge.res.resource,
 private import impl.h3d.h3d,
 	ge.res.shader.shader,
 	impl.h3d.ge.res.shader.shader,
-	type.cuda.types;
+	type.cuda.types,
+	ex.ge.res.element.missing;
 	
 public import impl.h3d.ge.res.texture;	
 
@@ -75,11 +76,19 @@ class H3DMaterial : H3DResource, IMaterial {
 	}
 	
 	class Uniforms {
+		H3DMaterial parent;
+		public:
+		this(H3DMaterial mat) {this.parent = mat;}
 		uint length() @property {
 			return elementCount(Elements.UniformElem);
 		}
 		Uniform opIndex(uint i) {
 			return new Uniform(i);
+		}
+		void opIndexAssign(float[4] value, string name) {
+			enforceEx!ExResElementMissing(h3dSetMaterialUniform(
+					this.parent.id, name, value[0], value[1], value[2], value[3]),
+				text(name));
 		}
 		
 		class Uniform {
