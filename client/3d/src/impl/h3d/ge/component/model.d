@@ -15,23 +15,86 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module impl.h3d.ge.res.model;
+module impl.h3d.ge.component.model;
 
 private import impl.h3d.h3d,
 	impl.h3d.ge.component.component;
 	
-public import ge.res.animation.animation;	
+public import impl.h3d.ge.res.animation.animation,
+	impl.h3d.ge.component.joint,
+	impl.h3d.ge.res.geometry;	
 	
 
-class /*H3DModel :*/ H3DModel : H3DSGNode {
-	string _name;
-	//Geometry _geometry;
-	//H3DAnimation[Animation.maxCount] _anim;
-	//TODO: Pose _pose;
-	/// Distance to camera from which on LOD[n] is used
-	float lodDist[4];
-	bool skinning;
+class Model : H3DSGNode {
+	Lod lod;
 	
-	/// indexed by target name
-	float[string] morphWeight;
+	public:
+	@property {
+		H3DGeometry geometry() {
+			return new H3DGeometry(getParam!int(Params.GeoResI));
+		}
+		void geometry(H3DGeometry value) {
+			setParam!int(value.id, Params.GeoResI);
+		}
+	}
+	
+	@property {
+		int skinningSoftware() {
+			return getParam!int(Params.SWSkinningI);
+		}
+		void skinningSoftware(int value) {
+			setParam!int(value, Params.SWSkinningI);
+		}
+	}
+	
+	//FIXME: make an object?
+	void setupAnimation(ubyte slot, Animation anim,
+		uint priority, Joint root, bool additive) {
+		h3dSetupModelAnimStage(this.id, slot, anim.id, priority,
+			root.name, additive);
+	}
+	
+	void setBoneWeight(string bone, float weight) {
+		h3dSetModelMorpher(this.id, bone, weight);
+	}
+	
+	private:
+	/// Distance to camera from which on LOD[n] is used
+	class Lod {
+		float opIndex(uint i) {
+			switch(i) {
+				case 0:
+					return getParam!float(Params.LodDist1F);
+				case 1:
+					return getParam!float(Params.LodDist2F);
+				case 2:
+					return getParam!float(Params.LodDist3F);
+				case 3:
+					return getParam!float(Params.LodDist4F);
+				default:
+					assert(0);
+			}
+		}
+
+		void opIndexAssign(float value, uint i) {
+			switch(i) {
+				case 0:
+					setParam!float(value, Params.LodDist1F);
+					return;
+				case 1:
+					setParam!float(value, Params.LodDist2F);
+					return;
+				case 2:
+					setParam!float(value, Params.LodDist3F);
+					return;
+				case 3:
+					setParam!float(value, Params.LodDist4F);
+					return;
+				default:
+					assert(0);
+			}
+		}
+	}
+	
+	private alias H3DModel.List Params;
 }

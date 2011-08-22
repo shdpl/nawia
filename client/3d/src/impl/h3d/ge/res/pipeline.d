@@ -41,6 +41,9 @@ class H3DPipeline : H3DResource, IPipeline {
 	this(string name) {
 		super(name);	
 	}
+	this(int id) {
+		super(id);
+	}
 	
 	/// Slow
 	BufferPixel dumpBuffer(string name, uint bufId) {
@@ -57,9 +60,6 @@ class H3DPipeline : H3DResource, IPipeline {
 		return ret;
 	}
 	
-	
-	
-	private:
 	override ResourceType type() @property {
 		return ResourceType.Material;
 	}

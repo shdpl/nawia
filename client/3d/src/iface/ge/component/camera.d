@@ -21,7 +21,7 @@ private import
 	ge.component.component;
 
 interface ICamera : IComponent {
-	
+	enum Eye { Left = 0, Right }
 	
 	
 }

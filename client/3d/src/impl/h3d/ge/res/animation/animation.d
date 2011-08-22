@@ -22,7 +22,7 @@ import impl.h3d.h3d;
 private import impl.h3d.ge.res.resource,
 	ge.res.animation.animation;
 
-abstract class H3DAnimation : H3DResource, IAnimation {
+abstract class Animation : H3DResource, IAnimation {
 	public:
 	//string _targetNode;
 	Entities entities;

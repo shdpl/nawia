@@ -15,22 +15,110 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.light;
+module impl.h3d.ge.component.light;
 
 import impl.h3d.h3d,
 	ge.res.material,
-	type.color.rgb;
-
-class H3DLight {
-	string _name;
-	void*/*LightContext*/ _lctx;
-	void*/*ShadowContext*/ _sctx;
+	type.color.rgb,
+	impl.h3d.ge.component.component,
+	impl.h3d.ge.res.material;
+	
+class Light : H3DSGNode {
 	
 	public:
-	IMaterial material;
-	float radius;
-	float fov;
-	ColorRGB!ubyte diffuse;
-	float intensity;
+	@property {
+		H3DMaterial material() {
+			return new H3DMaterial(getParam!int(Params.MatResI));
+		}
+		void material(H3DMaterial mat) {
+			setParam!int(mat.id, Params.MatResI);
+		}
+	}
 	
+	@property {
+		float radius() {
+			return getParam!float(Params.RadiusF);
+		}
+		void radius(float value) {
+			setParam!float(value, Params.RadiusF);
+		}
+	}
+	
+	@property {
+		float3 color() {
+			return float3(getParam!float(Params.ColorF3, 0),
+				getParam!float(Params.ColorF3, 1),
+				getParam!float(Params.ColorF3, 2));
+		}
+		void color(float3 value) {
+			setParam!float(value[0], Params.ColorF3, 0);
+			setParam!float(value[1], Params.ColorF3, 1);
+			setParam!float(value[2], Params.ColorF3, 2);
+		}
+	}
+	
+	@property {
+		float intensity() {
+			return getParam!float(Params.ColorMultiplierF);
+		}
+		void intensity(float value) {
+			setParam!float(value, Params.ColorMultiplierF);
+		}
+	}
+	
+	@property {
+		float fov() {
+			return getParam!float(Params.FovF);
+		}
+		void fov(float value) {
+			setParam!float(value, Params.FovF);
+		}
+	}
+	
+	@property {
+		int shadowMapsCount() {
+			return getParam!int(Params.MatResI);
+		}
+		void shadowMapsCount(int value) {
+			setParam!int(value, Params.MatResI);
+		}
+	}
+	
+	@property {
+		float shadowSegmentation() {
+			return getParam!float(Params.ShadowSplitLambdaF);
+		}
+		void shadowSegmentation(float value) {
+			setParam!float(value, Params.ShadowSplitLambdaF);
+		}
+	}
+	
+	@property {
+		float shadowBias() {
+			return getParam!float(Params.ShadowMapBiasF);
+		}
+		void shadowBias(float value) {
+			setParam!float(value, Params.ShadowMapBiasF);
+		}
+	}
+
+	@property {
+		string contextLighting() {
+			return getParam!string(Params.LightingContextStr);
+		}
+		void contextLighting(string value) {
+			setParam!string(value, Params.LightingContextStr);
+		}
+	}
+	
+	@property {
+		string contextShadowing() {
+			return getParam!string(Params.ShadowContextStr);
+		}
+		void contextShadowing(string value) {
+			setParam!string(value, Params.ShadowContextStr);
+		}
+	}
+	
+	private H3DLight.List Params;
 }

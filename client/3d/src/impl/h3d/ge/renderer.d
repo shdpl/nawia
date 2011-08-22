@@ -42,6 +42,15 @@ class Renderer : Singleton!Renderer {
 		h3dRelease();
 	}
 	
+	@property {
+		void animationFast(bool value) {
+			h3dSetOption(H3DOptions.List.FastAnimation, value);
+		}
+		bool animationFast() {
+			return h3dGetOption(H3DOptions.List.FastAnimation) < 0.01;
+		}
+	}
+	
 	@property void filteringTrilinear(bool value) {
 		h3dSetOption(H3DOptions.List.TrilinearFiltering, value);
 	}
@@ -134,12 +143,10 @@ class Renderer : Singleton!Renderer {
 		h3dSetOption(H3DOptions.List.GatherTimeStats, value);
 	}
 	
-	@property {
-		BufferPixel backbuffer() {
-			BufferPixel ret;
-			//h3dGetRenderTargetData(0,...)
-			return ret;
-		}
+	BufferPixel backbuffer() @property {
+		BufferPixel ret;
+		//h3dGetRenderTargetData(0,...)
+		return ret;
 	}
 	
 	H3DLogs msgs;

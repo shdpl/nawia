@@ -15,19 +15,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.mesh;
+module impl.h3d.ge.component.mesh;
 
 
-import impl.h3d.h3d,
-	ge.res.mesh,
-	ge.res.material;
+private import impl.h3d.h3d,
+	ge.component.mesh,
+	impl.h3d.ge.res.material,
+	impl.h3d.ge.component.component;
 
-class /*H3DMesh :*/ Mesh {
-	string _name;
-	IMaterial _mat;
-	uint _batchStart;
-	uint _batchCount;
+class Mesh : H3DSGNode, IMesh {
 	
-	public:
-	uint lodLevel;
+	@property {
+		H3DMaterial material() {
+			return new H3DMaterial(getParam!int(Params.MatResI));
+		}
+		void material(H3DMaterial mat) {
+			setParam!int(mat.id, Params.MatResI);
+		}
+	}
+	
+	int batchStart() @property {
+		return getParam!int(Params.BatchStartI);
+	}
+		
+	int batchLength() @property {
+		return getParam!int(Params.BatchCountI);
+	}
+	
+	int vertexFirst() @property {
+		return getParam!int(Params.VertRStartI);
+	}
+		
+	int vertexLast() @property {
+		return getParam!int(Params.VertREndI);
+	}
+	
+	@property {
+		int lodLevel() {
+			return getParam!int(Params.LodLevelI);
+		}
+		void lodLevel(int value) {
+			setParam!int(value, Params.LodLevelI);
+		}
+	}
+	
+	private H3DMesh.List Params;
 }

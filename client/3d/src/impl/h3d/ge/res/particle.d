@@ -47,6 +47,10 @@ class H3DParticle : H3DResource, IParticle {
 		super(name);
 		init();
 	}
+	this(int id) {
+		super(id);
+		init();
+	}
 	
 	@property {
 		override Duration lifeMin() {
@@ -70,10 +74,11 @@ class H3DParticle : H3DResource, IParticle {
 		}
 	}
 	
-	private:
 	override ResourceType type() @property {
 		return ResourceType.ParticleEffect;
 	}
+	
+	private:
 	float getChannel(int channel, int property) {
 		return getElemParam!float(channel, 0, property);
 	}

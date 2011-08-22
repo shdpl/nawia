@@ -28,5 +28,5 @@ interface IPipeline : IResource {
 	//float2[2] size() @property;
 	//void size(float2[2]) @property;
 	
-	BufferPixel getRenderTarget(string name, uint bufId);
+	BufferPixel dumpBuffer(string name, uint bufId);
 }

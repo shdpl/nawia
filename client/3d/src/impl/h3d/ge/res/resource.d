@@ -3,12 +3,13 @@ module impl.h3d.ge.res.resource;
 private import std.conv;
 
 private import ge.res.resource,
-	impl.h3d.h3d;
+	impl.h3d.h3d,
+	impl.h3d.io.res.resource : IOResource = H3DResource;
 
 alias int H3DResId;
 alias int H3DElemType;
 
-abstract class H3DResource : IResource {
+abstract class H3DResource : IOResource, IResource {
 	public:
 	H3DResId id;
 	

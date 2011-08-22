@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module impl.h3d.ge.res.emitter;
+module impl.h3d.ge.component.emitter;
 
 import impl.h3d.h3d;
 
@@ -26,29 +26,92 @@ import impl.h3d.ge.res.material,
 	impl.h3d.ge.component.component,
 	type.cuda.types;
 
-class H3DEmitter : H3DSGNode /*: Emitter*/ {
-	H3DMaterial _mat;
-	/// Particle description
-	H3DParticle _particle;
-	/// Delay before object will start emitting
-	StopWatch delay;
-	float emissionRate;
-	/// Angle of cone for random emission direction (default: 0.0)
-	float spreadAngle;
-	float3 force;
-	uint _particlesCount;
-	uint _particleRespCount;
-	
-	this(H3DSGNode parent, string name, H3DMaterial material, H3DParticle particle, uint maxCountInMoment, uint maxCount) {
-		_particlesCount = maxCountInMoment;
-		_particleRespCount = maxCount;
-		h3dAddEmitterNode(parent.id, name, material.id, particle.id, _particlesCount, _particleRespCount);
-	}
+class Emitter : H3DSGNode /*: Emitter*/ {
 	
 	public void onRedraw() {
-		h3dAdvanceEmitterTime(this.id, 0/*Timer.delta*/); //FIXME
-		if (h3dHasEmitterFinished(this.id)) {
+		if (!h3dHasEmitterFinished(this.id)) {
 			//this.clear(); //FIXME
+		}else
+			h3dAdvanceEmitterTime(this.id, 0/*Timer.delta*/); //FIXME
+	}
+	
+	@property {
+		H3DMaterial material() {
+			return new H3DMaterial(getParam!int(Params.MatResI));
+		}
+		void material(H3DMaterial mat) {
+			setParam!int(mat.id, Params.MatResI);
 		}
 	}
+	
+	@property {
+		H3DParticle resource() {
+			return new H3DParticle(getParam!int(Params.PartEffResI));
+		}
+		void resource(H3DParticle value) {
+			setParam!int(value.id, Params.PartEffResI);
+		}
+	}
+	
+	@property {
+		int maxCount() {
+			return getParam!int(Params.MaxCountI);
+		}
+		void maxCount(int value) {
+			setParam!int(value, Params.MaxCountI);
+		}
+	}
+	
+	@property {
+		int respawnCount() {
+			return getParam!int(Params.RespawnCountI);
+		}
+		void respawnCount(int value) {
+			setParam!int(value, Params.RespawnCountI);
+		}
+	}
+	
+	/// Delay before object will start emitting
+	@property {
+		float delay() {
+			return getParam!float(Params.DelayF);
+		}
+		void respawnAmount(float value) {
+			setParam!float(value, Params.DelayF);
+		}
+	}
+	
+	@property {
+		float emissionRate() {
+			return getParam!float(Params.EmissionRateF);
+		}
+		void emissionRate(float value) {
+			setParam!float(value, Params.EmissionRateF);
+		}
+	}
+	
+	/// Angle of cone for random emission direction (default: 0.0)
+	@property {
+		float spreadAngle() {
+			return getParam!float(Params.SpreadAngleF);
+		}
+		void spreadAngle(float value) {
+			setParam!float(value, Params.SpreadAngleF);
+		}
+	}
+	
+	@property {
+		float3 forceVector() {
+			return float3(getParam!float(Params.ForceF3),
+				getParam!float(Params.ForceF3),
+				getParam!float(Params.ForceF3));
+		}
+		void forceVector(float3 value) {
+			setParam!float(value[0], Params.ForceF3, 0);
+			setParam!float(value[1], Params.ForceF3, 1);
+			setParam!float(value[2], Params.ForceF3, 2);
+		}
+	}
+	
+	private H3DEmitter.List Params;
 }

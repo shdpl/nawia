@@ -55,12 +55,17 @@ class ResManager : Singleton!ResManager, IResManager {
 			animations - data/animations
 			shaders - data/shaders
 	**/
-	void bind(string entry, string uri) {_aliasMap[entry]=uri;}
+	override void bind(string entry, string uri) {
+		_aliasMap[entry]=uri;
+	}
 	
 	override Stream open(string uri) {return new BufferedFile(uri);}
 	
 	override void close(Stream stream) {}
 	
+	string resolve(string uri) {
+		return _aliasMap[uri];
+	}
 	
 	private:
 	string[string] _aliasMap;

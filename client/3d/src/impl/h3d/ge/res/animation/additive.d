@@ -20,7 +20,7 @@ module impl.h3d.ge.res.animation.additive;
 private import impl.h3d.ge.res.animation.animation/*,
 	ge.res.animation.additive*/;
 
-class AnimationAdditive : H3DAnimation/*, IAnimationAdditive*/ {
+class AnimationAdditive : Animation/*, IAnimationAdditive*/ {
 	this(string name) {
 		super(name);	
 	}

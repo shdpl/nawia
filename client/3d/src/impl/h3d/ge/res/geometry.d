@@ -12,6 +12,9 @@ class H3DGeometry : H3DResource, IGeometry {
 	this(string name) {
 		super(name);
 	}
+	this(int id) {
+		super(id);
+	}
 
 	uint indicesNo() @property {
 		return getElemParam!int(Elements.GeometryElem,0,Elements.GeoIndexCountI);
@@ -26,7 +29,6 @@ class H3DGeometry : H3DResource, IGeometry {
 		return getElemParam!int(Elements.GeometryElem, 0, Elements.GeoVertexCountI);
 	}
 	
-	private:
 	override ResourceType type() @property {
 		return ResourceType.Geometry;
 	}

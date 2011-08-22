@@ -22,5 +22,28 @@ import type.cords.cords;
 struct Box(T) /*if (is(T : Cords))*/ {
 	T[2] _cords;
 	
-	alias _cords this;
+	this(T topleft, T botright) {
+		_cords[0] = topleft;
+		_cords[1] = botright;
+	}
+	
+	@property {
+		void topleft(T value) {
+			_cords[0] = value;
+		}
+		T topleft() {
+			return _cords[0];
+		}
+	}
+	@property {
+		void botright(T value) {
+			_cords[1] = value;
+		}
+		T botright() {
+			return _cords[1];
+		}
+	}
+	
+	//	alias _cords[0] topleft;
+	//	alias _cords[1] botright;
 }

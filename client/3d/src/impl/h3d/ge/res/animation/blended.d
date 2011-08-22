@@ -20,7 +20,7 @@ module impl.h3d.ge.res.animation.blended;
 private import impl.h3d.ge.res.animation.animation/*,
 	ge.res.animation.blended*/;
 
-class H3DAnimationBlended : H3DAnimation/*, IAnimationBlended*/ {
+class AnimationBlended : Animation/*, IAnimationBlended*/ {
 	uint _animLayer;
 	
 	this(string name) {

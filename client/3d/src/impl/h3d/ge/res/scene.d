@@ -29,7 +29,6 @@ class H3DScene : H3DResource, IScene {
 		super(name);
 	}
 	
-	private:
 	override ResourceType type() @property {
 		return ResourceType.SceneGraph;
 	}

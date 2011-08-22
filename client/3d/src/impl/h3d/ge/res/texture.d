@@ -45,7 +45,7 @@ class H3DTexture : H3DResource, ITexture {
 		this.init;
 	}
 	override ResourceType type() @property {
-		return ResourceType.Material;
+		return ResourceType.Texture;
 	}
 	this(string name, int2 size, TextureFormat fmt) {
 		//FIXME: size as specialized type

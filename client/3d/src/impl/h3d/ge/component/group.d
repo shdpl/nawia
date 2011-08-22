@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.group;
+module impl.h3d.ge.component.group;
 
 import impl.h3d.h3d,
 	impl.h3d.ge.component.component;
 
-class H3DGroup : H3DSGNode {
-	string _name;
+class Group : H3DSGNode {
 }

@@ -15,15 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.joint;
+module impl.h3d.ge.component.joint;
 
-import impl.h3d.h3d;
+private import impl.h3d.h3d,
+	impl.h3d.ge.component.component;
 
-class H3DJoint /*: Joint*/ {
-	string _name;
-	uint _id;
+class Joint : H3DSGNode {
 	
-	uint id() {
-		return _id;
+	@property {
+		uint index() {
+			return getParam!int(Params.JointIndexI);
+		}
+		void index(uint value) {
+			setParam!int(value, Params.JointIndexI);
+		}
 	}
+	
+	private H3DJoint.List Params;
 }
