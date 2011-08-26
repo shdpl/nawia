@@ -24,6 +24,8 @@ public import util.singleton;
 
 interface IMsgMediator : IMsgListener!Msg, IMsgProvider!Msg {
 	
+	// TODO: maybe variadic args with msgs for dependencies
+	// pure function pointer or delegate for conditions
 	bool register(IMsgFilter!Msg filter);
 	bool unregister(IMsgFilter!Msg filter);
 	
