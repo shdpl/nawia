@@ -23,7 +23,7 @@ private import impl.h3d.ge.res.resource,
 	ex.ge.res.add;
 
 
-class H3DScene : H3DResource, IScene {
+class Scene : H3DResource, IScene {
 	public:
 	this(string name) {
 		super(name);

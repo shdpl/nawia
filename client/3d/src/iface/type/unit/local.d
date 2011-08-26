@@ -15,14 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module type.cords.world;
+module type.unit.local;
 
-private import type.cords.cords;
-public import type.unit.world;
-
-struct CordsWorld {
-	private Cords!(UnitWorld, 3) _cords;
-	
-	alias _cords this;
-	
-}
+alias float UnitLocal;

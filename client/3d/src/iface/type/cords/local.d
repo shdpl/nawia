@@ -15,13 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module type.cords.world;
+module type.cords.local;
 
-private import type.cords.cords;
-public import type.unit.world;
+private import type.cords.cords,
+	impl.h3d.ge.component.component; //FIXME: drop dependency on h3d
+public import type.unit.local;
 
-struct CordsWorld {
-	private Cords!(UnitWorld, 3) _cords;
+struct CordsLocal {
+	Cords!(UnitLocal, 3) _cords;
+	H3DSGNode parent;
+	
+	
+	this(UnitLocal x, UnitLocal y, UnitLocal z, H3DSGNode parent) {
+		_cords = _cords(x, y, z);
+		this.parent = parent;
+	}
 	
 	alias _cords this;
 	

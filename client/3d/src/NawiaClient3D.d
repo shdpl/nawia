@@ -46,10 +46,10 @@ void main(string args[]){//TODO: configured resources
 	rndrr.shadowMapSize = 2048;
 	rndrr.animationFast = true;
 
-	//auto world = new H3DWorld;
-	//auto sky = world.add(new H3DScene("skybox/skybox.scene.xml"));
-	//sky.pos = (0, 0, 0);
-	//sky.orientation = (0, 0, 0);
+	auto world = new H3DWorld;
+	auto sky = world.add(new Scene("skybox/skybox.scene.xml"));
+	sky.pos = (0, 0, 0);
+	sky.rot = (0, 0, 0);
 	/*
 	sky.scale = (210, 50, 210);
 	sky.shadowsDisabled = true;

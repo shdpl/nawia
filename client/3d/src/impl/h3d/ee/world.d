@@ -1,6 +1,7 @@
 module impl.h3d.ee.world;
 
-private import impl.h3d.ge.component.component;
+private import impl.h3d.ge.component.component,
+	type.cords.world;
 
 class H3DWorld : H3DSGNode {
 	
