@@ -22,25 +22,29 @@ import type.cords.cords;
 struct Box(T) /*if (is(T : Cords))*/ {
 	T[2] _cords;
 	
-	this(T topleft, T botright) {
-		_cords[0] = topleft;
-		_cords[1] = botright;
+	this(T botleft, T topright) {
+		_cords[0] = botleft;
+		_cords[1] = topright;
+	}
+	
+	this(T topright) {
+		_cords[1] = topright;
 	}
 	
 	@property {
-		void topleft(T value) {
-			_cords[0] = value;
+		void topright(T value) {
+			_cords[1] = value;
 		}
-		T topleft() {
-			return _cords[0];
+		T topright() {
+			return _cords[1];
 		}
 	}
 	@property {
-		void botright(T value) {
-			_cords[1] = value;
+		void botleft(T value) {
+			_cords[0] = value;
 		}
-		T botright() {
-			return _cords[1];
+		T botleft() {
+			return _cords[0];
 		}
 	}
 	

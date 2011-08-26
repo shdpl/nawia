@@ -20,6 +20,7 @@ module impl.h3d.ge.component.camera;
 
 private import impl.h3d.h3d,
 	ge.component.camera,
+	ge.window.window,
 	impl.h3d.ge.component.component,
 	impl.h3d.ge.res.pipeline,
 	impl.h3d.ge.res.texture,
@@ -34,8 +35,11 @@ class Camera : H3DSGNode, ICamera {
 	
 	
 	public:
-	this(H3DPipeline pipeline) {
+	this(IWindow, H3DPipeline pipeline) {
 		_pipeline = pipeline;
+	}
+	this(int id) {
+		super(id);
 	}
 	
 	//h3dGetCameraProjMat - hopefully wont be needed
@@ -90,22 +94,21 @@ class Camera : H3DSGNode, ICamera {
 		//Yes, i know - performance. But i'm choosing slower naive version
 		//for sake of clarity, while still limited by programming language.
 		Box!CordsScreen viewport() {
+			int botleft_x = getParam!int(Params.ViewportXI);
+			int botleft_y = getParam!int(Params.ViewportYI);
+			int width = getParam!int(Params.ViewportWidthI);
+			int height = getParam!int(Params.ViewportHeightI);
 			return Box!CordsScreen(
-				CordsScreen(getParam!int(Params.ViewportXI),
-					getParam!int(Params.ViewportYI)
-						+ getParam!int(Params.ViewportHeightI)),
-				CordsScreen(getParam!int(Params.ViewportXI)
-					+ getParam!int(Params.ViewportWidthI),
-					getParam!int(Params.ViewportYI))
-				);
+				CordsScreen(botleft_x, botleft_y),
+				CordsScreen(botleft_x+width, botleft_y+height));
 		}
 		void viewport(Box!CordsScreen value) {
-			setParam!int(value.topleft.x, Params.ViewportXI);
-			setParam!int(value.topleft.y - value.botright.y,
+			setParam!int(value.botleft.x, Params.ViewportXI);
+			setParam!int(value.botleft.y, Params.ViewportYI);
+			setParam!int(value.topright.x - value.botleft.x,
+				Params.ViewportWidthI);
+			setParam!int(value.topright.y - value.botleft.y,
 				Params.ViewportHeightI);
-			setParam!int(value.botright.x - value.topleft.x,
-				Params.ViewportXI);
-			setParam!int(value.botright.y, Params.ViewportYI);
 		}
 	}
 	

@@ -61,7 +61,7 @@ class H3DPipeline : H3DResource, IPipeline {
 	}
 	
 	override ResourceType type() @property {
-		return ResourceType.Material;
+		return ResourceType.Pipeline;
 	}
 	
 	private:

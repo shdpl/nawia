@@ -29,6 +29,7 @@ private import impl.h3d.h3d,
 public import impl.h3d.ge.res.texture;	
 
 class H3DMaterial : H3DResource, IMaterial {
+	
 	public:
 	this(string name) {
 		super(name);	
@@ -41,6 +42,16 @@ class H3DMaterial : H3DResource, IMaterial {
 		return ResourceType.Material;
 	}
 	
+
+	uint length() @property {
+		return elementCount(Elements.MaterialElem);
+	}
+		
+	Material_ opIndex(uint i) {
+		return new Material_(i);
+	}	
+	
+	public:
 	class Samplers {
 		class Sampler {
 			private uint id;
@@ -129,51 +140,41 @@ class H3DMaterial : H3DResource, IMaterial {
 		}
 	}
 	
-	class Materials {
-		class Material {
-			private uint id;
-			this(uint id) {
-				this.id = id;
-			}
-			
-			@property {
-				H3DMaterial linkedMaterial() {
-					return new H3DMaterial(getElemParam!int(
-							Elements.MaterialElem, id, Elements.MatLinkI));
-				}
-				void linkedMaterial(H3DMaterial value) {
-					setElemParam!int(value.id,
-						Elements.MaterialElem, id, Elements.MatLinkI);
-				}
-			}
-			@property {
-				H3DShader shader() @property {
-					return new H3DShader(getElemParam!int(
-						Elements.MaterialElem, id, Elements.MatShaderI));
-				}
-				void shader(H3DShader value) @property {
-					setElemParam!int(value.id,
-						Elements.MaterialElem, id, Elements.MatShaderI);
-				}
-			}
-			@property {
-				string className() @property {
-					return getElemParam!string(
-						Elements.MaterialElem, id, Elements.MatClassStr);
-				}
-				void className(string value) @property {
-					setElemParam!string(value,
-						Elements.MaterialElem, id, Elements.MatClassStr);
-				}
-			}
+	class Material_ {
+		private uint id;
+		this(uint id) {
+			this.id = id;
 		}
 		
-		uint length() @property {
-			return elementCount(Elements.MaterialElem);
+		@property {
+			H3DMaterial linkedMaterial() {
+				return new H3DMaterial(getElemParam!int(
+						Elements.MaterialElem, id, Elements.MatLinkI));
+			}
+			void linkedMaterial(H3DMaterial value) {
+				setElemParam!int(value.id,
+					Elements.MaterialElem, id, Elements.MatLinkI);
+			}
 		}
-		
-		Material opIndex(uint i) {
-			return new Material(i);
+		@property {
+			H3DShader shader() @property {
+				return new H3DShader(getElemParam!int(
+					Elements.MaterialElem, id, Elements.MatShaderI));
+			}
+			void shader(H3DShader value) @property {
+				setElemParam!int(value.id,
+					Elements.MaterialElem, id, Elements.MatShaderI);
+			}
+		}
+		@property {
+			string className() @property {
+				return getElemParam!string(
+					Elements.MaterialElem, id, Elements.MatClassStr);
+			}
+			void className(string value) @property {
+				setElemParam!string(value,
+					Elements.MaterialElem, id, Elements.MatClassStr);
+			}
 		}
 	}
 	

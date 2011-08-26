@@ -21,4 +21,8 @@ import impl.h3d.h3d,
 	impl.h3d.ge.component.component;
 
 class Group : H3DSGNode {
+	public:
+	this(int id) {
+		super(id);
+	}
 }

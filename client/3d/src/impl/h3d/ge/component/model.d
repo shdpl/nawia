@@ -29,6 +29,9 @@ class Model : H3DSGNode {
 	Lod lod;
 	
 	public:
+	this(int id) {
+		super(id);
+	}
 	@property {
 		H3DGeometry geometry() {
 			return new H3DGeometry(getParam!int(Params.GeoResI));

@@ -27,8 +27,12 @@ import impl.h3d.ge.res.material,
 	type.cuda.types;
 
 class Emitter : H3DSGNode /*: Emitter*/ {
+	public:
+	this(int id) {
+		super(id);
+	}
 	
-	public void onRedraw() {
+	void onRedraw() {
 		if (!h3dHasEmitterFinished(this.id)) {
 			//this.clear(); //FIXME
 		}else

@@ -1,1 +1,4 @@
-opCall returning object interface on module interface
+1. opCall returning object interface on module interface
+2. Think about component instantiation, and strip spatial info from components
+3. exchange every module-bounded float with real
+4. refactor to bigger modules

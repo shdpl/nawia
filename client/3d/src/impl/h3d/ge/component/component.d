@@ -17,9 +17,10 @@
 
 module impl.h3d.ge.component.component;
 
+private import core.vararg;
+
 private import impl.h3d.h3d,
 	impl.h3d.ge.ray,
-	type.cuda.types,
 	impl.h3d.ge.component.camera,
 	impl.h3d.ge.component.light,
 	impl.h3d.ge.component.joint,
@@ -27,52 +28,57 @@ private import impl.h3d.h3d,
 	impl.h3d.ge.component.emitter,
 	impl.h3d.ge.component.mesh,
 	impl.h3d.ge.component.model,
-	impl.h3d.ge.res.scene;
+	impl.h3d.ge.res.scene,
+	impl.h3d.ge.res.resource;
 	
-public import type.cords.local;
-
-abstract class H3DSGNode  {
+public import type.cords.local,
+	type.cuda.types;
+import std.conv;
+class H3DSGNode  {
 	public:
 	H3DNode id;
 	
 	public:
-	this() {}
+//	bool add(Camera camera) {
+//		return 0 != h3dAddCameraNode(this.id, camera.name, camera.pipeline.id);
+//	}
+//	bool add(Emitter emitter) {
+//		return 0 != h3dAddEmitterNode(this.id, emitter.name, emitter.material.id,
+//			emitter.resource.id, emitter.maxCount, emitter.respawnCount);
+//	}
+//	bool add(Group group) {
+//		return 0 != h3dAddGroupNode(this.id, group.name);
+//	}
+//	bool add(Joint joint) {
+//		return 0 != h3dAddJointNode(this.id, joint.name, joint.index);
+//	}
+//	bool add(Light light) {
+//		return 0 != h3dAddLightNode(this.id, light.name, light.material.id,
+//			light.contextLighting, light.contextShadowing);
+//	}
+//	bool add(Mesh mesh) {
+//		return 0 != h3dAddMeshNode(this.id, mesh.name, mesh.material.id,
+//			mesh.batchStart, mesh.batchLength, mesh.vertexFirst, mesh.vertexLast);
+//	}
+//	bool add(Model model) {
+//		return 0 != h3dAddModelNode(this.id, model.name, model.geometry.id);
+//	}
 	
-	this(H3DSGNode node) {
-		this.id = h3dCloneResource(node.id, null);
+	H3DSGNode add(T)(string path) {
+		static if(is(T == Scene)) {
+			return new H3DSGNode(h3dAddNodes(this.id, (new Scene(path)).id));
+		}
 	}
 	
-	~this() {
-		h3dRemoveResource(id);
-	}
-	
-
-	bool add(Camera camera) {
-		return 0 != h3dAddCameraNode(this.id, camera.name, camera.pipeline.id);
-	}
-	bool add(Emitter emitter) {
-		return 0 != h3dAddEmitterNode(this.id, emitter.name, emitter.material.id,
-			emitter.resource.id, emitter.maxCount, emitter.respawnCount);
-	}
-	bool add(Group group) {
-		return 0 != h3dAddGroupNode(this.id, group.name);
-	}
-	bool add(Joint joint) {
-		return 0 != h3dAddJointNode(this.id, joint.name, joint.index);
-	}
-	bool add(Light light) {
-		return 0 != h3dAddLightNode(this.id, light.name, light.material.id,
-			light.contextLighting, light.contextShadowing);
-	}
-	bool add(Mesh mesh) {
-		return 0 != h3dAddMeshNode(this.id, mesh.name, mesh.material.id,
-			mesh.batchStart, mesh.batchLength, mesh.vertexFirst, mesh.vertexLast);
-	}
-	bool add(Model model) {
-		return 0 != h3dAddModelNode(this.id, model.name, model.geometry.id);
-	}
-	bool add(Scene scene) {
-		return 0 != h3dAddNodes(this.id, scene.id);
+	E add(E, T...)(T args) {
+		static if(is(E == Camera) ) //if (convertsTo) etc.
+			return new E( h3dAddCameraNode(this.id, ""/*args[2]*/, args[1].id));
+		static if(is(E == Emitter) )
+			return new E( h3dAddEmitterNode(this.id, "", args[1].id,
+				args[2].resource.id, args[3].maxCount, args[4].respawnCount));
+		static if(is(E == Light) ) //if (convertsTo) etc.
+			return new E( h3dAddLightNode(this.id, "", args[0].id,
+				args[1], args[2]));
 	}
 	
 	@property string name() {
@@ -129,16 +135,15 @@ abstract class H3DSGNode  {
 	}
 	
 	@property {
-		CordsLocal scale() { // again, clarity - not performance
+		float3 scale() {
 			float x, y, z;
 			h3dGetNodeTransform(this.id,
 				null, null, null,
 				null, null, null,
 				&x, &y, &z);
-			return CordsLocal(x, y, z, this.parent);
+			return float3(x, y, z);
 		}
-		void scale(CordsLocal value) {
-			//FIXME: transform if not relative to parent
+		void scale(float3 value) {
 			h3dSetNodeTransform(this.id,
 				translation.x, translation.y, translation.z,
 				rotation.x, rotation.y, rotation.z,
@@ -209,6 +214,19 @@ abstract class H3DSGNode  {
 	
 	
 	protected:
+	this() {}
+	
+	this(H3DNode id) {
+		this.id = id;
+	}
+	
+	this(H3DSGNode node) {
+		this.id = h3dCloneResource(node.id, null);
+	}
+	
+	~this() {
+		h3dRemoveResource(id);
+	}
 	T getParam(T)(int param, int compIdx = 0)
 		if (is (T : float) | is(T : string) | is(T : int)) {
 		static if(is(T == float))

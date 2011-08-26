@@ -24,8 +24,11 @@ import impl.h3d.h3d,
 	impl.h3d.ge.res.material;
 	
 class Light : H3DSGNode {
-	
 	public:
+	this(int id) {
+		super(id);
+	}
+	
 	@property {
 		H3DMaterial material() {
 			return new H3DMaterial(getParam!int(Params.MatResI));
@@ -45,15 +48,15 @@ class Light : H3DSGNode {
 	}
 	
 	@property {
-		float3 color() {
-			return float3(getParam!float(Params.ColorF3, 0),
+		ColorRGB!float color() {
+			return ColorRGB!float(getParam!float(Params.ColorF3, 0),
 				getParam!float(Params.ColorF3, 1),
 				getParam!float(Params.ColorF3, 2));
 		}
-		void color(float3 value) {
-			setParam!float(value[0], Params.ColorF3, 0);
-			setParam!float(value[1], Params.ColorF3, 1);
-			setParam!float(value[2], Params.ColorF3, 2);
+		void color(ColorRGB!float value) {
+			setParam!float(value.r, Params.ColorF3, 0);
+			setParam!float(value.g, Params.ColorF3, 1);
+			setParam!float(value.b, Params.ColorF3, 2);
 		}
 	}
 	
@@ -77,10 +80,10 @@ class Light : H3DSGNode {
 	
 	@property {
 		int shadowMapsCount() {
-			return getParam!int(Params.MatResI);
+			return getParam!int(Params.ShadowMapCountI);
 		}
 		void shadowMapsCount(int value) {
-			setParam!int(value, Params.MatResI);
+			setParam!int(value, Params.ShadowMapCountI);
 		}
 	}
 	

@@ -21,7 +21,7 @@ private import std.typecons;
 
 //alias Tuple!(T, "r", T, "g", T, "b") ColorRGB(T);
 
-struct ColorRGB(T) {
+struct ColorRGB(T) if(is(T : float)) {
 	T r;
 	T g;
 	T b;

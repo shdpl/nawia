@@ -24,6 +24,10 @@ private import impl.h3d.h3d,
 	impl.h3d.ge.component.component;
 
 class Mesh : H3DSGNode, IMesh {
+	public:
+	this(int id) {
+		super(id);
+	}
 	
 	@property {
 		H3DMaterial material() {
