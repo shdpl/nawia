@@ -105,14 +105,29 @@ class H3DSGNode  {
 				&x, &y, &z,
 				null, null, null,
 				null, null, null);
+			writeln("getTranslation(", this.id,"): ", x, " ", y, " ", z);
 			return CordsLocal(x, y, z, this.parent);
 		}
 		void translation(CordsLocal value) {
 			//FIXME: transform if not relative to parent
+			float tx, ty, tz, rx, ry, rz, sx, sy, sz;
+			tx = value.x();
+			ty = value.y();
+			tz = value.z();
+			rx = rotation.x();
+			ry = rotation.y();
+			rz = rotation.z();
+			sx = scale.x;
+			sy = scale.y;
+			sz = scale.z;
 			h3dSetNodeTransform(this.id,
-				value.x, value.y, value.z,
-				rotation.x, rotation.y, rotation.z,
-				scale.x, scale.y, scale.z);
+				tx, ty, tz,
+				rx, ry, rz,
+				sx, sy, sz);
+			writeln("setTranslation(", this.id,"): ",
+				to!string(tx), " ", to!string(ty), " ", to!string(tz), " ",
+				to!string(rx), " ", to!string(ry), " ", to!string(rz), " ",
+				to!string(sx), " ", to!string(sy), " ", to!string(sz));
 		}
 	}
 	
@@ -123,14 +138,29 @@ class H3DSGNode  {
 				null, null, null,
 				&x, &y, &z,
 				null, null, null);
+			writeln("getRotation(", this.id,"): ", x, " ", y, " ", z);
 			return CordsLocal(x, y, z, this.parent);
 		}
 		void rotation(CordsLocal value) {
 			//FIXME: transform if not relative to parent
+			float tx, ty, tz, rx, ry, rz, sx, sy, sz;
+			tx = translation.x();
+			ty = translation.y();
+			tz = translation.z();
+			rx = value.x();
+			ry = value.y();
+			rz = value.z();
+			sx = scale.x;
+			sy = scale.y;
+			sz = scale.z;
 			h3dSetNodeTransform(this.id,
-				translation.x, translation.y, translation.z,
-				value.x, value.y, value.z,
-				scale.x, scale.y, scale.z);
+				tx, ty, tz,
+				rx, ry, rz,
+				sx, sy, sz);
+			writeln("setRotation(", this.id,"): ",
+				to!string(tx), " ", to!string(ty), " ", to!string(tz), " ",
+				to!string(rx), " ", to!string(ry), " ", to!string(rz), " ",
+				to!string(sx), " ", to!string(sy), " ", to!string(sz));
 		}
 	}
 	
@@ -141,13 +171,29 @@ class H3DSGNode  {
 				null, null, null,
 				null, null, null,
 				&x, &y, &z);
+			writeln("getScale(", this.id,"): ", x, " ", y, " ", z);
 			return float3(x, y, z);
 		}
 		void scale(float3 value) {
+			//FIXME: transform if not relative to parent
+			float tx, ty, tz, rx, ry, rz, sx, sy, sz;
+			tx = translation.x();
+			ty = translation.y();
+			tz = translation.z();
+			rx = rotation.x();
+			ry = rotation.y();
+			rz = rotation.z();
+			sx = value.x;
+			sy = value.y;
+			sz = value.z;
 			h3dSetNodeTransform(this.id,
-				translation.x, translation.y, translation.z,
-				rotation.x, rotation.y, rotation.z,
-				value.x, value.y, value.z);
+				tx, ty, tz,
+				rx, ry, rz,
+				sx, sy, sz);
+			writeln("setScale(", this.id,"): ",
+				to!string(tx), " ", to!string(ty), " ", to!string(tz), " ",
+				to!string(rx), " ", to!string(ry), " ", to!string(rz), " ",
+				to!string(sx), " ", to!string(sy), " ", to!string(sz));
 		}
 	}
 	
@@ -214,7 +260,8 @@ class H3DSGNode  {
 	
 	
 	protected:
-	this() {}
+	this() {
+	}
 	
 	this(H3DNode id) {
 		this.id = id;

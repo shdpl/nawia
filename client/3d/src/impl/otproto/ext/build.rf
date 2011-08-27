@@ -1,0 +1,12 @@
+-od"bin"
+-of"bin/otproto"
+
+-I""
+
+"src/otproto.d"
+"src/protocol/p740.d"
+"src/protocol/pauto.d"
+"src/protocol/protocol.d"
+"src/socket.d"
+"src/util.d"
+

@@ -1,0 +1,47 @@
+module otproto;
+
+extern(C) {
+	alias uint OTPHandle;
+	alias uint OTPLstnrId;
+	
+	nothrow		bool		otpSetSig(in ubyte id, in uint signature);
+	nothrow		void		otpSetRsa(in string key);
+	
+	nothrow	const(OTPHandle)otpConnect(
+		in string hostname, in ushort port, in bool nonblocking = false);
+	nothrow		void		otpDisconnect(in OTPHandle handle);
+	
+	nothrow		string		otpGetHostname(in OTPHandle connection);
+	nothrow	const(ushort)	otpGetPort(in OTPHandle connection);
+
+	nothrow		void		otpSend(in OTPMsg msg);
+	nothrow		void		otpPoll();
+	
+	nothrow	const(OTPLstnrId)	otpAddLstnr(in OTPMsgType type);
+	nothrow		void		otpDelLstnr(in OTPLstnrId lstnr);
+	
+	nothrow	const(OTPProto)	otpGetStatSent(in OTPHandle connection);
+	nothrow	const(OTPErrNo)	otpGetStatRecv(in OTPHandle connection);
+	
+	nothrow	const(OTPProto)	otpGetProto(in OTPHandle connection);
+	nothrow	const(OTPErrNo)	otpGetError();
+	
+	
+	enum OTPMsgType {
+		Connected,
+		Disconnected,
+	}
+	
+	struct OTPMsg {
+		OTPMsgType type;
+	}
+	
+	enum OTPErrNo {
+		Unknown
+	}
+	
+	enum OTPProto {
+		Auto
+	}
+}
+

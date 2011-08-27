@@ -19,6 +19,7 @@
 #include "Horde3DUtils.h"
 #include <math.h>
 #include <iomanip>
+#include <cstdio>
 
 using namespace std;
 
@@ -86,9 +87,15 @@ bool Application::init()
 	// Add camera
 	_cam = h3dAddCameraNode( H3DRootNode, "Camera", _forwardPipeRes );
 	//h3dSetNodeParamI( _cam, H3DCamera::OccCullingI, 1 );
+	float x, y, z;
 	// Add environment
 	H3DNode env = h3dAddNodes( H3DRootNode, envRes );
-	h3dSetNodeTransform( env, 0, 0, 0, 0, 0, 0, 0.23f, 0.23f, 0.23f );
+	h3dSetNodeTransform( env, -1, 0, 0, 0, 0, 0, 0.23f, 0.23f, 0.23f );
+	h3dGetNodeTransform( env, &x, &y, &z, 0, 0, 0, 0, 0, 0 );
+	printf("%f2 %f2 %f2", x, y, z);
+	h3dSetNodeTransform( env, x, y, z, 0, 0, 0, 0.23f, 0.23f, 0.23f );
+	h3dGetNodeTransform( env, &x, &y, &z, 0, 0, 0, 0, 0, 0 );
+	printf("%f2 %f2 %f2", x, y, z);
 	// Add skybox
 	H3DNode sky = h3dAddNodes( H3DRootNode, skyBoxRes );
 	h3dSetNodeTransform( sky, 0, 0, 0, 0, 0, 0, 210, 50, 210 );

@@ -26,18 +26,20 @@ private import
 	
 
 private import
+	type.cords.local,
+	type.color.rgb,
+	ge.component.camera,
 	impl.glfw.ge.window.window,
 	impl.nawia.io.res.manager,
 	impl.h3d.ge.renderer,
-	ge.component.camera,
 	impl.h3d.ee.world,
 	impl.h3d.ge.res.scene,
-	type.cords.local,
 	impl.h3d.ge.component.camera,
 	impl.h3d.ge.res.pipeline,
 	impl.h3d.ge.res.material,
 	impl.h3d.ge.component.light,
-	type.color.rgb;
+	impl.h3d.ge.component.model,
+	impl.nawia.ee.actor;
 	
 private import impl.h3d.h3d,
 	impl.glfw.glfw,
@@ -67,24 +69,20 @@ void main(string args[]){//TODO: configured resources
 	//sky.shadowsDisabled = true;
 	//("platform/platform.scene.xml");
 	auto platform = world.add!Scene("models/platform/platform.scene.xml");
-	platform.translation = CordsLocal(0, 0, 0, world);
-	//platform.orientation = (0, 0, 0);
-	platform.scale = float3(23f, 23f, 23f);
-	auto pipe = new H3DPipeline("pipelines/forward.pipeline.xml");
+	platform.translation = CordsLocal(-1, 0, 0, world);
+	//platform.rotation = (0, 0, 0);
+	//platform.scale = float3(.23f, .23f, .23f);
+	auto pipe = new H3DPipeline("pipelines/deferred.pipeline.xml");
 	auto cam = 
 		world.add!Camera(wnd, pipe);
-		
-	
-	auto lCtxID = "LIGHTING";
-	auto sCtxID = "SHADOWMAP";
-	auto lMat = new H3DMaterial("materials/light.material.xml");
 	
 	//enforce( lCtxID in lMat[0].shader.contexts
 	//	&& sCtxID in lMat[0].shader.contexts );
-	auto light = world.add!Light(lMat, lCtxID, sCtxID);
+	auto light = world.add!Light(
+		new H3DMaterial("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
 	light.translation = CordsLocal(0, 20, 50, world);
 	light.rotation = CordsLocal(-30, 0, 0, world);
-	light.scale = float3(1, 1, 1);
+	//light.scale = float3(1, 1, 1);
 	light.radius = 100;
 	light.fov = 90;
 	light.shadowMapsCount = 3;
@@ -96,24 +94,32 @@ void main(string args[]){//TODO: configured resources
 	
 	/*
 	auto man = new Actor(
-		impl!Model("man/man.scene.xml", impl!Animation("man.anim")),
-		impl!RandomWalker());
+		new Model("man/man.scene.xml", new Animation("man.anim")),
+		RandomWalker());
 	platform.add(man);
-
+	
 	auto mPositioner = Positioner(Circle(0, 20), uniform(0.0L, 20.0L));
 	for(int i=0; i<99; i++)
-		platform.add(mPositioner.position(man.duplicate));
+		platform.add(mPositioner.position(man.dup));
 	
 	auto mtd = new MsgMediatorMtD;
 	while(true) {
 		mtd.poll;
 	}*/
-	foreach(i; 0..10000) {
-		h3dSetNodeTransform( platform.id, -cast(float)i/cast(float)10000, 0, 0, 0, 0, 0, 0.23f, 0.23f, 0.23f );
+	//h3dSetNodeTransform( platform.id, -1, 0, 0, 0, 0, 0, 0.23f, 0.23f, 0.23f );
+	
+
+	
+	uint frames = 3000;
+	StopWatch timer;
+	timer.start;
+	foreach(i; 0 .. frames) {
 		h3dFinalizeFrame();
 		h3dRender(cam.id);
 		glfwSwapBuffers();
-		//platform.translation(0f, 0f, 0f, world);
+		//cam.rotation(CordsLocal((frames/10)/(i+1), 0, 0, world));
 	}
+	timer.stop;
+	writeln(cast(real)frames*1000/timer.peek.msecs, " fps");
 	h3dutDumpMessages();
 }
