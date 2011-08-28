@@ -92,10 +92,6 @@ bool Application::init()
 	H3DNode env = h3dAddNodes( H3DRootNode, envRes );
 	h3dSetNodeTransform( env, -1, 0, 0, 0, 0, 0, 0.23f, 0.23f, 0.23f );
 	h3dGetNodeTransform( env, &x, &y, &z, 0, 0, 0, 0, 0, 0 );
-	printf("%f2 %f2 %f2", x, y, z);
-	h3dSetNodeTransform( env, x, y, z, 0, 0, 0, 0.23f, 0.23f, 0.23f );
-	h3dGetNodeTransform( env, &x, &y, &z, 0, 0, 0, 0, 0, 0 );
-	printf("%f2 %f2 %f2", x, y, z);
 	// Add skybox
 	H3DNode sky = h3dAddNodes( H3DRootNode, skyBoxRes );
 	h3dSetNodeTransform( sky, 0, 0, 0, 0, 0, 0, 210, 50, 210 );

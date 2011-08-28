@@ -27,5 +27,5 @@ abstract class Singleton(T) {
         return instance;
     }
  
-    private this() {}
+    /*private*/public this() {} //D BUG
 }

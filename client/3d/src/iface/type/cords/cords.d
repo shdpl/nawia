@@ -27,9 +27,14 @@ struct Cords(T, size_t N) if (N > 0 && N < 4) {
 	}
 
 
-	T x() @property
-	{
-		return c.x;
+	@property {
+		T x()
+		{
+			return c.x;
+		}
+		void x(T value) {
+			c.x = value;
+		}
 	}
 	
 	static if(N > 1) {
@@ -38,9 +43,14 @@ struct Cords(T, size_t N) if (N > 0 && N < 4) {
 			c.y = y;
 		}
 		
-		T y() @property
-		{
-			return c.y;
+		@property {
+			T y()
+			{
+				return c.y;
+			}
+			void y(T value) {
+				c.y = value;
+			}
 		}
 	}
 
@@ -50,9 +60,14 @@ struct Cords(T, size_t N) if (N > 0 && N < 4) {
 			c.z = z;
 		}
 		
-		T z() @property
-		{
-			return c.z;
+		@property {
+			T z()
+			{
+				return c.z;
+			}
+			void z(T value) {
+				c.z = value;
+			}
 		}
 	}
 	

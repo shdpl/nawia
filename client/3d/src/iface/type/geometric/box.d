@@ -17,15 +17,20 @@
 
 module type.geometric.rect;
 
-import type.cords.cords;
+private import std.traits;
 
-struct Box(T) /*if (is(T : Cords))*/ {
-	T[2] _cords;
+public import type.cords.cords;
+
+struct Box(T) /*if (T >= Cords)*/ {
+	T _cords[2];
 	
 	this(T botleft, T topright) {
 		_cords[0] = botleft;
 		_cords[1] = topright;
 	}
+	/*
+	this(E)(T botleft, E x, E y) if (E != T && hasMember(T, x) &&
+		isImplicitlyConvertible(E,FieldTypeTuple(T)["x"])) {}*/
 	
 	this(T topright) {
 		_cords[1] = topright;
@@ -47,7 +52,23 @@ struct Box(T) /*if (is(T : Cords))*/ {
 			return _cords[0];
 		}
 	}
+	/*
+	@property {
+		uint width() { //FIXME: dynamically determined
+			return topright.x - botleft.x;
+		}
+		void width(uint value) {
+			topright.x = botleft.x + value;
+		}
+	}
 	
-	//	alias _cords[0] topleft;
-	//	alias _cords[1] botright;
+	@property {
+		uint height() if(hasMember(T, y)) { //FIXME: dynamically determined
+			return topright.y - botleft.y;
+		}
+		void height(uint value) {
+			topright.y = botleft.y + value;
+		}
+	}*/
+	
 }

@@ -2,22 +2,11 @@
 -of"bin/NawiaClient3D"
 -unittest
 
--I"src/impl/h3d/ext"
 -I"src"
 -I"src/iface"
 -I"src/impl/polyvox/ext"
 -I"src/impl/glfw/ext"
 
-"src/impl/h3d/ext/horde3d/CMake/Horde3D/Bindings/D/swig/horde3d.d"
-"src/impl/h3d/ext/horde3d/CMake/Horde3D/Bindings/D/swig/horde3d_im.d"
-"src/impl/h3d/ext/horde3d/CMake/Horde3D/Bindings/D/swig/horde3dutils.d"
-"src/impl/h3d/ext/horde3d/CMake/Horde3D/Bindings/D/swig/horde3dutils_im.d"
-"src/impl/h3d/ext/horde3d/Horde3D/Bindings/D/derelict/horde3d/horde3d.d"
-"src/impl/h3d/ext/horde3d/Horde3D/Bindings/D/derelict/horde3d/horde3dutils.d"
-"src/impl/h3d/ext/horde3d/Horde3D/Bindings/D/native/Horde3D.d"
-"src/impl/h3d/ext/horde3d/Horde3D/Bindings/D/native/Horde3DUtils.d"
-"src/impl/h3d/ext/horde3d/Horde3D/Samples/Knight D/app.d"
-"src/impl/h3d/ext/horde3d/Horde3D/Samples/Knight D/knight.d"
 "src/NawiaClient3D.d"
 "src/iface/ae/component/component.d"
 "src/iface/ae/component/listener.d"

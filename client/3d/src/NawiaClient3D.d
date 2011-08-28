@@ -41,10 +41,10 @@ private import
 	impl.h3d.ge.component.model,
 	impl.nawia.ee.actor;
 	
-private import impl.h3d.h3d,
-	impl.glfw.glfw,
-	impl.h3d.utils,
-	type.geometric.box;	
+private import impl.glfw.glfw,
+	impl.h3d.utils;
+	
+	
 	
 void main(string args[]){//TODO: configured resources
 	auto wndProps = WindowProperties();
@@ -55,42 +55,48 @@ void main(string args[]){//TODO: configured resources
 	wnd.title = "Nawia RPG";
 	
 	auto rndrr = Renderer(wnd);
-	rndrr.texturesReference = true;
+	rndrr.texReference = true;
 	rndrr.texCompression = false;
 	rndrr.anisotropy = 4;
 	rndrr.shadowMapSize = 2048;
 	rndrr.animationFast = true;
 	
-	auto world = new H3DWorld;//(skybox/skybox.scene.xml");
-	auto sky = world.add!Scene("models/skybox/skybox.scene.xml");
-	//sky.translation = CordsLocal(0, 0, 0, world);//TODO: world coords
-	//sky.rotation = CordsLocal(0, 0, 0, world);
-	sky.scale = float3(410, 10, 210);
-	//sky.shadowsDisabled = true;
-	//("platform/platform.scene.xml");
-	auto platform = world.add!Scene("models/platform/platform.scene.xml");
+	auto world = new H3DWorld;
+
+	auto platform = world.add!Scene("models/platform/platform.scene.xml"); //("platform/platform.scene.xml");
 	platform.translation = CordsLocal(-1, 0, 0, world);
-	//platform.rotation = (0, 0, 0);
-	//platform.scale = float3(.23f, .23f, .23f);
+	platform.scale = float3(.23, .23, .23);
+	
+	auto sky = platform.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
+	sky.scale = float3(210, 50, 210);
+	sky.shadowsDisabled = true;
+	
 	auto pipe = new H3DPipeline("pipelines/deferred.pipeline.xml");
 	auto cam = 
-		world.add!Camera(wnd, pipe);
+		world.add!Camera(pipe);
+	cam.translation = CordsLocal(15, 3, 20, platform);
+	cam.rotation = CordsLocal(-10, 60, 0, platform);
+	cam.viewport = Box!CordsScreen(wnd.size);
+	cam.clipNear = .01;
+	cam.clipFar = 1000;	//FIXME: clip!=clip <swap with fov>
+	cam.fov = 45;
+	//TODO: assign camera to window
+	h3dResizePipelineBuffers( pipe.id, wnd.size.x, wnd.size.y );
 	
 	//enforce( lCtxID in lMat[0].shader.contexts
 	//	&& sCtxID in lMat[0].shader.contexts );
-	auto light = world.add!Light(
+	auto light = platform.add!Light(
 		new H3DMaterial("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
-	light.translation = CordsLocal(0, 20, 50, world);
-	light.rotation = CordsLocal(-30, 0, 0, world);
+	light.translation = CordsLocal(0, 20, 50, platform);
+	light.rotation = CordsLocal(-30, 0, 0, platform);
 	//light.scale = float3(1, 1, 1);
-	light.radius = 100;
+	light.radius = 200;
 	light.fov = 90;
 	light.shadowMapsCount = 3;
 	light.shadowSegmentation = .9f;
 	light.shadowBias = .001f;
-	light.color = ColorRGB!float(.9f, .7f, .75);
+	light.color = ColorRGB!float(.9f, .7f, .75f);
 	
-	cam.viewport = Box!CordsScreen(wnd.size);
 	
 	/*
 	auto man = new Actor(
@@ -117,7 +123,7 @@ void main(string args[]){//TODO: configured resources
 		h3dFinalizeFrame();
 		h3dRender(cam.id);
 		glfwSwapBuffers();
-		//cam.rotation(CordsLocal((frames/10)/(i+1), 0, 0, world));
+		//cam.rotation(CordsLocal(0, i*360/frames, 0, world));
 	}
 	timer.stop;
 	writeln(cast(real)frames*1000/timer.peek.msecs, " fps");

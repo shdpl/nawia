@@ -72,7 +72,7 @@ class H3DSGNode  {
 	
 	E add(E, T...)(T args) {
 		static if(is(E == Camera) ) //if (convertsTo) etc.
-			return new E( h3dAddCameraNode(this.id, ""/*args[2]*/, args[1].id));
+			return new E( h3dAddCameraNode(this.id, ""/*args[2]*/, args[0].id));
 		static if(is(E == Emitter) )
 			return new E( h3dAddEmitterNode(this.id, "", args[1].id,
 				args[2].resource.id, args[3].maxCount, args[4].respawnCount));
@@ -81,8 +81,62 @@ class H3DSGNode  {
 				args[1], args[2]));
 	}
 	
-	@property string name() {
-		return h3dGetResName(this.id);
+	
+	
+	@property {
+		bool renderDisabled() {
+			return hasFlags(Flags.NoDraw);
+		}
+		void renderDisabled(bool value) {
+			setFlags(Flags.NoDraw, value);
+		}
+	}
+	
+	@property {
+		bool shadowsDisabled() {
+			return hasFlags(Flags.NoCastShadow);
+		}
+		void shadowsDisabled(bool value) {
+			setFlags(Flags.NoCastShadow, value);
+		}
+	}
+	
+	@property {
+		bool rayDisabled() {
+			return hasFlags(Flags.NoRayQuery);
+		}
+		void rayDisabled(bool value) {
+			setFlags(Flags.NoRayQuery, value);
+		}
+	}
+	
+	@property {
+		bool disabled() {
+			return hasFlags(Flags.Inactive);
+		}
+		void disabled(bool value) {
+			setFlags(Flags.Inactive, value);
+		}
+	}
+	
+	
+	
+	@property {
+		string name() {
+				return h3dGetResName(this.id);
+			}
+		void name(string value) {
+			setParam(value, Params.NameStr);
+		}
+	}
+	
+	@property {
+		string attachment() {
+				return h3dGetResName(this.id);
+			}
+		void attachment(string value) {
+			setParam(value, Params.AttachmentStr);
+		}
 	}
 	
 	@property Type type() {
@@ -105,29 +159,21 @@ class H3DSGNode  {
 				&x, &y, &z,
 				null, null, null,
 				null, null, null);
-			writeln("getTranslation(", this.id,"): ", x, " ", y, " ", z);
 			return CordsLocal(x, y, z, this.parent);
 		}
 		void translation(CordsLocal value) {
 			//FIXME: transform if not relative to parent
-			float tx, ty, tz, rx, ry, rz, sx, sy, sz;
-			tx = value.x();
-			ty = value.y();
-			tz = value.z();
-			rx = rotation.x();
-			ry = rotation.y();
-			rz = rotation.z();
+			float rx, ry, rz, sx, sy, sz;
+			rx = rotation.x;
+			ry = rotation.y;
+			rz = rotation.z;
 			sx = scale.x;
 			sy = scale.y;
 			sz = scale.z;
 			h3dSetNodeTransform(this.id,
-				tx, ty, tz,
+				value.x, value.y, value.z,
 				rx, ry, rz,
 				sx, sy, sz);
-			writeln("setTranslation(", this.id,"): ",
-				to!string(tx), " ", to!string(ty), " ", to!string(tz), " ",
-				to!string(rx), " ", to!string(ry), " ", to!string(rz), " ",
-				to!string(sx), " ", to!string(sy), " ", to!string(sz));
 		}
 	}
 	
@@ -138,29 +184,21 @@ class H3DSGNode  {
 				null, null, null,
 				&x, &y, &z,
 				null, null, null);
-			writeln("getRotation(", this.id,"): ", x, " ", y, " ", z);
 			return CordsLocal(x, y, z, this.parent);
 		}
 		void rotation(CordsLocal value) {
 			//FIXME: transform if not relative to parent
-			float tx, ty, tz, rx, ry, rz, sx, sy, sz;
-			tx = translation.x();
-			ty = translation.y();
-			tz = translation.z();
-			rx = value.x();
-			ry = value.y();
-			rz = value.z();
+			float tx, ty, tz, sx, sy, sz;
+			tx = translation.x;
+			ty = translation.y;
+			tz = translation.z;
 			sx = scale.x;
 			sy = scale.y;
 			sz = scale.z;
 			h3dSetNodeTransform(this.id,
 				tx, ty, tz,
-				rx, ry, rz,
+				value.x, value.y, value.z,
 				sx, sy, sz);
-			writeln("setRotation(", this.id,"): ",
-				to!string(tx), " ", to!string(ty), " ", to!string(tz), " ",
-				to!string(rx), " ", to!string(ry), " ", to!string(rz), " ",
-				to!string(sx), " ", to!string(sy), " ", to!string(sz));
 		}
 	}
 	
@@ -171,7 +209,6 @@ class H3DSGNode  {
 				null, null, null,
 				null, null, null,
 				&x, &y, &z);
-			writeln("getScale(", this.id,"): ", x, " ", y, " ", z);
 			return float3(x, y, z);
 		}
 		void scale(float3 value) {
@@ -183,17 +220,10 @@ class H3DSGNode  {
 			rx = rotation.x();
 			ry = rotation.y();
 			rz = rotation.z();
-			sx = value.x;
-			sy = value.y;
-			sz = value.z;
 			h3dSetNodeTransform(this.id,
 				tx, ty, tz,
 				rx, ry, rz,
-				sx, sy, sz);
-			writeln("setScale(", this.id,"): ",
-				to!string(tx), " ", to!string(ty), " ", to!string(tz), " ",
-				to!string(rx), " ", to!string(ry), " ", to!string(rz), " ",
-				to!string(sx), " ", to!string(sy), " ", to!string(sz));
+				value.x, value.y, value.z);
 		}
 	}
 	
@@ -274,6 +304,7 @@ class H3DSGNode  {
 	~this() {
 		h3dRemoveResource(id);
 	}
+	
 	T getParam(T)(int param, int compIdx = 0)
 		if (is (T : float) | is(T : string) | is(T : int)) {
 		static if(is(T == float))
@@ -291,6 +322,20 @@ class H3DSGNode  {
 			h3dSetNodeParamStr(id, param, value);
 		static if(is(T == int))
 			h3dSetNodeParamI(id, param, value);
+	}
+	
+	private:
+	Flags getFlags() {
+		return cast(Flags)h3dGetNodeFlags(this.id);
+	}
+	bool hasFlags(Flags flags) {
+		return (getFlags()&flags) == flags;
+	}
+	void setFlags(Flags flags, bool value, bool recursive = true) {
+		if (value)
+			h3dSetNodeFlags(this.id, getFlags()|flags, recursive);
+		else
+			h3dSetNodeFlags(this.id, getFlags()&(!flags), recursive);
 	}
 	
 	public:
@@ -343,6 +388,8 @@ class H3DSGNode  {
 		}
 	}
 	
-	protected:
-	alias H3DNodeParams.List ParamsComponent;
+	
+	private:
+	alias H3DNodeParams.List Params;
+	alias H3DNodeFlags.List Flags;
 }

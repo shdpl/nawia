@@ -18,24 +18,27 @@
 module impl.h3d.ge.component.camera;
 
 
+public import type.geometric.box;
+
 private import impl.h3d.h3d,
 	ge.component.camera,
 	ge.window.window,
 	impl.h3d.ge.component.component,
 	impl.h3d.ge.res.pipeline,
 	impl.h3d.ge.res.texture,
-	type.cords.screen,
-	type.geometric.box;
+	type.cords.screen;
+
+
 
 class Camera : H3DSGNode, ICamera {
 	private:
 	H3DPipeline _pipeline;
 	BufferPixel renderTarget;
-	float _fov, _aspect;
+	float _fov;
 	
 	
 	public:
-	this(IWindow, H3DPipeline pipeline) {
+	this(H3DPipeline pipeline) {
 		_pipeline = pipeline;
 	}
 	this(int id) {
@@ -48,29 +51,13 @@ class Camera : H3DSGNode, ICamera {
 		float fov() {
 			return _fov;
 		}
-		//FIXME: do it properly ;p
 		void fov(float value) {
-			if (is(_aspect)) {
-				h3dSetupCameraView(this.id, value, _aspect,
-					clipNear, clipFar);
-			}
 			_fov = value;
+			h3dSetupCameraView(this.id, value, aspect, clipNear, clipFar);
 		}
 	}
 	//LeftPlaneF	RightPlaneF BottomPlaneF TopPlaneF
-	@property {
-		float aspect() {
-			return _aspect;
-		}
-		//FIXME: do it properly ;p
-		void aspect(float value) {
-			if (is(_fov)) {
-				h3dSetupCameraView(this.id, _fov, value,
-					clipNear, clipFar);
-			}
-			_aspect = value;
-		}
-	}
+	
 	
 	@property {
 		bool culling() {
@@ -160,6 +147,14 @@ class Camera : H3DSGNode, ICamera {
 	
 	void render() {
 		h3dRender(id);
+	}
+	
+	private:
+	real aspect() @property {
+		auto vp = viewport;	//FIXME vp.width / vp.height
+		auto width = vp.topright.x - vp.botleft.x;
+		auto height = vp.topright.y - vp.botleft.y;
+		return width/height; 
 	}
 	
 	private alias H3DCamera.List Params;

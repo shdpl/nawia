@@ -47,7 +47,7 @@ class Renderer : Singleton!Renderer {
 			h3dSetOption(H3DOptions.List.FastAnimation, value);
 		}
 		bool animationFast() {
-			return h3dGetOption(H3DOptions.List.FastAnimation) < 0.01;
+			return h3dGetOption(H3DOptions.List.FastAnimation) > 0.01;
 		}
 	}
 	
@@ -56,7 +56,7 @@ class Renderer : Singleton!Renderer {
 	}
 	
 	@property bool filteringTrilinear() {
-		return h3dGetOption(H3DOptions.List.TrilinearFiltering) < 0.01;
+		return h3dGetOption(H3DOptions.List.TrilinearFiltering) > 0.01;
 	}
 	
 	@property ubyte anisotropy() out(result) {
@@ -71,28 +71,28 @@ class Renderer : Singleton!Renderer {
 			h3dSetOption(H3DOptions.List.MaxAnisotropy, value);
 	}
 	
-	@property bool texCompression() {
-		return h3dGetOption(H3DOptions.List.TexCompression) < 0.01;
-	}
-	
-	@property void texCompression(bool value) {
-		h3dSetOption(H3DOptions.List.TexCompression, value);
-	}
-	
 	@property bool linearizationSRGB() {
-		return h3dGetOption(H3DOptions.List.SRGBLinearization) < 0.01;
+		return h3dGetOption(H3DOptions.List.SRGBLinearization) > 0.01;
 	}
 	
 	@property void linearizationSRGB(bool value) {
 		h3dSetOption(H3DOptions.List.SRGBLinearization, value);
 	}
 	
-	@property bool texturesReference() {
-		return h3dGetOption(H3DOptions.List.LoadTextures) < 0.01;
+	@property bool texReference() {
+		return h3dGetOption(H3DOptions.List.LoadTextures) > 0.01;
 	}
 	
-	@property void texturesReference(bool value) {
+	@property void texReference(bool value) {
 		h3dSetOption(H3DOptions.List.LoadTextures, value);
+	}
+	
+	@property bool texCompression() {
+		return h3dGetOption(H3DOptions.List.TexCompression) > 0.01;
+	}
+	
+	@property void texCompression(bool value) {
+		h3dSetOption(H3DOptions.List.TexCompression, value);
 	}
 	
 	@property uint shadowMapSize() {
@@ -104,7 +104,7 @@ class Renderer : Singleton!Renderer {
 	}
 	
 	@property bool wireFrame() {
-		return h3dGetOption(H3DOptions.List.WireframeMode) < 0.01;
+		return h3dGetOption(H3DOptions.List.WireframeMode) > 0.01;
 	}
 	
 	@property void wireFrame(bool value) {
@@ -112,7 +112,7 @@ class Renderer : Singleton!Renderer {
 	}
 	
 	@property bool debugView() {
-		return h3dGetOption(H3DOptions.List.DebugViewMode) < 0.01;
+		return h3dGetOption(H3DOptions.List.DebugViewMode) > 0.01;
 	}
 	
 	@property void debugView(bool value) {
@@ -126,7 +126,7 @@ class Renderer : Singleton!Renderer {
 		
 		@property {
 			bool dumpFailedShaders() {
-				return h3dGetOption(H3DOptions.List.DumpFailedShaders) < 0.01;
+				return h3dGetOption(H3DOptions.List.DumpFailedShaders) > 0.01;
 			}
 			
 			void dumpFailedShaders(bool value) {
@@ -136,7 +136,7 @@ class Renderer : Singleton!Renderer {
 	}
 	
 	@property bool profile() {
-		return h3dGetOption(H3DOptions.List.GatherTimeStats) < 0.01;
+		return h3dGetOption(H3DOptions.List.GatherTimeStats) > 0.01;
 	}
 	
 	@property void profile(bool value) {
