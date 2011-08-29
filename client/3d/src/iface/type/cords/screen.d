@@ -19,15 +19,15 @@ module type.cords.screen;
 
 private import type.cords.cords;
 public import type.unit.screen : Px;
+private import std.array;
 
 struct CordsScreen {
 	//Screen.Id id_screen = Screen.Id.DEFAULT; TODO: screen
 	Cords!(Px, 2) _cords;
 	alias _cords this;
 	
-	this(Px x, Px y) {
+	this(T)(T x, T y) if(is(T : Px)) {
 		//assert(x < id_screen.Width && y < id_screen.Heigth); TODO: screen
 		_cords = _cords(x,y);
 	}
-	
 }

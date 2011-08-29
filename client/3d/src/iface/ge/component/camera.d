@@ -17,11 +17,70 @@
 
 module ge.node.camera;
 
+public import
+	type.geometric.box,
+	type.cords.screen,
+	ge.res.pipeline,
+	ge.res.texture;
+
 private import
 	ge.component.component;
 
 interface ICamera : IComponent {
 	enum Eye { Left = 0, Right }
 	
+	void render();
+	
+	@property {
+		float fov();
+		void fov(float value);
+	}
+	
+	@property {
+		bool culling();
+		void culling(bool value);
+	}
+	
+	@property {
+		bool orthogonal();
+		void orthogonal(bool value);
+	}
+	
+	@property {
+		Box!CordsScreen viewport();
+		void viewport(Box!CordsScreen value);
+	}
+	
+	@property {
+		float clipNear();
+		void clipNear(float value);
+	}
+	
+	@property {
+		float clipFar();
+		void clipFar(float value);
+	}
+	
+//	FIXME: DMDs stupidity
+//	@property {
+//		IPipeline pipeline();
+//		void pipeline(IPipeline value);
+//	}
+//	DITTO	
+//	/**
+//		Texture to be used as output buffer
+//	 **/
+//	@property {
+//		ITexture textureOut();
+//		void textureOut(ITexture value);
+//	}
+	
+	/**
+		In case of stereo rendering, determines which eye this camera is.
+	 **/
+	@property {
+		Eye eye();
+		void eye(Eye value);
+	}
 	
 }

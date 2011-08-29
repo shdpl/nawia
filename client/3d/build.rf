@@ -169,6 +169,7 @@
 "src/impl/glfw/io/hid/keyboard.d"
 "src/impl/glfw/io/hid/mouse.d"
 "src/impl/h3d/ee/component.d"
+"src/impl/h3d/ee/entity.d"
 "src/impl/h3d/ee/world.d"
 "src/impl/h3d/ext/horde3d/CMake/Horde3D/Bindings/D/swig/horde3d.d"
 "src/impl/h3d/ext/horde3d/CMake/Horde3D/Bindings/D/swig/horde3d_im.d"

@@ -61,7 +61,7 @@ void main(string args[]){//TODO: configured resources
 	rndrr.shadowMapSize = 2048;
 	rndrr.animationFast = true;
 	
-	auto world = new H3DWorld;
+	auto world = new World;
 	
 	auto scene = world.add!Scene("models/cathedral.scene.xml");
 	Camera[] cams = scene.find!Camera("Camera");

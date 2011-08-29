@@ -20,6 +20,7 @@ module impl.h3d.ge.component.component;
 private import core.vararg;
 
 private import impl.h3d.h3d,
+	ge.component.component,
 	impl.h3d.ge.ray,
 	impl.h3d.ge.component.camera,
 	impl.h3d.ge.component.light,
@@ -34,7 +35,7 @@ private import impl.h3d.h3d,
 public import type.cords.local,
 	type.cuda.types;
 
-class H3DSGNode  {
+class H3DSGNode : IComponent {
 	public:
 	H3DNode id;
 	
@@ -273,33 +274,6 @@ class H3DSGNode  {
 //	}
 	
 	
-	//H3DSGNode[] find(string name);
-	//H3DSGNode[] all();
-	//Iterator iterator();
-	//mapStream();
-	//Ray castRay(float3 origin, float3 direction, uint maxIntersections);
-
-//	H3DSGNode addNode(H3DSGNode parent, H3DSGNode which);
-//	void delNode(H3DSGNode parent);
-//
-//	void active(bool val);
-//	bool active();
-//	
-//	bool transformed();
-//	
-//	float3[3] aabb();
-	
-//	float3 translationLocal();
-//	void translationLocal(float3 trans);
-//	float3 translationGlobal();
-//	void translationGlobal(float3 trans);
-//	
-//	float3 rotation();
-//	void rotation(float3 rot);
-//	float3 scale();
-//	void scale(float3 scale);
-	
-	
 	protected:
 	this() {
 	}
@@ -350,8 +324,6 @@ class H3DSGNode  {
 	}
 	
 	public:
-	alias H3DNodeTypes.List Type;
-	
 	class NodeIterator(T) : InputRange!(T) {
 		private:
 		int _id;
