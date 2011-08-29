@@ -62,6 +62,24 @@ void main(string args[]){//TODO: configured resources
 	rndrr.animationFast = true;
 	
 	auto world = new H3DWorld;
+	
+	auto scene = world.add!Scene("models/cathedral.scene.xml");
+	Camera[] cams = scene.find!Camera("Camera");
+	enforceEx!Exception(cams.length == 1, "cams.length=" ~ text(cams.length));
+	Camera cam = cams[0];
+	cam.viewport = Box!CordsScreen(wnd.size);
+	
+	/*
+	auto cam = 
+		world.add!Camera(pipe);
+	cam.translation = CordsLocal(15, 3, 20, platform);
+	cam.rotation = CordsLocal(-10, 60, 0, platform);
+	cam.viewport = Box!CordsScreen(wnd.size);
+	cam.clipNear = .01;
+	cam.clipFar = 1000;	//FIXME: clip!=clip <swap with fov>
+	cam.fov = 45;
+	//TODO: assign camera to window
+	h3dResizePipelineBuffers( pipe.id, wnd.size.x, wnd.size.y );
 
 	auto platform = world.add!Scene("models/platform/platform.scene.xml"); //("platform/platform.scene.xml");
 	platform.translation = CordsLocal(-1, 0, 0, world);
@@ -112,18 +130,17 @@ void main(string args[]){//TODO: configured resources
 	while(true) {
 		mtd.poll;
 	}*/
-	//h3dSetNodeTransform( platform.id, -1, 0, 0, 0, 0, 0, 0.23f, 0.23f, 0.23f );
 	
 
 	
 	uint frames = 3000;
 	StopWatch timer;
-	timer.start;
+	timer.start();
 	foreach(i; 0 .. frames) {
-		h3dFinalizeFrame();
 		h3dRender(cam.id);
+		h3dFinalizeFrame();
 		glfwSwapBuffers();
-		//cam.rotation(CordsLocal(0, i*360/frames, 0, world));
+		cam.rotation(CordsLocal(0, to!float(-i*50)/frames +40, 0, world));
 	}
 	timer.stop;
 	writeln(cast(real)frames*1000/timer.peek.msecs, " fps");

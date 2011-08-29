@@ -22,7 +22,10 @@ private import impl.h3d.h3d,
 
 class Joint : H3DSGNode {
 	public:
-	this(int id) {
+	static immutable type = Type.Joint;
+	
+	public:
+	this(H3DNode id) {
 		super(id);
 	}
 	

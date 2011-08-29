@@ -34,7 +34,7 @@ class H3DMaterial : H3DResource, IMaterial {
 	this(string name) {
 		super(name);	
 	}
-	this(int id) {
+	this(H3DRes id) {
 		super(id);	
 	}
 	

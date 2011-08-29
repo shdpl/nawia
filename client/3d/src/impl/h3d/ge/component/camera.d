@@ -36,13 +36,16 @@ class Camera : H3DSGNode, ICamera {
 	BufferPixel renderTarget;
 	float _fov;
 	
+	public:
+	static immutable type = Type.Camera;
 	
 	public:
-	this(H3DPipeline pipeline) {
-		_pipeline = pipeline;
-	}
-	this(int id) {
+//	this(H3DPipeline pipeline) {
+//		_pipeline = pipeline;
+//	}
+	this(H3DNode id) {
 		super(id);
+		_pipeline = pipeline;
 	}
 	
 	//h3dGetCameraProjMat - hopefully wont be needed
@@ -90,12 +93,15 @@ class Camera : H3DSGNode, ICamera {
 				CordsScreen(botleft_x+width, botleft_y+height));
 		}
 		void viewport(Box!CordsScreen value) {
+			//TODO: replace all this calculations by value.botleft value.width etc.
+			int width = value.topright.x - value.botleft.x;
+			int height = value.topright.y - value.botleft.y;
+			
 			setParam!int(value.botleft.x, Params.ViewportXI);
 			setParam!int(value.botleft.y, Params.ViewportYI);
-			setParam!int(value.topright.x - value.botleft.x,
-				Params.ViewportWidthI);
-			setParam!int(value.topright.y - value.botleft.y,
-				Params.ViewportHeightI);
+			setParam!int(width, Params.ViewportWidthI);
+			setParam!int(height, Params.ViewportHeightI);
+			h3dResizePipelineBuffers( pipeline.id, width, height );
 		}
 	}
 	
@@ -119,7 +125,7 @@ class Camera : H3DSGNode, ICamera {
 	
 	@property {
 		H3DPipeline pipeline() {
-			return new H3DPipeline(_pipeline.id);
+			return new H3DPipeline(getParam!int(Params.PipeResI));
 		}
 		void pipeline(H3DPipeline value) {
 			setParam!int(value.id, Params.PipeResI);

@@ -33,7 +33,7 @@ private import impl.h3d.h3d,
 	
 public import type.cords.local,
 	type.cuda.types;
-import std.conv;
+
 class H3DSGNode  {
 	public:
 	H3DNode id;
@@ -63,6 +63,17 @@ class H3DSGNode  {
 //	bool add(Model model) {
 //		return 0 != h3dAddModelNode(this.id, model.name, model.geometry.id);
 //	}
+	
+	T[] find(T)(string name) if(is(T : H3DSGNode)) {
+		T[] ret;
+		int node;
+		for (auto i = h3dFindNodes(this.id, name, T.type); i > 0; i--) {
+			node = h3dGetNodeFindResult(i-1);
+			assert(h3dGetNodeType(node) == T.type);
+			ret ~= new T(node);
+			}
+		return ret;
+	}
 	
 	H3DSGNode add(T)(string path) {
 		static if(is(T == Scene)) {
@@ -139,7 +150,7 @@ class H3DSGNode  {
 		}
 	}
 	
-	@property Type type() {
+	Type type() @property {
 		return cast(Type)h3dGetNodeType(this.id);
 	}
 	

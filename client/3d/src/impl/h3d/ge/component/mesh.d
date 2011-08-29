@@ -25,7 +25,10 @@ private import impl.h3d.h3d,
 
 class Mesh : H3DSGNode, IMesh {
 	public:
-	this(int id) {
+	static immutable type = Type.Mesh;
+	
+	public:
+	this(H3DNode id) {
 		super(id);
 	}
 	

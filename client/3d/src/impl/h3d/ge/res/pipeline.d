@@ -41,7 +41,7 @@ class H3DPipeline : H3DResource, IPipeline {
 	this(string name) {
 		super(name);	
 	}
-	this(int id) {
+	this(H3DRes id) {
 		super(id);
 	}
 	

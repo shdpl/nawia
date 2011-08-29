@@ -29,7 +29,7 @@ class Model : H3DSGNode {
 	Lod lod;
 	
 	public:
-	this(int id) {
+	this(H3DNode id) {
 		super(id);
 	}
 	@property {

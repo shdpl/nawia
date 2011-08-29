@@ -22,7 +22,10 @@ import impl.h3d.h3d,
 
 class Group : H3DSGNode {
 	public:
-	this(int id) {
+	static immutable type = Type.Group;
+	
+	public:
+	this(H3DNode id) {
 		super(id);
 	}
 }

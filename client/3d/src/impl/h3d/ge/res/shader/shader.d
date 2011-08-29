@@ -31,7 +31,7 @@ class H3DShader : H3DResource, IShader {
 	this(string name) {
 		super(name);	
 	}
-	this(int id) {
+	this(H3DRes id) {
 		super(id);	
 	}
 	

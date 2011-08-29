@@ -40,7 +40,7 @@ class H3DTexture : H3DResource, ITexture {
 		super(name);	
 		this.init;
 	}
-	this(int id) {
+	this(H3DRes id) {
 		super(id);
 		this.init;
 	}

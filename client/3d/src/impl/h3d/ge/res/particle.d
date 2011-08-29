@@ -47,7 +47,7 @@ class H3DParticle : H3DResource, IParticle {
 		super(name);
 		init();
 	}
-	this(int id) {
+	this(H3DRes id) {
 		super(id);
 		init();
 	}

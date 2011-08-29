@@ -12,7 +12,7 @@ class H3DGeometry : H3DResource, IGeometry {
 	this(string name) {
 		super(name);
 	}
-	this(int id) {
+	this(H3DRes id) {
 		super(id);
 	}
 

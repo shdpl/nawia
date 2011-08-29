@@ -25,7 +25,10 @@ import impl.h3d.h3d,
 	
 class Light : H3DSGNode {
 	public:
-	this(int id) {
+	static immutable type = Type.Light;
+	
+	public:
+	this(H3DNode id) {
 		super(id);
 	}
 	

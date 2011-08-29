@@ -28,7 +28,10 @@ import impl.h3d.ge.res.material,
 
 class Emitter : H3DSGNode /*: Emitter*/ {
 	public:
-	this(int id) {
+	static immutable type = Type.Emitter;
+	
+	public:
+	this(H3DNode id) {
 		super(id);
 	}
 	
