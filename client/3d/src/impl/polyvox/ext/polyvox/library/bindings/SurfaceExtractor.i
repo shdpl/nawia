@@ -18,6 +18,7 @@ namespace PolyVox
 
 %include "SimpleVolume.h"
 %include "SurfaceExtractor.h"
+%include "PolyVoxCore/Material.h"
 
 namespace PolyVox
 {

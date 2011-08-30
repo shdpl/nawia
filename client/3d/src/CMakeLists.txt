@@ -34,6 +34,6 @@ FOREACH(file ${files})
 	ENDIF(NOT matches)
 ENDFOREACH(file)
 
-ADD_EXECUTABLE( NawiaClient3D ${sources} ${d_header_path}/glfw.d ${d_header_path}/glfw_im.d ${d_header_path}/horde3d.d ${d_header_path}/horde3d_im.d ${d_header_path}/horde3dutils.d ${d_header_path}/horde3dutils_im.d) #${d_header_path}/PolyVoxCore.d ${d_header_path}/PolyVoxCore_im.d )
+ADD_EXECUTABLE( NawiaClient3D ${sources} ${d_header_path}/glfw.d ${d_header_path}/glfw_im.d ${d_header_path}/horde3d.d ${d_header_path}/horde3d_im.d ${d_header_path}/horde3dutils.d ${d_header_path}/horde3dutils_im.d ${d_header_path}/PolyVoxCore.d ${d_header_path}/PolyVoxCore_im.d )
 
 target_link_libraries(NawiaClient3D dl) #FIXME: shouldn't SWIG add it?

@@ -11,3 +11,4 @@
 
 %template(SimpleVolumeMaterial8) PolyVox::SimpleVolume<PolyVox::Material8>;
 %template(SimpleVolumeDensity8) PolyVox::SimpleVolume<PolyVox::Density8>;
+%template(SimpleVolumeMaterialDensityPair44) PolyVox::SimpleVolume<PolyVox::MaterialDensityPair44>;

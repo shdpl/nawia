@@ -3,3 +3,5 @@ bin/
 build/
 !bin/data/README.txt
 !bin/README.txt
+*.kdev4
+*~

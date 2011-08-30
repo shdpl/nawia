@@ -46,6 +46,7 @@ interface IComponent : IEEComponent {
 	}
 	
 	// FIXME: translation units
+	// TODO: entity.translation.pos += [1,0,-1];
 	//	@property {
 	//		CordsWorld translation();
 	//		void translation(CordsWorld value);

@@ -15,33 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module impl.polyvox.ee.map.pathfinder;
+module impl.polyvox.ee.map.ray;
 
 private import
 	std.typecons;
-
+	
 private import
 	impl.polyvox.polyvox,
-	ee.map.pathfinder;
+	ee.map.ray;
 
-alias WhiteHole!IPathfinder Pathfinder;
-
+alias WhiteHole!IRaycaster Raycaster;
 /* TODO:
-class Pathfinder : IPathfinder {
-	void init(PathFinderArgs);
+class Raycaster : IRaycaster {
 	
-	/// Returns normalized vector representing direction to go
-	CordsWorld query(); //FIXME: Vector
+	void init(CordsWorld source);
 	
+	@property CordsWorld source();
+	@property void source(CordsWorld);
 	
-	struct PathFinderArgs {
-		bool function(CordsWorld) pathableChecker;
-		
-		IVolume volume;
-		
-		/// Points to visit
-		CordsWorld[] points;
-		
-		bool diagonalSupported;
-		}
+	@property CordsWorld direction();
+	@property void direction(CordsWorld);
+	
+	struct Ray {
+		Voxel intersection;
+	}
 }*/
+

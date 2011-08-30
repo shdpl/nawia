@@ -15,33 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module impl.polyvox.ee.map.pathfinder;
-
+module impl.polyvox.ee.map.volume.simple;
+	
 private import
-	std.typecons;
+	impl.polyvox.ee.map.volume.volume;
 
-private import
-	impl.polyvox.polyvox,
-	ee.map.pathfinder;
-
-alias WhiteHole!IPathfinder Pathfinder;
-
-/* TODO:
-class Pathfinder : IPathfinder {
-	void init(PathFinderArgs);
-	
-	/// Returns normalized vector representing direction to go
-	CordsWorld query(); //FIXME: Vector
-	
-	
-	struct PathFinderArgs {
-		bool function(CordsWorld) pathableChecker;
-		
-		IVolume volume;
-		
-		/// Points to visit
-		CordsWorld[] points;
-		
-		bool diagonalSupported;
-		}
-}*/
+//class VolumeSimple : Volume, IVolumeSimple {
+//	
+//}
