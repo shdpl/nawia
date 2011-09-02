@@ -22,16 +22,14 @@ private import std.range,
 	std.math;
 
 private import impl.h3d.h3d,
-	impl.h3d.ge.logs,
 	util.singleton,
 	ge.window.window,
+	ge.renderer,
 	ex.renderer.init;
 	
 public import type.buffer.pixel;	
 
-class Renderer : Singleton!Renderer {
-	public:
-	Shaders shaders;
+class Renderer : Singleton!Renderer, IRenderer {
 	
 	this(IWindow wnd) {
 		super();
@@ -103,44 +101,34 @@ class Renderer : Singleton!Renderer {
 		h3dSetOption(H3DOptions.List.ShadowMapSize, value);
 	}
 	
-	@property bool wireFrame() {
+	@property bool viewWireFrame() {
 		return h3dGetOption(H3DOptions.List.WireframeMode) > 0.01;
 	}
 	
-	@property void wireFrame(bool value) {
+	@property void viewWireFrame(bool value) {
 		h3dSetOption(H3DOptions.List.WireframeMode, value);
 	}
 	
-	@property bool debugView() {
+	@property bool viewDebug() {
 		return h3dGetOption(H3DOptions.List.DebugViewMode) > 0.01;
 	}
 	
-	@property void debugView(bool value) {
+	@property void viewDebug(bool value) {
 		h3dSetOption(H3DOptions.List.DebugViewMode, value);
 	}
 	
-	struct Shaders {
-		void preambles(string vertex, string pixel) {
-			h3dSetShaderPreambles(vertex, pixel);
-		}
+	void shadersPreamble(string vertex, string pixel) {
+		h3dSetShaderPreambles(vertex, pixel);
+	}
 		
-		@property {
-			bool dumpFailedShaders() {
-				return h3dGetOption(H3DOptions.List.DumpFailedShaders) > 0.01;
-			}
-			
-			void dumpFailedShaders(bool value) {
-				h3dSetOption(H3DOptions.List.DumpFailedShaders, value);
-			}
+	@property {
+		bool shadersDumpFailed() {
+			return h3dGetOption(H3DOptions.List.DumpFailedShaders) > 0.01;
 		}
-	}
-	
-	@property bool profile() {
-		return h3dGetOption(H3DOptions.List.GatherTimeStats) > 0.01;
-	}
-	
-	@property void profile(bool value) {
-		h3dSetOption(H3DOptions.List.GatherTimeStats, value);
+			
+		void shadersDumpFailed(bool value) {
+			h3dSetOption(H3DOptions.List.DumpFailedShaders, value);
+		}
 	}
 	
 	BufferPixel backbuffer() @property {
@@ -148,6 +136,4 @@ class Renderer : Singleton!Renderer {
 		//h3dGetRenderTargetData(0,...)
 		return ret;
 	}
-	
-	H3DLogs msgs;
 }

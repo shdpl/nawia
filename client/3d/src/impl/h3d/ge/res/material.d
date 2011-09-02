@@ -29,6 +29,10 @@ private import impl.h3d.h3d,
 public import impl.h3d.ge.res.texture;	
 
 class H3DMaterial : H3DResource, IMaterial {
+	public:
+	_Samplers samplers;
+	_Material materials;
+	_Uniforms uniforms;
 	
 	public:
 	this(string name) {
@@ -47,13 +51,13 @@ class H3DMaterial : H3DResource, IMaterial {
 		return elementCount(Elements.MaterialElem);
 	}
 		
-	Material_ opIndex(uint i) {
-		return new Material_(i);
+	_Material opIndex(uint i) {
+		return new _Material(i);
 	}	
 	
-	public:
-	class Samplers {
-		class Sampler {
+	private:
+	class _Samplers {
+		class _Sampler {
 			private uint id;
 			this(uint id) {
 				this.id = id;
@@ -81,20 +85,20 @@ class H3DMaterial : H3DResource, IMaterial {
 			return elementCount(Elements.SamplerElem);
 		}
 		
-		Sampler opIndex(uint i) {
-			return new Sampler(i);
+		_Sampler opIndex(uint i) {
+			return new _Sampler(i);
 		}
 	}
 	
-	class Uniforms {
+	class _Uniforms {
 		H3DMaterial parent;
 		public:
 		this(H3DMaterial mat) {this.parent = mat;}
 		uint length() @property {
 			return elementCount(Elements.UniformElem);
 		}
-		Uniform opIndex(uint i) {
-			return new Uniform(i);
+		_Uniform opIndex(uint i) {
+			return new _Uniform(i);
 		}
 		void opIndexAssign(float[4] value, string name) {
 			enforceEx!ExResElementMissing(h3dSetMaterialUniform(
@@ -102,7 +106,7 @@ class H3DMaterial : H3DResource, IMaterial {
 				text(name));
 		}
 		
-		class Uniform {
+		class _Uniform {
 			private uint id;
 			this(uint id) {
 				this.id = id;
@@ -117,11 +121,11 @@ class H3DMaterial : H3DResource, IMaterial {
 				return 4;
 			}
 
-			UniformComponent opIndex(uint i) {
-				return new UniformComponent(i);
+			_UniformComponent opIndex(uint i) {
+				return new _UniformComponent(i);
 			}
 			
-			class UniformComponent {
+			class _UniformComponent {
 				private uint id;
 				this(uint id) {
 					this.id = id;
@@ -140,7 +144,7 @@ class H3DMaterial : H3DResource, IMaterial {
 		}
 	}
 	
-	class Material_ {
+	class _Material {
 		private uint id;
 		this(uint id) {
 			this.id = id;

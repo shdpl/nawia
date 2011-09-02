@@ -1,15 +1,19 @@
 module impl.h3d.ge.res.resource;
 
 private import std.conv;
+public import
+	std.stream;
 
-private import ge.res.resource,
+private import
+	ex.ge.res.map,
+	ge.res.resource,
 	impl.h3d.h3d,
 	impl.h3d.io.res.resource : IOResource = H3DResource;
 
 alias int H3DResId;
 alias int H3DElemType;
 
-abstract class H3DResource : IOResource, IResource {
+class H3DResource : IOResource, IResource {
 	public:
 	H3DResId id;
 	
@@ -63,7 +67,16 @@ abstract class H3DResource : IOResource, IResource {
 	}
 	
 	protected:
-	abstract ResourceType type() @property;
+	ResourceType type() @property {
+		return ResourceType.Undefined;
+	}
+	
+	Stream mapResource(int elem, int stream_id, AccessRights access, uint size, uint elemIdx = 0) {
+		void* stream = h3dMapResStream( this.id, elem, elemIdx, stream_id,
+			(access & AccessRights.Read) != 0, (access & AccessRights.Write) != 0);
+		enforceEx!ExResMap(stream, text(this.id, elem, stream_id, access, elemIdx));
+		return new MemoryStream(cast(ubyte[])stream[0 .. size]);
+	}
 	
 	T getElemParam(T)(int elem, int elemIdx, int param, int compIdx = 0)
 		if (is (T : float) | is(T : string) | is(T : int)) {

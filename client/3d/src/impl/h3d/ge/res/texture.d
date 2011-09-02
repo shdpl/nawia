@@ -27,8 +27,7 @@ public import impl.h3d.h3d,
 
 class H3DTexture : H3DResource, ITexture {
 	public:
-	//flags
-	Images images;
+	_Images images;
 	
 	private:
 	alias H3DTexRes.List Elements;
@@ -77,19 +76,19 @@ class H3DTexture : H3DResource, ITexture {
 	
 	private:
 	void init() {
-		this.images = new Images;
+		this.images = new _Images;
 	}
 	
 	private:
-	class Images {
+	class _Images {
 		uint count() @property {
 			return h3dGetResElemCount(id, Elements.ImageElem);
 		}
 		
-		Image opIndex(int i) {
-			return new Image(i);
+		_Image opIndex(int i) {
+			return new _Image(i);
 		}
-		class Image {
+		class _Image {
 			private immutable ELEM = Elements.ImageElem;
 			uint id;
 			
@@ -104,6 +103,11 @@ class H3DTexture : H3DResource, ITexture {
 			uint height() @property {
 				return getElemParam!int(ELEM, id, Elements.ImgHeightI);
 			}
+
+//			Stream mapPixels(AccessRights access) {
+//				return mapResource(Elements.ImageElem, Elements.ImgPixelStream, access,
+//					/*restore size*/, id);
+//			}
 		}
 	}
 }

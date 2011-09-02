@@ -21,36 +21,63 @@ private import impl.h3d.h3d,
 	ge.window.window;
 
 interface IRenderer {
-	@property bool filteringTrilinear();
-	@property void filteringTrilinear(bool value);
 	
-	@property ubyte anisotropy();
-	@property void anisotropy(ubyte value);
+	/// Controls whether animation frame interpolation is on, or off
+	@property {
+		void animationFast(bool value);
+		bool animationFast();
+	}
 	
-	@property bool texCompression();
-	@property void texCompression(bool value);
+	@property {
+		bool filteringTrilinear();
+		void filteringTrilinear(bool value);
+	}
 	
-	@property bool linearizationSRGB();
-	@property void linearizationSRGB(bool value);
+	/// Only affects pipelines that are loaded *after* settings the option
+	@property {
+		ubyte anisotropy();
+		void anisotropy(ubyte value);
+	}
 	
-	@property bool texturesReference();
-	@property void texturesReference(bool value);
+	/// Controls gamma-to-linear-space conversion of sRGB input textures
+	@property {
+		bool linearizationSRGB();
+		void linearizationSRGB(bool value);
+	}	
 	
-	@property uint shadowMapSize();
-	@property void shadowMapSize(uint value);
+	/// Only affects textures that are loaded after setting the option
+	@property {
+		bool texCompression();
+		void texCompression(bool value);
+	}
 	
-	@property bool wireFrame();
-	@property void wireFrame(bool value);
+	/// Might be used to disable texture loading
+	@property {
+		bool texReference();
+		void texReference(bool value);
+	}
 	
-	@property bool debugView();
-	@property void debugView(bool value);
+	/// legal values: 128, 256, 512, 1024, 2048; Default: 1024
+	@property {
+		void shadowMapSize(uint value);
+		uint shadowMapSize();
+	}
 	
-	@property bool dumpFailedShaders();
-	@property void dumpFailedShaders(bool value);
+	@property {
+		bool viewWireFrame();
+		void viewWireFrame(bool value);
+	}
 	
-	@property bool profile();
-	@property void profile(bool value);
+	@property {
+		bool viewDebug();
+		void viewDebug(bool value);
+	}
 	
-	//@property Logs logs();
-	//@property void logs(Logs value);
+	@property {
+		bool shadersDumpFailed();
+		void shadersDumpFailed(bool value);
+	}
+	
+	void shadersPreamble(string vertex, string pixel);
+	
 }

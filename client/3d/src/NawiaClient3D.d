@@ -50,8 +50,8 @@ void main(){
 	Demo demo;
 	
 //	demo = new Demo1;
-//	demo = new Demo2;
-	demo = new Demo3;
+	demo = new Demo2;
+//	demo = new Demo3;
 	
 	demo.init;
 	demo.load;

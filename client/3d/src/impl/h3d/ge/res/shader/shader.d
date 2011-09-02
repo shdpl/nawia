@@ -24,24 +24,34 @@ private import impl.h3d.ge.res.resource,
 	impl.h3d.h3d;
 
 class H3DShader : H3DResource, IShader {
-	Contexts contexts;
-	Samplers samplers;
-	Uniforms uniforms;
+	_Contexts contexts;
+	_Samplers samplers;
+	_Uniforms uniforms;
 	
 	this(string name) {
-		super(name);	
+		super(name);
+		init();
 	}
 	this(H3DRes id) {
-		super(id);	
+		super(id);
+		init();
 	}
 	
 	override ResourceType type() @property {
 		return ResourceType.Shader;
 	}
 	
+
+	private:
+	void init() {
+		contexts = new _Contexts;
+		samplers = new _Samplers;
+		uniforms = new _Uniforms;
+	}
+	
 	public:
-	class Contexts {
-		class Context {
+	class _Contexts {
+		class _Context {
 			private uint id;
 			this(uint id) {
 				this.id = id;
@@ -56,13 +66,13 @@ class H3DShader : H3DResource, IShader {
 			return elementCount(Elements.ContextElem);
 		}
 		
-		Context opIndex(uint i) {
-			return new Context(i);
+		_Context opIndex(uint i) {
+			return new _Context(i);
 		}
 	}
 	
-	class Samplers {
-		class Sampler {
+	class _Samplers {
+		class _Sampler {
 			private uint id;
 			this(uint id) {
 				this.id = id;
@@ -77,20 +87,20 @@ class H3DShader : H3DResource, IShader {
 			return elementCount(Elements.SamplerElem);
 		}
 		
-		Sampler opIndex(uint i) {
-			return new Sampler(i);
+		_Sampler opIndex(uint i) {
+			return new _Sampler(i);
 		}
 	}
 	
-	class Uniforms {
+	class _Uniforms {
 		uint length() @property {
 			return elementCount(Elements.UniformElem);
 		}
-		Uniform opIndex(uint i) {
-			return new Uniform(i);
+		_Uniform opIndex(uint i) {
+			return new _Uniform(i);
 		}
 		
-		class Uniform {
+		class _Uniform {
 			private uint id;
 			this(uint id) {
 				this.id = id;
@@ -105,11 +115,11 @@ class H3DShader : H3DResource, IShader {
 				return getElemParam!int(Elements.UniformElem, id, Elements.UnifSizeI);
 			}
 
-			UniformComponent opIndex(uint i) {
-				return new UniformComponent(i);
+			_UniformComponent opIndex(uint i) {
+				return new _UniformComponent(i);
 			}
 			
-			class UniformComponent {
+			class _UniformComponent {
 				private uint id;
 				this(uint id) {
 					this.id = id;

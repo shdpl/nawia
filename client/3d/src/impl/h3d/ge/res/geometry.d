@@ -1,13 +1,12 @@
 module impl.h3d.ge.res.geometry;
 
-private import impl.h3d.ge.res.resource,
+
+private import
 	ge.res.geometry,
+	impl.h3d.ge.res.resource,
 	impl.h3d.h3d;
 
 class H3DGeometry : H3DResource, IGeometry {
-	enum IndicesFormat : bool {BIT16 = 1, BIT32 = 0};
-	
-	
 	public:
 	this(string name) {
 		super(name);
@@ -32,6 +31,23 @@ class H3DGeometry : H3DResource, IGeometry {
 	override ResourceType type() @property {
 		return ResourceType.Geometry;
 	}
+	
+	/// ushort/uint
+	Stream mapIndices(AccessRights access) {
+		return mapResource(Elements.GeometryElem, Elements.GeoIndexStream, access, indicesNo);
+	}
+	/// float x, y, z
+	Stream mapVertPositions(AccessRights access) {
+		return mapResource(Elements.GeometryElem, Elements.GeoVertPosStream, access, verticesNo);
+	}
+	///float nx, ny, nz, tx, ty, tz, tw
+	Stream mapVertTangents(AccessRights access) {
+		return mapResource(Elements.GeometryElem, Elements.GeoVertTanStream, access, verticesNo);
+	}
+	///float u0, v0, float4 jointIndices, float4 jointWeights, float u1, v1
+	Stream mapVertAttributes(AccessRights access) {
+		return mapResource(Elements.GeometryElem, Elements.GeoVertStaticStream, access, verticesNo);
+	} 
 	
 	private:
 	alias H3DGeoRes.List Elements;

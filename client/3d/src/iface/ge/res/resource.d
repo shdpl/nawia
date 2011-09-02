@@ -46,4 +46,10 @@ interface IResource {
     	TexRenderable = H3DResFlags.Flags.TexRenderable,
     	TexSRGB = H3DResFlags.Flags.TexSRGB
 	}
+	
+	enum AccessRights {
+		None = 0x0,
+		Read = 0x1,
+		Write = 0x2
+	}
 }

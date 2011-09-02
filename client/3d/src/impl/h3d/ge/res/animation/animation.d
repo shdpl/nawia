@@ -25,19 +25,19 @@ private import impl.h3d.ge.res.resource,
 abstract class Animation : H3DResource, IAnimation {
 	public:
 	//string _targetNode;
-	Entities entities;
+	_Entities entities;
 	//uint weight;
 	
 	public:
-	this(string name) {super(name);}
-	
-	//TODO: h3dMapResStream
-	//TODO: h3dUnmapResStream
+	this(string name) {
+		super(name);
+		entities = new _Entities;
+	}
 
-	class Entities {
+	class _Entities {
 		immutable uint lengthMax = 16;
 		
-		class Entity {
+		class _Entity {
 			private uint id;
 			
 			this(uint id) {
@@ -53,8 +53,8 @@ abstract class Animation : H3DResource, IAnimation {
 			return elementCount(Elements.EntityElem);
 		}
 		
-		Entity opIndex(uint i) {
-			return new Entity(i);
+		_Entity opIndex(uint i) {
+			return new _Entity(i);
 		}
 	}
 	

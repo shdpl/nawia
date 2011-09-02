@@ -15,15 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module impl.ge.logs;
+module impl.h3d.msg.logs;
 
 private import std.range,
 	std.conv,
 	std.exception;
 
-import impl.h3d.h3d,
-	msg._time.idle,
-	msg.listener;
+import impl.h3d.h3d;
 
 struct H3DMessage {
 	int level;
@@ -31,10 +29,9 @@ struct H3DMessage {
 	string content;
 	}
 	
-class H3DLogs : InputRange!(H3DMessage), IMsgListener!MsgTimeIdle {
+class Logs : InputRange!(H3DMessage) {
 	private:
 	H3DMessage _current;
-	mixin InjectMsgProvider!MsgTimeIdle _idleProvider;
 	
 	public:
 	@property uint logLevel() {
@@ -43,10 +40,6 @@ class H3DLogs : InputRange!(H3DMessage), IMsgListener!MsgTimeIdle {
 	
 	@property void logLevel(uint level) {
 		h3dSetOption(H3DOptions.List.MaxLogLevel, level);
-	}
-	
-	override void handle(MsgTimeIdle msg) {
-		//TODO: 
 	}
 	
 	override H3DMessage front() {
