@@ -28,7 +28,7 @@ private import impl.h3d.h3d,
 	
 public import impl.h3d.ge.res.texture;	
 
-class H3DMaterial : H3DResource, IMaterial {
+class Material : Resource, IMaterial {
 	public:
 	_Samplers samplers;
 	_Material materials;
@@ -64,11 +64,11 @@ class H3DMaterial : H3DResource, IMaterial {
 			}
 			
 			@property {
-				H3DTexture texture() {
-					return new H3DTexture(getElemParam!int(
+				Texture texture() {
+					return new Texture(getElemParam!int(
 							Elements.SamplerElem, id, Elements.SampTexResI));
 				}
-				void texture(H3DTexture value) {
+				void texture(Texture value) {
 					setElemParam!int(value.id, Elements.SamplerElem,
 						id, Elements.SampTexResI);
 				}
@@ -91,9 +91,9 @@ class H3DMaterial : H3DResource, IMaterial {
 	}
 	
 	class _Uniforms {
-		H3DMaterial parent;
+		Material parent;
 		public:
-		this(H3DMaterial mat) {this.parent = mat;}
+		this(Material mat) {this.parent = mat;}
 		uint length() @property {
 			return elementCount(Elements.UniformElem);
 		}
@@ -151,21 +151,21 @@ class H3DMaterial : H3DResource, IMaterial {
 		}
 		
 		@property {
-			H3DMaterial linkedMaterial() {
-				return new H3DMaterial(getElemParam!int(
+			Material linkedMaterial() {
+				return new Material(getElemParam!int(
 						Elements.MaterialElem, id, Elements.MatLinkI));
 			}
-			void linkedMaterial(H3DMaterial value) {
+			void linkedMaterial(Material value) {
 				setElemParam!int(value.id,
 					Elements.MaterialElem, id, Elements.MatLinkI);
 			}
 		}
 		@property {
-			H3DShader shader() @property {
-				return new H3DShader(getElemParam!int(
+			Shader shader() @property {
+				return new Shader(getElemParam!int(
 					Elements.MaterialElem, id, Elements.MatShaderI));
 			}
-			void shader(H3DShader value) @property {
+			void shader(Shader value) @property {
 				setElemParam!int(value.id,
 					Elements.MaterialElem, id, Elements.MatShaderI);
 			}

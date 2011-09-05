@@ -23,7 +23,7 @@ private import impl.h3d.h3d,
 	impl.h3d.ge.res.material,
 	impl.h3d.ge.component.component;
 
-class Mesh : H3DSGNode, IMesh {
+class Mesh : Component, IMesh {
 	public:
 	static immutable type = Type.Mesh;
 	
@@ -33,10 +33,10 @@ class Mesh : H3DSGNode, IMesh {
 	}
 	
 	@property {
-		H3DMaterial material() {
-			return new H3DMaterial(getParam!int(Params.MatResI));
+		Material material() {
+			return new Material(getParam!int(Params.MatResI));
 		}
-		void material(H3DMaterial mat) {
+		void material(Material mat) {
 			setParam!int(mat.id, Params.MatResI);
 		}
 	}

@@ -16,14 +16,17 @@
 */
 
 module impl.h3d.ge.component.light;
+	
+public import 
+	ge.component.light;
 
-import impl.h3d.h3d,
-	ge.res.material,
-	type.color.rgb,
+private import
+	impl.h3d.h3d,
 	impl.h3d.ge.component.component,
 	impl.h3d.ge.res.material;
 	
-class Light : H3DSGNode {
+	
+class Light : Component, ILight {
 	public:
 	static immutable type = Type.Light;
 	
@@ -33,10 +36,13 @@ class Light : H3DSGNode {
 	}
 	
 	@property {
-		H3DMaterial material() {
-			return new H3DMaterial(getParam!int(Params.MatResI));
+		override Material material() {
+			return new Material(getParam!int(Params.MatResI));
 		}
-		void material(H3DMaterial mat) {
+		override void material(IMaterial value) in {
+			assert(cast(Material) value);
+		} body {
+			Material mat = cast(Material) value;
 			setParam!int(mat.id, Params.MatResI);
 		}
 	}

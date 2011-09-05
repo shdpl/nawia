@@ -6,7 +6,7 @@ private import
 	
 public import impl.h3d.ge.component.component;
 
-class World : H3DSGNode {
+class World : Component {
 	this() {
 		this.id = H3DRootNode;
 		super();

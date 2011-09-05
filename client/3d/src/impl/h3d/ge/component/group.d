@@ -17,10 +17,12 @@
 
 module impl.h3d.ge.component.group;
 
-import impl.h3d.h3d,
+import
+	ge.component.group,
+	impl.h3d.h3d,
 	impl.h3d.ge.component.component;
 
-class Group : H3DSGNode {
+class Group : Component, IGroup {
 	public:
 	static immutable type = Type.Group;
 	

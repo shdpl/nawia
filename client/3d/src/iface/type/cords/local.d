@@ -18,15 +18,15 @@
 module type.cords.local;
 
 private import type.cords.cords,
-	impl.h3d.ge.component.component; //FIXME: drop dependency on h3d
+	ge.component.component; //FIXME: drop dependency on h3d
 public import type.unit.local;
 
 struct CordsLocal {
 	Cords!(UnitLocal, 3) _cords;
-	H3DSGNode parent;
+	IComponent parent;
 	
 	
-	this(UnitLocal x, UnitLocal y, UnitLocal z, H3DSGNode parent) {
+	this(UnitLocal x, UnitLocal y, UnitLocal z, IComponent parent) {
 		_cords = _cords(x, y, z);
 		this.parent = parent;
 	}

@@ -26,4 +26,8 @@ class AnimationBlended : Animation/*, IAnimationBlended*/ {
 	this(string name) {
 		super(name);	
 	}
+	
+	override Type aType() {
+		return Animation.Type.Blended;
+	}
 }

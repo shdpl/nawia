@@ -25,37 +25,41 @@ public import impl.h3d.ge.res.animation.animation,
 	impl.h3d.ge.res.geometry;	
 	
 
-class Model : H3DSGNode {
-	Lod lod;
+class Model : Component {
+	public:
+	_Lod lod;
 	
 	public:
 	this(H3DNode id) {
 		super(id);
+		init();
 	}
+	
 	@property {
-		H3DGeometry geometry() {
-			return new H3DGeometry(getParam!int(Params.GeoResI));
+		Geometry geometry() {
+			return new Geometry(getParam!int(Params.GeoResI));
 		}
-		void geometry(H3DGeometry value) {
+		void geometry(Geometry value) {
 			setParam!int(value.id, Params.GeoResI);
 		}
 	}
 	
 	@property {
-		int skinningSoftware() {
-			return getParam!int(Params.SWSkinningI);
+		bool skinningSoftware() {
+			return 0 != getParam!int(Params.SWSkinningI);
 		}
-		void skinningSoftware(int value) {
+		void skinningSoftware(bool value) {
 			setParam!int(value, Params.SWSkinningI);
 		}
 	}
 	
 	//FIXME: make an object?
 	void setupAnimation(ubyte slot, Animation anim,
-		uint priority, Joint root, bool additive) {
+		uint priority, Joint root) {
 		h3dSetupModelAnimStage(this.id, slot, anim.id, priority,
-			root.name, additive);
+			root.name, anim.aType == anim.Type.Additive);
 	}
+	//TODO: h3dSetModelAnimParams
 	
 	void setBoneWeight(string bone, float weight) {
 		h3dSetModelMorpher(this.id, bone, weight);
@@ -63,7 +67,7 @@ class Model : H3DSGNode {
 	
 	private:
 	/// Distance to camera from which on LOD[n] is used
-	class Lod {
+	class _Lod {
 		float opIndex(uint i) {
 			switch(i) {
 				case 0:
@@ -97,6 +101,10 @@ class Model : H3DSGNode {
 					assert(0);
 			}
 		}
+	}
+	private:
+	void init() {
+		lod = new _Lod();
 	}
 	
 	private alias H3DModel.List Params;

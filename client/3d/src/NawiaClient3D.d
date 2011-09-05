@@ -106,8 +106,8 @@ abstract class Demo {
 }
 
 class Demo1 : Demo {
-	H3DSGNode platform, sky;
-	H3DPipeline pipe;
+	Component platform, sky;
+	Pipeline pipe;
 	Light light;
 	
 	override void load() {
@@ -120,7 +120,7 @@ class Demo1 : Demo {
 		sky.scale = float3(210, 50, 210);
 		sky.shadowsDisabled = true;
 		
-		pipe = new H3DPipeline("pipelines/deferred.pipeline.xml");
+		pipe = new Pipeline("pipelines/deferred.pipeline.xml");
 		cam = world.add!Camera(pipe);
 		cam.translation = CordsLocal(15, 3, 20, platform);
 		cam.rotation = CordsLocal(-10, 60, 0, platform);
@@ -133,7 +133,7 @@ class Demo1 : Demo {
 		//enforce( lCtxID in lMat[0].shader.contexts
 		//	&& sCtxID in lMat[0].shader.contexts );
 		light = platform.add!Light(
-			new H3DMaterial("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
+			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
 		light.translation = CordsLocal(0, 20, 50, platform);
 		light.rotation = CordsLocal(-30, 0, 0, platform);
 		//light.scale = float3(1, 1, 1);
@@ -158,7 +158,7 @@ class Demo1 : Demo {
 }
 
 class Demo2 : Demo {
-	H3DSGNode scene;
+	Component scene;
 	
 	override void load() {
 		scene = world.add!Scene("models/cathedral.scene.xml");
@@ -166,14 +166,15 @@ class Demo2 : Demo {
 		enforceEx!Exception(cams.length == 1, "cams.length=" ~ text(cams.length));
 		cam = cams[0];
 		cam.viewport = Box!CordsScreen(wnd.size);
+		cam.culling = true;
 	}
 	
 }
 
 class Demo3 : Demo {
-	H3DPipeline pipe;
+	Pipeline pipe;
 	override void load() {
-		pipe = new H3DPipeline("pipelines/deferred.pipeline.xml");
+		pipe = new Pipeline("pipelines/deferred.pipeline.xml");
 		cam = world.add!Camera(pipe);
 		cam.viewport = Box!CordsScreen(wnd.size);
 		cam.clipNear = .01;

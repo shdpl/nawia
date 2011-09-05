@@ -27,15 +27,15 @@ import impl.h3d.h3d,
 private import impl.h3d.ge.res.resource,
 	ge.res.particle;
 
-class H3DParticle : H3DResource, IParticle {
+class Particle : Resource, IParticle {
 	private:
 	alias H3DPartEffRes.List Elements;	//FIXME: compiler bug (move bottom)
 	public:
-	Movement movement;
-	Rotation rotation;
-	Drag drag;
-	Size size;
-	Color color;
+	_Movement movement;
+	_Rotation rotation;
+	_Drag drag;
+	_Size size;
+	_Color color;
 	
 	
 	public:
@@ -86,11 +86,11 @@ class H3DParticle : H3DResource, IParticle {
 		setElemParam(value, channel, 0, property);
 	}
 	void init() {
-		movement = new Movement;
-		rotation = new Rotation;
-		drag = new Drag;
-		size = new Size;
-		color = new Color;	//http://d.puremagic.com/issues/show_bug.cgi?id=6532
+		movement = new _Movement;
+		rotation = new _Rotation;
+		drag = new _Drag;
+		size = new _Size;
+		color = new _Color;	//http://d.puremagic.com/issues/show_bug.cgi?id=6532
 	}
 	
 	private:
@@ -100,7 +100,7 @@ class H3DParticle : H3DResource, IParticle {
 		end = Elements.ChanEndRateF
 	}
 	
-	class Size {
+	class _Size {
 		@property {
 			float startMin() {
 				return getChannel(Elements.ChanSizeElem, Elements.ChanStartMinF);
@@ -127,7 +127,7 @@ class H3DParticle : H3DResource, IParticle {
 		}
 	}
 
-	class Drag {
+	class _Drag {
 		@property {
 			float startMin() {
 				return getChannel(Elements.ChanDragElem, Elements.ChanStartMinF);
@@ -154,7 +154,7 @@ class H3DParticle : H3DResource, IParticle {
 		}
 	}
 	
-	class Movement {
+	class _Movement {
 		@property {
 			float startMin() {
 				return getChannel(Elements.ChanMoveVelElem, Elements.ChanStartMinF);
@@ -181,7 +181,7 @@ class H3DParticle : H3DResource, IParticle {
 		}
 	}
 	
-	class Rotation {
+	class _Rotation {
 		@property {
 			float startMin() {
 				return getChannel(Elements.ChanRotVelElem, Elements.ChanStartMinF);
@@ -208,7 +208,7 @@ class H3DParticle : H3DResource, IParticle {
 		}
 	}
 	
-	class Color {
+	class _Color {
 		public:
 		@property {
 			void startMin(ColorRGBA!float value) {

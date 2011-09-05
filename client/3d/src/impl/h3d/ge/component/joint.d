@@ -17,10 +17,12 @@
 
 module impl.h3d.ge.component.joint;
 
-private import impl.h3d.h3d,
-	impl.h3d.ge.component.component;
+private import
+	impl.h3d.h3d,
+	impl.h3d.ge.component.component,
+	ge.component.joint;
 
-class Joint : H3DSGNode {
+class Joint : Component, IJoint {
 	public:
 	static immutable type = Type.Joint;
 	
@@ -32,9 +34,6 @@ class Joint : H3DSGNode {
 	@property {
 		uint index() {
 			return getParam!int(Params.JointIndexI);
-		}
-		void index(uint value) {
-			setParam!int(value, Params.JointIndexI);
 		}
 	}
 	

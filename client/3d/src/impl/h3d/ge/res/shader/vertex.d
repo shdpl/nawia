@@ -20,7 +20,7 @@ module impl.h3d.ge.res.shader.vertex;
 private import ge.res.shader.vertex,
 	impl.h3d.ge.res.shader.shader;
 
-class ShaderVertex : H3DShader, IShaderVertex {
+class ShaderVertex : Shader, IShaderVertex {
 	this(string name) {
 		super(name);	
 	}

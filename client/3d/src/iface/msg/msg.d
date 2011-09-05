@@ -17,7 +17,13 @@
 
 module msg.msg;
 
+public import std.datetime;
+
 
 struct Msg {
+	StopWatch time;
 	
+//	this() {
+//		time = StopWatch(AutoStart.yes);
+//	}
 }

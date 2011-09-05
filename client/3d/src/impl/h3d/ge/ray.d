@@ -22,6 +22,7 @@ import impl.h3d.h3d,
 	ge.component.component,
 	type.cuda.types;
 
+//TODO: h3dCastRay h3dGetCastRayResult
 struct Ray {
 	public Intersection[] intersections;
 	

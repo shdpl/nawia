@@ -21,41 +21,48 @@ import impl.h3d.h3d;
 
 import std.datetime;
 
-import impl.h3d.ge.res.material,
+import
+	msg.listener,
+	ge.msg.redraw,
+	ge.component.emitter,
+	impl.h3d.ge.res.material,
 	impl.h3d.ge.res.particle,
 	impl.h3d.ge.component.component,
 	type.cuda.types;
 
-class Emitter : H3DSGNode /*: Emitter*/ {
+class Emitter : Component, IEmitter, IMsgListener!MsgRedraw {
 	public:
 	static immutable type = Type.Emitter;
+	
+	private:
+	mixin InjectMsgProvider!MsgRedraw _redrawProvider;
 	
 	public:
 	this(H3DNode id) {
 		super(id);
 	}
 	
-	void onRedraw() {
+	void handle(MsgRedraw msg) {
 		if (!h3dHasEmitterFinished(this.id)) {
-			//this.clear(); //FIXME
+			//this.clear(); //FIXME: destroy itself
 		}else
-			h3dAdvanceEmitterTime(this.id, 0/*Timer.delta*/); //FIXME
+			h3dAdvanceEmitterTime(this.id, (Clock.currAppTick - msg.time.peek()).seconds); //FIXME
 	}
 	
 	@property {
-		H3DMaterial material() {
-			return new H3DMaterial(getParam!int(Params.MatResI));
+		Material material() {
+			return new Material(getParam!int(Params.MatResI));
 		}
-		void material(H3DMaterial mat) {
+		void material(Material mat) {
 			setParam!int(mat.id, Params.MatResI);
 		}
 	}
 	
 	@property {
-		H3DParticle resource() {
-			return new H3DParticle(getParam!int(Params.PartEffResI));
+		Particle resource() {
+			return new Particle(getParam!int(Params.PartEffResI));
 		}
-		void resource(H3DParticle value) {
+		void resource(Particle value) {
 			setParam!int(value.id, Params.PartEffResI);
 		}
 	}

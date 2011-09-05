@@ -17,6 +17,9 @@
 
 module ge.res.resource;
 
+public import
+	ex.ge.res.add;
+
 private import impl.h3d.h3d;	//TODO: drop dependency when other renderer comes
 
 interface IResource {
@@ -31,8 +34,6 @@ interface IResource {
 	//IResource next(); //FIXME: WhiteHole!T does not work as supposed to
 	
 	//TODO: h3dFindResElem
-	//TODO: h3dMapResStream
-	//TODO: h3dUnmapResStream
 	//TODO: h3dQueryUnloadedResource
 	//TODO: h3dReleaseUnusedResources
 

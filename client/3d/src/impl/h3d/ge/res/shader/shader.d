@@ -23,7 +23,7 @@ private import impl.h3d.ge.res.resource,
 	ge.res.shader.shader,
 	impl.h3d.h3d;
 
-class H3DShader : H3DResource, IShader {
+class Shader : Resource, IShader {
 	_Contexts contexts;
 	_Samplers samplers;
 	_Uniforms uniforms;

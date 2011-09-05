@@ -15,12 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.mmcomponent;
+module impl.h3d.ge.component.overlay;
 
-import horde3d;
+private import std.conv;
 
-class MMComponent {
+import
+	ge.component.overlay,
+	impl.h3d.h3d,
+	type.cords.screen,
+	type.color.rgba,
+	impl.h3d.ge.res.material;
+
+
+class Overlay : IOverlay {
 	public:
-	void free() {}
-	//listUnloaded
+	ColorRGBA!float color;
+	Material material;
+	
+	private:
+	float[] verts;
+	
+	public:
+	void mapCords (CordsScreen xy, CordsScreen uv) {}
+	
+	void render() {
+		assert(verts.length % 4 == 0);
+		h3dShowOverlays(cast(float*)verts, to!int(verts.length), color.r, color.g, color.b, color.a,
+			material.id, 0);
+	}
+	
+	///Clears *ALL* overlays
+	void clear() {
+		h3dClearOverlays();
+	}
+	
 }

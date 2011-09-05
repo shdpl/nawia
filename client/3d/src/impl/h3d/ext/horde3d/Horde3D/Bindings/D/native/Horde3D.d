@@ -258,7 +258,7 @@ enum H3DMatRes
 	UnifValueF4
 }
 
-	/* Enum: H3DShaderRes
+	/* Enum: ShaderRes
 			The available Shader resource accessors.
 
 		ContextElem     - Context element
@@ -269,7 +269,7 @@ enum H3DMatRes
 		UnifNameStr     - Name of uniform [read-only]
 		UnifDefValueF4  - Default value of uniform (a, b, c, d)
 	*/
-enum H3DShaderRes
+enum ShaderRes
 {
 	ContextElem = 600,
 	SamplerElem,

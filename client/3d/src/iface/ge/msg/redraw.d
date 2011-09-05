@@ -15,34 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module impl.h3d.ge.res.overlay.overlay;
+module ge.msg.redraw;
 
-private import std.conv;
+private import msg.msg;
 
-import impl.h3d.h3d,
-	type.cords.screen,
-	type.color.rgba,
-	impl.h3d.ge.res.material;
-	
-
-class Overlay {
-	public:
-	ColorRGBA!float color;
-	H3DMaterial material;
-	
-	void mapCords (CordsScreen xy, CordsScreen uv) {}
-	
-	void render() {
-		assert(verts.length % 4 == 0);
-		h3dShowOverlays(cast(float*)verts, to!int(verts.length), color.r, color.g, color.b, color.a,
-			material.id, 0);
-	}
-	
-	///Clears *ALL* overlays
-	void clear() {
-		h3dClearOverlays();
-	}
-	
-	private:
-	float[] verts;
+struct MsgRedraw {
+	Msg _msg;
+	alias _msg this;
 }

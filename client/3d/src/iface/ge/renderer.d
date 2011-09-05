@@ -17,7 +17,13 @@
 
 module ge.renderer;
 
-private import impl.h3d.h3d,
+public import
+	ex.renderer.init,
+	ex.renderer.option,
+	ex.ge.res.pipeline.buffer;
+
+private import
+	impl.h3d.h3d,
 	ge.window.window;
 
 interface IRenderer {

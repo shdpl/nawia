@@ -35,62 +35,49 @@ private import impl.h3d.h3d,
 public import type.cords.local,
 	type.cuda.types;
 
-class H3DSGNode : IComponent {
+class Component : IComponent {
 	public:
 	H3DNode id;
 	
 	public:
-//	bool add(Camera camera) {
-//		return 0 != h3dAddCameraNode(this.id, camera.name, camera.pipeline.id);
-//	}
-//	bool add(Emitter emitter) {
-//		return 0 != h3dAddEmitterNode(this.id, emitter.name, emitter.material.id,
-//			emitter.resource.id, emitter.maxCount, emitter.respawnCount);
-//	}
-//	bool add(Group group) {
-//		return 0 != h3dAddGroupNode(this.id, group.name);
-//	}
-//	bool add(Joint joint) {
-//		return 0 != h3dAddJointNode(this.id, joint.name, joint.index);
-//	}
-//	bool add(Light light) {
-//		return 0 != h3dAddLightNode(this.id, light.name, light.material.id,
-//			light.contextLighting, light.contextShadowing);
-//	}
-//	bool add(Mesh mesh) {
-//		return 0 != h3dAddMeshNode(this.id, mesh.name, mesh.material.id,
-//			mesh.batchStart, mesh.batchLength, mesh.vertexFirst, mesh.vertexLast);
-//	}
-//	bool add(Model model) {
-//		return 0 != h3dAddModelNode(this.id, model.name, model.geometry.id);
-//	}
-	
-	T[] find(T)(string name) if(is(T : H3DSGNode)) {
+	T[] find(T)(string name) if(is(T : Component)) {
 		T[] ret;
 		int node;
-		for (auto i = h3dFindNodes(this.id, name, T.type); i > 0; i--) {
-			node = h3dGetNodeFindResult(i-1);
-			assert(h3dGetNodeType(node) == T.type);
+		for (auto i = h3dFindNodes(this.id, name, T.type)-1; i >= 0; i--) {
+			node = h3dGetNodeFindResult(i);
+			assert(node && h3dGetNodeType(node) == T.type);
 			ret ~= new T(node);
 			}
 		return ret;
 	}
 	
-	H3DSGNode add(T)(string path) {
+	Component add(T)(string path) {
 		static if(is(T == Scene)) {
-			return new H3DSGNode(h3dAddNodes(this.id, (new Scene(path)).id));
+			return new Component(h3dAddNodes(this.id, (new Scene(path)).id));
 		}
 	}
 	
-	E add(E, T...)(T args) {
-		static if(is(E == Camera) ) //if (convertsTo) etc.
-			return new E( h3dAddCameraNode(this.id, ""/*args[2]*/, args[0].id));
+	E add(E, T...)(T args) { //FIXME: put specialized functions at constructors
+		H3DNode ret;
+		static if(is(E == Camera) && is(args[0] : Pipeline) ) //if (convertsTo) etc.
+			ret = h3dAddCameraNode(this.id, args[1], args[0].id); //FIXME: name
 		static if(is(E == Emitter) )
-			return new E( h3dAddEmitterNode(this.id, "", args[1].id,
-				args[2].resource.id, args[3].maxCount, args[4].respawnCount));
+			ret = h3dAddEmitterNode(this.id, "", args[1].id,
+				args[2].resource.id, args[3].maxCount, args[4].respawnCount);
 		static if(is(E == Light) ) //if (convertsTo) etc.
-			return new E( h3dAddLightNode(this.id, "", args[0].id,
-				args[1], args[2]));
+			ret = h3dAddLightNode(this.id, "", args[0].id, //FIXME: name
+				args[1], args[2]);
+		static if( is(E == Group) ) //if (convertsTo) etc.
+			ret = h3dAddGroupNode(this.id, args[0]);
+		static if( is(E == Model) ) //if (convertsTo) etc.
+			ret = h3dAddModelNode(this.id, args[0], args[1].id);
+		static if( is(E == Mesh) ) //if (convertsTo) etc.
+			ret = h3dAddMeshNode(this.id, args[0], args[1].id,
+				args[2], args[3], args[4], args[5]);
+		//static if( is(E == Joint) ) //if (convertsTo) etc.
+		//	ret = h3dAddMeshNode(this.id, args[0], args[1].id); //TODO: joint index
+		enforceEx!ExResAdd(ret, text(args));
+		return new E(ret);
 	}
 	
 	
@@ -258,20 +245,34 @@ class H3DSGNode : IComponent {
 		}
 	}
 
-	@property {	
-		H3DSGNode parent() { //TODO: instancing and reflection
+	@property {
+		Component parent() { //TODO: instancing and reflection
 			//FIXME: not working state!
-			return this;//h3dGetNodeParent(this.id);
+			return this;//enforceEx() && h3dGetNodeParent(this.id);
 		}
-		 void parent(H3DSGNode value) { //TODO: instancing and reflection
+		 void parent(Component value) { //TODO: instancing and reflection
 			//FIXME: not working state!
-			h3dSetNodeParent(this.id, value.id);
+			//enforceEx(h3dSetNodeParent(this.id, value.id), value);
 		}
 	}
 	
-//	H3DSGNode child(uint i) @property { //TODO: instancing and reflection
-//		return new H3DSGNode(h3dGetNodeChild(i));
+//	Component child(uint i) @property { //TODO: instancing and reflection
+//		return new Component(h3dGetNodeChild(this.id, i)); && enforceEx
 //	}
+	
+	override bool visible(ICamera value) in {
+		assert(cast(Camera) value);
+	} body {
+		auto cam = cast(Camera) value;
+		return h3dCheckNodeVisibility(this.id, cam.id, false, false) < 0;
+	}
+	
+	override int getLOD(ICamera value) in {
+		assert(cast(Camera) value);
+	} body {
+		auto cam = cast(Camera) value;
+		return h3dCheckNodeVisibility(this.id, cam.id, false, true);
+	}
 	
 	
 	protected:
@@ -282,7 +283,7 @@ class H3DSGNode : IComponent {
 		this.id = id;
 	}
 	
-	this(H3DSGNode node) {
+	this(Component node) {
 		this.id = h3dCloneResource(node.id, null);
 	}
 	

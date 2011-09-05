@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module impl.h3d.ge.res.animation.additive;
+module ge.component.overlay;
 
-private import impl.h3d.ge.res.animation.animation/*,
-	ge.res.animation.additive*/;
-
-class AnimationAdditive : Animation/*, IAnimationAdditive*/ {
-	this(string name) {
-		super(name);	
-	}
+import
+	type.cords.screen;
 	
-	override Type aType() {
-		return Animation.Type.Additive;
-	}
+
+interface IOverlay {
+	void mapCords (CordsScreen xy, CordsScreen uv);
+	
+	void render();
+	
+	///Clears *ALL* overlays
+	void clear();
 }

@@ -17,6 +17,10 @@
 
 module ge.component.component;
 
+public import
+	ge.component.camera,
+	ex.ge.res.add;
+
 private import
 	type.cords.world,
 	type.cords.polar,
@@ -98,8 +102,12 @@ interface IComponent : IEEComponent {
 //	void clear(); ///this, and childs
 //	T[] find(T)(string name) if(is(T : IComponent));
 //	@property {	
-//		H3DSGNode parent();
-//		void parent(H3DSGNode value);
+//		Component parent();
+//		void parent(Component value);
 //	}
-//	H3DSGNode child(uint i) @property;
+//	Component child(uint i) @property;
+
+	bool visible(ICamera value);
+	
+	int getLOD(ICamera value);
 }

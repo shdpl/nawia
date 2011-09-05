@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.node.camera;
+module ge.component.camera;
 
 public import
 	type.geometric.box,
@@ -61,12 +61,10 @@ interface ICamera : IComponent {
 		void clipFar(float value);
 	}
 	
-//	FIXME: DMDs stupidity
 //	@property {
 //		IPipeline pipeline();
 //		void pipeline(IPipeline value);
 //	}
-//	DITTO	
 //	/**
 //		Texture to be used as output buffer
 //	 **/

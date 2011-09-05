@@ -21,16 +21,19 @@ private import std.range,
 	std.conv,
 	std.math;
 
-private import impl.h3d.h3d,
+private import
+	impl.h3d.h3d,
 	util.singleton,
 	ge.window.window,
 	ge.renderer,
-	ex.renderer.init;
+	msg._time.idle;
 	
 public import type.buffer.pixel;	
 
-class Renderer : Singleton!Renderer, IRenderer {
+class Renderer : Singleton!Renderer, IRenderer, IMsgListener!MsgTimeIdle {
+	private mixin InjectMsgProvider!MsgTimeIdle _msgTime;
 	
+	public:
 	this(IWindow wnd) {
 		super();
 		enforceEx!ExRendererInit(true == h3dInit());
@@ -42,7 +45,7 @@ class Renderer : Singleton!Renderer, IRenderer {
 	
 	@property {
 		void animationFast(bool value) {
-			h3dSetOption(H3DOptions.List.FastAnimation, value);
+			setOption(Option.FastAnimation, value);
 		}
 		bool animationFast() {
 			return h3dGetOption(H3DOptions.List.FastAnimation) > 0.01;
@@ -50,7 +53,7 @@ class Renderer : Singleton!Renderer, IRenderer {
 	}
 	
 	@property void filteringTrilinear(bool value) {
-		h3dSetOption(H3DOptions.List.TrilinearFiltering, value);
+		setOption(Option.TrilinearFiltering, value);
 	}
 	
 	@property bool filteringTrilinear() {
@@ -66,7 +69,7 @@ class Renderer : Singleton!Renderer, IRenderer {
 	@property void anisotropy(ubyte value) in {
 		assert(value==1 || value == 2 || value == 4 || value == 8);
 	} body {
-			h3dSetOption(H3DOptions.List.MaxAnisotropy, value);
+		setOption(Option.MaxAnisotropy, value);
 	}
 	
 	@property bool linearizationSRGB() {
@@ -74,7 +77,7 @@ class Renderer : Singleton!Renderer, IRenderer {
 	}
 	
 	@property void linearizationSRGB(bool value) {
-		h3dSetOption(H3DOptions.List.SRGBLinearization, value);
+		setOption(Option.SRGBLinearization, value);
 	}
 	
 	@property bool texReference() {
@@ -82,7 +85,7 @@ class Renderer : Singleton!Renderer, IRenderer {
 	}
 	
 	@property void texReference(bool value) {
-		h3dSetOption(H3DOptions.List.LoadTextures, value);
+		setOption(Option.LoadTextures, value);
 	}
 	
 	@property bool texCompression() {
@@ -90,7 +93,7 @@ class Renderer : Singleton!Renderer, IRenderer {
 	}
 	
 	@property void texCompression(bool value) {
-		h3dSetOption(H3DOptions.List.TexCompression, value);
+		setOption(Option.TexCompression, value);
 	}
 	
 	@property uint shadowMapSize() {
@@ -98,7 +101,7 @@ class Renderer : Singleton!Renderer, IRenderer {
 	}
 	
 	@property void shadowMapSize(uint value) {
-		h3dSetOption(H3DOptions.List.ShadowMapSize, value);
+		setOption(Option.ShadowMapSize, value);
 	}
 	
 	@property bool viewWireFrame() {
@@ -106,7 +109,7 @@ class Renderer : Singleton!Renderer, IRenderer {
 	}
 	
 	@property void viewWireFrame(bool value) {
-		h3dSetOption(H3DOptions.List.WireframeMode, value);
+		setOption(Option.WireframeMode, value);
 	}
 	
 	@property bool viewDebug() {
@@ -114,7 +117,7 @@ class Renderer : Singleton!Renderer, IRenderer {
 	}
 	
 	@property void viewDebug(bool value) {
-		h3dSetOption(H3DOptions.List.DebugViewMode, value);
+		setOption(Option.DebugViewMode, value);
 	}
 	
 	void shadersPreamble(string vertex, string pixel) {
@@ -127,13 +130,34 @@ class Renderer : Singleton!Renderer, IRenderer {
 		}
 			
 		void shadersDumpFailed(bool value) {
-			h3dSetOption(H3DOptions.List.DumpFailedShaders, value);
+		setOption(Option.DumpFailedShaders, value);
 		}
 	}
 	
-	BufferPixel backbuffer() @property {
-		BufferPixel ret;
-		//h3dGetRenderTargetData(0,...)
+	BufferPixel backbuffer(int bufId) @property {
+		int x, y;
+		BufferPixel ret;	//TODO: components
+		enforceEx!ExResPipelineBuffer(
+			h3dGetRenderTargetData(0, null, bufId, &x, &y,
+				null, null, 0),
+			text(0, null, bufId));
+		enforceEx!ExResPipelineBuffer(
+			h3dGetRenderTargetData(0, null, bufId, &ret.size.x, &ret.size.y,
+				null, &ret.buffer, ret.memsize),
+			text(0, null, bufId, x, y));
 		return ret;
 	}
+	
+	void handle(MsgTimeIdle msg) { //TODO: MsgLowMem
+		h3dReleaseUnusedResources();
+	}
+	
+	private:
+	void setOption(Option option, float value) {
+		enforceEx!ExRendererOption(
+			h3dSetOption(option, value),
+			text(option, value));
+	}
+	
+	private alias H3DOptions.List Option;
 }

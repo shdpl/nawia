@@ -6,7 +6,7 @@ private import
 	impl.h3d.ge.res.resource,
 	impl.h3d.h3d;
 
-class H3DGeometry : H3DResource, IGeometry {
+class Geometry : Resource, IGeometry {
 	public:
 	this(string name) {
 		super(name);

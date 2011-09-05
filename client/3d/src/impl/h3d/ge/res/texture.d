@@ -25,7 +25,7 @@ public import impl.h3d.h3d,
 	type.cuda.types,
 	type.buffer.pixel;
 
-class H3DTexture : H3DResource, ITexture {
+class Texture : Resource, ITexture {
 	public:
 	_Images images;
 	
@@ -43,13 +43,14 @@ class H3DTexture : H3DResource, ITexture {
 		super(id);
 		this.init;
 	}
-	override ResourceType type() @property {
-		return ResourceType.Texture;
-	}
 	this(string name, int2 size, TextureFormat fmt) {
 		//FIXME: size as specialized type
 		id = h3dCreateTexture(name, size.x, size.y, fmt, 0);
-		enforceEx!ExResAdd(id!=0, text(name, size, fmt));
+		enforceEx!ExResAdd(id, text(name, size, fmt));
+	}
+	
+	override ResourceType type() @property {
+		return ResourceType.Texture;
 	}
 	
 	override BufferPixel data() @property {

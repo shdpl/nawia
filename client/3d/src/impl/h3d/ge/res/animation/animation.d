@@ -22,7 +22,7 @@ import impl.h3d.h3d;
 private import impl.h3d.ge.res.resource,
 	ge.res.animation.animation;
 
-abstract class Animation : H3DResource, IAnimation {
+abstract class Animation : Resource, IAnimation {
 	public:
 	//string _targetNode;
 	_Entities entities;
@@ -33,7 +33,20 @@ abstract class Animation : H3DResource, IAnimation {
 		super(name);
 		entities = new _Entities;
 	}
-
+	
+	abstract Type aType();
+	
+	private:
+	override ResourceType type() @property {
+		return ResourceType.Animation;
+	}
+	
+	public:
+	enum Type : bool { Blended, Additive }
+	
+	private:
+	alias H3DAnimRes.List Elements;
+	
 	class _Entities {
 		immutable uint lengthMax = 16;
 		
@@ -57,12 +70,4 @@ abstract class Animation : H3DResource, IAnimation {
 			return new _Entity(i);
 		}
 	}
-	
-	private:
-	override ResourceType type() @property {
-		return ResourceType.Animation;
-	}
-	
-	private:
-	alias H3DAnimRes.List Elements;
 }

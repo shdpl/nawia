@@ -17,9 +17,62 @@
 
 module ge.component.light;
 
+public import
+	ge.res.material,
+	type.color.rgb;
+
 private import
 	ge.component.component;
+	
 
 interface ILight : IComponent {
+	@property {
+		IMaterial material();
+		void material(IMaterial mat);
+	}
 	
+	@property {
+		float radius();
+		void radius(float value);
+	}
+	
+	@property {
+		ColorRGB!float color();
+		void color(ColorRGB!float value);
+	}
+	
+	@property {
+		float intensity();
+		void intensity(float value);
+	}
+	
+	@property {
+		float fov();
+		void fov(float value);
+	}
+	
+	@property {
+		int shadowMapsCount();
+		void shadowMapsCount(int value);
+	}
+	
+	@property {
+		float shadowSegmentation();
+		void shadowSegmentation(float value);
+	}
+	
+	@property {
+		float shadowBias();
+		void shadowBias(float value);
+	}
+
+	@property {
+		string contextLighting();
+		void contextLighting(string value);
+	}
+	
+	@property {
+		string contextShadowing();
+		void contextShadowing(string value);
+	}
 }

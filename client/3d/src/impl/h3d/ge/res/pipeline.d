@@ -25,11 +25,11 @@ import impl.h3d.h3d,
 	type.cuda.types,
 	type.buffer.pixel;
 
-class H3DPipeline : H3DResource, IPipeline {
+class Pipeline : Resource, IPipeline {
 	private:
 	H3DNodeTypes _handle;
 	public:
-	Stages stages;
+	_Stages stages;
 	
 	public:
 	/// Size of the render targets
@@ -39,10 +39,12 @@ class H3DPipeline : H3DResource, IPipeline {
 	}
 	
 	this(string name) {
-		super(name);	
+		super(name);
+		init();
 	}
 	this(H3DRes id) {
 		super(id);
+		init();
 	}
 	
 	/// Slow
@@ -65,17 +67,22 @@ class H3DPipeline : H3DResource, IPipeline {
 	}
 	
 	private:
+	void init() {
+		stages = new _Stages();
+	}
+	
+	private:
 	alias H3DPipeRes.List Elements;
 	
-	class Stages {
+	class _Stages {
 		uint count() @property {
 			return h3dGetResElemCount(id, Elements.StageElem);
 		}
 		
-		Stage opIndex(uint i) {
-			return new Stage(i);
+		_Stage opIndex(uint i) {
+			return new _Stage(i);
 		}
-		class Stage {
+		class _Stage {
 			private uint _id;
 			
 			this(uint i) {

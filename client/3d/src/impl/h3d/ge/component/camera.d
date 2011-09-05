@@ -18,11 +18,13 @@
 module impl.h3d.ge.component.camera;
 
 
-public import type.geometric.box;
-
-private import impl.h3d.h3d,
-	ge.component.camera,
+public import
+	type.geometric.box,
 	ge.window.window,
+	ge.component.camera;
+
+private import
+	impl.h3d.h3d,
 	impl.h3d.ge.component.component,
 	impl.h3d.ge.res.pipeline,
 	impl.h3d.ge.res.texture,
@@ -30,9 +32,8 @@ private import impl.h3d.h3d,
 
 
 
-class Camera : H3DSGNode, ICamera {
+class Camera : Component, ICamera {
 	private:
-	H3DPipeline _pipeline;
 	BufferPixel renderTarget;
 	float _fov;
 	
@@ -40,12 +41,8 @@ class Camera : H3DSGNode, ICamera {
 	static immutable type = Type.Camera;
 	
 	public:
-//	this(H3DPipeline pipeline) {
-//		_pipeline = pipeline;
-//	}
 	this(H3DNode id) {
 		super(id);
-		_pipeline = pipeline;
 	}
 	
 	//h3dGetCameraProjMat - hopefully wont be needed
@@ -59,7 +56,7 @@ class Camera : H3DSGNode, ICamera {
 			h3dSetupCameraView(this.id, value, aspect, clipNear, clipFar);
 		}
 	}
-	//LeftPlaneF	RightPlaneF BottomPlaneF TopPlaneF
+	//TODO: LeftPlaneF	RightPlaneF BottomPlaneF TopPlaneF
 	
 	
 	@property {
@@ -124,20 +121,19 @@ class Camera : H3DSGNode, ICamera {
 	}
 	
 	@property {
-		H3DPipeline pipeline() {
-			return new H3DPipeline(getParam!int(Params.PipeResI));
+		Pipeline pipeline() {
+			return new Pipeline(getParam!int(Params.PipeResI));
 		}
-		void pipeline(H3DPipeline value) {
+		void pipeline(Pipeline value) {
 			setParam!int(value.id, Params.PipeResI);
-			_pipeline = value;
 		}
 	}
 	
 	@property {
-		H3DTexture textureOut() {
-			return new H3DTexture(getParam!int(Params.OutTexResI));
+		Texture textureOut() {
+			return new Texture(getParam!int(Params.OutTexResI));
 		}
-		void textureOut(H3DTexture value) {
+		void textureOut(Texture value) {
 			setParam!int(value.id, Params.OutTexResI);
 		}
 	}
