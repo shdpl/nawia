@@ -50,20 +50,22 @@ void main(){
 	Demo demo;
 	
 //	demo = new Demo1;
-	demo = new Demo2;
+//	demo = new Demo2;
 //	demo = new Demo3;
+	demo = new Demo4;
 	
 	demo.init;
 	demo.load;
 	demo.run;
 }
-	
+
 abstract class Demo {
 	static immutable uint frames = 3000;
 	World world;
 	Window wnd;
 	Camera cam;
 	Renderer rndrr;
+	protected bool anim = true;
 	
 	public void init() {
 		auto wndProps = WindowProperties();
@@ -86,13 +88,15 @@ abstract class Demo {
 	abstract void load();
 	
 	public void run() {
+		auto base_rot = cam.rotation;
 		StopWatch timer;
 		timer.start();
 		foreach(i; 0 .. frames) {
 			h3dRender(cam.id);
 			h3dFinalizeFrame();
 			glfwSwapBuffers();
-			cam.rotation(CordsLocal(0, to!float(-i*50)/frames +40, 0, world));
+			if(anim)
+				cam.rotation=CordsLocal(base_rot.x, base_rot.y + to!float(-i*50)/frames, base_rot.z, world);
 		}
 		timer.stop;
 		writeln(cast(real)frames*1000/timer.peek.msecs, " fps");
@@ -120,10 +124,10 @@ class Demo1 : Demo {
 		sky.scale = float3(210, 50, 210);
 		sky.shadowsDisabled = true;
 		
-		pipe = new Pipeline("pipelines/deferred.pipeline.xml");
+		pipe = new Pipeline("pipelines/forward.pipeline.xml");
 		cam = world.add!Camera(pipe);
 		cam.translation = CordsLocal(15, 3, 20, platform);
-		cam.rotation = CordsLocal(-10, 60, 0, platform);
+		cam.rotation = CordsLocal(-10, 120, 0, platform);
 		cam.viewport = Box!CordsScreen(wnd.size);
 		cam.clipNear = .01;
 		cam.clipFar = 1000;	//FIXME: clip!=clip <swap with fov>
@@ -165,21 +169,156 @@ class Demo2 : Demo {
 		Camera[] cams = scene.find!Camera("Camera");
 		enforceEx!Exception(cams.length == 1, "cams.length=" ~ text(cams.length));
 		cam = cams[0];
+		
 		cam.viewport = Box!CordsScreen(wnd.size);
 		cam.culling = true;
-	}
-	
-}
-
-class Demo3 : Demo {
-	Pipeline pipe;
-	override void load() {
-		pipe = new Pipeline("pipelines/deferred.pipeline.xml");
-		cam = world.add!Camera(pipe);
-		cam.viewport = Box!CordsScreen(wnd.size);
 		cam.clipNear = .01;
 		cam.clipFar = 1000;	//FIXME: clip!=clip <swap with fov>
 		cam.fov = 45;
+		cam.rotation = CordsLocal(0, 40, 0, world);
+	}
+}
+
+class Demo3 : Demo {
+	Component platform, sky;
+	Pipeline pipe;
+	Light light;
+	
+	this() {anim = false;}
+	
+	override void load() {
+		void createSimpleGeometryRes() {
+		    // Cache the resources
+		    H3DRes matRes = h3dAddResource(H3DResTypes.List.Material, "models/platform/stones.material.xml", 0);
+		    h3dutLoadResourcesFromDisk( "/home/shd/src/nawia/client/3d/bin/data/" );
+		
+		    // Create the needed data for a simple quad that is textured on both sides
+		    float posData[] = [
+		        0,  0, 0,
+		        100, 0, 0,
+		        0, 100, 0,
+		        100, 100, 0
+		    ];
+		    uint vertexCount = 4;
+		
+		    int indexData[] = [ 0,1,2, 2,1,3,  3,1,2, 2,1,0 ];
+		    int triangleIndexCount = 12;
+		    int triangleIndexMax = 3;
+		    
+		    short normalData[] = [
+		        0, 0, 1,
+		        0, 0, 1,
+		        0, 0, 1,
+		        0, 0, 1
+		    ];
+		    short tangentData[] = [
+		        0, 1, 0,
+		        0, 1, 0,
+		        0, 1, 0,
+		        0, 1, 0
+		    ];
+		    short bitangentData[] = [
+		        1, 0, 0,
+		        1, 0, 0,
+		        1, 0, 0,
+		        1, 0, 0
+		    ];
+		    float uvData[] = [
+		        0, 0,
+		        1, 0,
+		        0, 1,
+		        1, 1
+		    ];
+		    
+		    enforce(h3dutCreateGeometryRes("geoRes", vertexCount, triangleIndexCount,
+		    	cast(float*)posData, cast(uint*)indexData, cast(short*)normalData, cast(short*)tangentData,
+		    	cast(short*)bitangentData, cast(float*)uvData, cast(float*)0));  
+			H3DRes geoRes = h3dFindResource(H3DResTypes.List.Geometry, "geoRes");
+			enforce(geoRes);
+		    H3DNode model = h3dAddModelNode( H3DRootNode, "DynGeoModelNode", geoRes );
+		    h3dAddMeshNode( model, "DynGeoMesh", matRes, 0, triangleIndexCount, 0, triangleIndexMax );
+		    h3dSetNodeTransform( model, 0,0,0, 0,40,0, .01,.01,.01 );
+		}
+		
+		sky = world.add!Scene("models/skybox/skybox.scene.xml");
+		sky.scale = float3(210, 50, 210);
+		sky.shadowsDisabled = true;
+		
+		pipe = new Pipeline("pipelines/forward.pipeline.xml");
+		cam = world.add!Camera(pipe);
+		cam.translation = CordsLocal(2, 1, 0, world);
+		cam.rotation = CordsLocal(-20, 75, 0, world);
+		cam.viewport = Box!CordsScreen(wnd.size);
+		cam.clipNear = .01;
+		cam.clipFar = 1000;
+		cam.fov = 45;
+		
+		light = world.add!Light(
+			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
+		light.translation = CordsLocal(0, 25, 20, world);
+		light.rotation = CordsLocal(-30, 0, 0, world);
+		light.radius = 200;
+		light.fov = 90;
+		light.shadowMapsCount = 3;
+		light.shadowSegmentation = .9f;
+		light.shadowBias = .001f;
+		light.color = ColorRGB!float(.9f, .7f, .75f);
+		
+		createSimpleGeometryRes();
+	}
+}
+class Demo4 : Demo {
+	Component platform, sky;
+	Pipeline pipe;
+	Light light;
+	
+	this() {anim = false;}
+	
+	override void load() {
+		void createGeometryRes(uint vertexCount, int triangleIndexCount, float posData[], int indexData[],
+				short normalData[],	short tangentData[], short bitangentData[], float uvData[]) {
+					
+		    H3DRes matRes = h3dAddResource(H3DResTypes.List.Material, "models/platform/stones.material.xml", 0);
+		    h3dutLoadResourcesFromDisk( "/home/shd/src/nawia/client/3d/bin/data/" );
+		    
+		    int triangleIndexMax = 3;
+		    
+		    enforce(h3dutCreateGeometryRes("geoRes", vertexCount, triangleIndexCount,
+		    	cast(float*)posData, cast(uint*)indexData, cast(short*)normalData, cast(short*)tangentData,
+		    	cast(short*)bitangentData, cast(float*)uvData, cast(float*)0));
+			H3DRes geoRes = h3dFindResource(H3DResTypes.List.Geometry, "geoRes");
+			enforce(geoRes);
+		    H3DNode model = h3dAddModelNode( H3DRootNode, "DynGeoModelNode", geoRes );
+		    h3dAddMeshNode( model, "DynGeoMesh", matRes, 0, triangleIndexCount, 0, triangleIndexMax );
+		    h3dSetNodeTransform( model, -5,-3,0, 0,0,0, .1,.1,.1 );
+		}
+		
+		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
+		sky.scale = float3(210, 50, 210);
+		sky.shadowsDisabled = true;
+		
+		rndrr.viewWireFrame = true;
+		pipe = new Pipeline("pipelines/forward.pipeline.xml");
+		cam = world.add!Camera(pipe);
+		cam.translation = CordsLocal(2, 1, 0, world);
+		cam.rotation = CordsLocal(-20, 90, 0, world);
+		cam.viewport = Box!CordsScreen(wnd.size);
+		cam.clipNear = .01;
+		cam.clipFar = 1000;
+		cam.fov = 45;
+		
+		
+		light = world.add!Light(
+			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
+		light.translation = CordsLocal(0, 25, 20, world);
+		light.rotation = CordsLocal(-30, 0, 0, world);
+		light.radius = 200;
+		light.fov = 90;
+		light.shadowMapsCount = 3;
+		light.shadowSegmentation = .9f;
+		light.shadowBias = .001f;
+		light.color = ColorRGB!float(.9f, .7f, .75f);
+		
 		auto voldata = new SimpleVolumeMaterialDensityPair44
 			(new Region(new Vector3DInt32(0,0,0),new Vector3DInt32(63, 63, 63)));
 		
@@ -189,6 +328,44 @@ class Demo3 : Demo {
 		auto extractor = new CubicSurfaceExtractorWithNormalsSimpleVolumeMaterialDensityPair44(
 			voldata, voldata.getEnclosingRegion, mesh);
 		extractor.execute();
+		
+		
+		float[] vertices;
+		short[] normals;
+		uint vertexCount = mesh.getNoOfVertices;
+		PositionMaterialNormalVector tmp2 = mesh.getVertices();
+		for(int i=0; i<tmp2.length; i++){
+			vertices ~= tmp2[i].getPosition.getX;
+			vertices ~= tmp2[i].getPosition.getY;
+			vertices ~= tmp2[i].getPosition.getZ;
+			
+			normals ~= to!short(tmp2[i].normal.getX() * short.max);
+			normals ~= to!short(tmp2[i].normal.getY() * short.max);
+			normals ~= to!short(tmp2[i].normal.getZ() * short.max);
+		}
+		enforce(vertices.length/3 == tmp2.length);
+		
+		
+		uint[] indices;
+		uint triangleIndexCount = mesh.getNoOfIndices();
+		auto tmp = mesh.getIndices();
+		for(int i=0; i<tmp.length; i++){
+			indices ~= tmp[i];
+		}
+		enforce(indices.length == mesh.getNoOfIndices());
+		
+		float[] posData = vertices;
+		int[] indexData = to!(int[])(indices);
+		
+		enforce(vertexCount == posData.length/3, text(vertexCount, " != ", posData.length/3));
+		enforce(triangleIndexCount == indexData.length, text(triangleIndexCount, " != ", indexData.length));
+		createGeometryRes( vertexCount, triangleIndexCount,
+			posData,
+			indexData,
+			normals,
+			cast(short[]) null,
+			cast(short[]) null,
+			cast(float[]) null);
 	}
 	void createSphere(SimpleVolumeMaterialDensityPair44 volData, int radius) {
 		auto v3dVolCenter = new Vector3DFloat(
@@ -218,6 +395,5 @@ class Demo3 : Demo {
 				}
 			}
 		}
-		
 	}
 }

@@ -8,6 +8,6 @@ class ExResAdd : Ex {
 	}
 	
 	this(string msg) {
-		super("Could not add resource: ");
+		super("Could not add resource: " ~ msg);
 	}
 }

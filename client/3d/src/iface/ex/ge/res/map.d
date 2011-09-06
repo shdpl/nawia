@@ -8,6 +8,6 @@ class ExResMap : Ex {
 	}
 	
 	this(string msg) {
-		super("Could not map resource: ");
+		super("Could not map resource: " ~ msg);
 	}
 }

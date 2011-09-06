@@ -59,8 +59,8 @@ class Component : IComponent {
 	
 	E add(E, T...)(T args) { //FIXME: put specialized functions at constructors
 		H3DNode ret;
-		static if(is(E == Camera) && is(args[0] : Pipeline) ) //if (convertsTo) etc.
-			ret = h3dAddCameraNode(this.id, args[1], args[0].id); //FIXME: name
+		static if(is(E == Camera) ) //if (convertsTo) etc.
+			ret = h3dAddCameraNode(this.id, ""/*args[1]*/, args[0].id); //FIXME: name
 		static if(is(E == Emitter) )
 			ret = h3dAddEmitterNode(this.id, "", args[1].id,
 				args[2].resource.id, args[3].maxCount, args[4].respawnCount);
@@ -76,7 +76,7 @@ class Component : IComponent {
 				args[2], args[3], args[4], args[5]);
 		//static if( is(E == Joint) ) //if (convertsTo) etc.
 		//	ret = h3dAddMeshNode(this.id, args[0], args[1].id); //TODO: joint index
-		enforceEx!ExResAdd(ret, text(args));
+		enforceEx!ExResAdd(ret, text(typeid(E), args));
 		return new E(ret);
 	}
 	

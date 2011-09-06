@@ -10,5 +10,6 @@ class Ex : Exception {
 	
 	this(string msg) {
 		super("Exception occured: " ~ msg);
+		debug asm {int 3;}
 	}
 }
