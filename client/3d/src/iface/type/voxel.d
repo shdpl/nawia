@@ -15,23 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ee.map.ray;
+module type.voxel;
 
-public import type.cords.world;
-private import type.voxel;
+alias ubyte VoxelType;
 
-interface IRaycaster {
-	
-	void init(CordsWorld source);
-	
-	@property CordsWorld source();
-	@property void source(CordsWorld);
-	
-	@property CordsWorld direction();
-	@property void direction(CordsWorld);
-	
-	struct Ray {
-		Voxel intersection;
-	}
+struct Voxel {
+	VoxelType density;
+	VoxelType material;
 }
-

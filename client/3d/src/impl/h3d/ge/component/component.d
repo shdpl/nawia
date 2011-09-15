@@ -276,15 +276,14 @@ class Component : IComponent {
 	
 	
 	protected:
-	this() {
-	}
+	this() {}
 	
-	this(H3DNode id) {
+	this(int id) {
 		this.id = id;
 	}
 	
 	this(Component node) {
-		this.id = h3dCloneResource(node.id, null);
+		this.id = cast(H3DNode) h3dCloneResource(node.id, null);
 	}
 	
 	~this() {
@@ -325,7 +324,8 @@ class Component : IComponent {
 	}
 	
 	public:
-	class NodeIterator(T) : InputRange!(T) {
+	/* TODO
+	struct ComponentRange {
 		private:
 		int _id;
 		
@@ -371,6 +371,7 @@ class Component : IComponent {
 			return res;
 		}
 	}
+	*/
 	
 	
 	private:

@@ -17,7 +17,7 @@
 
 module io.res.formatter.formatter;
 
-interface ResFormatter {
+interface IResFormatter {
 	interface ResReader {
 		
 	}

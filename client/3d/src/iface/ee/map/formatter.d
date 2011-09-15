@@ -15,23 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ee.map.ray;
+module ee.map.formatter;
 
-public import type.cords.world;
-private import type.voxel;
+public import
+	io.res.formatter.formatter;
 
-interface IRaycaster {
+interface IMapFormatter : IResFormatter {
 	
-	void init(CordsWorld source);
-	
-	@property CordsWorld source();
-	@property void source(CordsWorld);
-	
-	@property CordsWorld direction();
-	@property void direction(CordsWorld);
-	
-	struct Ray {
-		Voxel intersection;
-	}
 }
-

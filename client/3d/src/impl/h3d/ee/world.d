@@ -8,7 +8,7 @@ public import impl.h3d.ge.component.component;
 
 class World : Component {
 	this() {
-		this.id = H3DRootNode;
+		this.id = cast(H3DNode) H3DRootNode;
 		super();
 	}
 }
