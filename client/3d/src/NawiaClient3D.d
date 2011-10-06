@@ -56,8 +56,8 @@ void main(){
 	
 //	demo = new Demo1;
 //	demo = new Demo2;
-//	demo = new Demo3;
-	demo = new Demo4;
+	demo = new Demo3;
+//	demo = new Demo4;
 	
 	demo.init;
 	demo.load;
@@ -193,9 +193,7 @@ class Demo3 : Demo {
 	
 	override void load() {
 		void createSimpleGeometryRes() {
-		    // Cache the resources
-		    H3DRes matRes = h3dAddResource(H3DResTypes.List.Material, "models/platform/stones.material.xml", 0);
-		    h3dutLoadResourcesFromDisk( "/home/shd/src/nawia/client/3d/bin/data/" );
+		    auto mat = new Material("models/platform/stones.material.xml");
 		
 		    // Create the needed data for a simple quad that is textured on both sides
 		    float posData[] = [
@@ -235,14 +233,12 @@ class Demo3 : Demo {
 		        1, 1
 		    ];
 		    
-		    enforce(h3dutCreateGeometryRes("geoRes", vertexCount, triangleIndexCount,
-		    	cast(float*)posData, cast(uint*)indexData, cast(short*)normalData, cast(short*)tangentData,
-		    	cast(short*)bitangentData, cast(float*)uvData, cast(float*)0));  
-			H3DRes geoRes = h3dFindResource(H3DResTypes.List.Geometry, "geoRes");
-			enforce(geoRes);
-		    H3DNode model = h3dAddModelNode( H3DRootNode, "DynGeoModelNode", geoRes );
-		    h3dAddMeshNode( model, "DynGeoMesh", matRes, 0, triangleIndexCount, 0, triangleIndexMax );
-		    h3dSetNodeTransform( model, 0,0,0, 0,40,0, .01,.01,.01 );
+		    auto geo = new Geometry("geoRes", posData, indexData,
+		    		normalData, tangentData, bitangentData, uvData);
+		    auto model = world.add!Model("DynGeoModel", geo);
+		    model.add!Mesh("DynGeoMesh", mat, 0, triangleIndexCount, 0, triangleIndexMax);
+		    model.rotation = CordsLocal(0, 40, 0, model);
+		    model.scale = float3(.01, .01, .01);
 		}
 		
 		sky = world.add!Scene("models/skybox/skybox.scene.xml");
