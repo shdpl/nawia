@@ -18,7 +18,7 @@
 module impl.polyvox.ee.map.volume.volume;
 
 public import
-	ee.map.volume.volume,
+	ee.map.volume,
 	type.cords.world,
 	type.geometric.box;
 
@@ -26,24 +26,24 @@ private import
 	impl.polyvox.polyvox;
 
 
-/*class Volume {
+abstract class Volume {
 	
-	void init(Box!CordsWorld);
+	abstract void init(Box!CordsWorld);
 	
-	@property Box!CordsWorld region();
-	@property void region(Box!CordsWorld);
+	abstract @property Box!CordsWorld region();
+	abstract @property void region(Box!CordsWorld);
 	
-	@property UnitWorld width();
-	@property void width(UnitWorld);
+	abstract @property UnitWorld width();
+	abstract @property void width(UnitWorld);
 	
-	@property UnitWorld height();
-	@property void height(UnitWorld);
+	abstract @property UnitWorld height();
+	abstract @property void height(UnitWorld);
 	
-	@property UnitWorld depth();
-	@property void depth(UnitWorld);
+	abstract @property UnitWorld depth();
+	abstract @property void depth(UnitWorld);
 	
 	///voxel[x][y][z]
 	///voxel[VectorWorld]
-	override IVoxel opDispatch(string m, args...)();
+	abstract override IVoxel opDispatch(string m, args...)();
 	
-}*/
+}

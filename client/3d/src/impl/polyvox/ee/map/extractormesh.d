@@ -19,34 +19,89 @@ module impl.polyvox.ee.map.extractormesh;
 
 
 private import
-	std.typecons;
+	std.conv,
+	std.exception;
 
 public import
 	ee.map.extractormesh,
-	ee.map.volume.volume,
+	ee.map.volume,
 	ge.component.camera,
-	ge.component.mesh,
 	type.cords.world;
 	
 private import
-	impl.polyvox.polyvox;
+	impl.polyvox.polyvox,
+	impl.polyvox.ee.map.volume.simple,
+	impl.h3d.ge.res.geometry,
+	impl.h3d.h3d,
+	impl.h3d.ge.component.mesh;
 
-alias WhiteHole!IExtractorMesh ExtractorMesh;
+class ExtractorMesh : IExtractorMesh {
+	CubicSurfaceExtractorWithNormalsSimpleVolumeMaterialDensityPair44 _extractor;
+	SurfaceMeshPositionMaterialNormal _mesh;
+	
+	this(IVolume volume) {
+		init(volume);
+	}
+	
+	override void init(IVolume volume) in {
+			//assert(rt_typeid(vol == Volume)); //TODO: rt reflection
+	} body {
+		auto vol = cast(VolumeSimple) volume;
+		_mesh = new SurfaceMeshPositionMaterialNormal;
+		
+		_extractor = new CubicSurfaceExtractorWithNormalsSimpleVolumeMaterialDensityPair44(
+			vol._data, vol._data.getEnclosingRegion, _mesh);
+	}
+	
+	override IGeometry extract(/*cam.fov*/) {
+		_extractor.execute();
+	    return cast(IGeometry) polyvoxToHorde3d();
+	}
+	
+	private Geometry polyvoxToHorde3d() {
+		float[] vertices;
+		short[] normals;
+		uint vertexCount = _mesh.getNoOfVertices;
+		PositionMaterialNormalVector tmp2 = _mesh.getVertices();
+		for(int i=0; i<tmp2.length; i++){
+			vertices ~= tmp2[i].getPosition.getX;
+			vertices ~= tmp2[i].getPosition.getY;
+			vertices ~= tmp2[i].getPosition.getZ;
+			
+			normals ~= to!short(tmp2[i].normal.getX() * short.max);
+			normals ~= to!short(tmp2[i].normal.getY() * short.max);
+			normals ~= to!short(tmp2[i].normal.getZ() * short.max);
+		}
+		enforce(vertices.length/3 == tmp2.length);
+		
+		
+		uint[] indices;
+		uint triangleIndexCount = _mesh.getNoOfIndices();
+		auto tmp = _mesh.getIndices();
+		for(int i=0; i<tmp.length; i++){
+			indices ~= tmp[i];
+		}
+		enforce(indices.length == _mesh.getNoOfIndices());
+		
+		float[] posData = vertices;
+		int[] indexData = to!(int[])(indices);
+		
+		return createGeometryRes( vertexCount, triangleIndexCount,
+			posData,
+			indexData,
+			normals,
+			cast(short[]) null,
+			cast(short[]) null,
+			cast(float[]) null);
+	}
+	
 
-//class ExtractorMesh : IExtractorMesh {
-//	SurfaceExtractorSimpleVolumeMaterial8 _extractor;
-//	
-//	override void init(IVolume volume, ICamera camera) in {
-//			//assert(rt_typeid(vol == Volume)); //TODO: rt reflection
-//	} body {
-//		Volume vol = cast(Volume) IVolume;
-//		
-//		_extractor = new SurfaceExtractorSimpleVolumeMaterial8(
-//			vol.pvVolume,
-//		)
-//	}	
-//	
-//	override IMesh extract(CordsWorld) {
-//		return new Mesh();
-//	}
-//}
+	private Geometry createGeometryRes(uint vertexCount, int triangleIndexCount, float posData[], int indexData[],
+		short normalData[],	short tangentData[], short bitangentData[], float uvData[]) {
+			
+	    int triangleIndexMax = 3;
+	    
+	    return new Geometry("geoRes", posData, indexData,
+	    	normalData, tangentData, bitangentData, uvData);
+	}
+}

@@ -1,0 +1,7 @@
+set (classes 
+    QGLColormap
+    QGLContext
+    QGLFramebufferObject
+    QGLPixelBuffer
+    QGLWidget
+)

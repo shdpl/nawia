@@ -15,10 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.res.resource;
+module ge.resource;
 
 public import
-	ex.ge.res.add;
+	std.datetime;
+
+public import
+	ex.ge.res.add,
+	ex.ge.res.element.missing,
+	ex.ge.res.map,
+	ex.ge.res.pipeline.buffer,
+	type.cuda.types,
+	type.buffer.pixel,
+	type.color.rgba;
 
 private import impl.h3d.h3d;	//TODO: drop dependency when other renderer comes
 

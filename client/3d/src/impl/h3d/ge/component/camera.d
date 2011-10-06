@@ -21,13 +21,14 @@ module impl.h3d.ge.component.camera;
 public import
 	type.geometric.box,
 	ge.window.window,
-	ge.component.camera;
+	ge.component.camera,
+	type.buffer.pixel,
+	impl.h3d.ge.res.pipeline,
+	impl.h3d.ge.res.texture;
 
 private import
 	impl.h3d.h3d,
 	impl.h3d.ge.component.component,
-	impl.h3d.ge.res.pipeline,
-	impl.h3d.ge.res.texture,
 	type.cords.screen;
 
 

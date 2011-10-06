@@ -17,8 +17,8 @@
 
 module impl.polyvox.ee.map.volume.large;
 
-private import ee.map.volume.volume;
+private import ee.map.volume;
 
-//interface IVolumeLarge : IVolume {
-//	
-//}
+interface IVolumeLarge : IVolume {
+	
+}

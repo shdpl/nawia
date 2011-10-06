@@ -1,0 +1,1 @@
+build_example(dropsite main.d)

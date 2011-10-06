@@ -35,13 +35,18 @@ private import
 	impl.h3d.ee.world,
 	impl.h3d.ge.res.scene,
 	impl.h3d.ge.component.camera,
+	impl.h3d.ge.component.mesh,
 	impl.h3d.ge.res.pipeline,
 	impl.h3d.ge.res.material,
 	impl.h3d.ge.component.light,
 	impl.h3d.ge.component.model,
-	impl.nawia.ee.actor;
+	impl.nawia.ee.actor,
+	impl.polyvox.ee.map.volume.simple,
+	impl.polyvox.ee.map.extractormesh;
 	
-private import impl.glfw.glfw,
+private import
+	impl.glfw.glfw,
+	impl.h3d.h3d,
 	impl.h3d.utils,
 	impl.polyvox.polyvox;
 	
@@ -275,23 +280,6 @@ class Demo4 : Demo {
 	this() {anim = false;}
 	
 	override void load() {
-		void createGeometryRes(uint vertexCount, int triangleIndexCount, float posData[], int indexData[],
-				short normalData[],	short tangentData[], short bitangentData[], float uvData[]) {
-					
-		    H3DRes matRes = h3dAddResource(H3DResTypes.List.Material, "models/platform/stones.material.xml", 0);
-		    h3dutLoadResourcesFromDisk( "/home/shd/src/nawia/client/3d/bin/data/" );
-		    
-		    int triangleIndexMax = 3;
-		    
-		    enforce(h3dutCreateGeometryRes("geoRes", vertexCount, triangleIndexCount,
-		    	cast(float*)posData, cast(uint*)indexData, cast(short*)normalData, cast(short*)tangentData,
-		    	cast(short*)bitangentData, cast(float*)uvData, cast(float*)0));
-			H3DRes geoRes = h3dFindResource(H3DResTypes.List.Geometry, "geoRes");
-			enforce(geoRes);
-		    H3DNode model = h3dAddModelNode( H3DRootNode, "DynGeoModelNode", geoRes );
-		    h3dAddMeshNode( model, "DynGeoMesh", matRes, 0, triangleIndexCount, 0, triangleIndexMax );
-		    h3dSetNodeTransform( model, -5,-3,0, 0,0,0, .1,.1,.1 );
-		}
 		
 		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
 		sky.scale = float3(210, 50, 210);
@@ -319,54 +307,22 @@ class Demo4 : Demo {
 		light.shadowBias = .001f;
 		light.color = ColorRGB!float(.9f, .7f, .75f);
 		
-		auto voldata = new SimpleVolumeMaterialDensityPair44
-			(new Region(new Vector3DInt32(0,0,0),new Vector3DInt32(63, 63, 63)));
+		auto vol = new VolumeSimple(Box!CordsWorld(
+				CordsWorld(0,0,0), CordsWorld(63,63,63)));
 		
-		createSphere(voldata, 30);
+		createSphere(vol._data, 30);//TODO: geometry library
 		
-		SurfaceMeshPositionMaterialNormal mesh = new SurfaceMeshPositionMaterialNormal;
-		auto extractor = new CubicSurfaceExtractorWithNormalsSimpleVolumeMaterialDensityPair44(
-			voldata, voldata.getEnclosingRegion, mesh);
-		extractor.execute();
+		auto extractor = new ExtractorMesh(vol);
+		Geometry geo = cast(Geometry) extractor.extract(/*cam.fov*/);
 		
+		auto mat = new Material("models/platform/stones.material.xml");
 		
-		float[] vertices;
-		short[] normals;
-		uint vertexCount = mesh.getNoOfVertices;
-		PositionMaterialNormalVector tmp2 = mesh.getVertices();
-		for(int i=0; i<tmp2.length; i++){
-			vertices ~= tmp2[i].getPosition.getX;
-			vertices ~= tmp2[i].getPosition.getY;
-			vertices ~= tmp2[i].getPosition.getZ;
-			
-			normals ~= to!short(tmp2[i].normal.getX() * short.max);
-			normals ~= to!short(tmp2[i].normal.getY() * short.max);
-			normals ~= to!short(tmp2[i].normal.getZ() * short.max);
-		}
-		enforce(vertices.length/3 == tmp2.length);
-		
-		
-		uint[] indices;
-		uint triangleIndexCount = mesh.getNoOfIndices();
-		auto tmp = mesh.getIndices();
-		for(int i=0; i<tmp.length; i++){
-			indices ~= tmp[i];
-		}
-		enforce(indices.length == mesh.getNoOfIndices());
-		
-		float[] posData = vertices;
-		int[] indexData = to!(int[])(indices);
-		
-		enforce(vertexCount == posData.length/3, text(vertexCount, " != ", posData.length/3));
-		enforce(triangleIndexCount == indexData.length, text(triangleIndexCount, " != ", indexData.length));
-		createGeometryRes( vertexCount, triangleIndexCount,
-			posData,
-			indexData,
-			normals,
-			cast(short[]) null,
-			cast(short[]) null,
-			cast(float[]) null);
+		Model model = world.add!Model("DynGeoModelNode", geo);
+		model.add!Mesh("DynGeoMesh", mat, 0, geo.verticesNo, 0, geo.indicesNo );
+	    model.translation = CordsLocal(-5, -3, 0, world);
+	    model.scale = float3(.1, .1, .1);
 	}
+	
 	void createSphere(SimpleVolumeMaterialDensityPair44 volData, int radius) {
 		auto v3dVolCenter = new Vector3DFloat(
 			volData.getWidth() / 2,volData.getHeight() / 2, volData.getDepth() / 2);

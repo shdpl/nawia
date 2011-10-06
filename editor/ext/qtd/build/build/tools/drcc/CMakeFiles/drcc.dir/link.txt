@@ -1,0 +1,1 @@
+/usr/bin/c++   -O3 -DNDEBUG    CMakeFiles/drcc.dir/main.cpp.o CMakeFiles/drcc.dir/rcc.cpp.o  -o drcc -rdynamic -L/home/shd/src/nawia/editor/ext/qtd/build/build/CMakeFiles -lQtGui -lQtXml -lQtCore -Wl,-rpath,/home/shd/src/nawia/editor/ext/qtd/build/build/CMakeFiles: 

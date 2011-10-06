@@ -19,9 +19,7 @@ module ge.component.camera;
 
 public import
 	type.geometric.box,
-	type.cords.screen,
-	ge.res.pipeline,
-	ge.res.texture;
+	type.cords.screen;
 
 private import
 	ge.component.component;

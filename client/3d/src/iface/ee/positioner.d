@@ -1,6 +1,7 @@
 module ee.positioner;
 
-public import type.geometric.circle,
+public import
+	type.geometric.circle,
 	type.cords.world,
 	ge.res.texture;
 

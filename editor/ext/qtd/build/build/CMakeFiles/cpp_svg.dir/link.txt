@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -O3 -DNDEBUG   -shared -Wl,-soname,libcpp_svg.so -o lib/libcpp_svg.so CMakeFiles/cpp_svg.dir/cpp/qt_svg/ArrayOps_shell.cpp.o -L/home/shd/src/nawia/editor/ext/qtd/build/build/CMakeFiles -lQtSvg -Wl,-rpath,/home/shd/src/nawia/editor/ext/qtd/build/build/CMakeFiles 

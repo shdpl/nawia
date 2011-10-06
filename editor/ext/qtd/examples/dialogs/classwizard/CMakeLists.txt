@@ -1,0 +1,1 @@
+build_example(classwizard main.d RESOURCES classwizard.qrc)

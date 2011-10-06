@@ -1,15 +1,15 @@
-module impl.h3d.ge.res.resource;
+module impl.h3d.ge.resource;
 
 private import
 	std.conv;
 	
 public import
-	std.stream;
+	std.stream,
+	impl.h3d.h3d;
 
 private import
 	ex.ge.res.map,
 	ge.res.resource,
-	impl.h3d.h3d,
 	impl.h3d.io.res.resource : IOResource = Resource;
 
 alias int H3DResId;
@@ -20,7 +20,7 @@ abstract class Resource : IOResource, IResource {
 	public:
 	H3DResId id;
 	
-	this() {}
+	public:
 	this(H3DRes id) 
 	in {
 		assert(h3dGetResType(id) == this.type);
@@ -119,3 +119,4 @@ abstract class Resource : IOResource, IResource {
 	
 	alias H3DResTypes.List ResourceType;
 }
+

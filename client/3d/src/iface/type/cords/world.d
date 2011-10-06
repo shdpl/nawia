@@ -21,8 +21,11 @@ private import type.cords.cords;
 public import type.unit.world;
 
 struct CordsWorld {
-	private Cords!(UnitWorld, 3) _cords;
+	public Cords!(UnitWorld, 3) _cords;
 	
 	alias _cords this;
 	
+	this(UnitWorld x, UnitWorld y, UnitWorld z) {
+		_cords = _cords(x, y, z);
+	}
 }

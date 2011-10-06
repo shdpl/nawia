@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -O3 -DNDEBUG   -shared -Wl,-soname,libcpp_xml.so -o lib/libcpp_xml.so CMakeFiles/cpp_xml.dir/cpp/qt_xml/ArrayOps_shell.cpp.o -L/home/shd/src/nawia/editor/ext/qtd/build/build/CMakeFiles -lQtXml -Wl,-rpath,/home/shd/src/nawia/editor/ext/qtd/build/build/CMakeFiles 

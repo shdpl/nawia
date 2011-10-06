@@ -1,0 +1,23 @@
+focus control
+
+if (character.danger && character.perceptivity.draw)
+	character.look = danger && focus = danger && effect.danger
+
+//character.trait = interested
+animController = config[character.trait, character.action];
+OR
+Action {Msg[] provides; Msg[] reacts;}
+Action shoot(Entity what); shoot.provides
+	~= [MsgAnim(id, what), MsgSound(id, what), MsgPick(Pick.hit, what.lookVect)];
+
+LookController(IModel what, PosWorld at);
+iris.onRender = mesh.render(estLightIntensity);
+EyelidController : MsgListener!MsgHit {
+	if (!character.civilian)
+		return;
+	eyelid.status = Eyelid.Closed;
+	yield sleep(time);
+	eyelid.status = Eyelid.Open;
+}
+
+OCC Emotion Model -> animation

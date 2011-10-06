@@ -5,6 +5,7 @@ private import impl.h3d.utils,
 
 abstract class Resource {
 	this() {
-		h3dutLoadResourcesFromDisk(ResManager().resolve("data"));
+		//auto tmp = ResManager().resolve("data");
+		h3dutLoadResourcesFromDisk("./data");
 	}
 }

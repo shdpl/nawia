@@ -1,11 +1,16 @@
 module impl.h3d.ge.res.geometry;
 
+private import std.conv;
 
 private import
 	ge.res.geometry,
-	impl.h3d.ge.res.resource,
-	impl.h3d.h3d;
+	ex.ge.res.create;
 
+private import
+	impl.h3d.ge.res.resource,
+	horde3dutils;
+	
+	
 class Geometry : Resource, IGeometry {
 	public:
 	this(string name) {
@@ -13,6 +18,18 @@ class Geometry : Resource, IGeometry {
 	}
 	this(H3DRes id) {
 		super(id);
+	}
+	
+	/// Dynamic geometry
+	this(string name, float vertPos[]/*[3]*/,
+			int trisIndices[], short normals[], short tangents[], short bitangents[], float UVs[])
+	in {
+		assert(0 == vertPos.length % 3);
+	} body {
+		h3dutCreateGeometryRes(name, to!int(vertPos.length/3), to!int(trisIndices.length),
+			cast(float*)vertPos, cast(uint*)trisIndices, cast(short*)normals,
+			cast(short*)tangents, cast(short*)bitangents, cast(float*)UVs, cast(float*)0);
+		super(name);
 	}
 
 	uint indicesNo() @property {

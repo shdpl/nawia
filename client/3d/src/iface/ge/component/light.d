@@ -18,8 +18,8 @@
 module ge.component.light;
 
 public import
-	ge.res.material,
-	type.color.rgb;
+	type.color.rgb,
+	ge.res.material;
 
 private import
 	ge.component.component;

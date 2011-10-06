@@ -17,9 +17,10 @@
 
 module impl.h3d.ge.component.mesh;
 
+public import 
+	ge.component.mesh;
 
 private import impl.h3d.h3d,
-	ge.component.mesh,
 	impl.h3d.ge.res.material,
 	impl.h3d.ge.component.component;
 

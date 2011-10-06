@@ -1,0 +1,71 @@
+Number of public or protected functions that return a non-QObject object type, or that are virtual and take a non-QObject object type argument: 50
+
+
+Class QGraphicsItem:
+---------------------------------------------------------------------------------
+collidesWithItem(const QGraphicsItem*,Qt::ItemSelectionMode)const
+contextMenuEvent(QGraphicsSceneContextMenuEvent*)
+dragEnterEvent(QGraphicsSceneDragDropEvent*)
+dragLeaveEvent(QGraphicsSceneDragDropEvent*)
+dragMoveEvent(QGraphicsSceneDragDropEvent*)
+dropEvent(QGraphicsSceneDragDropEvent*)
+focusInEvent(QFocusEvent*)
+focusOutEvent(QFocusEvent*)
+hoverEnterEvent(QGraphicsSceneHoverEvent*)
+hoverLeaveEvent(QGraphicsSceneHoverEvent*)
+hoverMoveEvent(QGraphicsSceneHoverEvent*)
+inputMethodEvent(QInputMethodEvent*)
+isObscuredBy(const QGraphicsItem*)const
+keyPressEvent(QKeyEvent*)
+keyReleaseEvent(QKeyEvent*)
+mouseDoubleClickEvent(QGraphicsSceneMouseEvent*)
+mouseMoveEvent(QGraphicsSceneMouseEvent*)
+mousePressEvent(QGraphicsSceneMouseEvent*)
+mouseReleaseEvent(QGraphicsSceneMouseEvent*)
+paint(QPainter*,const QStyleOptionGraphicsItem*,QWidget*)
+sceneEvent(QEvent*)
+sceneEventFilter(QGraphicsItem*,QEvent*)
+wheelEvent(QGraphicsSceneWheelEvent*)
+
+
+Class QGraphicsScene:
+---------------------------------------------------------------------------------
+contextMenuEvent(QGraphicsSceneContextMenuEvent*)
+dragEnterEvent(QGraphicsSceneDragDropEvent*)
+dragLeaveEvent(QGraphicsSceneDragDropEvent*)
+dragMoveEvent(QGraphicsSceneDragDropEvent*)
+drawBackground(QPainter*,QRectF)
+drawForeground(QPainter*,QRectF)
+dropEvent(QGraphicsSceneDragDropEvent*)
+focusInEvent(QFocusEvent*)
+focusOutEvent(QFocusEvent*)
+helpEvent(QGraphicsSceneHelpEvent*)
+inputMethodEvent(QInputMethodEvent*)
+keyPressEvent(QKeyEvent*)
+keyReleaseEvent(QKeyEvent*)
+mouseDoubleClickEvent(QGraphicsSceneMouseEvent*)
+mouseMoveEvent(QGraphicsSceneMouseEvent*)
+mousePressEvent(QGraphicsSceneMouseEvent*)
+mouseReleaseEvent(QGraphicsSceneMouseEvent*)
+wheelEvent(QGraphicsSceneWheelEvent*)
+
+
+Class QTextCodec:
+---------------------------------------------------------------------------------
+convertFromUnicode(const QChar*,int,QTextCodec::ConverterState*)const
+convertToUnicode(const char*,int,QTextCodec::ConverterState*)const
+
+
+Class QXmlEntityResolver:
+---------------------------------------------------------------------------------
+resolveEntity(QString,QString,QXmlInputSource&*)
+
+
+Class QXmlReader:
+---------------------------------------------------------------------------------
+setContentHandler(QXmlContentHandler*)
+setDTDHandler(QXmlDTDHandler*)
+setDeclHandler(QXmlDeclHandler*)
+setEntityResolver(QXmlEntityResolver*)
+setErrorHandler(QXmlErrorHandler*)
+setLexicalHandler(QXmlLexicalHandler*)

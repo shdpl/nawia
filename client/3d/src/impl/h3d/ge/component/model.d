@@ -20,9 +20,10 @@ module impl.h3d.ge.component.model;
 private import impl.h3d.h3d,
 	impl.h3d.ge.component.component;
 	
-public import impl.h3d.ge.res.animation.animation,
+public import
 	impl.h3d.ge.component.joint,
-	impl.h3d.ge.res.geometry;	
+	impl.h3d.ge.res.geometry,
+	impl.h3d.ge.res.animation;	
 	
 
 class Model : Component {

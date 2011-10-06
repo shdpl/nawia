@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -O3 -DNDEBUG   -shared -Wl,-soname,libcpp_webkit.so -o lib/libcpp_webkit.so CMakeFiles/cpp_webkit.dir/cpp/qt_webkit/ArrayOps_shell.cpp.o -L/home/shd/src/nawia/editor/ext/qtd/build/build/CMakeFiles -lQtWebKit -Wl,-rpath,/home/shd/src/nawia/editor/ext/qtd/build/build/CMakeFiles 

@@ -1,0 +1,80 @@
+# The set of languages for which implicit dependencies are needed:
+SET(CMAKE_DEPENDS_LANGUAGES
+  "CXX"
+  )
+# The set of files for implicit dependencies of each language:
+SET(CMAKE_DEPENDS_CHECK_CXX
+  "/home/shd/src/nawia/editor/ext/qtd/generator/abstractmetabuilder.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/abstractmetabuilder.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/abstractmetalang.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/abstractmetalang.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/asttoxml.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/asttoxml.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/classlistgenerator.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/classlistgenerator.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/containergenerator.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/containergenerator.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/cppgenerator.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/cppgenerator.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/cppheadergenerator.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/cppheadergenerator.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/cppimplgenerator.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/cppimplgenerator.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/customtypes.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/customtypes.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/dgenerator.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/dgenerator.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/docparser.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/docparser.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/fileout.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/fileout.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/generator.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/generator.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/generatorset.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/generatorset.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/generatorsetd.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/generatorsetd.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/global.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/global.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/jumptable.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/jumptable.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/main.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/main.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/metainfogenerator.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/metainfogenerator.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/metajava.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/metajava.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/metajavabuilder.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/metajavabuilder.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/build/generator/moc_containergenerator.cxx" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/moc_containergenerator.cxx.o"
+  "/home/shd/src/nawia/editor/ext/qtd/build/generator/moc_cppgenerator.cxx" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/moc_cppgenerator.cxx.o"
+  "/home/shd/src/nawia/editor/ext/qtd/build/generator/moc_cppheadergenerator.cxx" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/moc_cppheadergenerator.cxx.o"
+  "/home/shd/src/nawia/editor/ext/qtd/build/generator/moc_cppimplgenerator.cxx" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/moc_cppimplgenerator.cxx.o"
+  "/home/shd/src/nawia/editor/ext/qtd/build/generator/moc_dgenerator.cxx" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/moc_dgenerator.cxx.o"
+  "/home/shd/src/nawia/editor/ext/qtd/build/generator/moc_fileout.cxx" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/moc_fileout.cxx.o"
+  "/home/shd/src/nawia/editor/ext/qtd/build/generator/moc_generator.cxx" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/moc_generator.cxx.o"
+  "/home/shd/src/nawia/editor/ext/qtd/build/generator/moc_generatorset.cxx" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/moc_generatorset.cxx.o"
+  "/home/shd/src/nawia/editor/ext/qtd/build/generator/moc_generatorsetd.cxx" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/moc_generatorsetd.cxx.o"
+  "/home/shd/src/nawia/editor/ext/qtd/build/generator/moc_jumptable.cxx" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/moc_jumptable.cxx.o"
+  "/home/shd/src/nawia/editor/ext/qtd/build/generator/moc_prigenerator.cxx" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/moc_prigenerator.cxx.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/ast.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/ast.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/binder.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/binder.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/class_compiler.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/class_compiler.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/codemodel.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/codemodel.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/codemodel_finder.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/codemodel_finder.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/compiler_utils.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/compiler_utils.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/control.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/control.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/declarator_compiler.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/declarator_compiler.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/default_visitor.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/default_visitor.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/dumptree.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/dumptree.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/lexer.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/lexer.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/list.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/list.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/name_compiler.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/name_compiler.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/parser.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/parser.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/rpp/preprocessor.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/rpp/preprocessor.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/smallobject.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/smallobject.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/tokens.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/tokens.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/type_compiler.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/type_compiler.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/parser/visitor.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/parser/visitor.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/prigenerator.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/prigenerator.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/qdocgenerator.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/qdocgenerator.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/build/generator/qrc_generator.cxx" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/qrc_generator.cxx.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/reporthandler.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/reporthandler.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/typeparser.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/typeparser.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/typesystem.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/typesystem.cpp.o"
+  "/home/shd/src/nawia/editor/ext/qtd/generator/uiconverter.cpp" "/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir/uiconverter.cpp.o"
+  )
+SET(CMAKE_CXX_COMPILER_ID "GNU")
+
+# Preprocessor definitions for this target.
+SET(CMAKE_TARGET_DEFINITIONS
+  "CPP_SHARED"
+  "RXX_ALLOCATOR_INIT_0"
+  "QT_GUI_LIB"
+  "QT_XML_LIB"
+  "QT_CORE_LIB"
+  "QT_NO_DEBUG"
+  )
+
+# Targets to which this target links.
+SET(CMAKE_TARGET_LINKED_INFO_FILES
+  )

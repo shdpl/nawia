@@ -1,0 +1,22 @@
+set (classes 
+    QAbstractNetworkCache
+    QAbstractSocket
+    QFtp
+    QHttp
+    QHttpHeader
+    QHttpRequestHeader
+    QHttpResponseHeader
+    QIPv6Address
+    QLocalServer
+    QLocalSocket
+    QNetworkAccessManager
+    QNetworkCookieJar
+    QNetworkDiskCache
+    QNetworkProxyFactory
+    QNetworkReply
+    QSslSocket
+    QTcpServer
+    QTcpSocket
+    QUdpSocket
+    QUrlInfo
+)

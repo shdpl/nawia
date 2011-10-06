@@ -1,0 +1,1 @@
+build_example(editabletreemodel main.d RESOURCES editabletreemodel.qrc FORMS mainwindow.ui)

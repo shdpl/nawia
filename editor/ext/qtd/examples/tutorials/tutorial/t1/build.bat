@@ -1,0 +1,1 @@
+dmd main.d qtdcore.lib qtdgui.lib -I../../../../ -I../../../../qt/d2

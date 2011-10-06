@@ -1,0 +1,1 @@
+dmd main.d model.d qtdcore.lib qtdgui.lib -ofinterview

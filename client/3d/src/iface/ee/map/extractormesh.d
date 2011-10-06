@@ -17,14 +17,15 @@
 
 module ee.map.extractormesh;
 
-public import ee.map.volume.volume,
-	ge.component.camera,
+public import
+	ee.map.volume,
 	ge.component.mesh,
-	type.cords.world;
+	ge.res.geometry;
 
 interface IExtractorMesh {
 	
-	void init(IVolume, ICamera);
+	void init(IVolume);
 	
-	IMesh extract(CordsWorld);
+	//IMesh extract(ICamera);
+	IGeometry extract();
 }

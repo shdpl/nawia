@@ -1,0 +1,1 @@
+build_example(borderlayout main.d)

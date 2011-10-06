@@ -1,0 +1,16 @@
+set (classes 
+    QXmlAttributes
+    QXmlContentHandler
+    QXmlDTDHandler
+    QXmlDeclHandler
+    QXmlDefaultHandler
+    QXmlEntityResolver
+    QXmlErrorHandler
+    QXmlInputSource
+    QXmlLexicalHandler
+    QXmlLocator
+    QXmlReader
+    QXmlSimpleReader
+    QXmlStreamReader
+    QXmlStreamWriter
+)
