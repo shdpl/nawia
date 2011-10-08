@@ -30,7 +30,7 @@ import
 	impl.h3d.ge.component.component,
 	type.cuda.types;
 
-class Emitter : Component, IEmitter, IMsgListener!MsgRedraw {
+class Emitter : Component, IEmitter, IMsgListener {
 	public:
 	static immutable type = Type.Emitter;
 	
@@ -42,11 +42,12 @@ class Emitter : Component, IEmitter, IMsgListener!MsgRedraw {
 		super(id);
 	}
 	
-	void handle(MsgRedraw msg) {
+	void handle(Variant msg) {
+		auto payload = msg.get!MsgRedraw;
 		if (!h3dHasEmitterFinished(this.id)) {
 			//this.clear(); //FIXME: destroy itself
 		}else
-			h3dAdvanceEmitterTime(this.id, (Clock.currAppTick - msg.time.peek()).seconds); //FIXME
+			h3dAdvanceEmitterTime(this.id, (Clock.currAppTick - payload.time.peek()).seconds); //FIXME
 	}
 	
 	@property {

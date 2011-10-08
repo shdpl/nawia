@@ -18,23 +18,22 @@
 module msg.listener;
 
 public import msg.msg,
-	msg.mediator.mediator; //FIXME
+	impl.nawia.msg.mediator.mtd; //FIXME
 	
-public import std.typecons;	
+public import
+	std.typecons,
+	std.variant;
 
 
-interface IMsgListener(MSG) {
+interface IMsgListener {
 	mixin template InjectMsgProvider(MSG) {
-		public bool register(IMsgListener!MSG what) {
-			return true;
+		public bool register(IMsgListener what) {
+			return MsgMediator().register(typeid(MSG), what);
 		}
-		public bool unregister(IMsgListener!MSG what) {
-			return true;
+		public bool unregister(IMsgListener what) {
+			return MsgMediator().unregister(typeid(MSG), what);
 		}
 	}
 	
-	bool register(IMsgListener!MSG lstnr);
-	bool unregister(IMsgListener!MSG lstnr);
-	
-	void handle(MSG msg);
+	void handle(Variant msg);
 }

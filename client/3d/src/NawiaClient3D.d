@@ -48,15 +48,17 @@ private import
 	impl.glfw.glfw,
 	impl.h3d.h3d,
 	impl.h3d.utils,
-	impl.polyvox.polyvox;
+	impl.polyvox.polyvox,
+	impl.nawia.msg.mediator.mtd;
 	
-	
+
+
 void main(){
 	Demo demo;
 	
 //	demo = new Demo1;
-//	demo = new Demo2;
-	demo = new Demo3;
+	demo = new Demo2;
+//	demo = new Demo3;
 //	demo = new Demo4;
 	
 	demo.init;
@@ -281,7 +283,7 @@ class Demo4 : Demo {
 		sky.scale = float3(210, 50, 210);
 		sky.shadowsDisabled = true;
 		
-		rndrr.viewWireFrame = true;
+		//rndrr.viewWireFrame = true;
 		pipe = new Pipeline("pipelines/forward.pipeline.xml");
 		cam = world.add!Camera(pipe);
 		cam.translation = CordsLocal(2, 1, 0, world);
@@ -298,9 +300,6 @@ class Demo4 : Demo {
 		light.rotation = CordsLocal(-30, 0, 0, world);
 		light.radius = 200;
 		light.fov = 90;
-		light.shadowMapsCount = 3;
-		light.shadowSegmentation = .9f;
-		light.shadowBias = .001f;
 		light.color = ColorRGB!float(.9f, .7f, .75f);
 		
 		auto vol = new VolumeSimple(Box!CordsWorld(
@@ -309,7 +308,7 @@ class Demo4 : Demo {
 		createSphere(vol._data, 30);//TODO: geometry library
 		
 		auto extractor = new ExtractorMesh(vol);
-		Geometry geo = cast(Geometry) extractor.extract(/*cam.fov*/);
+		auto geo = cast(Geometry) extractor.extract(/*cam.fov*/);
 		
 		auto mat = new Material("models/platform/stones.material.xml");
 		

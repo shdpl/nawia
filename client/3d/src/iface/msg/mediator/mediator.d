@@ -22,12 +22,19 @@ public import msg.provider;
 public import msg.filter.filter;
 public import util.singleton;
 
-interface IMsgMediator : IMsgListener!Msg, IMsgProvider!Msg {
+interface IMsgMediator {
 	
 	// TODO: maybe variadic args with msgs for dependencies
 	// pure function pointer or delegate for conditions
-	bool register(IMsgFilter!Msg filter);
-	bool unregister(IMsgFilter!Msg filter);
+	bool register(TypeInfo msg, IMsgFilter filter);
+	bool unregister(TypeInfo msg, IMsgFilter filter);
 	
+	bool register(TypeInfo msg, IMsgProvider prvdr);
+	bool unregister(TypeInfo msg, IMsgProvider prvdr);
+	
+	bool register(TypeInfo msg, IMsgListener lstnr);
+	bool unregister(TypeInfo msg, IMsgListener lstnr);
+	
+	void deliver(Variant msg);
 	void poll();
 }

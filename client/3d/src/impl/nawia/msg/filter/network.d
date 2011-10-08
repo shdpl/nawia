@@ -20,9 +20,9 @@ module impl.nawia.msg.filter.network;
 import msg.filter.filter,
 	msg.msg;
 
-class MsgFilterNetwork : IMsgFilter!Msg {
+class MsgFilterNetwork : IMsgFilter {
 	
-	override bool filter(Msg msg) {
+	override bool filter(Variant msg) {
 		//TODO:
 		return true;
 	}

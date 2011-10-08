@@ -28,8 +28,7 @@ public import
 	ge.window.properties,
 	ge.window.mode;
 
-interface IWindow : IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWindowResize,
-	IMsgProvider!MsgWindowClose
+interface IWindow : IMsgProvider
 {
 	
 	string title();

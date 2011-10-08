@@ -30,7 +30,7 @@ private import
 	
 public import type.buffer.pixel;	
 
-class Renderer : Singleton!Renderer, IRenderer, IMsgListener!MsgTimeIdle {
+class Renderer : Singleton!Renderer, IRenderer, IMsgListener {
 	private mixin InjectMsgProvider!MsgTimeIdle _msgTime;
 	
 	public:
@@ -148,7 +148,7 @@ class Renderer : Singleton!Renderer, IRenderer, IMsgListener!MsgTimeIdle {
 		return ret;
 	}
 	
-	void handle(MsgTimeIdle msg) { //TODO: MsgLowMem
+	void handle(Variant msg) { //TODO: MsgLowMem
 		h3dReleaseUnusedResources();
 	}
 	

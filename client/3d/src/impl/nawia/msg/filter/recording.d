@@ -21,9 +21,9 @@ module impl.nawia.msg.filter.recording;
 import msg.filter.filter,
 	msg.msg;
 
-class MsgFilterRecording : IMsgFilter!Msg {
+class MsgFilterRecording : IMsgFilter {
 	
-	override bool filter(Msg msg) {
+	override bool filter(Variant msg) {
 		//TODO:
 		return true;
 	}

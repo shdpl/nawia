@@ -22,7 +22,7 @@ import std.metastrings;
 
 import msg.mediator.mediator;
 
-
+/*
 //FIXME: name clash
 class MediatorStD : Singleton!MediatorStD, IMsgMediator {
 	
@@ -41,3 +41,4 @@ class MediatorStD : Singleton!MediatorStD, IMsgMediator {
 	void poll(){}
 	
 }
+*/

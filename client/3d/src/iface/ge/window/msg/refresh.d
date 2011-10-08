@@ -18,6 +18,7 @@
 module msg._window.refresh;
 
 private import msg.msg;
+private import impl.nawia.msg.mediator.mtd;
 
 struct MsgWindowRefresh {
 	Msg _msg;

@@ -36,8 +36,7 @@ private import impl.glfw.ge.window.mode,
 
 
 
-package class Window: Singleton!Window, IWindow, IMsgProvider!MsgWindowRefresh, IMsgProvider!MsgWindowResize,
-	IMsgProvider!MsgWindowClose
+package class Window: Singleton!Window, IWindow, IMsgProvider
 {
 	private:
 	string _title;
@@ -174,16 +173,16 @@ package class Window: Singleton!Window, IWindow, IMsgProvider!MsgWindowRefresh, 
 		glfwGetWindowSize(&__tmp_i1, &__tmp_i2);
 		_props.size = CordsScreen(__tmp_i1, __tmp_i2);
 		
-		register(cast(IMsgProvider!MsgWindowClose)this);
-		register(cast(IMsgProvider!MsgWindowResize)this);
-		register(cast(IMsgProvider!MsgWindowRefresh)this);
+		_lstnrClose.register(this);
+		_lstnrRefresh.register(this);
+		_lstnrResize.register(this);
 	}
 	
 	~this()
 	{
-		unregister(cast(IMsgProvider!MsgWindowClose)this);
-		unregister(cast(IMsgProvider!MsgWindowResize)this);
-		unregister(cast(IMsgProvider!MsgWindowRefresh)this);
+		_lstnrClose.unregister(this);
+		_lstnrRefresh.unregister(this);
+		_lstnrResize.unregister(this);
 		glfwCloseWindow();
 		//glfwTerminate();
 	}

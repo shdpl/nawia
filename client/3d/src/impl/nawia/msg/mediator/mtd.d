@@ -18,103 +18,80 @@
 
 module impl.nawia.msg.mediator.mtd;
 
-import std.string,
-	std.concurrency;
+private import
+	std.concurrency,
+	std.array;
 
 public import msg.msg,
 	msg.mediator.mediator;
 
 class MsgMediator : Singleton!MsgMediator, IMsgMediator {
 	
-	IMsgFilter!Msg[IMsgFilter!Msg][TypeInfo] _filters;
-	IMsgListener!Msg[IMsgListener!Msg][TypeInfo] _listeners;
-	IMsgProvider!Msg[IMsgProvider!Msg][TypeInfo] _providers;
+	IMsgFilter[IMsgFilter][TypeInfo] _filters;
+	IMsgListener[IMsgListener][TypeInfo] _listeners;
+	IMsgProvider[IMsgProvider][TypeInfo] _providers;
 	
+	/**
+		Do not instantiate this class directly - use MsgMediator()
+	*/
 	this() {
 		setMaxMailboxSize(thisTid, 1024, OnCrowding.throwException);
 	}
 	
-	void handle(Msg msg) {
-		//TODO
+	
+	override bool register(TypeInfo type, IMsgFilter filter) {
+		if (type in _filters)
+			if (filter in _filters[type])
+				return false;
+		_filters[type][filter] = filter;
+		return true;
 	}
 	
-	override bool register(IMsgFilter!Msg filter) {
-		auto type = typeid(filter);
-		if ( type !in _filters ) {
-			_filters[type] = null;
-			
-			}
-		if ( filter !in _filters[type] ) {
-			_filters[type][filter] = filter;
-			return true;
-		} 
-		return false;
+	override bool unregister(TypeInfo type, IMsgFilter filter) {
+		if (type !in _filters)
+			if (filter !in _filters[type])
+				return false;
+		_filters[type].remove(filter);
+		return true;
 	}
 	
-	bool unregister(IMsgFilter!Msg filter)
-	in {
-		assert(typeid(filter) in _filters);
-	}body{
-		auto type = typeid(filter);
-		if ( filter in _filters[type]) {
-			_filters[type].remove(filter);		//FIXME: _handlers[type].remove(hndlr);
-			return true;
-		}
-		return false;
+	override bool register(TypeInfo type, IMsgListener lstnr) {
+		if (type in _listeners)
+			if (lstnr in _listeners[type])
+				return false;
+		_listeners[type][lstnr] = lstnr;
+		return true;
 	}
 	
-	override bool register(IMsgListener!Msg lstnr) {
-		auto type = typeid(lstnr);
-		if ( type !in _listeners )
-			_listeners[type] = null;
-		if ( lstnr !in _listeners[type]) {
-			_listeners[type][lstnr] = lstnr;
-			return true;
-		}
-		return false;
+	override bool unregister(TypeInfo type, IMsgListener lstnr) {
+		if (type !in _listeners)
+			if (lstnr !in _listeners[type])
+				return false;
+		_listeners[type].remove(lstnr);
+		return true;
 	}
 	
-	override bool unregister(IMsgListener!Msg lstnr)
-	in {
-		assert(typeid(lstnr) in _listeners);
-	}body{
-		auto type = typeid(lstnr);
-		if ( lstnr in _listeners[type]) {
-			_listeners[type].remove(lstnr);		//FIXME: _handlers[type].remove(hndlr);
-			return true;
-		}
-		return false;
+	override bool register(TypeInfo type, IMsgProvider prvdr) {
+		if (type in _providers)
+			if (prvdr in _providers[type])
+				return false;
+		_providers[type][prvdr] = prvdr;
+		return true;
 	}
 	
-	override bool register(IMsgProvider!Msg prvdr) {
-		auto type = typeid(prvdr);
-		if ( type !in _providers )
-			_providers[type] = null;
-		if ( prvdr !in _providers[type] ) {
-			_providers[type][prvdr] = prvdr;
-			return true;
-		}
-		return false;
-		
+	override bool unregister(TypeInfo type, IMsgProvider prvdr) {
+		if (type !in _providers)
+			if (prvdr !in _providers[type])
+				return false;
+		_providers[type].remove(prvdr);
+		return true;
 	}
 	
-	override bool unregister(IMsgProvider!Msg prvdr)
-	in {
-		assert(typeid(prvdr) in _providers);
-	}body{
-		auto type = typeid(prvdr);
-		if ( prvdr in _providers[type] ) {
-			_providers[type].remove(prvdr);		//FIXME: _handlers[type].remove(hndlr);
-			return true;
-		}
-		return false;
+	override void deliver(Variant msg) {
+		send!Variant(thisTid, msg);	//TODO: actual multithreading
 	}
 	
-	override void deliver(Msg msg) {
-		
-	}
-	
-	override void poll() {
+	void poll() {
 		bool more;
 		do {
 			more = receiveTimeout(0, &recvMsg );
@@ -122,14 +99,63 @@ class MsgMediator : Singleton!MsgMediator, IMsgMediator {
 	}
 	
 	private:
-	void recvMsg(Msg msg) {
-		foreach(ref l; _listeners[typeid(msg)]) {
-			
-		}
+	void recvMsg(Variant msg) {
+		if (_listeners[msg.type])
+			foreach(ref l; _listeners[msg.type])
+				l.handle(msg);
 	}
 	
 }
 
 unittest {
+	import ge.window.msg.refresh;
 	
+	uint g_handle;
+	
+	class Provider : IMsgProvider {
+		mixin InjectMsgListener!MsgWindowRefresh _lstnrRefresh;
+		
+		this() {
+			assert(true == _lstnrRefresh.register(this));
+			assert(false == _lstnrRefresh.register(this));
+		}
+		
+		public void send() {
+			_lstnrRefresh.deliver(MsgWindowRefresh());
+		}
+	}
+	
+	class Listener1 : IMsgListener {
+		mixin InjectMsgProvider!MsgWindowRefresh _prvdrRefresh;
+		
+		this() {
+			assert(true == _prvdrRefresh.register(this));
+		}
+		
+		void handle(Variant msg) {
+			g_handle++;
+		}
+	}
+	
+	class Listener2 : IMsgListener {
+		mixin InjectMsgProvider!MsgWindowRefresh _prvdrRefresh;
+		
+		this() {
+			assert(true == _prvdrRefresh.register(this));
+		}
+		
+		void handle(Variant msg) {
+			g_handle++;
+		}
+	}
+	
+
+	auto mtd = MsgMediator();
+	auto lstnr1 = new Listener1();
+	auto prvdr = new Provider();
+	prvdr.send();
+	auto lstnr2 = new Listener2();
+	prvdr.send();
+	mtd.poll();
+	assert(g_handle == 3);
 }

@@ -17,8 +17,10 @@
 
 module msg.filter.filter;
 
+public import
+	std.variant;
 
-interface IMsgFilter(MSG)  {
+interface IMsgFilter  {
 	
 	/**
 	 * Filter message.
@@ -30,6 +32,6 @@ interface IMsgFilter(MSG)  {
 	 *		true	= continue delivering
 	 *		false	= ignore message
 	 */
-	bool filter(MSG msg);
+	bool filter(Variant msg);
 	
 }

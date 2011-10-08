@@ -19,18 +19,16 @@
 module msg.provider;
 public import msg.mediator.mediator; //FIXME
 
-interface IMsgProvider(MSG) {
+interface IMsgProvider {
 	mixin template InjectMsgListener(MSG) {
-		public bool register(IMsgProvider!MSG what) {
-			return true;
+		public bool register(IMsgProvider what) {
+			return MsgMediator().register(typeid(MSG), what);
 		}
-		public bool unregister(IMsgProvider!MSG what) {
-			return true;
+		public bool unregister(IMsgProvider what) {
+			return MsgMediator().unregister(typeid(MSG), what);
 		}
 		public void deliver(MSG msg) {
+			MsgMediator().deliver(Variant(msg));
 		}
 	}
-	bool register(IMsgProvider!MSG prvdr);
-	bool unregister(IMsgProvider!MSG prvdr);
-	public void deliver(MSG msg);
 }

@@ -19,10 +19,14 @@ module msg.msg;
 
 public import std.datetime;
 
+private import
+	impl.nawia.msg.mediator.mtd;
+
 
 struct Msg {
 	StopWatch time;
-	
+	uint processor;
+	alias MsgMediator mediator;
 //	this() {
 //		time = StopWatch(AutoStart.yes);
 //	}
