@@ -17,15 +17,16 @@
 
 module util.singleton;
 
-abstract class Singleton(T) {
-    private static T instance;
+mixin template Singleton(T) {
+    private static T _instance;
     
     /*override*/ public static T opCall(E...)(E args) { //D BUG
-        if(instance is null) {
-            instance = new T(args);
+        if(_instance is null) {
+            _instance = new T(args);
+            static if (__traits(compiles, _instance.init()))
+            	_instance.init();
         }
-        return instance;
+        return _instance;
     }
- 
-    /*private*/public this() {} //D BUG
+    
 }

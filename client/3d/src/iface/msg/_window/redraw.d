@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ge.msg.redraw;
+module msg._window.redraw;
 
 private import msg.msg;
 
-struct MsgRedraw {
+struct MsgWindowRedraw {
 	Msg _msg;
 	alias _msg this;
 }

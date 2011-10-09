@@ -56,8 +56,8 @@ private import
 void main(){
 	Demo demo;
 	
-//	demo = new Demo1;
-	demo = new Demo2;
+	demo = new Demo1;
+//	demo = new Demo2;
 //	demo = new Demo3;
 //	demo = new Demo4;
 	
@@ -72,13 +72,15 @@ abstract class Demo {
 	Window wnd;
 	Camera cam;
 	Renderer rndrr;
+	MsgMediator mediator;
 	protected bool anim = true;
 	
 	public void init() {
+		mediator = MsgMediator();
 		auto wndProps = WindowProperties();
-	
 		wndProps.size = CordsScreen(1280,1024); //TODO: Box!CordsScreen
 		wndProps.status = WindowStatus.NORMAL;
+		
 		wnd = Window(wndProps);
 		wnd.title = "Nawia RPG";
 		
@@ -100,19 +102,15 @@ abstract class Demo {
 		timer.start();
 		foreach(i; 0 .. frames) {
 			h3dRender(cam.id);
-			h3dFinalizeFrame();
-			glfwSwapBuffers();
 			if(anim)
 				cam.rotation=CordsLocal(base_rot.x, base_rot.y + to!float(-i*50)/frames, base_rot.z, world);
+			mediator.poll();
+			h3dFinalizeFrame();
+			wnd.swapBuffers();
 		}
 		timer.stop;
 		writeln(cast(real)frames*1000/timer.peek.msecs, " fps");
 		h3dutDumpMessages();
-		/*
-		auto mtd = new MsgMediatorMtD;
-		while(true) {
-			mtd.poll;
-		}*/
 	}
 }
 
@@ -139,7 +137,7 @@ class Demo1 : Demo {
 		cam.clipNear = .01;
 		cam.clipFar = 1000;	//FIXME: clip!=clip <swap with fov>
 		cam.fov = 45;
-		//TODO: assign camera to window
+		cam.assign(wnd);	// TODO: Multithreading
 		
 		//enforce( lCtxID in lMat[0].shader.contexts
 		//	&& sCtxID in lMat[0].shader.contexts );
@@ -183,6 +181,7 @@ class Demo2 : Demo {
 		cam.clipFar = 1000;	//FIXME: clip!=clip <swap with fov>
 		cam.fov = 45;
 		cam.rotation = CordsLocal(0, 40, 0, world);
+		cam.assign(wnd);	// TODO: Multithreading
 	}
 }
 
@@ -255,6 +254,7 @@ class Demo3 : Demo {
 		cam.clipNear = .01;
 		cam.clipFar = 1000;
 		cam.fov = 45;
+		cam.assign(wnd);	// TODO: Multithreading
 		
 		light = world.add!Light(
 			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
@@ -292,6 +292,7 @@ class Demo4 : Demo {
 		cam.clipNear = .01;
 		cam.clipFar = 1000;
 		cam.fov = 45;
+		cam.assign(wnd);	// TODO: Multithreading
 		
 		
 		light = world.add!Light(

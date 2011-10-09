@@ -30,18 +30,20 @@ private import
 	
 public import type.buffer.pixel;	
 
-class Renderer : Singleton!Renderer, IRenderer, IMsgListener {
+class Renderer : IRenderer, IMsgListener {
+	mixin Singleton!Renderer;
 	private mixin InjectMsgProvider!MsgTimeIdle _msgTime;
 	
-	public:
+	private:
 	this(IWindow wnd) {
-		super();
 		enforceEx!ExRendererInit(true == h3dInit());
 	}
 	
 	~this() {
 		h3dRelease();
 	}
+	
+	public:
 	
 	@property {
 		void animationFast(bool value) {

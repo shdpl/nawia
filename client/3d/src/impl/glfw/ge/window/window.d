@@ -24,10 +24,11 @@ import std.conv,
 
 import impl.glfw.glfw;
 
-import msg.provider,
-	ge.window.msg.close,
-	ge.window.msg.refresh,
-	ge.window.msg.resize;
+private import
+	msg.provider,
+	msg._window.close,
+	msg._window.redraw,
+	msg._window.resize;
 	
 public import ge.window.window;
 
@@ -36,7 +37,7 @@ private import impl.glfw.ge.window.mode,
 
 
 
-package class Window: Singleton!Window, IWindow, IMsgProvider
+package class Window: IWindow, IMsgProvider
 {
 	private:
 	string _title;
@@ -44,8 +45,9 @@ package class Window: Singleton!Window, IWindow, IMsgProvider
 	WindowProperties _props;
 	IWindowMode[] _windowModes;
 	mixin InjectMsgListener!MsgWindowClose _lstnrClose;
-	mixin InjectMsgListener!MsgWindowRefresh _lstnrRefresh;
+	mixin InjectMsgListener!MsgWindowRedraw _lstnrRedraw;
 	mixin InjectMsgListener!MsgWindowResize _lstnrResize;
+	mixin Singleton!Window;
 	
 	
 	public:
@@ -152,6 +154,7 @@ package class Window: Singleton!Window, IWindow, IMsgProvider
 		return ret;
 	}
 	
+	private:
 	this() {
 		this(WindowProperties());
 	}
@@ -172,31 +175,35 @@ package class Window: Singleton!Window, IWindow, IMsgProvider
 		
 		glfwGetWindowSize(&__tmp_i1, &__tmp_i2);
 		_props.size = CordsScreen(__tmp_i1, __tmp_i2);
-		
+	}
+	
+	void init() {
 		_lstnrClose.register(this);
-		_lstnrRefresh.register(this);
+		glfwSetWindowCloseCallback(&callbackClose);
+		_lstnrRedraw.register(this);
+		glfwSetWindowRefreshCallback(&callbackRefresh);
 		_lstnrResize.register(this);
+		glfwSetWindowSizeCallback(&callbackResize);
 	}
 	
 	~this()
 	{
 		_lstnrClose.unregister(this);
-		_lstnrRefresh.unregister(this);
+		_lstnrRedraw.unregister(this);
 		_lstnrResize.unregister(this);
 		glfwCloseWindow();
 		//glfwTerminate();
 	}
 	
-	private:
 	int onClose() {
 		_lstnrClose.deliver(MsgWindowClose());
 		return 1; //FIXME
 	}
-	void onResize(int x, int y) {
+	void onResize(int y, int x) {
 		_lstnrResize.deliver(MsgWindowResize(CordsScreen(x,y)));
 	}
 	void onRefresh() {
-		_lstnrRefresh.deliver(MsgWindowRefresh());
+		_lstnrRedraw.deliver(MsgWindowRedraw());
 	}
 	
 	
@@ -234,17 +241,16 @@ package class Window: Singleton!Window, IWindow, IMsgProvider
 	
 }
 
-extern(C) {
-	int onClose() {
-		return Window().onClose();
-	}
-
-	void onResize(int x, int y) {
-		return Window().onResize(x, y);
-	}
-	
-	void onRefresh() {
-		return Window().onRefresh();
-	}
+int callbackClose() {
+	return Window().onClose();
 }
+
+void callbackResize(int x, int y) {
+	Window().onResize(x, y);
+}
+
+void callbackRefresh() {
+	Window().onRefresh();
+}
+
 

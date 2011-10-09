@@ -25,8 +25,9 @@ private import
 public import msg.msg,
 	msg.mediator.mediator;
 
-class MsgMediator : Singleton!MsgMediator, IMsgMediator {
-	
+class MsgMediator : IMsgMediator {
+	private:
+	mixin Singleton!MsgMediator;
 	IMsgFilter[IMsgFilter][TypeInfo] _filters;
 	IMsgListener[IMsgListener][TypeInfo] _listeners;
 	IMsgProvider[IMsgProvider][TypeInfo] _providers;
@@ -38,7 +39,7 @@ class MsgMediator : Singleton!MsgMediator, IMsgMediator {
 		setMaxMailboxSize(thisTid, 1024, OnCrowding.throwException);
 	}
 	
-	
+	public:
 	override bool register(TypeInfo type, IMsgFilter filter) {
 		if (type in _filters)
 			if (filter in _filters[type])
@@ -87,11 +88,14 @@ class MsgMediator : Singleton!MsgMediator, IMsgMediator {
 		return true;
 	}
 	
-	override void deliver(Variant msg) {
-		send!Variant(thisTid, msg);	//TODO: actual multithreading
+	override void deliver(Variant msg)
+	in {
+		assert (msg.hasValue);
+	} body {
+		send(thisTid, msg);	//TODO: actual multithreading
 	}
 	
-	void poll() {
+	override void poll() {
 		bool more;
 		do {
 			more = receiveTimeout(0, &recvMsg );
@@ -100,9 +104,10 @@ class MsgMediator : Singleton!MsgMediator, IMsgMediator {
 	
 	private:
 	void recvMsg(Variant msg) {
-		if (_listeners[msg.type])
-			foreach(ref l; _listeners[msg.type])
+		if (msg.type in _listeners)
+			foreach(ref l; _listeners[msg.type]) {
 				l.handle(msg);
+			}
 	}
 	
 }

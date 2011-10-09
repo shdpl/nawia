@@ -15,12 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module msg._window.refresh;
+module msg._window.resize;
 
 private import msg.msg;
-private import impl.nawia.msg.mediator.mtd;
 
-struct MsgWindowRefresh {
-	Msg _msg;
-	alias _msg this;
+public import type.cords.screen;
+
+struct MsgWindowResize {
+	//Msg _msg;
+	//alias _msg this;
+	CordsScreen newSize;
+	
+	this(CordsScreen size) {
+		newSize = size;
 	}
+	
+	this(MsgWindowResize n) {
+		this.newSize = n.newSize;
+	}
+}

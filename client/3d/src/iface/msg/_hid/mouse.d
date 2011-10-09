@@ -15,17 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module msg._window.resize;
+module msg._hid.mouse;
 
 private import msg.msg;
 
-public import type.cords.screen;
-
-struct MsgWindowResize {
+struct MsgHidMouse {
 	Msg _msg;
 	alias _msg this;
 	
-		this(CordsScreen size) {
-			
-		}
-	}
+	//enum Button []
+	//enum status {BTN_UP, BTN_DOWN, BTN_KEEP}
+}

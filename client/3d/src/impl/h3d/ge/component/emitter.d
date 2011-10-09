@@ -23,7 +23,7 @@ import std.datetime;
 
 import
 	msg.listener,
-	ge.msg.redraw,
+	msg._window.redraw,
 	ge.component.emitter,
 	impl.h3d.ge.res.material,
 	impl.h3d.ge.res.particle,
@@ -35,7 +35,7 @@ class Emitter : Component, IEmitter, IMsgListener {
 	static immutable type = Type.Emitter;
 	
 	private:
-	mixin InjectMsgProvider!MsgRedraw _redrawProvider;
+	mixin InjectMsgProvider!MsgWindowRedraw _redrawProvider;
 	
 	public:
 	this(H3DNode id) {
@@ -43,7 +43,7 @@ class Emitter : Component, IEmitter, IMsgListener {
 	}
 	
 	void handle(Variant msg) {
-		auto payload = msg.get!MsgRedraw;
+		auto payload = msg.get!MsgWindowRedraw;
 		if (!h3dHasEmitterFinished(this.id)) {
 			//this.clear(); //FIXME: destroy itself
 		}else

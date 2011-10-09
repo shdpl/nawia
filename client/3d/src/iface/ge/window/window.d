@@ -17,10 +17,8 @@
 
 module ge.window.window;
 
+
 public import
-	ge.window.msg.close,
-	ge.window.msg.refresh,
-	ge.window.msg.resize,
 	msg.listener,
 	msg.provider,
 	type.cords.screen,

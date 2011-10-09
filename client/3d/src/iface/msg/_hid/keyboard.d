@@ -15,21 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+module msg._hid.keyboard;
 
-module msg.provider;
-public import
-	msg.mediator.mediator; //FIXME
+private import msg.msg;
 
-interface IMsgProvider {
-	mixin template InjectMsgListener(MSG) {
-		public bool register(IMsgProvider what) {
-			return MsgMediator().register(typeid(MSG), what);
-		}
-		public bool unregister(IMsgProvider what) {
-			return MsgMediator().unregister(typeid(MSG), what);
-		}
-		public void deliver(MSG msg) {
-			MsgMediator().deliver(Variant(msg));
-		}
-	}
+struct MsgHidKeyboard {
+	Msg _msg;
+	alias _msg this;
+	
+	//enum Key []
+	//enum status {KEY_UP, KEY_DOWN, KEY_KEEP}
 }

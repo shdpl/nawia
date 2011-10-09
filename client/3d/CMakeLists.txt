@@ -12,7 +12,7 @@ PROJECT(NawiaClient3D D)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin 
 	CACHE STRING "Where binaries files go" FORCE)
 
-SET( GLOBAL_DMD_DEFS "") # -gc -debug -unittest" )
+SET( GLOBAL_DMD_DEFS "-gc -debug" )
 SET( CMAKE_D_FLAGS "${CMAKE_D_FLAGS} ${GLOBAL_DMD_DEFS}")
 
 #ADD_SUBDIRECTORY(external)

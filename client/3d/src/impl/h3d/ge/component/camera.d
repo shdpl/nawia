@@ -29,12 +29,15 @@ public import
 private import
 	impl.h3d.h3d,
 	impl.h3d.ge.component.component,
-	type.cords.screen;
+	type.cords.screen,
+	msg.listener,
+	msg._window.resize;
 
 
 
-class Camera : Component, ICamera {
+class Camera : Component, ICamera, IMsgListener {
 	private:
+	mixin InjectMsgProvider!MsgWindowResize _prvdrResize;
 	BufferPixel renderTarget;
 	float _fov;
 	
@@ -150,6 +153,22 @@ class Camera : Component, ICamera {
 	
 	void render() {
 		h3dRender(id);
+	}
+	
+	void assign(IWindow wnd) {	// TODO: multiple window support
+		_prvdrResize.register(this);
+	}
+	
+	void deassign(IWindow wnd) {
+		_prvdrResize.unregister(this);
+	}
+	
+	void handle(Variant msg)
+	in {
+		assert (msg.type == MsgWindowResize);
+	} body {
+		auto payload = msg.get!MsgWindowResize;
+		viewport = Box!CordsScreen(CordsScreen(0,0), payload.newSize);
 	}
 	
 	private:
