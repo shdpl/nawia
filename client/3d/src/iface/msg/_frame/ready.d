@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module msg._ee.attachment;
+module msg._frame.ready;
 
-/**
-	Do something with attachment entities.
-*/
-struct MsgAttachment {
-	
+private import msg.msg;
+
+struct MsgFrameReady {
+	Msg _msg;
+	alias _msg this;
 }

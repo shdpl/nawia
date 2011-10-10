@@ -31,13 +31,18 @@ private import
 	impl.h3d.ge.component.component,
 	type.cords.screen,
 	msg.listener,
-	msg._window.resize;
+	msg.provider,
+	msg._window.resize,
+	msg._time.idle,
+	msg._frame.ready;
 
 
 
-class Camera : Component, ICamera, IMsgListener {
+class Camera : Component, ICamera, IMsgListener, IMsgProvider {
 	private:
 	mixin InjectMsgProvider!MsgWindowResize _prvdrResize;
+	mixin InjectMsgProvider!MsgTimeIdle _prvdrIdle;
+	mixin InjectMsgListener!MsgFrameReady _lstnrReady;
 	BufferPixel renderTarget;
 	float _fov;
 	
@@ -157,18 +162,23 @@ class Camera : Component, ICamera, IMsgListener {
 	
 	void assign(IWindow wnd) {	// TODO: multiple window support
 		_prvdrResize.register(this);
+		_prvdrIdle.register(this);
 	}
 	
 	void deassign(IWindow wnd) {
 		_prvdrResize.unregister(this);
+		_prvdrIdle.unregister(this);
 	}
 	
-	void handle(Variant msg)
-	in {
-		assert (msg.type == MsgWindowResize);
-	} body {
-		auto payload = msg.get!MsgWindowResize;
-		viewport = Box!CordsScreen(CordsScreen(0,0), payload.newSize);
+	void handle(Variant msg) {
+		if (msg.type == typeid(MsgTimeIdle)) {
+			render();
+			h3dFinalizeFrame();
+			_lstnrReady.deliver(MsgFrameReady());
+		} else if (msg.type == typeid(MsgWindowResize)) {
+			auto payload = msg.get!MsgWindowResize;
+			viewport = Box!CordsScreen(CordsScreen(0,0), payload.newSize);
+		}
 	}
 	
 	private:

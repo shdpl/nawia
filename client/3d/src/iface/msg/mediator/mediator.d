@@ -37,4 +37,6 @@ interface IMsgMediator {
 	
 	void deliver(Variant msg);
 	void poll();
+	void poll(bool delegate(Variant msg) condition);
+	void poll(bool delegate() condition);
 }

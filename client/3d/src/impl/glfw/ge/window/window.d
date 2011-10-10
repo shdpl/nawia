@@ -18,9 +18,12 @@
 
 module impl.glfw.ge.window.window;
 
-import std.conv,
+private import
+	std.conv,
 	std.stdio,
-	std.iterator;
+	std.iterator,
+	std.datetime,
+	std.math;
 
 import impl.glfw.glfw;
 
@@ -28,7 +31,9 @@ private import
 	msg.provider,
 	msg._window.close,
 	msg._window.redraw,
-	msg._window.resize;
+	msg._window.resize,
+	msg._frame.ready,
+	msg._ee.world.init;
 	
 public import ge.window.window;
 
@@ -37,20 +42,30 @@ private import impl.glfw.ge.window.mode,
 
 
 
-package class Window: IWindow, IMsgProvider
+package class Window: IWindow, IMsgProvider, IMsgListener
 {
-	private:
+	mixin InjectMsgListener!MsgWindowClose _lstnrClose;
+	mixin InjectMsgListener!MsgWindowRedraw _lstnrRedraw;
+	mixin InjectMsgListener!MsgWindowResize _lstnrResize;
+	mixin InjectMsgProvider!MsgFrameReady _prvdrReady;
+	mixin InjectMsgProvider!MsgWorldInit _prvdrInit;
+	mixin Singleton!Window;
+	
 	string _title;
 	CordsScreen _position;
 	WindowProperties _props;
 	IWindowMode[] _windowModes;
-	mixin InjectMsgListener!MsgWindowClose _lstnrClose;
-	mixin InjectMsgListener!MsgWindowRedraw _lstnrRedraw;
-	mixin InjectMsgListener!MsgWindowResize _lstnrResize;
-	mixin Singleton!Window;
+	bool _frameReady;
+	StopWatch _dFrame;
+	TickDuration _dPredictableFrame;
 	
 	
 	public:
+	
+	real fps;
+	real fpsMax;
+	real fpsMin;
+	real fpsAvg;
 	
 	override void title(in string title) {
 		_title = title;
@@ -154,6 +169,23 @@ package class Window: IWindow, IMsgProvider
 		return ret;
 	}
 	
+	public void handle(Variant msg) {
+		if (msg.type == typeid(MsgFrameReady)) {	//FIXME: peek before frameReady
+			_dPredictableFrame += _dFrame.peek;
+			_dPredictableFrame /= 2;
+			
+			if (_dFrame.peek() < _dPredictableFrame)
+				MsgMediator().poll({return _dFrame.peek < _dPredictableFrame;});
+			swapBuffers();
+			
+			updateFPS(_dFrame.peek);
+			
+			_dFrame.reset();
+		} else if (msg.type == typeid(MsgWorldInit)) {
+			_dFrame.start();
+		}
+	}
+	
 	private:
 	this() {
 		this(WindowProperties());
@@ -184,6 +216,13 @@ package class Window: IWindow, IMsgProvider
 		glfwSetWindowRefreshCallback(&callbackRefresh);
 		_lstnrResize.register(this);
 		glfwSetWindowSizeCallback(&callbackResize);
+		_prvdrReady.register(this);
+		_prvdrInit.register(this);
+		_dPredictableFrame.length = _dPredictableFrame.ticksPerSec /50;
+		fps = 50;
+		fpsAvg = 50;
+		fpsMax = real.min;
+		fpsMin = real.max;
 	}
 	
 	~this()
@@ -191,6 +230,8 @@ package class Window: IWindow, IMsgProvider
 		_lstnrClose.unregister(this);
 		_lstnrRedraw.unregister(this);
 		_lstnrResize.unregister(this);
+		_prvdrReady.unregister(this);
+		_prvdrInit.unregister(this);
 		glfwCloseWindow();
 		//glfwTerminate();
 	}
@@ -237,6 +278,14 @@ package class Window: IWindow, IMsgProvider
 			cNewModes = glfwGetVideoModes(vidModes, cModes);
 			} while (cNewModes < cModes);
 		assert(cNewModes == cModes);
+	}
+	 
+	void updateFPS(TickDuration td) {
+			fps = 1_000 /td.msecs;
+			fpsMax = fmax(fps, fpsMax);
+			fpsMin = fmin(fps, fpsMin);
+			fpsAvg += fps;
+			fpsAvg /= 2;
 	}
 	
 }

@@ -20,23 +20,41 @@ module impl.nawia.msg.mediator.mtd;
 
 private import
 	std.concurrency,
-	std.array;
+	std.array,
+	msg._time.idle,
+	msg._window.close;
 
-public import msg.msg,
+public import
+	msg.msg,
 	msg.mediator.mediator;
 
-class MsgMediator : IMsgMediator {
+class MsgMediator : IMsgMediator, IMsgProvider, IMsgListener {
 	private:
 	mixin Singleton!MsgMediator;
+	mixin InjectMsgListener!MsgTimeIdle _lstnrIdle;
+	mixin InjectMsgProvider!MsgWindowClose _prvdrClose;
 	IMsgFilter[IMsgFilter][TypeInfo] _filters;
 	IMsgListener[IMsgListener][TypeInfo] _listeners;
 	IMsgProvider[IMsgProvider][TypeInfo] _providers;
+	Variant _msg;
+	bool _running; 
 	
 	/**
 		Do not instantiate this class directly - use MsgMediator()
 	*/
 	this() {
+	}
+	
+	~this() {
+		_lstnrIdle.unregister(this);
+		_prvdrClose.unregister(this);
+	}
+	
+	void init() {
+		_running = true;
 		setMaxMailboxSize(thisTid, 1024, OnCrowding.throwException);
+		_lstnrIdle.register(this);
+		_prvdrClose.register(this);
 	}
 	
 	public:
@@ -98,8 +116,27 @@ class MsgMediator : IMsgMediator {
 	override void poll() {
 		bool more;
 		do {
-			more = receiveTimeout(0, &recvMsg );
-		} while(more)
+			do {
+				more = receiveTimeout(0, &recvMsg );
+			} while(more)
+			_lstnrIdle.deliver(MsgTimeIdle());
+		} while (_running);
+	}
+	
+	override void poll(bool delegate(Variant msg) condition) {
+		do {
+			receiveTimeout(0, &recvMsg );
+		} while(condition(_msg))
+	}
+	
+	override void poll(bool delegate() condition) {
+		do {
+			receiveTimeout(0, &recvMsg );
+		} while(condition())
+	}
+	
+	public void handle(Variant msg) {
+		_running = false;
 	}
 	
 	private:
@@ -108,6 +145,7 @@ class MsgMediator : IMsgMediator {
 			foreach(ref l; _listeners[msg.type]) {
 				l.handle(msg);
 			}
+		_msg = msg;
 	}
 	
 }

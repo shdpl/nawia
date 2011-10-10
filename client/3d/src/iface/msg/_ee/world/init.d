@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module msg._ee.attachment;
+module msg._ee.world.init;
 
-/**
-	Do something with attachment entities.
-*/
-struct MsgAttachment {
-	
+private import msg.msg;
+
+struct MsgWorldInit {
+	Msg msg;
+	alias msg this;
 }

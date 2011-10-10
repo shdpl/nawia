@@ -71,9 +71,5 @@ struct Cords(T, size_t N) if (N > 0 && N < 4) {
 		}
 	}
 	
-	auto opDispatch(string m, args...)() {
-		return mixin("c."~m~"(args)");
-	}
-	
 
 }

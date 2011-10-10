@@ -29,6 +29,8 @@ private import
 	type.cords.local,
 	type.color.rgb,
 	ge.component.camera,
+	msg.listener,
+	msg._frame.ready,
 	impl.glfw.ge.window.window,
 	impl.nawia.io.res.manager,
 	impl.h3d.ge.renderer,
@@ -56,34 +58,37 @@ private import
 void main(){
 	Demo demo;
 	
-	demo = new Demo1;
-//	demo = new Demo2;
+//	demo = new Demo1;
+	demo = new Demo2;
 //	demo = new Demo3;
 //	demo = new Demo4;
 	
 	demo.init;
+	std.stdio.writeln("load");
 	demo.load;
+	std.stdio.writeln("run");
 	demo.run;
 }
 
-abstract class Demo {
-	static immutable uint frames = 3000;
+abstract class Demo : IMsgListener {
+	mixin InjectMsgProvider!MsgFrameReady _prvdrReady;
 	World world;
 	Window wnd;
 	Camera cam;
 	Renderer rndrr;
 	MsgMediator mediator;
-	protected bool anim = true;
 	
 	public void init() {
 		mediator = MsgMediator();
+		_prvdrReady.register(this);
+		
 		auto wndProps = WindowProperties();
 		wndProps.size = CordsScreen(1280,1024); //TODO: Box!CordsScreen
 		wndProps.status = WindowStatus.NORMAL;
 		
 		wnd = Window(wndProps);
 		wnd.title = "Nawia RPG";
-		
+
 		rndrr = Renderer(wnd);
 		rndrr.texReference = true;
 		rndrr.texCompression = false;
@@ -94,22 +99,23 @@ abstract class Demo {
 		world = new World;
 	}
 	
+	public ~this() {
+		_prvdrReady.unregister(this);
+	}
+	
+	public void handle(Variant msg) {
+		assert(msg.type == typeid(MsgFrameReady));
+		auto oldRot = cam.rotation;
+		cam.rotation = CordsLocal(oldRot.x,
+			oldRot.y-3/(wnd.fps!=0? wnd.fps : 0.1), oldRot.z, cam);
+	}
+	
 	abstract void load();
 	
 	public void run() {
-		auto base_rot = cam.rotation;
-		StopWatch timer;
-		timer.start();
-		foreach(i; 0 .. frames) {
-			h3dRender(cam.id);
-			if(anim)
-				cam.rotation=CordsLocal(base_rot.x, base_rot.y + to!float(-i*50)/frames, base_rot.z, world);
-			mediator.poll();
-			h3dFinalizeFrame();
-			wnd.swapBuffers();
-		}
-		timer.stop;
-		writeln(cast(real)frames*1000/timer.peek.msecs, " fps");
+		mediator.poll();
+		writeln("fps: average(", wnd.fpsAvg,
+			"), max(", wnd.fpsMax, "), min(", wnd.fpsMin, ")");
 		h3dutDumpMessages();
 	}
 }
@@ -180,7 +186,7 @@ class Demo2 : Demo {
 		cam.clipNear = .01;
 		cam.clipFar = 1000;	//FIXME: clip!=clip <swap with fov>
 		cam.fov = 45;
-		cam.rotation = CordsLocal(0, 40, 0, world);
+		//cam.rotation = CordsLocal(0, 40, 0, world);
 		cam.assign(wnd);	// TODO: Multithreading
 	}
 }
@@ -189,8 +195,6 @@ class Demo3 : Demo {
 	Component platform, sky;
 	Pipeline pipe;
 	Light light;
-	
-	this() {anim = false;}
 	
 	override void load() {
 		void createSimpleGeometryRes() {
@@ -274,8 +278,6 @@ class Demo4 : Demo {
 	Component platform, sky;
 	Pipeline pipe;
 	Light light;
-	
-	this() {anim = false;}
 	
 	override void load() {
 		
