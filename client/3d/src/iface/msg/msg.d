@@ -27,7 +27,9 @@ struct Msg {
 	StopWatch time;
 	uint processor;
 	alias MsgMediator mediator;
-//	this() {
-//		time = StopWatch(AutoStart.yes);
-//	}
+	
+	this(Msg other) {
+		time = other.time;
+		processor = other.processor;
+	}
 }

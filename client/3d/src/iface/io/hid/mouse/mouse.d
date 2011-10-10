@@ -17,8 +17,18 @@
 
 module io.hid.mouse.mouse;
 
-import io.hid.controller;
+private import
+	io.hid.controller;	
 
 interface IMouse : IController {
+	enum Button {
+		LEFT,
+		RIGHT,
+		MIDDLE
+	}
 	
+	enum Action {
+		RELEASE,
+		PRESS
+	}
 }

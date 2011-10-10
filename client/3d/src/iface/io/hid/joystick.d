@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ai.controller.randomwalker;
+module io.hid.joystick;
 
-private import ee.controller;
+public import
+	io.hid.controller;
 
-interface IRandomWalker : IController {
+interface IJoystick : IController {
 	
 }

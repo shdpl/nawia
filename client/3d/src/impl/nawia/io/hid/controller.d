@@ -15,14 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module msg._hid.mouse;
+module impl.nawia.io.hid.controller;
 
-private import msg.msg;
+private import
+	io.hid.controller;
 
-struct MsgHidMouse {
-	Msg _msg;
-	alias _msg this;
+class Controller : IController {
 	
-	//enum Button []
-	//enum status {BTN_UP, BTN_DOWN, BTN_KEEP}
 }

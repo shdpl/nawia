@@ -15,10 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ai.controller.randomwalker;
+module msg._io.hid.mouse.move;
 
-private import ee.controller;
+public import
+	io.hid.mouse.mouse,
+	type.cords.screen,
+	type.cuda.types;
 
-interface IRandomWalker : IController {
+private import
+	msg.msg;
+
+struct MsgMouseMove {
+	//Msg _msg;
+	//alias _msg this;
 	
+	CordsScreen newPos;
+	int2 vector;	//FIXME: Vector!CordsScreen
+	
+	this(CordsScreen from, CordsScreen to) {
+		newPos = to;
+		vector.x = from.x - to.x;
+		vector.y = from.y - to.y;
+	}
+	
+	this(MsgMouseMove other) {
+		//_msg = Msg(other._msg);
+		newPos = other.newPos;
+		vector = other.vector;
+	}
 }

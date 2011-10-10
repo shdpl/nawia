@@ -19,6 +19,10 @@ module impl.glfw.api.impl.glfw.keyboard;
 
 import io.hid.keyboard.keyboard;
 
-package class KeyboardGLFW : IKeyboard {
+package class Keyboard: IKeyboard {
+	//glfwEnable(GLFW_KEY_REPEAT)
+	//glfwEnable(GLFW_SYSTEM_KEYS)
 	
+	//glfwSetCharCallback
+	//glfwSetKeyCallback
 }

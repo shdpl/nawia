@@ -15,10 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ai.controller.randomwalker;
+module msg._io.hid.mouse.click;
 
-private import ee.controller;
+public import
+	io.hid.mouse.mouse;
 
-interface IRandomWalker : IController {
+private import
+	msg.msg,
+	type.cords.screen;
+
+struct MsgMouseClick {
+	//Msg _msg;
+	//alias _msg this;
 	
+	CordsScreen pos;
+	IMouse.Button which;	//TODO: dynamic array?
+	IMouse.Action what;
+	
+	this(CordsScreen pos, IMouse.Button which, IMouse.Action what) {
+		this.pos = pos;
+		this.which = which;
+		this.what = what;
+	}
+	
+	this(MsgMouseClick other) {
+		//_msg = Msg(other._msg);
+		this.pos = other.pos;
+		this.which = other.which;
+		this.what = other.what;
+	}
 }

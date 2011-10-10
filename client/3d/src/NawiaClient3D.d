@@ -31,7 +31,9 @@ private import
 	ge.component.camera,
 	msg.listener,
 	msg._frame.ready,
+	msg._io.hid.mouse.move,
 	impl.glfw.ge.window.window,
+	impl.glfw.io.hid.mouse,
 	impl.nawia.io.res.manager,
 	impl.h3d.ge.renderer,
 	impl.h3d.ee.world,
@@ -58,10 +60,10 @@ private import
 void main(){
 	Demo demo;
 	
-//	demo = new Demo1;
+	demo = new Demo1;
 //	demo = new Demo2;
 //	demo = new Demo3;
-	demo = new Demo4;
+//	demo = new Demo4;
 	
 	demo.init;
 	std.stdio.writeln("load");
@@ -71,16 +73,19 @@ void main(){
 }
 
 abstract class Demo : IMsgListener {
-	mixin InjectMsgProvider!MsgFrameReady _prvdrReady;
+	//mixin InjectMsgProvider!MsgFrameReady _prvdrReady;
+	mixin InjectMsgProvider!MsgMouseMove _prvdrMove;
 	World world;
 	Window wnd;
 	Camera cam;
 	Renderer rndrr;
 	MsgMediator mediator;
+	Mouse mouse;
 	
 	public void init() {
 		mediator = MsgMediator();
-		_prvdrReady.register(this);
+//		_prvdrReady.register(this);
+		_prvdrMove.register(this);
 		
 		auto wndProps = WindowProperties();
 		wndProps.size = CordsScreen(1280,1024); //TODO: Box!CordsScreen
@@ -97,17 +102,26 @@ abstract class Demo : IMsgListener {
 		rndrr.animationFast = true;
 		
 		world = new World;
+		mouse = Mouse();
+		mouse.cursorHidden = true;
 	}
 	
 	public ~this() {
-		_prvdrReady.unregister(this);
+//		_prvdrReady.unregister(this);
+		_prvdrMove.unregister(this);
 	}
 	
 	public void handle(Variant msg) {
-		assert(msg.type == typeid(MsgFrameReady));
-		auto oldRot = cam.rotation;
-		cam.rotation = CordsLocal(oldRot.x,
-			oldRot.y-3/(wnd.fps!=0? wnd.fps : 0.1), oldRot.z, cam);
+		if(msg.type == typeid(MsgFrameReady)) {
+//			auto oldRot = cam.rotation;
+//			cam.rotation = CordsLocal(oldRot.x,
+//				oldRot.y-3/(wnd.fps!=0? wnd.fps : 0.1), oldRot.z, cam);
+		} else if (msg.type == typeid(MsgMouseMove)) {
+			auto payload = msg.get!MsgMouseMove;
+			auto oldRot = cam.rotation;
+			cam.rotation = CordsLocal(oldRot.x + to!real(payload.vector.x) / wnd.size.x * 360,
+				oldRot.y + to!real(payload.vector.y) / wnd.size.y * 360, oldRot.z, cam);	//FIXME: gimbal lock
+		}
 	}
 	
 	abstract void load();

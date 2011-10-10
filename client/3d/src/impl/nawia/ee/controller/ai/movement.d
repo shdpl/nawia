@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ai.controller.randomwalker;
+module impl.nawia.ee.controller.ai.movement;
 
-private import ee.controller;
+private import
+	ee.controller;
 
-interface IRandomWalker : IController {
+interface IMovementController : IController {
 	
 }

@@ -17,6 +17,9 @@
 
 module io.hid.controller;
 
-interface IController {
+public import
+	ee.controller : IEEController = IController;
+
+interface IController : IEEController {
 	
 }
