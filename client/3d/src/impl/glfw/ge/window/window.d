@@ -281,7 +281,7 @@ package class Window: IWindow, IMsgProvider, IMsgListener
 	}
 	 
 	void updateFPS(TickDuration td) {
-			fps = 1_000 /td.msecs;
+			fps = 1_000_000_000 /td.nsecs; //buggy but probably faster?
 			fpsMax = fmax(fps, fpsMax);
 			fpsMin = fmin(fps, fpsMin);
 			fpsAvg += fps;

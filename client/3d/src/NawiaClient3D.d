@@ -59,9 +59,9 @@ void main(){
 	Demo demo;
 	
 //	demo = new Demo1;
-	demo = new Demo2;
+//	demo = new Demo2;
 //	demo = new Demo3;
-//	demo = new Demo4;
+	demo = new Demo4;
 	
 	demo.init;
 	std.stdio.writeln("load");
@@ -142,7 +142,7 @@ class Demo1 : Demo {
 		cam.viewport = Box!CordsScreen(wnd.size);
 		cam.clipNear = .01;
 		cam.clipFar = 1000;	//FIXME: clip!=clip <swap with fov>
-		cam.fov = 45;
+		cam.fov = 73;
 		cam.assign(wnd);	// TODO: Multithreading
 		
 		//enforce( lCtxID in lMat[0].shader.contexts
@@ -185,7 +185,7 @@ class Demo2 : Demo {
 		cam.culling = true;
 		cam.clipNear = .01;
 		cam.clipFar = 1000;	//FIXME: clip!=clip <swap with fov>
-		cam.fov = 45;
+		cam.fov = 73;
 		//cam.rotation = CordsLocal(0, 40, 0, world);
 		cam.assign(wnd);	// TODO: Multithreading
 	}
@@ -257,7 +257,7 @@ class Demo3 : Demo {
 		cam.viewport = Box!CordsScreen(wnd.size);
 		cam.clipNear = .01;
 		cam.clipFar = 1000;
-		cam.fov = 45;
+		cam.fov = 73;
 		cam.assign(wnd);	// TODO: Multithreading
 		
 		light = world.add!Light(
@@ -285,15 +285,15 @@ class Demo4 : Demo {
 		sky.scale = float3(210, 50, 210);
 		sky.shadowsDisabled = true;
 		
-		//rndrr.viewWireFrame = true;
+		rndrr.viewWireFrame = true;
 		pipe = new Pipeline("pipelines/forward.pipeline.xml");
 		cam = world.add!Camera(pipe);
 		cam.translation = CordsLocal(2, 1, 0, world);
-		cam.rotation = CordsLocal(-20, 90, 0, world);
+		cam.rotation = CordsLocal(-20, 135, 0, world);
 		cam.viewport = Box!CordsScreen(wnd.size);
 		cam.clipNear = .01;
 		cam.clipFar = 1000;
-		cam.fov = 45;
+		cam.fov = 73;
 		cam.assign(wnd);	// TODO: Multithreading
 		
 		
