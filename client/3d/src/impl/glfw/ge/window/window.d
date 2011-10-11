@@ -29,7 +29,7 @@ import impl.glfw.glfw;
 
 private import
 	msg.provider,
-	msg._window.close,
+	msg._app.quit,
 	msg._window.redraw,
 	msg._window.resize,
 	msg._frame.ready,
@@ -44,7 +44,7 @@ private import impl.glfw.ge.window.mode,
 
 package class Window: IWindow, IMsgProvider, IMsgListener
 {
-	mixin InjectMsgListener!MsgWindowClose _lstnrClose;
+	mixin InjectMsgListener!MsgAppQuit _lstnrQuit;
 	mixin InjectMsgListener!MsgWindowRedraw _lstnrRedraw;
 	mixin InjectMsgListener!MsgWindowResize _lstnrResize;
 	mixin InjectMsgProvider!MsgFrameReady _prvdrReady;
@@ -210,7 +210,7 @@ package class Window: IWindow, IMsgProvider, IMsgListener
 	}
 	
 	void init() {
-		_lstnrClose.register(this);
+		_lstnrQuit.register(this);
 		glfwSetWindowCloseCallback(&callbackClose);
 		_lstnrRedraw.register(this);
 		glfwSetWindowRefreshCallback(&callbackRefresh);
@@ -227,7 +227,7 @@ package class Window: IWindow, IMsgProvider, IMsgListener
 	
 	~this()
 	{
-		_lstnrClose.unregister(this);
+		_lstnrQuit.unregister(this);
 		_lstnrRedraw.unregister(this);
 		_lstnrResize.unregister(this);
 		_prvdrReady.unregister(this);
@@ -237,7 +237,7 @@ package class Window: IWindow, IMsgProvider, IMsgListener
 	}
 	
 	int onClose() {
-		_lstnrClose.deliver(MsgWindowClose());
+		_lstnrQuit.deliver(MsgAppQuit());
 		return 1; //FIXME
 	}
 	void onResize(int y, int x) {

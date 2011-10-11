@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module msg._hid.keyboard;
+module msg._app.quit;
 
-private import msg.msg;
+public import msg.msg;
 
-struct MsgHidKeyboard {
+
+struct MsgAppQuit {
 	Msg _msg;
 	alias _msg this;
 	
-	//enum Key []
-	//enum status {KEY_UP, KEY_DOWN, KEY_KEEP}
+	
 }

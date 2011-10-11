@@ -22,7 +22,8 @@ private import
 	std.stdio,
 	std.conv,
 	std.exception,
-	std.datetime;
+	std.datetime,
+	std.bitmanip;
 	
 
 private import
@@ -32,8 +33,11 @@ private import
 	msg.listener,
 	msg._frame.ready,
 	msg._io.hid.mouse.move,
+	msg._io.hid.keyboard.press,
+	msg._app.quit,
 	impl.glfw.ge.window.window,
 	impl.glfw.io.hid.mouse,
+	impl.glfw.io.hid.keyboard,
 	impl.nawia.io.res.manager,
 	impl.h3d.ge.renderer,
 	impl.h3d.ee.world,
@@ -60,8 +64,8 @@ private import
 void main(){
 	Demo demo;
 	
-	demo = new Demo1;
-//	demo = new Demo2;
+//	demo = new Demo1;
+	demo = new Demo2;
 //	demo = new Demo3;
 //	demo = new Demo4;
 	
@@ -72,20 +76,27 @@ void main(){
 	demo.run;
 }
 
-abstract class Demo : IMsgListener {
-	//mixin InjectMsgProvider!MsgFrameReady _prvdrReady;
+abstract class Demo : IMsgListener, IMsgProvider {
+	mixin InjectMsgProvider!MsgFrameReady _prvdrReady;
 	mixin InjectMsgProvider!MsgMouseMove _prvdrMove;
+	mixin InjectMsgProvider!MsgKeyPress _prvdrPress;
+	mixin InjectMsgListener!MsgAppQuit _lstnrQuit;
 	World world;
 	Window wnd;
 	Camera cam;
 	Renderer rndrr;
 	MsgMediator mediator;
 	Mouse mouse;
+	Keyboard kb;
+	BitArray move;
 	
 	public void init() {
 		mediator = MsgMediator();
-//		_prvdrReady.register(this);
+		_prvdrReady.register(this);
 		_prvdrMove.register(this);
+		_prvdrPress.register(this);
+		_lstnrQuit.register(this);
+		
 		
 		auto wndProps = WindowProperties();
 		wndProps.size = CordsScreen(1280,1024); //TODO: Box!CordsScreen
@@ -104,11 +115,16 @@ abstract class Demo : IMsgListener {
 		world = new World;
 		mouse = Mouse();
 		mouse.cursorHidden = true;
+		
+		kb = Keyboard();
+		move.init([false, false, false, false]);
 	}
 	
 	public ~this() {
-//		_prvdrReady.unregister(this);
+		_prvdrReady.unregister(this);
 		_prvdrMove.unregister(this);
+		_prvdrPress.unregister(this);
+		_lstnrQuit.unregister(this);
 	}
 	
 	public void handle(Variant msg) {
@@ -116,11 +132,46 @@ abstract class Demo : IMsgListener {
 //			auto oldRot = cam.rotation;
 //			cam.rotation = CordsLocal(oldRot.x,
 //				oldRot.y-3/(wnd.fps!=0? wnd.fps : 0.1), oldRot.z, cam);
+			auto oldTran = cam.translation;
+			if (move[0]) {
+				cam.translation = CordsLocal(oldTran.x, oldTran.y, oldTran.z-10/wnd.fps, world);
+			} if (move[1]) {
+				cam.translation = CordsLocal(oldTran.x+10/wnd.fps, oldTran.y, oldTran.z, world);
+			} if (move[2]) {
+				cam.translation = CordsLocal(oldTran.x, oldTran.y, oldTran.z+10/wnd.fps, world);
+			} if (move[3]) {
+				cam.translation = CordsLocal(oldTran.x-10/wnd.fps, oldTran.y, oldTran.z, world);
+			}
 		} else if (msg.type == typeid(MsgMouseMove)) {
 			auto payload = msg.get!MsgMouseMove;
 			auto oldRot = cam.rotation;
 			cam.rotation = CordsLocal(oldRot.x + to!real(payload.vector.x) / wnd.size.x * 360,
 				oldRot.y + to!real(payload.vector.y) / wnd.size.y * 360, oldRot.z, cam);	//FIXME: gimbal lock
+		} else if (msg.type == typeid(MsgKeyPress)) {
+			auto payload = msg.get!MsgKeyPress;
+			if (payload.key.type == typeid(IKeyboard.KeySpecial)) {
+				auto ks = payload.key.peek!(IKeyboard.KeySpecial);
+				if (*ks == Keyboard.KeySpecial.ESC)
+					_lstnrQuit.deliver(MsgAppQuit());
+				else { //FIXME: think about this events
+					char c = cast(char)*ks;
+					switch (c) {
+						case 'W':
+							move[0] = payload.action == IKeyboard.KeyAction.PRESS;
+						break;
+						case 'D':
+							move[1] = payload.action == IKeyboard.KeyAction.PRESS;
+						break;
+						case 'S':
+							move[2] = payload.action == IKeyboard.KeyAction.PRESS;
+						break;
+						case 'A':
+							move[3] = payload.action == IKeyboard.KeyAction.PRESS;
+						break;
+						default:
+					}
+				}
+			}
 		}
 	}
 	

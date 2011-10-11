@@ -19,10 +19,72 @@ module impl.glfw.api.impl.glfw.keyboard;
 
 import io.hid.keyboard.keyboard;
 
-package class Keyboard: IKeyboard {
-	//glfwEnable(GLFW_KEY_REPEAT)
-	//glfwEnable(GLFW_SYSTEM_KEYS)
+private import
+	std.traits;
+
+private import
+	msg.provider,
+	msg._io.hid.keyboard.press,
+	type.cords.screen,
+	impl.glfw.glfw;
+
+package class Keyboard: IKeyboard, IMsgProvider {
+	mixin Singleton!Keyboard;
+	mixin InjectMsgListener!MsgKeyPress _lstnrPress;
+	CordsScreen _pos;
 	
-	//glfwSetCharCallback
-	//glfwSetKeyCallback
+	
+	public:
+	@property {
+		void disableSystemKeys(bool val) {
+			if (val)
+				glfwDisable(GLFW_SYSTEM_KEYS);
+			else
+				glfwEnable(GLFW_SYSTEM_KEYS);
+		}
+	}
+	
+	void onChar(int character, int action) {
+		_lstnrPress.deliver(MsgKeyPress(
+				IKeyboard.Key(cast(dchar)character),
+				cast(IKeyboard.KeyAction)action));
+	}
+	
+	void onKey(int key, int action) { //FIXME: think about this events
+//		foreach(member; EnumMembers!(IKeyboard.KeySpecial)) {
+//			if (key == member) {
+				_lstnrPress.deliver(MsgKeyPress(
+					IKeyboard.Key(cast(IKeyboard.KeySpecial)key),
+					cast(IKeyboard.KeyAction)action));
+//				break;
+//			}
+//		}
+		
+	}
+	
+	private:
+	this() {
+	}
+	
+	void init() {
+		glfwEnable(GLFW_KEY_REPEAT);
+		
+		_lstnrPress.register(this);
+		glfwSetCharCallback(&callbackChar);
+		glfwSetKeyCallback(&callbackKey);
+	}
+	
+	~this() {
+		glfwSetCharCallback(null);
+		glfwSetKeyCallback(null);
+		_lstnrPress.unregister(this);
+	}
+}
+
+void callbackChar(int action, int character) {
+	Keyboard().onChar(character, action);
+}
+
+void callbackKey(int action, int key) {
+	Keyboard().onKey(key, action);
 }

@@ -22,7 +22,7 @@ private import
 	std.concurrency,
 	std.array,
 	msg._time.idle,
-	msg._window.close;
+	msg._app.quit;
 
 public import
 	msg.msg,
@@ -32,7 +32,7 @@ class MsgMediator : IMsgMediator, IMsgProvider, IMsgListener {
 	private:
 	mixin Singleton!MsgMediator;
 	mixin InjectMsgListener!MsgTimeIdle _lstnrIdle;
-	mixin InjectMsgProvider!MsgWindowClose _prvdrClose;
+	mixin InjectMsgProvider!MsgAppQuit _prvdrQuit;
 	IMsgFilter[IMsgFilter][TypeInfo] _filters;
 	IMsgListener[IMsgListener][TypeInfo] _listeners;
 	IMsgProvider[IMsgProvider][TypeInfo] _providers;
@@ -47,14 +47,14 @@ class MsgMediator : IMsgMediator, IMsgProvider, IMsgListener {
 	
 	~this() {
 		_lstnrIdle.unregister(this);
-		_prvdrClose.unregister(this);
+		_prvdrQuit.unregister(this);
 	}
 	
 	void init() {
 		_running = true;
 		setMaxMailboxSize(thisTid, 1024, OnCrowding.throwException);
 		_lstnrIdle.register(this);
-		_prvdrClose.register(this);
+		_prvdrQuit.register(this);
 	}
 	
 	public:

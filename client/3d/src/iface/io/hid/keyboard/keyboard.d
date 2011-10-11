@@ -17,8 +17,78 @@
 
 module io.hid.keyboard.keyboard;
 
-import io.hid.controller;
+public import
+	std.variant;
+
+public import
+	io.hid.controller;
 
 interface IKeyboard : IController {
+	enum KeySpecial {
+		UNKNOWN	= -1,
+		SPACE	= 32,
+		ESC		= 257,
+		F1,
+		F2,
+		F3,
+		F4,
+		F5,
+		F6,
+		F7,
+		F8,
+		F9,
+		F10,
+		F11,
+		F12,
+		UP		= F12 + 14,
+		DOWN,
+		LEFT,
+		RIGHT,
+		SHIFT_L,
+		SHIFT_R,
+		CTRL_L,
+		CTRL_R,
+		ALT_L,
+		ALT_R,
+		TAB,
+		ENTER,
+		BACKSPACE,
+		INSERT,
+		DEL,
+		PAGE_UP,
+		PAGE_DOWN,
+		HOME,
+		END,
+		KP_0,
+		KP_1,
+		KP_2,
+		KP_3,
+		KP_4,
+		KP_5,
+		KP_6,
+		KP_7,
+		KP_8,
+		KP_9,
+		KP_DIVIDE,
+		KP_MULTIPLY,
+		KP_SUBSTRACT,
+		KP_ADD,
+		KP_DECIMAL,
+		KP_EQUAL,
+		KP_ENTER,
+		KP_NUM_LOCK,
+		CAPS_LOCK,
+		SCROLL_LOCK,
+		PAUSE,
+		SUPER_L,
+		SUPER_R,
+		MENU
+	}
 	
+	enum KeyAction {
+		RELEASE,
+		PRESS
+	}
+	
+	alias Algebraic!(dchar,KeySpecial) Key;
 }
