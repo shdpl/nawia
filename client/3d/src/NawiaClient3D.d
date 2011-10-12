@@ -23,7 +23,8 @@ private import
 	std.conv,
 	std.exception,
 	std.datetime,
-	std.bitmanip;
+	std.bitmanip,
+	std.math;
 	
 
 private import
@@ -133,14 +134,28 @@ abstract class Demo : IMsgListener, IMsgProvider {
 //			cam.rotation = CordsLocal(oldRot.x,
 //				oldRot.y-3/(wnd.fps!=0? wnd.fps : 0.1), oldRot.z, cam);
 			auto oldTran = cam.translation;
-			if (move[0]) {
-				cam.translation = CordsLocal(oldTran.x, oldTran.y, oldTran.z-10/wnd.fps, world);
-			} if (move[1]) {
-				cam.translation = CordsLocal(oldTran.x+10/wnd.fps, oldTran.y, oldTran.z, world);
-			} if (move[2]) {
-				cam.translation = CordsLocal(oldTran.x, oldTran.y, oldTran.z+10/wnd.fps, world);
-			} if (move[3]) {
-				cam.translation = CordsLocal(oldTran.x-10/wnd.fps, oldTran.y, oldTran.z, world);
+			auto oldRot = cam.rotation;
+			immutable auto curVel = 10/wnd.fps;
+			if (move[0]) {		//FORWARD
+				cam.translation = CordsLocal(
+					oldTran.x - sin( degToRad( oldRot.y ) ) * cos( -degToRad( oldRot.x ) ) * curVel,
+					oldTran.y - sin( -degToRad( oldRot.x ) ) * curVel,
+					oldTran.z - cos( degToRad( oldRot.y ) ) * cos( -degToRad( oldRot.x ) ) * curVel, world);
+			} if (move[1]) {	//RIGHT
+				cam.translation = CordsLocal(
+					oldTran.x + sin( degToRad( oldRot.y + 90 ) ) * curVel,
+					oldTran.y,
+					oldTran.z + cos( degToRad( oldRot.y + 90 ) ) * curVel, world);
+			} if (move[2]) {	//BACKWARD
+				cam.translation = CordsLocal(
+					oldTran.x + sin( degToRad( oldRot.y ) ) * cos( -degToRad( oldRot.x ) ) * curVel,
+					oldTran.y + sin( -degToRad( oldRot.x ) ) * curVel,
+					oldTran.z + cos( degToRad( oldRot.y ) ) * cos( -degToRad( oldRot.x ) ) * curVel, world);
+			} if (move[3]) {	//LEFT
+				cam.translation = CordsLocal(
+					to!float(oldTran.x + sin( degToRad( oldRot.y - 90) ) * curVel),
+					oldTran.y,
+					to!float(oldTran.z + cos( degToRad( oldRot.y - 90 ) ) * curVel), world);
 			}
 		} else if (msg.type == typeid(MsgMouseMove)) {
 			auto payload = msg.get!MsgMouseMove;
@@ -182,6 +197,11 @@ abstract class Demo : IMsgListener, IMsgProvider {
 		writeln("fps: average(", wnd.fpsAvg,
 			"), max(", wnd.fpsMax, "), min(", wnd.fpsMin, ")");
 		h3dutDumpMessages();
+	}
+	
+	private float degToRad( float f ) 
+	{
+		return f * (3.1415926f / 180.0f);
 	}
 }
 
