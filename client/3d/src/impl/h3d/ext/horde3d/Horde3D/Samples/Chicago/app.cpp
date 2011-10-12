@@ -126,6 +126,8 @@ void Application::mainLoop( float fps )
 	{
 		_crowdSim->update( _curFPS );
 	}
+
+	//printf("new frame\n");
 	
 	// Set camera parameters
 	h3dSetNodeTransform( _cam, _x, _y, _z, _rx ,_ry, 0, 1, 1, 1 );
@@ -256,6 +258,7 @@ void Application::keyStateHandler()
 void Application::mouseMoveEvent( float dX, float dY )
 {
 	if( _freezeMode == 2 ) return;
+	//printf("%f, %f\n", dX, dY);
 	
 	// Look left/right
 	_ry -= dX / 100 * 30;

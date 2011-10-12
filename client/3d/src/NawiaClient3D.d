@@ -101,7 +101,7 @@ abstract class Demo : IMsgListener, IMsgProvider {
 		
 		auto wndProps = WindowProperties();
 		wndProps.size = CordsScreen(1280,1024); //TODO: Box!CordsScreen
-		wndProps.status = WindowStatus.NORMAL;
+		wndProps.status = WindowStatus.FULLSCREEN;
 		
 		wnd = Window(wndProps);
 		wnd.title = "Nawia RPG";
@@ -160,10 +160,9 @@ abstract class Demo : IMsgListener, IMsgProvider {
 		} else if (msg.type == typeid(MsgMouseMove)) {
 			auto payload = msg.get!MsgMouseMove;
 			auto oldRot = cam.rotation;
-			writeln(payload.vector);
 			cam.rotation = CordsLocal(
-				fmax(fmin(oldRot.x - payload.vector.y, 90), -90),
-				oldRot.y - payload.vector.x,
+				fmax(fmin(oldRot.x + to!float(payload.vector.y)/10, 90), -90),
+				oldRot.y + to!float(payload.vector.x)/10,
 				oldRot.z, cam);
 		} else if (msg.type == typeid(MsgKeyPress)) {
 			auto payload = msg.get!MsgKeyPress;

@@ -28,16 +28,16 @@ private import
 struct MsgMouseMove {
 	//Msg _msg;
 	//alias _msg this;
-	
+
 	CordsScreen newPos;
 	int2 vector;	//FIXME: Vector!CordsScreen
-	
+
 	this(CordsScreen from, CordsScreen to) {
 		newPos = to;
-		vector.x = std.conv.to!int(to.x) - std.conv.to!int(from.x);
-		vector.y = std.conv.to!int(to.y) - std.conv.to!int(from.y);
+		vector.x = from.x - to.x;
+		vector.y = from.y - to.y;
 	}
-	
+
 	this(MsgMouseMove other) {
 		//_msg = Msg(other._msg);
 		newPos = other.newPos;

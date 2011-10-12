@@ -25,17 +25,20 @@ public import
 private import
 	msg._io.hid.mouse.click,
 	msg._io.hid.mouse.move,
+	msg._frame.ready,
 	msg.provider,
+	msg.listener,
 	util.singleton;
 	
 private import
 	glfw;
 
-package class Mouse : IMouse, IMsgProvider {
+package class Mouse : IMouse, IMsgProvider, IMsgListener {
 	mixin Singleton!Mouse;
 	mixin InjectMsgListener!MsgMouseClick _lstnrClick;
 	mixin InjectMsgListener!MsgMouseMove _lstnrMove;
-	CordsScreen _pos;
+	mixin InjectMsgProvider!MsgFrameReady _prvdrReady;
+	private CordsScreen _pos;
 	
 	
 	public:
@@ -59,6 +62,14 @@ package class Mouse : IMouse, IMsgProvider {
 		}
 	}
 	
+	void handle(Variant msg) {
+		assert(msg.type == typeid(MsgFrameReady));
+		int x, y;
+		glfwGetMousePos(&x, &y);
+		if (x != _pos.x || y != _pos.y)
+			onMove(x, y);
+	}
+	
 	//TODO: glfwSetMouseWheelCallback
 	
 	private:
@@ -69,24 +80,20 @@ package class Mouse : IMouse, IMsgProvider {
 		int __tmp1, __tmp2;
 		glfwGetMousePos(&__tmp1, &__tmp2);
 		_pos = CordsScreen(__tmp1, __tmp2);
-		
+		// listen for init, and then register
 		_lstnrClick.register(this);
 		glfwSetMouseButtonCallback(&callbackClick);
 		_lstnrMove.register(this);
-		glfwSetMousePosCallback(&callbackMove);
+		_prvdrReady.register(this);
 	}
 	
 	~this() {
 		_lstnrClick.unregister(this);
 		_lstnrMove.unregister(this);
+		_prvdrReady.unregister(this);
 	}
 }
 
 void callbackClick(int button, int action) {
 	Mouse().onClick(button, action);
-}
-
-void callbackMove(int x, int y) {
-	std.stdio.writeln(x, " ", y);
-	Mouse().onMove(y, x); // wtf?
 }
