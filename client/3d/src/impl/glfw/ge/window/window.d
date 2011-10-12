@@ -196,7 +196,6 @@ package class Window: IWindow, IMsgProvider, IMsgListener
 		int __tmp_i1, __tmp_i2;
 		
 		//glfwInit();
-		glfwDisable(GLFW_AUTO_POLL_EVENTS);
 		
 		with(hints)
 			enforceEx!ExWindowOpen(0 != glfwOpenWindow(size.x, size.y,

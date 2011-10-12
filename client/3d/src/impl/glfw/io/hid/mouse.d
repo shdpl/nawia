@@ -19,7 +19,8 @@ module impl.glfw.io.hid.mouse;
 
 public import
 	std.typecons,
-	io.hid.mouse.mouse;
+	io.hid.mouse.mouse,
+	std.datetime;
 
 private import
 	msg._io.hid.mouse.click,
@@ -86,5 +87,6 @@ void callbackClick(int button, int action) {
 }
 
 void callbackMove(int x, int y) {
-	Mouse().onMove(x, y);
+	std.stdio.writeln(x, " ", y);
+	Mouse().onMove(y, x); // wtf?
 }

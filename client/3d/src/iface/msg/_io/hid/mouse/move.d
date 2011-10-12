@@ -34,8 +34,8 @@ struct MsgMouseMove {
 	
 	this(CordsScreen from, CordsScreen to) {
 		newPos = to;
-		vector.x = from.x - to.x;
-		vector.y = from.y - to.y;
+		vector.x = std.conv.to!int(to.x) - std.conv.to!int(from.x);
+		vector.y = std.conv.to!int(to.y) - std.conv.to!int(from.y);
 	}
 	
 	this(MsgMouseMove other) {

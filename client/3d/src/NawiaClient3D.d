@@ -153,15 +153,18 @@ abstract class Demo : IMsgListener, IMsgProvider {
 					oldTran.z + cos( degToRad( oldRot.y ) ) * cos( -degToRad( oldRot.x ) ) * curVel, world);
 			} if (move[3]) {	//LEFT
 				cam.translation = CordsLocal(
-					to!float(oldTran.x + sin( degToRad( oldRot.y - 90) ) * curVel),
+					oldTran.x + sin( degToRad( oldRot.y - 90) ) * curVel,
 					oldTran.y,
-					to!float(oldTran.z + cos( degToRad( oldRot.y - 90 ) ) * curVel), world);
+					oldTran.z + cos( degToRad( oldRot.y - 90 ) ) * curVel, world);
 			}
 		} else if (msg.type == typeid(MsgMouseMove)) {
 			auto payload = msg.get!MsgMouseMove;
 			auto oldRot = cam.rotation;
-			cam.rotation = CordsLocal(oldRot.x + to!real(payload.vector.x) / wnd.size.x * 360,
-				oldRot.y + to!real(payload.vector.y) / wnd.size.y * 360, oldRot.z, cam);	//FIXME: gimbal lock
+			writeln(payload.vector);
+			cam.rotation = CordsLocal(
+				fmax(fmin(oldRot.x - payload.vector.y, 90), -90),
+				oldRot.y - payload.vector.x,
+				oldRot.z, cam);
 		} else if (msg.type == typeid(MsgKeyPress)) {
 			auto payload = msg.get!MsgKeyPress;
 			if (payload.key.type == typeid(IKeyboard.KeySpecial)) {
