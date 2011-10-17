@@ -21,5 +21,54 @@ private import
 	ee.controller;
 
 class ControllerPersonFirst : IController {
+	/*
+	@property {
+		void moveLeft(TypeInfo msg) {}
+		TypeInfo moveLeft() {}
+	}
+	@property {
+		void moveRight(TypeInfo msg) {}
+		TypeInfo moveLeft() {}
+	}
+	@property {
+		void moveForward(TypeInfo msg) {}
+		TypeInfo moveForward() {}
+	}
+	@property {
+		void moveBackward(TypeInfo msg) {}
+		TypeInfo moveBackward() {}
+	}
 	
+	@property {
+		void leanLeft(TypeInfo msg) {}
+		TypeInfo leanLeft() {}
+	}
+	@property {
+		void leanRight(TypeInfo msg) {}
+		TypeInfo leanRight() {}
+	}
+	
+	@property {
+		void crouch(TypeInfo msg) {}
+		TypeInfo crouch() {}
+	}
+	@property {
+		void crawl(TypeInfo msg) {}
+		TypeInfo crawl() {}
+	}
+	
+	
+	@property {
+		void look(TypeInfo msg) {}
+		TypeInfo look() {}
+	}
+	
+	@property {
+		void action1(TypeInfo msg) {}
+		TypeInfo action1() {}
+	}
+	@property {
+		void action2(TypeInfo msg) {}
+		TypeInfo action2() {}
+	}*/
 }

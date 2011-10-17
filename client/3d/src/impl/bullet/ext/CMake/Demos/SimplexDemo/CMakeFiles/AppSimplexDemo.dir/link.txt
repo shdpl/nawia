@@ -1,0 +1,1 @@
+/usr/bin/c++   -fPIC  -O3 -DNDEBUG    CMakeFiles/AppSimplexDemo.dir/SimplexDemo.o  -o AppSimplexDemo -rdynamic ../OpenGL/libOpenGLSupport.a ../../src/BulletDynamics/libBulletDynamics.a ../../src/BulletCollision/libBulletCollision.a ../../src/LinearMath/libLinearMath.a -lglut -lGL -lGLU 

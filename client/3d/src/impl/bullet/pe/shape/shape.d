@@ -18,6 +18,9 @@
 module impl.bullet.pe.shape.shape;
 
 import type.cuda.types;
+	
+private import
+	impl.bullet.bullet;
 
 class Shape {
 	float3 scale;

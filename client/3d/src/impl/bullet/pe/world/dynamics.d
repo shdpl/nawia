@@ -17,15 +17,58 @@
 
 module impl.bullet.pe.world.dynamics;
 
-import std.datetime;
-
-import impl.bullet.pe.world.collision,
+public import
+	impl.bullet.pe.world.collision,
 	impl.bullet.pe.pbody.rigid;
 
-class WorldDynamics : WorldCollision {
-	void onFrame(StopWatch delta) {}
+private import
+	msg._frame.ready,
+	msg.listener;
+	
+private import
+	impl.bullet.bullet;
+	
+
+class WorldDynamics : WorldCollision, IMsgListener {
+	mixin InjectMsgProvider!MsgFrameReady _lstnrReady;
+	btDiscreteDynamicsWorld _world;
+	btBroadphaseInterface _bphase;
+	btCollisionConfiguration _config;
+	btDispatcher _dispatcher;
+	btConstraintSolver _csolver;
 	
 	public:
-	void add(PBodyRigid rigidBody) {}
-	void del(PBodyRigid rigidBody) {}
+	this(real gravity = 10) {
+		_config = new btDefaultCollisionConfiguration;
+		_dispatcher = new btCollisionDispatcher(_config);
+		
+		_bphase = new btDbvtBroadphase;
+		_csolver = new btSequentialImpulseConstraintSolver;
+		_world = new btDiscreteDynamicsWorld(_dispatcher, _bphase, _csolver, _config);
+		
+		_world.setGravity(new btVector3(0, -gravity, 0)); //TODO: alternate worlds with different gravity?
+		
+		//_lstnrReady.register(this);
+	}
+	
+	~this() {
+		//_lstnrReady.unregister(this);
+	}
+	
+	public:
+	PBodyRigid add(T)() if (is(T : PBodyRigid)) {
+		auto ret = new T();
+		ret.init;
+		return ret;
+	}
+	void del(PBodyRigid b) {
+		b.clear();
+	}
+	
+	void handle(Variant msg) {
+		//assert(msg.type == typeid(MsgFrameReady));
+		//auto m = msg.peek!MsgFrameReady;
+		//_world.stepSimulation(m.delta.to!("seconds", float));	//TODO: check if has parts
+		//_world.debugDrawWorld;	//FIXME
+	}
 }

@@ -18,6 +18,9 @@
 module impl.bullet.pe.shape.hull;
 
 import impl.bullet.pe.shape.shape;
+	
+private import
+	impl.bullet.bullet;
 
 class ShapeHull : Shape {
 	

@@ -18,6 +18,9 @@
 module impl.bullet.pe.shape.sphere;
 
 import impl.bullet.pe.shape.shape;
+	
+private import
+	impl.bullet.bullet;
 
 class ShapeSphere : Shape {
 	

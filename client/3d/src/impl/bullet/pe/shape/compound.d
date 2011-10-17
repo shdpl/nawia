@@ -18,6 +18,9 @@
 module impl.bullet.pe.shape.compound;
 
 import impl.bullet.pe.shape.shape;
+	
+private import
+	impl.bullet.bullet;
 
 class ShapeCompountt : Shape {
 	

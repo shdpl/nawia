@@ -1,6 +1,6 @@
 package net.nawia.gsao.model.world.trait.actor;
 
-import net.nawia.gsao.model.Category;
+import net.nawia.gsao.domain.Category;
 
 public class CombatCharacteristic {
 

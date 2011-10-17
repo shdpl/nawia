@@ -1,6 +1,6 @@
 package net.nawia.gsao.model.world.magic;
 
-import net.nawia.gsao.model.Script;
+import net.nawia.gsao.domain.Script;
 
 public class SpellScripted implements Spell {
 

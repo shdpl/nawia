@@ -17,9 +17,15 @@
 
 module msg._frame.ready;
 
-private import msg.msg;
+private import
+	msg.msg;
+	
+public import
+	core.time;
 
 struct MsgFrameReady {
 	Msg _msg;
 	alias _msg this;
+	
+	TickDuration delta; //FIXME
 }

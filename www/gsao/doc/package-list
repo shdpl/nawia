@@ -1,0 +1,13 @@
+net.nawia.gsao.dao
+net.nawia.gsao.domain
+net.nawia.gsao.model
+net.nawia.gsao.model.world.entity
+net.nawia.gsao.model.world.entity.actor
+net.nawia.gsao.model.world.magic
+net.nawia.gsao.model.world.trait
+net.nawia.gsao.model.world.trait.actor
+net.nawia.gsao.service
+net.nawia.gsao.service.exception
+net.nawia.gsao.service.impl
+net.nawia.gsao.service.local
+net.nawia.gsao.service.remote

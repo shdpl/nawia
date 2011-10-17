@@ -55,22 +55,23 @@ private import
 	
 private import
 	impl.glfw.glfw,
-	impl.h3d.h3d,
 	impl.h3d.utils,
 	impl.polyvox.polyvox,
-	impl.nawia.msg.mediator.mtd;
+	impl.nawia.msg.mediator.mtd,
+	impl.bullet.bullet;
 	
 
 
 void main(){
 	Demo demo;
 	
-//	demo = new Demo1;
-	demo = new Demo2;
+	demo = new Demo1;
+//	demo = new Demo2;
 //	demo = new Demo3;
 //	demo = new Demo4;
 	
 	demo.init;
+	
 	std.stdio.writeln("load");
 	demo.load;
 	std.stdio.writeln("run");

@@ -18,6 +18,9 @@
 module impl.bullet.pe.shape.cylinder;
 
 import impl.bullet.pe.shape.shape;
+	
+private import
+	impl.bullet.bullet;
 
 class ShapeCylinder : Shape {
 	

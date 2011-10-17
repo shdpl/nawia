@@ -1,6 +1,6 @@
 package net.nawia.gsao.model.world.entity;
 
-import net.nawia.gsao.model.Action;
+import net.nawia.gsao.domain.Action;
 
 public class Item {
 

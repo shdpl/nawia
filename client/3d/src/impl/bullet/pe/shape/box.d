@@ -18,6 +18,9 @@
 module impl.bullet.pe.shape.box;
 
 import impl.bullet.pe.shape.shape;
+	
+private import
+	impl.bullet.bullet;
 
 class ShapeBox : Shape {
 	

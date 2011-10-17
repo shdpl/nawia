@@ -2,8 +2,6 @@ package net.nawia.gsao.service;
 
 import java.util.Date;
 
-import net.nawia.gsao.domain.Address;
-import net.nawia.gsao.domain.Model3D;
 import net.nawia.gsao.service.exception.ExceptionServiceHouse;
 
 public interface ServiceHouse {
@@ -17,7 +15,7 @@ public interface ServiceHouse {
 	 * @throws ExceptionServiceHouse
 	 *             when Address could not be retrieved
 	 */
-	Address getAddress(int hid) throws ExceptionServiceHouse;
+	//Address getAddress(int hid) throws ExceptionServiceHouse;
 
 	/**
 	 * Returns unique House name
@@ -52,7 +50,7 @@ public interface ServiceHouse {
 	 * @throws ExceptionServiceHouse
 	 *             when cannot find House 3D model
 	 */
-	Model3D getModel(int hid) throws ExceptionServiceHouse;
+	//Model3D getModel(int hid) throws ExceptionServiceHouse;
 
 	/**
 	 * Returns 3 dimensional Rectangle, that surrounds House

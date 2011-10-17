@@ -2,8 +2,8 @@ package net.nawia.gsao.service;
 
 import java.util.List;
 
-import net.nawia.gsao.domain.Group;
-import net.nawia.gsao.domain.Player;
+import net.nawia.gsao.model.Group;
+import net.nawia.gsao.model.Player;
 
 
 public interface ServiceGroup {

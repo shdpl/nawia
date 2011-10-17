@@ -3,7 +3,7 @@ package net.nawia.gsao.service;
 import java.util.Date;
 import java.util.List;
 
-import net.nawia.gsao.domain.Account;
+import net.nawia.gsao.model.Account;
 
 public interface ServiceAccount {
 	/**

@@ -28,17 +28,10 @@
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
-			</plugin>
+			</plugin><!-- jpa-persistence -->
 		</plugins>
 	</build>
 	<dependencies>
-		<dependency>
-			<groupId>org.exoplatform.portal</groupId>
-			<artifactId>starter-gatein</artifactId>
-			<version>3.1.0-GA</version>
-			<type>ear</type>
-			<scope>compile</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
@@ -52,16 +45,21 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.enterprise</groupId>
-			<artifactId>cdi-api</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.0-api</artifactId>
 			<version>1.0.0.Final</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.ejb</groupId>
+			<artifactId>jboss-ejb-api_3.1_spec</artifactId>
+			<version>1.0.1.Final</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.2</version>
 		</dependency>
 	</dependencies>
 </project>

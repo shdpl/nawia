@@ -1,0 +1,1 @@
+/usr/bin/gcc  -fPIC -fPIC  -O3 -DNDEBUG   -shared -Wl,-soname,libBulletD.so -o libBulletD.so CMakeFiles/BulletD.dir/BTPhysicsD_wrap.o BulletDynamics/libBulletDynamics.a BulletCollision/libBulletCollision.a LinearMath/libLinearMath.a -lstdc++ -lm 

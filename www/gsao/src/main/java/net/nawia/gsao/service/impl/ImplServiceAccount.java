@@ -6,9 +6,8 @@ import java.util.logging.Logger;
 
 //import javax.ejb.*;
 
-import net.nawia.gsao.dao.DaoAccount;
-import net.nawia.gsao.dao.DaoFactory;
-import net.nawia.gsao.domain.Account;
+import net.nawia.gsao.dao.AccountHome;
+import net.nawia.gsao.model.Account;
 import net.nawia.gsao.service.local.ServiceAccountLocal;
 import net.nawia.gsao.service.remote.ServiceAccountRemote;
 

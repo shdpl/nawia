@@ -4,8 +4,8 @@ import java.util.Map;
 
 
 
-import net.nawia.gsao.domain.Account;
-import net.nawia.gsao.domain.Ban;
+import net.nawia.gsao.model.Account;
+import net.nawia.gsao.model.Ban;
 
 public interface ServiceBan {
 

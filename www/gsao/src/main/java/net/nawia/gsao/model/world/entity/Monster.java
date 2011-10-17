@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.SortedSet;
 
-import net.nawia.gsao.model.Category;
+import net.nawia.gsao.domain.Category;
 import net.nawia.gsao.model.world.entity.actor.Summon;
 import net.nawia.gsao.model.world.entity.actor.Voices;
 import net.nawia.gsao.model.world.trait.Light;
