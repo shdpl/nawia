@@ -24,8 +24,8 @@ public import
 	core.time;
 
 struct MsgFrameReady {
-	Msg _msg;
-	alias _msg this;
+	//Msg _msg;
+	//alias _msg this;
 	
 	TickDuration delta; //FIXME
 }

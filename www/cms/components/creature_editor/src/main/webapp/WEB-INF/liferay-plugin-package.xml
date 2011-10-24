@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin-package PUBLIC "-//Liferay//DTD Plugin Package 4.3.6//EN" "http://www.liferay.com/dtd/liferay-plugin-package_4_3_0.dtd">
 <plugin-package>
-    <name>Hello ZK2</name>
-    <module-id>/com/demo/test/hellozk2/war</module-id>
-    <types>
-        <type>portlet</type>
-    </types>
-    <tags>
-        <tag>Hello ZK2</tag>
-    </tags>
-    <short-description>
-        Hello ZK2
- </short-description>
-    <change-log>
-        Initial Deployment
- </change-log>
- 
-    <author>Sam</author>
-    <licenses>
-        <license osi-approved="true">AGPL</license>
-    </licenses>
-    <liferay-versions>
-        <liferay-version>6.0.0+</liferay-version>
-        <liferay-version>6.0.0+</liferay-version>
-    </liferay-versions>
+	<name>Hello ZK2</name>
+	<module-id>/com/demo/test/hellozk2/war</module-id>
+	<types>
+		<type>portlet</type>
+	</types>
+	<tags>
+		<tag>nawia</tag>
+		<tag>creature</tag>
+		<tag>editor</tag>
+	</tags>
+	<short-description>
+		Nawia Creature Editor
+	</short-description>
+	<change-log>
+		Initial Deployment
+	</change-log>
+
+	<author>shd</author>
+	<licenses>
+		<license osi-approved="true">AGPL</license>
+	</licenses>
+	<liferay-versions>
+		<liferay-version>6.0.0+</liferay-version>
+		<liferay-version>6.0.0+</liferay-version>
+	</liferay-versions>
 </plugin-package>

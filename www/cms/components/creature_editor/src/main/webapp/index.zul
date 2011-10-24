@@ -1,173 +1,72 @@
 <?page title="Main Page" contentType="text/html;charset=UTF-8"?>
-<zk>
+<zk xmlns="http://www.zkoss.org/2005/zul"
+	xmlns:h="http://www.w3.org/1999/xhtml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
 	<window title="Creature Editor" border="normal">
-		<menubar>
-			<menu label="File">
-				<menupopup>
-					<menuitem label="New" />
-					<menuitem label="Delete" />
-					<menuseparator />
-					<menuitem label="Import..." />
-					<menuitem label="Export..." />
-				</menupopup>
-			</menu>
+		<menubar use="net.nawia.www.cms.components.creature_editor.controller.CtrlMenu">
+			<menuitem label="New" />
+			<menuitem label="Delete" />
+			<menuitem label="Edit" />
+			<menuseparator />
+			<menuitem label="Import..." />
+			<menuitem label="Export..." />
+			<menuseparator />
 			<menuitem label="Help" />
 		</menubar>
-		<vbox spacing="0">
-			<hbox spacing="0" widths="15%,">
-				<vbox spacing="0">
-					<combobox id="combo" mold="rounded" autodrop="true"
-						buttonVisible="true" value="search...">
-						<comboitem>Amazon</comboitem>
-						<comboitem>Valkyrie</comboitem>
-						<comboitem>Carrion Worm</comboitem>
-						<comboitem>Rotworm</comboitem>
-					</combobox>
-					<tree>
-						<treechildren>
-							<treeitem>
-								<treerow>
-									<treecell label="Amazons" />
-								</treerow>
-								<treechildren>
-									<treeitem>
-										<treerow>
-											<treecell label="Amazon" />
-										</treerow>
-									</treeitem>
-									<treeitem>
-										<treerow>
-											<treecell label="Valkyrie" />
-										</treerow>
-									</treeitem>
-								</treechildren>
-							</treeitem>
-							<treeitem>
-								<treerow>
-									<treecell label="Annelids" />
-								</treerow>
-								<treechildren>
-									<treeitem>
-										<treerow>
-											<treecell
-												label="Carrion Worm" />
-										</treerow>
-									</treeitem>
-									<treeitem>
-										<treerow>
-											<treecell label="Rotworm" />
-										</treerow>
-									</treeitem>
-								</treechildren>
-							</treeitem>
-							<treeitem>
-								<treerow>
-									<treecell label="Apes" />
-								</treerow>
-								<treechildren>
-									<treeitem>
-										<treerow>
-											<treecell label="Kongra" />
-										</treerow>
-									</treeitem>
-									<treeitem>
-										<treerow>
-											<treecell label="Merlkin" />
-										</treerow>
-									</treeitem>
-									<treeitem>
-										<treerow>
-											<treecell label="Sibang" />
-										</treerow>
-									</treeitem>
-								</treechildren>
-							</treeitem>
-							<treeitem>
-								<treerow>
-									<treecell label="Arachnids" />
-								</treerow>
-								<treechildren>
-									<treeitem>
-										<treerow>
-											<treecell label="Crystal Spider" />
-										</treerow>
-									</treeitem>
-									<treeitem>
-										<treerow>
-											<treecell label="Giant Spider" />
-										</treerow>
-									</treeitem>
-									<treeitem>
-										<treerow>
-											<treecell label="Poison Spider" />
-										</treerow>
-									</treeitem>
-									<treeitem>
-										<treerow>
-											<treecell label="Scorpion" />
-										</treerow>
-									</treeitem>
-									<treeitem>
-										<treerow>
-											<treecell label="Spider" />
-										</treerow>
-									</treeitem>
-									<treeitem>
-										<treerow>
-											<treecell label="Tarantula" />
-										</treerow>
-									</treeitem>
-								</treechildren>
-							</treeitem>
-						</treechildren>
-					</tree>
-				</vbox>
+		<hbox spacing="0">
+			<vbox spacing="0" use="net.nawia.www.cms.components.creature_editor.controller.CtrlMonster">
+				<combobox id="search" mold="rounded" autodrop="true"
+					buttonVisible="true" value="search...">
+					<comboitem forEach="${ monsterList }">${ each.name }</comboitem>
+				</combobox>
+				<tree id="monsterTree" mold="paging" />
+			</vbox>
 
-				<splitter height="100%" collapse="before" />
+			<splitter height="100%" collapse="before" />
 
-				<tabbox>
-					<tabs>
-						<tab label="General" />
-						<tab label="Look" />
-						<tab label="Attack" />
-						<tab label="Defense" />
-						<tab label="Summon" />
-						<tab label="Loot" />
-						<tab label="Voices" />
-						<tab label="Respawn" />
-						<tab label="Experience" />
-					</tabs>
-					<tabpanels>
-						<tabpanel>
-							<include src="general.zul" />
-						</tabpanel>
-						<tabpanel>
-							<include src="look.zul" />
-						</tabpanel>
-						<tabpanel>
-							<include src="attack.zul" />
-						</tabpanel>
-						<tabpanel>
-							<include src="defense.zul" />
-						</tabpanel>
-						<tabpanel>
-							<include src="summon.zul" />
-						</tabpanel>
-						<tabpanel>
-							<include src="loot.zul" />
-						</tabpanel>
-						<tabpanel>
-							<include src="voices.zul" />
-						</tabpanel>
-						<tabpanel>
-							<include src="respawn.zul" />
-						</tabpanel>
-						<tabpanel>
-							<include src="experience.zul" />
-						</tabpanel>
-					</tabpanels>
-				</tabbox>
-			</hbox>
-		</vbox>
+			<tabbox vflex="1" >
+				<tabs>
+					<tab label="General" />
+					<tab label="Look" />
+					<tab label="Attack" />
+					<tab label="Defense" />
+					<tab label="Summon" />
+					<tab label="Loot" />
+					<tab label="Voices" />
+					<tab label="Respawn" />
+					<tab label="Experience" />
+				</tabs>
+				<tabpanels>
+					<tabpanel>
+						<include src="general.zul" />
+					</tabpanel>
+					<tabpanel>
+						<include src="look.zul" />
+					</tabpanel>
+					<tabpanel>
+						<include src="attack.zul" />
+					</tabpanel>
+					<tabpanel>
+						<include src="defense.zul" />
+					</tabpanel>
+					<tabpanel>
+						<include src="summon.zul" />
+					</tabpanel>
+					<tabpanel>
+						<include src="loot.zul" />
+					</tabpanel>
+					<tabpanel>
+						<include src="voices.zul" />
+					</tabpanel>
+					<tabpanel>
+						<include src="respawn.zul" />
+					</tabpanel>
+					<tabpanel>
+						<include src="experience.zul" />
+					</tabpanel>
+				</tabpanels>
+			</tabbox>
+		</hbox>
 	</window>
 </zk>

@@ -162,7 +162,7 @@ abstract class Demo : IMsgListener, IMsgProvider {
 			auto payload = msg.get!MsgMouseMove;
 			auto oldRot = cam.rotation;
 			cam.rotation = CordsLocal(
-				fmax(fmin(oldRot.x + to!float(payload.vector.y)/10, 90), -90),
+				fmax(fmin(oldRot.x + to!float(payload.vector.y)/10, 85), -85),
 				oldRot.y + to!float(payload.vector.x)/10,
 				oldRot.z, cam);
 		} else if (msg.type == typeid(MsgKeyPress)) {

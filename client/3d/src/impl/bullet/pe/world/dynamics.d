@@ -48,11 +48,11 @@ class WorldDynamics : WorldCollision, IMsgListener {
 		
 		_world.setGravity(new btVector3(0, -gravity, 0)); //TODO: alternate worlds with different gravity?
 		
-		//_lstnrReady.register(this);
+		_lstnrReady.register(this);
 	}
 	
 	~this() {
-		//_lstnrReady.unregister(this);
+		_lstnrReady.unregister(this);
 	}
 	
 	public:
@@ -66,9 +66,9 @@ class WorldDynamics : WorldCollision, IMsgListener {
 	}
 	
 	void handle(Variant msg) {
-		//assert(msg.type == typeid(MsgFrameReady));
-		//auto m = msg.peek!MsgFrameReady;
-		//_world.stepSimulation(m.delta.to!("seconds", float));	//TODO: check if has parts
-		//_world.debugDrawWorld;	//FIXME
+		assert(msg.type == typeid(MsgFrameReady));
+		auto m = msg.peek!MsgFrameReady;
+		_world.stepSimulation(m.delta.to!("seconds", float));	//TODO: check if has parts
+		_world.debugDrawWorld;	//FIXME
 	}
 }
