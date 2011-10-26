@@ -4,14 +4,12 @@ private import
 	type.cords.world,
 	impl.h3d.h3d,
 	msg.provider,
-	msg._ee.world.init,
-	impl.bullet.pe.world.dynamics;
+	msg._ee.world.init;
 	
 public import impl.h3d.ge.component.component;
 
 class World : Component, IMsgProvider {
 	mixin InjectMsgListener!MsgWorldInit _prvdrInit;
-	WorldDynamics _peWorld;
 	
 	
 	this() {
@@ -19,8 +17,6 @@ class World : Component, IMsgProvider {
 		super();
 		_prvdrInit.register(this);
 		_prvdrInit.deliver(MsgWorldInit());
-		
-		_peWorld = new WorldDynamics;
 	}
 	
 	~this() {

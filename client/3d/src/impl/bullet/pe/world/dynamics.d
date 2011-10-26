@@ -23,7 +23,8 @@ public import
 
 private import
 	msg._frame.ready,
-	msg.listener;
+	msg.listener,
+	std.stdio;
 	
 private import
 	impl.bullet.bullet;
@@ -36,6 +37,7 @@ class WorldDynamics : WorldCollision, IMsgListener {
 	btCollisionConfiguration _config;
 	btDispatcher _dispatcher;
 	btConstraintSolver _csolver;
+	btRigidBody _tmp[];
 	
 	public:
 	this(real gravity = 10) {
@@ -56,11 +58,17 @@ class WorldDynamics : WorldCollision, IMsgListener {
 	}
 	
 	public:
-	PBodyRigid add(T)() if (is(T : PBodyRigid)) {
+	PBodyRigid add(T, E...)(E args) if (is(T : PBodyRigid)) {
 		auto ret = new T();
-		ret.init;
+		ret.init(args);
+		_world.addRigidBody(ret.btHandle());
+		
+		//ret.btHandle().activate();
+		
+		_tmp ~= ret.btHandle();
 		return ret;
 	}
+	
 	void del(PBodyRigid b) {
 		b.clear();
 	}
@@ -69,6 +77,5 @@ class WorldDynamics : WorldCollision, IMsgListener {
 		assert(msg.type == typeid(MsgFrameReady));
 		auto m = msg.peek!MsgFrameReady;
 		_world.stepSimulation(m.delta.to!("seconds", float));	//TODO: check if has parts
-		_world.debugDrawWorld;	//FIXME
 	}
 }

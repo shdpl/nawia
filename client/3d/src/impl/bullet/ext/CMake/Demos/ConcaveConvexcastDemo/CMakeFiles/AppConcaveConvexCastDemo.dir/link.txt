@@ -1,1 +1,0 @@
-/usr/bin/c++   -fPIC  -O3 -DNDEBUG    CMakeFiles/AppConcaveConvexCastDemo.dir/ConcaveConvexcastDemo.o CMakeFiles/AppConcaveConvexCastDemo.dir/main.o  -o AppConcaveConvexCastDemo -rdynamic ../OpenGL/libOpenGLSupport.a ../../src/BulletDynamics/libBulletDynamics.a ../../src/BulletCollision/libBulletCollision.a ../../src/LinearMath/libLinearMath.a -lglut -lGL -lGLU 

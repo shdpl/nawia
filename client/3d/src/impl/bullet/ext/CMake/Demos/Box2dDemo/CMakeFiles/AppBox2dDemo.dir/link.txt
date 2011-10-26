@@ -1,1 +1,0 @@
-/usr/bin/c++   -fPIC  -O3 -DNDEBUG    CMakeFiles/AppBox2dDemo.dir/main.o CMakeFiles/AppBox2dDemo.dir/Box2dDemo.o  -o AppBox2dDemo -rdynamic ../OpenGL/libOpenGLSupport.a ../../src/BulletDynamics/libBulletDynamics.a ../../src/BulletCollision/libBulletCollision.a ../../src/LinearMath/libLinearMath.a -lglut -lGL -lGLU 

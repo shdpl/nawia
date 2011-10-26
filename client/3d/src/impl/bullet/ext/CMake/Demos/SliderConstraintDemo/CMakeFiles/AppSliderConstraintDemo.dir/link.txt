@@ -1,1 +1,0 @@
-/usr/bin/c++   -fPIC  -O3 -DNDEBUG    CMakeFiles/AppSliderConstraintDemo.dir/SliderConstraintDemo.o CMakeFiles/AppSliderConstraintDemo.dir/main.o  -o AppSliderConstraintDemo -rdynamic ../OpenGL/libOpenGLSupport.a ../../src/BulletDynamics/libBulletDynamics.a ../../src/BulletCollision/libBulletCollision.a ../../src/LinearMath/libLinearMath.a -lglut -lGL -lGLU 

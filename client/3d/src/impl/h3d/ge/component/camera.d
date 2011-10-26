@@ -19,6 +19,7 @@ module impl.h3d.ge.component.camera;
 
 
 public import
+	std.datetime,
 	type.geometric.box,
 	ge.window.window,
 	ge.component.camera,
@@ -43,6 +44,8 @@ class Camera : Component, ICamera, IMsgListener, IMsgProvider {
 	mixin InjectMsgProvider!MsgWindowResize _prvdrResize;
 	mixin InjectMsgProvider!MsgTimeIdle _prvdrIdle;
 	mixin InjectMsgListener!MsgFrameReady _lstnrReady;
+	
+	StopWatch _timer;
 	BufferPixel renderTarget;
 	float _fov;
 	
@@ -52,6 +55,7 @@ class Camera : Component, ICamera, IMsgListener, IMsgProvider {
 	public:
 	this(H3DNode id) {
 		super(id);
+		_timer.start();
 	}
 	
 	//h3dGetCameraProjMat - hopefully wont be needed
@@ -174,7 +178,8 @@ class Camera : Component, ICamera, IMsgListener, IMsgProvider {
 		if (msg.type == typeid(MsgTimeIdle)) {
 			render();
 			h3dFinalizeFrame();
-			_lstnrReady.deliver(MsgFrameReady());
+			_lstnrReady.deliver(MsgFrameReady(_timer.peek()));
+			_timer.reset();
 		} else if (msg.type == typeid(MsgWindowResize)) {
 			auto payload = msg.get!MsgWindowResize;
 			viewport = Box!CordsScreen(CordsScreen(0,0), payload.newSize);

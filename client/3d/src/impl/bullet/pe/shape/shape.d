@@ -20,8 +20,10 @@ module impl.bullet.pe.shape.shape;
 import type.cuda.types;
 	
 private import
-	impl.bullet.bullet;
+	impl.bullet.bullet,
+	impl.bullet.pe.pbody.rigid;
 
-class Shape {
+class Shape : PBodyRigid {
 	float3 scale;
+	
 }

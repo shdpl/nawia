@@ -1,1 +1,0 @@
-/usr/bin/c++   -fPIC  -O3 -DNDEBUG    CMakeFiles/AppThreadingDemo.dir/main.o  -o AppThreadingDemo -rdynamic ../../src/BulletMultiThreaded/libBulletMultiThreaded.a ../../src/BulletDynamics/libBulletDynamics.a ../../src/BulletCollision/libBulletCollision.a ../../src/LinearMath/libLinearMath.a -lpthread 

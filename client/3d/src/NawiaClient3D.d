@@ -51,7 +51,9 @@ private import
 	impl.h3d.ge.component.model,
 	impl.nawia.ee.actor,
 	impl.polyvox.ee.map.volume.simple,
-	impl.polyvox.ee.map.extractormesh;
+	impl.polyvox.ee.map.extractormesh,
+	impl.bullet.pe.world.dynamics,
+	impl.bullet.pe.shape.box;
 	
 private import
 	impl.glfw.glfw,
@@ -84,6 +86,8 @@ abstract class Demo : IMsgListener, IMsgProvider {
 	mixin InjectMsgProvider!MsgKeyPress _prvdrPress;
 	mixin InjectMsgListener!MsgAppQuit _lstnrQuit;
 	World world;
+	WorldDynamics _peWorld;
+	PBodyRigid _shapes[];
 	Window wnd;
 	Camera cam;
 	Renderer rndrr;
@@ -115,6 +119,7 @@ abstract class Demo : IMsgListener, IMsgProvider {
 		rndrr.animationFast = true;
 		
 		world = new World;
+		_peWorld = new WorldDynamics;
 		mouse = Mouse();
 		mouse.cursorHidden = true;
 		
@@ -158,6 +163,7 @@ abstract class Demo : IMsgListener, IMsgProvider {
 					oldTran.y,
 					oldTran.z + cos( degToRad( oldRot.y - 90 ) ) * curVel, world);
 			}
+			onAnimate();
 		} else if (msg.type == typeid(MsgMouseMove)) {
 			auto payload = msg.get!MsgMouseMove;
 			auto oldRot = cam.rotation;
@@ -206,10 +212,12 @@ abstract class Demo : IMsgListener, IMsgProvider {
 	{
 		return f * (3.1415926f / 180.0f);
 	}
+	
+	void onAnimate() {}
 }
 
 class Demo1 : Demo {
-	Component platform, sky;
+	Component platform, sky, man;
 	Pipeline pipe;
 	Light light;
 	
@@ -218,6 +226,7 @@ class Demo1 : Demo {
 		platform = world.add!Scene("models/platform/platform.scene.xml"); //("platform/platform.scene.xml");
 		platform.translation = CordsLocal(-1, 0, 0, world);
 		platform.scale = float3(.23, .23, .23);
+		_shapes ~= _peWorld.add!ShapeBox(float3(-1, -1-10, 0), float3(50, 2, 50));
 		
 		sky = platform.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
 		sky.scale = float3(210, 50, 210);
@@ -226,7 +235,7 @@ class Demo1 : Demo {
 		pipe = new Pipeline("pipelines/forward.pipeline.xml");
 		cam = world.add!Camera(pipe);
 		cam.translation = CordsLocal(15, 3, 20, platform);
-		cam.rotation = CordsLocal(-10, 120, 0, platform);
+		cam.rotation = CordsLocal(-10, 20, 0, platform);
 		cam.viewport = Box!CordsScreen(wnd.size);
 		cam.clipNear = .01;
 		cam.clipFar = 1000;	//FIXME: clip!=clip <swap with fov>
@@ -246,6 +255,12 @@ class Demo1 : Demo {
 		light.shadowSegmentation = .9f;
 		light.shadowBias = .001f;
 		light.color = ColorRGB!float(.9f, .7f, .75f);
+		
+		man = platform.add!Scene("models/man/man.scene.xml");
+		man.translation = CordsLocal(0, 0, 0, world);
+		man.scale = float3(5, 5, 5);
+		_shapes ~= _peWorld.add!ShapeBox(float3(0, 20, 0), float3(5, 9, 3), 75);
+
 		/*
 		auto man = new Actor(
 			new Model("man/man.scene.xml", new Animation("man.anim")),
@@ -256,6 +271,19 @@ class Demo1 : Demo {
 		for(int i=0; i<99; i++)
 			platform.add(mPositioner.position(man.dup));
 		*/
+	}
+	
+	void onAnimate() {
+		float[15] _floats;
+		if (_shapes.length == 2) {
+			auto _transform = _shapes[1].btHandle.getWorldTransform();
+			_transform.getOpenGLMatrix(_floats.ptr);
+			man.transformationRelative = [
+				float4(_floats[0], _floats[1], _floats[2], _floats[3]),
+				float4(_floats[4], _floats[5], _floats[6], _floats[7]),
+				float4(_floats[8], _floats[9], _floats[10], _floats[11]),
+				float4(_floats[12], _floats[13], _floats[14], 0f)];
+		}
 	}
 	
 }

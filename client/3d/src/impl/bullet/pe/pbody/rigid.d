@@ -17,10 +17,13 @@
 
 module impl.bullet.pe.pbody.rigid;
 
-import impl.bullet.pe.shape.shape,
+private import
+	impl.bullet.bullet,
+	impl.bullet.pe.shape.shape,
+	impl.bullet.pe.pbody.pbody,
 	type.cuda.types;
 
-class PBodyRigid {
+abstract class PBodyRigid : PBody {
 	private:
 	//plRigidBodyHandle _handle;
 	
@@ -37,4 +40,6 @@ class PBodyRigid {
 	
 	float4 rotation() {return float4(0,0,0,0);}
 	void rotation(float4 rotation) {}
+	
+	abstract btRigidBody btHandle();
 }
