@@ -20,28 +20,28 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="100" attack="150"/>
 		<attack name="lifedrain" interval="2000" chance="9" range="7" target="1" min="-0" max="-470">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 		<attack name="death" interval="2000" chance="9" length="7" spread="0" min="0" max="-500">
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>
 		<attack name="death" interval="2000" chance="9" range="7" target="1" min="0" max="-75">
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>
 		<attack name="firecondition" interval="2000" chance="9" target="1" range="7" min="-80" max="-80">
-			<attribute key="areaEffect" value="fire"/>
-			<attribute key="shootEffect" value="fire"/>
+			<attribute key="areaeffect" value="fire"/>
+			<attribute key="shooteffect" value="fire"/>
 		</attack>	
 		<attack name="manadrain" interval="2000" chance="9" radius="5" target="0" min="-0" max="-200">
-			<attribute key="areaEffect" value="watersplash"/>
+			<attribute key="areaeffect" value="watersplash"/>
 		</attack>		
 		</attacks>
 	<defenses armor="45" defense="55">
 		<defense name="healing" interval="2000" chance="9" min="400" max="900">
-			<attribute key="areaEffect" value="greenshimmer"/>
+			<attribute key="areaeffect" value="greenshimmer"/>
 		</defense>
 		<defense name="invisible" interval="2000" chance="9" duration="6000">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

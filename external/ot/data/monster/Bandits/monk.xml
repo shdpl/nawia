@@ -22,10 +22,10 @@
 	</attacks>
 	<defenses armor="20" defense="22">
 		<defense name="healing" interval="2000" chance="20" min="30" max="50">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 		<defense name="speed" interval="2000" chance="20" speedchange="320" duration="3000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

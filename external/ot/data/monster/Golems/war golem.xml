@@ -19,18 +19,18 @@
 	</flags>
 	<attacks>
 		<attack name="melee" interval="2000" skill="50" attack="100"/>
-		<attack name="skills" interval="2000" chance="9" range="7" target="1" sword="-1" club="-1" fist="-1" axe="-1">
-			<attribute key="areaEffect" value="redspark"/>
+		<attack name="skills" interval="2000" chance="9" range="7" target="1"> <!-- TODO: sword="-1" club="-1" fist="-1" axe="-1" -->
+			<attribute key="areaeffect" value="redspark"/>
 		</attack>
 		<attack name="skills" interval="2000" chance="9" length="8" spread="0" shielding="-1">
-			<attribute key="areaEffect" value="redspark"/>
+			<attribute key="areaeffect" value="redspark"/>
 		</attack>
 		<attack name="energy" interval="2000" chance="9" range="7" target="1" min="-165" max="-220">
-			<attribute key="shootEffect" value="energyball"/>
-			<attribute key="areaEffect" value="energyarea"/>
+			<attribute key="shooteffect" value="energyball"/>
+			<attribute key="areaeffect" value="energyarea"/>
 		</attack>
 		<attack name="energycondition" interval="2000" chance="9" length="8" spread="0" min="-200" max="-200">
-			<attribute key="areaEffect" value="energy"/>
+			<attribute key="areaeffect" value="energy"/>
 		</attack>
 		<attack name="outfit" interval="2000" chance="9" range="7" monster="skeleton" duration="5000">
 			<attribute key="areaeffect" value="blueshimmer"/>
@@ -38,10 +38,10 @@
 	</attacks>
 	<defenses armor="40" defense="45">
 		<defense name="speed" interval="2000" chance="9" speedchange="290" duration="4000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 		<defense name="healing" interval="2000" chance="9" min="400" max="460">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

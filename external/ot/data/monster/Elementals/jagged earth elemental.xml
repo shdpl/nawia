@@ -21,22 +21,22 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="90" attack="60"/>
 		<attack name="poisoncondition" interval="2000" chance="14" length="6" spread="0" min="-200" max="-320">
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>
 		<attack name="earth" interval="2000" chance="14" range="9" target="1" radius="2" min="-100" max="-250">
-			<attribute key="areaEffect" value="stones"/>
+			<attribute key="areaeffect" value="stones"/>
 		</attack>
 		<attack name="speed" interval="2000" chance="14" range="8" speedchange="-220" duration="5000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>	
 		<attack name="poison" interval="2000" chance="14" target="1" range="7"  min="-0" max="-200">
-			<attribute key="shootEffect" value="smallearth"/>
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="shooteffect" value="smallearth"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>
 	</attacks>
 	<defenses armor="25" defense="25">
 	<defense name="healing" interval="2000" chance="14" min="125" max="175">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>	
 	</defenses>
 	<elements>

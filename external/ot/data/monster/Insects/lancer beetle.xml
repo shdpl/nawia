@@ -9,7 +9,7 @@
 <flag attackable="1"/>
 <flag hostile="1"/>
 <flag illusionable="1"/>
-<flag convinceable="670"/>
+<flag convinceable="1"/> <!-- TODO: 670 -->
 <flag pushable="0"/>
 <flag canpushitems="1"/>
 <flag canpushcreatures="0"/>
@@ -20,14 +20,14 @@
 <attacks>
 <attack name="melee" interval="2000" skill="40" attack="60"/>
 <attack name="lifedrain" interval="2000" chance="18" length="8" spread="3" min="-0" max="-90">
-<attribute key="areaEffect" value="poison"/>
+<attribute key="areaeffect" value="poison"/>
 </attack>
 <attack name="poisonfield" interval="2000" chance="18" target="0" radius="3">
 </attack>
 </attacks>
 	<defenses armor="25" defense="25">
 		<defense name="invisible" interval="2000" chance="18" duration="5000">
-			<attribute key="areaEffect" value="blueshimmer"/>										
+			<attribute key="areaeffect" value="blueshimmer"/>										
 		</defense>	
 	</defenses>
 <elements>

@@ -20,19 +20,19 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="170" attack="330"/>
 		<attack name="fire" interval="2000" chance="14" radius="7" target="1" min="-50" max="-200">
-			<attribute key="areaEffect" value="firearea"/>
+			<attribute key="areaeffect" value="firearea"/>
 		</attack>
 		<attack name="poisoncondition" interval="2000" chance="14" length="6" spread="0" min="-100" max="-100">
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>	
 		<attack name="death" interval="2000" chance="14" length="6" spread="0" min="-250" max="-570">
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>		
 		<attack name="death" interval="2000" chance="14" target="1" min="-50" max="-600">
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>
 		<attack name="fire" interval="2000" chance="14" length="6" spread="0" min="-50" max="-600">
-			<attribute key="areaEffect" value="firearea"/>
+			<attribute key="areaeffect" value="firearea"/>
 		</attack>
 	</attacks>
 	<defenses armor="48" defense="54"/>

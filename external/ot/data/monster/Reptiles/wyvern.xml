@@ -20,18 +20,18 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="50" attack="40" poison="480"/>
 		<attack name="poisoncondition" interval="2000" chance="16" length="8" spread="3" min="-20" max="-240">
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>
 		<attack name="drunk" interval="2000" chance="16" length="8" spread="3" duration="25000">
-			<attribute key="areaEffect" value="whitenote"/>
+			<attribute key="areaeffect" value="whitenote"/>
 		</attack>
 	</attacks>
 	<defenses armor="25" defense="18">
 		<defense name="healing" interval="2000" chance="16" min="76" max="84">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 		<defense name="speed" interval="2000" chance="16" speedchange="290" duration="5000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>	
 	</defenses>
 	<elements>

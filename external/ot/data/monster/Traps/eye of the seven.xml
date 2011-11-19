@@ -19,7 +19,7 @@
 	</flags>
 	<attacks>
 		<attack name="lifedrain" interval="2000" chance="25" range="7" min="0" max="-500">
-		<attribute key="areaEffect" value="redshimmer"/>
+		<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 	</attacks>
 	<defenses armor="1" defense="1"/>

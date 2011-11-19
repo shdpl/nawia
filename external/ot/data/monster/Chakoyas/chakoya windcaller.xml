@@ -21,16 +21,16 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="12" attack="20"/>
 		<attack name="ice" interval="2000" chance="18" range="7" min="-16" max="-32">
-			<attribute key="shootEffect" value="ice"/>
-			<attribute key="areaEffect" value="icearea"/>
+			<attribute key="shooteffect" value="ice"/>
+			<attribute key="areaeffect" value="icearea"/>
 		</attack>
 		<attack name="ice" interval="2000" chance="18" length="4" spread="3" min="-9" max="-20">
-			<attribute key="areaEffect" value="icearea"/>
+			<attribute key="areaeffect" value="icearea"/>
 		</attack>
 	</attacks>
 	<defenses armor="30" defense="30">
 		<defense name="invisible" interval="2000" chance="18" duration="4000">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

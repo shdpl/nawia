@@ -21,13 +21,13 @@
 		<attack name="melee" interval="2000" skill="40" attack="30"/>
 		<attack name="drunk" interval="2000" chance="16" range="7" target="1"/>
 		<attack name="energy" interval="2000" chance="16" range="7" target="1" min="-10" max="-30">
-			<attribute key="shootEffect" value="energyball"/>
-			<attribute key="areaEffect" value="energy"/>
+			<attribute key="shooteffect" value="energyball"/>
+			<attribute key="areaeffect" value="energy"/>
 		</attack>
 	</attacks>
 	<defenses armor="10" defense="10">
 			<defense name="healing" interval="2000" chance="16" min="10" max="20">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>		
 	</defenses>
 	<immunities>

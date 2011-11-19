@@ -24,7 +24,7 @@
 	<elements>
 		<element holyPercent="10"/>
 		<element icePercent="-10"/>
-		<elemetn deathPercent="-5"/>
+		<element deathPercent="-5"/>
 	</elements>
 		<voices interval="2000" chance="9">
 		<voice sentence="Yoooohhuuuu!"/>

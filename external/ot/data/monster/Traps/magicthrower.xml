@@ -20,8 +20,8 @@
 	</flags>
 	<attacks>
 		<attack name="energy" interval="2000" range="40" max="-100">
-			<attribute key="shootEffect" value="energyball"/>
-			<attribute key="areaEffect" value="energy"/>
+			<attribute key="shooteffect" value="energyball"/>
+			<attribute key="areaeffect" value="energy"/>
 		</attack>
 	</attacks>
 	<defenses armor="1" defense="1"/>

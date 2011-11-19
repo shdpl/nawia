@@ -21,20 +21,20 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="40" attack="100" poison="160"/>
 		<attack name="ice" interval="2000" chance="16" range="7" min="-50" max="-100">
-			<attribute key="shootEffect" value="ice"/>
-			<attribute key="areaEffect" value="iceattack"/>
+			<attribute key="shooteffect" value="ice"/>
+			<attribute key="areaeffect" value="iceattack"/>
 		</attack> 
 		<attack name="speed" interval="2000" chance="16" range="7" radius="4" target="0" speedchange="-600">
-		<attribute key="areaEffect" value="iceattack"/>
+		<attribute key="areaeffect" value="iceattack"/>
 		</attack>
 		<attack name="speed" interval="2000" chance="16" range="7" target="1" speedchange="-260" duration="5000">
-			<attribute key="shootEffect" value="snowball"/>
-			<attribute key="areaEffect" value="poff"/>
+			<attribute key="shooteffect" value="snowball"/>
+			<attribute key="areaeffect" value="poff"/>
 		</attack>
 	</attacks>
 	<defenses armor="25" defense="20">
 		<defense name="speed" interval="2000" chance="16" speedchange="380" duration="5000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

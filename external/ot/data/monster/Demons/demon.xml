@@ -21,29 +21,29 @@
 		<attack name="melee" interval="2000" skill="80" attack="100"/>
 		<attack name="manadrain" interval="2000" chance="10" range="7" min="-0" max="-120"/>
 		<attack name="fire" interval="2000" chance="10"  range="7" radius="7" target="1" min="-150" max="-250">
-			<attribute key="shootEffect" value="fire"/>
-			<attribute key="areaEffect" value="firearea"/>
+			<attribute key="shooteffect" value="fire"/>
+			<attribute key="areaeffect" value="firearea"/>
 		</attack>
 		<attack name="energy" interval="2000" chance="10"  range="1" radius="1" target="1" min="-210" max="-300">
-			<attribute key="shootEffect" value="energy"/>
-			<attribute key="areaEffect" value="energy"/>
+			<attribute key="shooteffect" value="energy"/>
+			<attribute key="areaeffect" value="energy"/>
 		</attack>		
 		<attack name="firefield" interval="2000" chance="10"  range="7" radius="1" target="1">
-			<attribute key="shootEffect" value="fire"/>
+			<attribute key="shooteffect" value="fire"/>
 		</attack>		
 		<attack name="energy" interval="2000"  chance="10"  length="8" spread="0" min="-300" max="-460">
-			<attribute key="areaEffect" value="purpleenergy"/>
+			<attribute key="areaeffect" value="purpleenergy"/>
 		</attack>
 		<attack name="speed" interval="2000" chance="10"  range="7" speedchange="-220" duration="5000">
-		<attribute key="areaEffect" value="redshimmer"/>
+		<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 	</attacks>
 	<defenses armor="30" defense="30">
 		<defense name="healing" interval="2000" chance="10"  min="120" max="280">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 		<defense name="speed" interval="2000" chance="10" speedchange="360" duration="20000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

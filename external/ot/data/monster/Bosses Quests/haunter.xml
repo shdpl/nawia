@@ -20,19 +20,19 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="50" attack="50"/>
 		<attack name="energy" interval="2000" chance="16" radius="3" target="0" min="-0" max="-130">
-			<attribute key="areaEffect" value="energy"/>
+			<attribute key="areaeffect" value="energy"/>
 		</attack>
 		<attack name="poisoncondition" interval="2000" chance="16" range="7" target="1" start="13">
-			<attribute key="shootEffect" value="poison"/>
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="shooteffect" value="poison"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>
 	</attacks>
 	<defenses armor="25" defense="20">
 		<defense name="healing" interval="2000" chance="16" min="100" max="155">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 		<defense name="speed" interval="2000" chance="16" speedchange="360" duration="80000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

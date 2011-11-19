@@ -20,15 +20,15 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="40" attack="60"/>
 		<attack name="physical" interval="2000" chance="18" length="5" spread="3" min="-0" max="-200">
-			<attribute key="areaEffect" value="redspark"/>
+			<attribute key="areaeffect" value="redspark"/>
 		</attack>
 	</attacks>
 	<defenses armor="30" defense="30">
 		<defense name="invisible" interval="2000" chance="18" duration="2000">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 		<defense name="healing" interval="2000" chance="18" min="75" max="125">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

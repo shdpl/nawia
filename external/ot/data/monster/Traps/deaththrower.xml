@@ -20,8 +20,8 @@
   </flags>
   <attacks>
     <attack name="death" interval="2000" chance="25" range="7">
-      <attribute key="shootEffect" value="suddendeath"/>
-	  <attribute key="areaEffect" value="MORTAREA"/>
+      <attribute key="shooteffect" value="suddendeath"/>
+	  <attribute key="areaeffect" value="MORTAREA"/>
 	  
     </attack>
   </attacks>

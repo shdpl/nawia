@@ -22,7 +22,7 @@
 	</attacks>
 	<defenses armor="18" defense="14">
 		<defense name="speed" interval="2000" chance="25" speedchange="238" duration="5000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

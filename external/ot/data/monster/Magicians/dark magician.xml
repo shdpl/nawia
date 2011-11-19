@@ -20,23 +20,23 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="30" attack="20"/>
 		<attack name="fire" interval="2000" chance="14" range="7" radius="1" target="1" min="-5" max="-40">
-			<attribute key="shootEffect" value="fire"/>
-			<attribute key="areaEffect" value="firearea"/>
+			<attribute key="shooteffect" value="fire"/>
+			<attribute key="areaeffect" value="firearea"/>
 		</attack>	
 		<attack name="energy" interval="2000" chance="14" range="7" target="1" min="-20" max="-30">
-			<attribute key="shootEffect" value="energyball"/>
-			<attribute key="areaEffect" value="energy"/>
+			<attribute key="shooteffect" value="energyball"/>
+			<attribute key="areaeffect" value="energy"/>
 		</attack>	
 	</attacks>
 	<defenses armor="15" defense="20">
 		<defense name="healing" interval="2000" chance="14" min="60" max="85">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 		<defense name="invisible" interval="5000" chance="14" duration="5000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 		<defense name="speed" interval="2000" chance="14" speedchange="290" duration="5000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>	
 	</defenses>
 	<elements>

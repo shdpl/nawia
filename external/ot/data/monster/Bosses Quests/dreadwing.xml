@@ -20,7 +20,7 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="40" attack="100" />
 		<attack name="physical" interval="2000" chance="25" target="1" radius="7" min="-0" max="-100">
-			<attribute key="areaEffect" value="whitenote"/>
+			<attribute key="areaeffect" value="whitenote"/>
 		</attack>
 	</attacks>
 	<defenses armor="30" defense="30"/>

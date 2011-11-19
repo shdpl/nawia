@@ -20,28 +20,28 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="120" attack="160"/>
 		<attack name="death" interval="2000" chance="9" length="8" spread="0" min="-0" max="-500">
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>	
 		<attack name="ice" interval="2000" chance="9" target="0" length="8" spread="3" min="0" max="-430">
-			<attribute key="areaEffect" value="icetornado"/>
+			<attribute key="areaeffect" value="icetornado"/>
 		</attack>		
 		<attack name="death" interval="2000" chance="9" radius="4" target="1" min="-0" max="-760">
-			<attribute key="areaEffect" value="mortarea"/>
-			<attribute key="shootEffect" value="death"/>
+			<attribute key="areaeffect" value="mortarea"/>
+			<attribute key="shooteffect" value="death"/>
 		</attack>	
 		<attack name="energycondition" interval="2000" chance="9" radius="4" target="0" min="-250" max="-250">
-			<attribute key="areaEffect" value="energy"/>
+			<attribute key="areaeffect" value="energy"/>
 		</attack>		
 		<attack name="drunk" interval="2000" chance="9" radius="6" target="0">
-			<attribute key="areaEffect" value="purplenote"/>
+			<attribute key="areaeffect" value="purplenote"/>
 		</attack>		
 		<attack name="poison" interval="2000" chance="9" length="8" spread="0" min="-0" max="-585">
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>
 	</attacks>
 	<defenses armor="50" defense="45">
 		<defense name="healing" interval="2000" chance="9" min="300" max="500">
-			<attribute key="areaEffect" value="greenshimmer"/>
+			<attribute key="areaeffect" value="greenshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

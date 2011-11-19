@@ -14,18 +14,18 @@
 		<flag canpushitems="1"/>
 		<flag canpushcreatures="0"/>
 		<flag staticattack="0"/>
-		<flag targetdistance="0"/>
+		<flag targetdistance="1"/>
 		<flag runonhealth="0"/>
 	</flags>
 	<attacks>
 		<attack name="melee" interval="2000" skill="30" attack="20"/>
 		<attack name="death" interval="2000" chance="20" range="3" target="1" min="-400" max="-700">
-			<attribute key="shootEffect" value="death"/>
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="shooteffect" value="death"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>	
 		<attack name="energy" interval="2000" chance="20" range="3" target="1" min="-200" max="-450">
-			<attribute key="shootEffect" value="energyball"/>
-			<attribute key="areaEffect" value="energy"/>
+			<attribute key="shooteffect" value="energyball"/>
+			<attribute key="areaeffect" value="energy"/>
 		</attack>			
 	</attacks>
 	<defenses armor="1" defense="5"/>

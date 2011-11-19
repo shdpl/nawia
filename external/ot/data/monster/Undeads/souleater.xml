@@ -20,22 +20,22 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="30" attack="90" />
 		<attack name="death" interval="2000" chance="14" range="7" target="1" max="-170">
-			<attribute key="shootEffect" value="death"/>
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="shooteffect" value="death"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>	
 		<attack name="death" interval="2000" chance="14" length="8" spread="0" min="-125" max="-255">
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>	
 		<attack name="physical" interval="2000" chance="14" length="8" spread="3" max="-0">
-			<attribute key="areaEffect" value="rednote"/>
+			<attribute key="areaeffect" value="rednote"/>
 		</attack>	
 		<attack name="manadrain" interval="2000" chance="14" range="7" target="1" max="-100">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>	
 	</attacks>
 	<defenses armor="25" defense="20">
 		<defense name="invisible" interval="2000" chance="22">
-			<attribute key="areaEffect" value="blueshimmer"/>											
+			<attribute key="areaeffect" value="blueshimmer"/>											
 		</defense>	
 	</defenses>
 	<elements>

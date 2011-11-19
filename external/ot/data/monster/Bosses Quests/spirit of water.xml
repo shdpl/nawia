@@ -21,22 +21,22 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="70" attack="100"/>
 		<attack name="physical" interval="2000" change="22" target="1" radius="2" min="-150" max="-300">
-			<attribute key="areaEffect" value="bluebubble"/>
+			<attribute key="areaeffect" value="bluebubble"/>
 		</attack>
 		<attack name="poison" interval="2000" chance="14" radius="5" target="0">
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>
 		<attack name="poison" interval="2000" chance="14" target="1" min="-0" max="-130" >
-			<attribute key="shootEffect" value="poison"/>
+			<attribute key="shooteffect" value="poison"/>
 		</attack>
 		<attack name="energy" interval="2000" chance="14" range="7" min="-0" max="-175">
-			<attribute key="shootEffect" value="snowball"/>
-			<attribute key="areaEffect" value="poff"/>
+			<attribute key="shooteffect" value="snowball"/>
+			<attribute key="areaeffect" value="poff"/>
 		</attack>
 	</attacks>
 	<defenses armor="0" defense="0">
 	<defense name="healing" interval="2000" chance="14" min="50" max="70">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

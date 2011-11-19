@@ -20,19 +20,19 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="50" attack="60"/>
 		<attack name="physical" interval="2000" chance="14" range="7" min="-0" max="-135">
-			<attribute key="shootEffect" value="smallstone"/>
+			<attribute key="shooteffect" value="smallstone"/>
 		</attack>
 		<attack name="speed" interval="2000" chance="14" range="7" radius="1" target="1" speedchange="-220" duration="5000">
-			<attribute key="areaEffect" value="sleep"/>
+			<attribute key="areaeffect" value="sleep"/>
 		</attack>
 		<attack name="physical" interval="2000" chance="14" length="5" spread="6" min="-0" max="-170">
-			<attribute key="areaEffect" value="groundshaker"/>
+			<attribute key="areaeffect" value="groundshaker"/>
 		</attack>
 		<attack name="lifedrain" interval="2000" chance="14" radius="3" target="0" min="-0" max="-160">
-			<attribute key="areaEffect" value="poff"/>
+			<attribute key="areaeffect" value="poff"/>
 		</attack>
 		<attack name="poisoncondition" interval="2000" chance="14" spread="0" length="6" poison="220">
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>	
 	</attacks>
 	<defenses armor="30" defense="32"/>

@@ -21,22 +21,22 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="80" attack="50"/>
 		<attack name="lifedrain" interval="2000" chance="12" length="8" spread="0" min="-0" max="-125">
-			<attribute key="areaEffect" value="purplenote"/>
+			<attribute key="areaeffect" value="purplenote"/>
 		</attack>
 		<attack name="physical" interval="2000" chance="12" radius="5" range="7" target="1" min="-0" max="-320" drown="20">
-			<attribute key="areaEffect" value="bluebubble"/>
+			<attribute key="areaeffect" value="bluebubble"/>
 		</attack>
 		<attack name="drown" interval="2000" chance="12" radius="5" range="7" target="1" min="-0" max="-320" drown="20">
-			<attribute key="areaEffect" value="bluebubble"/>
+			<attribute key="areaeffect" value="bluebubble"/>
 		</attack>
 		<attack name="drown" interval="2000" chance="12" length="8" spread="3" range="7" min="-0" drown="20">
-			<attribute key="areaEffect" value="poff"/>
+			<attribute key="areaeffect" value="poff"/>
 		</attack>
 		<attack name="physical" interval="2000" chance="12" radius="3" target="0" min="-0" max="-400">
-			<attribute key="areaEffect" value="blackspark"/>
+			<attribute key="areaeffect" value="blackspark"/>
 		</attack>
 		<attack name="physical" interval="2000" chance="12" range="7" radius="3" target="1" min="-0" max="-200">
-			<attribute key="shootEffect" value="snowball"/>
+			<attribute key="shooteffect" value="snowball"/>
 		</attack>
 	</attacks>
 	<defenses armor="51" defense="52"/>

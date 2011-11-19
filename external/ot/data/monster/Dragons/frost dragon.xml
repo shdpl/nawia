@@ -20,35 +20,35 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="100" attack="40"/>
 		<attack name="physical" interval="2000" chance="9" range="7" target="1" min="-0" max="-200">
-			<attribute key="areaEffect" value="poff"/>
+			<attribute key="areaeffect" value="poff"/>
 		</attack>
 		<attack name="lifedrain" interval="2000" chance="9" length="8" spread="3" min="-0" max="-380">
-			<attribute key="areaEffect" value="poff"/>
+			<attribute key="areaeffect" value="poff"/>
 		</attack>
 		<attack name="speed" interval="2000" chance="9" length="8" spread="3" speedchange="-720" duration="5000">
-			<attribute key="areaEffect" value="icearea"/>
+			<attribute key="areaeffect" value="icearea"/>
 		</attack>
 		<attack name="speed" interval="2000" chance="9" radius="4" target="1" speedchange="-500" duration="5000">
-			<attribute key="shootEffect" value="ice"/>
-			<attribute key="areaEffect" value="icearea"/>
+			<attribute key="shooteffect" value="ice"/>
+			<attribute key="areaeffect" value="icearea"/>
 		</attack>
 		<attack name="ice" interval="2000" chance="9" radius="4" target="1" min="-0" max="-240">
-			<attribute key="shootEffect" value="ice"/>
-			<attribute key="areaEffect" value="icearea"/>
+			<attribute key="shooteffect" value="ice"/>
+			<attribute key="areaeffect" value="icearea"/>
 		</attack>
 		<attack name="ice" interval="2000" chance="9" radius="3" target="0" min="-0" max="-120">
-			<attribute key="areaEffect" value="icearea"/>
+			<attribute key="areaeffect" value="icearea"/>
 		</attack>
 		<attack name="speed" interval="2000" chance="9" radius="3" target="0" speedchange="-500" duration="5000">
-			<attribute key="areaEffect" value="poff"/>
+			<attribute key="areaeffect" value="poff"/>
 		</attack>
 		<defense name="speed" interval="2000" chance="9" speedchange="360" duration="5000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>	
 	</attacks>
 	<defenses armor="22" defense="35">
 		<defense name="healing" interval="2000" chance="9" min="175" max="225">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

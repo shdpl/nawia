@@ -20,13 +20,13 @@
 <attacks>
 <attack name="melee" interval="2000" skill="90" attack="110"/>
 		<attack name="earth" interval="2000" chance="18" radius="3" max="-980">
-			<attribute key="areaEffect" value="greenspark"/>
+			<attribute key="areaeffect" value="greenspark"/>
 		</attack>	
 		<attack name="lifedrain" interval="2000" chance="18" length="8" spread="0" min="-200" max="-300">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>	
 		<attack name="speed" interval="2000" chance="18" radius="3" speedchange="-800">
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>	
 </attacks>
 <defenses armor="55" defense="60"/>

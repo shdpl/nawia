@@ -22,14 +22,14 @@
 		<attack name="melee" interval="2000" skill="90" attack="140"/>
 		<attack name="manadrain" interval="2000" chance="14" range="7" min="-0" max="-120"/>
 		<attack name="firefield" interval="2000" chance="14" range="7" radius="1" target="1">
-			<attribute key="shootEffect" value="fire"/>
+			<attribute key="shooteffect" value="fire"/>
 		</attack>
 		<attack name="fire" interval="2000" chance="14" range="5" radius="4" target="1" min="-0" max="-305">
-			<attribute key="areaEffect" value="firearea"/>
-			<attribute key="shootEffect" value="fire"/>
+			<attribute key="areaeffect" value="firearea"/>
+			<attribute key="shooteffect" value="fire"/>
 		</attack>
 		<attack name="energy" interval="2000" chance="14" length="8" spread="0" min="-300" max="-460">
-			<attribute key="areaEffect" value="purpleenergy"/>
+			<attribute key="areaeffect" value="purpleenergy"/>
 		</attack>
 	</attacks>
 	<defenses armor="40" defense="45">

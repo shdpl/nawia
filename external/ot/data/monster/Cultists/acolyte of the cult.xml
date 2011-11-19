@@ -20,15 +20,15 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="30" attack="50" poison="40"/>
 		<attack name="lifedrain" interval="2000" chance="16" range="7" target="1" min="-60" max="-120">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>		
 		<attack name="drunk" interval="2000" chance="16" range="7" target="1" duration="5000">
-			<attribute key="areaEffect" value="stun"/>
+			<attribute key="areaeffect" value="stun"/>
 		</attack>	
 	</attacks>
 	<defenses armor="10" defense="20">
 		<defense name="healing" interval="2000" chance="16" min="40" max="60">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

@@ -20,7 +20,7 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="10" attack="5"/>
 		<attack name="poison" interval="2000" chance="25" min="-1" max="-3">
-			<attribute key="areaEffect" value="greenbubble"/>
+			<attribute key="areaeffect" value="greenbubble"/>
 		</attack>
 	</attacks>
 	<defenses armor="1" defense="5"/>

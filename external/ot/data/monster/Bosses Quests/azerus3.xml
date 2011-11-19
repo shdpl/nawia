@@ -23,19 +23,19 @@
     <attacks> 
         <attack name="melee" interval="2000" skill="110" attack="150"/>		
         <attack name="manadrain" interval="2000" chance="14" range="7" max="-3800"> 
-            <attribute key="areaEffect" value="blueshimmer"/> 
+            <attribute key="areaeffect" value="blueshimmer"/> 
         </attack> 
         <attack name="death" interval="2000" chance="14" range="7" min="-0" max="-524"> 
-                  <attribute key="shootEffect" value="suddendeath"/> 
-                <attribute key="areaEffect" value="mortarea"/> 
+                  <attribute key="shooteffect" value="suddendeath"/> 
+                <attribute key="areaeffect" value="mortarea"/> 
           </attack> 		
 		<attack name="fire" interval="2000" chance="14" range="7" target="1" max="-1050">
-			<attribute key="areaEffect" value="fireattack"/>
+			<attribute key="areaeffect" value="fireattack"/>
 		</attack>	
 </attacks>		
     <defenses armor="50" defense="50">																						
 		<defense name="healing" interval="2000" chance="14" min="500" max="1000">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>	
 </defenses>
  <elements>

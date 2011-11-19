@@ -20,18 +20,18 @@
 	</flags>
 	<attacks>
 		<attack name="lifedrain" interval="2000" change="25" range="7" max="-7">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 	</attacks>
 	<defenses armor="10" defense="15">
 		<defense name="speed" interval="2000" chance="16" speedchange="310">
-			<attribute key="areaEffect" value="greenshimmer"/>
+			<attribute key="areaeffect" value="greenshimmer"/>
 		</defense>
 		<defense name="healing" interval="2000" chance="16" min="8" max="16">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
-		<defense name="Invisible" interval="2000" chance="25">
-			<attribute key="areaEffect" value="blueshimmer"/>
+		<defense name="invisible" interval="2000" chance="25">
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

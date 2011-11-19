@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <monster name="Massive Water Elemental" nameDescription="a massive water elemental" race="undead" experience="1100" speed="500" manacost="0">
 	<health now="1250" max="1250"/>
-	<look type="11" corpse="10499" corpseAid="102"/>
+	<look type="11" corpse="10499"/><!-- TODO: corpseAid="102" -->
 	<targetchange interval="5000" chance="8"/>
 	<strategy attack="100" defense="0"/>
 	<flags>
@@ -20,20 +20,20 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="40" attack="80" poison="300"/>
 		<attack name="poisonfield" interval="2000" chance="16" range="7" target="1" radius="3">
-			<attribute key="shootEffect" value="poison"/>
+			<attribute key="shooteffect" value="poison"/>
 		</attack>
 		<attack name="poisoncondition" interval="2000" chance="16" length="8" spread="3" min="-20" max="-420">
-			<attribute key="shootEffect" value="poison"/>
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="shooteffect" value="poison"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>
 		<attack name="ice" interval="2000" chance="16" range="10" min="-170" max="-210">
-			<attribute key="shootEffect" value="ice"/>
-			<attribute key="areaEffect" value="icearea"/>
+			<attribute key="shooteffect" value="ice"/>
+			<attribute key="areaeffect" value="icearea"/>
 		</attack> 	
 	</attacks>
 	<defenses armor="20" defense="22">
 		<defense name="healing" interval="2000" chance="16" min="100" max="150">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

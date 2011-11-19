@@ -19,10 +19,10 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="50" attack="50"/>
 		<attack name="physical" interval="2000" chance="20" range="7" min="-0" max="-70">
-			<attribute key="shootEffect" value="whirlwindclub"/>
+			<attribute key="shooteffect" value="whirlwindclub"/>
 		</attack>
 		<attack name="drunk" interval="2000" chance="20" range="7" target="1" duration="15000">
-			<attribute key="areaEffect" value="stun"/>
+			<attribute key="areaeffect" value="stun"/>
 		</attack>	
 	</attacks>
 	<defenses armor="17" defense="24"/>

@@ -20,19 +20,19 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="200" attack="180"/>
 		<attack name="energy" interval="2000" chance="14" range="3" target="1" min="-180" max="-860">
-			<attribute key="areaEffect" value="purpleenergy"/>
+			<attribute key="areaeffect" value="purpleenergy"/>
 		</attack>
 		<attack name="death" interval="2000" chance="14" length="8" spread="0" min="-600" max="-850">
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>
 		<attack name="madareth skills" interval="2000" chance="14" >
-			<attribute key="areaEffect" value="poff"/>
+			<attribute key="areaeffect" value="poff"/>
 		</attack>
 		<attack name="manadrain" interval="2000" chance="14" target="1" spread="1" min="-250" max="-850">
-			<attribute key="areaEffect" value="energyarea"/>
+			<attribute key="areaeffect" value="energyarea"/>
 		</attack>
 		<attack name="manadrain" interval="2000" chance="14" range="7" target="1" radius="5" min="-0" max="-225">
-			<attribute key="areaEffect" value="energyarea"/>
+			<attribute key="areaeffect" value="energyarea"/>
 		</attack>
 	</attacks>
 	<defenses armor="48" defense="46"/>

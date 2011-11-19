@@ -20,32 +20,32 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="80" attack="113"/>
 		<attack name="death" interval="2000" chance="10" range="7" target="1" min="-0" max="-250">
-			<attribute key="shootEffect" value="death"/>
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="shooteffect" value="death"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>
 		<attack name="speed" interval="2000" chance="10" range="7" speedchange="-440" duration="5000">
-			<attribute key="shootEffect" value="death"/>
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="shooteffect" value="death"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>	
 		<attack name="lifedrain" interval="2000" chance="10" target="0" radius="3" min="-0" max="-300">
-			<attribute key="areaEffect" value="blackspark"/>
+			<attribute key="areaeffect" value="blackspark"/>
 		</attack>		
 		<attack name="fire" interval="2000" chance="10" length="5" spread="3" min="-200" max="-300">
-			<attribute key="areaEffect" value="explosionarea"/>
+			<attribute key="areaeffect" value="explosionarea"/>
 		</attack>	
 		<attack name="death" interval="2000" chance="10" length="8" spread="0" min="-0" max="-700">
-			<attribute key="areaEffect" value="redspark"/>
+			<attribute key="areaeffect" value="redspark"/>
 		</attack>			
 		<attack name="death" interval="2000" chance="10" range="7" radius="4" target="0" min="-0" max="-300">
-			<attribute key="areaEffect" value="redspark"/>
+			<attribute key="areaeffect" value="redspark"/>
 		</attack>
 		<attack name="skills" interval="2000" chance="10" target="0" radius="4" shielding="-1">
-			<attribute key="areaEffect" value="yellownote"/>
+			<attribute key="areaeffect" value="yellownote"/>
 		</attack>
 	</attacks>
 	<defenses armor="20" defense="20">
 		<defense name="speed" interval="2000" chance="10" speedchange="360" duration="2000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

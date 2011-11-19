@@ -20,15 +20,15 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="70" attack="105"/>
 		<attack name="lifedrain" interval="2000" chance="16" target="0" radius="4" min="0" max="-130">
-			<attribute key="areaEffect" value="smallclouds"/>
+			<attribute key="areaeffect" value="smallclouds"/>
 		</attack>
 		<attack name="lifedrain" interval="2000" chance="16" target="1" range="7" min="0" max="-230">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 	</attacks>
 	<defenses armor="30" defense="30">
 		<defense name="invisible" interval="2000" chance="16" duration="6000">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

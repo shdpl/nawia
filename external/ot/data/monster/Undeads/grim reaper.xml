@@ -20,26 +20,26 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="106" attack="140"/>
 		<attack name="physical" interval="2000" chance="12" range="7" max="-65">
-			<attribute key="shootEffect" value="suddendeath"/>
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="shooteffect" value="suddendeath"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>
 		<attack name="death" interval="2000" chance="12" range="7" radius="4" target="1" min="-225" max="-275">
-			<attribute key="shootEffect" value="fire"/>
-			<attribute key="areaEffect" value="redspark"/>
+			<attribute key="shooteffect" value="fire"/>
+			<attribute key="areaeffect" value="redspark"/>
 	 	</attack>		
 		<attack name="death" interval="2000" chance="12" length="8" spread="0" min="-490" max="-720">
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>
-		<attack name="fire" interval="2000" chance="12" range="7" lenght="8" spread="3" max="-300">
-			<attribute key="areaEffect" value="fireattack"/>
+		<attack name="fire" interval="2000" chance="12" range="7" length="8" spread="3" max="-300">
+			<attribute key="areaeffect" value="fireattack"/>
 		</attack>
 	</attacks>
 	<defenses armor="50" defense="50">
 		<defense name="healing" interval="2000" chance="12" min="350" max="430">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 		<defense name="speed" interval="2000" chance="12" speedchange="600" duration="5000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>	
 	</defenses>
 	<elements>

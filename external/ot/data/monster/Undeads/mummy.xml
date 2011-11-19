@@ -20,11 +20,11 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="50" attack="28" poison="80"/>
 		<attack name="speed" interval="2000" chance="20" range="7" speedchange="-600">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 		<attack name="death" interval="2000" chance="20" range="7" target="1" min="-30" max="-40">
-			<attribute key="shootEffect" value="death"/>
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="shooteffect" value="death"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>	
 	</attacks>
 	<defenses armor="14" defense="20"/>

@@ -19,8 +19,8 @@
 	</flags>
 	<attacks>
 		<attack name="physical" interval="2000"  range="40" max="-110">
-			<attribute key="shootEffect" value="throwingstar"/>
-			<attribute key="areaEffect" value="yellowspark"/>
+			<attribute key="shooteffect" value="throwingstar"/>
+			<attribute key="areaeffect" value="yellowspark"/>
 		</attack>
 	</attacks>
 	<defenses armor="1" defense="1"/>

@@ -21,13 +21,13 @@
 		<attack name="melee" interval="2000" skill="60" attack="100"/>
 		<attack name="soulfire" interval="2000" chance="30"/> 
 		<attack name="fire" interval="2000" chance="30" range="7" target="1" min="-150" max="-170">
-			<attribute key="shootEffect" value="fire"/>
-			<attribute key="areaEffect" value="fireattack"/>
+			<attribute key="shooteffect" value="fire"/>
+			<attribute key="areaeffect" value="fireattack"/>
 		</attack>	
 	</attacks>	
 	<defenses armor="50" defense="55">
 		<defense name="speed" interval="2000" chance="30" speedchange="380" duration="5000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

@@ -21,12 +21,12 @@
     <attacks>
     <attack name="melee" interval="2000" attack="1" skill="60"/>
  	<attack name="mass healing" interval="2000" chance="20" target="0" min="10000" max="10000">
-	<attribute key="areaEffect" value="blueshimmer"/>
+	<attribute key="areaeffect" value="blueshimmer"/>
 	</attack>
     </attacks>
     <defenses armor="0" defense="0">
       <defense name="healing" interval="2000" chance="20" min="10000" max="10000">
-	  <attribute key="areaEffect" value="blueshimmer"/>
+	  <attribute key="areaeffect" value="blueshimmer"/>
 	  </defense>
     </defenses>
     <immunities>

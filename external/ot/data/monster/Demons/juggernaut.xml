@@ -20,15 +20,15 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="120" attack="160"/>
 		<attack name="physical" interval="2000" chance="30" range="7" min="-0" max="-780">
-		<attribute key="shootEffect" value="largerock"/>
+		<attribute key="shooteffect" value="largerock"/>
 		</attack>
 	</attacks>
 	<defenses armor="15" defense="15">
 		<defense name="speed" interval="2000" chance="30" speedchange="850" duration="5000">
-		<attribute key="areaEffect" value="redshimmer"/>
+		<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 		<defense name="healing" interval="2000" chance="30" min="350" max="550">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

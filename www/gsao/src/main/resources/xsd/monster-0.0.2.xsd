@@ -3,43 +3,43 @@
 	<xs:element name="voices">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="voice" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="voice" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="speed" type="xs:short" />
-			<xs:attribute name="interval" type="xs:short" />
-			<xs:attribute name="chance" type="xs:short" use="required" />
+			<xs:attribute name="speed" type="xs:short"/>
+			<xs:attribute name="interval" type="xs:short"/>
+			<xs:attribute name="chance" type="xs:short" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="voice">
 		<xs:complexType>
-			<xs:attribute name="yell" type="xs:boolean" />
-			<xs:attribute name="sentence" type="xs:string" use="required" />
+			<xs:attribute name="yell" type="xs:boolean"/>
+			<xs:attribute name="sentence" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="targetchange">
 		<xs:complexType>
-			<xs:attribute name="speed" type="xs:short" />
+			<xs:attribute name="speed" type="xs:short"/>
 			<xs:attribute name="interval">
 				<!-- use="required" -->
 				<xs:simpleType>
 					<xs:restriction base="xs:positiveInteger">
-						<xs:minInclusive value="1" />
+						<xs:minInclusive value="1"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="chance" type="xs:byte" use="required" />
+			<xs:attribute name="chance" type="xs:byte" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="summons">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="summon" maxOccurs="unbounded" />
-				<xs:element ref="attribute" minOccurs="0" />
+				<xs:element ref="summon" maxOccurs="unbounded"/>
+				<xs:element ref="attribute" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="maxSummons" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:positiveInteger">
-						<xs:maxInclusive value="100" />
+						<xs:maxInclusive value="100"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
@@ -56,21 +56,21 @@
 				<!-- FIXME: $interval ^ $speed -->
 				<xs:simpleType>
 					<xs:restriction base="xs:positiveInteger">
-						<xs:minInclusive value="1" />
+						<xs:minInclusive value="1"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="name" type="xs:string" use="required" />
-			<xs:attribute name="max" type="xs:integer" />
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="max" type="xs:integer"/>
 			<xs:attribute name="interval">
 				<!-- use="required" -->
 				<xs:simpleType>
 					<xs:restriction base="xs:positiveInteger">
-						<xs:minInclusive value="1" />
+						<xs:minInclusive value="1"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="chance" type="xs:integer" />
+			<xs:attribute name="chance" type="xs:integer"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="strategy">
@@ -93,182 +93,182 @@
 	<xs:element name="script">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="event" />
+				<xs:element ref="event"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="monster">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="health" />
+				<xs:element ref="health"/>
 				<xs:choice>
 					<xs:sequence>
-						<xs:element ref="strategy" />
-						<xs:element ref="targetchange" />
-						<xs:element ref="look" />
-						<xs:element ref="flags" />
-						<xs:element ref="attacks" />
-						<xs:element ref="defenses" />
-						<xs:element ref="elements" />
-						<xs:element ref="immunities" />
+						<xs:element ref="strategy"/>
+						<xs:element ref="targetchange"/>
+						<xs:element ref="look"/>
+						<xs:element ref="flags"/>
+						<xs:element ref="attacks"/>
+						<xs:element ref="defenses"/>
+						<xs:element ref="elements"/>
+						<xs:element ref="immunities"/>
 						<xs:sequence minOccurs="0">
-							<xs:element ref="summons" minOccurs="0" />
-							<xs:element ref="voices" />
-							<xs:element ref="loot" />
+							<xs:element ref="summons" minOccurs="0"/>
+							<xs:element ref="voices"/>
+							<xs:element ref="loot"/>
 						</xs:sequence>
 					</xs:sequence>
 					<xs:sequence>
-						<xs:element ref="look" />
+						<xs:element ref="look"/>
 						<xs:choice>
 							<xs:sequence>
-								<xs:element ref="targetchange" />
+								<xs:element ref="targetchange"/>
 								<xs:choice>
 									<xs:sequence>
-										<xs:element ref="strategy" />
-										<xs:element ref="flags" />
+										<xs:element ref="strategy"/>
+										<xs:element ref="flags"/>
 										<xs:choice>
 											<xs:sequence>
-												<xs:element ref="script" />
-												<xs:element ref="attacks" />
-												<xs:element ref="defenses" />
-												<xs:element ref="elements" />
-												<xs:element ref="immunities" />
-												<xs:element ref="summons" />
-												<xs:element ref="voices" />
+												<xs:element ref="script"/>
+												<xs:element ref="attacks"/>
+												<xs:element ref="defenses"/>
+												<xs:element ref="elements"/>
+												<xs:element ref="immunities"/>
+												<xs:element ref="summons"/>
+												<xs:element ref="voices"/>
 											</xs:sequence>
 											<xs:sequence>
-												<xs:element ref="defenses" />
+												<xs:element ref="defenses"/>
 												<xs:choice minOccurs="0">
 													<xs:sequence>
 														<xs:sequence minOccurs="0">
-															<xs:element ref="elements" />
-															<xs:element ref="voices" />
+															<xs:element ref="elements"/>
+															<xs:element ref="voices"/>
 														</xs:sequence>
-														<xs:element ref="loot" />
+														<xs:element ref="loot"/>
 													</xs:sequence>
 													<xs:sequence>
-														<xs:element ref="immunities" />
-														<xs:element ref="voices" />
+														<xs:element ref="immunities"/>
+														<xs:element ref="voices"/>
 													</xs:sequence>
 													<xs:sequence>
-														<xs:element ref="voices" />
-														<xs:element ref="loot" minOccurs="0" />
+														<xs:element ref="voices"/>
+														<xs:element ref="loot" minOccurs="0"/>
 													</xs:sequence>
 												</xs:choice>
 											</xs:sequence>
 											<xs:sequence>
-												<xs:element ref="attacks" />
+												<xs:element ref="attacks"/>
 												<xs:choice>
 													<xs:sequence>
-														<xs:element ref="elements" />
+														<xs:element ref="elements"/>
 														<xs:choice>
 															<xs:sequence>
 																<xs:sequence minOccurs="0">
-																	<xs:element ref="immunities" />
-																	<xs:element ref="voices" />
+																	<xs:element ref="immunities"/>
+																	<xs:element ref="voices"/>
 																</xs:sequence>
-																<xs:element ref="loot" />
+																<xs:element ref="loot"/>
 															</xs:sequence>
 															<xs:sequence>
-																<xs:element ref="voices" />
-																<xs:element ref="defenses" />
+																<xs:element ref="voices"/>
+																<xs:element ref="defenses"/>
 															</xs:sequence>
 														</xs:choice>
 													</xs:sequence>
 													<xs:sequence>
-														<xs:element ref="defenses" />
+														<xs:element ref="defenses"/>
 														<xs:choice>
-															<xs:element ref="loot" />
+															<xs:element ref="loot"/>
 															<xs:sequence>
-																<xs:element ref="voices" />
+																<xs:element ref="voices"/>
 																<xs:sequence minOccurs="0">
-																	<xs:element ref="elements" />
-																	<xs:element ref="immunities" />
+																	<xs:element ref="elements"/>
+																	<xs:element ref="immunities"/>
 																</xs:sequence>
-																<xs:element ref="loot" />
+																<xs:element ref="loot"/>
 															</xs:sequence>
 															<xs:sequence>
-																<xs:element ref="summons" />
+																<xs:element ref="summons"/>
 																<xs:sequence minOccurs="0">
-																	<xs:element ref="elements" />
-																	<xs:element ref="immunities" />
+																	<xs:element ref="elements"/>
+																	<xs:element ref="immunities"/>
 																</xs:sequence>
-																<xs:element ref="voices" />
-																<xs:element ref="loot" />
+																<xs:element ref="voices"/>
+																<xs:element ref="loot"/>
 															</xs:sequence>
 															<xs:sequence>
-																<xs:element ref="immunities" />
+																<xs:element ref="immunities"/>
 																<xs:choice minOccurs="0">
-																	<xs:element ref="loot" />
+																	<xs:element ref="loot"/>
 																	<xs:sequence>
-																		<xs:element ref="voices" />
+																		<xs:element ref="voices"/>
 																		<xs:sequence minOccurs="0">
 																			<xs:choice minOccurs="0">
-																				<xs:element ref="summons" />
+																				<xs:element ref="summons"/>
 																				<xs:sequence>
-																					<xs:element ref="elements" />
-																					<xs:element ref="immunities" />
+																					<xs:element ref="elements"/>
+																					<xs:element ref="immunities"/>
 																				</xs:sequence>
 																			</xs:choice>
-																			<xs:element ref="loot" />
+																			<xs:element ref="loot"/>
 																		</xs:sequence>
 																	</xs:sequence>
 																	<xs:sequence>
-																		<xs:element ref="summons" />
+																		<xs:element ref="summons"/>
 																		<xs:sequence minOccurs="0">
-																			<xs:element ref="voices" minOccurs="0" />
-																			<xs:element ref="loot" />
+																			<xs:element ref="voices" minOccurs="0"/>
+																			<xs:element ref="loot"/>
 																		</xs:sequence>
 																	</xs:sequence>
 																	<xs:sequence>
-																		<xs:element ref="elements" />
+																		<xs:element ref="elements"/>
 																		<xs:choice minOccurs="0">
-																			<xs:element ref="loot" />
+																			<xs:element ref="loot"/>
 																			<xs:sequence>
-																				<xs:element ref="voices" />
-																				<xs:element ref="loot" minOccurs="0" />
+																				<xs:element ref="voices"/>
+																				<xs:element ref="loot" minOccurs="0"/>
 																			</xs:sequence>
 																			<xs:sequence>
-																				<xs:element ref="summons" />
-																				<xs:element ref="voices" minOccurs="0" />
-																				<xs:element ref="loot" />
+																				<xs:element ref="summons"/>
+																				<xs:element ref="voices" minOccurs="0"/>
+																				<xs:element ref="loot"/>
 																			</xs:sequence>
 																		</xs:choice>
 																	</xs:sequence>
 																</xs:choice>
 															</xs:sequence>
 															<xs:sequence>
-																<xs:element ref="elements" />
+																<xs:element ref="elements"/>
 																<xs:choice minOccurs="0">
 																	<xs:sequence>
 																		<xs:sequence minOccurs="0">
-																			<xs:element ref="summons" />
-																			<xs:element ref="voices" />
+																			<xs:element ref="summons"/>
+																			<xs:element ref="voices"/>
 																		</xs:sequence>
-																		<xs:element ref="loot" />
+																		<xs:element ref="loot"/>
 																	</xs:sequence>
 																	<xs:sequence>
-																		<xs:element ref="voices" />
-																		<xs:element ref="loot" minOccurs="0" />
+																		<xs:element ref="voices"/>
+																		<xs:element ref="loot" minOccurs="0"/>
 																	</xs:sequence>
 																	<xs:sequence>
-																		<xs:element ref="immunities" />
+																		<xs:element ref="immunities"/>
 																		<xs:choice minOccurs="0">
-																			<xs:element ref="loot" />
+																			<xs:element ref="loot"/>
 																			<xs:sequence>
-																				<xs:element ref="voices" />
+																				<xs:element ref="voices"/>
 																				<xs:sequence minOccurs="0">
-																					<xs:element ref="summons" minOccurs="0" />
-																					<xs:element ref="loot" />
+																					<xs:element ref="summons" minOccurs="0"/>
+																					<xs:element ref="loot"/>
 																				</xs:sequence>
 																			</xs:sequence>
 																			<xs:sequence>
-																				<xs:element ref="summons" />
+																				<xs:element ref="summons"/>
 																				<xs:choice minOccurs="0">
-																					<xs:element ref="loot" />
+																					<xs:element ref="loot"/>
 																					<xs:sequence>
-																						<xs:element ref="voices" />
-																						<xs:element ref="loot" minOccurs="0" />
+																						<xs:element ref="voices"/>
+																						<xs:element ref="loot" minOccurs="0"/>
 																					</xs:sequence>
 																				</xs:choice>
 																			</xs:sequence>
@@ -283,33 +283,33 @@
 										</xs:choice>
 									</xs:sequence>
 									<xs:sequence>
-										<xs:element ref="flags" />
-										<xs:element ref="attacks" />
-										<xs:element ref="defenses" />
-										<xs:element ref="elements" />
-										<xs:element ref="voices" />
-										<xs:element ref="loot" />
+										<xs:element ref="flags"/>
+										<xs:element ref="attacks"/>
+										<xs:element ref="defenses"/>
+										<xs:element ref="elements"/>
+										<xs:element ref="voices"/>
+										<xs:element ref="loot"/>
 									</xs:sequence>
 								</xs:choice>
 							</xs:sequence>
 							<xs:sequence>
-								<xs:element ref="strategy" />
-								<xs:element ref="flags" />
-								<xs:element ref="attacks" />
+								<xs:element ref="strategy"/>
+								<xs:element ref="flags"/>
+								<xs:element ref="attacks"/>
 								<xs:choice>
 									<xs:sequence>
-										<xs:element ref="elements" />
-										<xs:element ref="defenses" />
+										<xs:element ref="elements"/>
+										<xs:element ref="defenses"/>
 									</xs:sequence>
 									<xs:sequence>
-										<xs:element ref="defenses" />
-										<xs:element ref="elements" />
+										<xs:element ref="defenses"/>
+										<xs:element ref="elements"/>
 										<xs:choice minOccurs="0">
-											<xs:element ref="voices" />
+											<xs:element ref="voices"/>
 											<xs:sequence>
-												<xs:element ref="immunities" />
-												<xs:element ref="summons" minOccurs="0" />
-												<xs:element ref="voices" />
+												<xs:element ref="immunities"/>
+												<xs:element ref="summons" minOccurs="0"/>
+												<xs:element ref="voices"/>
 											</xs:sequence>
 										</xs:choice>
 									</xs:sequence>
@@ -319,712 +319,29 @@
 					</xs:sequence>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name="speed" use="required">
-				<xs:simpleType>
-					<xs:restriction base="xs:short">
-						<xs:enumeration value="0" />
-						<xs:enumeration value="100" />
-						<xs:enumeration value="114" />
-						<xs:enumeration value="116" />
-						<xs:enumeration value="120" />
-						<xs:enumeration value="124" />
-						<xs:enumeration value="126" />
-						<xs:enumeration value="128" />
-						<xs:enumeration value="130" />
-						<xs:enumeration value="132" />
-						<xs:enumeration value="134" />
-						<xs:enumeration value="135" />
-						<xs:enumeration value="136" />
-						<xs:enumeration value="140" />
-						<xs:enumeration value="144" />
-						<xs:enumeration value="150" />
-						<xs:enumeration value="152" />
-						<xs:enumeration value="154" />
-						<xs:enumeration value="156" />
-						<xs:enumeration value="160" />
-						<xs:enumeration value="164" />
-						<xs:enumeration value="168" />
-						<xs:enumeration value="170" />
-						<xs:enumeration value="176" />
-						<xs:enumeration value="178" />
-						<xs:enumeration value="180" />
-						<xs:enumeration value="184" />
-						<xs:enumeration value="185" />
-						<xs:enumeration value="188" />
-						<xs:enumeration value="190" />
-						<xs:enumeration value="194" />
-						<xs:enumeration value="195" />
-						<xs:enumeration value="196" />
-						<xs:enumeration value="198" />
-						<xs:enumeration value="200" />
-						<xs:enumeration value="205" />
-						<xs:enumeration value="210" />
-						<xs:enumeration value="212" />
-						<xs:enumeration value="214" />
-						<xs:enumeration value="215" />
-						<xs:enumeration value="220" />
-						<xs:enumeration value="224" />
-						<xs:enumeration value="225" />
-						<xs:enumeration value="226" />
-						<xs:enumeration value="230" />
-						<xs:enumeration value="234" />
-						<xs:enumeration value="236" />
-						<xs:enumeration value="240" />
-						<xs:enumeration value="245" />
-						<xs:enumeration value="250" />
-						<xs:enumeration value="260" />
-						<xs:enumeration value="264" />
-						<xs:enumeration value="270" />
-						<xs:enumeration value="280" />
-						<xs:enumeration value="290" />
-						<xs:enumeration value="300" />
-						<xs:enumeration value="310" />
-						<xs:enumeration value="320" />
-						<xs:enumeration value="330" />
-						<xs:enumeration value="340" />
-						<xs:enumeration value="350" />
-						<xs:enumeration value="360" />
-						<xs:enumeration value="370" />
-						<xs:enumeration value="380" />
-						<xs:enumeration value="390" />
-						<xs:enumeration value="400" />
-						<xs:enumeration value="410" />
-						<xs:enumeration value="420" />
-						<xs:enumeration value="430" />
-						<xs:enumeration value="440" />
-						<xs:enumeration value="450" />
-						<xs:enumeration value="460" />
-						<xs:enumeration value="480" />
-						<xs:enumeration value="500" />
-						<xs:enumeration value="520" />
-						<xs:enumeration value="540" />
-						<xs:enumeration value="550" />
-						<xs:enumeration value="904" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="speed" type="xs:integer" use="required"/>
 			<xs:attribute name="race" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="blood" />
-						<xs:enumeration value="energy" />
-						<xs:enumeration value="fire" />
-						<xs:enumeration value="undead" />
-						<xs:enumeration value="venom" />
+						<xs:enumeration value="blood"/>
+						<xs:enumeration value="energy"/>
+						<xs:enumeration value="fire"/>
+						<xs:enumeration value="undead"/>
+						<xs:enumeration value="venom"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="namedescription">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="a azure frog" />
-						<xs:enumeration value="a badger" />
-						<xs:enumeration value="a bat" />
-						<xs:enumeration value="a bear" />
-						<xs:enumeration value="a black sheep" />
-						<xs:enumeration value="a brimstone bug" />
-						<xs:enumeration value="a bug" />
-						<xs:enumeration value="a butterfly" />
-						<xs:enumeration value="a centipede" />
-						<xs:enumeration value="a chicken" />
-						<xs:enumeration value="a cobra" />
-						<xs:enumeration value="a coral frog" />
-						<xs:enumeration value="a crab" />
-						<xs:enumeration value="a deathspawn" />
-						<xs:enumeration value="a dworc venomsniper" />
-						<xs:enumeration value="a dworc voodoomaster" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="nameDescription">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="Baron Brute" />
-						<xs:enumeration value="Brutus Bloodbeard" />
-						<xs:enumeration value="Coldheart" />
-						<xs:enumeration value="Deadeye Devious" />
-						<xs:enumeration value="Deathbringer" />
-						<xs:enumeration value="Doomhowl" />
-						<xs:enumeration value="Dreadwing" />
-						<xs:enumeration value="Fatality" />
-						<xs:enumeration value="Ferumbras" />
-						<xs:enumeration value="Fury of the emperor" />
-						<xs:enumeration value="Ghazbaran" />
-						<xs:enumeration value="Grorlam" />
-						<xs:enumeration value="Haunter" />
-						<xs:enumeration value="Incineron" />
-						<xs:enumeration value="Koshei The Deathless" />
-						<xs:enumeration value="Menace" />
-						<xs:enumeration value="Morgaroth" />
-						<xs:enumeration value="Norgle Glacierbeard" />
-						<xs:enumeration value="Orshabaal" />
-						<xs:enumeration value="Pythius the rotten" />
-						<xs:enumeration value="Rocko" />
-						<xs:enumeration value="Ron the Ripper" />
-						<xs:enumeration value="Spite of the emperor" />
-						<xs:enumeration value="The Axeorcist" />
-						<xs:enumeration value="The Dreadorian" />
-						<xs:enumeration value="Tirecz" />
-						<xs:enumeration value="Tremorak" />
-						<xs:enumeration value="Wrath of the emperor" />
-						<xs:enumeration value="a Grynch Clan Goblin" />
-						<xs:enumeration value="a Undead Jester" />
-						<xs:enumeration value="a amazon" />
-						<xs:enumeration value="a ancient scarab" />
-						<xs:enumeration value="a bandit" />
-						<xs:enumeration value="a banshee" />
-						<xs:enumeration value="a barbarian bloodwalker" />
-						<xs:enumeration value="a barbarian brutetamer" />
-						<xs:enumeration value="a barbarian headsplitter" />
-						<xs:enumeration value="a barbarian skullhunter" />
-						<xs:enumeration value="a battlemaster zunzu" />
-						<xs:enumeration value="a behemoth" />
-						<xs:enumeration value="a betrayed wraith" />
-						<xs:enumeration value="a black knight" />
-						<xs:enumeration value="a blazing fire elemental" />
-						<xs:enumeration value="a blightwalker" />
-						<xs:enumeration value="a blistering fire elemental" />
-						<xs:enumeration value="a blood crab" />
-						<xs:enumeration value="a blue djinn" />
-						<xs:enumeration value="a boar" />
-						<xs:enumeration value="a bog raider" />
-						<xs:enumeration value="a bonebeast" />
-						<xs:enumeration value="a bonelord" />
-						<xs:enumeration value="a braindeath" />
-						<xs:enumeration value="a butterfly" />
-						<xs:enumeration value="a carniphila" />
-						<xs:enumeration value="a carrion worm" />
-						<xs:enumeration value="a carved stone tile" />
-						<xs:enumeration value="a cat" />
-						<xs:enumeration value="a cave rat" />
-						<xs:enumeration value="a chakoya toolshaper" />
-						<xs:enumeration value="a chakoya tribewarden" />
-						<xs:enumeration value="a chakoya windcaller" />
-						<xs:enumeration value="a charged energy Elemental" />
-						<xs:enumeration value="a cockroach" />
-						<xs:enumeration value="a countess sorrow" />
-						<xs:enumeration value="a crazed beggar" />
-						<xs:enumeration value="a crimson frog" />
-						<xs:enumeration value="a crocodile" />
-						<xs:enumeration value="a crypt shambler" />
-						<xs:enumeration value="a crystal spider" />
-						<xs:enumeration value="a cyclops" />
-						<xs:enumeration value="a cyclops drone" />
-						<xs:enumeration value="a cyclops smith" />
-						<xs:enumeration value="a damaged worker golem" />
-						<xs:enumeration value="a dark apprentice" />
-						<xs:enumeration value="a dark magician" />
-						<xs:enumeration value="a dark monk" />
-						<xs:enumeration value="a dark torturer" />
-						<xs:enumeration value="a death blob" />
-						<xs:enumeration value="a deathslicer" />
-						<xs:enumeration value="a deaththrower" />
-						<xs:enumeration value="a deer" />
-						<xs:enumeration value="a defiler" />
-						<xs:enumeration value="a demon" />
-						<xs:enumeration value="a demon skeleton" />
-						<xs:enumeration value="a destroyer" />
-						<xs:enumeration value="a diabolic imp" />
-						<xs:enumeration value="a dipthrah" />
-						<xs:enumeration value="a dog" />
-						<xs:enumeration value="a dracola" />
-						<xs:enumeration value="a dragon" />
-						<xs:enumeration value="a dragon hatchling" />
-						<xs:enumeration value="a dragon lord" />
-						<xs:enumeration value="a dragon lord hatchling" />
-						<xs:enumeration value="a draken abomination" />
-						<xs:enumeration value="a draken elite" />
-						<xs:enumeration value="a draken spellweaver" />
-						<xs:enumeration value="a draken warmaster" />
-						<xs:enumeration value="a draptor" />
-						<xs:enumeration value="a dreadbeast" />
-						<xs:enumeration value="a dryad" />
-						<xs:enumeration value="a dwarf" />
-						<xs:enumeration value="a dwarf geomancer" />
-						<xs:enumeration value="a dwarf guard" />
-						<xs:enumeration value="a dwarf soldier" />
-						<xs:enumeration value="a dworc fleshhunter" />
-						<xs:enumeration value="a elder bonelord" />
-						<xs:enumeration value="a elephant" />
-						<xs:enumeration value="a elf" />
-						<xs:enumeration value="a elf arcanist" />
-						<xs:enumeration value="a elf scout" />
-						<xs:enumeration value="a enlightened of the cult" />
-						<xs:enumeration value="a eternal guardian" />
-						<xs:enumeration value="a fire devil" />
-						<xs:enumeration value="a fire elemental" />
-						<xs:enumeration value="a fire overlord" />
-						<xs:enumeration value="a flamethrower" />
-						<xs:enumeration value="a flamingo" />
-						<xs:enumeration value="a frost dragon" />
-						<xs:enumeration value="a frost dragon hatchling" />
-						<xs:enumeration value="a frost giant" />
-						<xs:enumeration value="a frost giantess" />
-						<xs:enumeration value="a frost troll" />
-						<xs:enumeration value="a fury" />
-						<xs:enumeration value="a gang member" />
-						<xs:enumeration value="a gargoyle" />
-						<xs:enumeration value="a gazer" />
-						<xs:enumeration value="a ghastly dragon" />
-						<xs:enumeration value="a ghost" />
-						<xs:enumeration value="a ghoul" />
-						<xs:enumeration value="a giant spider" />
-						<xs:enumeration value="a gladiator" />
-						<xs:enumeration value="a gnarlhound" />
-						<xs:enumeration value="a goblin" />
-						<xs:enumeration value="a goblin assassin" />
-						<xs:enumeration value="a goblin leader" />
-						<xs:enumeration value="a goblin scavenger" />
-						<xs:enumeration value="a gozzler" />
-						<xs:enumeration value="a green djinn" />
-						<xs:enumeration value="a green frog" />
-						<xs:enumeration value="a grim reaper" />
-						<xs:enumeration value="a hand of cursed fate" />
-						<xs:enumeration value="a haunted treeling" />
-						<xs:enumeration value="a hellfire fighter" />
-						<xs:enumeration value="a hellgorak" />
-						<xs:enumeration value="a hellhound" />
-						<xs:enumeration value="a hellspawn" />
-						<xs:enumeration value="a hero" />
-						<xs:enumeration value="a hunter" />
-						<xs:enumeration value="a husky" />
-						<xs:enumeration value="a hyaena" />
-						<xs:enumeration value="a hydra" />
-						<xs:enumeration value="a insect swarm" />
-						<xs:enumeration value="a jagged earth elemental" />
-						<xs:enumeration value="a juggernaut" />
-						<xs:enumeration value="a kller caiman" />
-						<xs:enumeration value="a kongra" />
-						<xs:enumeration value="a lancer beetle" />
-						<xs:enumeration value="a larva" />
-						<xs:enumeration value="a latrivan" />
-						<xs:enumeration value="a lava hole" />
-						<xs:enumeration value="a lavahole" />
-						<xs:enumeration value="a lich" />
-						<xs:enumeration value="a lion" />
-						<xs:enumeration value="a lizard chosen" />
-						<xs:enumeration value="a lizard dragon priest" />
-						<xs:enumeration value="a lizard gate guardian" />
-						<xs:enumeration value="a lizard high guard" />
-						<xs:enumeration value="a lizard legionnaire" />
-						<xs:enumeration value="a lizard magistratus" />
-						<xs:enumeration value="a lizard noble" />
-						<xs:enumeration value="a lizard sentinel" />
-						<xs:enumeration value="a lizard snakecharmer" />
-						<xs:enumeration value="a lizard templar" />
-						<xs:enumeration value="a lizard zaogun" />
-						<xs:enumeration value="a lost soul" />
-						<xs:enumeration value="a mad scientist" />
-						<xs:enumeration value="a magicthrower" />
-						<xs:enumeration value="a mahrdis" />
-						<xs:enumeration value="a mammoth" />
-						<xs:enumeration value="a marid" />
-						<xs:enumeration value="a massive earth elemental" />
-						<xs:enumeration value="a massive energy elemental" />
-						<xs:enumeration value="a massive fire elemental" />
-						<xs:enumeration value="a massive water elemental" />
-						<xs:enumeration value="a medusa" />
-						<xs:enumeration value="a mercury blob" />
-						<xs:enumeration value="a merlkin" />
-						<xs:enumeration value="a mimic" />
-						<xs:enumeration value="a minotaur" />
-						<xs:enumeration value="a minotaur archer" />
-						<xs:enumeration value="a minotaur guard" />
-						<xs:enumeration value="a minotaur mage" />
-						<xs:enumeration value="a monk" />
-						<xs:enumeration value="a morguthis" />
-						<xs:enumeration value="a mr. punish" />
-						<xs:enumeration value="a muddy earth elemental" />
-						<xs:enumeration value="a mummy" />
-						<xs:enumeration value="a mutated bat" />
-						<xs:enumeration value="a mutated human" />
-						<xs:enumeration value="a mutated rat" />
-						<xs:enumeration value="a mutated tiger" />
-						<xs:enumeration value="a necromancer" />
-						<xs:enumeration value="a nightmare" />
-						<xs:enumeration value="a nightmare scion" />
-						<xs:enumeration value="a nightstalker" />
-						<xs:enumeration value="a nomad" />
-						<xs:enumeration value="a novice of the cult" />
-						<xs:enumeration value="a omruc" />
-						<xs:enumeration value="a orc" />
-						<xs:enumeration value="a orc berserker" />
-						<xs:enumeration value="a orc leader" />
-						<xs:enumeration value="a orc marauder" />
-						<xs:enumeration value="a orc rider" />
-						<xs:enumeration value="a orc shaman" />
-						<xs:enumeration value="a orc spearman" />
-						<xs:enumeration value="a orc warlord" />
-						<xs:enumeration value="a orc warrior" />
-						<xs:enumeration value="a orchid frog" />
-						<xs:enumeration value="a panda" />
-						<xs:enumeration value="a paralyzethrower" />
-						<xs:enumeration value="a parrot" />
-						<xs:enumeration value="a phantasm" />
-						<xs:enumeration value="a pig" />
-						<xs:enumeration value="a pirate buccaneer" />
-						<xs:enumeration value="a pirate corsair" />
-						<xs:enumeration value="a pirate cutthroat" />
-						<xs:enumeration value="a pirate ghost" />
-						<xs:enumeration value="a pirate marauder" />
-						<xs:enumeration value="a pirate skeleton" />
-						<xs:enumeration value="a plaguesmith" />
-						<xs:enumeration value="a plaguethrower" />
-						<xs:enumeration value="a poacher" />
-						<xs:enumeration value="a poison spider" />
-						<xs:enumeration value="a polar bear" />
-						<xs:enumeration value="a priestess" />
-						<xs:enumeration value="a quara constrictor" />
-						<xs:enumeration value="a quara constrictor scout" />
-						<xs:enumeration value="a quara hydromancer" />
-						<xs:enumeration value="a quara hydromancer scout" />
-						<xs:enumeration value="a quara mantassin" />
-						<xs:enumeration value="a quara mantassin scout" />
-						<xs:enumeration value="a quara pincher" />
-						<xs:enumeration value="a quara pincher scout" />
-						<xs:enumeration value="a quara predator" />
-						<xs:enumeration value="a quara predator scout" />
-						<xs:enumeration value="a rabbit" />
-						<xs:enumeration value="a rahemos" />
-						<xs:enumeration value="a rat" />
-						<xs:enumeration value="a rift brood" />
-						<xs:enumeration value="a rift scythe" />
-						<xs:enumeration value="a rift worm" />
-						<xs:enumeration value="a roaring water elemental" />
-						<xs:enumeration value="a rotworm" />
-						<xs:enumeration value="a rotworm queen" />
-						<xs:enumeration value="a sandcrawler" />
-						<xs:enumeration value="a scarab" />
-						<xs:enumeration value="a scorpion" />
-						<xs:enumeration value="a sea serpent" />
-						<xs:enumeration value="a seagull" />
-						<xs:enumeration value="a serpent spawn" />
-						<xs:enumeration value="a sheep" />
-						<xs:enumeration value="a shredderthrower" />
-						<xs:enumeration value="a sibang" />
-						<xs:enumeration value="a silver rabbit" />
-						<xs:enumeration value="a skeleton" />
-						<xs:enumeration value="a skeleton warrior" />
-						<xs:enumeration value="a skunk" />
-						<xs:enumeration value="a slick water elemental" />
-						<xs:enumeration value="a slime" />
-						<xs:enumeration value="a smuggler" />
-						<xs:enumeration value="a snake" />
-						<xs:enumeration value="a son of verminor" />
-						<xs:enumeration value="a souleater" />
-						<xs:enumeration value="a spectre" />
-						<xs:enumeration value="a spider" />
-						<xs:enumeration value="a spit nettle" />
-						<xs:enumeration value="a squirrel" />
-						<xs:enumeration value="a stalker" />
-						<xs:enumeration value="a stampor" />
-						<xs:enumeration value="a stone golem" />
-						<xs:enumeration value="a swamp troll" />
-						<xs:enumeration value="a tarantula" />
-						<xs:enumeration value="a terramite" />
-						<xs:enumeration value="a terror bird" />
-						<xs:enumeration value="a thalas" />
-						<xs:enumeration value="a thornback tortoise" />
-						<xs:enumeration value="a tiger" />
-						<xs:enumeration value="a tiquandas revenge" />
-						<xs:enumeration value="a toad" />
-						<xs:enumeration value="a tortoise" />
-						<xs:enumeration value="a training monk" />
-						<xs:enumeration value="a troll" />
-						<xs:enumeration value="a troll champion" />
-						<xs:enumeration value="a troll legionnaire" />
-						<xs:enumeration value="a undead dragon" />
-						<xs:enumeration value="a undead gladiator" />
-						<xs:enumeration value="a undead mine worker" />
-						<xs:enumeration value="a undead prospector" />
-						<xs:enumeration value="a valkyrie" />
-						<xs:enumeration value="a vampire" />
-						<xs:enumeration value="a vampire bride" />
-						<xs:enumeration value="a vashresamun" />
-						<xs:enumeration value="a wailing widow" />
-						<xs:enumeration value="a war golem" />
-						<xs:enumeration value="a war wolf" />
-						<xs:enumeration value="a warlock" />
-						<xs:enumeration value="a wasp" />
-						<xs:enumeration value="a water elemental" />
-						<xs:enumeration value="a webster" />
-						<xs:enumeration value="a werewolf" />
-						<xs:enumeration value="a wild warrior" />
-						<xs:enumeration value="a winter wolf" />
-						<xs:enumeration value="a wisp" />
-						<xs:enumeration value="a witch" />
-						<xs:enumeration value="a wolf" />
-						<xs:enumeration value="a worker golem" />
-						<xs:enumeration value="a wyrm" />
-						<xs:enumeration value="a wyvern" />
-						<xs:enumeration value="a young sea serpent" />
-						<xs:enumeration value="a zombie" />
-						<xs:enumeration value="a zulazza the corruptor" />
-						<xs:enumeration value="achad" />
-						<xs:enumeration value="an acid blob" />
-						<xs:enumeration value="an acolyte of the cult" />
-						<xs:enumeration value="an adept of the cult" />
-						<xs:enumeration value="an ashmunrah" />
-						<xs:enumeration value="an assassin" />
-						<xs:enumeration value="an earth elemental" />
-						<xs:enumeration value="an earth overlord" />
-						<xs:enumeration value="an efreet" />
-						<xs:enumeration value="an energy elemental" />
-						<xs:enumeration value="an energy overlord" />
-						<xs:enumeration value="an eye of the seven" />
-						<xs:enumeration value="an ice golem" />
-						<xs:enumeration value="an ice overlord" />
-						<xs:enumeration value="an ice witch" />
-						<xs:enumeration value="an infernalist" />
-						<xs:enumeration value="an island troll" />
-						<xs:enumeration value="an orvercharged energy elemental" />
-						<xs:enumeration value="annihilon" />
-						<xs:enumeration value="apprentice sheng" />
-						<xs:enumeration value="avalanche" />
-						<xs:enumeration value="axeitus headbanger" />
-						<xs:enumeration value="azerus" />
-						<xs:enumeration value="bloodpaw" />
-						<xs:enumeration value="bovinus" />
-						<xs:enumeration value="chizzoron the distorter" />
-						<xs:enumeration value="colerian the barbarian" />
-						<xs:enumeration value="cursed gladiator" />
-						<xs:enumeration value="darakan the executioner" />
-						<xs:enumeration value="demodras" />
-						<xs:enumeration value="dire penguin" />
-						<xs:enumeration value="drasilla" />
-						<xs:enumeration value="esmeralda" />
-						<xs:enumeration value="fallen mooh&apos;tah master ghar" />
-						<xs:enumeration value="frostfur" />
-						<xs:enumeration value="glitterscale" />
-						<xs:enumeration value="gnorre chyllson" />
-						<xs:enumeration value="golgordan" />
-						<xs:enumeration value="grimgor guteater" />
-						<xs:enumeration value="heoni" />
-						<xs:enumeration value="hide" />
-						<xs:enumeration value="kreebosh the exile" />
-						<xs:enumeration value="lethal lissy" />
-						<xs:enumeration value="leviathan" />
-						<xs:enumeration value="lizard abomination" />
-						<xs:enumeration value="lord of the elements" />
-						<xs:enumeration value="mad technomancer" />
-						<xs:enumeration value="madareth" />
-						<xs:enumeration value="man in the cave" />
-						<xs:enumeration value="necropharus" />
-						<xs:enumeration value="orcus the cruel" />
-						<xs:enumeration value="penguin" />
-						<xs:enumeration value="rocky" />
-						<xs:enumeration value="scorn of the emperor" />
-						<xs:enumeration value="shardhead" />
-						<xs:enumeration value="slim" />
-						<xs:enumeration value="snake god essence" />
-						<xs:enumeration value="snake thing" />
-						<xs:enumeration value="stonecracker" />
-						<xs:enumeration value="svoren the mad" />
-						<xs:enumeration value="the Horned Fox" />
-						<xs:enumeration value="the Old Widow" />
-						<xs:enumeration value="the bloodtuskh" />
-						<xs:enumeration value="the count" />
-						<xs:enumeration value="the dark dancer" />
-						<xs:enumeration value="the hag" />
-						<xs:enumeration value="the hairy one" />
-						<xs:enumeration value="the halloween hare" />
-						<xs:enumeration value="the handmaiden" />
-						<xs:enumeration value="the imperor" />
-						<xs:enumeration value="the keeper" />
-						<xs:enumeration value="the many" />
-						<xs:enumeration value="the masked marauder" />
-						<xs:enumeration value="the massacre" />
-						<xs:enumeration value="the noxious spawn" />
-						<xs:enumeration value="the obliverator" />
-						<xs:enumeration value="the pit lord" />
-						<xs:enumeration value="the plasmother" />
-						<xs:enumeration value="the snapper" />
-						<xs:enumeration value="the spirit of earth" />
-						<xs:enumeration value="the spirit of fire" />
-						<xs:enumeration value="the spirit of water" />
-						<xs:enumeration value="the warlord ruzad" />
-						<xs:enumeration value="thul" />
-						<xs:enumeration value="ushuriel" />
-						<xs:enumeration value="zugurosh" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="name" type="xs:string" use="required" />
-			<xs:attribute name="manacost" type="xs:nonNegativeInteger" />
-			<xs:attribute name="experience" use="required">
-				<xs:simpleType>
-					<xs:restriction base="xs:short">
-						<xs:enumeration value="0" />
-						<xs:enumeration value="1" />
-						<xs:enumeration value="10" />
-						<xs:enumeration value="100" />
-						<xs:enumeration value="1000" />
-						<xs:enumeration value="10000" />
-						<xs:enumeration value="105" />
-						<xs:enumeration value="1050" />
-						<xs:enumeration value="110" />
-						<xs:enumeration value="1100" />
-						<xs:enumeration value="11000" />
-						<xs:enumeration value="115" />
-						<xs:enumeration value="119" />
-						<xs:enumeration value="12" />
-						<xs:enumeration value="120" />
-						<xs:enumeration value="1200" />
-						<xs:enumeration value="12000" />
-						<xs:enumeration value="125" />
-						<xs:enumeration value="1250" />
-						<xs:enumeration value="1300" />
-						<xs:enumeration value="13000" />
-						<xs:enumeration value="1320" />
-						<xs:enumeration value="135" />
-						<xs:enumeration value="1350" />
-						<xs:enumeration value="140" />
-						<xs:enumeration value="145" />
-						<xs:enumeration value="1450" />
-						<xs:enumeration value="150" />
-						<xs:enumeration value="15000" />
-						<xs:enumeration value="155" />
-						<xs:enumeration value="160" />
-						<xs:enumeration value="1600" />
-						<xs:enumeration value="165" />
-						<xs:enumeration value="170" />
-						<xs:enumeration value="1700" />
-						<xs:enumeration value="175" />
-						<xs:enumeration value="18" />
-						<xs:enumeration value="180" />
-						<xs:enumeration value="1800" />
-						<xs:enumeration value="185" />
-						<xs:enumeration value="190" />
-						<xs:enumeration value="195" />
-						<xs:enumeration value="1950" />
-						<xs:enumeration value="20" />
-						<xs:enumeration value="200" />
-						<xs:enumeration value="2000" />
-						<xs:enumeration value="20000" />
-						<xs:enumeration value="205" />
-						<xs:enumeration value="210" />
-						<xs:enumeration value="2100" />
-						<xs:enumeration value="215" />
-						<xs:enumeration value="2150" />
-						<xs:enumeration value="22" />
-						<xs:enumeration value="220" />
-						<xs:enumeration value="2200" />
-						<xs:enumeration value="23" />
-						<xs:enumeration value="2300" />
-						<xs:enumeration value="24" />
-						<xs:enumeration value="240" />
-						<xs:enumeration value="2400" />
-						<xs:enumeration value="25" />
-						<xs:enumeration value="250" />
-						<xs:enumeration value="2500" />
-						<xs:enumeration value="255" />
-						<xs:enumeration value="2550" />
-						<xs:enumeration value="2600" />
-						<xs:enumeration value="2635" />
-						<xs:enumeration value="265" />
-						<xs:enumeration value="270" />
-						<xs:enumeration value="275" />
-						<xs:enumeration value="28" />
-						<xs:enumeration value="280" />
-						<xs:enumeration value="2800" />
-						<xs:enumeration value="2900" />
-						<xs:enumeration value="295" />
-						<xs:enumeration value="2950" />
-						<xs:enumeration value="3" />
-						<xs:enumeration value="30" />
-						<xs:enumeration value="300" />
-						<xs:enumeration value="3000" />
-						<xs:enumeration value="305" />
-						<xs:enumeration value="3050" />
-						<xs:enumeration value="310" />
-						<xs:enumeration value="3100" />
-						<xs:enumeration value="320" />
-						<xs:enumeration value="3205" />
-						<xs:enumeration value="325" />
-						<xs:enumeration value="3250" />
-						<xs:enumeration value="34" />
-						<xs:enumeration value="3400" />
-						<xs:enumeration value="35" />
-						<xs:enumeration value="350" />
-						<xs:enumeration value="3500" />
-						<xs:enumeration value="37" />
-						<xs:enumeration value="3700" />
-						<xs:enumeration value="3750" />
-						<xs:enumeration value="38" />
-						<xs:enumeration value="3800" />
-						<xs:enumeration value="3900" />
-						<xs:enumeration value="4" />
-						<xs:enumeration value="40" />
-						<xs:enumeration value="400" />
-						<xs:enumeration value="4000" />
-						<xs:enumeration value="4050" />
-						<xs:enumeration value="42" />
-						<xs:enumeration value="420" />
-						<xs:enumeration value="4200" />
-						<xs:enumeration value="435" />
-						<xs:enumeration value="44" />
-						<xs:enumeration value="4400" />
-						<xs:enumeration value="45" />
-						<xs:enumeration value="450" />
-						<xs:enumeration value="4500" />
-						<xs:enumeration value="4600" />
-						<xs:enumeration value="4650" />
-						<xs:enumeration value="48" />
-						<xs:enumeration value="5" />
-						<xs:enumeration value="50" />
-						<xs:enumeration value="500" />
-						<xs:enumeration value="5000" />
-						<xs:enumeration value="510" />
-						<xs:enumeration value="5100" />
-						<xs:enumeration value="515" />
-						<xs:enumeration value="52" />
-						<xs:enumeration value="55" />
-						<xs:enumeration value="550" />
-						<xs:enumeration value="5500" />
-						<xs:enumeration value="580" />
-						<xs:enumeration value="5850" />
-						<xs:enumeration value="5900" />
-						<xs:enumeration value="60" />
-						<xs:enumeration value="600" />
-						<xs:enumeration value="6000" />
-						<xs:enumeration value="615" />
-						<xs:enumeration value="645" />
-						<xs:enumeration value="65" />
-						<xs:enumeration value="650" />
-						<xs:enumeration value="670" />
-						<xs:enumeration value="6800" />
-						<xs:enumeration value="70" />
-						<xs:enumeration value="700" />
-						<xs:enumeration value="7000" />
-						<xs:enumeration value="720" />
-						<xs:enumeration value="7200" />
-						<xs:enumeration value="745" />
-						<xs:enumeration value="75" />
-						<xs:enumeration value="750" />
-						<xs:enumeration value="7500" />
-						<xs:enumeration value="770" />
-						<xs:enumeration value="780" />
-						<xs:enumeration value="800" />
-						<xs:enumeration value="8000" />
-						<xs:enumeration value="8300" />
-						<xs:enumeration value="85" />
-						<xs:enumeration value="850" />
-						<xs:enumeration value="8700" />
-						<xs:enumeration value="90" />
-						<xs:enumeration value="900" />
-						<xs:enumeration value="95" />
-						<xs:enumeration value="950" />
-						<xs:enumeration value="9800" />
-						<xs:enumeration value="985" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="namedescription" type="xs:string"/>
+			<xs:attribute name="nameDescription" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="manacost" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="experience" type="xs:integer" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="loot">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="item" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="item" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -1039,32 +356,24 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="head" type="xs:unsignedInt" />
-			<xs:attribute name="body" type="xs:unsignedInt" />
-			<xs:attribute name="legs" type="xs:unsignedInt" />
-			<xs:attribute name="feet" type="xs:unsignedInt" />
-			<xs:attribute name="addons" type="xs:unsignedInt" />
+			<xs:attribute name="head" type="xs:unsignedInt"/>
+			<xs:attribute name="body" type="xs:unsignedInt"/>
+			<xs:attribute name="legs" type="xs:unsignedInt"/>
+			<xs:attribute name="feet" type="xs:unsignedInt"/>
+			<xs:attribute name="addons" type="xs:unsignedInt"/>
 			<xs:attribute name="typeex" type="xs:unsignedInt">
 				<xs:annotation>
 					<xs:documentation>If typeex used, you cannot use type.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="corpseAid">
-				<xs:simpleType>
-					<xs:restriction base="xs:byte">
-						<xs:enumeration value="101" />
-						<xs:enumeration value="102" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="corpse" type="xs:unsignedShort" />
+			<xs:attribute name="corpse" type="xs:unsignedShort"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="item">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="inside" minOccurs="0" />
+				<xs:element ref="inside" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="id" type="xs:integer">
 				<xs:annotation>
@@ -1074,190 +383,202 @@
 			<xs:attribute name="countmax">
 				<xs:simpleType>
 					<xs:restriction base="xs:unsignedInt">
-						<xs:minExclusive value="0" />
+						<xs:minExclusive value="0"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="chancemax">
 				<xs:simpleType>
 					<xs:restriction base="xs:byte">
-						<xs:enumeration value="0" />
+						<xs:enumeration value="0"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="chance1" type="xs:unsignedInt" />
-			<xs:attribute name="chance" type="xs:unsignedInt" />
+			<xs:attribute name="chance" type="xs:unsignedInt"/>
+			<xs:attribute name="chance1" type="xs:unsignedInt">
+				<xs:annotation>
+					<xs:documentation>deprecated, use chance instead</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="inside">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="item" maxOccurs="unbounded" />
+				<xs:element ref="item" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="immunity">
 		<xs:complexType>
-			<xs:attribute name="poison" type="xs:boolean" />
-			<xs:attribute name="physical" type="xs:boolean" />
-			<xs:attribute name="paralyze" type="xs:boolean" />
-			<xs:attribute name="outfit" type="xs:boolean" />
-			<xs:attribute name="manadrain" type="xs:boolean" />
-			<xs:attribute name="lifedrain" type="xs:boolean" />
-			<xs:attribute name="invisible" type="xs:boolean" />
-			<xs:attribute name="invisibility" type="xs:boolean" />
-			<xs:attribute name="ice" type="xs:boolean" />
-			<xs:attribute name="holy" type="xs:boolean" />
-			<xs:attribute name="fire" type="xs:boolean" />
-			<xs:attribute name="energy" type="xs:boolean" />
-			<xs:attribute name="earth" type="xs:boolean" />
-			<xs:attribute name="drunk" type="xs:boolean" />
-			<xs:attribute name="drown" type="xs:boolean" />
-			<xs:attribute name="death" type="xs:boolean" />
+			<xs:attribute name="poison" type="xs:boolean"/>
+			<xs:attribute name="physical" type="xs:boolean"/>
+			<xs:attribute name="paralyze" type="xs:boolean"/>
+			<xs:attribute name="outfit" type="xs:boolean"/>
+			<xs:attribute name="manadrain" type="xs:boolean"/>
+			<xs:attribute name="lifedrain" type="xs:boolean"/>
+			<xs:attribute name="invisible" type="xs:boolean"/>
+			<xs:attribute name="invisibility" type="xs:boolean"/>
+			<xs:attribute name="ice" type="xs:boolean"/>
+			<xs:attribute name="holy" type="xs:boolean"/>
+			<xs:attribute name="fire" type="xs:boolean"/>
+			<xs:attribute name="energy" type="xs:boolean"/>
+			<xs:attribute name="earth" type="xs:boolean"/>
+			<xs:attribute name="drunk" type="xs:boolean"/>
+			<xs:attribute name="drown" type="xs:boolean"/>
+			<xs:attribute name="death" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="immunities">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="immunity" maxOccurs="unbounded" />
+				<xs:element ref="immunity" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="health">
 		<xs:complexType>
-			<xs:attribute name="now" type="xs:unsignedInt" use="required" />
-			<xs:attribute name="max" type="xs:unsignedInt" use="required" />
+			<xs:attribute name="now" type="xs:unsignedInt" use="required"/>
+			<xs:attribute name="max" type="xs:unsignedInt" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="flags">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="flag" maxOccurs="unbounded" />
+				<xs:element ref="flag" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="flag">
 		<xs:complexType>
-			<xs:attribute name="targetdistance" type="xs:boolean" />
-			<xs:attribute name="summonable" type="xs:boolean" />
+			<xs:attribute name="targetdistance" type="xs:positiveInteger"/>
+			<xs:attribute name="summonable" type="xs:boolean"/>
 			<xs:attribute name="staticattack">
 				<xs:simpleType>
-					<xs:restriction base="xs:positiveInteger">
-						<xs:maxInclusive value="100" />
+					<xs:restriction base="xs:nonNegativeInteger">
+						<xs:maxInclusive value="100"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="runonhealth" type="xs:unsignedInt" />
-			<xs:attribute name="pushable" type="xs:boolean" />
-			<xs:attribute name="lightlevel" type="xs:integer" />
-			<xs:attribute name="lightcolor" type="xs:integer" />
-			<xs:attribute name="illusionable" type="xs:boolean" />
-			<xs:attribute name="hostile" type="xs:boolean" />
-			<xs:attribute name="hidehealth" type="xs:boolean" />
-			<xs:attribute name="convinceable" type="xs:boolean" />
-			<xs:attribute name="canpushitems" type="xs:boolean" />
-			<xs:attribute name="canpushcreatures" type="xs:boolean" />
-			<xs:attribute name="attackable" type="xs:boolean" />
+			<xs:attribute name="runonhealth" type="xs:unsignedInt"/>
+			<xs:attribute name="pushable" type="xs:boolean"/>
+			<xs:attribute name="lightlevel" type="xs:integer"/>
+			<xs:attribute name="lightcolor" type="xs:integer"/>
+			<xs:attribute name="illusionable" type="xs:boolean"/>
+			<xs:attribute name="hostile" type="xs:boolean"/>
+			<xs:attribute name="hidehealth" type="xs:boolean"/>
+			<xs:attribute name="convinceable" type="xs:boolean"/>
+			<xs:attribute name="canpushitems" type="xs:boolean"/>
+			<xs:attribute name="canpushcreatures" type="xs:boolean"/>
+			<xs:attribute name="attackable" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="event" type="xs:string" />
+	<xs:element name="event">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="elements">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="element" maxOccurs="unbounded" />
+				<xs:element ref="element" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="element">
 		<xs:complexType>
-			<xs:attribute name="physicalPercent" type="xs:integer" />
-			<xs:attribute name="icePercent" type="xs:integer" />
-			<xs:attribute name="earthPercent" type="xs:integer" />
-			<xs:attribute name="firePercent" type="xs:integer" />
-			<xs:attribute name="energyPercent" type="xs:integer" />
-			<xs:attribute name="holyPercent" type="xs:integer" />
-			<xs:attribute name="deathPercent" type="xs:integer" />
-			<xs:attribute name="drownPercent" type="xs:integer" />
-			<xs:attribute name="lifeDrainPercent" type="xs:integer" />
-			<xs:attribute name="manaDrainPercent" type="xs:integer" />
-			<xs:attribute name="healingPercent" type="xs:integer" />
+			<xs:attribute name="physicalPercent" type="xs:integer"/>
+			<xs:attribute name="icePercent" type="xs:integer"/>
+			<xs:attribute name="earthPercent" type="xs:integer"/>
+			<xs:attribute name="firePercent" type="xs:integer"/>
+			<xs:attribute name="energyPercent" type="xs:integer"/>
+			<xs:attribute name="holyPercent" type="xs:integer"/>
+			<xs:attribute name="deathPercent" type="xs:integer"/>
+			<xs:attribute name="drownPercent" type="xs:integer"/>
+			<xs:attribute name="lifeDrainPercent" type="xs:integer"/>
+			<xs:attribute name="manaDrainPercent" type="xs:integer"/>
+			<xs:attribute name="healingPercent" type="xs:integer"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="defenses">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="defense" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="defense" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="defense" type="xs:integer" />
-			<xs:attribute name="armor" type="xs:integer" />
+			<xs:attribute name="defense" type="xs:integer"/>
+			<xs:attribute name="armor" type="xs:integer"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="defense">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="attribute" minOccurs="0" />
+				<xs:element ref="attribute" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="speedchange">
 				<xs:simpleType>
 					<xs:restriction base="xs:integer">
-						<xs:minInclusive value="-1000" />
+						<xs:minInclusive value="-1000"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="name" use="required">
 				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="melee">
-							<xs:annotation>
-								<xs:documentation>If 'melee' is used, You CAN use 'attack',
-									'fire', 'poison', 'energy', 'drown', 'freeze', 'dazzle',
-									'curse' and 'tick'.
-								</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-						<xs:enumeration value="physical" />
-						<xs:enumeration value="poison" />
-						<xs:enumeration value="fire" />
-						<xs:enumeration value="energy" />
-						<xs:enumeration value="drown" />
-						<xs:enumeration value="ice" />
-						<xs:enumeration value="holy" />
-						<xs:enumeration value="death" />
-						<xs:enumeration value="lifedrain" />
-						<xs:enumeration value="manadrain" />
-						<xs:enumeration value="healing" />
-						<xs:enumeration value="speed">
-							<xs:annotation>
-								<xs:documentation>If 'speed is used, you CAN use
-									'speedchange'.
-								</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-						<xs:enumeration value="outfit">
-							<xs:annotation>
-								<xs:documentation>If 'outfit' is used, you CAN use 'monster'
-									OR
-									'item'
-								</xs:documentation>
-							</xs:annotation>
-						</xs:enumeration>
-						<xs:enumeration value="invisible" />
-						<xs:enumeration value="drunk" />
-						<xs:enumeration value="firefield" />
-						<xs:enumeration value="poisonfield" />
-						<xs:enumeration value="energyfield" />
-						<xs:enumeration value="firecondition" />
-						<xs:enumeration value="poisoncondition" />
-						<xs:enumeration value="energycondition" />
-						<xs:enumeration value="drowncondition" />
-						<!-- <xs:enumeration value="strength" /> -->
-						<!-- <xs:enumeration value="effect" /> -->
-					</xs:restriction>
+					<xs:union memberTypes="xs:string xs:string">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="melee">
+									<xs:annotation>
+										<xs:documentation>If 'melee' is used, You CAN use 'attack',
+											'fire', 'poison', 'energy', 'drown', 'freeze', 'dazzle',
+											'curse' and 'tick'.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="physical"/>
+								<xs:enumeration value="poison"/>
+								<xs:enumeration value="fire"/>
+								<xs:enumeration value="energy"/>
+								<xs:enumeration value="drown"/>
+								<xs:enumeration value="ice"/>
+								<xs:enumeration value="holy"/>
+								<xs:enumeration value="death"/>
+								<xs:enumeration value="lifedrain"/>
+								<xs:enumeration value="manadrain"/>
+								<xs:enumeration value="healing"/>
+								<xs:enumeration value="speed">
+									<xs:annotation>
+										<xs:documentation>If 'speed is used, you CAN use
+											'speedchange'.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="outfit">
+									<xs:annotation>
+										<xs:documentation>If 'outfit' is used, you CAN use 'monster'
+											OR
+											'item'
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="invisible"/>
+								<xs:enumeration value="drunk"/>
+								<xs:enumeration value="firefield"/>
+								<xs:enumeration value="poisonfield"/>
+								<xs:enumeration value="energyfield"/>
+								<xs:enumeration value="firecondition"/>
+								<xs:enumeration value="poisoncondition"/>
+								<xs:enumeration value="energycondition"/>
+								<xs:enumeration value="drowncondition"/>
+								<!-- <xs:enumeration value="strength" /> -->
+								<!-- <xs:enumeration value="effect" /> -->
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:union>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="monster" type="xs:string" />
-			<xs:attribute name="min" type="xs:unsignedInt" />
-			<xs:attribute name="max" type="xs:unsignedInt" />
+			<xs:attribute name="monster" type="xs:string"/>
+			<xs:attribute name="min" type="xs:unsignedInt"/>
+			<xs:attribute name="max" type="xs:unsignedInt"/>
 			<xs:attribute name="item" type="xs:unsignedInt">
 				<xs:annotation>
 					<xs:documentation>lookTypeEx ID</xs:documentation>
@@ -1266,21 +587,15 @@
 			<xs:attribute name="interval" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:positiveInteger">
-						<xs:minInclusive value="1" />
+						<xs:minInclusive value="1"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="duration" use="required">
-				<xs:simpleType>
-					<xs:restriction base="xs:positiveInteger">
-						<xs:minInclusive value="1" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="duration"/>
 			<xs:attribute name="chance">
 				<xs:simpleType>
 					<xs:restriction base="xs:positiveInteger">
-						<xs:maxInclusive value="100" />
+						<xs:maxInclusive value="100"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
@@ -1291,199 +606,198 @@
 			<xs:attribute name="value" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="spear" />
-						<xs:enumeration value="bolt" />
-						<xs:enumeration value="arrow" />
-						<xs:enumeration value="fire" />
-						<xs:enumeration value="energy" />
-						<xs:enumeration value="poisonarrow" />
-						<xs:enumeration value="burstarrow" />
-						<xs:enumeration value="throwingstar" />
-						<xs:enumeration value="throwingknife" />
-						<xs:enumeration value="smallstone" />
-						<xs:enumeration value="death" />
-						<xs:enumeration value="largerock" />
-						<xs:enumeration value="snowball" />
-						<xs:enumeration value="powerbolt" />
-						<xs:enumeration value="poison" />
-						<xs:enumeration value="infernalbolt" />
-						<xs:enumeration value="huntingspear" />
-						<xs:enumeration value="enchantedspear" />
-						<xs:enumeration value="redstar" />
-						<xs:enumeration value="greenstar" />
-						<xs:enumeration value="royalspear" />
-						<xs:enumeration value="sniperarrow" />
-						<xs:enumeration value="onyxarrow" />
-						<xs:enumeration value="piercingbolt" />
-						<xs:enumeration value="whirlwindsword" />
-						<xs:enumeration value="whirlwind" />
-						<xs:enumeration value="whirlwindclub" />
-						<xs:enumeration value="etherealspear" />
-						<xs:enumeration value="ice" />
-						<xs:enumeration value="earth" />
-						<xs:enumeration value="holy" />
-						<xs:enumeration value="suddendeath" />
-						<xs:enumeration value="flasharrow" />
-						<xs:enumeration value="flammingarrow" />
-						<xs:enumeration value="shiverarrow" />
-						<xs:enumeration value="energyball" />
-						<xs:enumeration value="smallice" />
-						<xs:enumeration value="smallholy" />
-						<xs:enumeration value="smallearth" />
-						<xs:enumeration value="eartharrow" />
-						<xs:enumeration value="explosion" />
-						<xs:enumeration value="cake" />
-						<xs:enumeration value="redspark" />
-						<xs:enumeration value="bluebubble" />
-						<xs:enumeration value="poff" />
-						<xs:enumeration value="yellowspark" />
-						<xs:enumeration value="explosionarea" />
-						<xs:enumeration value="explosion" />
-						<xs:enumeration value="firearea" />
-						<xs:enumeration value="yellowbubble" />
-						<xs:enumeration value="greenbubble" />
-						<xs:enumeration value="blackspark" />
-						<xs:enumeration value="teleport" />
-						<xs:enumeration value="energy" />
-						<xs:enumeration value="blueshimmer" />
-						<xs:enumeration value="redshimmer" />
-						<xs:enumeration value="greenshimmer" />
-						<xs:enumeration value="fire" />
-						<xs:enumeration value="greenspark" />
-						<xs:enumeration value="mortarea" />
-						<xs:enumeration value="greennote" />
-						<xs:enumeration value="rednote" />
-						<xs:enumeration value="poison" />
-						<xs:enumeration value="yellownote" />
-						<xs:enumeration value="purplenote" />
-						<xs:enumeration value="bluenote" />
-						<xs:enumeration value="whitenote" />
-						<xs:enumeration value="bubbles" />
-						<xs:enumeration value="dice" />
-						<xs:enumeration value="giftwraps" />
-						<xs:enumeration value="yellowfirework" />
-						<xs:enumeration value="redfirework" />
-						<xs:enumeration value="bluefirework" />
-						<xs:enumeration value="stun" />
-						<xs:enumeration value="sleep" />
-						<xs:enumeration value="watercreature" />
-						<xs:enumeration value="groundshaker" />
-						<xs:enumeration value="hearts" />
-						<xs:enumeration value="fireattack" />
-						<xs:enumeration value="energyarea" />
-						<xs:enumeration value="smallclouds" />
-						<xs:enumeration value="holydamage" />
-						<xs:enumeration value="bigclouds" />
-						<xs:enumeration value="icearea" />
-						<xs:enumeration value="icetornado" />
-						<xs:enumeration value="iceattack" />
-						<xs:enumeration value="stones" />
-						<xs:enumeration value="smallplants" />
-						<xs:enumeration value="carniphila" />
-						<xs:enumeration value="purpleenergy" />
-						<xs:enumeration value="yellowenergy" />
-						<xs:enumeration value="holyarea" />
-						<xs:enumeration value="bigplants" />
-						<xs:enumeration value="cake" />
-						<xs:enumeration value="giantice" />
-						<xs:enumeration value="watersplash" />
-						<xs:enumeration value="plantattack" />
-						<xs:enumeration value="tutorialarrow" />
-						<xs:enumeration value="tutorialsquare" />
-						<xs:enumeration value="mirrorhorizontal" />
-						<xs:enumeration value="mirrorvertical" />
-						<xs:enumeration value="skullhorizontal" />
-						<xs:enumeration value="skullvertical" />
-						<xs:enumeration value="assassin" />
-						<xs:enumeration value="stepshorizontal" />
-						<xs:enumeration value="bloodysteps" />
-						<xs:enumeration value="stepsvertical" />
-						<xs:enumeration value="yalaharighost" />
-						<xs:enumeration value="bats" />
-						<xs:enumeration value="smoke" />
-						<xs:enumeration value="insects" />
-						<xs:enumeration value="dragonhead" />
-
-						<xs:enumeration value="MORTAREA" />
-						<xs:enumeration value="arrow" />
-						<xs:enumeration value="bigclouds" />
-						<xs:enumeration value="bigplants" />
-						<xs:enumeration value="blackSpark" />
-						<xs:enumeration value="blackspark" />
-						<xs:enumeration value="bluebubble" />
-						<xs:enumeration value="bluenote" />
-						<xs:enumeration value="blueshimmer" />
-						<xs:enumeration value="bolt" />
-						<xs:enumeration value="bubbles" />
-						<xs:enumeration value="burstarrow" />
-						<xs:enumeration value="cake" />
-						<xs:enumeration value="carniphila" />
-						<xs:enumeration value="death" />
-						<xs:enumeration value="earth" />
-						<xs:enumeration value="energy" />
-						<xs:enumeration value="energyarea" />
-						<xs:enumeration value="energyball" />
-						<xs:enumeration value="explosion" />
-						<xs:enumeration value="explosionarea" />
-						<xs:enumeration value="fire" />
-						<xs:enumeration value="firearea" />
-						<xs:enumeration value="fireattack" />
-						<xs:enumeration value="greenbubble" />
-						<xs:enumeration value="greennote" />
-						<xs:enumeration value="greenshimmer" />
-						<xs:enumeration value="greenspark" />
-						<xs:enumeration value="groundshaker" />
-						<xs:enumeration value="hearts" />
-						<xs:enumeration value="holyarea" />
-						<xs:enumeration value="holydamage" />
-						<xs:enumeration value="ice" />
-						<xs:enumeration value="icearea" />
-						<xs:enumeration value="iceattack" />
-						<xs:enumeration value="icetornado" />
-						<xs:enumeration value="largerock" />
-						<xs:enumeration value="mortarea" />
-						<xs:enumeration value="piercingbolt" />
-						<xs:enumeration value="plantattack" />
-						<xs:enumeration value="poff" />
-						<xs:enumeration value="poison" />
-						<xs:enumeration value="poisonarrow" />
-						<xs:enumeration value="purpleenergy" />
-						<xs:enumeration value="purplenote" />
-						<xs:enumeration value="rednote" />
-						<xs:enumeration value="redshimmer" />
-						<xs:enumeration value="redspark" />
-						<xs:enumeration value="sleep" />
-						<xs:enumeration value="smallclouds" />
-						<xs:enumeration value="smallearth" />
-						<xs:enumeration value="smallholy" />
-						<xs:enumeration value="smallice" />
-						<xs:enumeration value="smallplants" />
-						<xs:enumeration value="smallstone" />
-						<xs:enumeration value="snowball" />
-						<xs:enumeration value="spear" />
-						<xs:enumeration value="stones" />
-						<xs:enumeration value="stun" />
-						<xs:enumeration value="suddendeath" />
-						<xs:enumeration value="teleport" />
-						<xs:enumeration value="throwingknife" />
-						<xs:enumeration value="throwingstar" />
-						<xs:enumeration value="watersplash" />
-						<xs:enumeration value="whirlwindaxe" />
-						<xs:enumeration value="whirlwindclub" />
-						<xs:enumeration value="whirlwindsword" />
-						<xs:enumeration value="whitenote" />
-						<xs:enumeration value="yellowbubble" />
-						<xs:enumeration value="yellowenergy" />
-						<xs:enumeration value="yellownote" />
-						<xs:enumeration value="yellowspark" />
+						<xs:enumeration value="spear"/>
+						<xs:enumeration value="bolt"/>
+						<xs:enumeration value="arrow"/>
+						<xs:enumeration value="fire"/>
+						<xs:enumeration value="energy"/>
+						<xs:enumeration value="poisonarrow"/>
+						<xs:enumeration value="burstarrow"/>
+						<xs:enumeration value="throwingstar"/>
+						<xs:enumeration value="throwingknife"/>
+						<xs:enumeration value="smallstone"/>
+						<xs:enumeration value="death"/>
+						<xs:enumeration value="largerock"/>
+						<xs:enumeration value="snowball"/>
+						<xs:enumeration value="powerbolt"/>
+						<xs:enumeration value="poison"/>
+						<xs:enumeration value="infernalbolt"/>
+						<xs:enumeration value="huntingspear"/>
+						<xs:enumeration value="enchantedspear"/>
+						<xs:enumeration value="redstar"/>
+						<xs:enumeration value="greenstar"/>
+						<xs:enumeration value="royalspear"/>
+						<xs:enumeration value="sniperarrow"/>
+						<xs:enumeration value="onyxarrow"/>
+						<xs:enumeration value="piercingbolt"/>
+						<xs:enumeration value="whirlwindsword"/>
+						<xs:enumeration value="whirlwind"/>
+						<xs:enumeration value="whirlwindclub"/>
+						<xs:enumeration value="etherealspear"/>
+						<xs:enumeration value="ice"/>
+						<xs:enumeration value="earth"/>
+						<xs:enumeration value="holy"/>
+						<xs:enumeration value="suddendeath"/>
+						<xs:enumeration value="flasharrow"/>
+						<xs:enumeration value="flammingarrow"/>
+						<xs:enumeration value="shiverarrow"/>
+						<xs:enumeration value="energyball"/>
+						<xs:enumeration value="smallice"/>
+						<xs:enumeration value="smallholy"/>
+						<xs:enumeration value="smallearth"/>
+						<xs:enumeration value="eartharrow"/>
+						<xs:enumeration value="explosion"/>
+						<xs:enumeration value="cake"/>
+						<xs:enumeration value="redspark"/>
+						<xs:enumeration value="bluebubble"/>
+						<xs:enumeration value="poff"/>
+						<xs:enumeration value="yellowspark"/>
+						<xs:enumeration value="explosionarea"/>
+						<xs:enumeration value="explosion"/>
+						<xs:enumeration value="firearea"/>
+						<xs:enumeration value="yellowbubble"/>
+						<xs:enumeration value="greenbubble"/>
+						<xs:enumeration value="blackspark"/>
+						<xs:enumeration value="teleport"/>
+						<xs:enumeration value="energy"/>
+						<xs:enumeration value="blueshimmer"/>
+						<xs:enumeration value="redshimmer"/>
+						<xs:enumeration value="greenshimmer"/>
+						<xs:enumeration value="fire"/>
+						<xs:enumeration value="greenspark"/>
+						<xs:enumeration value="mortarea"/>
+						<xs:enumeration value="greennote"/>
+						<xs:enumeration value="rednote"/>
+						<xs:enumeration value="poison"/>
+						<xs:enumeration value="yellownote"/>
+						<xs:enumeration value="purplenote"/>
+						<xs:enumeration value="bluenote"/>
+						<xs:enumeration value="whitenote"/>
+						<xs:enumeration value="bubbles"/>
+						<xs:enumeration value="dice"/>
+						<xs:enumeration value="giftwraps"/>
+						<xs:enumeration value="yellowfirework"/>
+						<xs:enumeration value="redfirework"/>
+						<xs:enumeration value="bluefirework"/>
+						<xs:enumeration value="stun"/>
+						<xs:enumeration value="sleep"/>
+						<xs:enumeration value="watercreature"/>
+						<xs:enumeration value="groundshaker"/>
+						<xs:enumeration value="hearts"/>
+						<xs:enumeration value="fireattack"/>
+						<xs:enumeration value="energyarea"/>
+						<xs:enumeration value="smallclouds"/>
+						<xs:enumeration value="holydamage"/>
+						<xs:enumeration value="bigclouds"/>
+						<xs:enumeration value="icearea"/>
+						<xs:enumeration value="icetornado"/>
+						<xs:enumeration value="iceattack"/>
+						<xs:enumeration value="stones"/>
+						<xs:enumeration value="smallplants"/>
+						<xs:enumeration value="carniphila"/>
+						<xs:enumeration value="purpleenergy"/>
+						<xs:enumeration value="yellowenergy"/>
+						<xs:enumeration value="holyarea"/>
+						<xs:enumeration value="bigplants"/>
+						<xs:enumeration value="cake"/>
+						<xs:enumeration value="giantice"/>
+						<xs:enumeration value="watersplash"/>
+						<xs:enumeration value="plantattack"/>
+						<xs:enumeration value="tutorialarrow"/>
+						<xs:enumeration value="tutorialsquare"/>
+						<xs:enumeration value="mirrorhorizontal"/>
+						<xs:enumeration value="mirrorvertical"/>
+						<xs:enumeration value="skullhorizontal"/>
+						<xs:enumeration value="skullvertical"/>
+						<xs:enumeration value="assassin"/>
+						<xs:enumeration value="stepshorizontal"/>
+						<xs:enumeration value="bloodysteps"/>
+						<xs:enumeration value="stepsvertical"/>
+						<xs:enumeration value="yalaharighost"/>
+						<xs:enumeration value="bats"/>
+						<xs:enumeration value="smoke"/>
+						<xs:enumeration value="insects"/>
+						<xs:enumeration value="dragonhead"/>
+						<xs:enumeration value="MORTAREA"/>
+						<xs:enumeration value="arrow"/>
+						<xs:enumeration value="bigclouds"/>
+						<xs:enumeration value="bigplants"/>
+						<xs:enumeration value="blackSpark"/>
+						<xs:enumeration value="blackspark"/>
+						<xs:enumeration value="bluebubble"/>
+						<xs:enumeration value="bluenote"/>
+						<xs:enumeration value="blueshimmer"/>
+						<xs:enumeration value="bolt"/>
+						<xs:enumeration value="bubbles"/>
+						<xs:enumeration value="burstarrow"/>
+						<xs:enumeration value="cake"/>
+						<xs:enumeration value="carniphila"/>
+						<xs:enumeration value="death"/>
+						<xs:enumeration value="earth"/>
+						<xs:enumeration value="energy"/>
+						<xs:enumeration value="energyarea"/>
+						<xs:enumeration value="energyball"/>
+						<xs:enumeration value="explosion"/>
+						<xs:enumeration value="explosionarea"/>
+						<xs:enumeration value="fire"/>
+						<xs:enumeration value="firearea"/>
+						<xs:enumeration value="fireattack"/>
+						<xs:enumeration value="greenbubble"/>
+						<xs:enumeration value="greennote"/>
+						<xs:enumeration value="greenshimmer"/>
+						<xs:enumeration value="greenspark"/>
+						<xs:enumeration value="groundshaker"/>
+						<xs:enumeration value="hearts"/>
+						<xs:enumeration value="holyarea"/>
+						<xs:enumeration value="holydamage"/>
+						<xs:enumeration value="ice"/>
+						<xs:enumeration value="icearea"/>
+						<xs:enumeration value="iceattack"/>
+						<xs:enumeration value="icetornado"/>
+						<xs:enumeration value="largerock"/>
+						<xs:enumeration value="mortarea"/>
+						<xs:enumeration value="piercingbolt"/>
+						<xs:enumeration value="plantattack"/>
+						<xs:enumeration value="poff"/>
+						<xs:enumeration value="poison"/>
+						<xs:enumeration value="poisonarrow"/>
+						<xs:enumeration value="purpleenergy"/>
+						<xs:enumeration value="purplenote"/>
+						<xs:enumeration value="rednote"/>
+						<xs:enumeration value="redshimmer"/>
+						<xs:enumeration value="redspark"/>
+						<xs:enumeration value="sleep"/>
+						<xs:enumeration value="smallclouds"/>
+						<xs:enumeration value="smallearth"/>
+						<xs:enumeration value="smallholy"/>
+						<xs:enumeration value="smallice"/>
+						<xs:enumeration value="smallplants"/>
+						<xs:enumeration value="smallstone"/>
+						<xs:enumeration value="snowball"/>
+						<xs:enumeration value="spear"/>
+						<xs:enumeration value="stones"/>
+						<xs:enumeration value="stun"/>
+						<xs:enumeration value="suddendeath"/>
+						<xs:enumeration value="teleport"/>
+						<xs:enumeration value="throwingknife"/>
+						<xs:enumeration value="throwingstar"/>
+						<xs:enumeration value="watersplash"/>
+						<xs:enumeration value="whirlwindaxe"/>
+						<xs:enumeration value="whirlwindclub"/>
+						<xs:enumeration value="whirlwindsword"/>
+						<xs:enumeration value="whitenote"/>
+						<xs:enumeration value="yellowbubble"/>
+						<xs:enumeration value="yellowenergy"/>
+						<xs:enumeration value="yellownote"/>
+						<xs:enumeration value="yellowspark"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="key" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="areaeffect" />
-						<xs:enumeration value="shooteffect" />
+						<xs:enumeration value="areaeffect"/>
+						<xs:enumeration value="shooteffect"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
@@ -1492,8 +806,8 @@
 	<xs:element name="attacks">
 		<xs:complexType mixed="true">
 			<xs:sequence minOccurs="0">
-				<xs:element ref="attack" maxOccurs="unbounded" />
-				<xs:element ref="defense" minOccurs="0" />
+				<xs:element ref="attack" maxOccurs="unbounded"/>
+				<xs:element ref="defense" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -1501,531 +815,481 @@
 		<xs:complexType mixed="true">
 			<xs:choice minOccurs="0">
 				<xs:sequence>
-					<xs:element ref="attribute" maxOccurs="unbounded" />
+					<xs:element ref="attribute" maxOccurs="unbounded"/>
 				</xs:sequence>
 			</xs:choice>
-			<xs:attribute name="target" type="xs:boolean" />
-			<!-- <xs:attribute name="sword"> <xs:simpleType> <xs:restriction base="xs:byte"> 
-				<xs:enumeration value="-1" /> </xs:restriction> </xs:simpleType> </xs:attribute> -->
-			<xs:attribute name="start" type="xs:integer" />
-			<xs:attribute name="spread" type="xs:positiveInteger" />
+			<xs:attribute name="target" type="xs:boolean"/>
+			<xs:attribute name="start" type="xs:integer"/>
+			<xs:attribute name="spread" type="xs:nonNegativeInteger"/>
 			<xs:attribute name="speedchange">
 				<xs:simpleType>
 					<xs:restriction base="xs:integer">
-						<xs:minInclusive value="-1000" />
+						<xs:minInclusive value="-1000"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="speed" type="xs:integer" />
+			<xs:attribute name="speed" type="xs:integer"/>
 			<xs:attribute name="skill" type="xs:integer">
 				<xs:annotation>
 					<xs:documentation>Skill ID</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="shielding">
-				<xs:simpleType>
-					<xs:restriction base="xs:byte">
-						<xs:enumeration value="-1" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="range">
-				<xs:simpleType>
-					<xs:restriction base="xs:byte">
-						<xs:enumeration value="1" />
-						<xs:enumeration value="10" />
-						<xs:enumeration value="12" />
-						<xs:enumeration value="14" />
-						<xs:enumeration value="19" />
-						<xs:enumeration value="20" />
-						<xs:enumeration value="25" />
-						<xs:enumeration value="3" />
-						<xs:enumeration value="30" />
-						<xs:enumeration value="4" />
-						<xs:enumeration value="40" />
-						<xs:enumeration value="5" />
-						<xs:enumeration value="6" />
-						<xs:enumeration value="7" />
-						<xs:enumeration value="8" />
-						<xs:enumeration value="9" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
+			<xs:attribute name="shielding" type="xs:integer"/>
+			<xs:attribute name="range" type="xs:nonNegativeInteger"/>
 			<xs:attribute name="radius">
 				<xs:simpleType>
 					<xs:restriction base="xs:byte">
-						<xs:enumeration value="0" />
-						<xs:enumeration value="1" />
-						<xs:enumeration value="2" />
-						<xs:enumeration value="3" />
-						<xs:enumeration value="4" />
-						<xs:enumeration value="5" />
-						<xs:enumeration value="6" />
-						<xs:enumeration value="7" />
+						<xs:enumeration value="0"/>
+						<xs:enumeration value="1"/>
+						<xs:enumeration value="2"/>
+						<xs:enumeration value="3"/>
+						<xs:enumeration value="4"/>
+						<xs:enumeration value="5"/>
+						<xs:enumeration value="6"/>
+						<xs:enumeration value="7"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="poison">
 				<xs:simpleType>
 					<xs:restriction base="xs:short">
-						<xs:enumeration value="10" />
-						<xs:enumeration value="100" />
-						<xs:enumeration value="120" />
-						<xs:enumeration value="1200" />
-						<xs:enumeration value="140" />
-						<xs:enumeration value="15" />
-						<xs:enumeration value="160" />
-						<xs:enumeration value="180" />
-						<xs:enumeration value="20" />
-						<xs:enumeration value="200" />
-						<xs:enumeration value="21" />
-						<xs:enumeration value="220" />
-						<xs:enumeration value="250" />
-						<xs:enumeration value="30" />
-						<xs:enumeration value="300" />
-						<xs:enumeration value="340" />
-						<xs:enumeration value="360" />
-						<xs:enumeration value="380" />
-						<xs:enumeration value="40" />
-						<xs:enumeration value="480" />
-						<xs:enumeration value="60" />
-						<xs:enumeration value="600" />
-						<xs:enumeration value="80" />
-						<xs:enumeration value="840" />
-						<xs:enumeration value="880" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="poision">
-				<xs:simpleType>
-					<xs:restriction base="xs:byte">
-						<xs:enumeration value="20" />
+						<xs:enumeration value="10"/>
+						<xs:enumeration value="100"/>
+						<xs:enumeration value="120"/>
+						<xs:enumeration value="1200"/>
+						<xs:enumeration value="140"/>
+						<xs:enumeration value="15"/>
+						<xs:enumeration value="160"/>
+						<xs:enumeration value="180"/>
+						<xs:enumeration value="20"/>
+						<xs:enumeration value="200"/>
+						<xs:enumeration value="21"/>
+						<xs:enumeration value="220"/>
+						<xs:enumeration value="250"/>
+						<xs:enumeration value="30"/>
+						<xs:enumeration value="300"/>
+						<xs:enumeration value="340"/>
+						<xs:enumeration value="360"/>
+						<xs:enumeration value="380"/>
+						<xs:enumeration value="40"/>
+						<xs:enumeration value="480"/>
+						<xs:enumeration value="60"/>
+						<xs:enumeration value="600"/>
+						<xs:enumeration value="80"/>
+						<xs:enumeration value="840"/>
+						<xs:enumeration value="880"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="name" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="brutetamer skills" />
-						<xs:enumeration value="cursecondition" />
-						<xs:enumeration value="death" />
-						<xs:enumeration value="drown" />
-						<xs:enumeration value="drowncondition" />
-						<xs:enumeration value="drunk" />
-						<xs:enumeration value="earth" />
-						<xs:enumeration value="emperor summon" />
-						<xs:enumeration value="energy" />
-						<xs:enumeration value="energycondition" />
-						<xs:enumeration value="energyfield" />
-						<xs:enumeration value="fire" />
-						<xs:enumeration value="firecondition" />
-						<xs:enumeration value="firefield" />
-						<xs:enumeration value="holy" />
-						<xs:enumeration value="ice" />
-						<xs:enumeration value="invisible" />
-						<xs:enumeration value="lifedrain" />
-						<xs:enumeration value="madareth skills" />
-						<xs:enumeration value="manadrain" />
-						<xs:enumeration value="mass healing" />
-						<xs:enumeration value="melee" />
-						<xs:enumeration value="outfit" />
-						<xs:enumeration value="paralyze" />
-						<xs:enumeration value="physical" />
-						<xs:enumeration value="poison" />
-						<xs:enumeration value="poisoncondition" />
-						<xs:enumeration value="poisonfield" />
-						<xs:enumeration value="pythius curse" />
-						<xs:enumeration value="pythius summon" />
-						<xs:enumeration value="skills" />
-						<xs:enumeration value="soulfire" />
-						<xs:enumeration value="speed" />
-						<xs:enumeration value="stampor skills" />
-						<xs:enumeration value="stone shower" />
+						<xs:enumeration value="brutetamer skills"/>
+						<xs:enumeration value="cursecondition"/>
+						<xs:enumeration value="death"/>
+						<xs:enumeration value="drown"/>
+						<xs:enumeration value="drowncondition"/>
+						<xs:enumeration value="drunk"/>
+						<xs:enumeration value="earth"/>
+						<xs:enumeration value="emperor summon"/>
+						<xs:enumeration value="energy"/>
+						<xs:enumeration value="energycondition"/>
+						<xs:enumeration value="energyfield"/>
+						<xs:enumeration value="fire"/>
+						<xs:enumeration value="firecondition"/>
+						<xs:enumeration value="firefield"/>
+						<xs:enumeration value="holy"/>
+						<xs:enumeration value="ice"/>
+						<xs:enumeration value="invisible"/>
+						<xs:enumeration value="lifedrain"/>
+						<xs:enumeration value="madareth skills"/>
+						<xs:enumeration value="manadrain"/>
+						<xs:enumeration value="mass healing"/>
+						<xs:enumeration value="melee"/>
+						<xs:enumeration value="outfit"/>
+						<xs:enumeration value="paralyze"/>
+						<xs:enumeration value="physical"/>
+						<xs:enumeration value="poison"/>
+						<xs:enumeration value="poisoncondition"/>
+						<xs:enumeration value="poisonfield"/>
+						<xs:enumeration value="pythius curse"/>
+						<xs:enumeration value="pythius summon"/>
+						<xs:enumeration value="skills"/>
+						<xs:enumeration value="soulfire"/>
+						<xs:enumeration value="speed"/>
+						<xs:enumeration value="stampor skills"/>
+						<xs:enumeration value="stone shower"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="monster">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="Blightwalker" />
-						<xs:enumeration value="Dark Torturer" />
-						<xs:enumeration value="Phantasm" />
-						<xs:enumeration value="Pirate Skeleton" />
-						<xs:enumeration value="Rat" />
-						<xs:enumeration value="Spectre" />
-						<xs:enumeration value="chicken" />
-						<xs:enumeration value="cyclops" />
-						<xs:enumeration value="ghost" />
-						<xs:enumeration value="mummy" />
-						<xs:enumeration value="pig" />
-						<xs:enumeration value="rabbit" />
-						<xs:enumeration value="rat" />
-						<xs:enumeration value="skeleton" />
-						<xs:enumeration value="vampire" />
-						<xs:enumeration value="werewolf" />
-						<xs:enumeration value="witch" />
+						<xs:enumeration value="Blightwalker"/>
+						<xs:enumeration value="Dark Torturer"/>
+						<xs:enumeration value="Phantasm"/>
+						<xs:enumeration value="Pirate Skeleton"/>
+						<xs:enumeration value="Rat"/>
+						<xs:enumeration value="Spectre"/>
+						<xs:enumeration value="chicken"/>
+						<xs:enumeration value="cyclops"/>
+						<xs:enumeration value="ghost"/>
+						<xs:enumeration value="mummy"/>
+						<xs:enumeration value="pig"/>
+						<xs:enumeration value="rabbit"/>
+						<xs:enumeration value="rat"/>
+						<xs:enumeration value="skeleton"/>
+						<xs:enumeration value="vampire"/>
+						<xs:enumeration value="werewolf"/>
+						<xs:enumeration value="witch"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="min">
 				<xs:simpleType>
 					<xs:restriction base="xs:short">
-						<xs:enumeration value="-1" />
-						<xs:enumeration value="-10" />
-						<xs:enumeration value="-100" />
-						<xs:enumeration value="-105" />
-						<xs:enumeration value="-115" />
-						<xs:enumeration value="-120" />
-						<xs:enumeration value="-125" />
-						<xs:enumeration value="-130" />
-						<xs:enumeration value="-14" />
-						<xs:enumeration value="-140" />
-						<xs:enumeration value="-148" />
-						<xs:enumeration value="-15" />
-						<xs:enumeration value="-150" />
-						<xs:enumeration value="-16" />
-						<xs:enumeration value="-160" />
-						<xs:enumeration value="-165" />
-						<xs:enumeration value="-170" />
-						<xs:enumeration value="-172" />
-						<xs:enumeration value="-175" />
-						<xs:enumeration value="-18" />
-						<xs:enumeration value="-180" />
-						<xs:enumeration value="-190" />
-						<xs:enumeration value="-2" />
-						<xs:enumeration value="-20" />
-						<xs:enumeration value="-200" />
-						<xs:enumeration value="-2000" />
-						<xs:enumeration value="-21" />
-						<xs:enumeration value="-210" />
-						<xs:enumeration value="-22" />
-						<xs:enumeration value="-220" />
-						<xs:enumeration value="-225" />
-						<xs:enumeration value="-240" />
-						<xs:enumeration value="-25" />
-						<xs:enumeration value="-250" />
-						<xs:enumeration value="-270" />
-						<xs:enumeration value="-28" />
-						<xs:enumeration value="-29" />
-						<xs:enumeration value="-30" />
-						<xs:enumeration value="-300" />
-						<xs:enumeration value="-320" />
-						<xs:enumeration value="-333" />
-						<xs:enumeration value="-340" />
-						<xs:enumeration value="-35" />
-						<xs:enumeration value="-350" />
-						<xs:enumeration value="-365" />
-						<xs:enumeration value="-390" />
-						<xs:enumeration value="-40" />
-						<xs:enumeration value="-400" />
-						<xs:enumeration value="-420" />
-						<xs:enumeration value="-440" />
-						<xs:enumeration value="-45" />
-						<xs:enumeration value="-450" />
-						<xs:enumeration value="-490" />
-						<xs:enumeration value="-5" />
-						<xs:enumeration value="-50" />
-						<xs:enumeration value="-500" />
-						<xs:enumeration value="-54" />
-						<xs:enumeration value="-55" />
-						<xs:enumeration value="-60" />
-						<xs:enumeration value="-600" />
-						<xs:enumeration value="-65" />
-						<xs:enumeration value="-69" />
-						<xs:enumeration value="-7" />
-						<xs:enumeration value="-70" />
-						<xs:enumeration value="-700" />
-						<xs:enumeration value="-72" />
-						<xs:enumeration value="-75" />
-						<xs:enumeration value="-8" />
-						<xs:enumeration value="-80" />
-						<xs:enumeration value="-800" />
-						<xs:enumeration value="-85" />
-						<xs:enumeration value="-9" />
-						<xs:enumeration value="-90" />
-						<xs:enumeration value="-900" />
-						<xs:enumeration value="-920" />
-						<xs:enumeration value="-95" />
-						<xs:enumeration value="-98" />
-						<xs:enumeration value="-99" />
-						<xs:enumeration value="0" />
-						<xs:enumeration value="10" />
-						<xs:enumeration value="10000" />
-						<xs:enumeration value="55" />
-						<xs:enumeration value="70" />
+						<xs:enumeration value="-1"/>
+						<xs:enumeration value="-10"/>
+						<xs:enumeration value="-100"/>
+						<xs:enumeration value="-105"/>
+						<xs:enumeration value="-115"/>
+						<xs:enumeration value="-120"/>
+						<xs:enumeration value="-125"/>
+						<xs:enumeration value="-130"/>
+						<xs:enumeration value="-14"/>
+						<xs:enumeration value="-140"/>
+						<xs:enumeration value="-148"/>
+						<xs:enumeration value="-15"/>
+						<xs:enumeration value="-150"/>
+						<xs:enumeration value="-16"/>
+						<xs:enumeration value="-160"/>
+						<xs:enumeration value="-165"/>
+						<xs:enumeration value="-170"/>
+						<xs:enumeration value="-172"/>
+						<xs:enumeration value="-175"/>
+						<xs:enumeration value="-18"/>
+						<xs:enumeration value="-180"/>
+						<xs:enumeration value="-190"/>
+						<xs:enumeration value="-2"/>
+						<xs:enumeration value="-20"/>
+						<xs:enumeration value="-200"/>
+						<xs:enumeration value="-2000"/>
+						<xs:enumeration value="-21"/>
+						<xs:enumeration value="-210"/>
+						<xs:enumeration value="-22"/>
+						<xs:enumeration value="-220"/>
+						<xs:enumeration value="-225"/>
+						<xs:enumeration value="-240"/>
+						<xs:enumeration value="-25"/>
+						<xs:enumeration value="-250"/>
+						<xs:enumeration value="-270"/>
+						<xs:enumeration value="-28"/>
+						<xs:enumeration value="-29"/>
+						<xs:enumeration value="-30"/>
+						<xs:enumeration value="-300"/>
+						<xs:enumeration value="-320"/>
+						<xs:enumeration value="-333"/>
+						<xs:enumeration value="-340"/>
+						<xs:enumeration value="-35"/>
+						<xs:enumeration value="-350"/>
+						<xs:enumeration value="-365"/>
+						<xs:enumeration value="-390"/>
+						<xs:enumeration value="-40"/>
+						<xs:enumeration value="-400"/>
+						<xs:enumeration value="-420"/>
+						<xs:enumeration value="-440"/>
+						<xs:enumeration value="-45"/>
+						<xs:enumeration value="-450"/>
+						<xs:enumeration value="-490"/>
+						<xs:enumeration value="-5"/>
+						<xs:enumeration value="-50"/>
+						<xs:enumeration value="-500"/>
+						<xs:enumeration value="-54"/>
+						<xs:enumeration value="-55"/>
+						<xs:enumeration value="-60"/>
+						<xs:enumeration value="-600"/>
+						<xs:enumeration value="-65"/>
+						<xs:enumeration value="-69"/>
+						<xs:enumeration value="-7"/>
+						<xs:enumeration value="-70"/>
+						<xs:enumeration value="-700"/>
+						<xs:enumeration value="-72"/>
+						<xs:enumeration value="-75"/>
+						<xs:enumeration value="-8"/>
+						<xs:enumeration value="-80"/>
+						<xs:enumeration value="-800"/>
+						<xs:enumeration value="-85"/>
+						<xs:enumeration value="-9"/>
+						<xs:enumeration value="-90"/>
+						<xs:enumeration value="-900"/>
+						<xs:enumeration value="-920"/>
+						<xs:enumeration value="-95"/>
+						<xs:enumeration value="-98"/>
+						<xs:enumeration value="-99"/>
+						<xs:enumeration value="0"/>
+						<xs:enumeration value="10"/>
+						<xs:enumeration value="10000"/>
+						<xs:enumeration value="55"/>
+						<xs:enumeration value="70"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="max">
 				<xs:simpleType>
 					<xs:restriction base="xs:short">
-						<xs:enumeration value="-10" />
-						<xs:enumeration value="-100" />
-						<xs:enumeration value="-1000" />
-						<xs:enumeration value="-105" />
-						<xs:enumeration value="-1050" />
-						<xs:enumeration value="-110" />
-						<xs:enumeration value="-1100" />
-						<xs:enumeration value="-111" />
-						<xs:enumeration value="-115" />
-						<xs:enumeration value="-120" />
-						<xs:enumeration value="-1200" />
-						<xs:enumeration value="-125" />
-						<xs:enumeration value="-1270" />
-						<xs:enumeration value="-1280" />
-						<xs:enumeration value="-13" />
-						<xs:enumeration value="-130" />
-						<xs:enumeration value="-1300" />
-						<xs:enumeration value="-135" />
-						<xs:enumeration value="-1377" />
-						<xs:enumeration value="-140" />
-						<xs:enumeration value="-145" />
-						<xs:enumeration value="-15" />
-						<xs:enumeration value="-150" />
-						<xs:enumeration value="-1500" />
-						<xs:enumeration value="-155" />
-						<xs:enumeration value="-160" />
-						<xs:enumeration value="-165" />
-						<xs:enumeration value="-17" />
-						<xs:enumeration value="-170" />
-						<xs:enumeration value="-175" />
-						<xs:enumeration value="-180" />
-						<xs:enumeration value="-185" />
-						<xs:enumeration value="-190" />
-						<xs:enumeration value="-195" />
-						<xs:enumeration value="-20" />
-						<xs:enumeration value="-200" />
-						<xs:enumeration value="-205" />
-						<xs:enumeration value="-210" />
-						<xs:enumeration value="-213" />
-						<xs:enumeration value="-220" />
-						<xs:enumeration value="-225" />
-						<xs:enumeration value="-23" />
-						<xs:enumeration value="-230" />
-						<xs:enumeration value="-235" />
-						<xs:enumeration value="-2398" />
-						<xs:enumeration value="-24" />
-						<xs:enumeration value="-240" />
-						<xs:enumeration value="-245" />
-						<xs:enumeration value="-25" />
-						<xs:enumeration value="-250" />
-						<xs:enumeration value="-2500" />
-						<xs:enumeration value="-255" />
-						<xs:enumeration value="-26" />
-						<xs:enumeration value="-260" />
-						<xs:enumeration value="-265" />
-						<xs:enumeration value="-27" />
-						<xs:enumeration value="-270" />
-						<xs:enumeration value="-275" />
-						<xs:enumeration value="-280" />
-						<xs:enumeration value="-290" />
-						<xs:enumeration value="-3" />
-						<xs:enumeration value="-30" />
-						<xs:enumeration value="-300" />
-						<xs:enumeration value="-305" />
-						<xs:enumeration value="-31" />
-						<xs:enumeration value="-310" />
-						<xs:enumeration value="-32" />
-						<xs:enumeration value="-320" />
-						<xs:enumeration value="-330" />
-						<xs:enumeration value="-34" />
-						<xs:enumeration value="-340" />
-						<xs:enumeration value="-35" />
-						<xs:enumeration value="-350" />
-						<xs:enumeration value="-36" />
-						<xs:enumeration value="-360" />
-						<xs:enumeration value="-370" />
-						<xs:enumeration value="-375" />
-						<xs:enumeration value="-380" />
-						<xs:enumeration value="-3800" />
-						<xs:enumeration value="-390" />
-						<xs:enumeration value="-395" />
-						<xs:enumeration value="-40" />
-						<xs:enumeration value="-400" />
-						<xs:enumeration value="-405" />
-						<xs:enumeration value="-411" />
-						<xs:enumeration value="-418" />
-						<xs:enumeration value="-420" />
-						<xs:enumeration value="-43" />
-						<xs:enumeration value="-430" />
-						<xs:enumeration value="-440" />
-						<xs:enumeration value="-45" />
-						<xs:enumeration value="-450" />
-						<xs:enumeration value="-460" />
-						<xs:enumeration value="-470" />
-						<xs:enumeration value="-480" />
-						<xs:enumeration value="-49" />
-						<xs:enumeration value="-495" />
-						<xs:enumeration value="-5" />
-						<xs:enumeration value="-50" />
-						<xs:enumeration value="-500" />
-						<xs:enumeration value="-510" />
-						<xs:enumeration value="-524" />
-						<xs:enumeration value="-54" />
-						<xs:enumeration value="-540" />
-						<xs:enumeration value="-55" />
-						<xs:enumeration value="-550" />
-						<xs:enumeration value="-555" />
-						<xs:enumeration value="-56" />
-						<xs:enumeration value="-570" />
-						<xs:enumeration value="-580" />
-						<xs:enumeration value="-585" />
-						<xs:enumeration value="-595" />
-						<xs:enumeration value="-60" />
-						<xs:enumeration value="-600" />
-						<xs:enumeration value="-605" />
-						<xs:enumeration value="-640" />
-						<xs:enumeration value="-645" />
-						<xs:enumeration value="-65" />
-						<xs:enumeration value="-650" />
-						<xs:enumeration value="-665" />
-						<xs:enumeration value="-680" />
-						<xs:enumeration value="-681" />
-						<xs:enumeration value="-685" />
-						<xs:enumeration value="-695" />
-						<xs:enumeration value="-7" />
-						<xs:enumeration value="-70" />
-						<xs:enumeration value="-700" />
-						<xs:enumeration value="-710" />
-						<xs:enumeration value="-715" />
-						<xs:enumeration value="-720" />
-						<xs:enumeration value="-740" />
-						<xs:enumeration value="-75" />
-						<xs:enumeration value="-750" />
-						<xs:enumeration value="-755" />
-						<xs:enumeration value="-760" />
-						<xs:enumeration value="-77" />
-						<xs:enumeration value="-780" />
-						<xs:enumeration value="-781" />
-						<xs:enumeration value="-80" />
-						<xs:enumeration value="-800" />
-						<xs:enumeration value="-815" />
-						<xs:enumeration value="-85" />
-						<xs:enumeration value="-850" />
-						<xs:enumeration value="-860" />
-						<xs:enumeration value="-870" />
-						<xs:enumeration value="-875" />
-						<xs:enumeration value="-885" />
-						<xs:enumeration value="-895" />
-						<xs:enumeration value="-90" />
-						<xs:enumeration value="-900" />
-						<xs:enumeration value="-925" />
-						<xs:enumeration value="-95" />
-						<xs:enumeration value="-980" />
-						<xs:enumeration value="0" />
-						<xs:enumeration value="10000" />
-						<xs:enumeration value="50" />
-						<xs:enumeration value="55" />
-						<xs:enumeration value="80" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="lenth">
-				<xs:simpleType>
-					<xs:restriction base="xs:byte">
-						<xs:enumeration value="8" />
+						<xs:enumeration value="-10"/>
+						<xs:enumeration value="-100"/>
+						<xs:enumeration value="-1000"/>
+						<xs:enumeration value="-105"/>
+						<xs:enumeration value="-1050"/>
+						<xs:enumeration value="-110"/>
+						<xs:enumeration value="-1100"/>
+						<xs:enumeration value="-111"/>
+						<xs:enumeration value="-115"/>
+						<xs:enumeration value="-120"/>
+						<xs:enumeration value="-1200"/>
+						<xs:enumeration value="-125"/>
+						<xs:enumeration value="-1270"/>
+						<xs:enumeration value="-1280"/>
+						<xs:enumeration value="-13"/>
+						<xs:enumeration value="-130"/>
+						<xs:enumeration value="-1300"/>
+						<xs:enumeration value="-135"/>
+						<xs:enumeration value="-1377"/>
+						<xs:enumeration value="-140"/>
+						<xs:enumeration value="-145"/>
+						<xs:enumeration value="-15"/>
+						<xs:enumeration value="-150"/>
+						<xs:enumeration value="-1500"/>
+						<xs:enumeration value="-155"/>
+						<xs:enumeration value="-160"/>
+						<xs:enumeration value="-165"/>
+						<xs:enumeration value="-17"/>
+						<xs:enumeration value="-170"/>
+						<xs:enumeration value="-175"/>
+						<xs:enumeration value="-180"/>
+						<xs:enumeration value="-185"/>
+						<xs:enumeration value="-190"/>
+						<xs:enumeration value="-195"/>
+						<xs:enumeration value="-20"/>
+						<xs:enumeration value="-200"/>
+						<xs:enumeration value="-205"/>
+						<xs:enumeration value="-210"/>
+						<xs:enumeration value="-213"/>
+						<xs:enumeration value="-220"/>
+						<xs:enumeration value="-225"/>
+						<xs:enumeration value="-23"/>
+						<xs:enumeration value="-230"/>
+						<xs:enumeration value="-235"/>
+						<xs:enumeration value="-2398"/>
+						<xs:enumeration value="-24"/>
+						<xs:enumeration value="-240"/>
+						<xs:enumeration value="-245"/>
+						<xs:enumeration value="-25"/>
+						<xs:enumeration value="-250"/>
+						<xs:enumeration value="-2500"/>
+						<xs:enumeration value="-255"/>
+						<xs:enumeration value="-26"/>
+						<xs:enumeration value="-260"/>
+						<xs:enumeration value="-265"/>
+						<xs:enumeration value="-27"/>
+						<xs:enumeration value="-270"/>
+						<xs:enumeration value="-275"/>
+						<xs:enumeration value="-280"/>
+						<xs:enumeration value="-290"/>
+						<xs:enumeration value="-3"/>
+						<xs:enumeration value="-30"/>
+						<xs:enumeration value="-300"/>
+						<xs:enumeration value="-305"/>
+						<xs:enumeration value="-31"/>
+						<xs:enumeration value="-310"/>
+						<xs:enumeration value="-32"/>
+						<xs:enumeration value="-320"/>
+						<xs:enumeration value="-330"/>
+						<xs:enumeration value="-34"/>
+						<xs:enumeration value="-340"/>
+						<xs:enumeration value="-35"/>
+						<xs:enumeration value="-350"/>
+						<xs:enumeration value="-36"/>
+						<xs:enumeration value="-360"/>
+						<xs:enumeration value="-370"/>
+						<xs:enumeration value="-375"/>
+						<xs:enumeration value="-380"/>
+						<xs:enumeration value="-3800"/>
+						<xs:enumeration value="-390"/>
+						<xs:enumeration value="-395"/>
+						<xs:enumeration value="-40"/>
+						<xs:enumeration value="-400"/>
+						<xs:enumeration value="-405"/>
+						<xs:enumeration value="-411"/>
+						<xs:enumeration value="-418"/>
+						<xs:enumeration value="-420"/>
+						<xs:enumeration value="-43"/>
+						<xs:enumeration value="-430"/>
+						<xs:enumeration value="-440"/>
+						<xs:enumeration value="-45"/>
+						<xs:enumeration value="-450"/>
+						<xs:enumeration value="-460"/>
+						<xs:enumeration value="-470"/>
+						<xs:enumeration value="-480"/>
+						<xs:enumeration value="-49"/>
+						<xs:enumeration value="-495"/>
+						<xs:enumeration value="-5"/>
+						<xs:enumeration value="-50"/>
+						<xs:enumeration value="-500"/>
+						<xs:enumeration value="-510"/>
+						<xs:enumeration value="-524"/>
+						<xs:enumeration value="-54"/>
+						<xs:enumeration value="-540"/>
+						<xs:enumeration value="-55"/>
+						<xs:enumeration value="-550"/>
+						<xs:enumeration value="-555"/>
+						<xs:enumeration value="-56"/>
+						<xs:enumeration value="-570"/>
+						<xs:enumeration value="-580"/>
+						<xs:enumeration value="-585"/>
+						<xs:enumeration value="-595"/>
+						<xs:enumeration value="-60"/>
+						<xs:enumeration value="-600"/>
+						<xs:enumeration value="-605"/>
+						<xs:enumeration value="-640"/>
+						<xs:enumeration value="-645"/>
+						<xs:enumeration value="-65"/>
+						<xs:enumeration value="-650"/>
+						<xs:enumeration value="-665"/>
+						<xs:enumeration value="-680"/>
+						<xs:enumeration value="-681"/>
+						<xs:enumeration value="-685"/>
+						<xs:enumeration value="-695"/>
+						<xs:enumeration value="-7"/>
+						<xs:enumeration value="-70"/>
+						<xs:enumeration value="-700"/>
+						<xs:enumeration value="-710"/>
+						<xs:enumeration value="-715"/>
+						<xs:enumeration value="-720"/>
+						<xs:enumeration value="-740"/>
+						<xs:enumeration value="-75"/>
+						<xs:enumeration value="-750"/>
+						<xs:enumeration value="-755"/>
+						<xs:enumeration value="-760"/>
+						<xs:enumeration value="-77"/>
+						<xs:enumeration value="-780"/>
+						<xs:enumeration value="-781"/>
+						<xs:enumeration value="-80"/>
+						<xs:enumeration value="-800"/>
+						<xs:enumeration value="-815"/>
+						<xs:enumeration value="-85"/>
+						<xs:enumeration value="-850"/>
+						<xs:enumeration value="-860"/>
+						<xs:enumeration value="-870"/>
+						<xs:enumeration value="-875"/>
+						<xs:enumeration value="-885"/>
+						<xs:enumeration value="-895"/>
+						<xs:enumeration value="-90"/>
+						<xs:enumeration value="-900"/>
+						<xs:enumeration value="-925"/>
+						<xs:enumeration value="-95"/>
+						<xs:enumeration value="-980"/>
+						<xs:enumeration value="0"/>
+						<xs:enumeration value="10000"/>
+						<xs:enumeration value="50"/>
+						<xs:enumeration value="55"/>
+						<xs:enumeration value="80"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="length">
 				<xs:simpleType>
 					<xs:restriction base="xs:byte">
-						<xs:enumeration value="1" />
-						<xs:enumeration value="3" />
-						<xs:enumeration value="4" />
-						<xs:enumeration value="40" />
-						<xs:enumeration value="5" />
-						<xs:enumeration value="6" />
-						<xs:enumeration value="7" />
-						<xs:enumeration value="8" />
-						<xs:enumeration value="9" />
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:attribute>
-			<xs:attribute name="lenght">
-				<xs:simpleType>
-					<xs:restriction base="xs:byte">
-						<xs:enumeration value="8" />
+						<xs:enumeration value="1"/>
+						<xs:enumeration value="3"/>
+						<xs:enumeration value="4"/>
+						<xs:enumeration value="40"/>
+						<xs:enumeration value="5"/>
+						<xs:enumeration value="6"/>
+						<xs:enumeration value="7"/>
+						<xs:enumeration value="8"/>
+						<xs:enumeration value="9"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="item">
 				<xs:simpleType>
 					<xs:restriction base="xs:short">
-						<xs:enumeration value="2097" />
-						<xs:enumeration value="3976" />
-						<xs:enumeration value="7172" />
+						<xs:enumeration value="2097"/>
+						<xs:enumeration value="3976"/>
+						<xs:enumeration value="7172"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="interval" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:short">
-						<xs:enumeration value="1000" />
-						<xs:enumeration value="1500" />
-						<xs:enumeration value="200" />
-						<xs:enumeration value="2000" />
-						<xs:enumeration value="2500" />
-						<xs:enumeration value="3000" />
-						<xs:enumeration value="5000" />
+						<xs:enumeration value="1000"/>
+						<xs:enumeration value="1500"/>
+						<xs:enumeration value="200"/>
+						<xs:enumeration value="2000"/>
+						<xs:enumeration value="2500"/>
+						<xs:enumeration value="3000"/>
+						<xs:enumeration value="5000"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="fist">
 				<xs:simpleType>
 					<xs:restriction base="xs:byte">
-						<xs:enumeration value="-1" />
+						<xs:enumeration value="-1"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="fire">
 				<xs:simpleType>
 					<xs:restriction base="xs:short">
-						<xs:enumeration value="200" />
+						<xs:enumeration value="200"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="duration">
 				<xs:simpleType>
 					<xs:restriction base="xs:int">
-						<xs:enumeration value="10000" />
-						<xs:enumeration value="12000" />
-						<xs:enumeration value="120000" />
-						<xs:enumeration value="15000" />
-						<xs:enumeration value="20000" />
-						<xs:enumeration value="25000" />
-						<xs:enumeration value="3000" />
-						<xs:enumeration value="30000" />
-						<xs:enumeration value="4000" />
-						<xs:enumeration value="5000" />
-						<xs:enumeration value="50000" />
-						<xs:enumeration value="60000" />
-						<xs:enumeration value="6000000" />
-						<xs:enumeration value="7500" />
-						<xs:enumeration value="8000" />
+						<xs:enumeration value="10000"/>
+						<xs:enumeration value="12000"/>
+						<xs:enumeration value="120000"/>
+						<xs:enumeration value="15000"/>
+						<xs:enumeration value="20000"/>
+						<xs:enumeration value="25000"/>
+						<xs:enumeration value="3000"/>
+						<xs:enumeration value="30000"/>
+						<xs:enumeration value="4000"/>
+						<xs:enumeration value="5000"/>
+						<xs:enumeration value="50000"/>
+						<xs:enumeration value="60000"/>
+						<xs:enumeration value="6000000"/>
+						<xs:enumeration value="7500"/>
+						<xs:enumeration value="8000"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="drown">
 				<xs:simpleType>
 					<xs:restriction base="xs:byte">
-						<xs:enumeration value="20" />
+						<xs:enumeration value="20"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="distance">
 				<xs:simpleType>
 					<xs:restriction base="xs:byte">
-						<xs:enumeration value="-1" />
-						<xs:enumeration value="-5" />
-						<xs:enumeration value="-60" />
+						<xs:enumeration value="-1"/>
+						<xs:enumeration value="-5"/>
+						<xs:enumeration value="-60"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="count">
 				<xs:simpleType>
 					<xs:restriction base="xs:byte">
-						<xs:enumeration value="5" />
+						<xs:enumeration value="5"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
@@ -2038,11 +1302,11 @@
 				<!-- FIXME: Is it supported!? -->
 				<xs:simpleType>
 					<xs:restriction base="xs:byte">
-						<xs:enumeration value="22" />
-						<xs:enumeration value="25" />
-						<xs:enumeration value="30" />
-						<xs:enumeration value="35" />
-						<xs:enumeration value="40" />
+						<xs:enumeration value="22"/>
+						<xs:enumeration value="25"/>
+						<xs:enumeration value="30"/>
+						<xs:enumeration value="35"/>
+						<xs:enumeration value="40"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
@@ -2054,7 +1318,7 @@
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:positiveInteger">
-						<xs:maxInclusive value="100" />
+						<xs:maxInclusive value="100"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
@@ -2070,6 +1334,8 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<!-- <xs:attribute name="sword"> <xs:simpleType> <xs:restriction base="xs:byte"> 
+				<xs:enumeration value="-1" /> </xs:restriction> </xs:simpleType> </xs:attribute> -->
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

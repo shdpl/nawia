@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Project>
+<Project ValidFileSet="Yes" ValidFile="C:\Users\shd\Documents\src\nawia\www\gsao\src\main\resources\xsd\monster-0.0.2.xsd">
 	<Folder FolderName="XML Files" ExtStr="xml;cml;math;rdf;smil;svg;wml">
-		<Folder FolderName="monster" ExtStr="*.xml" ValidFileSet="Yes" ValidFile="C:\Users\shd\Documents\Visual Studio 2010\Projects\nawia\www\gsao\src\main\resources\xsd\monster-0.0.2.xsd">
+		<Folder FolderName="monster" ExtStr="*.xml" ValidFileSet="Yes" ValidFile="C:\Users\shd\Documents\src\nawia\www\gsao\src\main\resources\xsd\monster-0.0.2.xsd">
 			<File FilePath="monster\fury of the emperor.xml" HomeFolder="Yes"/>
 			<File FilePath="monster\lizard gate guardian.xml" HomeFolder="Yes"/>
 			<File FilePath="monster\lizard magistratus.xml" HomeFolder="Yes"/>
@@ -52,7 +52,11 @@
 	<Folder FolderName="XQuery Files" ExtStr="xq;xql;xquery"/>
 	<Folder FolderName="HTML Files" ExtStr="html;htm;xhtml;asp"/>
 	<Folder FolderName="DTD/Schemas" ExtStr="dtd;dcd;xdr;biz;xsd">
-		<ExtMountFolder FolderName="C:\Users\shd\Documents\Visual Studio 2010\Projects\nawia\www\gsao\src\main\resources\xsd"/>
+		<File FilePath="C:\Users\shd\Documents\src\nawia\www\gsao\src\main\resources\xsd\items-0.0.1.xsd" HomeFolder="Yes"/>
+		<File FilePath="C:\Users\shd\Documents\src\nawia\www\gsao\src\main\resources\xsd\monster-0.0.1.xsd" HomeFolder="Yes"/>
+		<File FilePath="C:\Users\shd\Documents\src\nawia\www\gsao\src\main\resources\xsd\monster-0.0.2.xsd" HomeFolder="Yes"/>
+		<File FilePath="C:\Users\shd\Documents\src\nawia\www\gsao\src\main\resources\xsd\monsters-0.0.1.xsd" HomeFolder="Yes"/>
+		<File FilePath="C:\Users\shd\Documents\src\nawia\www\gsao\src\main\resources\xsd\spells-0.0.1.xsd" HomeFolder="Yes"/>
 	</Folder>
 	<Folder FolderName="Entities" ExtStr="ent"/>
 </Project>

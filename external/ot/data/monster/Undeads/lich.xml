@@ -20,24 +20,24 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="40" attack="30"/>
 		<attack name="speed" interval="2000" chance="9" range="7" speedchange="-600">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 		<attack name="lifedrain" interval="2000" chance="9" length="8" spread="0" min="-140" max="-190">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>		
 		<attack name="poisoncondition" interval="2000" chance="9" length="8" spread="0" min="-20" max="-20">
-			<attribute key="areaEffect" value="greenspark"/>
+			<attribute key="areaeffect" value="greenspark"/>
 		</attack>			
 		<attack name="lifedrain" interval="2000" chance="9" radius="3" target="0" min="-130" max="-195">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 		<attack name="lifedrain" interval="2000" chance="9" range="1" min="-200" max="-245">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</attack>
 	</attacks>
 	<defenses armor="20" defense="20">
 		<defense name="healing" interval="2000" chance="9" min="60" max="100">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

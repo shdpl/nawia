@@ -20,10 +20,10 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="190" attack="50"/>
 		<attack name="energy" interval="2000" chance="20" radius="3" target="0" min="-200" max="-400">
-			<attribute key="areaEffect" value="yellowspark"/>
+			<attribute key="areaeffect" value="yellowspark"/>
 		</attack>
 		<attack name="energy" interval="2000" chance="20" length="8" spread="0" min="-100" max="-200">
-			<attribute key="areaEffect" value="yellowspark"/>
+			<attribute key="areaeffect" value="yellowspark"/>
 		</attack>
 	</attacks>
 	<defenses armor="199" defense="199"/>

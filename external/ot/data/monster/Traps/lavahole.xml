@@ -20,8 +20,8 @@
 	</flags>
 	<attacks>
 		<attack name="fire" interval="2000" chance="25" range="7" min="-0" max="-111">
-			<attribute key="shootEffect" value="fire"/>
-			<attribute key="areaEffect" value="fire"/>
+			<attribute key="shooteffect" value="fire"/>
+			<attribute key="areaeffect" value="fire"/>
 		</attack>
 	</attacks>
 	<defenses armor="1" defense="1"/>

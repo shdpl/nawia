@@ -20,33 +20,33 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="70" attack="100"/>
 		<attack name="fire" interval="2000" chance="9" radius="3" target="0" min="-150" max="-800">
-			<attribute key="shootEffect" value="fire"/>
-			<attribute key="areaEffect" value="firearea"/>
+			<attribute key="shooteffect" value="fire"/>
+			<attribute key="areaeffect" value="firearea"/>
 		</attack>		
 		<attack name="physical" interval="2000" chance="9" range="1" min="-0" max="-600">
-			<attribute key="shootEffect" value="explosion"/>
-			<attribute key="areaEffect" value="explosionarea"/>
+			<attribute key="shooteffect" value="explosion"/>
+			<attribute key="areaeffect" value="explosionarea"/>
 		</attack>
 		<attack name="fire" interval="2000" chance="9" range="7" target="1" min="-0" max="-600">
-			<attribute key="shootEffect" value="fire"/>
-			<attribute key="areaEffect" value="firearea"/>
+			<attribute key="shooteffect" value="fire"/>
+			<attribute key="areaeffect" value="firearea"/>
 		</attack>
 		<attack name="fire" interval="2000" chance="9" length="8" spread="3" min="-0" max="-10">
-			<attribute key="areaEffect" value="explosion"/>
+			<attribute key="areaeffect" value="explosion"/>
 		</attack>
 		<attack name="poisoncondition" interval="2000" chance="9" range="7" target="1" min="-60" max="-60">
-			<attribute key="areaEffect" value="explosion"/>
+			<attribute key="areaeffect" value="explosion"/>
 		</attack>	
 		<attack name="speed" interval="2000" chance="9" range="7" speedchange="-850" duration="50000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 		<attack name="firefield" interval="1000" chance="9" radius="3" target="1">
-			<attribute key="areaEffect" value="fire"/>
+			<attribute key="areaeffect" value="fire"/>
 		</attack>
 	</attacks>
 	<defenses armor="20" defense="30">
 		<defense name="healing" interval="2000" chance="9" min="190" max="590">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

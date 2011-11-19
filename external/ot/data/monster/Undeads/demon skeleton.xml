@@ -20,8 +20,8 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="64" attack="50"/>
 		<attack name="death" interval="2000" chance="25" range="3" min="-30" max="-50">
-			<attribute key="shootEffect" value="death"/>
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="shooteffect" value="death"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>
 	</attacks>
 	<defenses armor="25" defense="25"/>

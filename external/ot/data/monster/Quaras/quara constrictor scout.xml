@@ -20,7 +20,7 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="55" attack="40"/>
 		<attack name="lifedrain" interval="2000" chance="25" radius="3" target="0" max="-80">
-			<attribute key="areaEffect" value="blackspark"/>
+			<attribute key="areaeffect" value="blackspark"/>
 		</attack>
 	</attacks>
 	<defenses armor="15" defense="15"/>

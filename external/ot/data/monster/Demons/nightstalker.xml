@@ -20,34 +20,34 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="50" attack="30" poison="80"/>
 		<attack name="speed" interval="3000" chance="22" range="7" target="1" duration="30000" speedchange="-100">
-			<attribute key="areaEffect" value="sleep"/>
+			<attribute key="areaeffect" value="sleep"/>
 		</attack>
 		<attack name="holy" interval="2000" chance="22" range="7" radius="1" target="1" min="-60" max="-170">
-			<attribute key="shootEffect" value="smallholy"/>
-			<attribute key="areaEffect" value="holyarea"/>
+			<attribute key="shooteffect" value="smallholy"/>
+			<attribute key="areaeffect" value="holyarea"/>
 		</attack>
 	</attacks>
 	<defenses armor="10" defense="10">
 		<defense name="speed" interval="2000" chance="22" speedchange="305" duration="8000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 		<defense name="invisible" interval="2000" chance="22" duration="5000">
-			<attribute key="areaEffect" value="yellowbubble"/>
+			<attribute key="areaeffect" value="yellowbubble"/>
 		</defense>
 		<defense name="outfit" interval="2000" chance="22" monster="werewolf" duration="5000">
-			<attribute key="areaEffect" value="bigclouds"/>
+			<attribute key="areaeffect" value="bigclouds"/>
 		</defense>
 		<defense name="outfit" interval="2000" chance="22" monster="vampire lord" duration="5000">
-			<attribute key="areaEffect" value="bigclouds"/>
+			<attribute key="areaeffect" value="bigclouds"/>
 		</defense>
 		<defense name="outfit" interval="2000" chance="22" monster="grim reaper" duration="5000">
-			<attribute key="areaEffect" value="bigclouds"/>
+			<attribute key="areaeffect" value="bigclouds"/>
 		</defense>
 		<defense name="outfit" interval="2000" chance="22" monster="tarantula" duration="5000">
-			<attribute key="areaEffect" value="bigclouds"/>
+			<attribute key="areaeffect" value="bigclouds"/>
 		</defense>
 		<defense name="outfit" interval="2000" chance="22" monster="ferumbras" duration="5000">
-			<attribute key="areaEffect" value="bigclouds"/>
+			<attribute key="areaeffect" value="bigclouds"/>
 		</defense>
 	</defenses>
 	<elements>

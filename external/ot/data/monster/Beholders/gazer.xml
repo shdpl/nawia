@@ -20,10 +20,10 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="10" attack="15"/>
 		<attack name="lifedrain" interval="2000" chance="20" range="7" min="-25" max="-35">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 		<attack name="manadrain" interval="2000" chance="20" range="7" min="-10" max="-35">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 	</attacks>
 	<defenses armor="4" defense="15">

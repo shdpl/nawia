@@ -20,28 +20,28 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="50" attack="30"/>
 		<attack name="lifedrain" interval="2000" chance="9" range="7" min="-0" max="-90">
-			<attribute key="shootEffect" value="suddendeath"/>
+			<attribute key="shooteffect" value="suddendeath"/>
 		</attack>
 		<attack name="energy" interval="2000" chance="9" radius="3" target="0" min="-30" max="-90">
-			<attribute key="areaEffect" value="energyarea"/>
+			<attribute key="areaeffect" value="energyarea"/>
 		</attack>
 		<attack name="drunk" interval="2000" chance="9" range="7" target="1">
-			<attribute key="shootEffect" value="energy"/>
-			<attribute key="areaEffect" value="energyarea"/>
+			<attribute key="shooteffect" value="energy"/>
+			<attribute key="areaeffect" value="energyarea"/>
 		</attack>
 		<attack name="energycondition" interval="2000" chance="9" radius="3" target="1" min="-500" max="-500">
-			<attribute key="areaEffect" value="energy"/>
+			<attribute key="areaeffect" value="energy"/>
 		</attack>
 		<attack name="speed" interval="2000" chance="9" range="7" target="1" speedchange="-650">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 		<attack name="energy" interval="2000" chance="9" range="7" target="1" min="-100" max="-250">
-			<attribute key="shootEffect" value="energy"/>
+			<attribute key="shooteffect" value="energy"/>
 		</attack>
 	</attacks>
 	<defenses armor="22" defense="15">
 		<defense name="healing" interval="2000" chance="9" min="50" max="80">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

@@ -12,7 +12,7 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="50" attack="60"/>
 		<attack name="physical" interval="2000" chance="25" range="5" radius="1" target="1" min="0" max="-70">
-			<attribute key="shootEffect" value="throwingknife"/>
+			<attribute key="shooteffect" value="throwingknife"/>
 		</attack>
 	</attacks>
 	<defenses armor="40" defense="40"/>

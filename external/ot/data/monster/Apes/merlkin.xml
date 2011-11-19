@@ -20,20 +20,20 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="20" attack="20"/>
 		<attack name="fire" interval="2000" chance="16" range="7" min="-60" max="-90">
-			<attribute key="shootEffect" value="fire"/>
-			<attribute key="areaEffect" value="firearea"/>
+			<attribute key="shooteffect" value="fire"/>
+			<attribute key="areaeffect" value="firearea"/>
 		</attack>
 		<attack name="energy" interval="2000" chance="16" range="7" min="-15" max="-45">
-			<attribute key="shootEffect" value="energy"/>
-			<attribute key="areaEffect" value="energy"/>
+			<attribute key="shooteffect" value="energy"/>
+			<attribute key="areaeffect" value="energy"/>
 		</attack>
 		<attack name="poisonfield" interval="2000" chance="16" range="7" radius="1" target="1">
-			<attribute key="shootEffect" value="poison"/>
+			<attribute key="shooteffect" value="poison"/>
 		</attack>
 	</attacks>
 	<defenses armor="16" defense="10">
 		<defense name="healing" interval="2000" chance="16" min="10" max="40">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

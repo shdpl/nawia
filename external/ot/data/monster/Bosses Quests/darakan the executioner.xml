@@ -21,12 +21,12 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="50" attack="70"/>
 		<attack name="physical" interval="2000" chance="20" min="-70" max="-130">
-			<attribute key="shootEffect" value="spear"/>
+			<attribute key="shooteffect" value="spear"/>
 		</attack>
 	</attacks>
 	<defenses armor="30" defense="31">
 		<defense name="healing" interval="2000" chance="20" min="20" max="50">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

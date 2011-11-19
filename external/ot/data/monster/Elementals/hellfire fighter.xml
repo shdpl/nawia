@@ -22,7 +22,7 @@
 		<attack name="firefield" interval="2000" chance="18" target="0" radius="3"/>
 		<attack name="fire" interval="2000" chance="18" length="8" spread="3" min="-390" max="-1500"/>
 		<attack name="fire" interval="2000" chance="18" radius="3" target="0" min="-60" max="-330">
-		<attribute key="areaEffect" value="firearea"/>
+		<attribute key="areaeffect" value="firearea"/>
 		</attack>
 	</attacks>
 	<defenses armor="25" defense="25"/>

@@ -19,19 +19,19 @@
 	<attacks>
 		<attack name="melee" interval="2000" attack="10" skill="3"/>
     <attack name="drunk" interval="2000" chance="14" range="7" target="1" duration="20000">
-      <attribute key="shootEffect" value="cake"/>
-      <attribute key="areaEffect" value="cake"/>
+      <attribute key="shooteffect" value="cake"/>
+      <attribute key="areaeffect" value="cake"/>
     </attack>
 	<attack name="speed" interval="2000" chance="14" length="8" spread="3" speedchange="-500" duration="5000">
-		<attribute key="areaEffect" value="rednote"/>
+		<attribute key="areaeffect" value="rednote"/>
 		</attack>	
 	</attacks>
 	<defenses armor="17" defense="15">
 		<defense name="invisible" interval="2000" chance="14" duration="5000">
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</defense>
 		<defense name="healing" interval="2000" chance="14" min="37" max="47">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>		
 	</defenses>
 	<immunities>

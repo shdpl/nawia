@@ -13,22 +13,22 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="20" attack="30" poison="220"/>
 		<attack name="speed" interval="2000" chance="12" radius="1" target="1" range="5" duration="5000" speed="-220">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 		<attack name="manadrain" interval="2000" chance="12" radius="1" target="1" range="5" min="-0" max="-105">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 		<attack name="physical" interval="2000" chance="12" radius="1" target="1" range="5" min="-50" max="-90">
-			<attribute key="areaEffect" value="mortarea"/>
-			<attribute key="shootEffect" value="suddendeath"/>
+			<attribute key="areaeffect" value="mortarea"/>
+			<attribute key="shooteffect" value="suddendeath"/>
 		</attack>
 	</attacks>
 	<defenses armor="11" defense="12">
 		<defense name="healing" interval="2000" chance="12" min="75" max="135">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 		<defense name="invisible" interval="2000" chance="12" duration="5000">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

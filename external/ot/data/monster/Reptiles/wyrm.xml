@@ -21,25 +21,25 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="30" attack="110"/>
 		<attack name="energy" interval="2000" chance="12" length="5" spread="2" min="-130" max="-200">
-			<attribute key="areaEffect" value="purpleenergy"/>
+			<attribute key="areaeffect" value="purpleenergy"/>
 		</attack>
 		<attack name="energy" interval="2000" chance="12" radius="3" min="-100" max="-220">
-			<attribute key="areaEffect" value="yellowenergy"/>
+			<attribute key="areaeffect" value="yellowenergy"/>
 		</attack>
 		<attack name="energy" interval="2000" chance="12" range="7" target="1" min="-100" max="-125">
-			<attribute key="shootEffect" value="energyball"/>
-			<attribute key="areaEffect" value="energy"/>
+			<attribute key="shooteffect" value="energyball"/>
+			<attribute key="areaeffect" value="energy"/>
 		</attack>	
 		<attack name="lifedrain" interval="2000" chance="12" length="4" spread="0" min="-98" max="-145">
-			<attribute key="areaEffect" value="poff"/>
+			<attribute key="areaeffect" value="poff"/>
 		</attack>		
 		<attack name="physical" interval="2000" chance="12" radius="1" target="0">
-			<attribute key="areaEffect" value="yellownote"/>
+			<attribute key="areaeffect" value="yellownote"/>
 		</attack>
 	</attacks>
 	<defenses armor="30" defense="31">
 		<defense name="healing" interval="2000" chance="12" min="160" max="200">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

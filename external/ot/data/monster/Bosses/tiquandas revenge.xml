@@ -20,21 +20,21 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="70" attack="55" poison="180"/>
 		<attack name="poison" interval="2000" chance="14" range="7" min="-0" max="-440">
-			<attribute key="shootEffect" value="poison"/>
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="shooteffect" value="poison"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>
 		<attack name="speed" interval="2000" chance="14" range="7" target="1" speedchange="-850" duration="30000">
-			<attribute key="shootEffect" value="poison"/>
-			<attribute key="areaEffect" value="greenspark"/>
+			<attribute key="shooteffect" value="poison"/>
+			<attribute key="areaeffect" value="greenspark"/>
 		</attack>
 		<attack name="earth" interval="2000" chance="14" radius="3" target="0" min="-0" max="-250">
-			<attribute key="areaEffect" value="plantattack"/>
+			<attribute key="areaeffect" value="plantattack"/>
 		</attack>
 	</attacks>
 	<defenses armor="30" defense="31">
 		<defense name="ultimate healing" interval="2000" chance="14" min="600" max="800"/>
 		<defense name="speed" interval="2000" chance="14" speedchange="800" duration="5000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>	
 	</defenses>
 	<immunities>

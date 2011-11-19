@@ -20,13 +20,13 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="50" attack="50" poison="20"/>
 		<attack name="lifedrain" interval="2000" chance="18" radius="3" target="0" min="-50" max="-90">
-			<attribute key="areaEffect" value="blackspark"/>
+			<attribute key="areaeffect" value="blackspark"/>
 		</attack>
 		<attack name="ice" interval="2000" chance="18" range="7" min="-40" max="-70" target="0" radius="4">
-			<attribute key="areaEffect" value="iceattack"/>
+			<attribute key="areaeffect" value="iceattack"/>
 		</attack> 	
 		<attack name="energycondition" interval="2000" chance="18" min="-75" max="-75" range="1" target="1">
-			<attribute key="shootEffect" value="energy"/>
+			<attribute key="shooteffect" value="energy"/>
 		</attack>
 	</attacks>
 	<defenses armor="15" defense="15"/>

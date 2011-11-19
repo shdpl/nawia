@@ -20,15 +20,15 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="10" attack="10"/>
 		<attack name="energy" interval="2000" chance="16" range="7" min="-15" max="-25">
-			<attribute key="shootEffect" value="energyball"/>
-			<attribute key="areaEffect" value="energyarea"/>
+			<attribute key="shooteffect" value="energyball"/>
+			<attribute key="areaeffect" value="energyarea"/>
 		</attack>
 		<attack name="fire" interval="2000" chance="16" range="7" radius="1" target="1" min="-15" max="-45">
-			<attribute key="shootEffect" value="fire"/>
-			<attribute key="areaEffect" value="firearea"/>
+			<attribute key="shooteffect" value="fire"/>
+			<attribute key="areaeffect" value="firearea"/>
 		</attack>
 		<attack name="energyfield" interval="2000" chance="16" range="7" radius="1" target="1">
-			<attribute key="shootEffect" value="energy"/>
+			<attribute key="shooteffect" value="energy"/>
 		</attack>
 	</attacks>
 	<defenses armor="12" defense="13"/>

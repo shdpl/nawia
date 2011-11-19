@@ -19,48 +19,48 @@
   </flags> 
   <attacks> 
     <attack name="outfit" interval="2000" chance="16" range="5" radius="5"  monster="witch" duration="6000000"> 
-      <attribute key="shootEffect" value="suddendeath"/> 
-      <attribute key="areaEffect" value="poff"/> 
+      <attribute key="shooteffect" value="suddendeath"/> 
+      <attribute key="areaeffect" value="poff"/> 
     </attack> 
     <attack name="outfit" interval="2000" chance="16" range="5" radius="5"  monster="ghost" duration="6000000"> 
-      <attribute key="shootEffect" value="suddendeath"/> 
-      <attribute key="areaEffect" value="poff"/> 
+      <attribute key="shooteffect" value="suddendeath"/> 
+      <attribute key="areaeffect" value="poff"/> 
     </attack> 
     <attack name="outfit" interval="2000" chance="16" range="5" radius="5"  item="2097" duration="6000000"> 
-      <attribute key="shootEffect" value="suddendeath"/> 
-      <attribute key="areaEffect" value="poff"/> 
+      <attribute key="shooteffect" value="suddendeath"/> 
+      <attribute key="areaeffect" value="poff"/> 
     </attack> 
     <attack name="outfit" interval="2000" chance="16" range="5" radius="5"  monster="skeleton" duration="6000000"> 
-      <attribute key="shootEffect" value="suddendeath"/> 
-      <attribute key="areaEffect" value="poff"/> 
+      <attribute key="shooteffect" value="suddendeath"/> 
+      <attribute key="areaeffect" value="poff"/> 
     </attack> 
     <attack name="outfit" interval="2000" chance="16" range="5" radius="5"  monster="vampire" duration="6000000"> 
-      <attribute key="shootEffect" value="suddendeath"/> 
-      <attribute key="areaEffect" value="poff"/> 
+      <attribute key="shooteffect" value="suddendeath"/> 
+      <attribute key="areaeffect" value="poff"/> 
     </attack> 
     <attack name="outfit" interval="2000" chance="16" range="5" radius="5"  monster="mummy" duration="6000000"> 
-      <attribute key="shootEffect" value="suddendeath"/> 
-      <attribute key="areaEffect" value="poff"/> 
+      <attribute key="shooteffect" value="suddendeath"/> 
+      <attribute key="areaeffect" value="poff"/> 
     </attack> 
     <attack name="outfit" interval="2000" chance="16" range="5" radius="5"  monster="Spectre" duration="6000000"> 
-      <attribute key="shootEffect" value="suddendeath"/> 
-      <attribute key="areaEffect" value="poff"/> 
+      <attribute key="shooteffect" value="suddendeath"/> 
+      <attribute key="areaeffect" value="poff"/> 
     </attack> 
     <attack name="outfit" interval="2000" chance="16" range="5" radius="5"  monster="Blightwalker" duration="6000000"> 
-      <attribute key="shootEffect" value="suddendeath"/> 
-      <attribute key="areaEffect" value="poff"/> 
+      <attribute key="shooteffect" value="suddendeath"/> 
+      <attribute key="areaeffect" value="poff"/> 
     </attack> 
     <attack name="outfit" interval="2000" chance="16" range="5" radius="5"  monster="Dark Torturer" duration="6000000"> 
-      <attribute key="shootEffect" value="suddendeath"/> 
-      <attribute key="areaEffect" value="poff"/> 
+      <attribute key="shooteffect" value="suddendeath"/> 
+      <attribute key="areaeffect" value="poff"/> 
     </attack> 
     <attack name="outfit" interval="2000" chance="16" range="5" radius="5"  monster="Pirate Skeleton" duration="6000000"> 
-      <attribute key="shootEffect" value="suddendeath"/> 
-      <attribute key="areaEffect" value="poff"/> 
+      <attribute key="shooteffect" value="suddendeath"/> 
+      <attribute key="areaeffect" value="poff"/> 
     </attack> 
     <attack name="outfit" interval="2000" chance="16" range="5" radius="5"  monster="Phantasm" duration="6000000"> 
-      <attribute key="shootEffect" value="suddendeath"/> 
-      <attribute key="areaEffect" value="poff"/> 
+      <attribute key="shooteffect" value="suddendeath"/> 
+      <attribute key="areaeffect" value="poff"/> 
     </attack> 
 
   </attacks> 

@@ -22,10 +22,10 @@
 	</attacks>
 	<defenses armor="15" defense="15">
 		<defense name="invisible" interval="2000" chance="20" duration="2000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>
 		<defense name="speed" interval="2000" chance="20" speedchange="800" duration="5000">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</defense>	
 	</defenses>
 	<elements>

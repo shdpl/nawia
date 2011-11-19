@@ -20,20 +20,20 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="65" attack="20" poison="250"/>
 		<attack name="death" interval="2000" chance="14" range="9" target="1" min="-0" max="-120">
-			<attribute key="shootEffect" value="death"/>
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="shooteffect" value="death"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>	
 		<attack name="poisoncondition" interval="2000" chance="14" range="7" min="-100" max="-100">
-			<attribute key="shootEffect" value="poison"/>
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="shooteffect" value="poison"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>
 		<attack name="manadrain" interval="2000" chance="14" range="7" min="-0" max="-170">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 	</attack>
 	</attacks>
 	<defenses armor="10" defense="19">
 		<defense name="healing" interval="2000" chance="14" min="34" max="56">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

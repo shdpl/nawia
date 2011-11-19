@@ -13,14 +13,14 @@
 		<flag pushable="0"/>
 		<flag canpushitems="1"/>
 		<flag canpushcreatures="0"/>
-		<flag targetdistance="0"/>
+		<flag targetdistance="1"/>
 		<flag staticattack="90"/>
 		<flag runonhealth="5"/>
 	</flags>
 	<attacks>
 		<attack name="melee" interval="2000" skill="25" attack="20"/>
 		<attack name="physical" interval="2000" chance="25" range="7" min="-0" max="-35">
-			<attribute key="shootEffect" value="arrow"/>
+			<attribute key="shooteffect" value="arrow"/>
 		</attack>
 	</attacks>
 	<defenses armor="8" defense="10"/>

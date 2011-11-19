@@ -20,7 +20,7 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="75" attack="40" poison="80"/>
 		<attack name="fire" interval="200" chance="25" range="1" radius="1" target="1" min="-0" max="-95">
-			<attribute key="areaEffect" value="explosion"/>
+			<attribute key="areaeffect" value="explosion"/>
 		</attack>
 	</attacks>
 	<defenses armor="25" defense="23"/>

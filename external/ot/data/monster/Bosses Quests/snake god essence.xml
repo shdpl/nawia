@@ -19,10 +19,10 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="90" attack="160"/>
 		<attack name="lifedrain" interval="2000" chance="20" length="8" spread="0" max="-300">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>	
 		<attack name="earth" interval="2000" chance="20" radius="6"  min="-150" max="-270">
-			<attribute key="areaEffect" value="greenshimmer"/>
+			<attribute key="areaeffect" value="greenshimmer"/>
 		</attack>
 	</attacks>
 	<defenses armor="70" defense="65"/>

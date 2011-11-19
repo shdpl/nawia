@@ -23,15 +23,15 @@
 			<attribute key="areaeffect" value="bluenote"/>
 		</attack>
 		<attack name="lifedrain" interval="2000" chance="14" spread="3" min="-0" max="-165">
-			<attribute key="areaEffect" value="rednote"/>
+			<attribute key="areaeffect" value="rednote"/>
 		</attack>
 	</attacks>
 	<defenses armor="50" defense="55">
 		<defense name="speed" interval="2000" chance="14" speedchange="450" duration="5000">
-			<attribute key="areaEffect" value="purplenote"/>
+			<attribute key="areaeffect" value="purplenote"/>
 		</defense>
 		<defense name="healing" interval="2000" chance="14" min="175" max="225">
-			<attribute key="areaEffect" value="greenshimmer"/>
+			<attribute key="areaeffect" value="greenshimmer"/>
 		</defense>
 	</defenses>
 	<elements>
@@ -48,7 +48,7 @@
 	</immunities>
 	<summons maxSummons="2">
 		<summon name="war wolf" interval="2000" chance="14" max="2"/>
-		<attribute key="areaEffect" value="whitenote"/>
+		<attribute key="areaeffect" value="whitenote"/>
 	</summons>
 	<voices speed="2000" chance="9">
 		<voice sentence="BLOOD!" yell="1"/>

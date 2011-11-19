@@ -20,10 +20,10 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="30" attack="40"/>
 		<attack name="earth" interval="2000" chance="18" length="8" spread="0" min="-40" max="-60">
-			<attribute key="areaEffect" value="poison"/>
+			<attribute key="areaeffect" value="poison"/>
 		</attack>		
 		<attack name="earth" interval="2000" chance="18" target="0" radius="4" min="-10" max="-20">
-			<attribute key="areaEffect" value="greenspark"/>
+			<attribute key="areaeffect" value="greenspark"/>
 		</attack>
 	</attacks>
 	<defenses armor="10" defense="10"/>

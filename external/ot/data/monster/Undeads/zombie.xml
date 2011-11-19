@@ -21,11 +21,11 @@
 		<attack name="melee" interval="2000" skill="42" attack="50"/>
 		<attack name="manadrain" interval="2000" chance="18" range="1" min="-14" max="-23"/>
 		<attack name="lifedrain" interval="2000" chance="18" range="7" target="1" min="-15" max="-24">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 		<attack name="death" interval="2000" chance="18" range="7" target="1" min="-30" max="-49">
-			<attribute key="shootEffect" value="death"/>
-			<attribute key="areaEffect" value="mortarea"/>
+			<attribute key="shooteffect" value="death"/>
+			<attribute key="areaeffect" value="mortarea"/>
 		</attack>
 	</attacks>
 	<defenses armor="15" defense="10"/>

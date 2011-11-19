@@ -21,24 +21,24 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="30" attack="30"/>
 		<attack name="outfit" interval="2000" chance="12" range="7" item="7172" duration="8000">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</attack>
 		<attack name="physical" interval="2000" chance="12" range="7" target="1" min="-0" max="-110">
-			<attribute key="shootEffect" value="snowball"/>
+			<attribute key="shooteffect" value="snowball"/>
 		</attack>		
 		<attack name="ice" interval="2000" chance="12" length="8" spread="3" min="-50" max="-125">
-			<attribute key="areaEffect" value="icearea"/>
+			<attribute key="areaeffect" value="icearea"/>
 		</attack>
 		<attack name="ice" interval="2000" chance="12" length="8" spread="3" min="-0" max="-100">
-			<attribute key="areaEffect" value="poff"/>
+			<attribute key="areaeffect" value="poff"/>
 		</attack>
 		<attack name="speed" interval="1000" chance="12" range="7" speedchange="-600">
-			<attribute key="areaEffect" value="redshimmer"/>
+			<attribute key="areaeffect" value="redshimmer"/>
 		</attack>
 	</attacks>
 	<defenses armor="15" defense="20">
 		<defense name="healing" interval="2000" chance="12" min="50" max="80">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

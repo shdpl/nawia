@@ -22,7 +22,7 @@
 	</attacks>
 	<defenses armor="30" defense="40">
 		<defense name="invisible" interval="2000" chance="33">
-			<attribute key="areaEffect" value="groundshaker"/>
+			<attribute key="areaeffect" value="groundshaker"/>
 		</defense>
 	</defenses>
 	<elements>

@@ -20,23 +20,23 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="80" attack="60"/>
 		<attack name="earth" interval="2000" chance="14" length="8" spread="3" min="-65" max="-320">
-			<attribute key="areaEffect" value="smallplants"/>
+			<attribute key="areaeffect" value="smallplants"/>
 		</attack>
 		<attack name="speed" interval="2000" chance="14" range="7" radius="4" target="1" speedchange="-360" duration="15000">
-			<attribute key="shootEffect" value="poison"/>
-			<attribute key="areaEffect" value="greenbubble"/>
+			<attribute key="shooteffect" value="poison"/>
+			<attribute key="areaeffect" value="greenbubble"/>
 		</attack>
 		<attack name="ice" interval="2000" chance="14" length="8" spread="3" min="-100" max="-250">
-			<attribute key="areaEffect" value="bluebubble"/>
+			<attribute key="areaeffect" value="bluebubble"/>
 		</attack>
 		<attack name="ice" interval="2000" chance="14" range="7" target="1" min="-70" max="-155">
-			<attribute key="shootEffect" value="ice"/>
-			<attribute key="areaEffect" value="iceattack"/>
+			<attribute key="shooteffect" value="ice"/>
+			<attribute key="areaeffect" value="iceattack"/>
 		</attack> 	
 	</attacks>
 	<defenses armor="25" defense="35">
 		<defense name="healing" interval="2000" chance="14" min="200" max="270">
-			<attribute key="areaEffect" value="blueshimmer"/>
+			<attribute key="areaeffect" value="blueshimmer"/>
 		</defense>
 	</defenses>
 	<elements>

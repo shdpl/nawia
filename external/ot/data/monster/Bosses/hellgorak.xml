@@ -20,16 +20,16 @@
 	<attacks>
 		<attack name="melee" interval="2000" skill="130" attack="115"/>
 		<attack name="energy" interval="2000" chance="16" length="8" spread="0" max="-850">
-			<attribute key="areaEffect" value="purpleenergy"/>
+			<attribute key="areaeffect" value="purpleenergy"/>
 		</attack>
 		<attack name="fire" interval="2000" chance="16" radius="5" target="1" max="-600">
-			<attribute key="areaEffect" value="firearea"/>
+			<attribute key="areaeffect" value="firearea"/>
 		</attack>
 		<attack name="energy" interval="2000" chance="16" range="1" target="1" min="-200" max="-400">
-			<attribute key="areaEffect" value="purpleenergy"/>
+			<attribute key="areaeffect" value="purpleenergy"/>
 		</attack>
-		<attack name="skills" interval="2000" chance="16" radius="6" target="10" distance="-60">
-			<attribute key="areaEffect" value="poff"/>
+		<attack name="skills" interval="2000" chance="16" radius="6" target="1" distance="-60">
+			<attribute key="areaeffect" value="poff"/>
 		</attack>
 	</attacks>
 	<defenses armor="70" defense="65"/>
