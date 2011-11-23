@@ -8,7 +8,7 @@ import javax.enterprise.inject.Model;
 
 import net.nawia.gsao.domain.Account;
 import net.nawia.gsao.domain.Group;
-import net.nawia.gsao.service.remote.ServiceGroupRemote;
+import net.nawia.gsao.server.service.remote.ServiceGroupRemote;
 
 @Model
 public class BeanGroup {

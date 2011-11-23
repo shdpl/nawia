@@ -7,7 +7,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import net.nawia.gsao.service.remote.ServiceAccountRemote;
+import net.nawia.gsao.server.service.remote.ServiceAccountRemote;
 
 @Named
 @RequestScoped

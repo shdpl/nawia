@@ -6,7 +6,7 @@ import javax.ejb.EJB;
 import javax.enterprise.inject.Model;
 
 import net.nawia.gsao.domain.Account;
-import net.nawia.gsao.service.remote.ServiceAccountRemote;
+import net.nawia.gsao.server.service.remote.ServiceAccountRemote;
 
 @Model
 public class BeanAccount {

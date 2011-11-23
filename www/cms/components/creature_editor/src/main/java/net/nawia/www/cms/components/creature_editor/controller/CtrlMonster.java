@@ -3,8 +3,8 @@ package net.nawia.www.cms.components.creature_editor.controller;
 import java.util.SortedSet;
 
 import net.nawia.gsao.model.world.entity.Monster;
-import net.nawia.gsao.service.ServiceMonster;
-import net.nawia.gsao.domain.Category;
+import net.nawia.gsao.content.model.Category;
+import net.nawia.gsao.content.service.ServiceMonster;
 
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.util.GenericForwardComposer;

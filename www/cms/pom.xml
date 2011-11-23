@@ -24,7 +24,6 @@
 		<module>http</module>
 		<module>components</module>
 		<module>ear</module>
-    <module>test</module>
     <module>themes</module>
   </modules>
 </project>
