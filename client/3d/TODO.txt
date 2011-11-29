@@ -5,3 +5,5 @@
 5. error safety
 6. runtime reflection
 7. Animations
+8. Laguerre polynomial eq.
+9. Plucker coordinates
