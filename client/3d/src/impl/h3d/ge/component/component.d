@@ -200,6 +200,30 @@ class Component : IComponent {
 				sx, sy, sz);
 		}
 	}
+	//TODO: width, height, depth
+	/// Size of object in meters
+	@property {				//TODO: move to spatial component
+		float3 size() {
+			float[6] floats;
+			
+			h3dGetNodeAABB(this.id,
+				&floats[0], &floats[1], &floats[2],
+				&floats[3], &floats[4], &floats[5]);
+			
+			return float3(
+				floats[3] - floats[0],
+				floats[4] - floats[1],
+				floats[5] - floats[2]
+			);
+		}
+		void size(float3 value) {
+			this.scale = float3(
+				value.x / size.x,
+				value.y / size.y,
+				value.z / size.z
+			);
+		}
+	}
 	
 	@property {
 		float3 scale() {

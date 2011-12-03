@@ -15,16 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module msg._log.log;
+module io.log.entry;
 
-private import msg.msg;
-
-struct MsgLog {
-	Msg _msg;
-	alias _msg this;
+struct LogEntry {
 	
-	uint level;				/// Log Level
-	float time;				/// Time when event trigerred
-	string content;		/// Message to be logged
-	string provider;	/// Address of log issuer: module.Class.function or subset
 }

@@ -57,6 +57,7 @@ private import
 	
 private import
 	impl.glfw.glfw,
+	impl.h3d.h3d,
 	impl.h3d.utils,
 	impl.polyvox.polyvox,
 	impl.nawia.msg.mediator.mtd,
@@ -67,8 +68,8 @@ private import
 void main(){
 	Demo demo;
 	
-//	demo = new Demo1;
-	demo = new Demo2;
+		demo = new Demo1;
+//	demo = new Demo2;
 //	demo = new Demo3;
 //	demo = new Demo4;
 	
@@ -136,11 +137,10 @@ abstract class Demo : IMsgListener, IMsgProvider {
 	
 	public void handle(Variant msg) {
 		if(msg.type == typeid(MsgFrameReady)) {
-//			auto oldRot = cam.rotation;
+			auto oldRot = cam.rotation;
 //			cam.rotation = CordsLocal(oldRot.x,
 //				oldRot.y-3/(wnd.fps!=0? wnd.fps : 0.1), oldRot.z, cam);
 			auto oldTran = cam.translation;
-			auto oldRot = cam.rotation;
 			immutable auto curVel = 10/wnd.fps;
 			if (move[0]) {		//FORWARD
 				cam.translation = CordsLocal(
@@ -224,12 +224,12 @@ class Demo1 : Demo {
 	override void load() {
 		//TODO: assign camera to window	auto platform
 		platform = world.add!Scene("models/platform/platform.scene.xml"); //("platform/platform.scene.xml");
-		platform.translation = CordsLocal(-1, 0, 0, world);
-		platform.scale = float3(.23, .23, .23);
-		_shapes ~= _peWorld.add!ShapeBox(float3(-1, -1-10, 0), float3(50, 2, 50));
+		platform.translation = CordsLocal(0, 0, 0, world);
+		platform.size = float3(50f, 1.f, 50f);
+		_shapes ~= _peWorld.add!ShapeBox(float3(0, -1-10, 0), float3(50, 2, 50)); //TODO: getAABB
 		
-		sky = platform.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
-		sky.scale = float3(210, 50, 210);
+		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
+		sky.size = float3(300, 100, 300);
 		sky.shadowsDisabled = true;
 		
 		pipe = new Pipeline("pipelines/forward.pipeline.xml");
@@ -244,7 +244,7 @@ class Demo1 : Demo {
 		
 		//enforce( lCtxID in lMat[0].shader.contexts
 		//	&& sCtxID in lMat[0].shader.contexts );
-		light = platform.add!Light(
+		light = world.add!Light(
 			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
 		light.translation = CordsLocal(0, 20, 50, platform);
 		light.rotation = CordsLocal(-30, 0, 0, platform);
@@ -256,9 +256,9 @@ class Demo1 : Demo {
 		light.shadowBias = .001f;
 		light.color = ColorRGB!float(.9f, .7f, .75f);
 		
-		man = platform.add!Scene("models/man/man.scene.xml");
+		man = world.add!Scene("models/man/man.scene.xml");
 		man.translation = CordsLocal(0, 0, 0, world);
-		man.scale = float3(5, 5, 5);
+		man.size = float3(2f, .5f, .2f);
 		_shapes ~= _peWorld.add!ShapeBox(float3(0, 20, 0), float3(5, 9, 3), 75);
 
 		/*
@@ -285,7 +285,6 @@ class Demo1 : Demo {
 				float4(_floats[12], _floats[13], _floats[14], 0f)];
 		}
 	}
-	
 }
 
 class Demo2 : Demo {
