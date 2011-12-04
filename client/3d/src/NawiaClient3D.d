@@ -25,7 +25,11 @@ private import
 	std.datetime,
 	std.bitmanip,
 	std.math;
-	
+
+private {
+	import impl.h3d.ee.world : GEWorld = World;
+	import impl.bullet.pe.world.dynamics;
+}
 
 private import
 	type.cords.local,
@@ -41,8 +45,8 @@ private import
 	impl.glfw.io.hid.keyboard,
 	impl.nawia.io.res.manager,
 	impl.h3d.ge.renderer,
-	impl.h3d.ee.world,
 	impl.h3d.ge.res.scene,
+	impl.h3d.ge.component.component,
 	impl.h3d.ge.component.camera,
 	impl.h3d.ge.component.mesh,
 	impl.h3d.ge.res.pipeline,
@@ -52,7 +56,6 @@ private import
 	impl.nawia.ee.actor,
 	impl.polyvox.ee.map.volume.simple,
 	impl.polyvox.ee.map.extractormesh,
-	impl.bullet.pe.world.dynamics,
 	impl.bullet.pe.shape.box;
 	
 private import
@@ -60,9 +63,8 @@ private import
 	impl.h3d.h3d,
 	impl.h3d.utils,
 	impl.polyvox.polyvox,
-	impl.nawia.msg.mediator.mtd,
-	impl.bullet.bullet;
-	
+	impl.nawia.msg.mediator.mtd;
+	private import impl.bullet.bullet;
 
 
 void main(){
@@ -86,7 +88,7 @@ abstract class Demo : IMsgListener, IMsgProvider {
 	mixin InjectMsgProvider!MsgMouseMove _prvdrMove;
 	mixin InjectMsgProvider!MsgKeyPress _prvdrPress;
 	mixin InjectMsgListener!MsgAppQuit _lstnrQuit;
-	World world;
+	GEWorld world;
 	WorldDynamics _peWorld;
 	PBodyRigid _shapes[];
 	Window wnd;
@@ -119,7 +121,7 @@ abstract class Demo : IMsgListener, IMsgProvider {
 		rndrr.shadowMapSize = 2048;
 		rndrr.animationFast = true;
 		
-		world = new World;
+		world = new GEWorld;
 		_peWorld = new WorldDynamics;
 		mouse = Mouse();
 		mouse.cursorHidden = true;
@@ -222,11 +224,12 @@ class Demo1 : Demo {
 	Light light;
 	
 	override void load() {
-		//TODO: assign camera to window	auto platform
 		platform = world.add!Scene("models/platform/platform.scene.xml"); //("platform/platform.scene.xml");
 		platform.translation = CordsLocal(0, 0, 0, world);
 		platform.size = float3(50f, 1.f, 50f);
-		_shapes ~= _peWorld.add!ShapeBox(float3(0, -1-10, 0), float3(50, 2, 50)); //TODO: getAABB
+		_shapes ~= _peWorld.add!PBodyRigid(
+			CordsLocal(0, -1.5, 0, world),
+			new ShapeBox(platform.size));
 		
 		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
 		sky.size = float3(300, 100, 300);
@@ -257,9 +260,11 @@ class Demo1 : Demo {
 		light.color = ColorRGB!float(.9f, .7f, .75f);
 		
 		man = world.add!Scene("models/man/man.scene.xml");
-		man.translation = CordsLocal(0, 0, 0, world);
+		man.translation = CordsLocal(0, 10, 0, world);
 		man.size = float3(2f, .5f, .2f);
-		_shapes ~= _peWorld.add!ShapeBox(float3(0, 20, 0), float3(5, 9, 3), 75);
+		_shapes ~= _peWorld.add!PBodyRigid(
+			man.translation,
+			new ShapeBox(man.size), .01); //TODO: getAABB
 
 		/*
 		auto man = new Actor(
@@ -275,15 +280,13 @@ class Demo1 : Demo {
 	
 	void onAnimate() {
 		float[15] _floats;
-		if (_shapes.length == 2) {
-			auto _transform = _shapes[1].btHandle.getWorldTransform();
-			_transform.getOpenGLMatrix(_floats.ptr);
-			man.transformationRelative = [
-				float4(_floats[0], _floats[1], _floats[2], _floats[3]),
-				float4(_floats[4], _floats[5], _floats[6], _floats[7]),
-				float4(_floats[8], _floats[9], _floats[10], _floats[11]),
-				float4(_floats[12], _floats[13], _floats[14], 0f)];
-		}
+		auto _transform = _shapes[$-1].btHandle.getWorldTransform();
+		_transform.getOpenGLMatrix(_floats.ptr);
+		man.transformationRelative = [
+			float4(_floats[0], _floats[1], _floats[2], _floats[3]),
+			float4(_floats[4], _floats[5], _floats[6], _floats[7]),
+			float4(_floats[8], _floats[9], _floats[10], _floats[11]),
+			float4(_floats[12], _floats[13], _floats[14], 0f)];
 	}
 }
 

@@ -10,6 +10,7 @@ private import
 	Use only for heavily instanced classes since every injecting class
 	will add up to Allocator.PAGE_SIZE bytes to Your memory usage.
 	TODO: consider GC-less memory management
+	TODO: bitfield for free
 */
 mixin template InjectAllocator(T) {
 	T add() {

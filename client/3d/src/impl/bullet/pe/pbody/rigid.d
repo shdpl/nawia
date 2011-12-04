@@ -21,17 +21,48 @@ private import
 	impl.bullet.bullet,
 	impl.bullet.pe.shape.shape,
 	impl.bullet.pe.pbody.pbody,
-	type.cuda.types;
+	type.cuda.types,
+	type.cords.local;
 
-abstract class PBodyRigid : PBody {
+class PBodyRigid : PBody {
 	private:
-	//plRigidBodyHandle _handle;
+	btVector3 _localInertia;
+	btTransform _transform;
+	btVector3 _origin;
+	btMotionState _mstate;
+	btRigidBody _handle;
+	Shape _shape;
 	
 	public:
-	void init(void* userData, float mass, Shape shape) {}
-	void clear() {
-		//plDeleteRigidBody(_handle);
+	this() {
+		_transform = new btTransform;
+		_origin = new btVector3;
+		_mstate = new btDefaultMotionState;
+		_localInertia = new btVector3;
 	}
+	~this() {}
+	
+	void init(CordsLocal pos, Shape shape, real mass = real.nan) {
+		_origin.setValue(pos.x, pos.y, pos.z);
+		
+		_transform.setIdentity();
+		_transform.setOrigin(_origin);
+		
+		_shape = shape;
+		auto inertia = _shape.localInertia(mass);
+		_localInertia.setValue(inertia.x, inertia.y, inertia.z);
+		
+		_mstate.setWorldTransform(_transform);
+		_handle = new btRigidBody(mass <>= 0 ? mass : 0, _mstate, _shape.btHandle(), _localInertia);
+
+		assert(!is(_handle));
+	}
+	
+	void clear() {
+		//_shape.dispose();
+		//_handle.dispose();
+	}
+	
 	float3 matrix() {return float3(0,0,0);}
 	void matrix(float3 matrix) {}
 	
@@ -41,5 +72,8 @@ abstract class PBodyRigid : PBody {
 	float4 rotation() {return float4(0,0,0,0);}
 	void rotation(float4 rotation) {}
 	
-	abstract btRigidBody btHandle();
+	btRigidBody btHandle() {
+		assert(!is(_handle));
+		return _handle;
+	}
 }

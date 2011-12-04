@@ -1,7 +1,7 @@
 include(UseDDeps)
 include(UseDUnittest)
 
-SET (d_header_path /usr/local/include/d/dmd/druntime/import/ )
+SET (d_header_path /usr/local/include/d/ )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 
@@ -36,4 +36,4 @@ ENDFOREACH(file)
 
 ADD_EXECUTABLE( NawiaClient3D ${sources} ${d_header_path}/glfw.d ${d_header_path}/glfw_im.d ${d_header_path}/horde3d.d ${d_header_path}/horde3d_im.d ${d_header_path}/horde3dutils.d ${d_header_path}/horde3dutils_im.d ${d_header_path}/PolyVoxCore.d ${d_header_path}/PolyVoxCore_im.d ${d_header_path}/BTPhysics.d ${d_header_path}/BTPhysics_im.d )
 
-target_link_libraries(NawiaClient3D dl) #FIXME: shouldn't SWIG add it?
+target_link_libraries(NawiaClient3D orange dl) #FIXME: shouldn't SWIG add it?

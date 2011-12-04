@@ -23,7 +23,25 @@ private import
 	impl.bullet.bullet,
 	impl.bullet.pe.pbody.rigid;
 
-class Shape : PBodyRigid {
-	float3 scale;
+abstract class Shape {
+	protected:
+	btCollisionShape _handle;
 	
+	public:
+	real3 localInertia(real mass) {
+		btVector3 ret = new btVector3;
+		
+		if (mass <> 0) {
+			_handle.calculateLocalInertia(mass, ret);
+		} else {
+			ret.setValue(0,0,0);
+		}
+		
+		return real3(ret.x(), ret.y(), ret.z());
+	}
+	
+	btCollisionShape btHandle() {
+		assert(!is(_handle));
+		return _handle;
+	}
 }

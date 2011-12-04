@@ -19,7 +19,8 @@ module impl.bullet.pe.world.dynamics;
 
 public import
 	impl.bullet.pe.world.collision,
-	impl.bullet.pe.pbody.rigid;
+	impl.bullet.pe.pbody.rigid,
+	type.cuda.types;
 
 private import
 	msg._frame.ready,
@@ -32,23 +33,36 @@ private import
 
 class WorldDynamics : WorldCollision, IMsgListener {
 	mixin InjectMsgProvider!MsgFrameReady _lstnrReady;
+	public:
+	struct Options {	//TODO: wrap
+		real[3] gravity = [0, -9.80665, 0];
+		auto configuration = typeid(btDefaultCollisionConfiguration);
+		/// btDbvtBroadphase, btAxisSweep3, bt32BitAxisSweep3 or btCudaBroadphase
+		auto broadphase = typeid(btDbvtBroadphase);
+		/// btParallelConstraintSolver or btSequentialImpulseConstraintSolver
+		auto solver = typeid(btSequentialImpulseConstraintSolver);
+	}
+	
+	private:
 	btDiscreteDynamicsWorld _world;
 	btBroadphaseInterface _bphase;
 	btCollisionConfiguration _config;
 	btDispatcher _dispatcher;
 	btConstraintSolver _csolver;
-	btRigidBody _tmp[];
+	btVector3 _gravity;
 	
 	public:
-	this(real gravity = 10) {
-		_config = new btDefaultCollisionConfiguration;
-		_dispatcher = new btCollisionDispatcher(_config);
+	this(Options o = Options()) {
+		_config = cast(btCollisionConfiguration) o.configuration.create;
 		
-		_bphase = new btDbvtBroadphase;
-		_csolver = new btSequentialImpulseConstraintSolver;
+		_dispatcher = new btCollisionDispatcher(_config);
+		_bphase = cast(btBroadphaseInterface) o.broadphase.create;
+		_csolver = cast(btConstraintSolver) o.solver.create;
+		
 		_world = new btDiscreteDynamicsWorld(_dispatcher, _bphase, _csolver, _config);
 		
-		_world.setGravity(new btVector3(0, -gravity, 0)); //TODO: alternate worlds with different gravity?
+		_gravity = new btVector3(o.gravity[0], o.gravity[1], o.gravity[2]);
+		_world.setGravity(_gravity);
 		
 		_lstnrReady.register(this);
 	}
@@ -63,9 +77,6 @@ class WorldDynamics : WorldCollision, IMsgListener {
 		ret.init(args);
 		_world.addRigidBody(ret.btHandle());
 		
-		//ret.btHandle().activate();
-		
-		_tmp ~= ret.btHandle();
 		return ret;
 	}
 	
@@ -76,6 +87,6 @@ class WorldDynamics : WorldCollision, IMsgListener {
 	void handle(Variant msg) {
 		assert(msg.type == typeid(MsgFrameReady));
 		auto m = msg.peek!MsgFrameReady;
-		_world.stepSimulation(m.delta.to!("seconds", float));	//TODO: check if has parts
+		_world.stepSimulation(m.delta.to!("seconds", float));
 	}
 }
