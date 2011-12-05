@@ -264,7 +264,7 @@ class Demo1 : Demo {
 		man.size = float3(2f, .5f, .2f);
 		_shapes ~= _peWorld.add!PBodyRigid(
 			man.translation,
-			new ShapeBox(man.size), .01); //TODO: getAABB
+			new ShapeBox(man.size), 75); //TODO: getAABB
 
 		/*
 		auto man = new Actor(
@@ -279,14 +279,7 @@ class Demo1 : Demo {
 	}
 	
 	void onAnimate() {
-		float[15] _floats;
-		auto _transform = _shapes[$-1].btHandle.getWorldTransform();
-		_transform.getOpenGLMatrix(_floats.ptr);
-		man.transformationRelative = [
-			float4(_floats[0], _floats[1], _floats[2], _floats[3]),
-			float4(_floats[4], _floats[5], _floats[6], _floats[7]),
-			float4(_floats[8], _floats[9], _floats[10], _floats[11]),
-			float4(_floats[12], _floats[13], _floats[14], 0f)];
+		man.transformationRelative = _shapes[$-1].transformation;
 	}
 }
 

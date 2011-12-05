@@ -18,6 +18,9 @@
 module impl.bullet.pe.pbody.rigid;
 
 private import
+	std.typecons;
+
+private import
 	impl.bullet.bullet,
 	impl.bullet.pe.shape.shape,
 	impl.bullet.pe.pbody.pbody,
@@ -33,6 +36,7 @@ class PBodyRigid : PBody {
 	btRigidBody _handle;
 	Shape _shape;
 	
+	
 	public:
 	this() {
 		_transform = new btTransform;
@@ -41,6 +45,10 @@ class PBodyRigid : PBody {
 		_localInertia = new btVector3;
 	}
 	~this() {}
+	
+	
+	alias btCollisionObject.CollisionFlags CollisionFlag;
+	
 	
 	void init(CordsLocal pos, Shape shape, real mass = real.nan) {
 		_origin.setValue(pos.x, pos.y, pos.z);
@@ -58,19 +66,47 @@ class PBodyRigid : PBody {
 		assert(!is(_handle));
 	}
 	
+	
 	void clear() {
 		//_shape.dispose();
 		//_handle.dispose();
 	}
 	
+	
 	float3 matrix() {return float3(0,0,0);}
 	void matrix(float3 matrix) {}
+	
 	
 	float3 translation() {return float3(0,0,0);}
 	void translation(float3 translation) {}
 	
+	
 	float4 rotation() {return float4(0,0,0,0);}
 	void rotation(float4 rotation) {}
+	
+	@property {
+		float4[4] transformation() {
+			
+		float[15] _floats;
+		_mstate.getWorldTransform(_transform);
+		_transform.getOpenGLMatrix(_floats.ptr);
+		
+		return [
+			float4(_floats[0], _floats[1], _floats[2], _floats[3]),
+			float4(_floats[4], _floats[5], _floats[6], _floats[7]),
+			float4(_floats[8], _floats[9], _floats[10], _floats[11]),
+			float4(_floats[12], _floats[13], _floats[14], 0f)];
+		}
+	}
+	
+	
+	void setFlag(CollisionFlag flag) {
+		_handle.setCollisionFlags(flag | _handle.getCollisionFlags());
+	}
+	bool getFlag(CollisionFlag flag) {
+		return ((_handle.getCollisionFlags()) & flag) != 0;
+	}
+	
 	
 	btRigidBody btHandle() {
 		assert(!is(_handle));

@@ -16,6 +16,10 @@
 */
 
 module impl.bullet.pe.pbody.pbody;
+	
+private import
+	impl.bullet.bullet;
 
 class PBody {
+	
 }

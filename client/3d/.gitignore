@@ -5,3 +5,4 @@ build/
 !bin/README.txt
 *.kdev4
 *~
+.deps

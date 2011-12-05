@@ -403,7 +403,7 @@ Copyright (C) 2010 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/shd/src/nawia/client/3d/src/impl/bullet/ex'
+ac_pwd='/home/shd/src/nawia/client/3d/src/impl/bullet/ext'
 srcdir='.'
 INSTALL='/bin/install -c'
 MKDIR_P='/bin/mkdir -p'
@@ -905,7 +905,7 @@ S["CFLAGS"]="-DUSE_ADDR64 -g -O2"
 S["CC"]="gcc"
 S["am__untar"]="${AMTAR} xf -"
 S["am__tar"]="${AMTAR} chof - \"$$tardir\""
-S["AMTAR"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ex/missing --run tar"
+S["AMTAR"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ext/missing --run tar"
 S["am__leading_dot"]="."
 S["SET_MAKE"]=""
 S["AWK"]="gawk"
@@ -913,12 +913,12 @@ S["mkdir_p"]="/bin/mkdir -p"
 S["MKDIR_P"]="/bin/mkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]="strip"
-S["install_sh"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ex/install-sh"
-S["MAKEINFO"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ex/missing --run makeinfo"
-S["AUTOHEADER"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ex/missing --run autoheader"
-S["AUTOMAKE"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ex/missing --run automake-1.11"
-S["AUTOCONF"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ex/missing --run autoconf"
-S["ACLOCAL"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ex/missing --run aclocal-1.11"
+S["install_sh"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ext/install-sh"
+S["MAKEINFO"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ext/missing --run makeinfo"
+S["AUTOHEADER"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ext/missing --run autoheader"
+S["AUTOMAKE"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ext/missing --run automake-1.11"
+S["AUTOCONF"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ext/missing --run autoconf"
+S["ACLOCAL"]="${SHELL} /home/shd/src/nawia/client/3d/src/impl/bullet/ext/missing --run aclocal-1.11"
 S["VERSION"]="2.79"
 S["PACKAGE"]="bullet"
 S["CYGPATH_W"]="echo"
