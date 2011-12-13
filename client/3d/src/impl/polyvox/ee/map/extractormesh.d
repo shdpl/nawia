@@ -32,7 +32,6 @@ private import
 	impl.polyvox.polyvox,
 	impl.polyvox.ee.map.volume.simple,
 	impl.h3d.ge.res.geometry,
-	impl.h3d.h3d,
 	impl.h3d.ge.component.mesh;
 
 class ExtractorMesh : IExtractorMesh {
@@ -54,15 +53,13 @@ class ExtractorMesh : IExtractorMesh {
 	}
 	
 	override IGeometry extract(/*cam.fov*/) {
-		_extractor.execute();
-	    return cast(IGeometry) polyvoxToHorde3d();
-	}
-	
-	private Geometry polyvoxToHorde3d() {
 		float[] vertices;
 		short[] normals;
+		
+		_extractor.execute();
 		uint vertexCount = _mesh.getNoOfVertices;
 		PositionMaterialNormalVector tmp2 = _mesh.getVertices();
+	  
 		for(int i=0; i<tmp2.length; i++){
 			vertices ~= tmp2[i].getPosition.getX;
 			vertices ~= tmp2[i].getPosition.getY;
@@ -73,7 +70,6 @@ class ExtractorMesh : IExtractorMesh {
 			normals ~= to!short(tmp2[i].normal.getZ() * short.max);
 		}
 		enforce(vertices.length/3 == tmp2.length);
-		
 		
 		uint[] indices;
 		uint triangleIndexCount = _mesh.getNoOfIndices();
@@ -86,22 +82,7 @@ class ExtractorMesh : IExtractorMesh {
 		float[] posData = vertices;
 		int[] indexData = to!(int[])(indices);
 		
-		return createGeometryRes( vertexCount, triangleIndexCount,
-			posData,
-			indexData,
-			normals,
-			cast(short[]) null,
-			cast(short[]) null,
-			cast(float[]) null);
-	}
-	
-
-	private Geometry createGeometryRes(uint vertexCount, int triangleIndexCount, float posData[], int indexData[],
-		short normalData[],	short tangentData[], short bitangentData[], float uvData[]) {
-			
-	    int triangleIndexMax = 3;
-	    
-	    return new Geometry("geoRes", posData, indexData,
-	    	normalData, tangentData, bitangentData, uvData);
+		return cast(IGeometry) new Geometry("geoRes", posData, indexData,
+	    	normals, cast(short[]) null, cast(short[]) null, cast(float[]) null);
 	}
 }

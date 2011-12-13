@@ -70,10 +70,10 @@ private import
 void main(){
 	Demo demo;
 	
-		demo = new Demo1;
+//	demo = new Demo1;
 //	demo = new Demo2;
 //	demo = new Demo3;
-//	demo = new Demo4;
+	demo = new Demo4;
 	
 	demo.init;
 	
@@ -396,7 +396,7 @@ class Demo4 : Demo {
 		sky.scale = float3(210, 50, 210);
 		sky.shadowsDisabled = true;
 		
-		rndrr.viewWireFrame = true;
+//		rndrr.viewWireFrame = true;
 		pipe = new Pipeline("pipelines/forward.pipeline.xml");
 		cam = world.add!Camera(pipe);
 		cam.translation = CordsLocal(2, 1, 0, world);
@@ -424,7 +424,7 @@ class Demo4 : Demo {
 		auto extractor = new ExtractorMesh(vol);
 		auto geo = cast(Geometry) extractor.extract(/*cam.fov*/);
 		
-		auto mat = new Material("models/platform/stones.material.xml");
+		auto mat = new Material("materials/terrain.material.xml");
 		
 		Model model = world.add!Model("DynGeoModelNode", geo);
 		model.add!Mesh("DynGeoMesh", mat, 0, geo.verticesNo, 0, geo.indicesNo );

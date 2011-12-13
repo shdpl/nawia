@@ -26,9 +26,6 @@ class Geometry : Resource, IGeometry {
 	in {
 		assert(0 == vertPos.length % 3);
 	} body {
-		//h3dutCreateGeometryRes(name, to!int(vertPos.length/3), to!int(trisIndices.length),
-		//	cast(float*)vertPos, cast(uint*)trisIndices, cast(short*)normals,
-		//	cast(short*)tangents, cast(short*)bitangents, cast(float*)UVs, cast(float*)0);
 		h3dutCreateGeometryRes(name, to!int(vertPos.length/3), to!int(trisIndices.length),
 			cast(float*)vertPos, cast(uint*)trisIndices, cast(short*)normals,
 			cast(short*)tangents, cast(short*)bitangents, cast(float*)UVs, cast(float*)0);

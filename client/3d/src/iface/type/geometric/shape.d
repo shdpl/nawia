@@ -1,0 +1,2 @@
+module type.geometric.shape;
+
