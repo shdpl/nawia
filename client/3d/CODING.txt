@@ -3,5 +3,9 @@ Resource management:
 	single reference  & time-constrained -  std.typecons : Unique
 	multiple reference & time-constrained - std.typecons : RefCounted
 Multi-Threading:
-	Data layout should match current perspective (at least on heavy algorithms)
+	Data layout should match current perspective (when your algorithm is heavier than perspective change)
 	Reduce perspective transmission and sharing between processors.
+Reference (class) vs. value (struct) types:
+	If you'll be mostly copy shallow, use reference type. If you'll be copying deep, use value.
+	If your object will be created and destroyed frequently, use value types.
+	If you'll access your object frequently, use value types. In another case, use reference.
