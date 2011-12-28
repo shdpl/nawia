@@ -17,7 +17,23 @@
 
 module ee.entity;
 
+public import
+	ee.component;
 
-interface IEntity {
+alias uint hEntity;
+
+struct Entity
+{
+	hEntity id;
+	string name;
+	Component[] component;
 	
+	hEntity parent;
+	hEntity child[];
+	
+	this(hEntity parent, string name)
+	{
+		this.parent = parent;
+		this.name = name;
+	}
 }

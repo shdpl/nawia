@@ -25,13 +25,14 @@ public import
 private import
 	msg._frame.ready,
 	msg.listener,
-	std.stdio;
+	std.stdio,
+	ee.world;
 	
 private import
 	impl.bullet.bullet;
 	
 
-class WorldDynamics : WorldCollision, IMsgListener {
+class WorldDynamics : WorldCollision, IMsgListener, World {
 	mixin InjectMsgProvider!MsgFrameReady _lstnrReady;
 	public:
 	struct Options {	//TODO: wrap
@@ -52,7 +53,8 @@ class WorldDynamics : WorldCollision, IMsgListener {
 	btVector3 _gravity;
 	
 	public:
-	this(Options o = Options()) {
+	this() {};
+	void init(Options o = Options()) {
 		_config = cast(btCollisionConfiguration) o.configuration.create;
 		
 		_dispatcher = new btCollisionDispatcher(_config);
@@ -67,7 +69,10 @@ class WorldDynamics : WorldCollision, IMsgListener {
 		_lstnrReady.register(this);
 	}
 	
-	~this() {
+	~this() {}
+	
+	void dispose()
+	{
 		_lstnrReady.unregister(this);
 	}
 	

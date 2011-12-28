@@ -35,12 +35,14 @@ private import impl.h3d.h3d,
 public import type.cords.local,
 	type.cuda.types;
 
-class Component : IComponent {
+class GEComponent : IComponent {
 	public:
 	H3DNode id;
+	private:
+	Resource res;
 	
 	public:
-	T[] find(T)(string name) if(is(T : Component)) {
+	T[] find(T)(string name) if(is(T : GEComponent)) {
 		T[] ret;
 		int node;
 		for (auto i = h3dFindNodes(this.id, name, T.type)-1; i >= 0; i--) {
@@ -51,9 +53,12 @@ class Component : IComponent {
 		return ret;
 	}
 	
-	Component add(T)(string path) {
+	GEComponent add(T)(string path) {
 		static if(is(T == Scene)) {
-			return new Component(h3dAddNodes(this.id, (new Scene(path)).id));
+			res = new Scene(path);
+			auto id = h3dAddNodes(H3DRootNode, res.id);
+			assert(id);
+			return new GEComponent(id);
 		}
 	}
 	
@@ -270,11 +275,11 @@ class Component : IComponent {
 	}
 
 	@property {
-		Component parent() { //TODO: instancing and reflection
+		GEComponent parent() { //TODO: instancing and reflection
 			//FIXME: not working state!
 			return this;//enforceEx() && h3dGetNodeParent(this.id);
 		}
-		 void parent(Component value) { //TODO: instancing and reflection
+		 void parent(GEComponent value) { //TODO: instancing and reflection
 			//FIXME: not working state!
 			//enforceEx(h3dSetNodeParent(this.id, value.id), value);
 		}
@@ -306,12 +311,12 @@ class Component : IComponent {
 		this.id = id;
 	}
 	
-	this(Component node) {
+	this(GEComponent node) {
 		this.id = cast(H3DNode) h3dCloneResource(node.id, null);
 	}
 	
 	~this() {
-		h3dRemoveResource(id);
+		//h3dRemoveResource(id);
 	}
 	
 	T getParam(T)(int param, int compIdx = 0)

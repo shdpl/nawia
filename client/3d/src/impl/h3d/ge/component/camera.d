@@ -39,7 +39,7 @@ private import
 
 
 
-class Camera : Component, ICamera, IMsgListener, IMsgProvider {
+class Camera : GEComponent, ICamera, IMsgListener, IMsgProvider {
 	private:
 	mixin InjectMsgProvider!MsgWindowResize _prvdrResize;
 	mixin InjectMsgProvider!MsgTimeIdle _prvdrIdle;

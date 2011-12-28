@@ -26,7 +26,7 @@ public import
 	impl.h3d.ge.res.animation;	
 	
 
-class Model : Component {
+class Model : GEComponent {
 	public:
 	_Lod lod;
 	

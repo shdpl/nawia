@@ -17,6 +17,6 @@
 
 module ee.component;
 
-interface IComponent {
+interface Component {
 	
 }

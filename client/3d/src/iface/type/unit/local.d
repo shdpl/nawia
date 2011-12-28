@@ -17,4 +17,4 @@
 
 module type.unit.local;
 
-alias float UnitLocal;
+alias real UnitLocal;

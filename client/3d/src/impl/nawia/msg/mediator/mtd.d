@@ -46,8 +46,6 @@ class MsgMediator : IMsgMediator, IMsgProvider, IMsgListener {
 	}
 	
 	~this() {
-		_lstnrIdle.unregister(this);
-		_prvdrQuit.unregister(this);
 	}
 	
 	void init() {
@@ -58,6 +56,11 @@ class MsgMediator : IMsgMediator, IMsgProvider, IMsgListener {
 	}
 	
 	public:
+	void dispose() {
+		_lstnrIdle.unregister(this);
+		_prvdrQuit.unregister(this);
+	}
+	
 	override bool register(TypeInfo type, IMsgFilter filter) {
 		if (type in _filters)
 			if (filter in _filters[type])

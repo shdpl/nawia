@@ -19,14 +19,16 @@ module ge.window.window;
 
 
 public import
+	util.disposable,
 	msg.listener,
 	msg.provider,
 	type.cords.screen,
 	type.color.rgb,
 	ge.window.properties,
 	ge.window.mode;
+	
 
-interface IWindow : IMsgProvider
+interface IWindow : IMsgProvider, Disposable
 {
 	
 	string title();

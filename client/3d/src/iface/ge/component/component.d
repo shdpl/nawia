@@ -25,11 +25,11 @@ private import
 	type.cords.world,
 	type.cords.polar,
 	type.cuda.types,
-	ee.component : IEEComponent = IComponent;
+	ee.component : EEComponent = Component;
 	
 private import impl.h3d.h3d; //FIXME: drop dependency on h3d
 
-interface IComponent : IEEComponent {
+interface IComponent : EEComponent {
 	alias H3DNodeTypes.List Type;
 	
 	@property Type type();

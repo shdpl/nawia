@@ -20,14 +20,14 @@ module impl.h3d.ge.component.overlay;
 private import std.conv;
 
 import
-	ge.component.overlay,
 	impl.h3d.h3d,
 	type.cords.screen,
 	type.color.rgba,
-	impl.h3d.ge.res.material;
+	impl.h3d.ge.res.material,
+	impl.h3d.ge.component.component;
 
 
-class Overlay : IOverlay {
+class Overlay : GEComponent {
 	public:
 	ColorRGBA!float color;
 	Material material;

@@ -30,7 +30,7 @@ import
 	impl.h3d.ge.component.component,
 	type.cuda.types;
 
-class Emitter : Component, IEmitter, IMsgListener {
+class Emitter : GEComponent, IEmitter, IMsgListener {
 	public:
 	static immutable type = Type.Emitter;
 	

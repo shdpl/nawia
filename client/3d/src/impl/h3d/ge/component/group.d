@@ -22,7 +22,7 @@ import
 	impl.h3d.h3d,
 	impl.h3d.ge.component.component;
 
-class Group : Component, IGroup {
+class Group : GEComponent, IGroup {
 	public:
 	static immutable type = Type.Group;
 	

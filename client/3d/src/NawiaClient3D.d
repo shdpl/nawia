@@ -27,8 +27,24 @@ private import
 	std.math;
 
 private {
-	import impl.h3d.ee.world : GEWorld = World;
-	import impl.bullet.pe.world.dynamics;
+	import impl.bullet.pe.world.dynamics,
+		impl.glfw.ge.window.window,
+		impl.glfw.io.hid.mouse,
+		impl.glfw.io.hid.keyboard,
+		impl.nawia.io.res.manager,
+		impl.h3d.ge.res.scene,
+		impl.h3d.ge.component.component,
+		impl.h3d.ge.component.camera,
+		impl.h3d.ge.component.mesh,
+		impl.h3d.ge.res.pipeline,
+		impl.h3d.ge.res.material,
+		impl.h3d.ge.component.light,
+		impl.h3d.ge.component.model,
+		impl.h3d.ge.world,
+		impl.nawia.ee.world.std,
+		impl.polyvox.ee.map.volume.simple,
+		impl.polyvox.ee.map.extractormesh,
+		impl.bullet.pe.shape.box;
 }
 
 private import
@@ -39,24 +55,7 @@ private import
 	msg._frame.ready,
 	msg._io.hid.mouse.move,
 	msg._io.hid.keyboard.press,
-	msg._app.quit,
-	impl.glfw.ge.window.window,
-	impl.glfw.io.hid.mouse,
-	impl.glfw.io.hid.keyboard,
-	impl.nawia.io.res.manager,
-	impl.h3d.ge.renderer,
-	impl.h3d.ge.res.scene,
-	impl.h3d.ge.component.component,
-	impl.h3d.ge.component.camera,
-	impl.h3d.ge.component.mesh,
-	impl.h3d.ge.res.pipeline,
-	impl.h3d.ge.res.material,
-	impl.h3d.ge.component.light,
-	impl.h3d.ge.component.model,
-	impl.nawia.ee.actor,
-	impl.polyvox.ee.map.volume.simple,
-	impl.polyvox.ee.map.extractormesh,
-	impl.bullet.pe.shape.box;
+	msg._app.quit;
 	
 private import
 	impl.glfw.glfw,
@@ -64,10 +63,12 @@ private import
 	impl.h3d.utils,
 	impl.polyvox.polyvox,
 	impl.nawia.msg.mediator.mtd;
-	private import impl.bullet.bullet;
+private import
+	impl.bullet.bullet,
+	core.memory;
 
 
-void main(){
+void main() {
 	Demo demo;
 	
 //	demo = new Demo1;
@@ -75,12 +76,14 @@ void main(){
 //	demo = new Demo3;
 	demo = new Demo4;
 	
-	demo.init;
+	demo.init();
 	
 	std.stdio.writeln("load");
-	demo.load;
+	demo.load();
 	std.stdio.writeln("run");
 	demo.run;
+	
+	demo.dispose();
 }
 
 abstract class Demo : IMsgListener, IMsgProvider {
@@ -88,12 +91,12 @@ abstract class Demo : IMsgListener, IMsgProvider {
 	mixin InjectMsgProvider!MsgMouseMove _prvdrMove;
 	mixin InjectMsgProvider!MsgKeyPress _prvdrPress;
 	mixin InjectMsgListener!MsgAppQuit _lstnrQuit;
+	EEWorldStd _world;
 	GEWorld world;
 	WorldDynamics _peWorld;
 	PBodyRigid _shapes[];
 	Window wnd;
 	Camera cam;
-	Renderer rndrr;
 	MsgMediator mediator;
 	Mouse mouse;
 	Keyboard kb;
@@ -106,36 +109,26 @@ abstract class Demo : IMsgListener, IMsgProvider {
 		_prvdrPress.register(this);
 		_lstnrQuit.register(this);
 		
+		_world = new EEWorldStd();	
 		
-		auto wndProps = WindowProperties();
-		wndProps.size = CordsScreen(1280,1024); //TODO: Box!CordsScreen
-		wndProps.status = WindowStatus.FULLSCREEN;
-		
-		wnd = Window(wndProps);
-		wnd.title = "Nawia RPG";
-
-		rndrr = Renderer(wnd);
-		rndrr.texReference = true;
-		rndrr.texCompression = false;
-		rndrr.anisotropy = 4;
-		rndrr.shadowMapSize = 2048;
-		rndrr.animationFast = true;
-		
-		world = new GEWorld;
-		_peWorld = new WorldDynamics;
-		mouse = Mouse();
-		mouse.cursorHidden = true;
-		
-		kb = Keyboard();
-		move.init([false, false, false, false]);
+		this.initGE();
+		this.initPE();
+		this.initIO();
 	}
 	
-	public ~this() {
+	public void dispose() {
+		_world.get!WorldDynamics().dispose();
+		_world.get!GEWorld().dispose();
+		
 		_prvdrReady.unregister(this);
 		_prvdrMove.unregister(this);
 		_prvdrPress.unregister(this);
 		_lstnrQuit.unregister(this);
+		
+		mediator.dispose();
 	}
+	
+	public ~this() {}
 	
 	public void handle(Variant msg) {
 		if(msg.type == typeid(MsgFrameReady)) {
@@ -209,6 +202,43 @@ abstract class Demo : IMsgListener, IMsgProvider {
 			"), max(", wnd.fpsMax, "), min(", wnd.fpsMin, ")");
 		h3dutDumpMessages();
 	}
+
+	
+	private void initGE()
+	{
+		// Display component
+		auto wndProps = WindowProperties();
+		wndProps.size = CordsScreen(1280,1024); //TODO: Box!CordsScreen
+		wndProps.status = WindowStatus.FULLSCREEN;
+		
+		wnd = Window(wndProps);
+		wnd.title = "Nawia RPG";
+		
+		world = new GEWorld();
+		world.init(wnd);
+		world.texReference = true;
+		world.texCompression = false;
+		world.anisotropy = 4;
+		world.shadowMapSize = 2048;
+		world.animationFast = true;
+		_world.add(world);
+	}
+	
+	private void initPE()
+	{
+		_peWorld = new WorldDynamics();
+		_peWorld.init();
+		_world.add(_peWorld);
+	}
+	
+	private void initIO()
+	{
+		mouse = Mouse();
+		mouse.cursorHidden = true;
+		
+		kb = Keyboard();
+		move.init([false, false, false, false]);
+	}
 	
 	private float degToRad( float f ) 
 	{
@@ -219,7 +249,7 @@ abstract class Demo : IMsgListener, IMsgProvider {
 }
 
 class Demo1 : Demo {
-	Component platform, sky, man;
+	GEComponent platform, sky, man;
 	Pipeline pipe;
 	Light light;
 	
@@ -284,11 +314,14 @@ class Demo1 : Demo {
 }
 
 class Demo2 : Demo {
-	Component scene;
+	hEntity cat;
 	
 	override void load() {
-		scene = world.add!Scene("models/cathedral.scene.xml");
-		Camera[] cams = scene.find!Camera("Camera");
+		cat = _world.add!Entity(_world.root, "cathedral");
+		Entity* e = _world.getRW(cat);
+		e.component ~= _world.get!GEWorld.add!Scene("models/cathedral.scene.xml");
+		auto tmp = cast (GEComponent) e.component[0];
+		Camera[] cams = tmp.find!Camera("Camera");
 		enforceEx!Exception(cams.length == 1, "cams.length=" ~ text(cams.length));
 		cam = cams[0];
 		
@@ -297,13 +330,12 @@ class Demo2 : Demo {
 		cam.clipNear = .01;
 		cam.clipFar = 1000;	//FIXME: clip!=clip <swap with fov>
 		cam.fov = 73;
-		//cam.rotation = CordsLocal(0, 40, 0, world);
 		cam.assign(wnd);	// TODO: Multithreading
 	}
 }
 
 class Demo3 : Demo {
-	Component platform, sky;
+	GEComponent platform, sky;
 	Pipeline pipe;
 	Light light;
 	
@@ -386,7 +418,7 @@ class Demo3 : Demo {
 	}
 }
 class Demo4 : Demo {
-	Component platform, sky;
+	GEComponent platform, sky;
 	Pipeline pipe;
 	Light light;
 	

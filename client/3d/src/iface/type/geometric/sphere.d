@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module type.geometric.circle;
+module type.geometric.sphere;
 
 import type.cords.cords;
 
-struct Circle(T) { //static if (is(T : Cords))
+struct Sphere(T) { //static if (is(T : Cords))
 	T center;
 	real rad_min;
 	real rad_max;

@@ -24,7 +24,7 @@ private import impl.h3d.h3d,
 	impl.h3d.ge.res.material,
 	impl.h3d.ge.component.component;
 
-class Mesh : Component, IMesh {
+class Mesh : GEComponent, IMesh {
 	public:
 	static immutable type = Type.Mesh;
 	

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Mariusz 'shd' Gliwiński.
+ * Copyright (C) 2011 Mariusz 'shd' Gliwiński.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -15,15 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module util.tree.tree;
+module msg._ee.world.destroy;
 
-interface ITree {
-	
-	@property ITree child(uint i);
-	@property void child(ITree node);
-	@property ITree parent();
-	@property void parent(ITree node);
-	
-    Node opBinary(string op)(Stuff rhs) if (op == "~");
-    
+private import msg.msg;
+
+struct MsgWorldDestroy {
+	Msg msg;
+	alias msg this;
 }

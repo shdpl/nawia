@@ -21,7 +21,7 @@ abstract class Resource : IOResource, IResource {
 	H3DResId id;
 	
 	public:
-	this(H3DRes id) 
+	this(H3DRes id)
 	in {
 		assert(h3dGetResType(id) == this.type);
 	}body{
@@ -50,7 +50,7 @@ abstract class Resource : IOResource, IResource {
 //	}
 	
 	~this() {
-		assert(h3dRemoveResource(this.id) >= 0);
+		//assert(h3dRemoveResource(this.id) >= 0);
 	}
 	
 	/// Empty string in case of failure

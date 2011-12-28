@@ -42,7 +42,7 @@ private import impl.glfw.ge.window.mode,
 
 
 
-package class Window: IWindow, IMsgProvider, IMsgListener
+package class Window: IWindow, IMsgProvider, IMsgListener	//TODO: as display world
 {
 	mixin InjectMsgListener!MsgAppQuit _lstnrQuit;
 	mixin InjectMsgListener!MsgWindowRedraw _lstnrRedraw;
@@ -186,6 +186,31 @@ package class Window: IWindow, IMsgProvider, IMsgListener
 		}
 	}
 	
+	void init() {
+		_lstnrQuit.register(this);
+		glfwSetWindowCloseCallback(&callbackClose);
+		_lstnrRedraw.register(this);
+		glfwSetWindowRefreshCallback(&callbackRefresh);
+		_lstnrResize.register(this);
+		glfwSetWindowSizeCallback(&callbackResize);
+		_prvdrReady.register(this);
+		_prvdrInit.register(this);
+		_dPredictableFrame.length = _dPredictableFrame.ticksPerSec /50;
+		fps = 50;
+		fpsAvg = 50;
+		fpsMax = real.min;
+		fpsMin = real.max;
+	}
+	
+	void dispose() {
+		_lstnrQuit.unregister(this);
+		_lstnrRedraw.unregister(this);
+		_lstnrResize.unregister(this);
+		_prvdrReady.unregister(this);
+		_prvdrInit.unregister(this);
+		glfwCloseWindow();
+	}
+	
 	private:
 	this() {
 		this(WindowProperties());
@@ -208,32 +233,7 @@ package class Window: IWindow, IMsgProvider, IMsgListener
 		_props.size = CordsScreen(__tmp_i1, __tmp_i2);
 	}
 	
-	void init() {
-		_lstnrQuit.register(this);
-		glfwSetWindowCloseCallback(&callbackClose);
-		_lstnrRedraw.register(this);
-		glfwSetWindowRefreshCallback(&callbackRefresh);
-		_lstnrResize.register(this);
-		glfwSetWindowSizeCallback(&callbackResize);
-		_prvdrReady.register(this);
-		_prvdrInit.register(this);
-		_dPredictableFrame.length = _dPredictableFrame.ticksPerSec /50;
-		fps = 50;
-		fpsAvg = 50;
-		fpsMax = real.min;
-		fpsMin = real.max;
-	}
-	
-	~this()
-	{
-		_lstnrQuit.unregister(this);
-		_lstnrRedraw.unregister(this);
-		_lstnrResize.unregister(this);
-		_prvdrReady.unregister(this);
-		_prvdrInit.unregister(this);
-		glfwCloseWindow();
-		//glfwTerminate();
-	}
+	~this() {}
 	
 	int onClose() {
 		_lstnrQuit.deliver(MsgAppQuit());

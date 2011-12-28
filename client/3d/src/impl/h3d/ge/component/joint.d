@@ -22,7 +22,7 @@ private import
 	impl.h3d.ge.component.component,
 	ge.component.joint;
 
-class Joint : Component, IJoint {
+class Joint : GEComponent, IJoint {
 	public:
 	static immutable type = Type.Joint;
 	

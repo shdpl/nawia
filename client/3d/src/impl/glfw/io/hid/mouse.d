@@ -73,8 +73,7 @@ package class Mouse : IMouse, IMsgProvider, IMsgListener {
 	//TODO: glfwSetMouseWheelCallback
 	
 	private:
-	this() {
-	}
+	this() {}
 	
 	void init() {
 		int __tmp1, __tmp2;
@@ -87,7 +86,8 @@ package class Mouse : IMouse, IMsgProvider, IMsgListener {
 		_prvdrReady.register(this);
 	}
 	
-	~this() {
+	void dispose()
+	{
 		_lstnrClick.unregister(this);
 		_lstnrMove.unregister(this);
 		_prvdrReady.unregister(this);

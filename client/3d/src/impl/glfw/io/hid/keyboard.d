@@ -63,8 +63,7 @@ package class Keyboard: IKeyboard, IMsgProvider {
 	}
 	
 	private:
-	this() {
-	}
+	this() {}
 	
 	void init() {
 		glfwEnable(GLFW_KEY_REPEAT);
@@ -74,7 +73,8 @@ package class Keyboard: IKeyboard, IMsgProvider {
 		glfwSetKeyCallback(&callbackKey);
 	}
 	
-	~this() {
+	void dispose()
+	{
 		glfwSetCharCallback(null);
 		glfwSetKeyCallback(null);
 		_lstnrPress.unregister(this);

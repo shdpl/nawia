@@ -26,7 +26,7 @@ private import
 	impl.h3d.ge.res.material;
 	
 	
-class Light : Component, ILight {
+class Light : GEComponent, ILight {
 	public:
 	static immutable type = Type.Light;
 	
