@@ -26,6 +26,7 @@ private import
 	msg._frame.ready,
 	msg.listener,
 	std.stdio,
+	std.array,
 	ee.world;
 	
 private import
@@ -45,6 +46,7 @@ class WorldDynamics : WorldCollision, IMsgListener, World {
 	}
 	
 	private:
+	PBodyRigid[] _bodies;
 	btDiscreteDynamicsWorld _world;
 	btBroadphaseInterface _bphase;
 	btCollisionConfiguration _config;
@@ -53,7 +55,10 @@ class WorldDynamics : WorldCollision, IMsgListener, World {
 	btVector3 _gravity;
 	
 	public:
-	this() {};
+	this()
+	{
+		_bodies = [];
+	}
 	void init(Options o = Options()) {
 		_config = cast(btCollisionConfiguration) o.configuration.create;
 		
@@ -69,10 +74,16 @@ class WorldDynamics : WorldCollision, IMsgListener, World {
 		_lstnrReady.register(this);
 	}
 	
-	~this() {}
+	~this()
+	{
+	}
 	
 	void dispose()
 	{
+		foreach(b; this._bodies)
+		{
+			del(b);
+		}
 		_lstnrReady.unregister(this);
 	}
 	
@@ -80,12 +91,14 @@ class WorldDynamics : WorldCollision, IMsgListener, World {
 	PBodyRigid add(T, E...)(E args) if (is(T : PBodyRigid)) {
 		auto ret = new T();
 		ret.init(args);
+		_bodies ~= ret;
 		_world.addRigidBody(ret.btHandle());
 		
 		return ret;
 	}
 	
 	void del(PBodyRigid b) {
+		_world.removeRigidBody(b.btHandle());
 		b.clear();
 	}
 	

@@ -17,24 +17,26 @@
 
 module impl.bullet.pe.pbody.rigid;
 
+public import
+	type.geometric.box;
+
 private import
 	std.typecons;
 
 private import
 	impl.bullet.bullet,
-	impl.bullet.pe.shape.shape,
 	impl.bullet.pe.pbody.pbody,
 	type.cuda.types,
 	type.cords.local;
 
-class PBodyRigid : PBody {
+class PBodyRigid /*: PBody*/ {
 	private:
 	btVector3 _localInertia;
 	btTransform _transform;
 	btVector3 _origin;
 	btMotionState _mstate;
 	btRigidBody _handle;
-	Shape _shape;
+	btCollisionShape _shape;
 	
 	
 	public:
@@ -44,24 +46,37 @@ class PBodyRigid : PBody {
 		_mstate = new btDefaultMotionState;
 		_localInertia = new btVector3;
 	}
-	~this() {}
+	~this()
+	{
+	}
 	
 	
 	alias btCollisionObject.CollisionFlags CollisionFlag;
 	
+	void init(T)(CordsLocal pos, T shape, real mass = real.nan)
+	{
+		static if (isBox!T)
+		{
+			_shape = new btBoxShape(new btVector3(shape.width, shape.height, shape.depth));
+		} else {
+			static assert(false);
+		}
+		_init(pos, mass);
+	}
 	
-	void init(CordsLocal pos, Shape shape, real mass = real.nan) {
+	void _init(CordsLocal pos, real mass = real.nan) {
 		_origin.setValue(pos.x, pos.y, pos.z);
 		
 		_transform.setIdentity();
 		_transform.setOrigin(_origin);
 		
-		_shape = shape;
-		auto inertia = _shape.localInertia(mass);
-		_localInertia.setValue(inertia.x, inertia.y, inertia.z);
+		if (mass <>= real.nan)
+			_shape.calculateLocalInertia(mass, _localInertia);
+		else
+			_localInertia.setValue(0,0,0);
 		
 		_mstate.setWorldTransform(_transform);
-		_handle = new btRigidBody(mass <>= 0 ? mass : 0, _mstate, _shape.btHandle(), _localInertia);
+		_handle = new btRigidBody(mass <>= 0 ? mass : 0, _mstate, _shape, _localInertia);
 
 		assert(!is(_handle));
 	}

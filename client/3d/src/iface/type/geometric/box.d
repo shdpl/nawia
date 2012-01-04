@@ -24,51 +24,83 @@ public import type.cords.cords;
 struct Box(T) /*if (T >= Cords)*/ {
 	T _cords[2];
 	
-	this(T botleft, T topright) {
-		_cords[0] = botleft;
-		_cords[1] = topright;
+	this(T botleftnear, T toprightfar) {
+		_cords[0] = botleftnear;
+		_cords[1] = toprightfar;
 	}
 	/*
-	this(E)(T botleft, E x, E y) if (E != T && hasMember(T, x) &&
+	this(E)(T botleftnear, E x, E y) if (E != T && hasMember(T, x) &&
 		isImplicitlyConvertible(E,FieldTypeTuple(T)["x"])) {}*/
 	
-	this(T topright) {
-		_cords[1] = topright;
+	this(T toprightfar) {
+		static if(__traits(compiles, _cords[0].x = 0))
+			_cords[0].x = 0;
+		static if(__traits(compiles, _cords[0].y = 0))
+			_cords[0].y = 0;
+		static if(__traits(compiles, _cords[0].z = 0))
+			_cords[0].z = 0;
+		_cords[1] = toprightfar;
 	}
 	
 	@property {
-		void topright(T value) {
+		void toprightfar(T value) {
 			_cords[1] = value;
 		}
-		T topright() {
+		T toprightfar() {
 			return _cords[1];
 		}
 	}
 	@property {
-		void botleft(T value) {
+		void botleftnear(T value) {
 			_cords[0] = value;
 		}
-		T botleft() {
+		T botleftnear() {
 			return _cords[0];
 		}
 	}
-	/*
-	@property {
-		uint width() { //FIXME: dynamically determined
-			return topright.x - botleft.x;
-		}
-		void width(uint value) {
-			topright.x = botleft.x + value;
+	
+	static if(__traits(hasMember, T, "x"))
+	{
+		@property {
+			typeof(T.x) width() {
+				return toprightfar.x - botleftnear.x;
+			}
+			void width(typeof(T.x) value) {
+				toprightfar.x = botleftnear.x + value;
+			}
 		}
 	}
 	
-	@property {
-		uint height() if(hasMember(T, y)) { //FIXME: dynamically determined
-			return topright.y - botleft.y;
+	static if(__traits(hasMember, T, "y"))
+	{
+		@property {
+			typeof(T.y) height() {
+				return toprightfar.y - botleftnear.y;
+			}
+			void height(typeof(T.y) value) {
+				toprightfar.y = botleftnear.y + value;
+			}
 		}
-		void height(uint value) {
-			topright.y = botleft.y + value;
-		}
-	}*/
+	}
 	
+	static if(__traits(hasMember, T, "z"))
+	{
+		@property {
+			typeof(T.z) depth() {
+				return toprightfar.z - botleftnear.z;
+			}
+			void depth(typeof(T.z) value) {
+				toprightfar.z = botleftnear.z + value;
+			}
+		}
+	}
+	
+}
+
+
+template isBox(T)
+{
+	enum bool isBox =
+		__traits(hasMember, T, "toprightfar")
+		&& __traits(hasMember, T, "botleftnear");
 }

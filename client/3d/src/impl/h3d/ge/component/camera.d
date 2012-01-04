@@ -94,21 +94,21 @@ class Camera : GEComponent, ICamera, IMsgListener, IMsgProvider {
 		//Yes, i know - performance. But i'm choosing slower naive version
 		//for sake of clarity, while still limited by programming language.
 		Box!CordsScreen viewport() {
-			int botleft_x = getParam!int(Params.ViewportXI);
-			int botleft_y = getParam!int(Params.ViewportYI);
+			int botleftnear_x = getParam!int(Params.ViewportXI);
+			int botleftnear_y = getParam!int(Params.ViewportYI);
 			int width = getParam!int(Params.ViewportWidthI);
 			int height = getParam!int(Params.ViewportHeightI);
 			return Box!CordsScreen(
-				CordsScreen(botleft_x, botleft_y),
-				CordsScreen(botleft_x+width, botleft_y+height));
+				CordsScreen(botleftnear_x, botleftnear_y),
+				CordsScreen(botleftnear_x+width, botleftnear_y+height));
 		}
 		void viewport(Box!CordsScreen value) {
-			//TODO: replace all this calculations by value.botleft value.width etc.
-			int width = value.topright.x - value.botleft.x;
-			int height = value.topright.y - value.botleft.y;
+			//TODO: replace all this calculations by value.botleftnear value.width etc.
+			int width = value.toprightfar.x - value.botleftnear.x;
+			int height = value.toprightfar.y - value.botleftnear.y;
 			
-			setParam!int(value.botleft.x, Params.ViewportXI);
-			setParam!int(value.botleft.y, Params.ViewportYI);
+			setParam!int(value.botleftnear.x, Params.ViewportXI);
+			setParam!int(value.botleftnear.y, Params.ViewportYI);
 			setParam!int(width, Params.ViewportWidthI);
 			setParam!int(height, Params.ViewportHeightI);
 			h3dResizePipelineBuffers( pipeline.id, width, height );
@@ -189,8 +189,8 @@ class Camera : GEComponent, ICamera, IMsgListener, IMsgProvider {
 	private:
 	real aspect() @property {
 		auto vp = viewport;	//FIXME vp.width / vp.height
-		auto width = vp.topright.x - vp.botleft.x;
-		auto height = vp.topright.y - vp.botleft.y;
+		auto width = vp.toprightfar.x - vp.botleftnear.x;
+		auto height = vp.toprightfar.y - vp.botleftnear.y;
 		return width/height; 
 	}
 	

@@ -43,8 +43,7 @@ private {
 		impl.h3d.ge.world,
 		impl.nawia.ee.world.std,
 		impl.polyvox.ee.map.volume.simple,
-		impl.polyvox.ee.map.extractormesh,
-		impl.bullet.pe.shape.box;
+		impl.polyvox.ee.map.extractormesh;
 }
 
 private import
@@ -71,10 +70,10 @@ private import
 void main() {
 	Demo demo;
 	
-//	demo = new Demo1;
+	demo = new Demo1;
 //	demo = new Demo2;
 //	demo = new Demo3;
-	demo = new Demo4;
+//	demo = new Demo4;
 	
 	demo.init();
 	
@@ -94,7 +93,7 @@ abstract class Demo : IMsgListener, IMsgProvider {
 	EEWorldStd _world;
 	GEWorld world;
 	WorldDynamics _peWorld;
-	PBodyRigid _shapes[];
+	PBodyRigid _pbody[];
 	Window wnd;
 	Camera cam;
 	MsgMediator mediator;
@@ -257,9 +256,9 @@ class Demo1 : Demo {
 		platform = world.add!Scene("models/platform/platform.scene.xml"); //("platform/platform.scene.xml");
 		platform.translation = CordsLocal(0, 0, 0, world);
 		platform.size = float3(50f, 1.f, 50f);
-		_shapes ~= _peWorld.add!PBodyRigid(
+		_pbody ~= _peWorld.add!PBodyRigid(
 			CordsLocal(0, -1.5, 0, world),
-			new ShapeBox(platform.size));
+			Box!float3(platform.size));
 		
 		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
 		sky.size = float3(300, 100, 300);
@@ -292,9 +291,9 @@ class Demo1 : Demo {
 		man = world.add!Scene("models/man/man.scene.xml");
 		man.translation = CordsLocal(0, 10, 0, world);
 		man.size = float3(2f, .5f, .2f);
-		_shapes ~= _peWorld.add!PBodyRigid(
+		_pbody ~= _peWorld.add!PBodyRigid(
 			man.translation,
-			new ShapeBox(man.size), 75); //TODO: getAABB
+			Box!float3(man.size), 75); //TODO: getAABB
 
 		/*
 		auto man = new Actor(
@@ -309,7 +308,7 @@ class Demo1 : Demo {
 	}
 	
 	void onAnimate() {
-		man.transformationRelative = _shapes[$-1].transformation;
+		man.transformationRelative = _pbody[$-1].transformation;
 	}
 }
 

@@ -35,18 +35,18 @@ class VolumeSimple : IVolume {
 	void init(Box!CordsWorld bb) {
 		_data = new SimpleVolumeMaterialDensityPair44
 			(new Region(
-				new Vector3DInt32(bb.botleft.x,bb.botleft.y,bb.botleft.z),
-				new Vector3DInt32(bb.topright.x,bb.topright.y,bb.topright.z)));
+				new Vector3DInt32(bb.botleftnear.x,bb.botleftnear.y,bb.botleftnear.z),
+				new Vector3DInt32(bb.toprightfar.x,bb.toprightfar.y,bb.toprightfar.z)));
 	}
 	
 	/// Bounding box
 	@property Box!CordsWorld region() {
 		Region region = _data.getEnclosingRegion();
-		Vector3DInt32 botleft = region.getLowerCorner();
-		Vector3DInt32 topright = region.getUpperCorner();
+		Vector3DInt32 botleftnear = region.getLowerCorner();
+		Vector3DInt32 toprightfar = region.getUpperCorner();
 		return Box!CordsWorld(
-			CordsWorld(botleft.getX(), botleft.getY(), botleft.getZ()),
-			CordsWorld(topright.getX(), topright.getY(), topright.getZ()));
+			CordsWorld(botleftnear.getX(), botleftnear.getY(), botleftnear.getZ()),
+			CordsWorld(toprightfar.getX(), toprightfar.getY(), toprightfar.getZ()));
 	}
 	
 	///voxel[x][y][z]
