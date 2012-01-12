@@ -18,12 +18,14 @@
 module net.nawia.client3d;
 
 private import 
+	std.stdio: writeln;
+private import 
 	std.uri,
-	std.stdio,
 	std.conv,
 	std.exception,
 	std.datetime,
 	std.bitmanip,
+	std.stream,
 	std.math;
 
 private {
@@ -43,7 +45,8 @@ private {
 		impl.h3d.ge.world,
 		impl.nawia.ee.world.std,
 		impl.polyvox.ee.map.volume.simple,
-		impl.polyvox.ee.map.extractormesh;
+		impl.polyvox.ee.map.extractormesh,
+		impl.otbm.ee.map.formatter.otbm;
 }
 
 private import
@@ -70,8 +73,9 @@ private import
 void main() {
 	Demo demo;
 	
-	demo = new Demo1;
-//	demo = new Demo2;
+	
+//	demo = new Demo1;
+	demo = new Demo2;
 //	demo = new Demo3;
 //	demo = new Demo4;
 	
@@ -294,6 +298,12 @@ class Demo1 : Demo {
 		_pbody ~= _peWorld.add!PBodyRigid(
 			man.translation,
 			Box!float3(man.size), 75); //TODO: getAABB
+			
+		auto animRes = h3dAddResource(H3DResTypes.List.Animation, "animations/man.anim", 0 );
+		h3dutLoadResourcesFromDisk("data/");
+		h3dSetupModelAnimStage( man.id, 0, animRes, 0, "", false );
+		writeln(man.id, animRes);
+		
 
 		/*
 		auto man = new Actor(
@@ -308,7 +318,10 @@ class Demo1 : Demo {
 	}
 	
 	void onAnimate() {
+		static real progress = 0;
+		progress += 1/wnd.fps*35;
 		man.transformationRelative = _pbody[$-1].transformation;
+		h3dSetModelAnimParams( man.id, 0, progress, 1.0f );
 	}
 }
 
@@ -420,76 +433,99 @@ class Demo4 : Demo {
 	GEComponent platform, sky;
 	Pipeline pipe;
 	Light light;
+	File _file;
+	FormatterOTBM _fmter;
+	MapNode _map;
+	
+	this()
+	{
+		_file = new File;
+		_fmter = new FormatterOTBM;
+	}
+	
+	override void init()
+	{
+		super.init();
+		_file.open("/home/shd/src/otserv_data/world/map.otbm");
+		_map = _fmter.format(_file);
+	}
+	
+	override void dispose()
+	{
+		_map.dispose();
+		_file.close();
+		super.dispose();
+	}
 	
 	override void load() {
 		
-		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
-		sky.scale = float3(210, 50, 210);
-		sky.shadowsDisabled = true;
-		
-//		rndrr.viewWireFrame = true;
-		pipe = new Pipeline("pipelines/forward.pipeline.xml");
-		cam = world.add!Camera(pipe);
-		cam.translation = CordsLocal(2, 1, 0, world);
-		cam.rotation = CordsLocal(-20, 135, 0, world);
-		cam.viewport = Box!CordsScreen(wnd.size);
-		cam.clipNear = .01;
-		cam.clipFar = 1000;
-		cam.fov = 73;
-		cam.assign(wnd);	// TODO: Multithreading
-		
-		
-		light = world.add!Light(
-			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
-		light.translation = CordsLocal(0, 25, 20, world);
-		light.rotation = CordsLocal(-30, 0, 0, world);
-		light.radius = 200;
-		light.fov = 90;
-		light.color = ColorRGB!float(.9f, .7f, .75f);
-		
-		auto vol = new VolumeSimple(Box!CordsWorld(
-				CordsWorld(0,0,0), CordsWorld(63,63,63)));
-		
-		createSphere(vol._data, 30);//TODO: geometry library
-		
-		auto extractor = new ExtractorMesh(vol);
-		auto geo = cast(Geometry) extractor.extract(/*cam.fov*/);
-		
-		auto mat = new Material("materials/terrain.material.xml");
-		
-		Model model = world.add!Model("DynGeoModelNode", geo);
-		model.add!Mesh("DynGeoMesh", mat, 0, geo.verticesNo, 0, geo.indicesNo );
-	    model.translation = CordsLocal(-5, -3, 0, world);
-	    model.scale = float3(.1, .1, .1);
+//		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
+//		sky.scale = float3(210, 50, 210);
+//		sky.shadowsDisabled = true;
+//		
+////		rndrr.viewWireFrame = true;
+//		pipe = new Pipeline("pipelines/forward.pipeline.xml");
+//		cam = world.add!Camera(pipe);
+//		cam.translation = CordsLocal(2, 1, 0, world);
+//		cam.rotation = CordsLocal(-20, 135, 0, world);
+//		cam.viewport = Box!CordsScreen(wnd.size);
+//		cam.clipNear = .01;
+//		cam.clipFar = 1000;
+//		cam.fov = 73;
+//		cam.assign(wnd);	// TODO: Multithreading
+//		
+//		
+//		light = world.add!Light(
+//			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
+//		light.translation = CordsLocal(0, 25, 20, world);
+//		light.rotation = CordsLocal(-30, 0, 0, world);
+//		light.radius = 200;
+//		light.fov = 90;
+//		light.color = ColorRGB!float(.9f, .7f, .75f);
+//		
+//		auto vol = new VolumeSimple(Box!CordsWorld(
+//				CordsWorld(0,0,0), CordsWorld(63,63,63)));
+//		
+//		createSphere(vol._data, 30);//TODO: geometry library
+//		
+//		auto extractor = new ExtractorMesh(vol);
+//		auto geo = cast(Geometry) extractor.extract(/*cam.fov*/);
+//		
+//		auto mat = new Material("materials/terrain.material.xml");
+//		
+//		Model model = world.add!Model("DynGeoModelNode", geo);
+//		model.add!Mesh("DynGeoMesh", mat, 0, geo.verticesNo, 0, geo.indicesNo );
+//	    model.translation = CordsLocal(-5, -3, 0, world);
+//	    model.scale = float3(.1, .1, .1);
 	}
 	
-	void createSphere(SimpleVolumeMaterialDensityPair44 volData, int radius) {
-		auto v3dVolCenter = new Vector3DFloat(
-			volData.getWidth() / 2,volData.getHeight() / 2, volData.getDepth() / 2);
-		foreach(z; 0 .. volData.getWidth()) {
-			foreach(y; 0 .. volData.getHeight()) {
-				foreach(x; 0 .. volData.getDepth()) {
-					
-					auto v3dCurrentPos = new Vector3DFloat(x,y,z);
-					
-					float fDistToCenter = (v3dCurrentPos.swigOpSubAssign(v3dVolCenter)).length();
-					
-					if(fDistToCenter < radius)
-					{
-						//Our new density value
-						ubyte uDensity = MaterialDensityPair44.getMaxDensity();
-	
-						//Get the old voxel
-						MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
-	
-						//Modify the density
-						voxel.setDensity(uDensity);
-	
-						//Wrte the voxel value into the volume	
-						volData.setVoxelAt(x, y, z, voxel);
-					}
-				}
-			}
-		}
-	}
+//	void createSphere(SimpleVolumeMaterialDensityPair44 volData, int radius) {
+//		auto v3dVolCenter = new Vector3DFloat(
+//			volData.getWidth() / 2,volData.getHeight() / 2, volData.getDepth() / 2);
+//		foreach(z; 0 .. volData.getWidth()) {
+//			foreach(y; 0 .. volData.getHeight()) {
+//				foreach(x; 0 .. volData.getDepth()) {
+//					
+//					auto v3dCurrentPos = new Vector3DFloat(x,y,z);
+//					
+//					float fDistToCenter = (v3dCurrentPos.swigOpSubAssign(v3dVolCenter)).length();
+//					
+//					if(fDistToCenter < radius)
+//					{
+//						//Our new density value
+//						ubyte uDensity = MaterialDensityPair44.getMaxDensity();
+//	
+//						//Get the old voxel
+//						MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
+//	
+//						//Modify the density
+//						voxel.setDensity(uDensity);
+//	
+//						//Wrte the voxel value into the volume	
+//						volData.setVoxelAt(x, y, z, voxel);
+//					}
+//				}
+//			}
+//		}
+//	}
 }

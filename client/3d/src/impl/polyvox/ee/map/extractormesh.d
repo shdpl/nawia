@@ -34,55 +34,55 @@ private import
 	impl.h3d.ge.res.geometry,
 	impl.h3d.ge.component.mesh;
 
-class ExtractorMesh : IExtractorMesh {
-	CubicSurfaceExtractorWithNormalsSimpleVolumeMaterialDensityPair44 _extractor;
-	SurfaceMeshPositionMaterialNormal _mesh;
-	
-	this(IVolume volume) {
-		init(volume);
-	}
-	
-	override void init(IVolume volume) in {
-			//assert(rt_typeid(vol == Volume)); //TODO: rt reflection
-	} body {
-		auto vol = cast(VolumeSimple) volume;
-		_mesh = new SurfaceMeshPositionMaterialNormal;
-		
-		_extractor = new CubicSurfaceExtractorWithNormalsSimpleVolumeMaterialDensityPair44(
-			vol._data, vol._data.getEnclosingRegion, _mesh);
-	}
-	
-	override IGeometry extract(/*cam.fov*/) {
-		float[] vertices;
-		short[] normals;
-		
-		_extractor.execute();
-		uint vertexCount = _mesh.getNoOfVertices;
-		PositionMaterialNormalVector tmp2 = _mesh.getVertices();
-	  
-		for(int i=0; i<tmp2.length; i++){
-			vertices ~= tmp2[i].getPosition.getX;
-			vertices ~= tmp2[i].getPosition.getY;
-			vertices ~= tmp2[i].getPosition.getZ;
-			
-			normals ~= to!short(tmp2[i].normal.getX() * short.max);
-			normals ~= to!short(tmp2[i].normal.getY() * short.max);
-			normals ~= to!short(tmp2[i].normal.getZ() * short.max);
-		}
-		enforce(vertices.length/3 == tmp2.length);
-		
-		uint[] indices;
-		uint triangleIndexCount = _mesh.getNoOfIndices();
-		auto tmp = _mesh.getIndices();
-		for(int i=0; i<tmp.length; i++){
-			indices ~= tmp[i];
-		}
-		enforce(indices.length == _mesh.getNoOfIndices());
-		
-		float[] posData = vertices;
-		int[] indexData = to!(int[])(indices);
-		
-		return cast(IGeometry) new Geometry("geoRes", posData, indexData,
-	    	normals, cast(short[]) null, cast(short[]) null, cast(float[]) null);
-	}
-}
+//class ExtractorMesh : IExtractorMesh {
+//	CubicSurfaceExtractorWithNormalsSimpleVolumeMaterialDensityPair44 _extractor;
+//	SurfaceMeshPositionMaterialNormal _mesh;
+//	
+//	this(IVolume volume) {
+//		init(volume);
+//	}
+//	
+//	override void init(IVolume volume) in {
+//			//assert(rt_typeid(vol == Volume)); //TODO: rt reflection
+//	} body {
+//		auto vol = cast(VolumeSimple) volume;
+//		_mesh = new SurfaceMeshPositionMaterialNormal;
+//		
+//		_extractor = new CubicSurfaceExtractorWithNormalsSimpleVolumeMaterialDensityPair44(
+//			vol._data, vol._data.getEnclosingRegion, _mesh);
+//	}
+//	
+//	override IGeometry extract(/*cam.fov*/) {
+//		float[] vertices;
+//		short[] normals;
+//		
+//		_extractor.execute();
+//		uint vertexCount = _mesh.getNoOfVertices;
+//		PositionMaterialNormalVector tmp2 = _mesh.getVertices();
+//	  
+//		for(int i=0; i<tmp2.length; i++){
+//			vertices ~= tmp2[i].getPosition.getX;
+//			vertices ~= tmp2[i].getPosition.getY;
+//			vertices ~= tmp2[i].getPosition.getZ;
+//			
+//			normals ~= to!short(tmp2[i].normal.getX() * short.max);
+//			normals ~= to!short(tmp2[i].normal.getY() * short.max);
+//			normals ~= to!short(tmp2[i].normal.getZ() * short.max);
+//		}
+//		enforce(vertices.length/3 == tmp2.length);
+//		
+//		uint[] indices;
+//		uint triangleIndexCount = _mesh.getNoOfIndices();
+//		auto tmp = _mesh.getIndices();
+//		for(int i=0; i<tmp.length; i++){
+//			indices ~= tmp[i];
+//		}
+//		enforce(indices.length == _mesh.getNoOfIndices());
+//		
+//		float[] posData = vertices;
+//		int[] indexData = to!(int[])(indices);
+//		
+//		return cast(IGeometry) new Geometry("geoRes", posData, indexData,
+//	    	normals, cast(short[]) null, cast(short[]) null, cast(float[]) null);
+//	}
+//}

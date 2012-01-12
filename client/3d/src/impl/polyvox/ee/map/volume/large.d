@@ -16,9 +16,40 @@
 */
 
 module impl.polyvox.ee.map.volume.large;
-
-private import ee.map.volume;
-
-interface IVolumeLarge : IVolume {
 	
-}
+public import
+	ee.map.volume;
+	
+private import
+	impl.polyvox.polyvox;
+
+//class VolumeLarge : IVolume {
+//	public:	//TODO: geometry library
+//	SimpleVolumeMaterialDensityPair44 _data;
+//	
+//	public:
+//	this(Box!CordsWorld bb) {
+//		init(bb);
+//	}
+//	
+//	void init(Box!CordsWorld bb) {
+//		_data = new VolumeLarge
+//			(new Region(
+//				new Vector3DInt32(bb.botleftnear.x,bb.botleftnear.y,bb.botleftnear.z),
+//				new Vector3DInt32(bb.toprightfar.x,bb.toprightfar.y,bb.toprightfar.z)));
+//	}
+//	
+//	/// Bounding box
+//	@property Box!CordsWorld region() {
+//		Region region = _data.getEnclosingRegion();
+//		Vector3DInt32 botleftnear = region.getLowerCorner();
+//		Vector3DInt32 toprightfar = region.getUpperCorner();
+//		return Box!CordsWorld(
+//			CordsWorld(botleftnear.getX(), botleftnear.getY(), botleftnear.getZ()),
+//			CordsWorld(toprightfar.getX(), toprightfar.getY(), toprightfar.getZ()));
+//	}
+//	
+//	///voxel[x,y,z]
+//	///voxel[VectorWorld]
+//	override IVoxel opDispatch(string m, args...)() {}
+//}
