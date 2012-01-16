@@ -25,7 +25,7 @@ private import
 
 class VolumeSimple : IVolume {
 	public:	//TODO: geometry library
-	SimpleVolumeMaterialDensityPair44 _data;
+	SimpleVolumeMaterialDensityPair1616 _data;
 	Box!CordsWorld _bb;
 	
 	public:
@@ -35,7 +35,7 @@ class VolumeSimple : IVolume {
 	
 	void init(Box!CordsWorld bb) {
 		_bb = bb;
-		_data = new SimpleVolumeMaterialDensityPair44
+		_data = new SimpleVolumeMaterialDensityPair1616
 			(new Region(
 				new Vector3DInt32(bb.botleftnear.x,bb.botleftnear.y,bb.botleftnear.z),
 				new Vector3DInt32(bb.toprightfar.x,bb.toprightfar.y,bb.toprightfar.z)));

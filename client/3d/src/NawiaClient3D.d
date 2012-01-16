@@ -493,10 +493,10 @@ class Demo4 : Demo {
 					if(fDistToCenter < radius)
 					{
 						//Our new density value
-						ubyte uDensity = MaterialDensityPair44.getMaxDensity();
+						uint uDensity = MaterialDensityPair1616.getMaxDensity();
 	
 						//Get the old voxel
-						MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
+						MaterialDensityPair1616 voxel = volData.getVoxelAt(x,y,z);
 	
 						//Modify the density
 						voxel.setDensity(uDensity);
@@ -570,8 +570,8 @@ class Demo5 : Demo {
 		_vol = new VolumeSimple(Box!CordsWorld(
 					CordsWorld(0,0,0), CordsWorld(575,500,10)));
 		
-		auto voxel = new MaterialDensityPair44();
-		voxel.setDensity(MaterialDensityPair44.getMinDensity());
+		auto voxel = new MaterialDensityPair1616();
+		voxel.setDensity(MaterialDensityPair1616.getMinDensity());
 		_vol._data.setBorderValue(voxel);
 		
 		_file.open("/home/shd/src/otserv_data/world/map.otbm");
@@ -607,13 +607,12 @@ class Demo5 : Demo {
 		{
 			auto payload = msg.get!MsgEntityCreate;
 			auto volData = _vol._data;
-			//Get the old voxel
-			MaterialDensityPair44 voxel = volData.getVoxelAt(payload.x,payload.y,payload.z);
+			MaterialDensityPair1616 voxel = volData.getVoxelAt(payload.x,payload.y,payload.z);
 
-			//Modify the density
-			voxel.setDensity(MaterialDensityPair44.getMaxDensity());
+			voxel.setMaterial(payload.type);
+			writeln(payload.type);
+			voxel.setDensity(MaterialDensityPair1616.getMaxDensity());
 
-			//Wrte the voxel value into the volume	
 			volData.setVoxelAt(payload.x, payload.y, payload.z, voxel);
 		} else {
 			super.handle(msg);

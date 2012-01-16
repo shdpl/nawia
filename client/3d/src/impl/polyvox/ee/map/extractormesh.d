@@ -35,7 +35,7 @@ private import
 	impl.h3d.ge.component.mesh;
 
 class ExtractorMesh : IExtractorMesh {
-	CubicSurfaceExtractorWithNormalsSimpleVolumeMaterialDensityPair44 _extractor;
+	CubicSurfaceExtractorWithNormalsSimpleVolumeMaterialDensityPair1616 _extractor;
 	SurfaceMeshPositionMaterialNormal _mesh;
 	
 	this(IVolume volume) {
@@ -51,7 +51,7 @@ class ExtractorMesh : IExtractorMesh {
 		auto up = region.toprightfar;
 		auto low = region.botleftnear;
 		
-		_extractor = new CubicSurfaceExtractorWithNormalsSimpleVolumeMaterialDensityPair44(
+		_extractor = new CubicSurfaceExtractorWithNormalsSimpleVolumeMaterialDensityPair1616(
 			vol._data, new Region(low.x, low.y, low.z, up.x, up.y, up.z), _mesh);
 	}
 	

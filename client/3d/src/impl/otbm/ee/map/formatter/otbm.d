@@ -29,12 +29,13 @@ class FormatterOTBM : IMsgProvider
 		_lstnrCreate.unregister(this);
 	}
 	
-	void tmpProvide(ushort x, ushort y, ushort z)
+	void tmpProvide(ushort x, ushort y, ushort z, ushort itemId)
 	{
 		auto msg = MsgEntityCreate();
 		msg.x = x;
 		msg.y = y;
 		msg.z = z;
+		msg.type = itemId;
 		_lstnrCreate.deliver(msg);
 	}
 	
@@ -176,7 +177,7 @@ struct MapNode
 		buffer.close();
 	}
 	
-	this(Stream buffer, MapNode[] childs, void delegate(ushort x, ushort y, ushort z) tmpCb)
+	this(Stream buffer, MapNode[] childs, void delegate(ushort x, ushort y, ushort z, ushort itemId) tmpCb)
 	{
 		this.buffer = buffer;
 		this.childs = childs;
@@ -260,7 +261,6 @@ struct MapNode
 						child.buffer.read(dx);
 						child.buffer.read(dy);
 //						std.stdio.writeln(x + dx, " ", y + dy, " ", z);
-						tmpCb(to!ushort(x + dx), to!ushort(y + dy), z);
 
 						if (child.type == NodeType.HOUSETILE)
 						{
@@ -303,6 +303,7 @@ struct MapNode
 								case DataType.ITEM:
 									ushort itemId;
 									child.buffer.read(itemId);
+									tmpCb(to!ushort(x + dx), to!ushort(y + dy), z, itemId);
 //									std.stdio.writeln(itemId);
 								break;
 								default:
