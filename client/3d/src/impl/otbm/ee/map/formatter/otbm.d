@@ -1,19 +1,42 @@
 module impl.otbm.ee.map.formatter.otbm;
 
 public import
-	std.stream;
+	std.stream,
+	std.algorithm;
 	
 private import
+	msg.listener,
+	msg._ee.entity.create,
 	ex.ee.map.obsolete,
 	ex.ee.map.unsupported;
 
 
-class FormatterOTBM
+class FormatterOTBM : IMsgProvider
 {
+	mixin InjectMsgListener!MsgEntityCreate _lstnrCreate;
+
 	immutable NODE_START = 0xfe;
 	immutable NODE_END = 0xff;
 	immutable NODE_ESCAPE = 0xfd;
 	
+	void init()
+	{
+		_lstnrCreate.register(this);
+	}
+	
+	void dispose()
+	{
+		_lstnrCreate.unregister(this);
+	}
+	
+	void tmpProvide(ushort x, ushort y, ushort z)
+	{
+		auto msg = MsgEntityCreate();
+		msg.x = x;
+		msg.y = y;
+		msg.z = z;
+		_lstnrCreate.deliver(msg);
+	}
 	
 	MapNode format(Stream otbm)
 	{
@@ -49,7 +72,7 @@ class FormatterOTBM
 				
 				case NODE_END:
 					buffer.position(0);
-					return MapNode(buffer, childs);
+					return MapNode(buffer, childs, &tmpProvide);
 				break;
 				
 				default:
@@ -153,7 +176,7 @@ struct MapNode
 		buffer.close();
 	}
 	
-	this(Stream buffer, MapNode[] childs)
+	this(Stream buffer, MapNode[] childs, void delegate(ushort x, ushort y, ushort z) tmpCb)
 	{
 		this.buffer = buffer;
 		this.childs = childs;
@@ -237,6 +260,8 @@ struct MapNode
 						child.buffer.read(dx);
 						child.buffer.read(dy);
 //						std.stdio.writeln(x + dx, " ", y + dy, " ", z);
+						tmpCb(to!ushort(x + dx), to!ushort(y + dy), z);
+
 						if (child.type == NodeType.HOUSETILE)
 						{
 							uint houseId;

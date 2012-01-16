@@ -50,7 +50,7 @@ class MsgMediator : IMsgMediator, IMsgProvider, IMsgListener {
 	
 	void init() {
 		_running = true;
-		setMaxMailboxSize(thisTid, 1024, OnCrowding.throwException);
+		setMaxMailboxSize(thisTid, 524288, OnCrowding.throwException); //FIXME: temporary
 		_lstnrIdle.register(this);
 		_prvdrQuit.register(this);
 	}
@@ -127,15 +127,21 @@ class MsgMediator : IMsgMediator, IMsgProvider, IMsgListener {
 	}
 	
 	override void poll(bool delegate(Variant msg) condition) {
+		bool more;
+		bool result;
 		do {
-			receiveTimeout(0, &recvMsg );
-		} while(condition(_msg))
+			more = receiveTimeout(0, &recvMsg );
+			result = condition(_msg);
+		} while(result && more)	//TODO: make sure, that condition is met
 	}
 	
 	override void poll(bool delegate() condition) {
+		bool more;
+		bool result;
 		do {
-			receiveTimeout(0, &recvMsg );
-		} while(condition())
+			more = receiveTimeout(0, &recvMsg );
+			result = condition();
+		} while(result && more)	//TODO: make sure, that condition is met
 	}
 	
 	public void handle(Variant msg) {

@@ -57,7 +57,8 @@ private import
 	msg._frame.ready,
 	msg._io.hid.mouse.move,
 	msg._io.hid.keyboard.press,
-	msg._app.quit;
+	msg._app.quit,
+	msg._ee.entity.create;
 	
 private import
 	impl.glfw.glfw,
@@ -69,7 +70,6 @@ private import
 	impl.bullet.bullet,
 	core.memory;
 
-
 void main() {
 	Demo demo;
 	
@@ -77,7 +77,8 @@ void main() {
 //	demo = new Demo1;
 //	demo = new Demo2;
 //	demo = new Demo3;
-	demo = new Demo4;
+//	demo = new Demo4;
+	demo = new Demo5;
 	
 	demo.init();
 	
@@ -90,6 +91,7 @@ void main() {
 }
 
 abstract class Demo : IMsgListener, IMsgProvider {
+	mixin InjectMsgProvider!MsgEntityCreate _prvdrEntity;//fixme
 	mixin InjectMsgProvider!MsgFrameReady _prvdrReady;
 	mixin InjectMsgProvider!MsgMouseMove _prvdrMove;
 	mixin InjectMsgProvider!MsgKeyPress _prvdrPress;
@@ -302,7 +304,6 @@ class Demo1 : Demo {
 		auto animRes = h3dAddResource(H3DResTypes.List.Animation, "animations/man.anim", 0 );
 		h3dutLoadResourcesFromDisk("data/");
 		h3dSetupModelAnimStage( man.id, 0, animRes, 0, "", false );
-		writeln(man.id, animRes);
 		
 
 		/*
@@ -505,6 +506,117 @@ class Demo4 : Demo {
 					}
 				}
 			}
+		}
+	}
+}
+class Demo5 : Demo {
+	GEComponent platform, sky;
+	Pipeline pipe;
+	Light light;
+	File _file;
+	FormatterOTBM _fmter;
+	MapNode _map;
+	VolumeSimple _vol;
+	
+	this()
+	{
+		_file = new File;
+		_fmter = new FormatterOTBM;
+	}
+	
+	override void init()
+	{
+		super.init();
+		_fmter.init();
+		_prvdrEntity.register(this);
+	}
+	
+	override void dispose()
+	{
+		_prvdrEntity.unregister(this);
+		_fmter.dispose();
+		_map.dispose();
+		_file.close();
+		super.dispose();
+	}
+	
+	override void load() {
+		
+		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
+		sky.scale = float3(210, 50, 210);
+		sky.shadowsDisabled = true;
+		
+//		world.viewWireFrame = true;
+		pipe = new Pipeline("pipelines/forward.pipeline.xml");
+		cam = world.add!Camera(pipe);
+		cam.translation = CordsLocal(2, 1, 0, world);
+		cam.rotation = CordsLocal(-20, 135, 0, world);
+		cam.viewport = Box!CordsScreen(wnd.size);
+		cam.clipNear = .01;
+		cam.clipFar = 1000;
+		cam.fov = 73;
+	    cam.culling = false;
+		cam.assign(wnd);	// TODO: Multithreading
+		
+		
+		light = world.add!Light(
+			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
+		light.translation = CordsLocal(0, 25, 20, world);
+		light.rotation = CordsLocal(-30, 0, 0, world);
+		light.radius = 200;
+		light.fov = 90;
+		light.color = ColorRGB!float(.9f, .7f, .75f);
+		
+		_vol = new VolumeSimple(Box!CordsWorld(
+					CordsWorld(0,0,0), CordsWorld(575,500,10)));
+		
+		auto voxel = new MaterialDensityPair44();
+		voxel.setDensity(MaterialDensityPair44.getMinDensity());
+		_vol._data.setBorderValue(voxel);
+		
+		_file.open("/home/shd/src/otserv_data/world/map.otbm");
+		_map = _fmter.format(_file);
+		
+		auto msgFound = false;
+		mediator.poll(delegate(Variant v) {
+			if (msgFound)
+			{
+				return v.type == typeid(MsgEntityCreate);
+			}
+			if (v.type == typeid(MsgEntityCreate))
+				msgFound = true;
+			return true;
+		});
+		
+		auto extractor = new ExtractorMesh(_vol);
+		auto geo = cast(Geometry) extractor.extract(/*cam.fov*/);
+		
+		auto mat = new Material("materials/terrain.material.xml");
+		
+		Model model = world.add!Model("DynGeoModelNode", geo);
+		model.add!Mesh("DynGeoMesh", mat, 0, geo.verticesNo, 0, geo.indicesNo );
+	    model.translation = CordsLocal(-30, -5, 5, world);
+	    model.scale = float3(.1, .1, .2);
+	    model.rotation(CordsLocal(90,0,0, model));
+	    writeln("vertices: ", geo.verticesNo);
+	}
+	
+	override public void handle(Variant msg)
+	{
+		if(msg.type == typeid(MsgEntityCreate))
+		{
+			auto payload = msg.get!MsgEntityCreate;
+			auto volData = _vol._data;
+			//Get the old voxel
+			MaterialDensityPair44 voxel = volData.getVoxelAt(payload.x,payload.y,payload.z);
+
+			//Modify the density
+			voxel.setDensity(MaterialDensityPair44.getMaxDensity());
+
+			//Wrte the voxel value into the volume	
+			volData.setVoxelAt(payload.x, payload.y, payload.z, voxel);
+		} else {
+			super.handle(msg);
 		}
 	}
 }
