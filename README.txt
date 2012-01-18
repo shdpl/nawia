@@ -10,6 +10,7 @@ Until this time, there are few already implemented projects that might interest 
 - Planeshift and their Crystal Space engine (GPL/LGPL) http://www.planeshift.it/
 - Ryzom (AGPL/GPL) http://dev.ryzom.com/
 - Myst Online (GPL) http://mystonline.com/
+- Multiverse MMO (MIT) http://www.multiversemmo.com/
 
 2. Project
 	Currently, project consists of three parts: 
