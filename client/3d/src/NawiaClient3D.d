@@ -515,7 +515,6 @@ class Demo5 : Demo {
 	Light light;
 	File _file;
 	FormatterOTBM _fmter;
-	MapNode _map;
 	VolumeSimple _vol;
 	
 	this()
@@ -535,7 +534,6 @@ class Demo5 : Demo {
 	{
 		_prvdrEntity.unregister(this);
 		_fmter.dispose();
-		_map.dispose();
 		_file.close();
 		super.dispose();
 	}
@@ -575,7 +573,7 @@ class Demo5 : Demo {
 		_vol._data.setBorderValue(voxel);
 		
 		_file.open("/home/shd/src/otserv_data/world/map.otbm");
-		_map = _fmter.format(_file);
+		_fmter.format(_file);
 		
 		auto msgFound = false;
 		mediator.poll(delegate(Variant v) {
@@ -610,7 +608,6 @@ class Demo5 : Demo {
 			MaterialDensityPair1616 voxel = volData.getVoxelAt(payload.x,payload.y,payload.z);
 
 			voxel.setMaterial(payload.type);
-			writeln(payload.type);
 			voxel.setDensity(MaterialDensityPair1616.getMaxDensity());
 
 			volData.setVoxelAt(payload.x, payload.y, payload.z, voxel);

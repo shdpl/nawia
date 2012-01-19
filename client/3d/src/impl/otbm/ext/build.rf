@@ -1,0 +1,6 @@
+-od"bin"
+-of"bin/libotbm"
+
+-I"src"
+
+"src/otbm/parser.d"

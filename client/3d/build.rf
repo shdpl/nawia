@@ -337,6 +337,7 @@
 "src/impl/orange/ext/tests/Util.d"
 "src/impl/orange/ext/tests/unittest.d"
 "src/impl/otbm/ee/map/formatter/otbm.d"
+"src/impl/otbm/ext/src/otbm/parser.d"
 "src/impl/otproto/ext/src/otproto.d"
 "src/impl/otproto/ext/src/protocol/p740.d"
 "src/impl/otproto/ext/src/protocol/pauto.d"
