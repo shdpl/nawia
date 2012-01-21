@@ -23,7 +23,8 @@ public import
 
 struct MsgEntityCreate {
 	//Msg msg;
-	ushort x, y, z; //FIXME: cordsWorld or smth
+	ushort x, y;
+	ubyte z; //FIXME: cordsWorld or smth
 	ushort type;
 	
 	//alias msg this;

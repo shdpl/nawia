@@ -18,8 +18,12 @@
 module impl.polyvox.ee.map.volume.simple;
 	
 public import
-	ee.map.volume;
+	ee.map.volume,
+	type.voxel;
 	
+	
+private import
+	std.conv;
 private import
 	impl.polyvox.polyvox;
 
@@ -46,8 +50,24 @@ class VolumeSimple : IVolume {
 		return _bb;
 	}
 	
-	///voxel[x][y][z]
-	///voxel[VectorWorld]
-	override IVoxel opDispatch(string m, args...)() {}
+	///volume[x, y, z] = value;
+	Voxel opIndexAssign(Voxel value, ushort x, ushort y, ubyte z)
+	{
+		MaterialDensityPair1616 voxel = _data.getVoxelAt(x, y, z);
+		voxel.setDensity(value.density);
+		voxel.setMaterial(value.material);
+		_data.setVoxelAt(x, y, z, voxel);
+		return value;
+	}
+	
+	///value = volume[x, y, z];
+	Voxel opIndex(ushort x, ushort y, ubyte z)
+	{
+		auto ret = Voxel();
+		MaterialDensityPair1616 voxel = _data.getVoxelAt(x, y, z);
+		ret.material = to!ushort(voxel.getMaterial());
+		ret.density = to!ushort(voxel.getDensity());
+		return ret;
+	}
 	
 }

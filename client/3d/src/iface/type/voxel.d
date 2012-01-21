@@ -17,9 +17,20 @@
 
 module type.voxel;
 
-alias ubyte VoxelType;
+alias ushort VoxelType;
 
 struct Voxel {
 	VoxelType density;
 	VoxelType material;
+	
+	this(VoxelType material, VoxelType density)
+	{
+		this.material = material;
+		this.density = density;
+	}
+	
+	this(VoxelType material)
+	{
+		this(material, density.max);
+	}
 }

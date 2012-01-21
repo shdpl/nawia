@@ -26,8 +26,8 @@ interface IVolume {
 	
 	@property Box!CordsWorld region();
 	
-	///voxel[x][y][z]
-	///voxel[VectorWorld]
-	override IVoxel opDispatch(string m, args...)();
+//	///voxel[x][y][z]
+//	///voxel[VectorWorld]
+//	override IVoxel opDispatch(string m, args...)();
 	
 }

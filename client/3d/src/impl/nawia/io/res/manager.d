@@ -17,9 +17,11 @@
 
 module impl.nawia.io.res.manager;
 
-private import util.singleton,
+private import
+	util.singleton,
 	std.stream,
-	std.path;
+	std.path,
+	std.algorithm;
 	
 private import io.res.manager;
 
@@ -34,13 +36,13 @@ class ResManager : IResManager {
 		_aliasMap["home"] = "~"; //TODO:
 		_aliasMap["tmp"] = "/tmp"; //TODO:
 		_aliasMap["data"] = curdir~"/data"; //TODO:
-		_aliasMap["gui"] = "data/gui";
-		_aliasMap["models"] = "data/models";
-		_aliasMap["materials"] = "data/materials";
-		_aliasMap["textures"] = "data/textures";
-		_aliasMap["particles"] = "data/particles";
-		_aliasMap["animations"] = "data/animations";
-		_aliasMap["shaders"] = "data/shaders";
+		_aliasMap["gui"] = "data:gui";
+		_aliasMap["models"] = "data:models";
+		_aliasMap["materials"] = "data:materials";
+		_aliasMap["textures"] = "data:textures";
+		_aliasMap["particles"] = "data:particles";
+		_aliasMap["animations"] = "data:animations";
+		_aliasMap["shaders"] = "data:shaders";
 	}
 	
 	/**
@@ -60,14 +62,39 @@ class ResManager : IResManager {
 		_aliasMap[entry]=uri;
 	}
 	
-	override Stream open(string uri) {return new BufferedFile(uri);}
+	override Stream open(string uri)
+	{
+		auto schema = getSchema(uri);
+		//TODO: multiple readers handling
+		if (schema == "file")
+		{
+			return new BufferedFile(uri[schema.length+1 .. $]);
+		}
+		else
+		{
+			return new BufferedFile(uri);
+		}
+	}
 	
 	override void close(Stream stream) {}
 	
-	string resolve(string uri) {
-		return _aliasMap[uri];
-	}
-	
 	private:
 	string[string] _aliasMap;
+	
+	
+	T resolveAliases(T)(T uri) if (is(T : string))
+	{
+		T al = getSchema(uri);
+		while (al && al in _aliasMap)
+		{
+			uri = _aliasMap[al] ~ uri[al.length .. $];
+			al = getSchema(uri);
+		}
+		return uri;
+	}
+	
+	T getSchema(T)(T uri) if (is(T : string))
+	{
+		return uri[0 .. countUntil(uri, ":")];
+	}
 }

@@ -56,10 +56,21 @@ class ExtractorMesh : IExtractorMesh {
 	}
 	
 	override IGeometry extract(/*cam.fov*/) {
+		_extractor.execute();
+		decimate();
+		return getGeometry();
+	}
+	
+	private:
+	void decimate()
+	{
+		//TODO
+	}
+	
+	IGeometry getGeometry()
+	{
 		float[] vertices;
 		short[] normals;
-		
-		_extractor.execute();
 		uint vertexCount = _mesh.getNoOfVertices;
 		PositionMaterialNormalVector tmp2 = _mesh.getVertices();
 	  

@@ -603,14 +603,8 @@ class Demo5 : Demo {
 	{
 		if(msg.type == typeid(MsgEntityCreate))
 		{
-			auto payload = msg.get!MsgEntityCreate;
-			auto volData = _vol._data;
-			MaterialDensityPair1616 voxel = volData.getVoxelAt(payload.x,payload.y,payload.z);
-
-			voxel.setMaterial(payload.type);
-			voxel.setDensity(MaterialDensityPair1616.getMaxDensity());
-
-			volData.setVoxelAt(payload.x, payload.y, payload.z, voxel);
+			auto m = msg.get!MsgEntityCreate;
+			_vol[m.x, m.y, m.z] = Voxel(m.type);
 		} else {
 			super.handle(msg);
 		}
