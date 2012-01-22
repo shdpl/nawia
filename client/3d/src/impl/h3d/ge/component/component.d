@@ -53,12 +53,12 @@ class GEComponent : IComponent {
 		return ret;
 	}
 	
-	GEComponent add(T)(string path) {
+	Model add(T)(string path) {
 		static if(is(T == Scene)) {
 			res = new Scene(path);
 			auto id = h3dAddNodes(H3DRootNode, res.id);
 			assert(id);
-			return new GEComponent(id);
+			return new Model(id);
 		}
 	}
 	

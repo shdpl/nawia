@@ -51,7 +51,7 @@ class VolumeSimple : IVolume {
 	}
 	
 	///volume[x, y, z] = value;
-	Voxel opIndexAssign(Voxel value, ushort x, ushort y, ubyte z)
+	Voxel opIndexAssign(Voxel value, UnitWorld x, UnitWorld y, UnitWorld z)
 	{
 		MaterialDensityPair1616 voxel = _data.getVoxelAt(x, y, z);
 		voxel.setDensity(value.density);
@@ -61,7 +61,7 @@ class VolumeSimple : IVolume {
 	}
 	
 	///value = volume[x, y, z];
-	Voxel opIndex(ushort x, ushort y, ubyte z)
+	Voxel opIndex(UnitWorld x, UnitWorld y, UnitWorld z)
 	{
 		auto ret = Voxel();
 		MaterialDensityPair1616 voxel = _data.getVoxelAt(x, y, z);

@@ -10,7 +10,7 @@ class Ex : Exception {
 	
 	this(string msg, string file = __FILE__, size_t line = __LINE__)
 	{
+//		debug asm {int 3;}
 		super(to!string(file)~"("~to!string(line)~") "~"Exception occured: "~to!string(msg));
-		debug asm {int 3;}
 	}
 }

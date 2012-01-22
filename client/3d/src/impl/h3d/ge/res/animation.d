@@ -11,16 +11,16 @@ class Animation : Resource, IAnimation {
 	//string _targetNode;
 	_Entities entities;
 	//uint weight;
+	Type animType;
 	
 	public:
 	this(string name) {
+		animType = Type.Additive;
 		super(name);
 		entities = new _Entities;
 	}
 	
-	abstract Type aType();
-	
-	private:
+	protected:
 	override ResourceType type() @property {
 		return ResourceType.Animation;
 	}

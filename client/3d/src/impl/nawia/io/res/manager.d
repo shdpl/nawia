@@ -23,7 +23,9 @@ private import
 	std.path,
 	std.algorithm;
 	
-private import io.res.manager;
+private import
+	ex.io.res.unsupported,
+	io.res.manager;
 
 class ResManager : IResManager {
 	mixin Singleton!ResManager;
@@ -33,16 +35,22 @@ class ResManager : IResManager {
 	}
 	
 	void init() {
-		_aliasMap["home"] = "~"; //TODO:
-		_aliasMap["tmp"] = "/tmp"; //TODO:
-		_aliasMap["data"] = curdir~"/data"; //TODO:
-		_aliasMap["gui"] = "data:gui";
-		_aliasMap["models"] = "data:models";
-		_aliasMap["materials"] = "data:materials";
-		_aliasMap["textures"] = "data:textures";
-		_aliasMap["particles"] = "data:particles";
-		_aliasMap["animations"] = "data:animations";
-		_aliasMap["shaders"] = "data:shaders";
+		_aliasMap["home"] = "file://~/";
+		_aliasMap["tmp"] = "file:///tmp/";
+		_aliasMap["data"] = "file://"~curdir~"/data/";
+		_aliasMap["gui"] = "data:gui/";
+		_aliasMap["models"] = "data:models/";
+		_aliasMap["materials"] = "data:materials/";
+		_aliasMap["textures"] = "data:textures/";
+		_aliasMap["particles"] = "data:particles/";
+		_aliasMap["animations"] = "data:animations/";
+		_aliasMap["shaders"] = "data:shaders/";
+		_aliasMap["world"] = "data:world/";
+	}
+	
+	void dispose()
+	{
+		//TODO
 	}
 	
 	/**
@@ -50,13 +58,14 @@ class ResManager : IResManager {
 			home - TODO
 			tmp - TODO
 			data - TODO
-			gui - data/gui
-			models - data/models
-			materials - data/materials
-			textures - data/textures
-			particles - data/particles
-			animations - data/animations
-			shaders - data/shaders
+			gui - data:gui
+			models - data:models
+			materials - data:materials
+			textures - data:textures
+			particles - data:particles
+			animations - data:animations
+			shaders - data:shaders
+			world - data:world
 	**/
 	override void bind(string entry, string uri) {
 		_aliasMap[entry]=uri;
@@ -64,15 +73,17 @@ class ResManager : IResManager {
 	
 	override Stream open(string uri)
 	{
+		uri = resolveAliases(uri);
 		auto schema = getSchema(uri);
-		//TODO: multiple readers handling
 		if (schema == "file")
 		{
-			return new BufferedFile(uri[schema.length+1 .. $]);
+			return new BufferedFile(uri[schema.length+3 .. $]);
 		}
 		else
 		{
-			return new BufferedFile(uri);
+			//TODO: Object.factory(schema);
+			enforceEx!ExResUnsupported(false, "schema = "~schema);
+			assert(0);
 		}
 	}
 	
@@ -87,7 +98,7 @@ class ResManager : IResManager {
 		T al = getSchema(uri);
 		while (al && al in _aliasMap)
 		{
-			uri = _aliasMap[al] ~ uri[al.length .. $];
+			uri = _aliasMap[al] ~ uri[al.length+1 .. $];
 			al = getSchema(uri);
 		}
 		return uri;

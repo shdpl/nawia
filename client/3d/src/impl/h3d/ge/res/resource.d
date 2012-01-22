@@ -30,7 +30,7 @@ abstract class Resource : IOResource, IResource {
 	
 	this(string name, ResourceFlags flags = ResourceFlags.None) {
 		this.id = h3dAddResource(this.type, name, flags);
-		enforceEx!ExResAdd(this.id, text(name, flags));
+		enforceEx!ExResAdd(this.id, text(this.type, " ", name, " ", flags));
 		super();
 	}
 	

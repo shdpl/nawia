@@ -20,7 +20,8 @@ module type.cords.cords;
 import type.cuda.types;
 
 struct Cords(T, size_t N) if (N > 0 && N < 4) {
-	private SmallVec!(T, N) c;
+	SmallVec!(T, N) c;
+	alias c this;
 	
 	this(T x) {
 		c.x = x;

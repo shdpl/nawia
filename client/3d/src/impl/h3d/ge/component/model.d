@@ -56,9 +56,10 @@ class Model : GEComponent {
 	
 	//FIXME: make an object?
 	void setupAnimation(ubyte slot, Animation anim,
-		uint priority, Joint root) {
+		uint priority, Joint root = null) {
+			std.stdio.writeln("test");
 		h3dSetupModelAnimStage(this.id, slot, anim.id, priority,
-			root.name, anim.aType == anim.Type.Additive);
+			!is(root) ? "" : root.name, anim.animType == anim.Type.Additive);
 	}
 	//TODO: h3dSetModelAnimParams
 	

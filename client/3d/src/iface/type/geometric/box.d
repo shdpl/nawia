@@ -95,6 +95,12 @@ struct Box(T) /*if (T >= Cords)*/ {
 		}
 	}
 	
+	CordsWorld opCast(E)() const nothrow
+		if (is(E == CordsWorld))
+    {
+		return _cords[1] - _cords[0];
+    }
+	
 }
 
 

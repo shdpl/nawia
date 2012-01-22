@@ -34,7 +34,7 @@ class Material : Resource, IMaterial {
 		
 	_Material opIndex(uint i) {
 		return new _Material(i);
-	}	
+	}
 	
 	private:
 	class _Samplers {

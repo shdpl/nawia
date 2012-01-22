@@ -61,7 +61,6 @@ private import
 	msg._ee.entity.create;
 	
 private import
-	impl.glfw.glfw,
 	impl.h3d.h3d,
 	impl.h3d.utils,
 	impl.polyvox.polyvox,
@@ -74,11 +73,11 @@ void main() {
 	Demo demo;
 	
 	
-//	demo = new Demo1;
+	demo = new Demo1;
 //	demo = new Demo2;
 //	demo = new Demo3;
 //	demo = new Demo4;
-	demo = new Demo5;
+//	demo = new Demo5;
 	
 	demo.init();
 	
@@ -106,6 +105,7 @@ abstract class Demo : IMsgListener, IMsgProvider {
 	Mouse mouse;
 	Keyboard kb;
 	BitArray move;
+	ResManager _res;
 	
 	public void init() {
 		mediator = MsgMediator();
@@ -114,7 +114,8 @@ abstract class Demo : IMsgListener, IMsgProvider {
 		_prvdrPress.register(this);
 		_lstnrQuit.register(this);
 		
-		_world = new EEWorldStd();	
+		_world = new EEWorldStd();
+		_res = ResManager();
 		
 		this.initGE();
 		this.initPE();
@@ -124,6 +125,8 @@ abstract class Demo : IMsgListener, IMsgProvider {
 	public void dispose() {
 		_world.get!WorldDynamics().dispose();
 		_world.get!GEWorld().dispose();
+		
+		_res.dispose();
 		
 		_prvdrReady.unregister(this);
 		_prvdrMove.unregister(this);
@@ -254,7 +257,8 @@ abstract class Demo : IMsgListener, IMsgProvider {
 }
 
 class Demo1 : Demo {
-	GEComponent platform, sky, man;
+	GEComponent platform, sky;
+	Model man;
 	Pipeline pipe;
 	Light light;
 	
@@ -300,10 +304,8 @@ class Demo1 : Demo {
 		_pbody ~= _peWorld.add!PBodyRigid(
 			man.translation,
 			Box!float3(man.size), 75); //TODO: getAABB
-			
-		auto animRes = h3dAddResource(H3DResTypes.List.Animation, "animations/man.anim", 0 );
-		h3dutLoadResourcesFromDisk("data/");
-		h3dSetupModelAnimStage( man.id, 0, animRes, 0, "", false );
+		
+		man.setupAnimation(0, new Animation("animations/man.anim"), 0);
 		
 
 		/*
@@ -475,34 +477,22 @@ class Demo4 : Demo {
 		model.add!Mesh("DynGeoMesh", mat, 0, geo.verticesNo, 0, geo.indicesNo );
 	    model.translation = CordsLocal(-5, -3, 0, world);
 	    model.scale = float3(.1, .1, .1);
+	    writeln("vertices: ", geo.verticesNo);
 	}
 	
 	void createSphere(VolumeSimple vol, int radius) {
-		auto volData = vol._data;
 		auto region = vol.region;
-		auto v3dVolCenter = new Vector3DFloat(
-			region.width / 2, region.height / 2, region.depth / 2);
-		foreach(z; 0 .. region.width) {
+		auto center = CordsWorld(region.width / 2, region.height / 2, region.depth / 2);
+		
+		foreach(z; 0 .. region.depth) {
 			foreach(y; 0 .. region.height) {
-				foreach(x; 0 .. region.depth) {
+				foreach(x; 0 .. region.width) {
+					auto vecToCenter = CordsWorld(center.x - x, center.y - y, center.z - z); //FIXME: to!CordsWorld
+					real dist = sqrt(vecToCenter.x^^2 + vecToCenter.y^^2 + vecToCenter.z^^2);//FIXME: vector distance
 					
-					auto v3dCurrentPos = new Vector3DFloat(x,y,z);
-					
-					float fDistToCenter = (v3dCurrentPos.swigOpSubAssign(v3dVolCenter)).length();
-					
-					if(fDistToCenter < radius)
+					if(dist < radius)
 					{
-						//Our new density value
-						uint uDensity = MaterialDensityPair1616.getMaxDensity();
-	
-						//Get the old voxel
-						MaterialDensityPair1616 voxel = volData.getVoxelAt(x,y,z);
-	
-						//Modify the density
-						voxel.setDensity(uDensity);
-	
-						//Wrte the voxel value into the volume	
-						volData.setVoxelAt(x, y, z, voxel);
+						vol[x, y, z] = Voxel(0);
 					}
 				}
 			}
@@ -513,13 +503,11 @@ class Demo5 : Demo {
 	GEComponent platform, sky;
 	Pipeline pipe;
 	Light light;
-	File _file;
 	FormatterOTBM _fmter;
 	VolumeSimple _vol;
 	
 	this()
 	{
-		_file = new File;
 		_fmter = new FormatterOTBM;
 	}
 	
@@ -534,7 +522,6 @@ class Demo5 : Demo {
 	{
 		_prvdrEntity.unregister(this);
 		_fmter.dispose();
-		_file.close();
 		super.dispose();
 	}
 	
@@ -553,7 +540,6 @@ class Demo5 : Demo {
 		cam.clipNear = .01;
 		cam.clipFar = 1000;
 		cam.fov = 73;
-	    cam.culling = false;
 		cam.assign(wnd);	// TODO: Multithreading
 		
 		
@@ -568,12 +554,7 @@ class Demo5 : Demo {
 		_vol = new VolumeSimple(Box!CordsWorld(
 					CordsWorld(0,0,0), CordsWorld(575,500,10)));
 		
-		auto voxel = new MaterialDensityPair1616();
-		voxel.setDensity(MaterialDensityPair1616.getMinDensity());
-		_vol._data.setBorderValue(voxel);
-		
-		_file.open("/home/shd/src/otserv_data/world/map.otbm");
-		_fmter.format(_file);
+		_fmter.format(_res.open("world:map.otbm"));
 		
 		auto msgFound = false;
 		mediator.poll(delegate(Variant v) {
