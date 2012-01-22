@@ -1,9 +1,9 @@
 ================================== NAWIA - let the journey begin. ============================================
 1. Foreword
 	Nawia, is going to be community oriented Free Software Open Source MMORPG, yet commercial.
-Because of very early project stage, I'm not going to bother anyone with features and plans.
-On the other side, if nothing in my life gonna seriously go wrong, it will be something big,
-so if You're interested You can subscribe, and go back in let's say one year (2011/2012).
+Because of very early project stage, I'm not going to bother anyone with features and plans. Because
+from quite a while i have to work full-time on something else, and scale of project, don't expect fast results.
+There will be test server set-up in 2012 though, so you will be able to test things out.
 
 Until this time, there are few already implemented projects that might interest You (chronological order):
 - WorldForge (GPL)
