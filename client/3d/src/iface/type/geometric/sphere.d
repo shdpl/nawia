@@ -17,8 +17,6 @@
 
 module type.geometric.sphere;
 
-import type.cords.cords;
-
 struct Sphere(T) { //static if (is(T : Cords))
 	T center;
 	real rad_min;

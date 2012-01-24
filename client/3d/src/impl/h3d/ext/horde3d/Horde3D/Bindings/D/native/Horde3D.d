@@ -204,7 +204,7 @@ enum H3DFormats
 		GeoVertTanStream     - Vertex tangent frame (TBN) data
 		                       (float tx, ty, tz, bx, by, bz, nx, ny, nz)
 		GeoVertStaticStream  - Vertex static attribute data (float u0, v0,
-		                       float4 jointIndices, float4 jointWeights, float u1, v1)
+		                       vec4 jointIndices, vec4 jointWeights, float u1, v1)
 	*/
 enum H3DGeoRes
 {

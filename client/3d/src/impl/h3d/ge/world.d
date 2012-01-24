@@ -20,8 +20,6 @@ public import
 	msg._ee.world.init,
 	msg._ee.world.destroy,
 	ge.world;
-	
-
 
 private import std.range,
 	std.conv,
@@ -177,12 +175,17 @@ class GEWorld : GEComponent, IGEWorld, IMsgProvider, IMsgListener {
 		BufferPixel ret;	//TODO: components
 		enforceEx!ExResPipelineBuffer(
 			h3dGetRenderTargetData(0, null, bufId, &x, &y,
-				null, null, 0),
-			text(0, null, bufId));
+				null, null, 0)
+			, text(bufId)
+		);
+		ret = BufferPixel(x, y);
 		enforceEx!ExResPipelineBuffer(
-			h3dGetRenderTargetData(0, null, bufId, &ret.size.x, &ret.size.y,
-				null, &ret.buffer, ret.memsize),
-			text(0, null, bufId, x, y));
+			h3dGetRenderTargetData(0, null, bufId, &x, &y,
+				null, &ret.buffer, ret.memsize)
+			,text(bufId)
+		);
+		ret.size.x = x;
+		ret.size.y = y;
 		return ret;
 	}
 	

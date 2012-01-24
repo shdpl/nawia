@@ -20,7 +20,7 @@ module impl.bullet.pe.world.dynamics;
 public import
 	impl.bullet.pe.world.collision,
 	impl.bullet.pe.pbody.rigid,
-	type.cuda.types;
+	gl3n.linalg;
 
 private import
 	msg._frame.ready,

@@ -17,11 +17,11 @@
 
 module impl.openal.ae.listener;
 
-import type.cuda.types;
+import gl3n.linalg;
 
 class Listener {
 	float gain;
-	float3 position;
-	float3 velocity;
-	float3[2] orientation; //AT, UP vectors
+	vec3 position;
+	vec3 velocity;
+	vec3[2] orientation; //AT, UP vectors
 }

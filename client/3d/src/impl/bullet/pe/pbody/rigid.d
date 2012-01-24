@@ -26,7 +26,7 @@ private import
 private import
 	impl.bullet.bullet,
 	impl.bullet.pe.pbody.pbody,
-	type.cuda.types,
+	gl3n.linalg,
 	type.cords.local;
 
 class PBodyRigid /*: PBody*/ {
@@ -88,29 +88,29 @@ class PBodyRigid /*: PBody*/ {
 	}
 	
 	
-	float3 matrix() {return float3(0,0,0);}
-	void matrix(float3 matrix) {}
+	vec3 matrix() {return vec3(0,0,0);}
+	void matrix(vec3 matrix) {}
 	
 	
-	float3 translation() {return float3(0,0,0);}
-	void translation(float3 translation) {}
+	vec3 translation() {return vec3(0,0,0);}
+	void translation(vec3 translation) {}
 	
 	
-	float4 rotation() {return float4(0,0,0,0);}
-	void rotation(float4 rotation) {}
+	vec4 rotation() {return vec4(0,0,0,0);}
+	void rotation(vec4 rotation) {}
 	
 	@property {
-		float4[4] transformation() {
+		vec4[4] transformation() {
 			
 		float[15] _floats;
 		_mstate.getWorldTransform(_transform);
 		_transform.getOpenGLMatrix(_floats.ptr);
 		
 		return [
-			float4(_floats[0], _floats[1], _floats[2], _floats[3]),
-			float4(_floats[4], _floats[5], _floats[6], _floats[7]),
-			float4(_floats[8], _floats[9], _floats[10], _floats[11]),
-			float4(_floats[12], _floats[13], _floats[14], 0f)];
+			vec4(_floats[0], _floats[1], _floats[2], _floats[3]),
+			vec4(_floats[4], _floats[5], _floats[6], _floats[7]),
+			vec4(_floats[8], _floats[9], _floats[10], _floats[11]),
+			vec4(_floats[12], _floats[13], _floats[14], 0f)];
 		}
 	}
 	

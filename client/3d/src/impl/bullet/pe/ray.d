@@ -18,10 +18,10 @@
 module impl.bullet.pe.pe.ray;
 
 import impl.bullet.pe.pbody.rigid,
-	type.cuda.types;
+	gl3n.linalg;
 
 class Ray  {
 	public:
 	PBodyRigid collider;
-	float3 worldPos;
+	vec3 worldPos;
 }

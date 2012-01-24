@@ -24,7 +24,7 @@ public import
 private import
 	type.cords.world,
 	type.cords.polar,
-	type.cuda.types,
+	gl3n.linalg,
 	ee.component : EEComponent = Component;
 	
 private import impl.h3d.h3d; //FIXME: drop dependency on h3d
@@ -63,8 +63,8 @@ interface IComponent : EEComponent {
 	//}
 	
 	@property {
-		float3 scale();
-		void scale(float3 value);
+		vec3 scale();
+		void scale(vec3 value);
 	}
 	
 	//TODO: transformation merge:

@@ -121,7 +121,7 @@ class MsgMediator : IMsgMediator, IMsgProvider, IMsgListener {
 		do {
 			do {
 				more = receiveTimeout(0, &recvMsg );
-			} while(more)
+			} while(more);
 			_lstnrIdle.deliver(MsgTimeIdle());
 		} while (_running);
 	}
@@ -132,7 +132,7 @@ class MsgMediator : IMsgMediator, IMsgProvider, IMsgListener {
 		do {
 			more = receiveTimeout(0, &recvMsg );
 			result = condition(_msg);
-		} while(result && more)	//TODO: make sure, that condition is met
+		} while(result && more);	//TODO: make sure, that condition is met
 	}
 	
 	override void poll(bool delegate() condition) {
@@ -141,7 +141,7 @@ class MsgMediator : IMsgMediator, IMsgProvider, IMsgListener {
 		do {
 			more = receiveTimeout(0, &recvMsg );
 			result = condition();
-		} while(result && more)	//TODO: make sure, that condition is met
+		} while(result && more);	//TODO: make sure, that condition is met
 	}
 	
 	public void handle(Variant msg) {

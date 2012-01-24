@@ -2,7 +2,7 @@ module impl.h3d.ge.res.pipeline;
 
 private import
 	ge.res.pipeline,
-	type.cuda.types,
+	gl3n.linalg,
 	type.buffer.pixel,
 	ex.ge.res.pipeline.buffer;
 
@@ -17,9 +17,9 @@ class Pipeline : Resource, IPipeline {
 	
 	public:
 	/// Size of the render targets
-	void size(int2 size) @property {
+	void size(vec2i size) @property {
 	//TODO: replace sizewith proper type
-		h3dResizePipelineBuffers(this.id, size[0], size[1]);
+		h3dResizePipelineBuffers(this.id, size.x, size.y);
 	}
 	
 	this(string name) {
@@ -39,8 +39,9 @@ class Pipeline : Resource, IPipeline {
 			h3dGetRenderTargetData(this.id, name, bufId, &x, &y,
 				null, null, 0),
 			text(this.id, name, bufId));
+		ret = BufferPixel(x,y);
 		enforceEx!ExResPipelineBuffer(
-			h3dGetRenderTargetData(this.id, name, bufId, &ret.size.x, &ret.size.y,
+			h3dGetRenderTargetData(this.id, name, bufId, &x, &y,
 				null, &ret.buffer, ret.memsize),
 			text(this.id, name, bufId, x, y));
 		return ret;

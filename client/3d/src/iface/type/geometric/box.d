@@ -17,11 +17,12 @@
 
 module type.geometric.rect;
 
-private import std.traits;
+private import
+	std.traits,
+	type.cords.cords;
 
-public import type.cords.cords;
 
-struct Box(T) /*if (T >= Cords)*/ {
+struct Box(T) if (isCoords!T) {
 	T _cords[2];
 	
 	this(T botleftnear, T toprightfar) {
@@ -61,11 +62,12 @@ struct Box(T) /*if (T >= Cords)*/ {
 	
 	static if(__traits(hasMember, T, "x"))
 	{
+		alias typeof(toprightfar.x) Type;
 		@property {
-			typeof(T.x) width() {
+			Type width() {
 				return toprightfar.x - botleftnear.x;
 			}
-			void width(typeof(T.x) value) {
+			void width(Type value) {
 				toprightfar.x = botleftnear.x + value;
 			}
 		}
@@ -73,11 +75,12 @@ struct Box(T) /*if (T >= Cords)*/ {
 	
 	static if(__traits(hasMember, T, "y"))
 	{
+		alias typeof(toprightfar.x) Type;
 		@property {
-			typeof(T.y) height() {
+			Type height() {
 				return toprightfar.y - botleftnear.y;
 			}
-			void height(typeof(T.y) value) {
+			void height(Type value) {
 				toprightfar.y = botleftnear.y + value;
 			}
 		}
@@ -85,11 +88,12 @@ struct Box(T) /*if (T >= Cords)*/ {
 	
 	static if(__traits(hasMember, T, "z"))
 	{
+		alias typeof(toprightfar.x) Type;
 		@property {
-			typeof(T.z) depth() {
+			Type depth() {
 				return toprightfar.z - botleftnear.z;
 			}
-			void depth(typeof(T.z) value) {
+			void depth(Type value) {
 				toprightfar.z = botleftnear.z + value;
 			}
 		}

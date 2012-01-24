@@ -19,11 +19,11 @@ module type.buffer.pixel;
 
 private import std.conv;
 
-import type.cuda.types,
+import gl3n.linalg,
 	type.color.rgba;
 
 struct BufferPixel {
-	int2 size;
+	vec2i size;
 	ColorRGBA!float[] buffer;
 	
 	this(uint x, uint y) {

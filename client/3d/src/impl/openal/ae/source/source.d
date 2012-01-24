@@ -19,7 +19,7 @@ module impl.openal.ae.source.source;
 
 import impl.openal.ae.buffer,
 	impl.openal.ae.playback,
-	type.cuda.types;
+	gl3n.linalg;
 
 class Source {
 	bool active;
@@ -29,10 +29,10 @@ class Source {
 	
 	
 	
-	float3 position;
+	vec3 position;
 	bool posIsLocalToListener;
-	float3 velocity;
-	float3 direction;
+	vec3 velocity;
+	vec3 direction;
 	
 	float gain;
 	float gainMin;

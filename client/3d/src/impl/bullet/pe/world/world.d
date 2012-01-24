@@ -18,11 +18,11 @@
 module impl.bullet.pe.world.world;
 
 import impl.bullet.pe.ray,
-	type.cuda.types;
+	gl3n.linalg;
 
 class World {
 	public:
-	Ray rayCast(float3 from, float3 to) {return new Ray;}
+	Ray rayCast(vec3 from, vec3 to) {return new Ray;}
 	
 	
 }

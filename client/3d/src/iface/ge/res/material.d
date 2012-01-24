@@ -8,6 +8,6 @@ interface IMaterial : IResource {
 	//void shader(IShader) @property;
 	
 	/*ISampler[] _samplers;
-	float3[] _uniforms;*/
+	vec3[] _uniforms;*/
 	
 }

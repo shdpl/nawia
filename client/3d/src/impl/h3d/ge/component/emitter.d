@@ -28,7 +28,7 @@ import
 	impl.h3d.ge.res.material,
 	impl.h3d.ge.res.particle,
 	impl.h3d.ge.component.component,
-	type.cuda.types;
+	gl3n.linalg;
 
 class Emitter : GEComponent, IEmitter, IMsgListener {
 	public:
@@ -116,15 +116,15 @@ class Emitter : GEComponent, IEmitter, IMsgListener {
 	}
 	
 	@property {
-		float3 forceVector() {
-			return float3(getParam!float(Params.ForceF3),
+		vec3 forceVector() {
+			return vec3(getParam!float(Params.ForceF3),
 				getParam!float(Params.ForceF3),
 				getParam!float(Params.ForceF3));
 		}
-		void forceVector(float3 value) {
-			setParam!float(value[0], Params.ForceF3, 0);
-			setParam!float(value[1], Params.ForceF3, 1);
-			setParam!float(value[2], Params.ForceF3, 2);
+		void forceVector(vec3 value) {
+			setParam!float(value.x, Params.ForceF3, 0);
+			setParam!float(value.y, Params.ForceF3, 1);
+			setParam!float(value.z, Params.ForceF3, 2);
 		}
 	}
 	

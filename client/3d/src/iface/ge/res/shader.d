@@ -9,5 +9,5 @@ interface IShader {
 	void contexts(IShaderContext[]) @property;
 	
 	Sampler[] _samplers = void;
-	float3[] _uniforms;*/
+	vec3[] _uniforms;*/
 }

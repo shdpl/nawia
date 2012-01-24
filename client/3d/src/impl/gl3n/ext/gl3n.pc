@@ -1,0 +1,16 @@
+# Package Information for pkg-config
+# Author: David Herberth
+# Created: nie, 22 sty 2012, 14:57:54 CET
+# Licence: MIT
+
+prefix=/usr/local
+exec_prefix=/usr/local
+libdir=/usr/local/lib
+includedir=/usr/local/include/d/gl3n
+
+Name: gl3n
+Description: OpenGL Maths for D (not glm for D but better).
+Version: 
+Libs: -L/usr/local/lib -L-lgl3n-dmd
+Cflags: -I/usr/local/include/d/gl3n
+

@@ -25,7 +25,7 @@ public import
 	ex.ge.res.element.missing,
 	ex.ge.res.map,
 	ex.ge.res.pipeline.buffer,
-	type.cuda.types,
+	gl3n.linalg,
 	type.buffer.pixel,
 	type.color.rgba;
 

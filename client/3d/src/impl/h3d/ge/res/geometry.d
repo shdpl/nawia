@@ -61,7 +61,7 @@ class Geometry : Resource, IGeometry {
 	Stream mapVertTangents(AccessRights access) {
 		return mapResource(Elements.GeometryElem, Elements.GeoVertTanStream, access, verticesNo);
 	}
-	///float u0, v0, float4 jointIndices, float4 jointWeights, float u1, v1
+	///float u0, v0, vec4 jointIndices, vec4 jointWeights, float u1, v1
 	Stream mapVertAttributes(AccessRights access) {
 		return mapResource(Elements.GeometryElem, Elements.GeoVertStaticStream, access, verticesNo);
 	} 

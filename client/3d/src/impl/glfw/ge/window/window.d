@@ -21,7 +21,6 @@ module impl.glfw.ge.window.window;
 private import
 	std.conv,
 	std.stdio,
-	std.iterator,
 	std.datetime,
 	std.math;
 

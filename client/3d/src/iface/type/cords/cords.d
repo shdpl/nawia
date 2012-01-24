@@ -17,11 +17,11 @@
 
 module type.cords.cords;
 
-import type.cuda.types;
+public import
+	gl3n.linalg;
 
 struct Cords(T, size_t N) if (N > 0 && N < 4) {
-	SmallVec!(T, N) c;
-	alias c this;
+	Vector!(T, N) c;
 	
 	this(T x) {
 		c.x = x;
@@ -71,6 +71,11 @@ struct Cords(T, size_t N) if (N > 0 && N < 4) {
 			}
 		}
 	}
-	
+}
 
+template isCoords(T)
+{
+	enum bool isCoords =
+		__traits(hasMember, T, "x")
+		&& __traits(hasMember, T, "y");
 }

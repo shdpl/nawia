@@ -17,20 +17,22 @@
 
 module type.cords.local;
 
-private import type.cords.cords,
+private import
+	type.cords.cords,
 	ge.component.component; //FIXME: drop dependency on h3d
-public import type.unit.local;
+public import
+	type.unit.local;
 
-struct CordsLocal {
+struct CordsLocal
+{
 	Cords!(UnitLocal, 3) _cords;
-	IComponent parent;
+	CordsLocal* parent;
 	
 	
-	this(UnitLocal x, UnitLocal y, UnitLocal z, IComponent parent) {
+	this(UnitLocal x, UnitLocal y, UnitLocal z, CordsLocal* parent) {
 		_cords = _cords(x, y, z);
 		this.parent = parent;
 	}
 	
 	alias _cords this;
-	
 }

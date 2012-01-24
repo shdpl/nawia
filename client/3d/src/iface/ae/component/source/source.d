@@ -26,10 +26,10 @@ interface ISource {
 	
 	
 	
-	float3 position;
+	vec3 position;
 	bool posIsLocalToListener;
-	float3 velocity;
-	float3 direction;
+	vec3 velocity;
+	vec3 direction;
 	
 	float gain;
 	float gainMin;

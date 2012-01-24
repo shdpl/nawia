@@ -33,7 +33,7 @@ private import impl.h3d.h3d,
 	impl.h3d.ge.res.resource;
 	
 public import type.cords.local,
-	type.cuda.types;
+	gl3n.linalg;
 
 class GEComponent : IComponent {
 	public:
@@ -163,7 +163,7 @@ class GEComponent : IComponent {
 				&x, &y, &z,
 				null, null, null,
 				null, null, null);
-			return CordsLocal(x, y, z, this.parent);
+			return CordsLocal(x, y, z, null);	//FIXME: parent
 		}
 		void translation(CordsLocal value) {
 			//FIXME: transform if not relative to parent
@@ -188,7 +188,7 @@ class GEComponent : IComponent {
 				null, null, null,
 				&x, &y, &z,
 				null, null, null);
-			return CordsLocal(x, y, z, this.parent);
+			return CordsLocal(x, y, z, null);	//FIXME: parent
 		}
 		void rotation(CordsLocal value) {
 			//FIXME: transform if not relative to parent
@@ -208,21 +208,21 @@ class GEComponent : IComponent {
 	//TODO: width, height, depth
 	/// Size of object in meters
 	@property {				//TODO: move to spatial component
-		float3 size() {
+		vec3 size() {
 			float[6] floats;
 			
 			h3dGetNodeAABB(this.id,
 				&floats[0], &floats[1], &floats[2],
 				&floats[3], &floats[4], &floats[5]);
 			
-			return float3(
+			return vec3(
 				floats[3] - floats[0],
 				floats[4] - floats[1],
 				floats[5] - floats[2]
 			);
 		}
-		void size(float3 value) {
-			this.scale = float3(
+		void size(vec3 value) {
+			this.scale = vec3(
 				value.x / size.x,
 				value.y / size.y,
 				value.z / size.z
@@ -231,15 +231,15 @@ class GEComponent : IComponent {
 	}
 	
 	@property {
-		float3 scale() {
+		vec3 scale() {
 			float x, y, z;
 			h3dGetNodeTransform(this.id,
 				null, null, null,
 				null, null, null,
 				&x, &y, &z);
-			return float3(x, y, z);
+			return vec3(x, y, z);
 		}
-		void scale(float3 value) {
+		void scale(vec3 value) {
 			//FIXME: transform if not relative to parent
 			float tx, ty, tz, rx, ry, rz, sx, sy, sz;
 			tx = translation.x();
@@ -256,20 +256,20 @@ class GEComponent : IComponent {
 	}
 	
 	@property { //FIXME: make a new type for these matrices
-		float4[4] transformationAbsolute() {
-			float4[4] ret;
+		vec4[4] transformationAbsolute() {
+			vec4[4] ret;
 			h3dGetNodeTransMats(this.id, null, cast(float**)&ret);
 			return ret;
 		}
 	}
 	
 	@property { //FIXME: make a new type for these matrices
-		float4[4] transformationRelative() {
-			float4[4] ret;
+		vec4[4] transformationRelative() {
+			vec4[4] ret;
 			h3dGetNodeTransMats(this.id, cast(float**)&ret, null);
 			return ret;
 		}
-		void transformationRelative(float4[4] value) {
+		void transformationRelative(vec4[4] value) {
 			h3dSetNodeTransMat(this.id, cast(float*)value);
 		}
 	}

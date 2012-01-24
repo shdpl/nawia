@@ -20,7 +20,7 @@ module msg._io.hid.mouse.move;
 public import
 	io.hid.mouse.mouse,
 	type.cords.screen,
-	type.cuda.types;
+	gl3n.linalg;
 
 private import
 	msg.msg;
@@ -30,7 +30,7 @@ struct MsgMouseMove {
 	//alias _msg this;
 
 	CordsScreen newPos;
-	int2 vector;	//FIXME: Vector!CordsScreen
+	vec2i vector;	//FIXME: Vector!CordsScreen
 
 	this(CordsScreen from, CordsScreen to) {
 		newPos = to;

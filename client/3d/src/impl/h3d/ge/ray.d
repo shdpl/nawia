@@ -20,7 +20,7 @@ module impl.h3d.ge.res.ray;
 
 import impl.h3d.h3d,
 	ge.component.component,
-	type.cuda.types;
+	gl3n.linalg;
 
 //TODO: h3dCastRay h3dGetCastRayResult
 struct Ray {
@@ -30,6 +30,6 @@ struct Ray {
 		public:
 		H3DNode target;
 		float distance;
-		float3 point;
+		vec3 point;
 	}
 }

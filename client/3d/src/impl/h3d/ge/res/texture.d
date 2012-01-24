@@ -6,7 +6,7 @@ private import
 private import
 	impl.h3d.ge.res.resource,
 	impl.h3d.h3d,
-	type.cuda.types,
+	gl3n.linalg,
 	type.buffer.pixel;
 
 
@@ -28,7 +28,7 @@ class Texture : Resource, ITexture {
 		super(id);
 		this.init;
 	}
-	this(string name, int2 size, TextureFormat fmt) {
+	this(string name, vec2i size, TextureFormat fmt) {
 		//FIXME: size as specialized type
 		super(h3dCreateTexture(name, size.x, size.y, fmt, 0));
 	}

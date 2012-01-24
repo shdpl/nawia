@@ -73,10 +73,10 @@ void main() {
 	Demo demo;
 	
 	
-	demo = new Demo1;
+//	demo = new Demo1;
 //	demo = new Demo2;
 //	demo = new Demo3;
-//	demo = new Demo4;
+	demo = new Demo4;
 //	demo = new Demo5;
 	
 	demo.init();
@@ -149,22 +149,22 @@ abstract class Demo : IMsgListener, IMsgProvider {
 				cam.translation = CordsLocal(
 					oldTran.x - sin( degToRad( oldRot.y ) ) * cos( -degToRad( oldRot.x ) ) * curVel,
 					oldTran.y - sin( -degToRad( oldRot.x ) ) * curVel,
-					oldTran.z - cos( degToRad( oldRot.y ) ) * cos( -degToRad( oldRot.x ) ) * curVel, world);
+					oldTran.z - cos( degToRad( oldRot.y ) ) * cos( -degToRad( oldRot.x ) ) * curVel, null); //FIXME: parent cords
 			} if (move[1]) {	//RIGHT
 				cam.translation = CordsLocal(
 					oldTran.x + sin( degToRad( oldRot.y + 90 ) ) * curVel,
 					oldTran.y,
-					oldTran.z + cos( degToRad( oldRot.y + 90 ) ) * curVel, world);
+					oldTran.z + cos( degToRad( oldRot.y + 90 ) ) * curVel, null);
 			} if (move[2]) {	//BACKWARD
 				cam.translation = CordsLocal(
 					oldTran.x + sin( degToRad( oldRot.y ) ) * cos( -degToRad( oldRot.x ) ) * curVel,
 					oldTran.y + sin( -degToRad( oldRot.x ) ) * curVel,
-					oldTran.z + cos( degToRad( oldRot.y ) ) * cos( -degToRad( oldRot.x ) ) * curVel, world);
+					oldTran.z + cos( degToRad( oldRot.y ) ) * cos( -degToRad( oldRot.x ) ) * curVel, null);
 			} if (move[3]) {	//LEFT
 				cam.translation = CordsLocal(
 					oldTran.x + sin( degToRad( oldRot.y - 90) ) * curVel,
 					oldTran.y,
-					oldTran.z + cos( degToRad( oldRot.y - 90 ) ) * curVel, world);
+					oldTran.z + cos( degToRad( oldRot.y - 90 ) ) * curVel, null);
 			}
 			onAnimate();
 		} else if (msg.type == typeid(MsgMouseMove)) {
@@ -173,7 +173,7 @@ abstract class Demo : IMsgListener, IMsgProvider {
 			cam.rotation = CordsLocal(
 				fmax(fmin(oldRot.x + to!float(payload.vector.y)/10, 85), -85),
 				oldRot.y + to!float(payload.vector.x)/10,
-				oldRot.z, cam);
+				oldRot.z, null);
 		} else if (msg.type == typeid(MsgKeyPress)) {
 			auto payload = msg.get!MsgKeyPress;
 			if (payload.key.type == typeid(IKeyboard.KeySpecial)) {
@@ -264,20 +264,20 @@ class Demo1 : Demo {
 	
 	override void load() {
 		platform = world.add!Scene("models/platform/platform.scene.xml"); //("platform/platform.scene.xml");
-		platform.translation = CordsLocal(0, 0, 0, world);
-		platform.size = float3(50f, 1.f, 50f);
+		platform.translation = CordsLocal(0, 0, 0, null);
+		platform.size = vec3(50f, 1.f, 50f);
 		_pbody ~= _peWorld.add!PBodyRigid(
-			CordsLocal(0, -1.5, 0, world),
-			Box!float3(platform.size));
+			CordsLocal(0, -1.5, 0, null),
+			Box!vec3(platform.size));
 		
 		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
-		sky.size = float3(300, 100, 300);
+		sky.size = vec3(300, 100, 300);
 		sky.shadowsDisabled = true;
 		
 		pipe = new Pipeline("pipelines/forward.pipeline.xml");
 		cam = world.add!Camera(pipe);
-		cam.translation = CordsLocal(15, 3, 20, platform);
-		cam.rotation = CordsLocal(-10, 20, 0, platform);
+		cam.translation = CordsLocal(15, 3, 20, null);
+		cam.rotation = CordsLocal(-10, 20, 0, null);
 		cam.viewport = Box!CordsScreen(wnd.size);
 		cam.clipNear = .01;
 		cam.clipFar = 1000;	//FIXME: clip!=clip <swap with fov>
@@ -288,9 +288,9 @@ class Demo1 : Demo {
 		//	&& sCtxID in lMat[0].shader.contexts );
 		light = world.add!Light(
 			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
-		light.translation = CordsLocal(0, 20, 50, platform);
-		light.rotation = CordsLocal(-30, 0, 0, platform);
-		//light.scale = float3(1, 1, 1);
+		light.translation = CordsLocal(0, 20, 50, null);
+		light.rotation = CordsLocal(-30, 0, 0, null);
+		//light.scale = vec3(1, 1, 1);
 		light.radius = 200;
 		light.fov = 90;
 		light.shadowMapsCount = 3;
@@ -299,11 +299,11 @@ class Demo1 : Demo {
 		light.color = ColorRGB!float(.9f, .7f, .75f);
 		
 		man = world.add!Scene("models/man/man.scene.xml");
-		man.translation = CordsLocal(0, 10, 0, world);
-		man.size = float3(2f, .5f, .2f);
+		man.translation = CordsLocal(0, 10, 0, null);
+		man.size = vec3(2f, .5f, .2f);
 		_pbody ~= _peWorld.add!PBodyRigid(
 			man.translation,
-			Box!float3(man.size), 75); //TODO: getAABB
+			Box!vec3(man.size), 75); //TODO: getAABB
 		
 		man.setupAnimation(0, new Animation("animations/man.anim"), 0);
 		
@@ -400,18 +400,18 @@ class Demo3 : Demo {
 		    		normalData, tangentData, bitangentData, uvData);
 		    auto model = world.add!Model("DynGeoModel", geo);
 		    model.add!Mesh("DynGeoMesh", mat, 0, triangleIndexCount, 0, triangleIndexMax);
-		    model.rotation = CordsLocal(0, 40, 0, model);
-		    model.scale = float3(.01, .01, .01);
+		    model.rotation = CordsLocal(0, 40, 0, null);
+		    model.scale = vec3(.01, .01, .01);
 		}
 		
 		sky = world.add!Scene("models/skybox/skybox.scene.xml");
-		sky.scale = float3(210, 50, 210);
+		sky.scale = vec3(210, 50, 210);
 		sky.shadowsDisabled = true;
 		
 		pipe = new Pipeline("pipelines/forward.pipeline.xml");
 		cam = world.add!Camera(pipe);
-		cam.translation = CordsLocal(2, 1, 0, world);
-		cam.rotation = CordsLocal(-20, 75, 0, world);
+		cam.translation = CordsLocal(2, 1, 0, null);
+		cam.rotation = CordsLocal(-20, 75, 0, null);
 		cam.viewport = Box!CordsScreen(wnd.size);
 		cam.clipNear = .01;
 		cam.clipFar = 1000;
@@ -420,8 +420,8 @@ class Demo3 : Demo {
 		
 		light = world.add!Light(
 			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
-		light.translation = CordsLocal(0, 25, 20, world);
-		light.rotation = CordsLocal(-30, 0, 0, world);
+		light.translation = CordsLocal(0, 25, 20, null);
+		light.rotation = CordsLocal(-30, 0, 0, null);
 		light.radius = 200;
 		light.fov = 90;
 		light.shadowMapsCount = 3;
@@ -440,14 +440,14 @@ class Demo4 : Demo {
 	override void load() {
 		
 		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
-		sky.scale = float3(210, 50, 210);
+		sky.scale = vec3(210, 50, 210);
 		sky.shadowsDisabled = true;
 		
 //		world.viewWireFrame = true;
 		pipe = new Pipeline("pipelines/forward.pipeline.xml");
 		cam = world.add!Camera(pipe);
-		cam.translation = CordsLocal(2, 1, 0, world);
-		cam.rotation = CordsLocal(-20, 135, 0, world);
+		cam.translation = CordsLocal(2, 1, 0, null);
+		cam.rotation = CordsLocal(-20, 135, 0, null);
 		cam.viewport = Box!CordsScreen(wnd.size);
 		cam.clipNear = .01;
 		cam.clipFar = 1000;
@@ -457,8 +457,8 @@ class Demo4 : Demo {
 		
 		light = world.add!Light(
 			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
-		light.translation = CordsLocal(0, 25, 20, world);
-		light.rotation = CordsLocal(-30, 0, 0, world);
+		light.translation = CordsLocal(0, 25, 20, null);
+		light.rotation = CordsLocal(-30, 0, 0, null);
 		light.radius = 200;
 		light.fov = 90;
 		light.color = ColorRGB!float(.9f, .7f, .75f);
@@ -475,22 +475,20 @@ class Demo4 : Demo {
 		
 		Model model = world.add!Model("DynGeoModelNode", geo);
 		model.add!Mesh("DynGeoMesh", mat, 0, geo.verticesNo, 0, geo.indicesNo );
-	    model.translation = CordsLocal(-5, -3, 0, world);
-	    model.scale = float3(.1, .1, .1);
+	    model.translation = CordsLocal(-5, -3, 0, null);
+	    model.scale = vec3(.1, .1, .1);
 	    writeln("vertices: ", geo.verticesNo);
 	}
 	
 	void createSphere(VolumeSimple vol, int radius) {
 		auto region = vol.region;
-		auto center = CordsWorld(region.width / 2, region.height / 2, region.depth / 2);
+		auto center = vec3(region.width / 2, region.height / 2, region.depth / 2);
 		
 		foreach(z; 0 .. region.depth) {
 			foreach(y; 0 .. region.height) {
 				foreach(x; 0 .. region.width) {
-					auto vecToCenter = CordsWorld(center.x - x, center.y - y, center.z - z); //FIXME: to!CordsWorld
-					real dist = sqrt(vecToCenter.x^^2 + vecToCenter.y^^2 + vecToCenter.z^^2);//FIXME: vector distance
 					
-					if(dist < radius)
+					if(distance(center, vec3(x, y, z)) < radius) //FIXME: to!CordsWorld
 					{
 						vol[x, y, z] = Voxel(0);
 					}
@@ -528,14 +526,14 @@ class Demo5 : Demo {
 	override void load() {
 		
 		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
-		sky.scale = float3(210, 50, 210);
+		sky.scale = vec3(210, 50, 210);
 		sky.shadowsDisabled = true;
 		
 //		world.viewWireFrame = true;
 		pipe = new Pipeline("pipelines/forward.pipeline.xml");
 		cam = world.add!Camera(pipe);
-		cam.translation = CordsLocal(2, 1, 0, world);
-		cam.rotation = CordsLocal(-20, 135, 0, world);
+		cam.translation = CordsLocal(2, 1, 0, null);
+		cam.rotation = CordsLocal(-20, 135, 0, null);
 		cam.viewport = Box!CordsScreen(wnd.size);
 		cam.clipNear = .01;
 		cam.clipFar = 1000;
@@ -545,8 +543,8 @@ class Demo5 : Demo {
 		
 		light = world.add!Light(
 			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
-		light.translation = CordsLocal(0, 25, 20, world);
-		light.rotation = CordsLocal(-30, 0, 0, world);
+		light.translation = CordsLocal(0, 25, 20, null);
+		light.rotation = CordsLocal(-30, 0, 0, null);
 		light.radius = 200;
 		light.fov = 90;
 		light.color = ColorRGB!float(.9f, .7f, .75f);
@@ -574,9 +572,9 @@ class Demo5 : Demo {
 		
 		Model model = world.add!Model("DynGeoModelNode", geo);
 		model.add!Mesh("DynGeoMesh", mat, 0, geo.verticesNo, 0, geo.indicesNo );
-	    model.translation = CordsLocal(-30, -5, 5, world);
-	    model.scale = float3(.1, .1, .2);
-	    model.rotation(CordsLocal(90,0,0, model));
+	    model.translation = CordsLocal(-30, -5, 5, null);
+	    model.scale = vec3(.1, .1, .2);
+	    model.rotation(CordsLocal(90,0,0, null));
 	    writeln("vertices: ", geo.verticesNo);
 	}
 	
