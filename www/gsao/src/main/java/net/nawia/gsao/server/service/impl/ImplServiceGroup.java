@@ -2,19 +2,20 @@ package net.nawia.gsao.server.service.impl;
 
 import java.util.List;
 
-//import javax.ejb.Stateless;
+import javax.annotation.security.*;
+import javax.ejb.*;
 
-import net.nawia.gsao.server.domain.Group;
-import net.nawia.gsao.server.domain.Player;
+import net.nawia.gsao.server.model.Group;
+import net.nawia.gsao.server.model.Player;
 import net.nawia.gsao.server.service.ServiceGroup;
 import net.nawia.gsao.server.service.local.ServiceGroupLocal;
 import net.nawia.gsao.server.service.remote.ServiceGroupRemote;
 
-//@Stateless(name="ServiceGroup")
-//@DeclareRoles({"GM"})
-//@RolesAllowed({"GM"})
-//@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-public class ImplServiceGroup implements ServiceGroupLocal, ServiceGroupRemote {
+@Stateless(name="ServiceGroup")
+@DeclareRoles({"GM"})
+@RolesAllowed({"GM"})
+@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+public class ImplServiceGroup implements ServiceGroup {
 
 	@Override
 	public int add(Group g) {

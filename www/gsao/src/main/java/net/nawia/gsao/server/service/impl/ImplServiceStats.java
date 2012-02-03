@@ -1,18 +1,16 @@
 package net.nawia.gsao.server.service.impl;
 
-//import javax.ejb.Stateless;
-//import javax.ejb.TransactionAttribute;
-//import javax.ejb.TransactionAttributeType;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import net.nawia.gsao.server.service.ServiceStats;
-import net.nawia.gsao.server.service.local.ServiceStatsLocal;
-import net.nawia.gsao.server.service.remote.ServiceStatsRemote;
 
-//@Stateless(name="ServiceStats")
+@Stateless(name="ServiceStats")
 //@DeclareRoles({"GM"})
 //@RolesAllowed({"GM"})
-//@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-public class ImplServiceStats implements ServiceStatsLocal, ServiceStatsRemote {
+@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+public class ImplServiceStats implements ServiceStats {
 
 	@Override
 	public boolean isOnline() {

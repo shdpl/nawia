@@ -11,13 +11,61 @@
 		<artifactId>cms</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<dependencies>
+	<profiles>
+		<profile>
+			<id>jb7e</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.cargo</groupId>
+						<artifactId>cargo-maven2-plugin</artifactId>
+						<configuration>
+							<container>
+								<containerId>jboss7x</containerId>
+								<zipUrlInstaller>
+									<url>http://download.jboss.org/jbossas/7.0/jboss-as-7.0.2.Final/jboss-as-7.0.2.Final.zip</url>
+								</zipUrlInstaller>
+							</container>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>jb7s</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.cargo</groupId>
+						<artifactId>cargo-maven2-plugin</artifactId>
+						<configuration>
+							<container>
+								<containerId>jboss7x</containerId>
+								<home>/opt/liferay/jboss-7.0.2/standalone/</home>
+							</container>
+							<configuration>
+								<home>/opt/liferay/jboss-7.0.2/standalone/</home>
+								<type>existing</type>
+							</configuration>
+							<deployer>
+								<type>installed</type>
+							</deployer>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<dependencies><!-- 
 		<dependency>
 			<groupId>net.nawia.www.cms</groupId>
 			<artifactId>http</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>war</type>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>net.nawia.www</groupId>
 			<artifactId>gsao</artifactId>
@@ -44,6 +92,10 @@
 					<artifactId>jboss-as-depchain</artifactId>
 					<groupId>org.jboss.jbossas</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>dom4j</artifactId>
+					<groupId>dom4j</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 	</dependencies>
@@ -54,57 +106,20 @@
 				<artifactId>maven-ear-plugin</artifactId>
 				<version>2.5</version>
 				<configuration>
+					<defaultLibBundleDir>lib</defaultLibBundleDir>
 					<modules>
-						<webModule>
+<!-- 						<webModule>
 							<groupId>net.nawia.www.cms</groupId>
 							<artifactId>http</artifactId>
 							<bundleFileName>http-0.0.1-SNAPSHOT.war</bundleFileName>
 							<contextRoot>/nawia</contextRoot>
-						</webModule>
+						</webModule> -->
 						<ejbModule>
 							<groupId>net.nawia.www</groupId>
 							<artifactId>gsao</artifactId>
 						</ejbModule>
 					</modules>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jboss-maven-plugin</artifactId>
-				<version>1.5.0</version>
-				<configuration>
-					<jbossHome>${project.build.directory}/../../../gsao/target/jboss-6.0.0.Final/</jbossHome>
-					<serverName>default</serverName>
-					<fileNames>
-						<fileName>${project.build.directory}/${project.build.finalName}.ear</fileName>
-					</fileNames>
-					<unpack>true</unpack>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.4.3</version>
-				<executions>
-					<execution>
-						<id>copy-db-driver</id>
-						<phase>install</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/../../../gsao/target/jboss-6.0.0.Final/server/default/deploy/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.build.directory}/ear-0.0.1-SNAPSHOT</directory>
-									<includes>
-										<include>*.jar</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

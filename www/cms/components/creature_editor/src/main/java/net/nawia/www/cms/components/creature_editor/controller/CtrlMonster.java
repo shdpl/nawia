@@ -2,8 +2,8 @@ package net.nawia.www.cms.components.creature_editor.controller;
 
 import java.util.SortedSet;
 
-import net.nawia.gsao.model.world.entity.Monster;
-import net.nawia.gsao.content.model.Category;
+//import net.nawia.gsao.model.world.entity.Monster;
+//import net.nawia.gsao.content.model.Category;
 import net.nawia.gsao.content.service.ServiceMonster;
 
 import org.zkoss.zk.ui.Component;
@@ -23,47 +23,47 @@ public class CtrlMonster extends GenericForwardComposer {
 	Combobox search;
 	Tree monsterTree;
 	
-	@Override
-	public void doBeforeComposeChildren(Component comp) throws Exception {
-		super.doBeforeComposeChildren(comp);
-		buildMonsterTree();
-	}
+//	@Override
+//	public void doAfterCompose(org.zkoss.zk.ui.Component comp) {
+//		super.doBeforeComposeChildren(comp);
+//		
+//	}
 	
-	public void onFocus$search() {
-		SortedSet<Object> to_check = monsters.getChilds(null);
-		ListModelList model = new ListModelList();
-		boolean all = false;
-		while(!all) {
-			all = true;
-			for(Object obj : to_check) {
-				to_check.remove(obj);
-				if (obj instanceof Monster) {
-					model.add(obj);
-				} else {	// Category<Monster>
-					to_check.addAll(monsters.getChilds((Category<Monster>)obj));
-					all = false;
-				}
-			}
-		}
-		search.setModel(model);
-	}
+//	public void onFocus$search() {
+//		SortedSet<Object> to_check = monsters.getChilds(null);
+//		ListModelList model = new ListModelList();
+//		boolean all = false;
+//		while(!all) {
+//			all = true;
+//			for(Object obj : to_check) {
+//				to_check.remove(obj);
+//				if (obj instanceof Monster) {
+//					model.add(obj);
+//				} else {	// Category<Monster>
+//					to_check.addAll(monsters.getChilds((Category<Monster>)obj));
+//					all = false;
+//				}
+//			}
+//		}
+//		search.setModel(model);
+//	}
 	
-	private void buildMonsterTree() {
-		SortedSet<Object> to_check = monsters.getChilds(null);
-		boolean all = false;
-		while(!all) {
-			all = true;
-			for(Object obj : to_check) {
-				to_check.remove(obj);
-				if (obj instanceof Monster) {
-					model.add(obj);
-				} else {	// Category<Monster>
-					to_check.addAll(monsters.getChilds((Category<Monster>)obj));
-					all = false;
-				}
-			}
-		}
-	}
+//	private void buildMonsterTree() {
+//		SortedSet<Object> to_check = monsters.getChilds(null);
+//		boolean all = false;
+//		while(!all) {
+//			all = true;
+//			for(Object obj : to_check) {
+//				to_check.remove(obj);
+//				if (obj instanceof Monster) {
+//					model.add(obj);
+//				} else {	// Category<Monster>
+//					to_check.addAll(monsters.getChilds((Category<Monster>)obj));
+//					all = false;
+//				}
+//			}
+//		}
+//	}
 	
 	
 }

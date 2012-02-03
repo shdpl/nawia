@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd">
 	<window title="Creature Editor" border="normal">
-		<menubar use="net.nawia.www.cms.components.creature_editor.controller.CtrlMenu">
+		<menubar apply="net.nawia.www.cms.components.creature_editor.controller.CtrlMenu">
 			<menuitem label="New" />
 			<menuitem label="Delete" />
 			<menuitem label="Edit" />
@@ -15,7 +15,7 @@
 			<menuitem label="Help" />
 		</menubar>
 		<hbox spacing="0">
-			<vbox spacing="0" use="net.nawia.www.cms.components.creature_editor.controller.CtrlMonster">
+			<vbox spacing="0" apply="net.nawia.www.cms.components.creature_editor.controller.CtrlMonster">
 				<combobox id="search" mold="rounded" autodrop="true"
 					buttonVisible="true" value="search...">
 					<comboitem forEach="${ monsterList }">${ each.name }</comboitem>

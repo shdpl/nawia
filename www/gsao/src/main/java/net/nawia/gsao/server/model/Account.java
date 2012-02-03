@@ -16,6 +16,7 @@
  ******************************************************************************/
 package net.nawia.gsao.server.model;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
@@ -35,7 +36,7 @@ import javax.validation.constraints.Size;
  * Player account
  */
 @Entity
-@Table(name = "accounts", schema = "public", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
+@Table(name = "accounts", schema = "\"public\"", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 public class Account implements java.io.Serializable {
 
 	/**
@@ -80,23 +81,23 @@ public class Account implements java.io.Serializable {
 	}
 
 	public Account(int id, String name, String password, String email,
-			long premend, boolean blocked, short warnings) {
+			Date premend, boolean blocked, int warnings) {
 		this.id = id;
 		this.name = name;
 		this.password = password;
 		this.email = email;
-		this.premend = premend;
+		this.premend = premend.getTime();
 		this.blocked = (short) (blocked ? 1 : 0);
-		this.warnings = warnings;
+		this.warnings = (short) warnings;
 	}
 
 	public Account(int id, String name, String password, String email,
-			long premend, boolean blocked, short warnings, Set<Player> players) {
+			Date premend, boolean blocked, short warnings, Set<Player> players) {
 		this.id = id;
 		this.name = name;
 		this.password = password;
 		this.email = email;
-		this.premend = premend;
+		this.premend = premend.getTime();
 		this.blocked = (short) (blocked ? 1 : 0);
 		this.warnings = warnings;
 		this.players = players;
@@ -106,7 +107,7 @@ public class Account implements java.io.Serializable {
 	@Min(0)
 	@Max(Integer.MAX_VALUE)
 	@GeneratedValue
-	@Column(name = "id", unique = true, nullable = false)
+	@Column(name = "\"id\"", unique = true, nullable = false)
 	public int getId() {
 		return this.id;
 	}
@@ -148,12 +149,12 @@ public class Account implements java.io.Serializable {
 	}
 
 	@Column(name = "premend", nullable = false)
-	public long getPremend() {
-		return this.premend;
+	public Date getPremend() {
+		return new Date(this.premend);
 	}
 
-	public void setPremend(long premend) {
-		this.premend = premend;
+	public void setPremend(Date premend) {
+		this.premend = premend.getTime();
 	}
 
 	@Column(name = "blocked", nullable = false)

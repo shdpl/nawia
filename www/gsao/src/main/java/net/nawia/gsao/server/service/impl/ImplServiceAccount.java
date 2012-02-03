@@ -4,22 +4,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-//import javax.ejb.*;
+import javax.ejb.*;
 
 import net.nawia.gsao.server.dao.DaoAccount;
 import net.nawia.gsao.server.model.Account;
 import net.nawia.gsao.server.service.local.ServiceAccountLocal;
 import net.nawia.gsao.server.service.remote.ServiceAccountRemote;
 
-//@Stateless(name = "ServiceAccount")
+@Stateless(name = "ServiceAccount")
 // @DeclareRoles({"AccountManager"})
 // @RolesAllowed({"AccountManager"})
-// @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+ @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class ImplServiceAccount implements ServiceAccountLocal,
 		ServiceAccountRemote {
 	private static final Logger _log = Logger
 			.getLogger(ImplServiceAccount.class.getName());
-	//@EJB
+	@EJB
 	DaoAccount _daoAcc;
 
 	@Override
@@ -27,17 +27,13 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		_log.entering("ImplServiceAccount", "register()");
 		assert (null != name && null != password && null != email);
 
-		
-		try {
-			Account acc = new Account(0, name, password, email, new Date(),
-					0, false, 0);
-			boolean ret = _daoAcc.findAll(acc).size() == 0;
-			if (ret)
-				_daoAcc.persist(acc);
-			return ret;
-		} finally {
-			_daoAcc.close();
-		}
+		Account acc = new Account(0, name, password, email, new Date(),
+				false, 0);
+		throw new UnsupportedOperationException();
+//		boolean ret = _daoAcc.findAll(acc).size() == 0;
+//		if (ret)
+//			_daoAcc.persist(acc);
+//		return ret;
 	}
 
 	@Override
@@ -45,29 +41,21 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		_log.entering("ImplServiceAccount", "del()");
 		assert (null != acc);
 
-		try {
-			if (null != _daoAcc.find(acc.getId()))
-				_daoAcc.remove(acc);
-			else
-				return false;
-			return true;
-		} finally {
-			_daoAcc.close();
-		}
+		if (null != _daoAcc.findById(acc.getId()))
+			_daoAcc.remove(acc);
+		else
+			return false;
+		return true;
 	}
 
 	@Override
 	public boolean hasName(String name) {
 		_log.entering("ImplServiceAccount", "hasName()");
 		assert (null != name && !name.isEmpty());
-
-		try {
-			return !_daoAcc.findAll(
-					new Account(0, name, null, null, null, false, (short) 0))
-					.isEmpty();
-		} finally {
-			_daoAcc.close();
-		}
+		throw new UnsupportedOperationException();
+//		return !_daoAcc.findAll(
+//				new Account(0, name, null, null, null, false, (short) 0))
+//				.isEmpty();
 	}
 
 	@Override
@@ -76,27 +64,21 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		assert (login != null && !login.isEmpty() && password != null && !password
 				.isEmpty());
 
-		try {
-			List<Account> accs = _daoAcc.findAll(new Account(0, login, null,
-					null, null, false, (short) 0));
-			assert (accs.size() < 2);
-			if (accs.size() != 0 && accs.get(0).getPassword().equals(password))
-				return accs.get(0).getId();
-			return -1;
-		} finally {
-			_daoAcc.close();
-		}
+		throw new UnsupportedOperationException();
+//			List<Account> accs = _daoAcc.findAll(new Account(0, login, null,
+//					null, null, false, (short) 0));
+//			assert (accs.size() < 2);
+//			if (accs.size() != 0 && accs.get(0).getPassword().equals(password))
+//				return accs.get(0).getId();
+//			return -1;
 	}
 
 	@Override
 	public List<Account> getAll() {
 		_log.entering("ImplServiceAccount", "getAll()");
 
-		try {
-			return _daoAcc.findAll();
-		} finally {
-			_daoAcc.close();
-		}
+		throw new UnsupportedOperationException();
+//		return _daoAcc.findAll();
 	}
 
 	@Override
@@ -105,18 +87,14 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 				id, password });
 		assert (id >= 0 && password != null);
 		
-		try {
-			Account acc = _daoAcc.find(id);
-			if (acc == null) {
-				_log.severe("Could not find account with ID " + id);
-				return false;
-			}
-			acc.setPassword(password);
-			_daoAcc.persist(acc);
-			return true;
-		} finally {
-			_daoAcc.close();
+		Account acc = _daoAcc.findById(id);
+		if (acc == null) {
+			_log.severe("Could not find account with ID " + id);
+			return false;
 		}
+		acc.setPassword(password);
+		_daoAcc.persist(acc);
+		return true;
 	}
 
 	@Override
@@ -125,18 +103,14 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 				email });
 		assert (id >= 0 && email != null);
 		
-		try {
-			Account acc = _daoAcc.find(id);
-			if (acc == null) {
-				_log.severe("Could not find account with ID " + id);
-				return false;
-			}
-			acc.setEmail(email);
-			_daoAcc.persist(acc);
-			return true;
-		} finally {
-			_daoAcc.close();
+		Account acc = _daoAcc.findById(id);
+		if (acc == null) {
+			_log.severe("Could not find account with ID " + id);
+			return false;
 		}
+		acc.setEmail(email);
+		_daoAcc.persist(acc);
+		return true;
 	}
 
 	@Override
@@ -144,18 +118,14 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		_log.entering("ImplServiceAccount", "rename", new Object[] { id, name });
 		assert (id >= 0 && name != null);
 		
-		try {
-			Account acc = _daoAcc.find(id);
-			if (acc == null) {
-				_log.severe("Could not find account with ID " + id);
-				return false;
-			}
-			acc.setName(name);
-			_daoAcc.persist(acc);
-			return true;
-		} finally {
-			_daoAcc.close();
+		Account acc = _daoAcc.findById(id);
+		if (acc == null) {
+			_log.severe("Could not find account with ID " + id);
+			return false;
 		}
+		acc.setName(name);
+		_daoAcc.persist(acc);
+		return true;
 	}
 
 	@Override
@@ -163,18 +133,14 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		_log.entering("ImplServiceAccount", "lock", id);
 		assert (id >= 0);
 		
-		try {
-			Account acc = _daoAcc.find(id);
-			if (acc == null) {
-				_log.severe("Could not find account with ID " + id);
-				return false;
-			}
-			acc.setBlocked(true);
-			_daoAcc.persist(acc);
-			return true;
-		} finally {
-			_daoAcc.close();
+		Account acc = _daoAcc.findById(id);
+		if (acc == null) {
+			_log.severe("Could not find account with ID " + id);
+			return false;
 		}
+		acc.setBlocked(true);
+		_daoAcc.persist(acc);
+		return true;
 	}
 
 	@Override
@@ -182,18 +148,14 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		_log.entering("ImplServiceAccount", "unlock", id);
 		assert (id >= 0);
 		
-		try {
-			Account acc = _daoAcc.find(id);
-			if (acc == null) {
-				_log.severe("Could not find account with ID " + id);
-				return false;
-			}
-			acc.setBlocked(false);
-			_daoAcc.persist(acc);
-			return true;
-		} finally {
-			_daoAcc.close();
+		Account acc = _daoAcc.findById(id);
+		if (acc == null) {
+			_log.severe("Could not find account with ID " + id);
+			return false;
 		}
+		acc.setBlocked(false);
+		_daoAcc.persist(acc);
+		return true;
 	}
 
 	@Override
@@ -201,16 +163,12 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		_log.entering("ImplServiceAccount", "locked", id);
 		assert (id >= 0);
 		
-		try {
-			Account acc = _daoAcc.find(id);
-			if (acc == null) {
-				_log.severe("Could not find account with ID " + id);
-				return null;
-			}
-			return acc.isBlocked();
-		} finally {
-			_daoAcc.close();
+		Account acc = _daoAcc.findById(id);
+		if (acc == null) {
+			_log.severe("Could not find account with ID " + id);
+			return null;
 		}
+		return acc.getBlocked();
 	}
 
 	@Override
@@ -218,18 +176,14 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		_log.entering("ImplServiceAccount", "setWarnings", new Object[] { id, warnings });
 		assert (id >= 0 && warnings >= 0);
 		
-		try {
-			Account acc = _daoAcc.find(id);
-			if (acc == null) {
-				_log.severe("Could not find account with ID " + id);
-				return false;
-			}
-			acc.setWarnings((short) warnings);
-			_daoAcc.persist(acc);
-			return true;
-		} finally {
-			_daoAcc.close();
+		Account acc = _daoAcc.findById(id);
+		if (acc == null) {
+			_log.severe("Could not find account with ID " + id);
+			return false;
 		}
+		acc.setWarnings((short) warnings);
+		_daoAcc.persist(acc);
+		return true;
 	}
 
 	@Override
@@ -237,16 +191,12 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		_log.entering("ImplServiceAccount", "getWarnings", id);
 		assert (id >= 0);
 		
-		try {
-			Account acc = _daoAcc.find(id);
-			if (acc == null) {
-				_log.severe("Could not find account with ID " + id);
-				return -1;
-			}
-			return acc.getWarnings();
-		} finally {
-			_daoAcc.close();
+		Account acc = _daoAcc.findById(id);
+		if (acc == null) {
+			_log.severe("Could not find account with ID " + id);
+			return -1;
 		}
+		return acc.getWarnings();
 	}
 
 	@Override
@@ -254,18 +204,14 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		_log.entering("ImplServiceAccount", "setPremium", new Object[]{id, until});
 		assert (id >= 0) && until != null;
 		
-		try {
-			Account acc = _daoAcc.find(id);
-			if (acc == null) {
-				_log.severe("Could not find account with ID " + id);
-				return false;
-			}
-			acc.setPremend(until);
-			_daoAcc.persist(acc);
-			return true;
-		} finally {
-			_daoAcc.close();
+		Account acc = _daoAcc.findById(id);
+		if (acc == null) {
+			_log.severe("Could not find account with ID " + id);
+			return false;
 		}
+		acc.setPremend(until);
+		_daoAcc.persist(acc);
+		return true;
 	}
 
 	@Override
@@ -273,16 +219,12 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		_log.entering("ImplServiceAccount", "getPremium", id);
 		assert (id >= 0);
 		
-		try {
-			Account acc = _daoAcc.find(id);
-			if (acc == null) {
-				_log.severe("Could not find account with ID " + id);
-				return null;
-			}
-			return acc.getPremend();
-		} finally {
-			_daoAcc.close();
+		Account acc = _daoAcc.findById(id);
+		if (acc == null) {
+			_log.severe("Could not find account with ID " + id);
+			return null;
 		}
+		return acc.getPremend();
 	}
 
 	@Override
@@ -290,16 +232,12 @@ public class ImplServiceAccount implements ServiceAccountLocal,
 		_log.entering("ImplServiceAccount", "isPremium", id);
 		assert (id >= 0);
 		
-		try {
-			Account acc = _daoAcc.find(id);
+			Account acc = _daoAcc.findById(id);
 			if (acc == null) {
 				_log.severe("Could not find account with ID " + id);
 				return null;
 			}
 			return !acc.getPremend().before(new Date());
-		} finally {
-			_daoAcc.close();
-		}
 	}
 	
 	

@@ -132,12 +132,12 @@ public class Ban implements java.io.Serializable {
 
 	@NotNull
 	@Column(name = "type", nullable = false)
-	public long getType() {
-		return this.type;
+	public BAN_T getType() {
+		return BAN_T.values()[(int)this.type];
 	}
 
-	public void setType(long type) {
-		this.type = type;
+	public void setType(BAN_T type) {
+		this.type = type.ordinal();
 	}
 
 	@Column(name = "param", nullable = false)

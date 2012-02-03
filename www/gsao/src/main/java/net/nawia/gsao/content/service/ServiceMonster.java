@@ -1,9 +1,6 @@
 package net.nawia.gsao.content.service;
 
-import java.util.SortedSet;
-
-import net.nawia.gsao.content.model.monster.Monster;
-
+import net.nawia.gsao.content.model.monster.*;
 
 public interface ServiceMonster {
 	
@@ -12,14 +9,14 @@ public interface ServiceMonster {
 	 * @param category, or null which is interpreted as root
 	 * @return Category<Monster> or Monster
 	 */
-	SortedSet<Object> getChilds(Category<Monster> category);
+//	SortedSet<Object> getChilds(Category<Monster> category);
 
 	/**
 	 * Returns parent monster category
 	 * @param category Monster or Category<Monster> object
 	 * @return parent category or null if it's already a root category 
 	 */
-	Category<Monster> getParent(Object category);
+//	Category<Monster> getParent(Object category);
 	
 	/**
 	 * Adds new monster type under selected category
@@ -27,7 +24,7 @@ public interface ServiceMonster {
 	 * @param category
 	 * @return true if success, false if failure
 	 */
-	boolean add(Monster type, Category<Monster> category);
+//	boolean add(Monster type, Category<Monster> category);
 	
 	/**
 	 * Saves monster state
@@ -40,14 +37,14 @@ public interface ServiceMonster {
 	 * Returns descriptor of all flags possible to use.
 	 * @return Monster Flag Descriptors, or null if error
 	 */
-	Set<FlagDescriptor> getFlagsDescriptors();	//TODO: flexible Flags
+//	Set<FlagDescriptor> getFlagsDescriptors();	//TODO: flexible Flags
 	
 	/**
 	 * Defines new flag for use in Monster definitions
 	 * @param flag
 	 * @return true if success, false otherwise
 	 */
-	boolean addFlagDescriptor(FlagDescriptor flag);
+//	boolean addFlagDescriptor(FlagDescriptor flag);
 	
 	/**
 	 * Undefines existant flag for use in Monster definitions
@@ -60,14 +57,14 @@ public interface ServiceMonster {
 	 * Returns every possible lookType possible
 	 * @return look types, or null if error
 	 */
-	Set<LookTypeDescriptor> getLookTypeDescriptors();
+//	Set<LookTypeDescriptor> getLookTypeDescriptors();
 	
 	/**
 	 * Describes new lookType
 	 * @param lookType
 	 * @return true if defined, false in case of error
 	 */
-	boolean addLookTypeDescriptor(LookTypeDescriptor lookType);
+//	boolean addLookTypeDescriptor(LookTypeDescriptor lookType);
 	
 	/**
 	 * Undefines look type

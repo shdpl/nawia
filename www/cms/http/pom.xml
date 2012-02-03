@@ -25,33 +25,49 @@
 			<artifactId>gsao</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>ejb</type>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
 			<artifactId>portal-client</artifactId>
-			<version>6.0.5</version>
+			<version>6.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
 			<artifactId>portal-service</artifactId>
-			<version>6.0.5</version>
+			<version>6.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
 			<artifactId>util-bridges</artifactId>
-			<version>6.0.5</version>
+			<version>6.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
 			<artifactId>util-java</artifactId>
-			<version>6.0.5</version>
+			<version>6.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
 			<artifactId>util-taglib</artifactId>
-			<version>6.0.5</version>
+			<version>6.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.ejb</groupId>
+			<artifactId>jboss-ejb-api_3.1_spec</artifactId>
+			<version>1.0.1.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>portal-impl</artifactId>
+			<version>6.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>portal-web</artifactId>
+			<version>6.1.0</version>
+			<type>war</type>
 		</dependency>
 	</dependencies>
 
@@ -103,7 +119,8 @@
 				<dependency>
 					<groupId>org.jboss.spec.javax.ejb</groupId>
 					<artifactId>jboss-ejb-api_3.1_spec</artifactId>
-					<version>1.0.0.CR2</version>
+					<version>1.0.1.Final</version>
+					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 			<build>
