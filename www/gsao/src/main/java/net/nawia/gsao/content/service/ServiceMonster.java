@@ -1,22 +1,23 @@
 package net.nawia.gsao.content.service;
 
 import net.nawia.gsao.content.model.monster.*;
+import net.nawia.gsao.util.Category;
 
 public interface ServiceMonster {
 	
 	/**
-	 * Returns set of monsters or monster subcategory.
+	 * Returns child monster category
 	 * @param category, or null which is interpreted as root
-	 * @return Category<Monster> or Monster
+	 * @return Category<Monster>
 	 */
-//	SortedSet<Object> getChilds(Category<Monster> category);
+	Category<Monster> getChilds(Category<Monster> parent);
 
 	/**
 	 * Returns parent monster category
-	 * @param category Monster or Category<Monster> object
+	 * @param category category of monsters
 	 * @return parent category or null if it's already a root category 
 	 */
-//	Category<Monster> getParent(Object category);
+	Category<Monster> getParent(Category<Monster> category);
 	
 	/**
 	 * Adds new monster type under selected category
@@ -24,7 +25,7 @@ public interface ServiceMonster {
 	 * @param category
 	 * @return true if success, false if failure
 	 */
-//	boolean add(Monster type, Category<Monster> category);
+	boolean add(Monster type, Category<Monster> category);
 	
 	/**
 	 * Saves monster state
@@ -32,6 +33,13 @@ public interface ServiceMonster {
 	 * @return true if success, false otherwise
 	 */
 	boolean save(Monster type);
+	
+	/**
+	 * Returns monster of given name
+	 * @param name unique monster name
+	 * @return Monster if exists, or null otherwise
+	 */
+	Monster getMonster(String name);
 	
 	/**
 	 * Returns descriptor of all flags possible to use.

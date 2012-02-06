@@ -1,8 +1,8 @@
 package net.nawia.gsao.server.service.remote;
 
-//import javax.ejb.Remote;
+import javax.ejb.Remote;
 
 import net.nawia.gsao.server.service.ServiceAccount;
 
-//@Remote
+@Remote
 public interface ServiceAccountRemote extends ServiceAccount {}
