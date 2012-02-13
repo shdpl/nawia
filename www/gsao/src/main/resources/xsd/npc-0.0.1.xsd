@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="response" id="response">
+		<xs:complexType mixed="true">
+			<xs:sequence>
+				<xs:element ref="action" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="interact" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute ref="param"/>
+			<xs:attribute name="knowspell" type="xs:string"/>
+			<xs:attribute name="text" type="xs:string"/>
+			<xs:attribute name="function" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>'text' OR 'function'</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="public" type="xs:boolean"/>
+			<xs:attribute name="lowhealth" type="xs:int"/>
+			<xs:attribute name="condition">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="poison"/>
+						<xs:enumeration value="fire"/>
+						<xs:enumeration value="energy"/>
+						<xs:enumeration value="haste"/>
+						<xs:enumeration value="paralyze"/>
+						<xs:enumeration value="outfit"/>
+						<xs:enumeration value="invisible"/>
+						<xs:enumeration value="light"/>
+						<xs:enumeration value="manashield"/>
+						<xs:enumeration value="drunk"/>
+						<xs:enumeration value="exhaust_yell"/>
+						<xs:enumeration value="exhaust_combat"/>
+						<xs:enumeration value="exhaust_heal"/>
+						<xs:enumeration value="exhaust_potion"/>
+						<xs:enumeration value="exhaust_others"/>
+						<xs:enumeration value="regeneration"/>
+						<xs:enumeration value="soul"/>
+						<xs:enumeration value="drown"/>
+						<xs:enumeration value="muted"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="b1" type="xs:boolean"/>
+			<xs:attribute name="b2" type="xs:boolean"/>
+			<xs:attribute name="b3" type="xs:boolean"/>
+			<xs:attribute name="n1" type="xs:int"/>
+			<xs:attribute name="n2" type="xs:int"/>
+			<xs:attribute name="n3" type="xs:int"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="npc">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="health" minOccurs="0"/>
+				<xs:element ref="look"/>
+				<xs:element ref="interaction" maxOccurs="unbounded"/>
+				<xs:element ref="parameters" minOccurs="0"/>
+				<xs:element ref="voices" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute name="script" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="speed" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="attackable" type="xs:boolean"/>
+			<xs:attribute name="walkinterval" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="walkradius" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="lookdir">
+				<xs:simpleType>
+					<xs:restriction base="xs:nonNegativeInteger">
+						<xs:enumeration value="0">
+							<xs:annotation>
+								<xs:documentation>north</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="1">
+							<xs:annotation>
+								<xs:documentation>east</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="2">
+							<xs:annotation>
+								<xs:documentation>south</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="3">
+							<xs:annotation>
+								<xs:documentation>west</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="4">
+							<xs:annotation>
+								<xs:documentation>south-west</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="5">
+							<xs:annotation>
+								<xs:documentation>south-east</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="6">
+							<xs:annotation>
+								<xs:documentation>north-west</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+						<xs:enumeration value="7">
+							<xs:annotation>
+								<xs:documentation>north-east</xs:documentation>
+							</xs:annotation>
+						</xs:enumeration>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="floorchange" type="xs:boolean" default="false"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="look">
+		<xs:annotation>
+			<xs:documentation>typeex OR type + head + body + legs + feet + addons</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="typeex" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="type" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="head" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="body" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="legs" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="feet" type="xs:nonNegativeInteger"/>
+			<xs:attribute name="addons" type="xs:nonNegativeInteger"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="list" type="xs:string"/>
+	<xs:element name="keywords" type="xs:string"/>
+	<xs:element name="itemlist">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="item" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="listid" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="item">
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:integer" use="required"/>
+			<xs:attribute name="sellprice" type="xs:int"/>
+			<xs:attribute name="buyprice" type="xs:int"/>
+			<xs:attribute name="keywords" type="xs:string" use="required"/>
+			<xs:attribute name="subtype" type="xs:int"/>
+			<xs:attribute name="name" type="xs:string"/>
+			<xs:attribute name="pname" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="interaction">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="itemlist" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="script" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="interact" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="talkradius" type="xs:positiveInteger"/>
+			<xs:attribute name="idletimeout" type="xs:positiveInteger"/>
+			<xs:attribute name="defaultpublic" type="xs:boolean"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="interact">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="keywords" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="list" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="text" type="xs:string" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="storage" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attributeGroup ref="storage"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="response" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="keywords" type="xs:string" use="optional"/>
+			<xs:attribute name="event" use="optional">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="onbusy"/>
+						<xs:enumeration value="onthink"/>
+						<xs:enumeration value="onidle"/>
+						<xs:enumeration value="onplayerenter"/>
+						<xs:enumeration value="onplayermove"/>
+						<xs:enumeration value="onplayerleave"/>
+						<xs:enumeration value="onplayershopsell"/>
+						<xs:enumeration value="onplayershopbuy"/>
+						<xs:enumeration value="onplayershopclose"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="time" type="xs:nonNegativeInteger" use="optional">
+				<xs:annotation>
+					<xs:documentation>Used only with event="onidle"</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="singleevent" type="xs:boolean" use="optional">
+				<xs:annotation>
+					<xs:documentation>Used only with event="onidle"</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="topic" type="xs:positiveInteger" use="optional"/>
+			<xs:attribute name="nottopic" type="xs:positiveInteger" use="optional">
+				<xs:annotation>
+					<xs:documentation>use "nottopic" OR "topic"</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="focus" type="xs:int" use="optional"/>
+			<xs:attribute name="haveitem" type="xs:unsignedShort" use="optional"/>
+			<xs:attribute name="donthaveitem" type="xs:unsignedShort" use="optional"/>
+			<xs:attribute name="lowlevel" type="xs:unsignedInt" use="optional"/>
+			<xs:attribute name="highlevel" type="xs:unsignedInt" use="optional">
+				<xs:annotation>
+					<xs:documentation>use "highlevel" OR "lowlevel"</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute ref="param" use="optional"/>
+			<xs:attributeGroup ref="storage"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="include">
+		<xs:complexType>
+			<xs:attribute name="file" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="health">
+		<xs:complexType>
+			<xs:attribute name="now" type="xs:positiveInteger" default="100"/>
+			<xs:attribute name="max" type="xs:positiveInteger" default="100"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="action">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="name" use="required">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="topic"/>
+								<xs:enumeration value="price"/>
+								<xs:enumeration value="amount"/>
+								<xs:enumeration value="item"/>
+								<xs:enumeration value="subtype"/>
+								<xs:enumeration value="spell"/>
+								<xs:enumeration value="listname"/>
+								<xs:enumeration value="listpname"/>
+								<xs:enumeration value="teachspell"/>
+								<xs:enumeration value="sell"/>
+								<xs:enumeration value="buy"/>
+								<xs:enumeration value="takemoney"/>
+								<xs:enumeration value="givemoney"/>
+								<xs:enumeration value="level"/>
+								<xs:enumeration value="takeitem"/>
+								<xs:enumeration value="giveitem"/>
+								<xs:enumeration value="effect"/>
+								<xs:enumeration value="idle"/>
+								<xs:enumeration value="script"/>
+								<xs:enumeration value="scriptparam"/>
+								<xs:enumeration value="storage"/>
+								<xs:enumeration value="addqueue"/>
+								<xs:enumeration value="teleport"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+					<xs:attribute name="value">
+						<xs:simpleType>
+							<xs:union memberTypes="xs:int xs:string">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="|SPELL|"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:union>
+						</xs:simpleType>
+					</xs:attribute>
+					<xs:attribute name="text" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>use if 'name' = script</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="key" type="xs:int"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="parameters">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="parameter">
+					<xs:complexType>
+						<xs:attribute name="key" type="xs:string"/>
+						<xs:attribute name="value" type="xs:string"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="voices">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="voice">
+					<xs:complexType>
+						<xs:attribute name="text" type="xs:string" use="required"/>
+						<xs:attribute name="interval2" type="xs:positiveInteger" default="60"/>
+						<xs:attribute name="margin" type="xs:nonNegativeInteger" default="0"/>
+						<xs:attribute name="type" default="1">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="yell"/>
+									<xs:enumeration value="1">
+										<xs:annotation>
+											<xs:documentation>normal talk</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="2">
+										<xs:annotation>
+											<xs:documentation>whispering - #w text</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="3">
+										<xs:annotation>
+											<xs:documentation>yelling - #y text</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="4">
+										<xs:annotation>
+											<xs:documentation>Player-to-NPC speaking(NPCs channel)</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="5">
+										<xs:annotation>
+											<xs:documentation>NPC-to-Player speaking</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="6">
+										<xs:annotation>
+											<xs:documentation>Players speaking privately to players</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="7">
+										<xs:annotation>
+											<xs:documentation>Yellow message in chat</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="8">
+										<xs:annotation>
+											<xs:documentation>White message in chat</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="9">
+										<xs:annotation>
+											<xs:documentation>Broadcast a message - #b</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="10">
+										<xs:annotation>
+											<xs:documentation>Talk red on chat - #c</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="11">
+										<xs:annotation>
+											<xs:documentation>Red private - @name@ text</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="12">
+										<xs:annotation>
+											<xs:documentation>Talk orange on text</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="13">
+										<xs:annotation>
+											<xs:documentation>Talk orange</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+									<xs:enumeration value="14">
+										<xs:annotation>
+											<xs:documentation>Yell orange</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="randomspectator" type="xs:boolean" default="false"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="script">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any/>
+			</xs:sequence>
+			<xs:attribute name="text" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:attributeGroup name="storage">
+		<xs:attribute name="id" type="xs:int"/>
+		<xs:attribute name="storageId" type="xs:int">
+			<xs:annotation>
+				<xs:documentation>use "storageId" or "id"</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="value" type="xs:int"/>
+		<xs:attribute name="storageValue" type="xs:int">
+			<xs:annotation>
+				<xs:documentation>use "storageValue" or "value"</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="comparator">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="equal"/>
+					<xs:enumeration value="notequal"/>
+					<xs:enumeration value="greaterorequal"/>
+					<xs:enumeration value="greater"/>
+					<xs:enumeration value="less"/>
+					<xs:enumeration value="lessorequal"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="storageComp">
+			<xs:simpleType>
+				<xs:annotation>
+					<xs:documentation>use "storageComp" or "comparator"</xs:documentation>
+				</xs:annotation>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="equal"/>
+					<xs:enumeration value="notequal"/>
+					<xs:enumeration value="greaterorequal"/>
+					<xs:enumeration value="greater"/>
+					<xs:enumeration value="less"/>
+					<xs:enumeration value="lessorequal"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:attributeGroup>
+	<xs:attribute name="param" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Separated with semicolons. Possible parameters: male;female;pzblock;lowmoney;enoughmoney;noamount;lowamount;enoughamount;premium;promoted;druid;knight;paladin;sorcerer;lowlevel;highlevel;knowspell;cannotlearnspell</xs:documentation>
+		</xs:annotation>
+	</xs:attribute>
+</xs:schema>

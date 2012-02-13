@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.nawia.net/xsd/monster-0.0.2.xsd" targetNamespace="http://www.nawia.net/xsd/monster-0.0.2.xsd" elementFormDefault="qualified">
 	<xs:element name="voices">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="voice" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="tns:voice" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="speed" type="xs:short"/>
 			<xs:attribute name="interval" type="xs:short"/>
@@ -33,8 +33,8 @@
 	<xs:element name="summons">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="summon" maxOccurs="unbounded"/>
-				<xs:element ref="attribute" minOccurs="0"/>
+				<xs:element ref="tns:summon" maxOccurs="unbounded"/>
+				<xs:element ref="tns:attribute" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="maxSummons" use="required">
 				<xs:simpleType>
@@ -93,182 +93,182 @@
 	<xs:element name="script">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="event"/>
+				<xs:element ref="tns:event"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="monster">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="health"/>
+				<xs:element ref="tns:health"/>
 				<xs:choice>
 					<xs:sequence>
-						<xs:element ref="strategy"/>
-						<xs:element ref="targetchange"/>
-						<xs:element ref="look"/>
-						<xs:element ref="flags"/>
-						<xs:element ref="attacks"/>
-						<xs:element ref="defenses"/>
-						<xs:element ref="elements"/>
-						<xs:element ref="immunities"/>
+						<xs:element ref="tns:strategy"/>
+						<xs:element ref="tns:targetchange"/>
+						<xs:element ref="tns:look"/>
+						<xs:element ref="tns:flags"/>
+						<xs:element ref="tns:attacks"/>
+						<xs:element ref="tns:defenses"/>
+						<xs:element ref="tns:elements"/>
+						<xs:element ref="tns:immunities"/>
 						<xs:sequence minOccurs="0">
-							<xs:element ref="summons" minOccurs="0"/>
-							<xs:element ref="voices"/>
-							<xs:element ref="loot"/>
+							<xs:element ref="tns:summons" minOccurs="0"/>
+							<xs:element ref="tns:voices"/>
+							<xs:element ref="tns:loot"/>
 						</xs:sequence>
 					</xs:sequence>
 					<xs:sequence>
-						<xs:element ref="look"/>
+						<xs:element ref="tns:look"/>
 						<xs:choice>
 							<xs:sequence>
-								<xs:element ref="targetchange"/>
+								<xs:element ref="tns:targetchange"/>
 								<xs:choice>
 									<xs:sequence>
-										<xs:element ref="strategy"/>
-										<xs:element ref="flags"/>
+										<xs:element ref="tns:strategy"/>
+										<xs:element ref="tns:flags"/>
 										<xs:choice>
 											<xs:sequence>
-												<xs:element ref="script"/>
-												<xs:element ref="attacks"/>
-												<xs:element ref="defenses"/>
-												<xs:element ref="elements"/>
-												<xs:element ref="immunities"/>
-												<xs:element ref="summons"/>
-												<xs:element ref="voices"/>
+												<xs:element ref="tns:script"/>
+												<xs:element ref="tns:attacks"/>
+												<xs:element ref="tns:defenses"/>
+												<xs:element ref="tns:elements"/>
+												<xs:element ref="tns:immunities"/>
+												<xs:element ref="tns:summons"/>
+												<xs:element ref="tns:voices"/>
 											</xs:sequence>
 											<xs:sequence>
-												<xs:element ref="defenses"/>
+												<xs:element ref="tns:defenses"/>
 												<xs:choice minOccurs="0">
 													<xs:sequence>
 														<xs:sequence minOccurs="0">
-															<xs:element ref="elements"/>
-															<xs:element ref="voices"/>
+															<xs:element ref="tns:elements"/>
+															<xs:element ref="tns:voices"/>
 														</xs:sequence>
-														<xs:element ref="loot"/>
+														<xs:element ref="tns:loot"/>
 													</xs:sequence>
 													<xs:sequence>
-														<xs:element ref="immunities"/>
-														<xs:element ref="voices"/>
+														<xs:element ref="tns:immunities"/>
+														<xs:element ref="tns:voices"/>
 													</xs:sequence>
 													<xs:sequence>
-														<xs:element ref="voices"/>
-														<xs:element ref="loot" minOccurs="0"/>
+														<xs:element ref="tns:voices"/>
+														<xs:element ref="tns:loot" minOccurs="0"/>
 													</xs:sequence>
 												</xs:choice>
 											</xs:sequence>
 											<xs:sequence>
-												<xs:element ref="attacks"/>
+												<xs:element ref="tns:attacks"/>
 												<xs:choice>
 													<xs:sequence>
-														<xs:element ref="elements"/>
+														<xs:element ref="tns:elements"/>
 														<xs:choice>
 															<xs:sequence>
 																<xs:sequence minOccurs="0">
-																	<xs:element ref="immunities"/>
-																	<xs:element ref="voices"/>
+																	<xs:element ref="tns:immunities"/>
+																	<xs:element ref="tns:voices"/>
 																</xs:sequence>
-																<xs:element ref="loot"/>
+																<xs:element ref="tns:loot"/>
 															</xs:sequence>
 															<xs:sequence>
-																<xs:element ref="voices"/>
-																<xs:element ref="defenses"/>
+																<xs:element ref="tns:voices"/>
+																<xs:element ref="tns:defenses"/>
 															</xs:sequence>
 														</xs:choice>
 													</xs:sequence>
 													<xs:sequence>
-														<xs:element ref="defenses"/>
+														<xs:element ref="tns:defenses"/>
 														<xs:choice>
-															<xs:element ref="loot"/>
+															<xs:element ref="tns:loot"/>
 															<xs:sequence>
-																<xs:element ref="voices"/>
+																<xs:element ref="tns:voices"/>
 																<xs:sequence minOccurs="0">
-																	<xs:element ref="elements"/>
-																	<xs:element ref="immunities"/>
+																	<xs:element ref="tns:elements"/>
+																	<xs:element ref="tns:immunities"/>
 																</xs:sequence>
-																<xs:element ref="loot"/>
+																<xs:element ref="tns:loot"/>
 															</xs:sequence>
 															<xs:sequence>
-																<xs:element ref="summons"/>
+																<xs:element ref="tns:summons"/>
 																<xs:sequence minOccurs="0">
-																	<xs:element ref="elements"/>
-																	<xs:element ref="immunities"/>
+																	<xs:element ref="tns:elements"/>
+																	<xs:element ref="tns:immunities"/>
 																</xs:sequence>
-																<xs:element ref="voices"/>
-																<xs:element ref="loot"/>
+																<xs:element ref="tns:voices"/>
+																<xs:element ref="tns:loot"/>
 															</xs:sequence>
 															<xs:sequence>
-																<xs:element ref="immunities"/>
+																<xs:element ref="tns:immunities"/>
 																<xs:choice minOccurs="0">
-																	<xs:element ref="loot"/>
+																	<xs:element ref="tns:loot"/>
 																	<xs:sequence>
-																		<xs:element ref="voices"/>
+																		<xs:element ref="tns:voices"/>
 																		<xs:sequence minOccurs="0">
 																			<xs:choice minOccurs="0">
-																				<xs:element ref="summons"/>
+																				<xs:element ref="tns:summons"/>
 																				<xs:sequence>
-																					<xs:element ref="elements"/>
-																					<xs:element ref="immunities"/>
+																					<xs:element ref="tns:elements"/>
+																					<xs:element ref="tns:immunities"/>
 																				</xs:sequence>
 																			</xs:choice>
-																			<xs:element ref="loot"/>
+																			<xs:element ref="tns:loot"/>
 																		</xs:sequence>
 																	</xs:sequence>
 																	<xs:sequence>
-																		<xs:element ref="summons"/>
+																		<xs:element ref="tns:summons"/>
 																		<xs:sequence minOccurs="0">
-																			<xs:element ref="voices" minOccurs="0"/>
-																			<xs:element ref="loot"/>
+																			<xs:element ref="tns:voices" minOccurs="0"/>
+																			<xs:element ref="tns:loot"/>
 																		</xs:sequence>
 																	</xs:sequence>
 																	<xs:sequence>
-																		<xs:element ref="elements"/>
+																		<xs:element ref="tns:elements"/>
 																		<xs:choice minOccurs="0">
-																			<xs:element ref="loot"/>
+																			<xs:element ref="tns:loot"/>
 																			<xs:sequence>
-																				<xs:element ref="voices"/>
-																				<xs:element ref="loot" minOccurs="0"/>
+																				<xs:element ref="tns:voices"/>
+																				<xs:element ref="tns:loot" minOccurs="0"/>
 																			</xs:sequence>
 																			<xs:sequence>
-																				<xs:element ref="summons"/>
-																				<xs:element ref="voices" minOccurs="0"/>
-																				<xs:element ref="loot"/>
+																				<xs:element ref="tns:summons"/>
+																				<xs:element ref="tns:voices" minOccurs="0"/>
+																				<xs:element ref="tns:loot"/>
 																			</xs:sequence>
 																		</xs:choice>
 																	</xs:sequence>
 																</xs:choice>
 															</xs:sequence>
 															<xs:sequence>
-																<xs:element ref="elements"/>
+																<xs:element ref="tns:elements"/>
 																<xs:choice minOccurs="0">
 																	<xs:sequence>
 																		<xs:sequence minOccurs="0">
-																			<xs:element ref="summons"/>
-																			<xs:element ref="voices"/>
+																			<xs:element ref="tns:summons"/>
+																			<xs:element ref="tns:voices"/>
 																		</xs:sequence>
-																		<xs:element ref="loot"/>
+																		<xs:element ref="tns:loot"/>
 																	</xs:sequence>
 																	<xs:sequence>
-																		<xs:element ref="voices"/>
-																		<xs:element ref="loot" minOccurs="0"/>
+																		<xs:element ref="tns:voices"/>
+																		<xs:element ref="tns:loot" minOccurs="0"/>
 																	</xs:sequence>
 																	<xs:sequence>
-																		<xs:element ref="immunities"/>
+																		<xs:element ref="tns:immunities"/>
 																		<xs:choice minOccurs="0">
-																			<xs:element ref="loot"/>
+																			<xs:element ref="tns:loot"/>
 																			<xs:sequence>
-																				<xs:element ref="voices"/>
+																				<xs:element ref="tns:voices"/>
 																				<xs:sequence minOccurs="0">
-																					<xs:element ref="summons" minOccurs="0"/>
-																					<xs:element ref="loot"/>
+																					<xs:element ref="tns:summons" minOccurs="0"/>
+																					<xs:element ref="tns:loot"/>
 																				</xs:sequence>
 																			</xs:sequence>
 																			<xs:sequence>
-																				<xs:element ref="summons"/>
+																				<xs:element ref="tns:summons"/>
 																				<xs:choice minOccurs="0">
-																					<xs:element ref="loot"/>
+																					<xs:element ref="tns:loot"/>
 																					<xs:sequence>
-																						<xs:element ref="voices"/>
-																						<xs:element ref="loot" minOccurs="0"/>
+																						<xs:element ref="tns:voices"/>
+																						<xs:element ref="tns:loot" minOccurs="0"/>
 																					</xs:sequence>
 																				</xs:choice>
 																			</xs:sequence>
@@ -283,33 +283,33 @@
 										</xs:choice>
 									</xs:sequence>
 									<xs:sequence>
-										<xs:element ref="flags"/>
-										<xs:element ref="attacks"/>
-										<xs:element ref="defenses"/>
-										<xs:element ref="elements"/>
-										<xs:element ref="voices"/>
-										<xs:element ref="loot"/>
+										<xs:element ref="tns:flags"/>
+										<xs:element ref="tns:attacks"/>
+										<xs:element ref="tns:defenses"/>
+										<xs:element ref="tns:elements"/>
+										<xs:element ref="tns:voices"/>
+										<xs:element ref="tns:loot"/>
 									</xs:sequence>
 								</xs:choice>
 							</xs:sequence>
 							<xs:sequence>
-								<xs:element ref="strategy"/>
-								<xs:element ref="flags"/>
-								<xs:element ref="attacks"/>
+								<xs:element ref="tns:strategy"/>
+								<xs:element ref="tns:flags"/>
+								<xs:element ref="tns:attacks"/>
 								<xs:choice>
 									<xs:sequence>
-										<xs:element ref="elements"/>
-										<xs:element ref="defenses"/>
+										<xs:element ref="tns:elements"/>
+										<xs:element ref="tns:defenses"/>
 									</xs:sequence>
 									<xs:sequence>
-										<xs:element ref="defenses"/>
-										<xs:element ref="elements"/>
+										<xs:element ref="tns:defenses"/>
+										<xs:element ref="tns:elements"/>
 										<xs:choice minOccurs="0">
-											<xs:element ref="voices"/>
+											<xs:element ref="tns:voices"/>
 											<xs:sequence>
-												<xs:element ref="immunities"/>
-												<xs:element ref="summons" minOccurs="0"/>
-												<xs:element ref="voices"/>
+												<xs:element ref="tns:immunities"/>
+												<xs:element ref="tns:summons" minOccurs="0"/>
+												<xs:element ref="tns:voices"/>
 											</xs:sequence>
 										</xs:choice>
 									</xs:sequence>
@@ -341,7 +341,7 @@
 	<xs:element name="loot">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="item" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="tns:item" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -373,7 +373,7 @@
 	<xs:element name="item">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="inside" minOccurs="0"/>
+				<xs:element ref="tns:inside" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="id" type="xs:integer">
 				<xs:annotation>
@@ -405,7 +405,7 @@
 	<xs:element name="inside">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="item" maxOccurs="unbounded"/>
+				<xs:element ref="tns:item" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -432,7 +432,7 @@
 	<xs:element name="immunities">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="immunity" maxOccurs="unbounded"/>
+				<xs:element ref="tns:immunity" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -445,7 +445,7 @@
 	<xs:element name="flags">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="flag" maxOccurs="unbounded"/>
+				<xs:element ref="tns:flag" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -481,7 +481,7 @@
 	<xs:element name="elements">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="element" maxOccurs="unbounded"/>
+				<xs:element ref="tns:element" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -503,7 +503,7 @@
 	<xs:element name="defenses">
 		<xs:complexType mixed="true">
 			<xs:sequence>
-				<xs:element ref="defense" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="tns:defense" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="defense" type="xs:integer"/>
 			<xs:attribute name="armor" type="xs:integer"/>
@@ -512,7 +512,7 @@
 	<xs:element name="defense">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="attribute" minOccurs="0"/>
+				<xs:element ref="tns:attribute" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="speedchange">
 				<xs:simpleType>
@@ -807,8 +807,8 @@
 		<!-- ref spell & union -->
 		<xs:complexType mixed="true">
 			<xs:sequence minOccurs="0">
-				<xs:element ref="attack" maxOccurs="unbounded"/>
-				<xs:element ref="defense" minOccurs="0"/>
+				<xs:element ref="tns:attack" maxOccurs="unbounded"/>
+				<xs:element ref="tns:defense" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -816,7 +816,7 @@
 		<xs:complexType mixed="true">
 			<xs:choice minOccurs="0">
 				<xs:sequence>
-					<xs:element ref="attribute" maxOccurs="unbounded"/>
+					<xs:element ref="tns:attribute" maxOccurs="unbounded"/>
 				</xs:sequence>
 			</xs:choice>
 			<xs:attribute name="monster" type="xs:string"/>
@@ -909,14 +909,14 @@
 			<xs:attribute name="interval" type="xs:positiveInteger" use="required"/>
 			<xs:attribute name="fist" type="xs:integer"/>
 			<xs:attribute name="duration" type="xs:integer"/>
-			<xs:attribute name="distance" type="xs:integer"/> <!-- TODO: remove -> distance skill -->
+			<xs:attribute name="distance" type="xs:integer"/>
 			<xs:attribute name="club" type="xs:integer">
 				<xs:annotation>
 					<xs:documentation>skill modifier</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="change" type="xs:integer"/> <!-- TODO: remove(lifedrain spell) -->
-			<xs:attribute name="count" type="xs:integer"/> <!-- TODO: (lifedrain spell) -->
+			<xs:attribute name="change" type="xs:integer"/>
+			<xs:attribute name="count" type="xs:integer"/>
 			<xs:attribute name="chance">
 				<xs:annotation>
 					<xs:documentation>
@@ -941,6 +941,9 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<!-- TODO: remove -> distance skill -->
+			<!-- TODO: remove(lifedrain spell) -->
+			<!-- TODO: (lifedrain spell) -->
 		</xs:complexType>
 	</xs:element>
 </xs:schema>
