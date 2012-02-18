@@ -1,21 +1,86 @@
+--- @return timestamp
 function getOTSYSTime() end
-function getConfigValue() end
+
+--- @param string:key
+function getConfigValue(key) end
+
 --- @param [count]
 function doRemoveItem(uid, count) end
-function doFeedPlayer(cid, food) end
-function doSendCancel() end
+
+--- @param food number of seconds
+-- @return true on success, or false if cannot find player
+function doPlayerFeed(cid, food) end
+
+--- Send cancel message to player (when he cannot perform activity)
+-- @return true on success, false if player not found
+function doSendCancel(cid, text) end
+
+--- Send one of predefined cancel messages
+-- @param ReturnValue message id
+-- @see RETURNVALUE_NOERROR
+-- @return true on success, false if player not found
 function doSendDefaultCancel(cid, ReturnValue) end
-function doPlayerSetIdleTime() end
---- @param [pushmove]
-function doTeleportThing(cid, newpos, pushmove) end
---- @param [countOrSubtype]
+
+---
+-- @param cid
+-- @param time timestamp
+-- @param warned true if player has been warned, false otherwise
+-- @return bool:success
+--
+function doPlayerSetIdleTime(cid, time, warned) end
+
+--- Teleport item or creature
+-- @param uid
+-- @param newpos {x, y, z} target position
+-- @return true on success, false otherwise
+--
+function doTeleportThing(uid, newpos) end
+
+--- Transform item into something else
+-- @param uid
+-- @param toitemid
+-- @param [countOrSubtype]
+-- @return bool:success
+--
 function doTransformItem(uid, toitemid, countOrSubtype) end
-function doSendMagicEffect(pos, type) end
+
+---
+-- @param pos
+-- @param type
+-- @param player
+--
+function doSendMagicEffect(pos, type, player) end
+
+--- Send shoot animation
+-- @param frompos where is shoot from
+-- @param topos where is shoot to
+-- @param type projectile type
+-- @see CONST_ANI_SPEAR
+--
 function doSendDistanceShoot(frompos, topos, type) end
+
+--- Change item type
+-- @param uid id of item to change
+-- @param newtype new item type
+-- @see doTransformItem
+--
 function doChangeTypeItem(uid, newtype) end
+
+--- Send animated text onto given position
+-- @param pos target {x, y, z} position
+-- @param text text string
+-- @param color color id
+-- @see TEXTCOLOR_BLUE
+--
 function doSendAnimatedText(pos, text, color) end
-function doShowTextWindow() end
+
+---
+-- @param cid
+-- @param itemid
+-- @param text
+--
 function doShowTextDialog(cid, itemid, text) end
+
 function doDecayItem(uid) end
 function doCreateItem(itemid, typeOrCount, pos) end
 --- @param [countOrSubtype]
