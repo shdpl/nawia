@@ -1,61 +1,77 @@
 function getOTSYSTime() end
 function getConfigValue() end
-function doRemoveItem() end
-function doFeedPlayer() end
+--- @param [count]
+function doRemoveItem(uid, count) end
+function doFeedPlayer(cid, food) end
 function doSendCancel() end
-function doSendDefaultCancel() end
+function doSendDefaultCancel(cid, ReturnValue) end
 function doPlayerSetIdleTime() end
-function doTeleportThing() end
-function doTransformItem() end
-function doSendMagicEffect() end
-function doSendDistanceShoot() end
-function doChangeTypeItem() end
-function doSendAnimatedText() end
+--- @param [pushmove]
+function doTeleportThing(cid, newpos, pushmove) end
+--- @param [countOrSubtype]
+function doTransformItem(uid, toitemid, countOrSubtype) end
+function doSendMagicEffect(pos, type) end
+function doSendDistanceShoot(frompos, topos, type) end
+function doChangeTypeItem(uid, newtype) end
+function doSendAnimatedText(pos, text, color) end
 function doShowTextWindow() end
-function doShowTextDialog() end
-function doDecayItem() end
-function doCreateItem() end
-function doCreateItemEx() end
-function doCreateTeleport() end
-function doSummonCreature() end
+function doShowTextDialog(cid, itemid, text) end
+function doDecayItem(uid) end
+function doCreateItem(itemid, typeOrCount, pos) end
+--- @param [countOrSubtype]
+function doCreateItemEx(itemid, countOrSubtype) end
+function doCreateTeleport(itemid, topos, createpos) end
+function doSummonCreature(name, pos) end
 function doPlayerSummonCreature() end
-function doRemoveCreature() end
-function doMoveCreature() end
+function doRemoveCreature(cid) end
+function doMoveCreature(cid, direction) end
 function doSetCreatureDirection() end
-function doCreatureSay() end
-function doCreatureAddHealth() end
-function getCreatureLight() end
-function getCreatureLookDir() end
+function doCreatureSay(cid, text, type) end
+function doCreatureAddHealth(cid, health) end
+
+--- checks for creatures current light color
+-- @return id of light color
+function getCreatureLight(cid) end
+
+--- return direction index, where creature is facing
+-- @return constant representing creature direction
+-- @see NORTH
+function getCreatureLookDir(cid) end
 
 function doPlayerAddInFightTicks() end
-function doPlayerAddSkillTry() end
-function doPlayerAddManaSpent() end
-function doPlayerAddMana() end
-function doPlayerAddItem() end
-function doPlayerAddItemEx() end
-function doTileAddItemEx() end
+function doPlayerAddSkillTry(cid, skillid, n) end
+function doPlayerAddManaSpent(cid, mana) end
+function doPlayerAddMana(cid, mana) end
+--- @param [countOrSubtype]
+function doPlayerAddItem(uid, itemid, countOrSubtype) end
+--- @param [useCidPosOnFail] default 0
+function doPlayerAddItemEx(cid, uid, useCidPosOnFail) end
+function doTileAddItemEx(pos, uid) end
 function addContainerItemEx() end
 function doRelocate() end
-function doPlayerSendTextMessage() end
-function doPlayerRemoveMoney() end
+function doPlayerSendTextMessage(cid, MessageClasses, message) end
+function doPlayerRemoveMoney(cid, money) end
 function doPlayerAddMoney() end
 function doPlayerWithdrawMoney() end
 function doPlayerDepositMoney() end
 function doPlayerTransferMoneyTo() end
 function doPlayerSetMasterPos() end
-function doPlayerSetTown() end
-function doPlayerSetVocation() end
-function doPlayerSetSex() end
-function doPlayerRemoveItem() end
-function doPlayerAddSoul() end
-function doPlayerAddExp() end
+function doPlayerSetTown(cid, townid) end
+function doPlayerSetVocation(cid,voc) end
+
+--- sets player sex
+-- @param sex 0 for female, 1 for male
+function doPlayerSetSex(cid, sex) end
+function doPlayerRemoveItem(cid,itemid,count) end
+function doPlayerAddSoul(cid, soul) end
+function doPlayerAddExp(cid,exp) end
 function doPlayerRemoveExp() end
 function doPlayerSetGuildRank() end
 function doPlayerSetGuildNick() end
-function doSetCreatureLight() end
+function doSetCreatureLight(cid, lightLevel, lightColor, time) end
 function doPlayerSetLossPercent() end
-function doSetCreatureDropLoot() end
-function getPlayerSkullType() end
+function doSetCreatureDropLoot(cid, doDrop) end
+function getPlayerSkullType(cid) end
 function setPlayerSkullType() end
 function getPlayerSkullEndTime() end
 function getPlayerUnjustKills() end
@@ -68,17 +84,17 @@ function doPlayerSendOutfitWindow() end
 function getWaypointPositionByName() end
 
 --queries
-function getPlayerGUIDByName() end
+function getPlayerGUIDByName(name) end
 function getPlayerByAccountNumber() end
 function getAccountNumberByPlayerName() end
 function getIPByPlayerName() end
 function getPlayersByIPAddress() end
 
 --get item info
-function getItemRWInfo() end
-function getThingFromPos() end
-function getThing() end
-function getThingPos() end
+function getItemRWInfo(uid) end
+function getThingFromPos(pos) end
+function getThing(uid) end
+function getThingPos(uid) end
 function getTileStackItemsSize() end
 function getTileItemById() end
 function getTileItemByType() end
@@ -91,75 +107,140 @@ function getItemTypeDefaultDescription() end
 function getItemSpecialDescription() end
 
 --set item
-function doSetItemActionId() end
-function doSetItemText() end
-function doSetItemSpecialDescription() end
+function doSetItemActionId(uid, actionid) end
+function doSetItemText(uid, text) end
+function doSetItemSpecialDescription(uid, desc) end
 
 --get tile info
-function getTilePzInfo() end
-function getTileHouseInfo() end
-function queryTileAddThing() end
+function getTilePzInfo(pos) end
+function getTileHouseInfo(pos) end
+-- @param [flags] abc
+function queryTileAddThing(uid, pos, flags) end
 
 --houses
-function getHouseOwner() end
-function getHouseName() end
-function getHouseEntry() end
-function getHouseRent() end
-function getHouseTown() end
-function getHouseAccessList() end
-function getHouseByPlayerGUID() end
+function getHouseOwner(houseid) end
+function getHouseName(houseid) end
+function getHouseEntry(houseid) end
+function getHouseRent(houseid) end
+function getHouseTown(houseid) end
+function getHouseAccessList(houseid, listid) end
+function getHouseByPlayerGUID(playerGUID) end
 function getHouseTilesSize() end
 function getHouseDoorCount() end
 function getHouseBedCount() end
 function isHouseGuildHall() end
-function setHouseOwner() end
-function setHouseAccessList() end
+function setHouseOwner(houseid, ownerGUID) end
+function setHouseAccessList(houseid, listid, listtext) end
 function getHouseList() end
 function cleanHouse() end
 
---get player info functions
-function getPlayerFood() end
-function getPlayerAccess() end
-function getPlayerLevel() end
-function getPlayerMagLevel() end
-function getPlayerMana() end
-function getPlayerMaxMana() end
-function getPlayerSkill() end
-function getPlayerVocation() end
+--- checks for how many seconds a player is full
+-- @return time in seconds for which player is full
+function getPlayerFood(cid) end
+
+--- checks for players access
+-- @return access
+function getPlayerAccess(cid) end
+
+--- checks current player level
+-- @return players current level
+function getPlayerLevel(cid) end
+
+--- checks for current players magic level
+-- @return magic level
+function getPlayerMagLevel(cid) end
+
+--- checks for current player mana points
+-- @return players current mana
+function getPlayerMana(cid) end
+
+--- checks for player maximum mana points
+-- @return players maximum mana
+function getPlayerMaxMana(cid) end
+
+--- checks for player skill value
+-- @param cid creature id
+-- @param skillid constant id of skill
+-- @see CONST_SKILL_FIST
+function getPlayerSkill(cid, skillid) end
+
+--- checks for player vocation
+-- @param cid
+-- @return vocation id
+function getPlayerVocation(cid) end
+
 function getPlayerMasterPos() end
-function getPlayerTown() end
-function getPlayerItemCount() end
-function getPlayerSoul() end
-function getPlayerFreeCap() end
-function getPlayerSlotItem() end
+
+--- checks for town where player lives (respawns)
+-- @return town id
+function getPlayerTown(cid) end
+
+--- checks for items inside players inventory
+-- @return amount of items with given type
+function getPlayerItemCount(cid, itemid) end
+
+--- check for player current amount of soul points
+-- @return number of SP
+function getPlayerSoul(cid) end
+
+--- check for players actual free capacity
+-- @return number of OZ
+function getPlayerFreeCap(cid) end
+
+--- Checks for players item on given slot
+-- @param cid character id
+-- @param slot slot id
+-- @see CONST_SLOT_HEAD
+-- @return {itemid, uid, aid}, or 0 if no item
+function getPlayerSlotItem(cid, slot) end
+
 function getPlayerItemById() end
-function getPlayerDepotItems() end
-function getPlayerGuildId() end
-function getPlayerGuildName() end
-function getPlayerGuildRank() end
-function getPlayerGuildNick() end
+
+--- Checks for amount of player stored item tiles inside his depot
+-- @return number of items including depot locker
+function getPlayerDepotItems(cid, depotid) end
+
+function getPlayerGuildId(cid) end
+function getPlayerGuildName(cid) end
+
+--- Checks players rank in guild
+-- @return :string players rank
+function getPlayerGuildRank(cid) end
+
+function getPlayerGuildNick(cid) end
 function getPlayerGuildLevel() end
-function getPlayerSex() end
-function getPlayerGUID() end
-function getPlayerFlagValue() end
+
+--- Checks for player sex
+-- @return 0 for female, 1 for male
+function getPlayerSex(cid) end
+
+--- Checks for player id
+-- @return player id, or -1 if creature specified is not a player
+function getPlayerGUID(cid) end
+
+--- Check for specific player flag
+-- @return true if on, false if off
+-- @see PLAYERFLAG_CANNOTUSECOMBAT
+function getPlayerFlagValue(cid, flag) end
+
 function getPlayerLossPercent() end
-function getPlayerPremiumDays() end
+function getPlayerPremiumDays(cid) end
 function getPlayerAccountBalance() end
-function getPlayerByNameWildcard() end
+function getPlayerByNameWildcard(wildcard) end
 function isPremium() end
 function getPlayerLastLogin() end
 function getPlayerExperience() end
 
-function playerLearnInstantSpell() end
-function canPlayerLearnInstantSpell() end
-function getPlayerLearnedInstantSpell() end
-function getPlayerInstantSpellInfo() end
-function getPlayerInstantSpellCount() end
-function getInstantSpellInfoByName() end
-function getInstantSpellWords() end
+function playerLearnInstantSpell(cid, name) end
+function canPlayerLearnInstantSpell(cid, name) end
+function getPlayerLearnedInstantSpell(cid, name) end
+function getPlayerInstantSpellInfo(cid, index) end
+function getPlayerInstantSpellCount(cid) end
+function getInstantSpellInfoByName(cid, name) end
+function getInstantSpellWords(name) end
 
-function getPlayerStorageValue() end
-function setPlayerStorageValue() end
+function getPlayerStorageValue(sid) end
+function setPlayerStorageValue(uid, sid, value) end
 function doErasePlayerStorageValueByName() end
 function setPlayerStorageValueByName() end
 function getPlayerStorageValueByName() end
@@ -169,8 +250,8 @@ function getGlobalStorageValue() end
 function setGlobalStorageValue() end
 function doEraseGlobalStorageValue() end
 
-function doPlayerAddOutfit() end
-function doPlayerRemoveOutfit() end
+function doPlayerAddOutfit(cid,looktype,addons) end
+function doPlayerRemoveOutfit(cid,looktype,addons) end
 function doPlayerAddOutfitEx() end
 function doPlayerRemoveOutfitEx() end
 function canPlayerWearOutfit() end
@@ -178,12 +259,12 @@ function canPlayerWearOutfit() end
 function isGmInvisible() end
 function doPlayerToogleGmInvisible() end
 function getPlayerAccountId() end
-function doPlayerAddPremiumDays() end
-function doPlayerRemovePremiumDays() end
+function doPlayerAddPremiumDays(cid, days) end
+function doPlayerRemovePremiumDays(cid, days) end
 
 function getFirstItemFromInventory() end
 function getCreatureConditionInfo() end
-function getCreatureCondition() end
+function getCreatureCondition(cid, condition) end
 function doPlayerSetStamina() end
 function getPlayerStamina() end
 function getPlayerModes() end
@@ -192,26 +273,27 @@ function doUpdateGuildWar() end
 function getWorldType() end
 function getWorldTime() end
 function getWorldLight() end
-function getWorldCreatures() end
+function getWorldCreatures(type) end
 function getWorldUpTime() end
 function getPlayersOnlineList() end
-function doPlayerBroadcastMessage() end
-function getGuildId() end
+function doPlayerBroadcastMessage(message, type) end
+function getGuildId(guildName) end
 
 --type validation
 function isMonsterName() end
 function isValidItemId() end
-function isCreature() end
-function isContainer() end
+function isCreature(cid) end
+function isContainer(uid) end
 function isCorpse() end
-function isMoveable() end
+function isMoveable(uid) end
 function isValidUID() end
 
 --container
-function getContainerSize() end
-function getContainerCap() end
-function getContainerItem() end
-function doAddContainerItem() end
+function getContainerSize(uid) end
+function getContainerCap(uid) end
+function getContainerItem(uid, slot) end
+--- @param [countOrSubtype]
+function doAddContainerItem(uid, itemid, countOrSubtype) end
 function getDepotId() end
 
 -- bans
@@ -227,35 +309,36 @@ function getIPBanList() end
 
 --
 function createCombatObject() end
-function createCombatArea() end
-function setCombatArea() end
-function setCombatCondition() end
-function setCombatParam() end
-function createConditionObject() end
-function setConditionParam() end
-function addDamageCondition() end
-function addOutfitCondition() end
+--- @param [extArea]
+function createCombatArea(area, extArea) end
+function setCombatArea(combat, area) end
+function setCombatCondition(combat, condition) end
+function setCombatParam(combat, key, value) end
+function createConditionObject(type) end
+function setConditionParam(condition, key, value) end
+function addDamageCondition(condition, rounds, time, value) end
+function addOutfitCondition(condition, lookTypeEx, lookType, lookHead, lookBody, lookLegs, lookFeet) end
 
-function setCombatCallBack() end
-function setCombatFormula() end
-function setConditionFormula() end
-function doCombat() end
+function setCombatCallBack(combat, key, functionName) end
+function setCombatFormula(combat, type, mina, minb, maxa, maxb) end
+function setConditionFormula(combat, mina, minb, maxa, maxb) end
+function doCombat(cid, combat, param) end
 
-function doAreaCombatHealth() end
-function doTargetCombatHealth() end
+function doAreaCombatHealth(cid, type, pos, area, min, max, effect) end
+function doTargetCombatHealth(cid, target, type, min, max, effect) end
 
 --
-function doAreaCombatMana() end
-function doTargetCombatMana() end
+function doAreaCombatMana(cid, pos, area, min, max, effect) end
+function doTargetCombatMana(cid, target, min, max, effect) end
 
-function doAreaCombatCondition() end
-function doTargetCombatCondition() end
+function doAreaCombatCondition(cid, pos, area, condition, effect) end
+function doTargetCombatCondition(cid, target, condition, effect) end
 
-function doAreaCombatDispel() end
-function doTargetCombatDispel() end
+function doAreaCombatDispel(cid, pos, area, type, effect) end
+function doTargetCombatDispel(cid, target, type, effect) end
 
-function doChallengeCreature() end
-function doConvinceCreature() end
+function doChallengeCreature(cid, target) end
+function doConvinceCreature(cid, target) end
 function getMonsterTargetList() end
 function getMonsterFriendList() end
 function doSetMonsterTarget() end
@@ -272,20 +355,34 @@ function variantToNumber() end
 function variantToString() end
 function variantToPosition() end
 
-function doChangeSpeed() end
+function doChangeSpeed(cid, delta) end
 
 function doCreatureChangeOutfit() end
-function setCreatureOutfit() end
-function getCreatureOutfit() end
-function setMonsterOutfit() end
-function setItemOutfit() end
-function getCreaturePosition() end
-function getCreatureName() end
-function getCreatureSpeed() end
-function getCreatureBaseSpeed() end
-function getCreatureTarget() end
-function getCreatureHealth() end
-function getCreatureMaxHealth() end
+function setCreatureOutfit(cid, outfit, time) end
+function getCreatureOutfit(cid) end
+function setMonsterOutfit(cid, name, time) end
+function setItemOutfit(cid, item, time) end
+
+--- checks for creature position
+-- @return {x, y, z, stackpos} position, where stackpos is number of tiles below the player
+function getCreaturePosition(cid) end
+
+--- check creatures name
+-- @return creature name
+function getCreatureName(cid) end
+
+function getCreatureSpeed(cid) end
+function getCreatureBaseSpeed(cid) end
+function getCreatureTarget(cid) end
+
+--- check for creature current health points
+-- @return current health points
+function getCreatureHealth(cid) end
+
+--- check for creature maximum health points
+-- @return maximum health points
+function getCreatureMaxHealth(cid) end
+
 function getCreatureByName() end
 function getCreatureMaster() end
 function getCreatureSummons() end
@@ -297,25 +394,25 @@ function isCreatureImmuneToCondition() end
 function hasProperty() end
 function isItemTwoHandedByUID() end
 function isItemTwoHanded() end
-function isItemStackable() end
-function isItemRune() end
-function isItemDoor() end
-function isItemContainer() end
-function isItemFluidContainer() end
-function isItemMoveable() end
-function getItemName() end
+function isItemStackable(itemid) end
+function isItemRune(itemid) end
+function isItemDoor(itemid) end
+function isItemContainer(itemid) end
+function isItemFluidContainer(itemid) end
+function isItemMoveable(itemid) end
+function getItemName(itemid) end
 function getItemDescriptions() end
-function getItemWeight() end
+function getItemWeight(itemid, count) end
 function getItemIdByName() end
 function isSightClear() end
 function getPlayerNameByGUID() end
 
-function debugPrint() end
-function isIntegerInArray() end
+function debugPrint(text) end
+function isIntegerInArray(array, value) end
 function getFluidSourceType() end
-function addEvent() end
-function stopEvent() end
-function registerCreatureEvent() end
+function addEvent(callback, delay, parameter) end
+function stopEvent(eventid) end
+function registerCreatureEvent(uid, eventName) end
 function getDataDirectory() end
 function doPlayerSetRate() end
 function doPlayerSetVipLimit() end
