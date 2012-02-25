@@ -20,7 +20,7 @@ CREATE TABLE "accounts" (
         PRIMARY KEY ("id"),
         UNIQUE ("name")
 );
-INSERT INTO "accounts" VALUES (1, 'shd', MD5('dabfczn4'), '', 0, 0, 0),(2, 'ivul666', MD5('proz666'), '', 0, 0, 0);
+INSERT INTO "accounts" VALUES (1, 'shd', MD5('shd'), '', 0, 0, 0),(2, 'ivul666', MD5('ivul666'), '', 0, 0, 0);
 CREATE TABLE "players" (
         "id" SERIAL,
         "name" VARCHAR(255) NOT NULL,
