@@ -93,9 +93,25 @@ function doDecayItem(uid) end
 --
 function doCreateItem(itemid, typeOrCount, pos) end
 
---- @param [countOrSubtype]
+---
+-- @param itemid
+-- @param [countOrSubtype]
+-- @return uid of created item
+--
 function doCreateItemEx(itemid, countOrSubtype) end
+
+---
+-- @param itemid
+-- @param topos
+-- @param createpos
+--
 function doCreateTeleport(itemid, topos, createpos) end
+
+---
+-- @param name
+-- @param pos
+-- @return cid
+--
 function doSummonCreature(name, pos) end
 
 ---
@@ -438,10 +454,11 @@ function getThingPos(uid) end
 --
 function getTileStackItemsSize(pos) end
 
----
+--- Get item with specific type from given position
 -- @param pos
 -- @param itemId
 -- @param [subType]
+-- @returns item
 --
 function getTileItemById(pos, itemId, subType) end
 
