@@ -1,8 +1,9 @@
 Item = {}
 
 function Item.getByOTItem(otitem)
-    otitem.beforeUse = {}
-    otitem.onUse = {}
+    otitem.beforeUse    = {}
+    otitem.onUse        = {}
+    otitem.onUseFailure = {}
     return otitem;
 end
 
@@ -44,4 +45,24 @@ end
 
 function Item.addOnUse(item, callback)
     table.insert(item.onUse, callback)
+end
+
+function Item.getOnUse(item)
+    return item.onUse
+end
+
+function Item.addOnUseBefore(item, callback)
+    table.insert(item.beforeUse, callback)
+end
+
+function Item.getOnUseBefore(item)
+    return item.beforeUse
+end
+
+function Item.addOnUseFailure(item, callback)
+    table.insert(item.onUseFailure, callback)
+end
+
+function Item.getOnUseFailure(item)
+    return item.onUseFailure
 end

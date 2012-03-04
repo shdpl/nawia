@@ -20,6 +20,10 @@ function Lever.doSwitch(lever)
     return Lever.isOn(lever) and Lever.doSwitchOff(lever) or Lever.doSwitchOn(lever)
 end
 
+function Lever.doSwitchFailure(lever, player)
+    Player.doRecvInfo(player, Translate.getString('It stuck.'))
+end
+
 function Lever.is(item)
     return Lever.isOn(item) or Lever.isOff(item)
 end
@@ -33,6 +37,7 @@ function Lever.isOn(lever)
 end
 
 function Lever.getByItem(item)
+    Item.addOnUseFailure(item, Lever.doSwitchFailure)
     Item.addOnUse(item, Lever.doSwitch)
     return item;
 end

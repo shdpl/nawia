@@ -11,17 +11,23 @@ function Door.doOpen(door, creature)
     return true
 end
 
-function Door.doClose(door, creature)
+function Door.isClosable(door)
     local tile = Tile.getByPos(door.pos)
     local topEntity = Tile.getContent(tile)
+    return topEntity.uid == nil
+end
 
-    if topEntity.uid ~= nil then
-        local field = Tile.getContentsByType(tile, Field.typeid)
-
-        if (field.uid ~= topEntity.uid) then
-            Entity.doTeleportTo(topEntity, creature.pos) --todo: all entities?
-        end
-    end
+function Door.doClose(door, creature)
+--    local tile = Tile.getByPos(door.pos)
+--    local topEntity = Tile.getContent(tile)
+--
+--    if topEntity.uid ~= nil then
+--        local field = Tile.getContentsByType(tile, Field.typeid)
+--
+--        if (field.uid ~= topEntity.uid) then
+--            Entity.doTeleportTo(topEntity, creature.pos) --todo: all entities?
+--        end
+--    end
 
     Item.doTransformDec2(door);
     Item.doDecay(door)
@@ -47,6 +53,10 @@ function Door.isLocked(door)
 end
 
 function Door.getByItem(item)
+    Item.addOnUseBefore(item, Door.is)
+    if Door.isOpen(item) then
+        Item.addOnUseBefore(item, Door.isClosable)
+    end
     Item.addOnUse(item, Door.isOpen(item) and Door.doClose or Door.doOpen) --todo: lock, unlock
     return item;
 end
