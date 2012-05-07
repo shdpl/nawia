@@ -8,10 +8,15 @@ Usage =
         return ret;
     end;
 
+    getByItem = function(item)
+        return Usage.inherit(Usage.get(), item)
+    end;
+
     inherit = function(usage, item)
         Usage.inheritBefore(usage, item)
         Usage.inheritAction(usage, item)
         Usage.inheritFailure(usage, item)
+        return usage
     end;
 
     inheritBefore = function(usage, item)

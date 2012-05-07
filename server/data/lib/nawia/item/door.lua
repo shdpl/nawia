@@ -12,9 +12,10 @@ function Door.doOpen(door, creature)
 end
 
 function Door.isClosable(door)
-    local tile = Tile.getByPos(door.pos)
-    local topEntity = Tile.getContent(tile)
-    return topEntity.uid == nil
+--    local tile = Tile.getByPos(door.pos)
+--    local topEntity = Tile.getContent(tile)
+--    return topEntity.uid == nil
+    return true
 end
 
 function Door.doClose(door, creature)
@@ -28,7 +29,7 @@ function Door.doClose(door, creature)
 --            Entity.doTeleportTo(topEntity, creature.pos) --todo: all entities?
 --        end
 --    end
-
+    --doRelocate
     Item.doTransformDec2(door);
     Item.doDecay(door)
     return true

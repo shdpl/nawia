@@ -431,6 +431,7 @@ function getPlayersByIPAddress(ip) end
 
 ---
 -- @param uid
+-- @return flags (1 - readable, 2 - writable)
 --
 function getItemRWInfo(uid) end
 
@@ -465,6 +466,7 @@ function getTileItemById(pos, itemId, subType) end
 ---
 -- @param pos
 -- @param type
+-- @see ITEM_TYPE_NONE
 --
 function getTileItemByType(pos, type) end
 
@@ -476,11 +478,13 @@ function getTileThingByPos(pos) end
 ---
 -- @param pos
 -- @param topOrder
+-- @deprecated
 --
 function getTileThingByTopOrder(pos, topOrder) end
 
 ---
 -- @param pos
+-- BUGGED: as of 2012-05-06
 --
 function getTopCreature(pos) end
 
@@ -515,6 +519,7 @@ function getItemSpecialDescription(uid) end
 function doSetItemActionId(uid, actionid) end
 
 ---
+-- Set text of i.e. book
 -- @param uid
 -- @param text
 --
@@ -1224,12 +1229,13 @@ function doCombat(cid, combat, param) end
 function doAreaCombatHealth(cid, type, pos, area, min, max, effect) end
 
 ---
--- @param cid
--- @param target
--- @param type
+-- @param cid dmg issuer
+-- @param target dmg receiver
+-- @param type type of damage
 -- @param min
 -- @param max
 -- @param effect
+-- @see COMBAT_
 --
 function doTargetCombatHealth(cid, target, type, min, max, effect) end
 
@@ -1480,6 +1486,7 @@ function isCreatureImmuneToCondition(cid, conditionType, aggressive) end
 ---
 -- @param uid
 -- @param prop
+-- @see CONST_PROP_BLOCKSOLID
 --
 function hasProperty(uid, prop) end
 
@@ -1529,8 +1536,8 @@ function isItemMoveable(itemid) end
 function getItemName(itemid) end
 
 ---
---
-function getItemDescriptions() end
+-- @return item.name, item.plural, item.article
+function getItemDescriptions(uid) end
 
 ---
 -- @param itemid
@@ -1641,10 +1648,6 @@ function doRefreshMap() end
 function getPlayerIp() end
 
 ---
---
-function internalGetPlayerInfo() end
-
----
 -- @param name
 --
 function isNpcName(name) end
@@ -1663,6 +1666,7 @@ function getNpcParameterByName(name, key) end
 
 ---
 -- @param itemid
+-- @see WEAPON_NONE
 --
 function getItemWeaponType(itemid) end
 

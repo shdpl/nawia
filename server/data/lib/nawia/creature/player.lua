@@ -1,9 +1,7 @@
 Player = {}
 
 function Player.getByCID(cid)
-    local ret = Entity.getByUID(cid)
-    ret.cid = cid
-    return ret
+    return Creature.getByCID(cid)
 end
 
 function Player.doUse(player, action)
