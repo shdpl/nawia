@@ -6,12 +6,12 @@
 
 namespace PolyVox
 {
-	class SurfaceExtractorSimpleVolumeMaterial8 : public SurfaceExtractor<SimpleVolume, Material8>
+	class SurfaceExtractorSimpleVolumeMaterialDensityPair1616 : public SurfaceExtractor <SimpleVolume, MaterialDensityPair<uint32_t, 16, 16> >
 	{
 		public:
-			SurfaceExtractorSimpleVolumeMaterial8(SimpleVolume<Material8>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
-			: SurfaceExtractor<SimpleVolume, Material8>(volData, region, result) {}
-			void execute() { SurfaceExtractor<SimpleVolume, Material8>::execute(); }
+			SurfaceExtractorSimpleVolumeMaterialDensityPair1616(SimpleVolume<MaterialDensityPair<uint32_t, 16, 16> >* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
+			: SurfaceExtractor<SimpleVolume, MaterialDensityPair<uint32_t, 16, 16> >(volData, region, result) {}
+			void execute() { SurfaceExtractor<SimpleVolume, MaterialDensityPair<uint32_t, 16, 16> >::execute(); }
 	};
 };
 %}
@@ -22,10 +22,10 @@ namespace PolyVox
 
 namespace PolyVox
 {
-	class SurfaceExtractorSimpleVolumeMaterial8 : public SurfaceExtractor<SimpleVolume, Material8>
+	class SurfaceExtractorSimpleVolumeMaterialDensityPair1616 : public SurfaceExtractor <SimpleVolume, MaterialDensityPair<uint32_t, 16, 16> >
 	{
 		public:
-			SurfaceExtractorSimpleVolumeMaterial8(SimpleVolume<Material8>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
+			SurfaceExtractorSimpleVolumeMaterialDensityPair1616(SimpleVolume<MaterialDensityPair <uint32_t, 16, 16> >* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
 			void execute();
 	};
 };

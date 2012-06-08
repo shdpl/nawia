@@ -14,7 +14,6 @@ public class ServiceMonsterImpl implements ServiceMonsterLocal {
 
 	@Override
 	public Category<Monster> getChilds(Category<Monster> parent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

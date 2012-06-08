@@ -50,7 +50,7 @@ class MsgMediator : IMsgMediator, IMsgProvider, IMsgListener {
 	
 	void init() {
 		_running = true;
-		setMaxMailboxSize(thisTid, 524288, OnCrowding.throwException); //FIXME: temporary
+		setMaxMailboxSize(thisTid, 5242880, OnCrowding.throwException); //FIXME: temporary
 		_lstnrIdle.register(this);
 		_prvdrQuit.register(this);
 	}

@@ -76,8 +76,8 @@ void main() {
 //	demo = new Demo1;
 //	demo = new Demo2;
 //	demo = new Demo3;
-	demo = new Demo4;
-//	demo = new Demo5;
+//	demo = new Demo4;
+	demo = new Demo5;
 	
 	demo.init();
 	
@@ -265,7 +265,7 @@ class Demo1 : Demo {
 	override void load() {
 		platform = world.add!Scene("models/platform/platform.scene.xml"); //("platform/platform.scene.xml");
 		platform.translation = CordsLocal(0, 0, 0, null);
-		platform.size = vec3(50f, 1.f, 50f);
+		platform.size = vec3(50f, 1f, 50f);
 		_pbody ~= _peWorld.add!PBodyRigid(
 			CordsLocal(0, -1.5, 0, null),
 			Box!vec3(platform.size));
@@ -550,7 +550,7 @@ class Demo5 : Demo {
 		light.color = ColorRGB!float(.9f, .7f, .75f);
 		
 		_vol = new VolumeSimple(Box!CordsWorld(
-					CordsWorld(0,0,0), CordsWorld(575,500,10)));
+					CordsWorld(0,0,0), CordsWorld(2000,2000,16)));
 		
 		_fmter.format(_res.open("world:map.otbm"));
 		
@@ -583,7 +583,10 @@ class Demo5 : Demo {
 		if(msg.type == typeid(MsgEntityCreate))
 		{
 			auto m = msg.get!MsgEntityCreate;
-			_vol[m.x, m.y, m.z] = Voxel(m.type);
+//			if (m.x >= 2000 || m.y >= 2000 || m.z >= 16)
+//				{/*writeln(m.x," ",m.y," ",m.z);*/}
+//			else
+				_vol[m.x, m.y, m.z] = Voxel(m.type);
 		} else {
 			super.handle(msg);
 		}

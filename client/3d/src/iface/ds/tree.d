@@ -10,10 +10,10 @@ mixin template InjectTreeNode()
 		T child[];
 	}
 	
-	int opApply(scope int delegate(ref T) dg)
-	{
+//	int opApply(scope int delegate(ref T) dg)
+//	{
 		
-	}
+//	}
 }
 
 bool isTreeNode(T)(T what)

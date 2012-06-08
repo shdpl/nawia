@@ -615,9 +615,9 @@ namespace PolyVox
 						assert(ind1 >= 0);
 						assert(ind2 >= 0);
 
-						assert(ind0 < 1000000);
-						assert(ind1 < 1000000);
-						assert(ind2 < 1000000);
+						//assert(ind0 < 1000000);
+						//assert(ind1 < 1000000);
+						//assert(ind2 < 1000000);
 						m_meshCurrent->addTriangle(ind0, ind1, ind2);
 					}
 				}//For each triangle

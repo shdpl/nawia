@@ -29,7 +29,7 @@ struct H3DMessage {
 	string content;
 	}
 	
-class Logs : InputRange!(H3DMessage) {
+class Logs /*: InputRange!(H3DMessage)*/ {
 	private:
 	H3DMessage _current;
 	
@@ -42,45 +42,45 @@ class Logs : InputRange!(H3DMessage) {
 		h3dSetOption(H3DOptions.List.MaxLogLevel, level);
 	}
 	
-	override H3DMessage front() {
-		return _current;
-	}
-	
-	override void popFront() {
-		getMsg();
-	}
-	
-	override bool empty() {
-		return _current.content.empty;
-	}
-	
-	override H3DMessage moveFront() {
-		enforce(false, "not implemented");
-		return _current;
-	}
-	
-	override int opApply(int delegate(ref H3DMessage) dg) {
-		int res;
-		for(; !empty; popFront()) {
-			auto front = front;
-			res = dg(front);
-			if(res) return res;
-			}
-		return res;
-	}
-	
-	override int opApply(int delegate(ref size_t, ref H3DMessage) dg) {
-		int res;
-		
-		size_t i = 0;
-		for(; !empty; popFront()) {
-			auto front = front;
-			res = dg(i, front);
-			if(res) break;
-			i++;
-			}
-		return res;
-	}
+//	override H3DMessage front() {
+//		return _current;
+//	}
+//	
+//	override void popFront() {
+//		getMsg();
+//	}
+//	
+//	override bool empty() {
+//		return _current.content.empty;
+//	}
+//	
+//	override H3DMessage moveFront() {
+//		enforce(false, "not implemented");
+//		return _current;
+//	}
+//	
+//	int opApply(int delegate(ref H3DMessage) dg) { //TODO: override
+//		int res;
+//		for(; !empty; popFront()) {
+//			auto front = front;
+//			res = dg(front);
+//			if(res) return res;
+//			}
+//		return res;
+//	}
+//	
+//	int opApply(int delegate(ref size_t, ref H3DMessage) dg) { //TODO: override
+//		int res;
+//		
+//		size_t i = 0;
+//		for(; !empty; popFront()) {
+//			auto front = front;
+//			res = dg(i, front);
+//			if(res) break;
+//			i++;
+//			}
+//		return res;
+//	}
 	
 	size_t capacity() {
 		return to!size_t(h3dGetOption(H3DOptions.List.MaxNumMessages));

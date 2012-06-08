@@ -53,21 +53,21 @@ class VolumeSimple : IVolume {
 	///volume[x, y, z] = value;
 	Voxel opIndexAssign(Voxel value, UnitWorld x, UnitWorld y, UnitWorld z)
 	{
-		MaterialDensityPair1616 voxel = _data.getVoxelAt(x, y, z);
+		MaterialDensityPair1616 voxel = _data.getVoxelAt(x, y, z+1);
 		voxel.setDensity(value.density);
 		voxel.setMaterial(value.material);
-		_data.setVoxelAt(x, y, z, voxel);
+		_data.setVoxelAt(x, y, z+1, voxel);
 		return value;
 	}
 	
 	///value = volume[x, y, z];
-	Voxel opIndex(UnitWorld x, UnitWorld y, UnitWorld z)
-	{
-		auto ret = Voxel();
-		MaterialDensityPair1616 voxel = _data.getVoxelAt(x, y, z);
-		ret.material = to!ushort(voxel.getMaterial());
-		ret.density = to!ushort(voxel.getDensity());
-		return ret;
-	}
+//	Voxel opIndex(UnitWorld x, UnitWorld y, UnitWorld z)
+//	{
+//		auto ret = Voxel();
+//		MaterialDensityPair1616 voxel = _data.getVoxelAt(x, y, z+1);
+//		ret.material = to!ushort(voxel.getMaterial());
+//		ret.density = to!ushort(voxel.getDensity());
+//		return ret;
+//	}
 	
 }

@@ -12,6 +12,12 @@
 	</parent>
 	<packaging>ejb</packaging>
 
+	<repositories>
+		<repository>
+			<id>org.tmatesoft.svnkit</id>
+			<url>http://maven.tmatesoft.com/content/repositories/releases/</url>
+		</repository>
+	</repositories>
 	<build>
 		<plugins>
 			<plugin>
@@ -127,6 +133,16 @@
 			<artifactId>cdi-api</artifactId>
 			<version>1.0</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.tmatesoft.svnkit</groupId>
+			<artifactId>svnkit</artifactId>
+			<version>1.7.4-v1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.8</version>
 		</dependency>
 	</dependencies>
 </project>

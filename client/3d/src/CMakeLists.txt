@@ -10,6 +10,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/iface )
 
 ADD_SUBDIRECTORY( ${CMAKE_CURRENT_SOURCE_DIR}/impl )
 #include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/impl/h3d/ext )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/impl/gl3n/ext )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/impl/glfw/ext )
 #include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/impl/otbm/ext/src )
 #include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/impl/polyvox/ext )
@@ -35,6 +36,6 @@ FOREACH(file ${files})
 	ENDIF(NOT matches)
 ENDFOREACH(file)
 
-ADD_EXECUTABLE( NawiaClient3D ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/impl/otbm/ext/src/otbm/parser.d ${d_header_path}/glfw.d ${d_header_path}/glfw_im.d ${d_header_path}/horde3d.d ${d_header_path}/horde3d_im.d ${d_header_path}/horde3dutils.d ${d_header_path}/horde3dutils_im.d ${d_header_path}/PolyVoxCore.d ${d_header_path}/PolyVoxCore_im.d ${d_header_path}/BTPhysics.d ${d_header_path}/BTPhysics_im.d )
+ADD_EXECUTABLE( NawiaClient3D ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/impl/otbm/ext/src/otbm/parser.d ${CMAKE_CURRENT_SOURCE_DIR}/impl/gl3n/ext/gl3n/interpolate.d ${CMAKE_CURRENT_SOURCE_DIR}/impl/gl3n/ext/gl3n/util.d ${CMAKE_CURRENT_SOURCE_DIR}/impl/gl3n/ext/gl3n/math.d ${CMAKE_CURRENT_SOURCE_DIR}/impl/gl3n/ext/gl3n/linalg.d ${d_header_path}/glfw.d ${d_header_path}/glfw_im.d ${d_header_path}/horde3d.d ${d_header_path}/horde3d_im.d ${d_header_path}/horde3dutils.d ${d_header_path}/horde3dutils_im.d ${d_header_path}/PolyVoxCore.d ${d_header_path}/PolyVoxCore_im.d ${d_header_path}/BTPhysics.d ${d_header_path}/BTPhysics_im.d )
 
-target_link_libraries(NawiaClient3D orange dl gl3n-dmd) #FIXME: shouldn't SWIG add it?
+target_link_libraries(NawiaClient3D orange dl) #FIXME: shouldn't SWIG add it? // gl3n-dmd
