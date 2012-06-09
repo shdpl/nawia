@@ -48,6 +48,74 @@ void delegate(in Tile, in Item, in Item* parent) onItem;
 
 
 /**
+ Checks whether otbm file format version is supported by library (it's not an map version)
+ */
+bool isSupported(Version otbm)
+{
+	return otbm.major == 0;
+}
+
+/**
+ Checks whether map version supported by library (it's not an otbm version)
+ */
+bool isSupported(Nullable!Version map, Nullable!Version item)
+{
+	if (!map.isNull)
+	{
+		if (map.major <= 0 || map.major > 2)
+			return false;
+	}
+	if (!item.isNull)
+	{
+		if (item.major < 3 || item.minor < 8 || item.minor == 16)
+			return false;
+	}
+	return true;
+}
+
+struct Position
+{
+	ushort x, y;
+	ubyte z;
+}
+
+struct Tile
+{
+	Position pos;
+	uint flags;
+}
+
+struct Item
+{
+	uint id;
+	ushort type;
+	ubyte count = 1;
+	ushort aid;
+	ushort uid;
+	string text;
+	ushort charges;
+
+	bool isPortal;
+	Position portal_exit;
+	
+	bool isDepot;
+	ushort depot_id;
+}
+
+struct Waypoint
+{
+	string name;
+	Position pos;
+}
+
+struct Town
+{
+	uint id;
+	string name;
+	Position pos;
+}
+
+/**
  * Tries to parse input file. During parsing, it calls every set callback methods.
  */
 void parse(Stream stream)
@@ -304,74 +372,6 @@ void parse(Stream stream)
 		otbm.doDebug();
 		throw e;
 	}
-}
-
-/**
- Checks whether otbm file format version is supported by library (it's not an map version)
- */
-bool isSupported(Version otbm)
-{
-	return otbm.major == 0;
-}
-
-/**
- Checks whether map version supported by library (it's not an otbm version)
- */
-bool isSupported(Nullable!Version map, Nullable!Version item)
-{
-	if (!map.isNull)
-	{
-		if (map.major <= 0 || map.major > 2)
-			return false;
-	}
-	if (!item.isNull)
-	{
-		if (item.major < 3 || item.minor < 8 || item.minor == 16)
-			return false;
-	}
-	return true;
-}
-
-struct Position
-{
-	ushort x, y;
-	ubyte z;
-}
-
-struct Tile
-{
-	Position pos;
-	uint flags;
-}
-
-struct Item
-{
-	uint id;
-	ushort type;
-	ubyte count = 1;
-	ushort aid;
-	ushort uid;
-	string text;
-	ushort charges;
-
-	bool isPortal;
-	Position portal_exit;
-	
-	bool isDepot;
-	ushort depot_id;
-}
-
-struct Waypoint
-{
-	string name;
-	Position pos;
-}
-
-struct Town
-{
-		uint id;
-		string name;
-		Position pos;
 }
 
 private:
