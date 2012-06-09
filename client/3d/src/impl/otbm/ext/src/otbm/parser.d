@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2012 Mariusz 'shd' Gliwiński.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 module parser;
 
 public {
@@ -12,43 +28,42 @@ private {
 	import std.stdio : writeln;
 }
 
+//struct OTBMParser
+//{
 alias Tuple!(uint, "major", uint, "minor") Version;
 
-// callbacks
+/// callbacks
 void delegate(in Version map, in ushort width, in ushort height, in Version items) onHeader;
 
 void delegate(in char[] description) onMapDescription;
 void delegate(in char[] spawn) onMapSpawnFile;
 void delegate(in char[] houses) onMapHousesFile;
 
-void delegate(in uint id, in char[] name, in ushort x, in ushort y, in ubyte z) onTown;
-void delegate(in char[] name, in ushort x, in ushort y, in ubyte z) onWaypoint;
+void delegate(in Town) onTown;
+void delegate(in Waypoint) onWaypoint;
 
-void delegate(in ushort x, in ushort y, in ubyte z, uint flags, in ushort itemId) onTile;
-void delegate(in uint id, in ushort x, in ushort y, in ubyte z, in ushort item_type, in ubyte count = 1, in uint parent = 0) onItem;
-void delegate(
-	in uint id, in ushort x, in ushort y, in ubyte z, in ushort item_type, in ubyte count = 1, in uint parent = 0,
-	in ushort target_x = 0, in ushort target_y = 0, in ubyte target_z = 0
-) onTeleport;
-void delegate(in uint id, in ushort x, in ushort y, in ubyte z, uint flags, in ushort itemId) onHouseTile;
+void delegate(in Tile) onTile;
+/** BUG:OTBM-1 Tile, and parent here might not be fully filled with its data **/
+void delegate(in Tile, in Item, in Item* parent) onItem;
+//void delegate(in uint id, in ushort x, in ushort y, in ubyte z, uint flags, in ushort itemId) onHouseTile;
 
 
 /**
- Tries to parse input file. During parsing, it calls every set callback methods.
+ * Tries to parse input file. During parsing, it calls every set callback methods.
  */
 void parse(Stream stream)
 {	
 	ubyte type, curByte;
-	uint item_count = 0;
+	uint item_count;
 	OTBMFilter otbm = new OTBMFilter(stream);
 	
 	void parseTileArea(OTBMFilter buffer)
 	{
 		ubyte parseTile(OTBMFilter buffer, ushort x, ushort y, ubyte z)
 		{
-			uint readFlags(OTBMFilter buffer)
+			void readFlags(OTBMFilter buffer, out uint flags)
 			{
-				uint flags, validFlags;
+				uint validFlags;
 				
 				buffer.read(flags);
 				if (flags & TileState.PROTECTIONZONE)
@@ -72,134 +87,115 @@ void parse(Stream stream)
 					validFlags |= TileState.REFRESH;
 				}
 				enforceEx!MapFormatBroken(validFlags == flags);
-				return flags;
 			}
-			ubyte parseItem(OTBMFilter buf, ushort x, ushort y, ubyte z, uint parent = 0)
+			ubyte parseItem(OTBMFilter buf, in Tile tile, in Item* parent = null)
 			{
-				try {
-					uint item_id = ++item_count;
-					ubyte ub;
-					ushort item_type;
-					ubyte count = 1;
-					bool tele = false;
-					ushort tele_target_x, tele_target_y;
-					ubyte tele_target_z;
-					
-					buf.read(item_type);
-					buf.read(ub);
-					while(ub != NODE_END)
-					{
-						switch(ub)
-						{
-							case NODE_START:
-								buffer.read(ub);
-								switch(ub)
-								{
-									case NodeType.ITEM:
-										parseItem(buf, x,y,z, item_id);
-										buf.read(ub);
-									break;
-									default:
-										enforceEx!MapFormatBroken(false);
-								}
-							break;
-							case DataType.COUNT:
-								buffer.read(count);
-								buffer.read(ub);
-							break;
-							case DataType.TELE_DEST:
-								tele = true;
-								buffer.read(tele_target_x);
-								buffer.read(tele_target_y);
-								buffer.read(tele_target_z);
-								buffer.read(ub);
-							break;
-							case DataType.DEPOT_ID:
-								ushort depot_id;
-								buffer.read(depot_id);
-								buffer.read(ub);
-							break;
-							case DataType.TEXT:
-								string str = to!string(readStr(buffer));
-								buffer.read(ub);
-							break;
-							case DataType.CHARGES:
-								ushort charges;
-								buffer.read(charges);
-								buffer.read(ub);
-							break;
-							case DataType.ACTION_ID:
-								ushort aid;
-								buffer.read(aid);
-								buffer.read(ub);
-							break;
-							case DataType.UNIQUE_ID:
-								ushort uid;
-								buffer.read(uid);
-								buffer.read(ub);
-							break;
-							default:
-								enforceEx!MapFormatBroken(false);
-						}
-					}
-					if (!tele && onItem !is null)
-					{
-						onItem(item_id, x,y,z, item_type, count, parent);
-					}
-					else if(tele && onTeleport !is null)
-					{
-						onTeleport(item_id, x,y,z, item_type, count, parent, tele_target_x,tele_target_y,tele_target_z);
-					}
-					return ub;
-				} catch (MapFormatBroken e)  {
-					writeln("parseItem()");
-					throw e;
-				}
-			}
-			try {
-				ubyte curByte, type, dx, dy;
+				ubyte ub;
+				Item i = Item();
+				i.id = ++item_count;
 				
-				buffer.read(dx);
-				buffer.read(dy);
-				if (onTile !is null)
+				buf.read(i.type);
+				buf.read(ub);
+				while(ub != NODE_END)
 				{
-					onTile(to!ushort(x+dx),to!ushort(y+dy),z,0,to!ushort(1));
-				}
-			
-				buffer.read(curByte);
-				while(curByte != NODE_END)
-				{
-					switch(curByte)
+					switch(ub)
 					{
-						case DataType.ITEM:
-							curByte = parseItem(buffer,to!ushort(x+dx),to!ushort(y+dy),z);
-						break;
-						case DataType.TILE_FLAGS:
-							auto flags = readFlags(buffer);
-							buffer.read(curByte);
-						break;
 						case NODE_START:
-							otbm.read(curByte);
-							while(curByte != NODE_END)
+							buffer.read(ub);
+							switch(ub)
 							{
-								switch(curByte)
-								{
-									case NodeType.ITEM:
-										curByte = parseItem(buffer,to!ushort(x+dx),to!ushort(y+dy),z);
-									break;
-									default:
-										enforceEx!MapFormatBroken(false);
-								}
+								case NodeType.ITEM:
+									parseItem(buf, tile, &i);
+									buf.read(ub);
+								break;
+								default:
+									enforceEx!MapFormatBroken(false);
 							}
-							otbm.read(curByte);
+						break;
+						case DataType.COUNT:
+							buffer.read(i.count);
+							buffer.read(ub);
+						break;
+						case DataType.TELE_DEST:
+							i.isPortal = true;
+							buffer.read(i.portal_exit.x);
+							buffer.read(i.portal_exit.y);
+							buffer.read(i.portal_exit.z);
+							buffer.read(ub);
+						break;
+						case DataType.DEPOT_ID:
+							i.isDepot = true;
+							buffer.read(i.depot_id);
+							buffer.read(ub);
+						break;
+						case DataType.TEXT:
+							i.text = to!string(readStr(buffer));
+							buffer.read(ub);
+						break;
+						case DataType.CHARGES:
+							buffer.read(i.charges);
+							buffer.read(ub);
+						break;
+						case DataType.ACTION_ID:
+							buffer.read(i.aid);
+							buffer.read(ub);
+						break;
+						case DataType.UNIQUE_ID:
+							buffer.read(i.uid);
+							buffer.read(ub);
 						break;
 						default:
-							enforceEx!MapFormatBroken(curByte == NODE_END);
+							enforceEx!MapFormatBroken(false);
 					}
 				}
-			} catch (MapFormatBroken e)  {
-				writeln("parseTile()");
-				throw e;
+				if (onItem !is null)
+				{
+					onItem(tile, i, parent);
+				}
+				
+				return ub;
+			}
+			ubyte curByte, type, dx, dy;
+			Tile t;
+			
+			buffer.read(dx); t.pos.x = to!ushort(x+dx);
+			buffer.read(dy); t.pos.y = to!ushort(y+dy);
+			t.pos.z = z;
+		
+			buffer.read(curByte);
+			while(curByte != NODE_END)
+			{
+				switch(curByte)
+				{
+					case DataType.ITEM:
+						curByte = parseItem(buffer,t);
+					break;
+					case DataType.TILE_FLAGS:
+						readFlags(buffer, t.flags);
+						buffer.read(curByte);
+					break;
+					case NODE_START:
+						otbm.read(curByte);
+						while(curByte != NODE_END)
+						{
+							switch(curByte)
+							{
+								case NodeType.ITEM:
+									curByte = parseItem(buffer,t);
+								break;
+								default:
+									enforceEx!MapFormatBroken(false);
+							}
+						}
+						otbm.read(curByte);
+					break;
+					default:
+						enforceEx!MapFormatBroken(curByte == NODE_END);
+				}
+			}
+			if (onTile !is null)
+			{
+				onTile(t);
 			}
 			buffer.read(curByte);
 			return curByte;
@@ -237,10 +233,7 @@ void parse(Stream stream)
 	}
 	void parseTowns(OTBMFilter buf)
 	{
-		uint townId;
-		char[] name;
-		ushort x, y;
-		ubyte z, ub;
+		ubyte ub;
 		buf.read(ub);
 		enforceEx!MapFormatBroken(ub == NODE_START);
 		while(ub != NODE_END)
@@ -249,13 +242,14 @@ void parse(Stream stream)
 			switch(ub)
 			{
 				case NodeType.TOWN:
-					buf.read(townId);
-					name = readStr(buf);
-					buf.read(x);
-					buf.read(y);
-					buf.read(z);
+					Town t;
+					buf.read(t.id);
+					t.name = to!string(readStr(buf));
+					buf.read(t.pos.x);
+					buf.read(t.pos.y);
+					buf.read(t.pos.z);
 					if (onTown !is null)
-						onTown(townId, name, x, y, z);
+						onTown(t);
 					buf.read(ub);
 				break;
 				default:
@@ -291,6 +285,16 @@ void parse(Stream stream)
 					{
 						switch(curByte)
 						{
+							case NodeType.WAYPOINT:
+								Waypoint wp;
+								wp.name = to!string(readStr(otbm));
+								
+								otbm.read(wp.pos.x);
+								otbm.read(wp.pos.y);
+								otbm.read(wp.pos.z);
+								if (onWaypoint !is null)
+									onWaypoint(wp);
+							break;
 							default:
 								enforceEx!MapFormatBroken(false);
 						}
@@ -332,6 +336,48 @@ bool isSupported(Nullable!Version map, Nullable!Version item)
 			return false;
 	}
 	return true;
+}
+
+struct Position
+{
+	ushort x, y;
+	ubyte z;
+}
+
+struct Tile
+{
+	Position pos;
+	uint flags;
+}
+
+struct Item
+{
+	uint id;
+	ushort type;
+	ubyte count = 1;
+	ushort aid;
+	ushort uid;
+	string text;
+	ushort charges;
+
+	bool isPortal;
+	Position portal_exit;
+	
+	bool isDepot;
+	ushort depot_id;
+}
+
+struct Waypoint
+{
+	string name;
+	Position pos;
+}
+
+struct Town
+{
+		uint id;
+		string name;
+		Position pos;
 }
 
 private:
@@ -552,114 +598,14 @@ void parseHeader(OTBMFilter buffer)
 		onHeader(map, width, height, items);
 }
 
-//struct Item
-//{
-//	ushort itemId;
-//	ubyte count;
-//	
-//	
-//	this(Stream buffer)
-//	{
-//		//TODO (more items on one tile?)
-//	}
-//}
-//
-//
-//struct TileHouse
-//{
-//	ushort houseId, itemId;
-//	uint flags;
-//	
-//	this(Stream buffer)
-//	{
-//		ubyte curByte;
-//		
-//		buffer.read(houseId);
-//		buffer.read(curByte);
-//		switch(curByte)
-//		{
-//			case DataType.ITEM:
-//				itemId = readItem(buffer);
-//				buffer.read(curByte);
-//			break;
-//			case DataType.TILE_FLAGS:
-//				flags = readFlags(buffer);
-//				buffer.read(curByte);
-//			break;
-//			default:
-//		}
-//		enforceEx!MapFormatBroken(curByte == NODE_END);
-//	}
-//}
-//
-
-//struct Token
-//{
-//	ubyte type;
-//	Token[] childs;
-//	Stream buffer;
-//	
-//	
-//	this(Stream buffer, Token[] childs)
-//	{
-//		this.buffer = buffer;
-//		this.childs = childs;
-//		
-//		buffer.read(type);
-//		parseNode();
-//	}
-	
-//	void parseNode()
-//	{
-//		switch(type)
-//		{
-//			case NodeType.ROOT:
-//				parseHeader();
-//			break;
-//			case NodeType.MAP_DATA:
-//				parseMapData();
-//			break;
-//			case NodeType.TOWNS:
-//				parseTowns();
-//			break;
-//			case NodeType.WAYPOINTS:
-//				parseWaypoints();
-//			break;
-//			case NodeType.TILE_AREA:
-//				parseTiles();
-//			break;
-//			default:
-//				enforceEx!MapFormatBroken(NodeType.TILE == type || NodeType.HOUSETILE == type || NodeType.ITEM == type || NodeType.TOWN == type);
-//		}
-//	}
-	
-//	
-//	void parseWaypoints()
-//	{
-//		char[] name;
-//		ushort x, y;
-//		ubyte z;
-//		foreach(ref child; childs)
-//		{
-//			enforceEx!MapFormatBroken(child.type == NodeType.WAYPOINT);
-//			name = readStr(child.buffer);
-//			
-//			child.buffer.read(x);
-//			child.buffer.read(y);
-//			child.buffer.read(z);
-//			if (onWaypoint !is null)
-//				onWaypoint(name, x, y, z);
-//		}
-//	}
-//	
-//	
-//}
 char[] readStr(Stream buffer)
 {
 	ushort len;
 	buffer.read(len);
 	return buffer.readString(len);
 }
+	
+//}
 
 public:
 // Exceptions

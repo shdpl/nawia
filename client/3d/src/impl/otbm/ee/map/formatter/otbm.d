@@ -18,6 +18,8 @@ private import
 class FormatterOTBM : IMsgProvider
 {
 	mixin InjectMsgListener!MsgEntityCreate _lstnrCreate;
+	ushort width;
+	ushort height;
 
 	void init()
 	{
@@ -31,22 +33,53 @@ class FormatterOTBM : IMsgProvider
 	
 	void format(Stream otbm)
 	{
-		onHeader = delegate(in Version map, in ushort width, in ushort height, in Version items)
-		{
-			writeln("Map version\t- OTBMv",map.major," ","OTBv",items.major,".",items.minor);
-			writeln("Map size\t- ",width,"x",height);
-		};
-		onTile = &deliverEntityCreate;
+		onHeader = &formatHeader;
+//		onTile = &formatTile;
+		onItem = &formatItem;
+//		onTown = &formatTown;
+//		onWaypoint = &formatWaypoint;
 		parse(otbm);
 	}
 	
-	void deliverEntityCreate(in ushort x, in ushort y, in ubyte z, uint flags, in ushort itemId)
+	void formatHeader(in Version map, in ushort width, in ushort height, in Version items)
 	{
-		auto msg = MsgEntityCreate();
-		msg.x = x;
-		msg.y = y;
-		msg.z = z;
-		msg.type = itemId;
-		_lstnrCreate.deliver(msg);
+		writeln("Map version\t- OTBMv",map.major," ","OTBv",items.major,".",items.minor);
+		writeln("Map size\t- ",width,"x",height);
+		this.width = width;
+		this.height = height;
 	}
+	
+//	void formatTile(in Tile t)
+//	{
+//		if (t.pos.x > width || t.pos.y > height)
+//		{
+//			writeln("WARNING: Entity positioned out of map found(",t.pos.x,",",t.pos.y,").");
+//			return;
+//		}
+//	}
+	
+	void formatItem(in Tile t, in Item i, in Item* p)
+	{
+		if (t.pos.x > width || t.pos.y > height)
+			writeln("WARNING: Entity positioned out of map found(",t.pos.x,",",t.pos.y,").");
+		else
+		{
+			auto msg = MsgEntityCreate();
+			msg.x = t.pos.x;
+			msg.y = t.pos.y;
+			msg.z = t.pos.z;
+			msg.type = i.type;
+			_lstnrCreate.deliver(msg);
+		}
+	}
+	
+//	void formatTown(in Town t)
+//	{
+//		writeln(t.name);
+//	}
+//	
+//	void formatWaypoint(in Waypoint w)
+//	{
+//		writeln(w.name);
+//	}
 }

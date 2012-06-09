@@ -549,8 +549,7 @@ class Demo5 : Demo {
 		light.fov = 90;
 		light.color = ColorRGB!float(.9f, .7f, .75f);
 		
-		_vol = new VolumeSimple(Box!CordsWorld(
-					CordsWorld(0,0,0), CordsWorld(2000,2000,16)));
+		_vol = new VolumeSimple(Box!CordsWorld( CordsWorld(0,0,0), CordsWorld(2000,2000,16) ));
 		
 		_fmter.format(_res.open("world:map.otbm"));
 		
@@ -583,10 +582,22 @@ class Demo5 : Demo {
 		if(msg.type == typeid(MsgEntityCreate))
 		{
 			auto m = msg.get!MsgEntityCreate;
-//			if (m.x >= 2000 || m.y >= 2000 || m.z >= 16)
-//				{/*writeln(m.x," ",m.y," ",m.z);*/}
-//			else
-				_vol[m.x, m.y, m.z] = Voxel(m.type);
+			
+//			m.x -= 512;
+//			m.y -= 512;
+//			m.z -= 0;
+//			if(m.x > 0 && m.x < 255 && m.y > 0 && m.y < 255 && m.z > 0 && m.z < 16)
+//			{
+//				_vol[m.x*2, m.y*2, m.z*2] = Voxel(m.type);
+//				_vol[m.x*2+1, m.y*2, m.z*2] = Voxel(m.type);
+//				_vol[m.x*2+1, m.y*2+1, m.z*2] = Voxel(m.type);
+//				_vol[m.x*2, m.y*2+1, m.z*2] = Voxel(m.type);
+//				_vol[m.x*2, m.y*2+1, m.z*2+1] = Voxel(m.type);
+//				_vol[m.x*2+1, m.y*2, m.z*2] = Voxel(m.type);
+//				_vol[m.x*2+1, m.y*2+1, m.z*2+1] = Voxel(m.type);
+//				_vol[m.x*2, m.y*2, m.z*2+1] = Voxel(m.type);
+//			}
+			_vol[m.x, m.y, m.z] = Voxel(m.type);
 		} else {
 			super.handle(msg);
 		}
