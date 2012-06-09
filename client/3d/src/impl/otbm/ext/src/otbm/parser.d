@@ -320,57 +320,51 @@ void parse(Stream stream)
 		}
 	}
 	
-	try {
-		Version vOtbm;
-		otbm.read(vOtbm.major);
-		enforceEx!OTBMVersionNotSupported(isSupported(vOtbm), text("version=",vOtbm));
-		
-		otbm.onNodeChildNext!(NodeType.ROOT, parseHeader);
-		otbm.onNodeChildNext!(NodeType.MAP_DATA, parseMapData);
-		curByte = otbm._peekedByte;
-		while(curByte != NODE_END)
-		{
-			enforceEx!MapFormatBroken(curByte == NODE_START);
-			otbm.read(curByte);
-			switch(curByte)
-			{
-				case NodeType.TILE_AREA:
-					parseTileArea(otbm);
-				break;
-				case NodeType.TOWNS:
-					parseTowns(otbm);
-					otbm.read(curByte);
-				break;
-				case NodeType.WAYPOINTS:
-					otbm.read(curByte);
-					while(curByte != NODE_END)
-					{
-						switch(curByte)
-						{
-							case NodeType.WAYPOINT:
-								Waypoint wp;
-								wp.name = to!string(readStr(otbm));
-								
-								otbm.read(wp.pos.x);
-								otbm.read(wp.pos.y);
-								otbm.read(wp.pos.z);
-								if (onWaypoint !is null)
-									onWaypoint(wp);
-							break;
-							default:
-								enforceEx!MapFormatBroken(false);
-						}
-					}
-				break;
-				default:
-					enforceEx!MapFormatBroken(false);
-			}
-			otbm.read(curByte);
-		}
-	} catch(MapFormatBroken e)
+	Version vOtbm;
+	otbm.read(vOtbm.major);
+	enforceEx!OTBMVersionNotSupported(isSupported(vOtbm), text("version=",vOtbm));
+	
+	otbm.onNodeChildNext!(NodeType.ROOT, parseHeader);
+	otbm.onNodeChildNext!(NodeType.MAP_DATA, parseMapData);
+	curByte = otbm._peekedByte;
+	while(curByte != NODE_END)
 	{
-		otbm.doDebug();
-		throw e;
+		enforceEx!MapFormatBroken(curByte == NODE_START);
+		otbm.read(curByte);
+		switch(curByte)
+		{
+			case NodeType.TILE_AREA:
+				parseTileArea(otbm);
+			break;
+			case NodeType.TOWNS:
+				parseTowns(otbm);
+				otbm.read(curByte);
+			break;
+			case NodeType.WAYPOINTS:
+				otbm.read(curByte);
+				while(curByte != NODE_END)
+				{
+					switch(curByte)
+					{
+						case NodeType.WAYPOINT:
+							Waypoint wp;
+							wp.name = to!string(readStr(otbm));
+							
+							otbm.read(wp.pos.x);
+							otbm.read(wp.pos.y);
+							otbm.read(wp.pos.z);
+							if (onWaypoint !is null)
+								onWaypoint(wp);
+						break;
+						default:
+							enforceEx!MapFormatBroken(false);
+					}
+				}
+			break;
+			default:
+				enforceEx!MapFormatBroken(false);
+		}
+		otbm.read(curByte);
 	}
 }
 

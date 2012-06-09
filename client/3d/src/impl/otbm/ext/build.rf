@@ -1,6 +1,8 @@
 -od"bin"
--of"bin/libotbm"
+-of"bin/otbm"
 
 -I"src"
 
 "src/otbm/parser.d"
+"src/tool.d"
+
