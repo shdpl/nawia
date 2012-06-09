@@ -471,7 +471,7 @@ class Demo4 : Demo {
 		auto extractor = new ExtractorMesh(vol);
 		auto geo = cast(Geometry) extractor.extract(/*cam.fov*/);
 		
-		auto mat = new Material("materials/terrain.material.xml");
+		auto mat = new Material("materials/mesh.material.xml");
 		
 		Model model = world.add!Model("DynGeoModelNode", geo);
 		model.add!Mesh("DynGeoMesh", mat, 0, geo.verticesNo, 0, geo.indicesNo );
@@ -529,8 +529,8 @@ class Demo5 : Demo {
 		sky.scale = vec3(210, 50, 210);
 		sky.shadowsDisabled = true;
 		
-//		world.viewWireFrame = true;
-		pipe = new Pipeline("pipelines/forward.pipeline.xml");
+		world.viewWireFrame = true;
+		pipe = new Pipeline("pipelines/deferred.pipeline.xml");
 		cam = world.add!Camera(pipe);
 		cam.translation = CordsLocal(2, 1, 0, null);
 		cam.rotation = CordsLocal(-20, 135, 0, null);
@@ -567,7 +567,7 @@ class Demo5 : Demo {
 		auto extractor = new ExtractorMesh(_vol);
 		auto geo = cast(Geometry) extractor.extract(/*cam.fov*/);
 		
-		auto mat = new Material("materials/terrain.material.xml");
+		auto mat = new Material("materials/mesh.material.xml");
 		
 		Model model = world.add!Model("DynGeoModelNode", geo);
 		model.add!Mesh("DynGeoMesh", mat, 0, geo.verticesNo, 0, geo.indicesNo );

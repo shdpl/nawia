@@ -25,7 +25,6 @@ private {
 	import std.exception : enforceEx, Exception;
 	import std.conv : text, to;
 	import std.process;
-	import std.stdio : writeln;
 }
 
 //struct OTBMParser
@@ -200,35 +199,30 @@ void parse(Stream stream)
 			buffer.read(curByte);
 			return curByte;
 		}
-		try {
-			ushort x, y;
-			ubyte curByte, z;
-			buffer.read(x);
-			buffer.read(y);
-			buffer.read(z);
-			enforceEx!MapFormatBroken(z < 16);
-			
+		ushort x, y;
+		ubyte curByte, z;
+		buffer.read(x);
+		buffer.read(y);
+		buffer.read(z);
+		enforceEx!MapFormatBroken(z < 16);
+		
+		buffer.read(curByte);
+		enforceEx!MapFormatBroken(curByte == NODE_START);
+		while(curByte != NODE_END)
+		{
 			buffer.read(curByte);
-			enforceEx!MapFormatBroken(curByte == NODE_START);
-			while(curByte != NODE_END)
+			switch(curByte)
 			{
-				buffer.read(curByte);
-				switch(curByte)
-				{
-					case NodeType.TILE:
-						curByte = parseTile(buffer, x,y,z);
-					break;
-	//				case NodeType.HOUSETILE:
-	//					buffer.doDebug();
-	//	//				TileHouse(buffer);
-	//				break;
-					default:
-						enforceEx!MapFormatBroken(false);
-				}
+				case NodeType.TILE:
+					curByte = parseTile(buffer, x,y,z);
+				break;
+//				case NodeType.HOUSETILE:
+//					buffer.doDebug();
+//	//				TileHouse(buffer);
+//				break;
+				default:
+					enforceEx!MapFormatBroken(false);
 			}
-		} catch (MapFormatBroken e)  {
-			writeln("parseTileArea()");
-			throw e;
 		}
 	}
 	void parseTowns(OTBMFilter buf)
@@ -492,7 +486,6 @@ class OTBMFilter : FilterStream
 				"hexdump -C /home/shd/src/nawia/client/3d/bin/data/world/map.otbm -s "
 				,source.position > 16 ? source.position-16 : source.position
 				," | head -n ",lines);
-		writeln(cmd);
 		system(cmd.ptr);
 	}
 }
