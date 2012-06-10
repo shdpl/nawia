@@ -24,6 +24,7 @@ private {
 	import std.variant;
 	import std.exception : enforceEx, Exception;
 	import std.conv : text, to;
+	import std.stdio : writeln;
 	import std.process;
 }
 
@@ -113,6 +114,244 @@ struct Town
 	uint id;
 	string name;
 	Position pos;
+}
+
+
+
+enum ItemGroup : ubyte
+{
+  NONE = 0,
+  GROUND,
+  CONTAINER,
+  WEAPON,    /*deprecated*/
+  AMMUNITION,  /*deprecated*/
+  ARMOR,   /*deprecated*/
+  CHARGES,
+  ITEM_GROUP_TELEPORT,  /*deprecated*/
+  ITEM_GROUP_MAGICFIELD,  /*deprecated*/
+  ITEM_GROUP_WRITEABLE, /*deprecated*/
+  ITEM_GROUP_KEY,     /*deprecated*/
+  ITEM_GROUP_SPLASH,
+  ITEM_GROUP_FLUID,
+  ITEM_GROUP_DOOR,    /*deprecated*/
+  ITEM_GROUP_DEPRECATED,
+  ITEM_GROUP_LAST
+};
+
+enum ItemAttribute : ubyte
+{
+  ServerId = 0x10,
+  ClientId,
+  Name,
+  Descr,
+  Speed,
+  Slot,
+  MaxItems,
+  Weight,
+  Weapon,
+  Ammunition,
+  Armor,
+  MagLevel,
+  MagFieldType,
+  Writeable,
+  RotateTo,
+  Decay,
+  SpriteHash,
+  MiniMapColor,
+  Attribute07,
+  Attribute08,
+  Light,
+  Decay2,
+  Weapon2,
+  Ammunition2,
+  Armor2,
+  Writeable2,
+  Light2,
+  TopOrder,
+  Writeable3,
+  WareId,
+};
+
+enum ItemFlags : uint
+{
+  BlockSolid = 1 << 0,
+  BlockProjectile = 1 << 1,
+  BlockPathFind = 1 << 2,
+  HasHeight = 1 << 3,
+  Usable = 1 << 4,
+  Pickupable = 1 << 5,
+  Movable = 1 << 6,
+  Stackable = 1 << 7,
+  FloorChangeDown = 1 << 8,
+  FloorChangeNorth = 1 << 9,
+  FloorChangeEast = 1 << 10,
+  FloorChangeSouth = 1 << 11,
+  FloorChangeWest = 1 << 12,
+  AlwaysOnTop = 1 << 13,
+  Readable = 1 << 14,
+  Rotable = 1 << 15,
+  Hangable = 1 << 16,
+  Vertical = 1 << 17,
+  Horizontal = 1 << 18,
+  CannotDecay = 1 << 19,
+  AllowDistRead = 1 << 20,
+  Unused = 1 << 21,
+  ClientCharges = 1 << 22, //deprecated
+  LookThrough = 1 << 23,
+  Animation = 1 << 24,
+  WalkStack = 1 << 25
+};
+
+struct Light
+{
+	align(1)
+	ushort level;
+	ushort color;
+}
+
+struct VersionInfo
+{
+	align(1)
+	uint otb_version;
+	uint client_version;
+	uint build;
+	char[128] csd;
+}
+void delegate(VersionInfo) onOTBVersion;
+
+struct ItemType
+{
+	string name;
+	ItemGroup group;
+	ItemFlags flags;
+	ushort serverId;
+	ushort clientId;
+	ushort speed;
+	Light light2;
+	ubyte topOrder;
+	ushort wareId;
+	ubyte[16] hash;
+	ushort miniMapColor;
+}
+void delegate(ItemType) onItemType;
+
+void parseOTB(Stream stream)
+{
+	enum RootAttrib : ubyte
+	{
+		VERSION = 0x1
+	}
+	alias ushort DataSize;
+	
+	
+	ubyte cb;
+	ushort len;
+	RootAttrib ra;
+	OTBMFilter otb = new OTBMFilter(stream);
+	
+	Version vOtb;
+	otb.read(vOtb.major);
+	enforceEx!OTBMVersionNotSupported(isSupported(vOtb), text("version=",vOtb));
+	otb.read(cb);
+	enforceEx!MapFormatBroken(cb == NODE_START);
+	otb.read(cb);
+	switch(cb)
+	{
+		case 0:
+			uint flags;
+			otb.read(flags);
+			otb.read(cast(ubyte) ra);
+			switch(ra)
+			{
+				case RootAttrib.VERSION:
+					immutable GENERIC_OTB = 0xffffffff;
+					DataSize ds;
+					otb.read(ds);
+					enforceEx!MapFormatBroken(ds == VersionInfo.sizeof);
+					VersionInfo vi;
+					otb.read(vi.otb_version);
+					otb.read(vi.client_version);
+					otb.read(vi.build);
+					otb.readString(128);
+					enforceEx!MapVersionNotSupported(vi.otb_version == GENERIC_OTB || vi.otb_version == 3);
+					if (onOTBVersion !is null)
+					{
+						onOTBVersion(vi);
+					}
+				break;
+				default:
+					enforceEx!MapFormatBroken(false);
+			}
+		break;
+		default:
+			enforceEx!MapFormatBroken(false);
+	}
+	for(otb.read(cb); cb != NODE_END; otb.read(cb) )
+	{
+		ItemType it;
+		otb.read(cast(ubyte) it.group);
+		otb.read(cast(uint) it.flags);
+		
+		ushort size;
+		otb.read(cb);
+		while (cb != NODE_END)
+		{
+			otb.read(size);
+			switch(cb)
+			{
+				case ItemAttribute.ServerId:
+					enforceEx!MapFormatBroken(size == it.serverId.sizeof);
+					otb.read(it.serverId);
+				break;
+				case ItemAttribute.ClientId:
+					enforceEx!MapFormatBroken(size == it.clientId.sizeof);
+					otb.read(it.clientId);
+				break;
+				case ItemAttribute.Speed:
+					enforceEx!MapFormatBroken(size == it.speed.sizeof);
+					otb.read(it.speed);
+				break;
+				case ItemAttribute.Light2:
+					enforceEx!MapFormatBroken(size == it.light2.sizeof);
+					otb.read(it.light2.level);
+					otb.read(it.light2.color);
+				break;
+				case ItemAttribute.TopOrder:
+					enforceEx!MapFormatBroken(size == it.topOrder.sizeof);
+					otb.read(it.topOrder);
+				break;
+				case ItemAttribute.WareId:
+					enforceEx!MapFormatBroken(size == it.wareId.sizeof);
+					otb.read(it.wareId);
+				break;
+				case ItemAttribute.Name:
+					it.name = to!string(otb.readString(size));
+				break;
+				case ItemAttribute.SpriteHash:
+					enforceEx!MapFormatBroken(size == it.hash.sizeof);
+					otb.read(it.hash);
+				break;
+				case ItemAttribute.MiniMapColor:
+					enforceEx!MapFormatBroken(size == it.miniMapColor.sizeof);
+					otb.read(it.miniMapColor);
+				break;
+				case ItemAttribute.Attribute07:
+					otb.seekCur(size);
+				break;
+				case ItemAttribute.Attribute08:
+					otb.seekCur(size);
+				break;
+				default:
+					enforceEx!MapFormatBroken(false);
+			}
+			otb.read(cb);
+		}
+		if (onItemType !is null)
+		{
+			onItemType(it);
+		}
+	}
+	enforceEx!MapFormatBroken(otb.eof);
 }
 
 /**
@@ -389,26 +628,45 @@ class OTBMFilter : FilterStream
 		auto ret = super.readBlock(buffer,size);
 		auto b = cast(ubyte[])buffer[0 .. ret];
 		auto j = 0, i = 0;
-		auto tmp = false;
-		for(; j < ret; j++)
+		auto escape = false;
+
+		while(true)
 		{
-			if (b[j] == NODE_ESCAPE)
+			for(; j < ret; j++)
 			{
-				if (ret <= j+1)
-					break;
-				b[i++] = b[++j];
+				if (b[j] == NODE_ESCAPE)
+				{
+					if (ret <= j+1)
+					{
+						escape = true;
+						break;
+					}
+					b[i++] = b[++j];
+				}
+	//			else if (b[j] == NODE_START || b[j] == NODE_END)
+	//			{
+	//				enforceEx!MapFormatBroken(false);
+	//			}
+				else
+					b[i++] = b[j];
 			}
-//			else if (b[j] == NODE_START || b[j] == NODE_END)
-//			{
-//				enforceEx!MapFormatBroken(false);
-//			}
+			if (i < ret)
+			{
+				if (0 == super.readBlock(buffer+i, ret-i))
+					break;
+				if (escape)
+				{
+					i++;
+					escape = false;
+				}
+				j = i;
+			}
 			else
-				b[i++] = b[j];
+			{
+				break;
+			}
 		}
-		if (i < ret)
-		{
-			i += super.readBlock(buffer+i, ret-i);
-		}
+
 		return i;
 	}
 	
@@ -477,9 +735,9 @@ class OTBMFilter : FilterStream
 	auto doDebug(uint lines = 6)
 	{
 		auto cmd = text(
-				"hexdump -C /home/shd/src/nawia/client/3d/bin/data/world/map.otbm -s "
+				"hexdump -C /home/shd/Downloads/trunk.r5673/trunk.r5673/data/items/items.otb -s "
 				,source.position > 16 ? source.position-16 : source.position
-				," | head -n ",lines);
+				," | head -n",lines);
 		system(cmd.ptr);
 	}
 }
