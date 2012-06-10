@@ -25,7 +25,9 @@ private {
 	import std.exception : enforceEx, Exception;
 	import std.conv : text, to;
 	import std.stdio : writeln;
-	import std.process;
+	import std.bitmanip;
+	import std.array;
+	import std.algorithm;
 }
 
 //struct OTBMParser
@@ -172,41 +174,69 @@ enum ItemAttribute : ubyte
   WareId,
 };
 
-enum ItemFlags : uint
+
+union ItemFlags
 {
-  BlockSolid = 1 << 0,
-  BlockProjectile = 1 << 1,
-  BlockPathFind = 1 << 2,
-  HasHeight = 1 << 3,
-  Usable = 1 << 4,
-  Pickupable = 1 << 5,
-  Movable = 1 << 6,
-  Stackable = 1 << 7,
-  FloorChangeDown = 1 << 8,
-  FloorChangeNorth = 1 << 9,
-  FloorChangeEast = 1 << 10,
-  FloorChangeSouth = 1 << 11,
-  FloorChangeWest = 1 << 12,
-  AlwaysOnTop = 1 << 13,
-  Readable = 1 << 14,
-  Rotable = 1 << 15,
-  Hangable = 1 << 16,
-  Vertical = 1 << 17,
-  Horizontal = 1 << 18,
-  CannotDecay = 1 << 19,
-  AllowDistRead = 1 << 20,
-  Unused = 1 << 21,
-  ClientCharges = 1 << 22, //deprecated
-  LookThrough = 1 << 23,
-  Animation = 1 << 24,
-  WalkStack = 1 << 25
-};
+	uint f;
+	mixin(bitfields!(
+		bool, "BlockSolid", 1,
+		bool, "BlockProjectile", 1,
+		bool, "BlockPathFind", 1,
+		bool, "HasHeight", 1,
+		bool, "Usable", 1,
+		bool, "Pickupable", 1,
+		bool, "Movable", 1,
+		bool, "Stackable", 1,
+		bool, "FloorChangeDown", 1,
+		bool, "FloorChangeNorth", 1,
+		bool, "FloorChangeEast", 1,
+		bool, "FloorChangeSouth", 1,
+		bool, "FloorChangeWest", 1,
+		bool, "AlwaysOnTop", 1,
+		bool, "Readable", 1,
+		bool, "Rotable", 1,
+		bool, "Hangable", 1,
+		bool, "Vertical", 1,
+		bool, "Horizontal", 1,
+		bool, "CannotDecay", 1,
+		bool, "AllowDistRead", 1,
+		bool, "Unused", 1,
+		bool, "ClientCharges", 1, //deprecated
+		bool, "LookThrough", 1,
+		bool, "Animation", 1,
+		bool, "WalkStack", 1,
+		uint, "", 6
+	));
+	
+	template stringize(Ts...)
+	{
+	    static if (Ts.length < 2)
+	        enum stringize = "this."~Ts[0]~" ? \""~Ts[0]~"\" : \"\"";
+	    else
+	        enum stringize = stringize!(Ts[0]) ~ "," ~stringize!(Ts[1..$]);
+	}
+	
+	const string toString() //templated names
+	{
+		enum string ret = stringize!("BlockSolid", "BlockProjectile", "BlockPathFind", "HasHeight", "Usable", 
+				"Pickupable", "Movable", "Stackable", "FloorChangeDown", "FloorChangeNorth",
+				"FloorChangeEast", "FloorChangeSouth", "FloorChangeWest", "AlwaysOnTop", "Readable",
+				"Rotable", "Hangable", "Vertical", "Horizontal", "CannotDecay", "AllowDistRead", 
+				"Unused", "ClientCharges", "LookThrough", "Animation", "WalkStack");
+		return text(f," (",join(filter!(s => s.length > 0)(mixin("["~ret~"]")), ", "),")");
+	}
+}
 
 struct Light
 {
 	align(1)
 	ushort level;
 	ushort color;
+	
+	const string toString()
+	{
+		return text("Level:",level,"\tColor:",color);
+	}
 }
 
 struct VersionInfo
@@ -290,7 +320,7 @@ void parseOTB(Stream stream)
 	{
 		ItemType it;
 		otb.read(cast(ubyte) it.group);
-		otb.read(cast(uint) it.flags);
+		otb.read(it.flags.f);
 		
 		ushort size;
 		otb.read(cb);

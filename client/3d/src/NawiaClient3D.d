@@ -72,7 +72,6 @@ private import
 void main() {
 	Demo demo;
 	
-	
 //	demo = new Demo1;
 //	demo = new Demo2;
 //	demo = new Demo3;
@@ -523,13 +522,13 @@ class Demo5 : Demo {
 		super.dispose();
 	}
 	
-	override void load() {
-		
+	override void load()
+	{
 		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
 		sky.scale = vec3(210, 50, 210);
 		sky.shadowsDisabled = true;
 		
-		world.viewWireFrame = true;
+//		world.viewWireFrame = true;
 		pipe = new Pipeline("pipelines/deferred.pipeline.xml");
 		cam = world.add!Camera(pipe);
 		cam.translation = CordsLocal(2, 1, 0, null);

@@ -1,6 +1,7 @@
 import parser;
 import std.stream : BufferedFile;
 import std.stdio : writeln;
+import std.array;
 
 enum FileType : ubyte
 {
@@ -27,8 +28,11 @@ int main(string[] args)
 	
 	switch(args[1])
 	{
-		case "check":
+		case "chk":
 			check(f, ft);
+		break;
+		case "ls":
+			list(f, ft);
 		break;
 		default:
 			return usage;
@@ -41,7 +45,10 @@ bool usage()
 	writeln( text(
 		"Usage: otbm command path/to/file.otb\n",
 		" supported commands",
-		"  check"
+		"  chk ",
+//		"  ed ",
+//		"  rm ",
+		"  ls "
 	) );
 	return 1;
 }
@@ -75,4 +82,37 @@ void check(Stream f, FileType ft)
 		default:
 			throw new Error(text("Validation of file type ",ft," not implemented!"));
 	}
+}
+
+void list(Stream f, FileType ft)
+{
+	switch(ft)
+	{
+		case FileType.OTB:
+			listOTB(f, ft);
+		break;
+		default:
+			throw new Error(text("List of file type ",ft," not implemented!"));
+	}
+	check(f,ft);
+}
+
+void listOTB(Stream f,  FileType ft)
+{
+	onItemType = delegate(ItemType it)
+	{
+		writeln(
+			"Name:         ",it.name,"\n",
+			"Group:        ",it.group,"\n",
+			"Flags:        ",it.flags,"\n",
+			"ServerId:     ",it.serverId,"\n",
+			"ClientId:     ",it.clientId,"\n",
+			"Speed:        ",it.speed,"\n",
+			"Light2:       ",it.light2,"\n",
+			"TopOrder:     ",it.topOrder,"\n",
+			"WareId:       ",it.wareId,"\n",
+			"Hash:         ",it.hash,"\n",
+			"MiniMapColor: ",it.miniMapColor,"\n"
+		);
+	};
 }

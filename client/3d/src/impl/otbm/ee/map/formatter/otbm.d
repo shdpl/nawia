@@ -20,6 +20,7 @@ class FormatterOTBM : IMsgProvider
 	mixin InjectMsgListener!MsgEntityCreate _lstnrCreate;
 	ushort width;
 	ushort height;
+	ItemType[ushort] types;
 
 	void init()
 	{
@@ -38,6 +39,16 @@ class FormatterOTBM : IMsgProvider
 		onItem = &formatItem;
 //		onTown = &formatTown;
 //		onWaypoint = &formatWaypoint;
+		auto otb = new std.stream.BufferedFile();
+		otb.open("/home/shd/Downloads/trunk.r5673/trunk.r5673/data/items/items.otb");
+		onItemType = delegate(ItemType it)
+		{
+			if (0 != it.serverId)
+			{
+				types[it.serverId] = it; 
+			}
+		};
+		otb.parseOTB();
 		parse(otbm);
 	}
 	
@@ -69,7 +80,9 @@ class FormatterOTBM : IMsgProvider
 			msg.y = t.pos.y;
 			msg.z = t.pos.z;
 			msg.type = i.type;
-			_lstnrCreate.deliver(msg);
+			if( (ItemFlags.LookThrough & types[i.type].flags) == 0
+				 && (ItemFlags.BlockSolid & types[i.type].flags) == 1)
+				_lstnrCreate.deliver(msg);
 		}
 	}
 	
