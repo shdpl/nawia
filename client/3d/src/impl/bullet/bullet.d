@@ -1,3 +1,3 @@
 module impl.bullet.bullet;
 
-public import BTPhysics;
+//public import BTPhysics;

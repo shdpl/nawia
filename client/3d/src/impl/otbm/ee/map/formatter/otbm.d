@@ -80,8 +80,8 @@ class FormatterOTBM : IMsgProvider
 			msg.y = t.pos.y;
 			msg.z = t.pos.z;
 			msg.type = i.type;
-			if( (ItemFlags.LookThrough & types[i.type].flags) == 0
-				 && (ItemFlags.BlockSolid & types[i.type].flags) == 1)
+			if( types[i.type].flags.LookThrough,
+				 types[i.type].flags.BlockSolid )
 				_lstnrCreate.deliver(msg);
 		}
 	}

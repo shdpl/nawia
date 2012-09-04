@@ -18,7 +18,7 @@
 module impl.glfw.ge.window.mode;
 
 private import ge.window.mode,
-	glfw;
+	impl.glfw.glfw;
 
 class GLFWWindowMode : IWindowMode {
 	CordsScreen _size;

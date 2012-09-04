@@ -35,8 +35,8 @@ private import
 	impl.h3d.ge.component.mesh;
 
 class ExtractorMesh : IExtractorMesh {
-	SurfaceExtractorSimpleVolumeMaterialDensityPair1616 _extractor;
-	SurfaceMeshPositionMaterialNormal _mesh;
+	PVoxSurfaceExtractor _extractor;
+	PVoxSurfaceMesh _mesh;
 	
 	this(IVolume volume) {
 		init(volume);
@@ -46,18 +46,12 @@ class ExtractorMesh : IExtractorMesh {
 			//assert(rt_typeid(vol == Volume)); //TODO: rt reflection
 	} body {
 		auto vol = cast(VolumeSimple) volume;
-		_mesh = new SurfaceMeshPositionMaterialNormal;
-		auto region = vol.region;
-		auto up = region.toprightfar;
-		auto low = region.botleftnear;
-		auto pvReg = new Region(new Vector3DInt32(low.x, low.y, low.z), new Vector3DInt32(up.x, up.y, up.z));
-		
-		_extractor = new SurfaceExtractorSimpleVolumeMaterialDensityPair1616(
-			vol._data, pvReg, _mesh);
+		_mesh = pvoxSurfaceMeshAdd();
+		pvoxSurfaceExtractorAdd(vol._volume, vol._region, _mesh, false);
 	}
 	
 	override IGeometry extract(/*cam.fov*/) {
-		_extractor.execute();
+		pvoxSurfaceExtractorExecute(_extractor);
 		decimate();
 		return getGeometry();
 	}
@@ -72,27 +66,24 @@ class ExtractorMesh : IExtractorMesh {
 	{
 		float[] vertices;
 		short[] normals;
-		uint vertexCount = _mesh.getNoOfVertices;
-		PositionMaterialNormalVector tmp2 = _mesh.getVertices();
+		uint vertexCount = pvoxSurfaceMeshGetNoOfVertices(_mesh);
+		PVoxVertex[] tmp2 = new PVoxVertex[vertexCount];
+		pvoxSurfaceMeshGetVertices(_mesh, tmp2.ptr);
 	  
 		for(int i=0; i<tmp2.length; i++){
-			vertices ~= tmp2[i].getPosition.getX;
-			vertices ~= tmp2[i].getPosition.getY;
-			vertices ~= tmp2[i].getPosition.getZ;
+			vertices ~= tmp2[i].position.x;
+			vertices ~= tmp2[i].position.y;
+			vertices ~= tmp2[i].position.z;
 			
-			normals ~= to!short(tmp2[i].normal.getX() * short.max);
-			normals ~= to!short(tmp2[i].normal.getY() * short.max);
-			normals ~= to!short(tmp2[i].normal.getZ() * short.max);
+//			normals ~= to!short(tmp2[i].normal.getX() * short.max);
+//			normals ~= to!short(tmp2[i].normal.getY() * short.max);
+//			normals ~= to!short(tmp2[i].normal.getZ() * short.max);
 		}
 		enforce(vertices.length/3 == tmp2.length);
 		
-		uint[] indices;
-		uint triangleIndexCount = _mesh.getNoOfIndices();
-		auto tmp = _mesh.getIndices();
-		for(int i=0; i<tmp.length; i++){
-			indices ~= tmp[i];
-		}
-		enforce(indices.length == _mesh.getNoOfIndices());
+		uint triangleIndexCount = pvoxSurfaceMeshGetNoOfIndices(_mesh);
+		uint[] indices = new uint[triangleIndexCount];
+		pvoxSurfaceMeshGetIndices(_mesh, indices.ptr);
 		
 		float[] posData = vertices;
 		int[] indexData = to!(int[])(indices);

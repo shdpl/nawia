@@ -35,14 +35,14 @@ class Logs /*: InputRange!(H3DMessage)*/ {
 	
 	public:
 	@property uint logLevel() {
-		return to!uint(h3dGetOption(H3DOptions.List.MaxLogLevel));
+		return to!uint(h3dGetOption(H3DOptions.MaxLogLevel));
 	}
 	
 	@property void logLevel(uint level) {
-		h3dSetOption(H3DOptions.List.MaxLogLevel, level);
+		h3dSetOption(H3DOptions.MaxLogLevel, level);
 	}
 	
-//	override H3DMessage front() {
+//	override h3dMessage front() {
 //		return _current;
 //	}
 //	
@@ -54,12 +54,12 @@ class Logs /*: InputRange!(H3DMessage)*/ {
 //		return _current.content.empty;
 //	}
 //	
-//	override H3DMessage moveFront() {
+//	override h3dMessage moveFront() {
 //		enforce(false, "not implemented");
 //		return _current;
 //	}
 //	
-//	int opApply(int delegate(ref H3DMessage) dg) { //TODO: override
+//	int opApply(int delegate(ref h3dMessage) dg) { //TODO: override
 //		int res;
 //		for(; !empty; popFront()) {
 //			auto front = front;
@@ -69,7 +69,7 @@ class Logs /*: InputRange!(H3DMessage)*/ {
 //		return res;
 //	}
 //	
-//	int opApply(int delegate(ref size_t, ref H3DMessage) dg) { //TODO: override
+//	int opApply(int delegate(ref size_t, ref h3dMessage) dg) { //TODO: override
 //		int res;
 //		
 //		size_t i = 0;
@@ -83,17 +83,17 @@ class Logs /*: InputRange!(H3DMessage)*/ {
 //	}
 	
 	size_t capacity() {
-		return to!size_t(h3dGetOption(H3DOptions.List.MaxNumMessages));
+		return to!size_t(h3dGetOption(H3DOptions.MaxNumMessages));
 	}
 	
 	void reserve(size_t elements) {
-		h3dSetOption(H3DOptions.List.MaxNumMessages, elements);
+		h3dSetOption(H3DOptions.MaxNumMessages, elements);
 	}
 	
 	private:
 	void getMsg() {
 		with(_current) {
-			content = h3dGetMessage(&level, &time);
+			content = to!string(h3dGetMessage(&level, &time));
 			}
 	}
 }

@@ -17,12 +17,10 @@
 
 module h3d.h3d;
 
-public import horde3d;
-
-alias int H3DNode;
-alias int H3DRes;
+public import derelict.horde3d.core;
 
 static this() {
+	DerelictH3DCore.load();
 	//h3dInit();
 	}
 

@@ -12,11 +12,11 @@ private import
 //	
 //	
 //	@property bool profile() {
-//		return h3dGetOption(H3DOptions.List.GatherTimeStats) > 0.01;
+//		return h3dGetOption(H3DOptions.GatherTimeStats) > 0.01;
 //	}
 //	
 //	@property void profile(bool value) {
-//		h3dSetOption(H3DOptions.List.GatherTimeStats, value);
+//		h3dSetOption(H3DOptions.GatherTimeStats, value);
 //	}
 //	
 //	TriCount	Number of triangles that were pushed to the renderer

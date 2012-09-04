@@ -27,6 +27,8 @@ private import
 	std.bitmanip,
 	std.stream,
 	std.math;
+	
+private import derelict.glfw2.glfw2;
 
 private {
 	import impl.bullet.pe.world.dynamics,
@@ -69,7 +71,8 @@ private import
 	impl.bullet.bullet,
 	core.memory;
 
-void main() {
+void main()
+{
 	Demo demo;
 	
 //	demo = new Demo1;
@@ -96,8 +99,8 @@ abstract class Demo : IMsgListener, IMsgProvider {
 	mixin InjectMsgListener!MsgAppQuit _lstnrQuit;
 	EEWorldStd _world;
 	GEWorld world;
-	WorldDynamics _peWorld;
-	PBodyRigid _pbody[];
+//	WorldDynamics _peWorld;
+//	PBodyRigid _pbody[];
 	Window wnd;
 	Camera cam;
 	MsgMediator mediator;
@@ -117,12 +120,12 @@ abstract class Demo : IMsgListener, IMsgProvider {
 		_res = ResManager();
 		
 		this.initGE();
-		this.initPE();
+//		this.initPE();
 		this.initIO();
 	}
 	
 	public void dispose() {
-		_world.get!WorldDynamics().dispose();
+//		_world.get!WorldDynamics().dispose();
 		_world.get!GEWorld().dispose();
 		
 		_res.dispose();
@@ -220,6 +223,7 @@ abstract class Demo : IMsgListener, IMsgProvider {
 		
 		wnd = Window(wndProps);
 		wnd.title = "Nawia RPG";
+		writeln("After title");
 		
 		world = new GEWorld();
 		world.init(wnd);
@@ -231,12 +235,12 @@ abstract class Demo : IMsgListener, IMsgProvider {
 		_world.add(world);
 	}
 	
-	private void initPE()
-	{
-		_peWorld = new WorldDynamics();
-		_peWorld.init();
-		_world.add(_peWorld);
-	}
+//	private void initPE()
+//	{
+//		_peWorld = new WorldDynamics();
+//		_peWorld.init();
+//		_world.add(_peWorld);
+//	}
 	
 	private void initIO()
 	{
@@ -265,9 +269,9 @@ class Demo1 : Demo {
 		platform = world.add!Scene("models/platform/platform.scene.xml"); //("platform/platform.scene.xml");
 		platform.translation = CordsLocal(0, 0, 0, null);
 		platform.size = vec3(50f, 1f, 50f);
-		_pbody ~= _peWorld.add!PBodyRigid(
-			CordsLocal(0, -1.5, 0, null),
-			Box!vec3(platform.size));
+//		_pbody ~= _peWorld.add!PBodyRigid(
+//			CordsLocal(0, -1.5, 0, null),
+//			Box!vec3(platform.size));
 		
 		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
 		sky.size = vec3(300, 100, 300);
@@ -300,9 +304,9 @@ class Demo1 : Demo {
 		man = world.add!Scene("models/man/man.scene.xml");
 		man.translation = CordsLocal(0, 10, 0, null);
 		man.size = vec3(2f, .5f, .2f);
-		_pbody ~= _peWorld.add!PBodyRigid(
-			man.translation,
-			Box!vec3(man.size), 75); //TODO: getAABB
+//		_pbody ~= _peWorld.add!PBodyRigid(
+//			man.translation,
+//			Box!vec3(man.size), 75); //TODO: getAABB
 		
 		man.setupAnimation(0, new Animation("animations/man.anim"), 0);
 		
@@ -322,7 +326,7 @@ class Demo1 : Demo {
 	void onAnimate() {
 		static real progress = 0;
 		progress += 1/wnd.fps*35;
-		man.transformationRelative = _pbody[$-1].transformation;
+//		man.transformationRelative = _pbody[$-1].transformation;
 		h3dSetModelAnimParams( man.id, 0, progress, 1.0f );
 	}
 }
@@ -524,56 +528,56 @@ class Demo5 : Demo {
 	
 	override void load()
 	{
-		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
-		sky.scale = vec3(210, 50, 210);
-		sky.shadowsDisabled = true;
-		
-//		world.viewWireFrame = true;
-		pipe = new Pipeline("pipelines/deferred.pipeline.xml");
-		cam = world.add!Camera(pipe);
-		cam.translation = CordsLocal(2, 1, 0, null);
-		cam.rotation = CordsLocal(-20, 135, 0, null);
-		cam.viewport = Box!CordsScreen(wnd.size);
-		cam.clipNear = .01;
-		cam.clipFar = 1000;
-		cam.fov = 73;
-		cam.assign(wnd);	// TODO: Multithreading
-		
-		
-		light = world.add!Light(
-			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
-		light.translation = CordsLocal(0, 25, 20, null);
-		light.rotation = CordsLocal(-30, 0, 0, null);
-		light.radius = 200;
-		light.fov = 90;
-		light.color = ColorRGB!float(.9f, .7f, .75f);
-		
-		_vol = new VolumeSimple(Box!CordsWorld( CordsWorld(0,0,0), CordsWorld(2000,2000,16) ));
-		
-		_fmter.format(_res.open("world:map.otbm"));
-		
-		auto msgFound = false;
-		mediator.poll(delegate(Variant v) {
-			if (msgFound)
-			{
-				return v.type == typeid(MsgEntityCreate);
-			}
-			if (v.type == typeid(MsgEntityCreate))
-				msgFound = true;
-			return true;
-		});
-		
-		auto extractor = new ExtractorMesh(_vol);
-		auto geo = cast(Geometry) extractor.extract(/*cam.fov*/);
-		
-		auto mat = new Material("materials/mesh.material.xml");
-		
-		Model model = world.add!Model("DynGeoModelNode", geo);
-		model.add!Mesh("DynGeoMesh", mat, 0, geo.verticesNo, 0, geo.indicesNo );
-	    model.translation = CordsLocal(-30, -5, 5, null);
-	    model.scale = vec3(.1, .1, .2);
-	    model.rotation(CordsLocal(90,0,0, null));
-	    writeln("vertices: ", geo.verticesNo);
+//		sky = world.add!Scene("models/skybox/skybox.scene.xml");//(skybox/skybox.scene.xml");
+//		sky.scale = vec3(210, 50, 210);
+//		sky.shadowsDisabled = true;
+//		
+////		world.viewWireFrame = true;
+//		pipe = new Pipeline("pipelines/deferred.pipeline.xml");
+//		cam = world.add!Camera(pipe);
+//		cam.translation = CordsLocal(2, 1, 0, null);
+//		cam.rotation = CordsLocal(-20, 135, 0, null);
+//		cam.viewport = Box!CordsScreen(wnd.size);
+//		cam.clipNear = .01;
+//		cam.clipFar = 1000;
+//		cam.fov = 73;
+//		cam.assign(wnd);	// TODO: Multithreading
+//		
+//		
+//		light = world.add!Light(
+//			new Material("materials/light.material.xml"), "LIGHTING", "SHADOWMAP");
+//		light.translation = CordsLocal(0, 25, 20, null);
+//		light.rotation = CordsLocal(-30, 0, 0, null);
+//		light.radius = 200;
+//		light.fov = 90;
+//		light.color = ColorRGB!float(.9f, .7f, .75f);
+//		
+//		_vol = new VolumeSimple(Box!CordsWorld( CordsWorld(0,0,0), CordsWorld(2000,2000,16) ));
+//		
+//		_fmter.format(_res.open("world:map.otbm"));
+//		
+//		auto msgFound = false;
+//		mediator.poll(delegate(Variant v) {
+//			if (msgFound)
+//			{
+//				return v.type == typeid(MsgEntityCreate);
+//			}
+//			if (v.type == typeid(MsgEntityCreate))
+//				msgFound = true;
+//			return true;
+//		});
+//		
+//		auto extractor = new ExtractorMesh(_vol);
+//		auto geo = cast(Geometry) extractor.extract(/*cam.fov*/);
+//		
+//		auto mat = new Material("materials/mesh.material.xml");
+//		
+//		Model model = world.add!Model("DynGeoModelNode", geo);
+//		model.add!Mesh("DynGeoMesh", mat, 0, geo.verticesNo, 0, geo.indicesNo );
+//	    model.translation = CordsLocal(-30, -5, 5, null);
+//	    model.scale = vec3(.1, .1, .2);
+//	    model.rotation(CordsLocal(90,0,0, null));
+//	    writeln("vertices: ", geo.verticesNo);
 	}
 	
 	override public void handle(Variant msg)

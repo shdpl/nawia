@@ -1,3 +1,0 @@
-<Model geometry="models/beerstein/beerstein.geo" name="beerstein" >
-    <Mesh sx="167.469" vertREnd="14617" rx="-89.6666" sy="167.469" ry="0" sz="167.469" rz="-0" batchStart="0" name="metal01" batchCount="12495" material="models/beerstein/metal.material.xml" vertRStart="0" />
-</Model>

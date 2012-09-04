@@ -132,5 +132,5 @@ class Light : GEComponent, ILight {
 		}
 	}
 	
-	private H3DLight.List Params;
+	private H3DLight Params;
 }

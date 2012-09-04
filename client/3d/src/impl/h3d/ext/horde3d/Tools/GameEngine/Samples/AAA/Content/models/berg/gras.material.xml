@@ -1,6 +1,0 @@
-<Material>
-	<Shader source="shaders/model_noSpecular.shader" />
-	<ShaderFlag name="_F03_ParallaxMapping" />
-	<Sampler name="albedoMap" map="models/berg/gras_dark.jpg" />
-	<Sampler name="normalMap" map="models/berg/Grass_normal.jpg" allowCompression="false" />
-</Material>

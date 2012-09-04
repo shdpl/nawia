@@ -1,3 +1,0 @@
-<Model geometry="models/scene/scene.geo" name="scene" >
-    <Mesh tx="0" sx="1.5" vertREnd="288" ty="4.95939" sy="1" tz="0" sz="1.5" batchStart="0" name="Plane01" batchCount="1536" material="models/scene/stones.material.xml" vertRStart="0" />
-</Model>

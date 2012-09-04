@@ -20,6 +20,6 @@ module msg._ee.world.init;
 private import msg.msg;
 
 struct MsgWorldInit {
-	Msg msg;
-	alias msg this;
+//	Msg msg;
+//	alias msg this;
 }

@@ -33,78 +33,78 @@ private import
 	impl.bullet.bullet;
 	
 
-class WorldDynamics : WorldCollision, IMsgListener, World {
-	mixin InjectMsgProvider!MsgFrameReady _lstnrReady;
-	public:
-	struct Options {	//TODO: wrap
-		real[3] gravity = [0, -9.80665, 0];
-		auto configuration = typeid(btDefaultCollisionConfiguration);
-		/// btDbvtBroadphase, btAxisSweep3, bt32BitAxisSweep3 or btCudaBroadphase
-		auto broadphase = typeid(btDbvtBroadphase);
-		/// btParallelConstraintSolver or btSequentialImpulseConstraintSolver
-		auto solver = typeid(btSequentialImpulseConstraintSolver);
-	}
-	
-	private:
-	PBodyRigid[] _bodies;
-	btDiscreteDynamicsWorld _world;
-	btBroadphaseInterface _bphase;
-	btCollisionConfiguration _config;
-	btDispatcher _dispatcher;
-	btConstraintSolver _csolver;
-	btVector3 _gravity;
-	
-	public:
-	this()
-	{
-		_bodies = [];
-	}
-	void init(Options o = Options()) {
-		_config = cast(btCollisionConfiguration) o.configuration.create;
-		
-		_dispatcher = new btCollisionDispatcher(_config);
-		_bphase = cast(btBroadphaseInterface) o.broadphase.create;
-		_csolver = cast(btConstraintSolver) o.solver.create;
-		
-		_world = new btDiscreteDynamicsWorld(_dispatcher, _bphase, _csolver, _config);
-		
-		_gravity = new btVector3(o.gravity[0], o.gravity[1], o.gravity[2]);
-		_world.setGravity(_gravity);
-		
-		_lstnrReady.register(this);
-	}
-	
-	~this()
-	{
-	}
-	
-	void dispose()
-	{
-		foreach(b; this._bodies)
-		{
-			del(b);
-		}
-		_lstnrReady.unregister(this);
-	}
-	
-	public:
-	PBodyRigid add(T, E...)(E args) if (is(T : PBodyRigid)) {
-		auto ret = new T();
-		ret.init(args);
-		_bodies ~= ret;
-		_world.addRigidBody(ret.btHandle());
-		
-		return ret;
-	}
-	
-	void del(PBodyRigid b) {
-		_world.removeRigidBody(b.btHandle());
-		b.clear();
-	}
-	
-	void handle(Variant msg) {
-		assert(msg.type == typeid(MsgFrameReady));
-		auto m = msg.peek!MsgFrameReady;
-		_world.stepSimulation(m.delta.to!("seconds", float));
-	}
-}
+//class WorldDynamics : WorldCollision, IMsgListener, World {
+//	mixin InjectMsgProvider!MsgFrameReady _lstnrReady;
+//	public:
+//	struct Options {	//TODO: wrap
+//		real[3] gravity = [0, -9.80665, 0];
+//		auto configuration = typeid(btDefaultCollisionConfiguration);
+//		/// btDbvtBroadphase, btAxisSweep3, bt32BitAxisSweep3 or btCudaBroadphase
+//		auto broadphase = typeid(btDbvtBroadphase);
+//		/// btParallelConstraintSolver or btSequentialImpulseConstraintSolver
+//		auto solver = typeid(btSequentialImpulseConstraintSolver);
+//	}
+//	
+//	private:
+//	PBodyRigid[] _bodies;
+//	btDiscreteDynamicsWorld _world;
+//	btBroadphaseInterface _bphase;
+//	btCollisionConfiguration _config;
+//	btDispatcher _dispatcher;
+//	btConstraintSolver _csolver;
+//	btVector3 _gravity;
+//	
+//	public:
+//	this()
+//	{
+//		_bodies = [];
+//	}
+//	void init(Options o = Options()) {
+//		_config = cast(btCollisionConfiguration) o.configuration.create;
+//		
+//		_dispatcher = new btCollisionDispatcher(_config);
+//		_bphase = cast(btBroadphaseInterface) o.broadphase.create;
+//		_csolver = cast(btConstraintSolver) o.solver.create;
+//		
+//		_world = new btDiscreteDynamicsWorld(_dispatcher, _bphase, _csolver, _config);
+//		
+//		_gravity = new btVector3(o.gravity[0], o.gravity[1], o.gravity[2]);
+//		_world.setGravity(_gravity);
+//		
+//		_lstnrReady.register(this);
+//	}
+//	
+//	~this()
+//	{
+//	}
+//	
+//	void dispose()
+//	{
+//		foreach(b; this._bodies)
+//		{
+//			del(b);
+//		}
+//		_lstnrReady.unregister(this);
+//	}
+//	
+//	public:
+//	PBodyRigid add(T, E...)(E args) if (is(T : PBodyRigid)) {
+//		auto ret = new T();
+//		ret.init(args);
+//		_bodies ~= ret;
+//		_world.addRigidBody(ret.btHandle());
+//		
+//		return ret;
+//	}
+//	
+//	void del(PBodyRigid b) {
+//		_world.removeRigidBody(b.btHandle());
+//		b.clear();
+//	}
+//	
+//	void handle(Variant msg) {
+//		assert(msg.type == typeid(MsgFrameReady));
+//		auto m = msg.peek!MsgFrameReady;
+//		_world.stepSimulation(m.delta.to!("seconds", float));
+//	}
+//}

@@ -1,5 +1,0 @@
-<Material>
-	<Shader source="shaders/model_twoSided.shader" />
-
-	<Sampler name="albedoMap" map="models/StehTischMitSchirm/schirm_material.jpg" />
-</Material>

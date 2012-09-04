@@ -1,5 +1,0 @@
-<Model name="fountain" geometry="models/fountain/fountain.geo">
-
-	<Mesh name="objBrunnen" material="models/fountain/_1_-_Default.material.xml" batchStart="0" batchCount="504" vertRStart="0" vertREnd="282" />
-	<Mesh name="objWasser" material="models/fountain/_2_-_Default.material.xml" batchStart="504" batchCount="48" vertRStart="283" vertREnd="298" />
-</Model>

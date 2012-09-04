@@ -42,19 +42,19 @@ interface IResource {
 	//IResource clone();//TODO: make typesafe
 	//IResource next(); //FIXME: WhiteHole!T does not work as supposed to
 	
-	//TODO: h3dFindResElem
-	//TODO: h3dQueryUnloadedResource
-	//TODO: h3dReleaseUnusedResources
+	//TODO: H3DFindResElem
+	//TODO: H3DQueryUnloadedResource
+	//TODO: H3DReleaseUnusedResources
 
 	enum ResourceFlags {
 		None = 0,
-		NoQuery = H3DResFlags.Flags.NoQuery,
-    	NoTexCompression = H3DResFlags.Flags.NoTexCompression,
-    	NoTexMipmaps = H3DResFlags.Flags.NoTexMipmaps,
-    	TexCubemap = H3DResFlags.Flags.TexCubemap,
-    	TexDynamic = H3DResFlags.Flags.TexDynamic,
-    	TexRenderable = H3DResFlags.Flags.TexRenderable,
-    	TexSRGB = H3DResFlags.Flags.TexSRGB
+		NoQuery =  H3DResFlags.NoQuery,
+    	NoTexCompression =  H3DResFlags.NoTexCompression,
+    	NoTexMipmaps =  H3DResFlags.NoTexMipmaps,
+    	TexCubemap =  H3DResFlags.TexCubemap,
+    	TexDynamic =  H3DResFlags.TexDynamic,
+    	TexRenderable =  H3DResFlags.TexRenderable,
+    	TexSRGB =  H3DResFlags.TexSRGB
 	}
 	
 	enum AccessRights {

@@ -3,6 +3,7 @@
 	<buildpathentry excluding="impl/glfw/ext/|impl/h3d/ext/|impl/polyvox/ext/" including="impl/" kind="src" path="src"/>
 	<buildpathentry kind="src" path="src/iface"/>
 	<buildpathentry kind="src" path="src/impl/polyvox/ext"/>
-	<buildpathentry kind="src" path="src/impl/glfw/ext"/>
+	<buildpathentry excluding="**" kind="src" path="src/impl/glfw/ext"/>
 	<buildpathentry exported="true" kind="con" path="org.eclipse.dltk.launching.INTERPRETER_CONTAINER"/>
+	<buildpathentry exported="true" external="true" kind="lib" path="C:/Users/shd/Documents/src/derelict3/import"/>
 </buildpath>

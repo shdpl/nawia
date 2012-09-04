@@ -1,7 +1,8 @@
 module impl.h3d.ge.res.texture;
 
 private import
-	iface.ge.res.texture;
+	iface.ge.res.texture,
+	std.string;
 
 private import
 	impl.h3d.ge.res.resource,
@@ -15,7 +16,7 @@ class Texture : Resource, ITexture {
 	_Images images;
 	
 	private:
-	alias H3DTexRes.List Elements;
+	alias H3DTexRes Elements;
 	immutable ELEM = Elements.TextureElem;
 	
 	
@@ -30,7 +31,7 @@ class Texture : Resource, ITexture {
 	}
 	this(string name, vec2i size, TextureFormat fmt) {
 		//FIXME: size as specialized type
-		super(h3dCreateTexture(name, size.x, size.y, fmt, 0));
+		super(h3dCreateTexture(name.toStringz(), size.x, size.y, fmt, 0));
 	}
 	
 	override ResourceType type() @property {

@@ -81,10 +81,10 @@ package class Keyboard: IKeyboard, IMsgProvider {
 	}
 }
 
-void callbackChar(int action, int character) {
+extern(C) void callbackChar(int action, int character) {
 	Keyboard().onChar(character, action);
 }
 
-void callbackKey(int action, int key) {
+extern(C) void callbackKey(int action, int key) {
 	Keyboard().onKey(key, action);
 }

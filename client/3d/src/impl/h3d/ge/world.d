@@ -23,7 +23,8 @@ public import
 
 private import std.range,
 	std.conv,
-	std.math;
+	std.math,
+	std.string;
 
 private import
 	impl.h3d.h3d,
@@ -84,7 +85,7 @@ class GEWorld : GEComponent, IGEWorld, IMsgProvider, IMsgListener {
 			setOption(Option.FastAnimation, value);
 		}
 		bool animationFast() {
-			return h3dGetOption(H3DOptions.List.FastAnimation) > 0.01;
+			return h3dGetOption(H3DOptions.FastAnimation) > 0.01;
 		}
 	}
 	
@@ -93,13 +94,13 @@ class GEWorld : GEComponent, IGEWorld, IMsgProvider, IMsgListener {
 	}
 	
 	@property bool filteringTrilinear() {
-		return h3dGetOption(H3DOptions.List.TrilinearFiltering) > 0.01;
+		return h3dGetOption(H3DOptions.TrilinearFiltering) > 0.01;
 	}
 	
 	@property ubyte anisotropy() out(result) {
 		assert(result == 1 || result == 2 || result == 4 || result == 8);
 	} body {
-		return to!ubyte(h3dGetOption(H3DOptions.List.MaxAnisotropy));
+		return to!ubyte(h3dGetOption(H3DOptions.MaxAnisotropy));
 	}
 	
 	@property void anisotropy(ubyte value) in {
@@ -109,7 +110,7 @@ class GEWorld : GEComponent, IGEWorld, IMsgProvider, IMsgListener {
 	}
 	
 	@property bool linearizationSRGB() {
-		return h3dGetOption(H3DOptions.List.SRGBLinearization) > 0.01;
+		return h3dGetOption(H3DOptions.SRGBLinearization) > 0.01;
 	}
 	
 	@property void linearizationSRGB(bool value) {
@@ -117,7 +118,7 @@ class GEWorld : GEComponent, IGEWorld, IMsgProvider, IMsgListener {
 	}
 	
 	@property bool texReference() {
-		return h3dGetOption(H3DOptions.List.LoadTextures) > 0.01;
+		return h3dGetOption(H3DOptions.LoadTextures) > 0.01;
 	}
 	
 	@property void texReference(bool value) {
@@ -125,7 +126,7 @@ class GEWorld : GEComponent, IGEWorld, IMsgProvider, IMsgListener {
 	}
 	
 	@property bool texCompression() {
-		return h3dGetOption(H3DOptions.List.TexCompression) > 0.01;
+		return h3dGetOption(H3DOptions.TexCompression) > 0.01;
 	}
 	
 	@property void texCompression(bool value) {
@@ -133,7 +134,7 @@ class GEWorld : GEComponent, IGEWorld, IMsgProvider, IMsgListener {
 	}
 	
 	@property uint shadowMapSize() {
-		return to!uint(h3dGetOption(H3DOptions.List.ShadowMapSize));
+		return to!uint(h3dGetOption(H3DOptions.ShadowMapSize));
 	}
 	
 	@property void shadowMapSize(uint value) {
@@ -141,7 +142,7 @@ class GEWorld : GEComponent, IGEWorld, IMsgProvider, IMsgListener {
 	}
 	
 	@property bool viewWireFrame() {
-		return h3dGetOption(H3DOptions.List.WireframeMode) > 0.01;
+		return h3dGetOption(H3DOptions.WireframeMode) > 0.01;
 	}
 	
 	@property void viewWireFrame(bool value) {
@@ -149,7 +150,7 @@ class GEWorld : GEComponent, IGEWorld, IMsgProvider, IMsgListener {
 	}
 	
 	@property bool viewDebug() {
-		return h3dGetOption(H3DOptions.List.DebugViewMode) > 0.01;
+		return h3dGetOption(H3DOptions.DebugViewMode) > 0.01;
 	}
 	
 	@property void viewDebug(bool value) {
@@ -157,12 +158,12 @@ class GEWorld : GEComponent, IGEWorld, IMsgProvider, IMsgListener {
 	}
 	
 	void shadersPreamble(string vertex, string pixel) {
-		h3dSetShaderPreambles(vertex, pixel);
+		h3dSetShaderPreambles(vertex.toStringz(), pixel.toStringz());
 	}
 		
 	@property {
 		bool shadersDumpFailed() {
-			return h3dGetOption(H3DOptions.List.DumpFailedShaders) > 0.01;
+			return h3dGetOption(H3DOptions.DumpFailedShaders) > 0.01;
 		}
 			
 		void shadersDumpFailed(bool value) {
@@ -196,5 +197,5 @@ class GEWorld : GEComponent, IGEWorld, IMsgProvider, IMsgListener {
 			text(option, value));
 	}
 	
-	private alias H3DOptions.List Option;
+	private alias H3DOptions Option;
 }

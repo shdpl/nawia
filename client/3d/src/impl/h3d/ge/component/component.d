@@ -17,9 +17,13 @@
 
 module impl.h3d.ge.component.component;
 
-private import core.vararg;
+private import
+	std.utf,
+	std.string,
+	core.vararg;
 
-private import impl.h3d.h3d,
+private import
+	impl.h3d.h3d,
 	ge.component.component,
 	impl.h3d.ge.ray,
 	impl.h3d.ge.component.camera,
@@ -45,7 +49,7 @@ class GEComponent : IComponent {
 	T[] find(T)(string name) if(is(T : GEComponent)) {
 		T[] ret;
 		int node;
-		for (auto i = h3dFindNodes(this.id, name, T.type)-1; i >= 0; i--) {
+		for (auto i = h3dFindNodes(this.id, toUTFz!(char*)(name), T.type)-1; i >= 0; i--) {
 			node = h3dGetNodeFindResult(i);
 			assert(node && h3dGetNodeType(node) == T.type);
 			ret ~= new T(node);
@@ -65,19 +69,19 @@ class GEComponent : IComponent {
 	E add(E, T...)(T args) { //FIXME: put specialized functions at constructors
 		H3DNode ret;
 		static if(is(E == Camera) ) //if (convertsTo) etc.
-			ret = h3dAddCameraNode(this.id, ""/*args[1]*/, args[0].id); //FIXME: name
+			ret = h3dAddCameraNode(this.id, "".toStringz()/*args[1]*/, args[0].id); //FIXME: name
 		static if(is(E == Emitter) )
-			ret = h3dAddEmitterNode(this.id, "", args[1].id,
+			ret = h3dAddEmitterNode(this.id, "".toStringz(), args[1].id,
 				args[2].resource.id, args[3].maxCount, args[4].respawnCount);
 		static if(is(E == Light) ) //if (convertsTo) etc.
-			ret = h3dAddLightNode(this.id, "", args[0].id, //FIXME: name
-				args[1], args[2]);
+			ret = h3dAddLightNode(this.id, "".toStringz(), args[0].id, //FIXME: name
+				args[1].toStringz(), args[2].toStringz());
 		static if( is(E == Group) ) //if (convertsTo) etc.
 			ret = h3dAddGroupNode(this.id, args[0]);
 		static if( is(E == Model) ) //if (convertsTo) etc.
-			ret = h3dAddModelNode(this.id, args[0], args[1].id);
+			ret = h3dAddModelNode(this.id, args[0].toStringz(), args[1].id);
 		static if( is(E == Mesh) ) //if (convertsTo) etc.
-			ret = h3dAddMeshNode(this.id, args[0], args[1].id,
+			ret = h3dAddMeshNode(this.id, args[0].toStringz(), args[1].id,
 				args[2], args[3], args[4], args[5]);
 		//static if( is(E == Joint) ) //if (convertsTo) etc.
 		//	ret = h3dAddMeshNode(this.id, args[0], args[1].id); //TODO: joint index
@@ -127,7 +131,7 @@ class GEComponent : IComponent {
 	
 	@property {
 		string name() {
-				return h3dGetResName(this.id);
+				return to!string( h3dGetResName(this.id) );
 			}
 		void name(string value) {
 			setParam(value, Params.NameStr);
@@ -136,7 +140,7 @@ class GEComponent : IComponent {
 	
 	@property {
 		string attachment() {
-				return h3dGetResName(this.id);
+				return to!string( h3dGetResName(this.id) );
 			}
 		void attachment(string value) {
 			setParam(value, Params.AttachmentStr);
@@ -258,7 +262,7 @@ class GEComponent : IComponent {
 	@property { //FIXME: make a new type for these matrices
 		vec4[4] transformationAbsolute() {
 			vec4[4] ret;
-			h3dGetNodeTransMats(this.id, null, cast(float**)&ret);
+			h3dGetNodeTransMats(this.id, cast(const(float)**)null, cast(const(float)**)&ret);
 			return ret;
 		}
 	}
@@ -266,7 +270,7 @@ class GEComponent : IComponent {
 	@property { //FIXME: make a new type for these matrices
 		vec4[4] transformationRelative() {
 			vec4[4] ret;
-			h3dGetNodeTransMats(this.id, cast(float**)&ret, null);
+			h3dGetNodeTransMats(this.id, cast(const(float)**)&ret, cast(const(float)**)null);
 			return ret;
 		}
 		void transformationRelative(vec4[4] value) {
@@ -324,7 +328,7 @@ class GEComponent : IComponent {
 		static if(is(T == float))
 			return h3dGetNodeParamF(id, param, compIdx);
 		static if(is(T == string))
-			return h3dGetNodeParamStr(id, param);
+			return to!string( h3dGetNodeParamStr(id, param) );
 		static if(is(T == int))
 			return h3dGetNodeParamI(id, param);
 	}
@@ -333,7 +337,7 @@ class GEComponent : IComponent {
 		static if(is(T == float))
 			h3dSetNodeParamF(id, param, compIdx, value);
 		static if(is(T == string))
-			h3dSetNodeParamStr(id, param, value);
+			h3dSetNodeParamStr(id, param, value.toStringz());
 		static if(is(T == int))
 			h3dSetNodeParamI(id, param, value);
 	}
@@ -360,7 +364,7 @@ class GEComponent : IComponent {
 		
 		public:
 		
-		override H3DMessage front() {
+		override h3dMessage front() {
 			return _id;
 		}
 		
@@ -372,12 +376,12 @@ class GEComponent : IComponent {
 			return _current.content.empty;
 		}
 		
-		override H3DMessage moveFront() {
+		override h3dMessage moveFront() {
 			assert(false, "not implemented");
 			return _current;
 		}
 		
-		override int opApply(int delegate(ref H3DMessage) dg) {
+		override int opApply(int delegate(ref h3dMessage) dg) {
 			int res;
 			for(; !empty; popFront()) {
 				auto front = front;
@@ -387,7 +391,7 @@ class GEComponent : IComponent {
 			return res;
 		}
 		
-		override int opApply(int delegate(ref size_t, ref H3DMessage) dg) {
+		override int opApply(int delegate(ref size_t, ref h3dMessage) dg) {
 			int res;
 			
 			size_t i = 0;
@@ -404,6 +408,6 @@ class GEComponent : IComponent {
 	
 	
 	private:
-	alias H3DNodeParams.List Params;
-	alias H3DNodeFlags.List Flags;
+	alias H3DNodeParams Params;
+	alias H3DNodeFlags Flags;
 }

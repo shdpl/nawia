@@ -27,36 +27,43 @@ private import
 private import
 	impl.polyvox.polyvox;
 
-class VolumeSimple : IVolume {
-	public:	//TODO: geometry library
-	SimpleVolumeMaterialDensityPair1616 _data;
+class VolumeSimple : IVolume
+{
+	public:
+	PVoxVolume _volume;
+	PVoxRegion _region;
 	Box!CordsWorld _bb;
 	
+	
 	public:
-	this(Box!CordsWorld bb) {
+	this(Box!CordsWorld bb)
+	{
 		init(bb);
 	}
 	
-	void init(Box!CordsWorld bb) {
+	void init(Box!CordsWorld bb)
+	{
 		_bb = bb;
-		_data = new SimpleVolumeMaterialDensityPair1616
-			(new Region(
-				new Vector3DInt32(bb.botleftnear.x,bb.botleftnear.y,bb.botleftnear.z),
-				new Vector3DInt32(bb.toprightfar.x,bb.toprightfar.y,bb.toprightfar.z)));
+		_region = pvoxRegionAdd();
+		pvoxRegionSetLowerCorner(_region, PVoxVector3DUint32(bb.botleftnear.x,bb.botleftnear.y,bb.botleftnear.z));
+		pvoxRegionSetUpperCorner(_region, PVoxVector3DUint32(bb.toprightfar.x,bb.toprightfar.y,bb.toprightfar.z));
+		_volume = pvoxVolumeAdd(_region);
 	}
 	
 	/// Bounding box
-	@property Box!CordsWorld region() {
+	@property Box!CordsWorld region()
+	{
 		return _bb;
 	}
 	
 	///volume[x, y, z] = value;
 	Voxel opIndexAssign(Voxel value, UnitWorld x, UnitWorld y, UnitWorld z)
 	{
-		MaterialDensityPair1616 voxel = _data.getVoxelAt(x, y, z+1);
-		voxel.setDensity(value.density);
-		voxel.setMaterial(value.material);
-		_data.setVoxelAt(x, y, z+1, voxel);
+		PVoxVector3DUint32 pos = {x,y,z+1};
+		PVoxVoxel voxel = pvoxVolumeGetVoxelAt(_volume,pos);
+//		voxel.density = value.density;
+		voxel.material = value.material;
+		pvoxVolumeSetVoxelAt(_volume, pos, voxel);
 		return value;
 	}
 	

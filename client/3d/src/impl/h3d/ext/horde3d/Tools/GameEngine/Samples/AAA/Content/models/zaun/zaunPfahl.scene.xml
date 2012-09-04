@@ -1,3 +1,0 @@
-<Model geometry="models/zaun/zaunPfahl.geo" name="zaunPfahl" >
-    <Mesh tx="3.37781" ty="40.105" vertREnd="47" tz="2.34898" rx="-0" ry="0" rz="90" batchStart="0" name="ZaunLatte12" batchCount="108" material="models/zaun/Holz.material.xml" vertRStart="0" />
-</Model>

@@ -15,7 +15,7 @@ class Shader : Resource, IShader {
 		super(name);
 		init();
 	}
-	this(H3DResId id) {
+	this(H3DRes id) {
 		super(id);
 		init();
 	}
@@ -122,5 +122,5 @@ class Shader : Resource, IShader {
 	}
 	
 	private:
-	alias H3DShaderRes.List Elements;
+	alias H3DShaderRes Elements;
 }

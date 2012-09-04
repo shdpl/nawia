@@ -1,6 +1,7 @@
 module impl.h3d.ge.res.pipeline;
 
 private import
+	std.string,
 	ge.res.pipeline,
 	gl3n.linalg,
 	type.buffer.pixel,
@@ -36,12 +37,12 @@ class Pipeline : Resource, IPipeline {
 		int x, y;
 		BufferPixel ret;	//TODO: components
 		enforceEx!ExResPipelineBuffer(
-			h3dGetRenderTargetData(this.id, name, bufId, &x, &y,
+			h3dGetRenderTargetData(this.id, name.toStringz(), bufId, &x, &y,
 				null, null, 0),
 			text(this.id, name, bufId));
 		ret = BufferPixel(x,y);
 		enforceEx!ExResPipelineBuffer(
-			h3dGetRenderTargetData(this.id, name, bufId, &x, &y,
+			h3dGetRenderTargetData(this.id, name.toStringz(), bufId, &x, &y,
 				null, &ret.buffer, ret.memsize),
 			text(this.id, name, bufId, x, y));
 		return ret;
@@ -57,7 +58,7 @@ class Pipeline : Resource, IPipeline {
 	}
 	
 	private:
-	alias H3DPipeRes.List Elements;
+	alias H3DPipeRes Elements;
 	
 	class _Stages {
 		uint count() @property {

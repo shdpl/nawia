@@ -17,7 +17,11 @@
 
 module impl.h3d.ge.component.model;
 
-private import impl.h3d.h3d,
+private import
+	std.string;
+
+private import
+	impl.h3d.h3d,
 	impl.h3d.ge.component.component;
 	
 public import
@@ -59,12 +63,12 @@ class Model : GEComponent {
 		uint priority, Joint root = null) {
 			std.stdio.writeln("test");
 		h3dSetupModelAnimStage(this.id, slot, anim.id, priority,
-			!is(root) ? "" : root.name, anim.animType == anim.Type.Additive);
+			!is(root) ? "" : root.name.toStringz(), anim.animType == anim.Type.Additive);
 	}
 	//TODO: h3dSetModelAnimParams
 	
 	void setBoneWeight(string bone, float weight) {
-		h3dSetModelMorpher(this.id, bone, weight);
+		h3dSetModelMorpher(this.id, bone.toStringz(), weight);
 	}
 	
 	private:
@@ -109,5 +113,5 @@ class Model : GEComponent {
 		lod = new _Lod();
 	}
 	
-	private alias H3DModel.List Params;
+	private alias H3DModel Params;
 }

@@ -1,8 +1,11 @@
--od"bin"
--of"bin/otbm"
+-g
+-inline
+-lib
+-noboundscheck
+-O
+-release
+-w
+-shared
+-of"bin\libotbm"
 
--I"src"
-
-"src/otbm/parser.d"
-"src/tool.d"
-
+"src\otbm\parser.d"

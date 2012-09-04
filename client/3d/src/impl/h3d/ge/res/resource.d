@@ -1,6 +1,7 @@
 module impl.h3d.ge.resource;
 
 private import
+	std.string,
 	std.conv;
 	
 public import
@@ -12,13 +13,10 @@ private import
 	ge.res.resource,
 	impl.h3d.io.res.resource : IOResource = Resource;
 
-alias int H3DResId;
-alias int H3DElemType;
-
 // TODO: what if Resource would be a template?
 abstract class Resource : IOResource, IResource {
 	public:
-	H3DResId id;
+	H3DRes id;
 	
 	public:
 	this(H3DRes id)
@@ -29,7 +27,7 @@ abstract class Resource : IOResource, IResource {
 	}
 	
 	this(string name, ResourceFlags flags = ResourceFlags.None) {
-		this.id = h3dAddResource(this.type, name, flags);
+		this.id = h3dAddResource(this.type, name.toStringz(), flags);
 		enforceEx!ExResAdd(this.id, text(this.type, " ", name, " ", flags));
 		super();
 	}
@@ -55,7 +53,7 @@ abstract class Resource : IOResource, IResource {
 	
 	/// Empty string in case of failure
 	override string name() @property {
-		return h3dGetResName(id);
+		return to!string(h3dGetResName(id));
 	}
 	
 	override bool loaded() @property {
@@ -63,7 +61,7 @@ abstract class Resource : IOResource, IResource {
 	}
 	
 	override bool load(ubyte[] data, size_t size) {
-		return h3dLoadResource(this.id, cast(string)data, to!int(size));
+		return h3dLoadResource(this.id, (cast(string)data).toStringz(), to!int(size));
 	}
 	
 	override void unload() {
@@ -87,7 +85,7 @@ abstract class Resource : IOResource, IResource {
 		static if(is(T == float))
 			return h3dGetResParamF(id, elem, elemIdx, param, compIdx);
 		static if(is(T == string)) {
-			string ret = h3dGetResParamStr(id, elem, elemIdx, param);
+			string ret = to!string(h3dGetResParamStr(id, elem, elemIdx, param));
 			assert(ret.length != 0);
 			return ret;
 		}
@@ -99,14 +97,14 @@ abstract class Resource : IOResource, IResource {
 		static if(is(T == float))
 			h3dSetResParamF(id, elem, elemIdx, param, compIdx, value);
 		static if(is(T == string))
-			h3dSetResParamStr(id, elem, elemIdx, param, value);
+			h3dSetResParamStr(id, elem, elemIdx, param, value.toStringz());
 		static if(is(T == int))
 			h3dSetResParamI(id, elem, elemIdx, param, value);
 	}
 	
 	/* TODO: Something like that
-	abstract class H3DResElement {
-		abstract H3DElemType h3dElemType() @property;
+	abstract class h3dResElement {
+		abstract h3dElemType h3dElemType() @property;
 		
 		public:
 		uint count() @property {
@@ -117,6 +115,6 @@ abstract class Resource : IOResource, IResource {
 		return h3dGetResElemCount(id, element);
 	}
 	
-	alias H3DResTypes.List ResourceType;
+	alias H3DResTypes ResourceType;
 }
 

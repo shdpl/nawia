@@ -37,5 +37,5 @@ class Joint : GEComponent, IJoint {
 		}
 	}
 	
-	private H3DJoint.List Params;
+	private H3DJoint Params;
 }

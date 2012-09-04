@@ -19,12 +19,14 @@
 module impl.glfw.ge.window.window;
 
 private import
+	std.string,
 	std.conv,
 	std.stdio,
 	std.datetime,
 	std.math;
 
-import impl.glfw.glfw;
+import
+	impl.glfw.glfw;
 
 private import
 	msg.provider,
@@ -68,7 +70,7 @@ package class Window: IWindow, IMsgProvider, IMsgListener	//TODO: as display wor
 	
 	override void title(in string title) {
 		_title = title;
-		glfwSetWindowTitle(title);	// TODO: wrong bindings?
+		glfwSetWindowTitle(title.toStringz());
 	}
 	
 	override string title() {
@@ -162,8 +164,8 @@ package class Window: IWindow, IMsgProvider, IMsgListener	//TODO: as display wor
 	}
 	
 	override IWindowMode desktopMode() {
-		GLFWvidmode mode = new GLFWvidmode;
-		glfwGetDesktopMode(mode);
+		GLFWvidmode mode;
+		glfwGetDesktopMode(&mode);
 		IWindowMode ret = new GLFWWindowMode(mode);
 		return ret;
 	}
@@ -191,7 +193,7 @@ package class Window: IWindow, IMsgProvider, IMsgListener	//TODO: as display wor
 		_lstnrRedraw.register(this);
 		glfwSetWindowRefreshCallback(&callbackRefresh);
 		_lstnrResize.register(this);
-		glfwSetWindowSizeCallback(&callbackResize);
+//		glfwSetWindowSizeCallback(&callbackResize);
 		_prvdrReady.register(this);
 		_prvdrInit.register(this);
 		_dPredictableFrame.length = _dPredictableFrame.ticksPerSec /50;
@@ -273,8 +275,8 @@ package class Window: IWindow, IMsgProvider, IMsgListener	//TODO: as display wor
 		int cNewModes;
 		int cModes = 16;
 		do {
-			cNewModes = glfwGetVideoModes(vidModes, cModes);
-			} while (cNewModes < cModes);
+			cNewModes = glfwGetVideoModes(&vidModes, cModes);
+		} while (cNewModes < cModes);
 		assert(cNewModes == cModes);
 	}
 	 
@@ -285,19 +287,20 @@ package class Window: IWindow, IMsgProvider, IMsgListener	//TODO: as display wor
 			fpsAvg += fps;
 			fpsAvg /= 2;
 	}
+}
+extern(C)
+{
+	int callbackClose() {
+		return Window().onClose();
+	}
 	
-}
-
-int callbackClose() {
-	return Window().onClose();
-}
-
-void callbackResize(int x, int y) {
-	Window().onResize(x, y);
-}
-
-void callbackRefresh() {
-	Window().onRefresh();
+	void callbackResize(int x, int y) {
+		Window().onResize(x, y);
+	}
+	
+	void callbackRefresh() {
+		Window().onRefresh();
+	}
 }
 
 

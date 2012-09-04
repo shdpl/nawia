@@ -181,6 +181,7 @@ class Camera : GEComponent, ICamera, IMsgListener, IMsgProvider {
 			_lstnrReady.deliver(MsgFrameReady(_timer.peek()));
 			_timer.reset();
 		} else if (msg.type == typeid(MsgWindowResize)) {
+			std.stdio.writeln("received");
 			auto payload = msg.get!MsgWindowResize;
 			viewport = Box!CordsScreen(CordsScreen(0,0), payload.newSize);
 		}
@@ -194,5 +195,5 @@ class Camera : GEComponent, ICamera, IMsgListener, IMsgProvider {
 		return width/height; 
 	}
 	
-	private alias H3DCamera.List Params;
+	private alias H3DCamera Params;
 }

@@ -1,6 +1,8 @@
 module impl.h3d.ge.res.geometry;
 
-private import std.conv;
+private import
+	std.conv,
+	std.string;
 
 private import
 	ge.res.geometry,
@@ -8,7 +10,8 @@ private import
 
 private import
 	impl.h3d.ge.res.resource,
-	horde3dutils;
+	impl.h3d.utils,
+	impl.h3d.h3d;
 	
 	
 class Geometry : Resource, IGeometry {
@@ -26,7 +29,7 @@ class Geometry : Resource, IGeometry {
 	in {
 		assert(0 == vertPos.length % 3);
 	} body {
-		h3dutCreateGeometryRes(name, to!int(vertPos.length/3), to!int(trisIndices.length),
+		h3dutCreateGeometryRes(name.toStringz(), to!int(vertPos.length/3), to!int(trisIndices.length),
 			cast(float*)vertPos, cast(uint*)trisIndices, cast(short*)normals,
 			cast(short*)tangents, cast(short*)bitangents, cast(float*)UVs, cast(float*)0);
 		super(name);
@@ -67,5 +70,5 @@ class Geometry : Resource, IGeometry {
 	} 
 	
 	private:
-	alias H3DGeoRes.List Elements;
+	alias H3DGeoRes Elements;
 }

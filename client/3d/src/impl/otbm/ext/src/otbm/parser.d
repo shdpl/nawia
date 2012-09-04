@@ -49,7 +49,6 @@ void delegate(in Tile) onTile;
 void delegate(in Tile, in Item, in Item* parent) onItem;
 //void delegate(in uint id, in ushort x, in ushort y, in ubyte z, uint flags, in ushort itemId) onHouseTile;
 
-
 /**
  Checks whether otbm file format version is supported by library (it's not an map version)
  */

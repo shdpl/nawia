@@ -1,6 +1,0 @@
-<Model name="sunflower" geometry="models/sunflower/sunflower.geo">
-
-	<Mesh rx="90" ry="0" rz="-0" name="seedheads" material="models/sunflower/seedheads.material.xml" batchStart="0" batchCount="19629" vertRStart="0" vertREnd="22037" />
-	<Mesh rx="90" ry="0" rz="-0" name="stems" material="models/sunflower/stems.material.xml" batchStart="19629" batchCount="32973" vertRStart="22038" vertREnd="56045" />
-	<Mesh rx="90" ry="0" rz="-0" name="flowers" material="models/sunflower/flowers.material.xml" batchStart="52602" batchCount="15831" vertRStart="56046" vertREnd="73580" />
-</Model>

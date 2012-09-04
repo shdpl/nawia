@@ -29,7 +29,7 @@ class Animation : Resource, IAnimation {
 	enum Type : bool { Blended, Additive }
 	
 	private:
-	alias H3DAnimRes.List Elements;
+	alias H3DAnimRes Elements;
 	
 	class _Entities {
 		immutable uint lengthMax = 16;

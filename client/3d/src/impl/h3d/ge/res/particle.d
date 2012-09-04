@@ -13,11 +13,11 @@ private import
 
 class Particle : Resource, IParticle {
 	private:
-	alias H3DPartEffRes.List Elements;	//FIXME: compiler bug (move bottom)
+	alias H3DPartEffRes Elements;	//FIXME: compiler bug (move bottom)
 	public:
 	_Movement movement;
 	_Rotation rotation;
-	_Drag drag;
+//	_Drag drag;
 	_Size size;
 	_Color color;
 	
@@ -68,7 +68,7 @@ class Particle : Resource, IParticle {
 	void init() {
 		movement = new _Movement;
 		rotation = new _Rotation;
-		drag = new _Drag;
+//		drag = new _Drag;
 		size = new _Size;
 		color = new _Color;	//http://d.puremagic.com/issues/show_bug.cgi?id=6532
 	}
@@ -107,32 +107,32 @@ class Particle : Resource, IParticle {
 		}
 	}
 
-	class _Drag {
-		@property {
-			float startMin() {
-				return getChannel(Elements.ChanDragElem, Elements.ChanStartMinF);
-			}
-			void startMin(float vel) {
-				setChannel(Elements.ChanDragElem, Elements.ChanStartMinF, vel);
-			}
-		}
-		@property {
-			float startMax() {
-				return getChannel(Elements.ChanDragElem, Elements.ChanStartMaxF);
-			}
-			void startMax(float vel) {
-				setChannel(Elements.ChanDragElem, Elements.ChanStartMaxF, vel);
-			}
-		}
-		@property {
-			float end() {
-				return getChannel(Elements.ChanDragElem, Elements.ChanEndRateF);
-			}
-			void end(float vel) {
-				setChannel(Elements.ChanDragElem, Elements.ChanEndRateF, vel);
-			}
-		}
-	}
+//	class _Drag {
+//		@property {
+//			float startMin() {
+//				return getChannel(Elements.ChanDragElem, Elements.ChanStartMinF);
+//			}
+//			void startMin(float vel) {
+//				setChannel(Elements.ChanDragElem, Elements.ChanStartMinF, vel);
+//			}
+//		}
+//		@property {
+//			float startMax() {
+//				return getChannel(Elements.ChanDragElem, Elements.ChanStartMaxF);
+//			}
+//			void startMax(float vel) {
+//				setChannel(Elements.ChanDragElem, Elements.ChanStartMaxF, vel);
+//			}
+//		}
+//		@property {
+//			float end() {
+//				return getChannel(Elements.ChanDragElem, Elements.ChanEndRateF);
+//			}
+//			void end(float vel) {
+//				setChannel(Elements.ChanDragElem, Elements.ChanEndRateF, vel);
+//			}
+//		}
+//	}
 	
 	class _Movement {
 		@property {

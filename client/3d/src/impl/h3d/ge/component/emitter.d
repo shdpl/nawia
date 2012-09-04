@@ -128,5 +128,5 @@ class Emitter : GEComponent, IEmitter, IMsgListener {
 		}
 	}
 	
-	private H3DEmitter.List Params;
+	private H3DEmitter Params;
 }

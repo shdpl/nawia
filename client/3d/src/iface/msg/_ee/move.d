@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-module ee.controller.msg.move;
+module impl.ee.controller.msg.move;
 
 public import msg.msg;
 

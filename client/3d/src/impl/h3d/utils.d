@@ -1,3 +1,8 @@
 module impl.h3d.utils;
 
-public import horde3dutils;
+public import derelict.horde3d.utils;
+
+static this()
+{
+	DerelictH3DUtils.load();
+}

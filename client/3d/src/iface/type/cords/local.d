@@ -19,7 +19,7 @@ module type.cords.local;
 
 private import
 	type.cords.cords,
-	ge.component.component; //FIXME: drop dependency on h3d
+	ge.component.component;
 public import
 	type.unit.local;
 

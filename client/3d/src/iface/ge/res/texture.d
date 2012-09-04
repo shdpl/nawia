@@ -6,7 +6,7 @@ private import
 
 
 interface ITexture : IResource {
-	alias H3DFormats.List TextureFormat;	//TODO: other renderer implementation
+	alias H3DFormats TextureFormat;	//TODO: other renderer implementation
 	
 	//flags
 	

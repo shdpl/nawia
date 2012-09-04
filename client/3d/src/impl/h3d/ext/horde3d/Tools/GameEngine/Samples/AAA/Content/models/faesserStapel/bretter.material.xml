@@ -1,6 +1,0 @@
-<Material>
-	<Shader source="shaders/model.shader" />
-	<ShaderFlag name="_F03_ParallaxMapping" />
-	<Sampler name="albedoMap" map="models/faesserStapel/fass.jpg" />
-	<Sampler name="normalMap" map="models/faesserStapel/fass_normal.jpg" allowCompression="false" />
-</Material>

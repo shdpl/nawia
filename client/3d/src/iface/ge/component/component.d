@@ -27,10 +27,10 @@ private import
 	gl3n.linalg,
 	ee.component : EEComponent = Component;
 	
-private import impl.h3d.h3d; //FIXME: drop dependency on h3d
+private import impl.h3d.h3d;
 
 interface IComponent : EEComponent {
-	alias H3DNodeTypes.List Type;
+	alias H3DNodeTypes Type;
 	
 	@property Type type();
 	

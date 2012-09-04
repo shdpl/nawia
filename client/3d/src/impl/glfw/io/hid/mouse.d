@@ -31,7 +31,7 @@ private import
 	util.singleton;
 	
 private import
-	glfw;
+	impl.glfw.glfw;
 
 package class Mouse : IMouse, IMsgProvider, IMsgListener {
 	mixin Singleton!Mouse;
@@ -94,6 +94,6 @@ package class Mouse : IMouse, IMsgProvider, IMsgListener {
 	}
 }
 
-void callbackClick(int button, int action) {
+extern(C) void callbackClick(int button, int action) {
 	Mouse().onClick(button, action);
 }

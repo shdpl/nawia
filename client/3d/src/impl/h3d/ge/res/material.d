@@ -1,6 +1,9 @@
 module impl.h3d.ge.res.material;
 
 private import
+	std.string;
+
+private import
 	ge.res.material,
 	ex.ge.res.element.missing;
 
@@ -83,7 +86,7 @@ class Material : Resource, IMaterial {
 		}
 		void opIndexAssign(float[4] value, string name) {
 			enforceEx!ExResElementMissing(h3dSetMaterialUniform(
-					this.parent.id, name, value[0], value[1], value[2], value[3]),
+					this.parent.id, name.toStringz(), value[0], value[1], value[2], value[3]),
 				text(name));
 		}
 		
@@ -165,5 +168,5 @@ class Material : Resource, IMaterial {
 	
 	
 	private:
-	alias H3DMatRes.List Elements;
+	alias H3DMatRes Elements;
 }

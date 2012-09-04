@@ -3,5 +3,5 @@ buildtype = EXECUTABLE
 out = bin
 outname = libotbm
 buildtool = $DEEBUILDER.COMPILEREXEPATH @build.rf
-extraOptions = -od$DEEBUILDER.OUTPUTPATH\n-of$DEEBUILDER.OUTPUTEXE\n$DEEBUILDER.SRCLIBS.-I\n$DEEBUILDER.SRCFOLDERS.-I\n$DEEBUILDER.SRCMODULES\n
+extraOptions = -g\n-inline\n-lib\n-noboundscheck\n-O\n-release\n-w\n-shared\n-of$DEEBUILDER.OUTPUTEXE\n$DEEBUILDER.SRCLIBS.-I\n"src\\otbm\\parser.d"
 

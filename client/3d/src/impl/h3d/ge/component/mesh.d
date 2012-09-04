@@ -67,5 +67,5 @@ class Mesh : GEComponent, IMesh {
 		}
 	}
 	
-	private H3DMesh.List Params;
+	private H3DMesh Params;
 }

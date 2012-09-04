@@ -1,3 +1,7 @@
 module impl.polyvox.polyvox;
 
-public import PolyVoxCore;
+public import derelict.polyvox.core;
+
+static this() {
+	DerelictPVoxCore.load();
+}
