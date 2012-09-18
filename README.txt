@@ -7,6 +7,8 @@ Biggest factors for making this decision are:
 * paradigm shift
 * other people
 
+From now, this repo is just a container that will store git modules that make-up the whole project (a little convenience thing).
+
 
 If you're looking for opensource MMO code:
 - WorldForge (GPL)
