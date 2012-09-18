@@ -1,4 +1,4 @@
-==================================   Project frozen!   ==================================
+================================ Project frozen! ================================
 I don't think the project should receive any public interest for now.
 I don't want to raise any expectations, and/or feel pressure from third-parties.
 I'm going to continue development, but hopefully in silence.
