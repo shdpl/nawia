@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<buildpath>
-	<buildpathentry excluding="impl/glfw/ext/|impl/h3d/ext/|impl/polyvox/ext/" including="impl/" kind="src" path="src"/>
-	<buildpathentry kind="src" path="src/iface"/>
-	<buildpathentry kind="src" path="src/impl/polyvox/ext"/>
-	<buildpathentry kind="src" path="src/impl/glfw/ext"/>
-	<buildpathentry exported="true" kind="con" path="org.eclipse.dltk.launching.INTERPRETER_CONTAINER"/>
-</buildpath>

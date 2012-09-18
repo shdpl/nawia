@@ -1,1 +1,0 @@
-dmd main.d borderlayout.d window.d libqtdcore.lib libqtdgui.lib -I../../../ -I../../../qt/d1 -ofborderlayout

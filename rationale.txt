@@ -1,6 +1,0 @@
-1. Wrapper wrapped by wrapper?
- - Yes, I know that's odd, although i should mention, that both wrapper layers are playing different roles in project.
-   * First, SWIG-generated moves library into D-world (so if we'll be using D library, it's gone).
-   * Second one, converts probably functional interface into OOP world. Furthermore, even if external library API has objects,
-     they need to be matched with internal interfaces (so it plays adapter role).
-   Maybe in later phase of project this double-wrapper thing will change.

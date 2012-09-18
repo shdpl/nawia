@@ -1,9 +1,0 @@
-<?page title="Experience" contentType="text/html;charset=UTF-8"?>
-<zk>
-	% of experience from this, compared to average monster
-	<chart id="dial" title="Exp Plot" width="50" height="50" type="dial"
-		threeD="false" fgAlpha="128" />
-	<spinner value="60" />
-
-	TODO: jeżeli są, a ich nikt nie zabija - creature creator
-</zk>

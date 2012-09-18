@@ -1,8 +1,0 @@
-bin/
-!bin/data/README.txt
-build/
-!bin/data/README.txt
-!bin/README.txt
-*.kdev4
-*~
-.deps

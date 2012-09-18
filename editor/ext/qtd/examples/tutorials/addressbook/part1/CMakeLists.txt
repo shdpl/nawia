@@ -1,1 +1,0 @@
-build_example(addressbook main.d)

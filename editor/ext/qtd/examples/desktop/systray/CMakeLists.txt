@@ -1,1 +1,0 @@
-build_example(systray main.d RESOURCES systray.qrc)

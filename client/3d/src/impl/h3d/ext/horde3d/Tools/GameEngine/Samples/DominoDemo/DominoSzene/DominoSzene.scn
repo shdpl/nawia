@@ -1,9 +1,0 @@
-<!DOCTYPE SceneConfiguration>
-<Configuration>
-    <Pipeline path="pipeline.xml" />
-    <SceneGraph path="models/TestSzene.xml" />
-    <LightParameters lightingcontext="LIGHTING" shadowcontext="SHADOWMAP" material="lighting.material.xml" />
-    <AttachmentPlugIn name="GameEngine" />
-    <Extras/>
-    <ActiveCamera name="camera" />
-</Configuration>

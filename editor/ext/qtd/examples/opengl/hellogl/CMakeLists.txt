@@ -1,1 +1,0 @@
-build_example(hellogl main.d PACKAGES QtCore QtGui QtOpenGL)

@@ -1,8 +1,0 @@
--od"bin"
--of"bin/otbm"
-
--I"src"
-
-"src/otbm/parser.d"
-"src/tool.d"
-

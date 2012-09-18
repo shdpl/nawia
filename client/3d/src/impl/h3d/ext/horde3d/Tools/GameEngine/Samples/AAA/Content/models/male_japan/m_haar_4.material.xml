@@ -1,6 +1,0 @@
-<Material>
-	<Shader source="shaders/model.shader" />
-	<ShaderFlag name="_F01_Skinning" />
-
-	<Sampler name="albedoMap" map="textures/character/male/haar_4.jpg" />
-</Material>

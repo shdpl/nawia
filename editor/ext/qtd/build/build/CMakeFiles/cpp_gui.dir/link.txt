@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC -O3 -DNDEBUG   -shared -Wl,-soname,libcpp_gui.so -o lib/libcpp_gui.so CMakeFiles/cpp_gui.dir/cpp/qt_gui/ArrayOps_shell.cpp.o -L/home/shd/src/nawia/editor/ext/qtd/build/build/CMakeFiles -lQtGui -Wl,-rpath,/home/shd/src/nawia/editor/ext/qtd/build/build/CMakeFiles 

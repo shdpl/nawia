@@ -1,5 +1,0 @@
-set (classes 
-    QWebHistoryInterface
-    QWebPage
-    QWebView
-)

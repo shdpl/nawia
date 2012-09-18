@@ -1,1 +1,0 @@
-build_example(t3 main.d)

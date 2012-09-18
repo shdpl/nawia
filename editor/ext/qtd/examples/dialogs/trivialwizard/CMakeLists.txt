@@ -1,1 +1,0 @@
-build_example(trivialwizard trivialwizard.d)

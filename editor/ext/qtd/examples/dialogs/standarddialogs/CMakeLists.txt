@@ -1,1 +1,0 @@
-build_example(standarddialogs main.d)

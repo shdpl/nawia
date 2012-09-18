@@ -1,1 +1,0 @@
-build_example(dockwidgets main.d RESOURCES dockwidgets.qrc)

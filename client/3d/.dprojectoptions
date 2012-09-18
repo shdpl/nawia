@@ -1,7 +1,0 @@
-[compileoptions]
-buildtype = EXECUTABLE
-out = bin
-outname = NawiaClient3D
-buildtool = make -C build
-extraOptions = -od$DEEBUILDER.OUTPUTPATH\n-of$DEEBUILDER.OUTPUTEXE\n-unittest\n$DEEBUILDER.SRCLIBS.-I\n$DEEBUILDER.SRCFOLDERS.-I\n$DEEBUILDER.SRCMODULES
-

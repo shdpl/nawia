@@ -1,2 +1,0 @@
-The following functions have a signature pattern which may imply that
-they need to apply reference counting to their arguments (0 functions) : 

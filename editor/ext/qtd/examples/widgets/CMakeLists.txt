@@ -1,2 +1,0 @@
-add_subdirectory(analogclock)
-add_subdirectory(calculator)

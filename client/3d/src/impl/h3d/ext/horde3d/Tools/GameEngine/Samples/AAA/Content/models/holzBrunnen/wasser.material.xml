@@ -1,7 +1,0 @@
-<Material>
-	<Shader source="shaders/wasser.shader" />
-	<Sampler name="normalMap" map="models/holzBrunnen/water_normal.jpg" allowCompression="false" />
-	<Sampler name="albedoMap" map="models/holzBrunnen/water.jpg" />
-	<ShaderFlag name="_F03_ParallaxMapping" />
-	<Uniform name="counter" a="1" b="1" c="1" d="1" />
-</Material>

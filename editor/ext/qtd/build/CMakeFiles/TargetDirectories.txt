@@ -1,4 +1,0 @@
-/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/dgen.dir
-/home/shd/src/nawia/editor/ext/qtd/build/generator/CMakeFiles/generator.dir
-/home/shd/src/nawia/editor/ext/qtd/build/CMakeFiles/install.dir
-/home/shd/src/nawia/editor/ext/qtd/build/CMakeFiles/main.dir

@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC -O3 -DNDEBUG   -shared -Wl,-soname,libcpp_core.so -o lib/libcpp_core.so CMakeFiles/cpp_core.dir/cpp/qt_core/ArrayOps_shell.cpp.o -L/home/shd/src/nawia/editor/ext/qtd/build/build/CMakeFiles -lQtCore -Wl,-rpath,/home/shd/src/nawia/editor/ext/qtd/build/build/CMakeFiles 
