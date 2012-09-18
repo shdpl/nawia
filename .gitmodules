@@ -1,9 +1,0 @@
-[submodule "client/3d/src/impl/glfw/ext/glfw"]
-	path = client/3d/src/impl/glfw/ext/glfw
-	url = ../nawia.git
-[submodule "client/3d/src/impl/orange/ext"]
-	path = client/3d/src/impl/orange/ext
-	url = https://github.com/jacob-carlborg/orange.git
-[submodule "client/3d/src/impl/spark/ext"]
-	path = client/3d/src/impl/spark/ext
-	url = git@github.com:shdpl/Spark.git
