@@ -1,0 +1,45 @@
+Graphics context / Human Interface Devices:
+* glfw
+
+Rendering:
+* Horde3D
+
+Overlays:
+* librocket
+
+Particles:
+* Spark
+
+Physics:
+* Bullet
+
+Math:
+* gl3n
+
+Logic:
+* ffll
+
+Multimedia container
+* Ogg
+
+Audio:
+* CSound (procedural generation)
+* Kowalski Engine (mixing,processing)
+* FLAC (loseless)
+* Vorbis (lossy)
+
+Video:
+* theora
+
+Compression:
+* LZO (read)
+* LZMA (read/write)
+
+Serialization:
+* orange
+
+Map format:
+* otbm
+
+Protocol:
+* otproto => enet
